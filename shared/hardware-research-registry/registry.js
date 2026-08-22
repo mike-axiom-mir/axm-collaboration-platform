@@ -152,13 +152,66 @@ function compile(raw) {
   return result;
 }
 
+const PACKAGE_KEYS = Object.freeze([
+  'schema','id','title','objective','family','domain','defaultField','authority',
+  'sources','candidates','builds','claims','boundaries','packageDigest'
+]);
+const MERGED_PACKAGE_KEYS = Object.freeze([...PACKAGE_KEYS.slice(0, -2), 'mergedFrom', ...PACKAGE_KEYS.slice(-2)]);
+const BOUNDARY_CEILING = Object.freeze({
+  physicalExecution:false,
+  automaticBuild:false,
+  automaticSafetyApproval:false,
+  automaticProcurement:false,
+  automaticPromotion:false,
+  inputIsData:true
+});
+
+function exactKeys(value, expected, label) {
+  object(value, label);
+  const actual = Object.keys(value).sort();
+  const wanted = expected.slice().sort();
+  Core.assert(Core.stable(actual) === Core.stable(wanted), label + ' keys changed');
+}
+
+function assertAuthorityCeiling(pkg) {
+  exactKeys(pkg, Array.isArray(pkg.mergedFrom) ? MERGED_PACKAGE_KEYS : PACKAGE_KEYS, 'hardware package');
+  Core.assert(pkg.family === 'HARDWARE_COMPUTE_RESEARCH', 'hardware family changed');
+  Core.assert(pkg.domain === 'ROBOTICA_AND_PHYSICAL_SYSTEMS', 'hardware domain changed');
+  Core.assert(pkg.defaultField === 'HARDWARE', 'hardware default field changed');
+  Core.assert(pkg.authority === 'RECOMMENDATION_ONLY', 'hardware recommendation boundary changed');
+  exactKeys(pkg.boundaries, Object.keys(BOUNDARY_CEILING), 'hardware boundaries');
+  Core.assert(Core.stable(pkg.boundaries) === Core.stable(BOUNDARY_CEILING), 'hardware boundary ceiling changed');
+  if (Array.isArray(pkg.mergedFrom)) {
+    Core.assert(pkg.mergedFrom.length > 0 && pkg.mergedFrom.every(item => /^[a-f0-9]{64}$/.test(item)), 'mergedFrom must contain exact package digests');
+  }
+
+  for (const source of pkg.sources || []) {
+    exactKeys(source, ['id','title','kind','locator','evidenceStatus','contentDigest','notes'], 'hardware source');
+    Core.assert(SOURCE_STATES.has(source.evidenceStatus), 'source evidence status changed');
+  }
+  for (const candidate of pkg.candidates || []) {
+    exactKeys(candidate, ['id','class','title','description','sourceIds','readiness','safety','tags'], 'hardware candidate');
+    exactKeys(candidate.safety, ['risk','hazards','requiredAuthorities'], 'hardware candidate safety');
+    Core.assert(CANDIDATE_CLASSES.has(candidate.class) && candidate.readiness === 'RESEARCH_CANDIDATE', 'hardware candidate authority changed');
+    Core.assert(RISKS.has(candidate.safety.risk), 'hardware candidate safety risk changed');
+  }
+  for (const build of pkg.builds || []) {
+    exactKeys(build, ['id','title','purpose','candidateIds','designArtifactRefs','state','executionAuthority','safetyApproval','openQuestions'], 'hardware build');
+    for (const ref of build.designArtifactRefs || []) exactKeys(ref, ['locator','digest'], 'hardware design reference');
+    Core.assert(build.state === 'DESIGN_ONLY' && build.executionAuthority === false && build.safetyApproval === false, 'build authority boundary changed');
+  }
+  for (const claim of pkg.claims || []) {
+    exactKeys(claim, ['id','statement','kind','risk','subjectRefs','passCondition','counterevidence','primarySurface','secondarySurface','verdict'], 'hardware claim');
+    Core.assert(CLAIM_KINDS.has(claim.kind) && RISKS.has(claim.risk) && claim.verdict === 'UNTESTED', 'hardware claim authority changed');
+  }
+}
+
 function verify(pkg) {
   try {
     Core.assert(pkg && pkg.schema === PACKAGE_SCHEMA, 'hardware package schema is unsupported');
     const copy = Core.clone(pkg), digest = copy.packageDigest; delete copy.packageDigest;
     Core.assert(Core.digest(copy) === digest, 'hardware package digest mismatch');
-    Core.assert((pkg.builds || []).every(item => item.state === 'DESIGN_ONLY' && item.executionAuthority === false && item.safetyApproval === false), 'build authority boundary changed');
-    Core.assert(pkg.boundaries && pkg.boundaries.physicalExecution === false && pkg.boundaries.inputIsData === true, 'hardware package boundary changed');
+    assertAuthorityCeiling(pkg);
     return { pass: true, reason: null, digest };
   } catch (error) {
     return { pass: false, reason: error.message };

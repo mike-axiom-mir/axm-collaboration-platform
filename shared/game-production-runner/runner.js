@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const PlainFiles = require('./plain-file-io');
 const Codec = require('./canonical');
 const Contracts = require('./contracts');
 const Compiler = require('./compiler');
@@ -61,20 +62,21 @@ function registryMap(items, method) {
 }
 
 function writeJsonAtomic(file, value) {
-  const temporary = file + '.next';
-  fs.writeFileSync(temporary, JSON.stringify(value, null, 2) + '\n', { flag: 'w' });
-  fs.renameSync(temporary, file);
+  PlainFiles.writeAtomic(file, Buffer.from(JSON.stringify(value, null, 2) + '\n', 'utf8'));
 }
 
 function appendReceipt(file, receipt) {
-  fs.appendFileSync(file, JSON.stringify(receipt) + '\n', { encoding: 'utf8', flag: 'a' });
+  PlainFiles.appendAtomic(file, Buffer.from(JSON.stringify(receipt) + '\n', 'utf8'));
 }
 
-function readJson(file) { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+function readJson(file) {
+  return JSON.parse(PlainFiles.read(file, { maxBytes: 64 * 1024 * 1024 }).toString('utf8'));
+}
 
 function readReceiptLedger(file, expectedSchema) {
-  if (!fs.existsSync(file)) return [];
-  const raw = fs.readFileSync(file, 'utf8').trim();
+  const data = PlainFiles.read(file, { allowMissing: true, maxBytes: 64 * 1024 * 1024 });
+  if (data === null) return [];
+  const raw = data.toString('utf8').trim();
   if (!raw) return [];
   const lines = raw.split(/\r?\n/);
   const receipts = lines.map((line, index) => {

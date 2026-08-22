@@ -11,6 +11,7 @@ const STATUSES = new Set(['EXPERIMENTAL', 'TEST', 'WORKING', 'CANON', 'SHELL', '
 const KINDS = new Set(['product', 'service', 'scaffold', 'adapter', 'machine-capability']);
 const VERIFICATION_STATUSES = new Set(['TEST', 'WORKING', 'CANON']);
 const SKIP_WALK = new Set(['node_modules', 'vendor', 'exports', 'state', 'logs', 'backups']);
+const DIGEST_CONTRACT = 'sha256-canonical-text-lf-v1';
 
 function readJson(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -25,8 +26,20 @@ function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
 
+function canonicalTextBytes(value) {
+  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(value);
+  const output = Buffer.allocUnsafe(bytes.length);
+  let writeOffset = 0;
+  for (let readOffset = 0; readOffset < bytes.length; readOffset += 1) {
+    if (bytes[readOffset] === 13 && bytes[readOffset + 1] === 10) continue;
+    output[writeOffset] = bytes[readOffset];
+    writeOffset += 1;
+  }
+  return output.subarray(0, writeOffset);
+}
+
 function digestFile(file) {
-  try { return sha256(fs.readFileSync(file)); }
+  try { return sha256(canonicalTextBytes(fs.readFileSync(file))); }
   catch (error) { return null; }
 }
 
@@ -245,4 +258,4 @@ function validateIndex(index) {
   return { pass: errors.length === 0, errors };
 }
 
-module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, STATUSES, KINDS, buildIndex, validateIndex, validateTargetManifest, digestFile, isVerificationTarget };
+module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, DIGEST_CONTRACT, STATUSES, KINDS, buildIndex, validateIndex, validateTargetManifest, digestFile, isVerificationTarget };

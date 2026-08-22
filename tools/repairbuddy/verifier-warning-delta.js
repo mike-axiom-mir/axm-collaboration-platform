@@ -31,12 +31,24 @@ function stableId(value) {
   return 'warn-' + sha256(Buffer.from(value, 'utf8'));
 }
 
+function stableWarningCode(message) {
+  const text = String(message || '').toLowerCase().replace(/\b[0-9a-f]{16,64}\b/g, '<digest>').replace(/\b\d+\b/g, '<number>').replace(/\\/g, '/');
+  const pathMatch = text.match(/(?:^|\s)((?:[a-z0-9_.-]+\/)+[a-z0-9_.-]+)/);
+  let category = 'OTHER';
+  if (/missing|not found|required/.test(text)) category = 'MISSING_REQUIRED_MATERIAL';
+  else if (/digest|checksum|hash|binding/.test(text)) category = 'DIGEST_OR_BINDING';
+  else if (/schema|contract|format/.test(text)) category = 'SCHEMA_OR_CONTRACT';
+  else if (/warning|unverified|unknown|review/.test(text)) category = 'EVIDENCE_OR_REVIEW';
+  const anchor = pathMatch ? pathMatch[1] : text.replace(/[^a-z0-9_./<>-]+/g, ' ').trim();
+  return category + ':' + sha256(Buffer.from(anchor, 'utf8')).slice(0, 20);
+}
+
 function classifyWarning(message) {
   let match = message.match(/^game package ([^:]+): (.+)$/);
   if (match) {
     const subject = match[1];
     const warning = match[2];
-    return { id:stableId('game|' + subject + '|' + warning), category:'GAME_PACKAGE', subject, message };
+    return { id:stableId('game|' + subject + '|' + stableWarningCode(warning)), category:'GAME_PACKAGE', subject, message, identityBasis:'STRUCTURED_SUBJECT_AND_NORMALIZED_CODE' };
   }
   match = message.match(/^promotion claim needs reverification: ([^ ·]+)(?: · .+)?$/);
   if (match) return { id:stableId('promotion|' + match[1]), category:'PROMOTION_EVIDENCE', subject:match[1], message };
@@ -46,7 +58,7 @@ function classifyWarning(message) {
   if (message.startsWith('tools-index.json is stale') || message.startsWith('tools-index.json missing or invalid')) {
     return { id:stableId('tools-index-readiness'), category:'GENERATED_INDEX', subject:'tools-index.json', message };
   }
-  return { id:stableId('unclassified|' + message), category:'UNCLASSIFIED', subject:'workshop', message };
+  return { id:stableId('unclassified|' + stableWarningCode(message)), category:'UNCLASSIFIED', subject:'workshop', message, identityBasis:'NORMALIZED_MESSAGE_CODE' };
 }
 
 function normalizeMessages(messages, label) {
@@ -182,6 +194,7 @@ module.exports = {
   DELTA_SCHEMA,
   BASELINE_STATUS,
   canonicalDigest,
+  stableWarningCode,
   classifyWarning,
   normalizeMessages,
   buildBaseline,

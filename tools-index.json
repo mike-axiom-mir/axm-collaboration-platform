@@ -1,27 +1,28 @@
 {
   "schema": "axm.tools-index/v1",
-  "generatedAt": "2026-08-04T03:02:23.281Z",
-  "sourceDigest": "d7298c675734d68b6c06246c491d5c14f351332c7fd4035f9e2d92f938054c41",
+  "generatedAt": "2026-08-16T08:57:56.200Z",
+  "sourceDigest": "e586a1fa21e14c410b20d676dfddc5cc611009a8e0020aafdf1df48da4ab15a7",
   "promotionLadder": "shared/readiness/promotion-ladder.json",
   "summary": {
-    "tools": 210,
+    "tools": 215,
     "statuses": {
       "TEST": 121,
       "WORKING": 4,
-      "EXPERIMENTAL": 84,
+      "EXPERIMENTAL": 89,
       "SHELL": 1
     },
-    "contractsPresent": 210,
-    "contractsValid": 210,
-    "topLevelSelftests": 208,
-    "anySelftests": 210,
-    "permissionsDeclared": 210,
-    "kindsDeclared": 150,
-    "readmes": 123,
-    "capabilities": 1769
+    "contractsPresent": 215,
+    "contractsValid": 215,
+    "topLevelSelftests": 213,
+    "anySelftests": 215,
+    "permissionsDeclared": 215,
+    "kindsDeclared": 155,
+    "readmes": 128,
+    "capabilities": 1854
   },
   "promotionQueue": {
-    "readyForHumanReview": [
+    "readyForHumanReview": [],
+    "needsSelftestRun": [
       "accessibility-adaptation-lab",
       "aetherfx",
       "agent-command-center",
@@ -117,6 +118,7 @@
       "text-fabric",
       "ui-fx",
       "ui-ux-builder",
+      "universal-object-fabric",
       "verification-entry-observatory",
       "verification-proof-lab",
       "verifier",
@@ -129,7 +131,6 @@
       "workshop-updater",
       "world-tile-foundry"
     ],
-    "needsSelftestRun": [],
     "blocked": [
       {
         "id": "browser-lan-hardware-qa-lab",
@@ -214,18 +215,37 @@
         "blockers": [
           "kind is undeclared"
         ]
-      },
-      {
-        "id": "universal-object-fabric",
-        "blockers": [
-          "selftest result is stale for the current selftest digest"
-        ]
       }
     ],
     "shellDecisionRequired": [
       "main-hub"
     ],
-    "claimsNeedingReverification": []
+    "claimsNeedingReverification": [
+      {
+        "id": "adapter-translation-garden",
+        "blockers": [
+          "current selftest PASS result is missing"
+        ]
+      },
+      {
+        "id": "memory-continuity-garden",
+        "blockers": [
+          "current selftest PASS result is missing"
+        ]
+      },
+      {
+        "id": "prehub",
+        "blockers": [
+          "current selftest PASS result is missing"
+        ]
+      },
+      {
+        "id": "repair-resilience-library",
+        "blockers": [
+          "current selftest PASS result is missing"
+        ]
+      }
+    ]
   },
   "capabilities": [
     {
@@ -516,6 +536,13 @@
       "consumers": []
     },
     {
+      "id": "append-only-bounded-inflight-cache-lease-ledger",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "append-only-calibration-evidence",
       "providers": [
         "cognitive-calibration-lab"
@@ -533,6 +560,13 @@
       "id": "append-only-roadmap-editing",
       "providers": [
         "route"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "append-only-run-checkpoint-ledger",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -1066,6 +1100,20 @@
       ]
     },
     {
+      "id": "axm.compute-hardware-reference/v1",
+      "providers": [],
+      "consumers": [
+        "compute-substrate-lab"
+      ]
+    },
+    {
+      "id": "axm.compute-substrate-intake/v1",
+      "providers": [],
+      "consumers": [
+        "compute-substrate-lab"
+      ]
+    },
+    {
       "id": "axm.copy.request/v1",
       "providers": [],
       "consumers": [
@@ -1328,10 +1376,38 @@
       ]
     },
     {
+      "id": "axm.git-pr-evidence-input/v1",
+      "providers": [],
+      "consumers": [
+        "deterministic-pr-checkpoint"
+      ]
+    },
+    {
+      "id": "axm.git-pr-review-metadata/v1",
+      "providers": [],
+      "consumers": [
+        "deterministic-pr-checkpoint"
+      ]
+    },
+    {
+      "id": "axm.git-pr-scope-policy/v1",
+      "providers": [],
+      "consumers": [
+        "deterministic-pr-checkpoint"
+      ]
+    },
+    {
       "id": "axm.hand-verification-plan/v1",
       "providers": [],
       "consumers": [
         "hand-forge-bridge"
+      ]
+    },
+    {
+      "id": "axm.hardware-research-intake/v1",
+      "providers": [],
+      "consumers": [
+        "hardware-research-registry"
       ]
     },
     {
@@ -1656,6 +1732,21 @@
       ]
     },
     {
+      "id": "axm.repairbuddy.warning-baseline/v1",
+      "providers": [],
+      "consumers": [
+        "repairbuddy"
+      ]
+    },
+    {
+      "id": "axm.research-observation/v1",
+      "providers": [],
+      "consumers": [
+        "compute-substrate-lab",
+        "hardware-research-registry"
+      ]
+    },
+    {
       "id": "axm.review-item/v1",
       "providers": [],
       "consumers": [
@@ -1878,6 +1969,13 @@
       "providers": [],
       "consumers": [
         "verification-proof-lab"
+      ]
+    },
+    {
+      "id": "axm.verify-report/v1",
+      "providers": [],
+      "consumers": [
+        "repairbuddy"
       ]
     },
     {
@@ -2238,6 +2336,13 @@
       "consumers": []
     },
     {
+      "id": "bounded-full-cold-archive-audit",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "bounded-future-surface-preview",
       "providers": [
         "element-foundry"
@@ -2374,6 +2479,13 @@
       "consumers": []
     },
     {
+      "id": "bounded-nonterminal-checkpoint-cache-reference-discovery",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "bounded-one-to-ten-independent-review-queue",
       "providers": [
         "workshop-direction"
@@ -2468,6 +2580,13 @@
       "id": "bounded-specialist-review",
       "providers": [
         "discovery-engine"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "bounded-terminal-ledger-cache-reference-discovery",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -3277,6 +3396,13 @@
       "consumers": []
     },
     {
+      "id": "complete-verifier-warning-baseline",
+      "providers": [
+        "repairbuddy"
+      ],
+      "consumers": []
+    },
+    {
       "id": "component-graph-aware-independent-machine-review",
       "providers": [
         "asset-fabric"
@@ -3329,6 +3455,27 @@
       "id": "component.review.digest",
       "providers": [
         "modular-intake-gate"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "compute-evidence-ledger-cli",
+      "providers": [
+        "compute-substrate-lab"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "compute-substrate-package-cli",
+      "providers": [
+        "compute-substrate-lab"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "compute-substrate-snapshot-cli",
+      "providers": [
+        "compute-substrate-lab"
       ],
       "consumers": []
     },
@@ -3434,6 +3581,13 @@
       "id": "content-addressed-cognitive-ledger",
       "providers": [
         "cognitive-resource-meter"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "content-addressed-cold-history-tier-package",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -3771,6 +3925,13 @@
       "consumers": []
     },
     {
+      "id": "deterministic-cache-retention-proposal",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "deterministic-element-composer",
       "providers": [
         "element-foundry"
@@ -3788,6 +3949,13 @@
       "id": "deterministic-game-animation-state-graphs",
       "providers": [
         "ps2-asset-forge"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "deterministic-game-production-plan",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -3825,6 +3993,14 @@
         "asset-fabric"
       ],
       "consumers": []
+    },
+    {
+      "id": "deterministic-json-core",
+      "providers": [],
+      "consumers": [
+        "deterministic-pr-checkpoint",
+        "repairbuddy"
+      ]
     },
     {
       "id": "deterministic-lightmap-uv1-authoring",
@@ -3937,6 +4113,13 @@
       "id": "deterministic-usability-audit",
       "providers": [
         "ui-ux-builder"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "deterministic-warning-delta",
+      "providers": [
+        "repairbuddy"
       ],
       "consumers": []
     },
@@ -4614,6 +4797,34 @@
       "consumers": []
     },
     {
+      "id": "exact-approved-cache-retention-application",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "exact-approved-inactive-lease-ledger-curation",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "exact-approved-lossless-cold-archive-rollup",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "exact-approved-portable-cold-history-tier-export",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "exact-archive-sha256-deduplication",
       "providers": [
         "archive-intake-cartographer"
@@ -4894,6 +5105,13 @@
       ]
     },
     {
+      "id": "explicit-cache-entry-invalidation",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "explicit-camera-on-set-preview",
       "providers": [
         "film-motion-studio"
@@ -4929,6 +5147,13 @@
       "consumers": []
     },
     {
+      "id": "explicit-content-verified-document-run",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "explicit-damage-state-families",
       "providers": [
         "modular-environment-kit-builder"
@@ -4943,9 +5168,23 @@
       "consumers": []
     },
     {
+      "id": "explicit-fixture-candidate-run",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "explicit-fork-and-rollback-holds",
       "providers": [
         "immutable-history-guard"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "explicit-fresh-root-tier-restore",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -5069,6 +5308,13 @@
       "consumers": []
     },
     {
+      "id": "explicit-portable-profile-fixture-run",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "explicit-probe-state-and-coverage",
       "providers": [
         "diagnostics-operations-center"
@@ -5149,6 +5395,13 @@
       "id": "explicit-target-top-level-module-presence-observation",
       "providers": [
         "dependency-declaration-observatory"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "explicit-trusted-hand-confinement-substrate-probe",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -5299,6 +5552,20 @@
       "providers": [],
       "consumers": [
         "branch-module-return-gate"
+      ]
+    },
+    {
+      "id": "filesystem:explicit-clean-git-working-copy",
+      "providers": [],
+      "consumers": [
+        "deterministic-pr-checkpoint"
+      ]
+    },
+    {
+      "id": "filesystem:explicit-clean-publish-lane-worktree",
+      "providers": [],
+      "consumers": [
+        "deterministic-pr-publisher"
       ]
     },
     {
@@ -5596,6 +5863,34 @@
       "consumers": []
     },
     {
+      "id": "fresh-cache-reference-snapshot-gate",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "fresh-process-recovery-from-archive-anchor",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "fresh-process-recovery-from-rollup-anchor",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "fresh-verifier-cache-hit-gate",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "freshness-aware-reference-status",
       "providers": [
         "workshop-census-observatory"
@@ -5687,6 +5982,13 @@
       "consumers": []
     },
     {
+      "id": "full-audit-equivalent-tier-restore",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "future-capture-consent-withdrawal",
       "providers": [
         "human-attention-ledger"
@@ -5746,6 +6048,13 @@
       "id": "game-library",
       "providers": [
         "game-hub"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "game-production-integration-inspection",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -5861,6 +6170,108 @@
       "id": "geographic-price-normalization",
       "providers": [
         "geographic-market-map"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.authority-preservation",
+      "providers": [
+        "deterministic-pr-checkpoint"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.changed-blob-digest-binding",
+      "providers": [
+        "deterministic-pr-checkpoint"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.checkpoint-bound-publish-plan",
+      "providers": [
+        "deterministic-pr-publisher"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.clean-feature-branch-push",
+      "providers": [
+        "deterministic-pr-publisher"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.declared-evidence-binding",
+      "providers": [
+        "deterministic-pr-checkpoint"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.deterministic-review-packet",
+      "providers": [
+        "deterministic-pr-checkpoint"
+      ],
+      "consumers": [
+        "deterministic-pr-publisher"
+      ]
+    },
+    {
+      "id": "git-pr.explicit-scope-policy-gate",
+      "providers": [
+        "deterministic-pr-checkpoint"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.github-draft-create-or-update",
+      "providers": [
+        "deterministic-pr-publisher"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.merge-authority-refusal",
+      "providers": [
+        "deterministic-pr-publisher"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.path-independent-semantic-digest",
+      "providers": [
+        "deterministic-pr-checkpoint"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.platform-merge-handoff",
+      "providers": [
+        "deterministic-pr-publisher"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.public-safe-review-material-gate",
+      "providers": [
+        "deterministic-pr-publisher"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "git-pr.read-only-local-checkpoint",
+      "providers": [
+        "deterministic-pr-checkpoint"
+      ],
+      "consumers": [
+        "deterministic-pr-publisher"
+      ]
+    },
+    {
+      "id": "git-pr.sender-receiver-transport-receipt",
+      "providers": [
+        "deterministic-pr-publisher"
       ],
       "consumers": []
     },
@@ -6006,6 +6417,34 @@
       "id": "hardware-bound-energy-observation",
       "providers": [
         "sustainability-metrology-lab"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "hardware-evidence-ledger-cli",
+      "providers": [
+        "hardware-research-registry"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "hardware-package-conflict-check",
+      "providers": [
+        "hardware-research-registry"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "hardware-research-package-cli",
+      "providers": [
+        "hardware-research-registry"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "hardware-research-snapshot-cli",
+      "providers": [
+        "hardware-research-registry"
       ],
       "consumers": []
     },
@@ -6170,6 +6609,13 @@
         "asset-fabric"
       ],
       "consumers": []
+    },
+    {
+      "id": "host-authenticated-github-cli-session",
+      "providers": [],
+      "consumers": [
+        "deterministic-pr-publisher"
+      ]
     },
     {
       "id": "host:cpu",
@@ -7034,6 +7480,27 @@
       "consumers": []
     },
     {
+      "id": "interrupted-curation-recovery",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "interrupted-rollup-recovery",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "interrupted-run-resume",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "inventory-fingerprint",
       "providers": [
         "workshop-census-observatory"
@@ -7178,6 +7645,13 @@
       "id": "learner-visible-evidence-recap-and-targeted-repair",
       "providers": [
         "learning-lab"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "lease-session-fencing-and-crash-expiry",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -7367,6 +7841,8 @@
       "id": "local-git-runtime",
       "providers": [],
       "consumers": [
+        "deterministic-pr-checkpoint",
+        "deterministic-pr-publisher",
         "source-control-merge-workbench"
       ]
     },
@@ -7489,6 +7965,13 @@
       "consumers": [
         "duo-test"
       ]
+    },
+    {
+      "id": "lossless-compressed-cold-lease-archive",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
     },
     {
       "id": "machine-action-declaration-shape-observation",
@@ -7676,6 +8159,13 @@
       "id": "measured-requested-versus-achieved-ratios",
       "providers": [
         "lod-hlod-impostor-builder"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "measured-smaller-rollup-selection",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -8181,6 +8671,20 @@
       ]
     },
     {
+      "id": "neutral-portable-step-receipts",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "new-resolved-changed-warning-separation",
+      "providers": [
+        "repairbuddy"
+      ],
+      "consumers": []
+    },
+    {
       "id": "non-empty-rejection-reason-enforcement",
       "providers": [
         "reasoning-shell"
@@ -8583,6 +9087,20 @@
       "consumers": []
     },
     {
+      "id": "path-private-active-cache-lease-discovery",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "path-private-cold-history-tier-package-audit",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "pattern-intake-validation",
       "providers": [
         "repairbuddy"
@@ -8593,6 +9111,13 @@
       "id": "pause-resume-complete-request-lifecycle",
       "providers": [
         "body-pulse"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "per-key-runner-retention-coordination",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -8784,6 +9309,13 @@
       "id": "portable-presentation-recipe-composer",
       "providers": [
         "presentation-spine"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "portable-production-profile-plan",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -9155,6 +9687,13 @@
       ]
     },
     {
+      "id": "provisional-1837-root-governance-cli",
+      "providers": [
+        "compute-substrate-lab"
+      ],
+      "consumers": []
+    },
+    {
       "id": "provisional-discovery",
       "providers": [
         "discovery-engine"
@@ -9307,6 +9846,20 @@
       "consumers": []
     },
     {
+      "id": "read-only-cache-retention-inventory",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "read-only-godot-availability-probe",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "read-only-install-governance-lineage",
       "providers": [
         "module-installer"
@@ -9408,6 +9961,13 @@
       "id": "receipt-integrity-reverification",
       "providers": [
         "evidence-desk"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "receipt-preserving-rollup-lineage",
+      "providers": [
+        "game-production-runner"
       ],
       "consumers": []
     },
@@ -10131,6 +10691,13 @@
       "consumers": []
     },
     {
+      "id": "sealed-hot-lease-archive-anchor",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "seam-pattern-matching",
       "providers": [
         "repairbuddy"
@@ -10456,6 +11023,21 @@
       ]
     },
     {
+      "id": "service:compute-substrate-lab-core",
+      "providers": [],
+      "consumers": [
+        "compute-substrate-lab"
+      ]
+    },
+    {
+      "id": "service:deterministic-research-foundry",
+      "providers": [],
+      "consumers": [
+        "compute-substrate-lab",
+        "hardware-research-registry"
+      ]
+    },
+    {
       "id": "service:device-handoff",
       "providers": [],
       "consumers": [
@@ -10529,6 +11111,13 @@
       ]
     },
     {
+      "id": "service:game-production-runner-core",
+      "providers": [],
+      "consumers": [
+        "game-production-runner"
+      ]
+    },
+    {
       "id": "service:gate",
       "providers": [],
       "consumers": [
@@ -10548,6 +11137,14 @@
       ]
     },
     {
+      "id": "service:hardware-research-registry-core",
+      "providers": [],
+      "consumers": [
+        "compute-substrate-lab",
+        "hardware-research-registry"
+      ]
+    },
+    {
       "id": "service:knowledge-canvas-inbox",
       "providers": [],
       "consumers": [
@@ -10560,6 +11157,13 @@
       "consumers": [
         "marketplace-deployment",
         "publish-library"
+      ]
+    },
+    {
+      "id": "service:local-godot-substrate",
+      "providers": [],
+      "consumers": [
+        "game-production-runner"
       ]
     },
     {
@@ -10620,6 +11224,13 @@
       "consumers": [
         "modular-intake-gate",
         "module-contract-workbench"
+      ]
+    },
+    {
+      "id": "service:node-permission-model",
+      "providers": [],
+      "consumers": [
+        "game-production-runner"
       ]
     },
     {
@@ -10861,6 +11472,13 @@
       "providers": [],
       "consumers": [
         "launcher-card-installer"
+      ]
+    },
+    {
+      "id": "service:verification-spine",
+      "providers": [],
+      "consumers": [
+        "game-production-runner"
       ]
     },
     {
@@ -12351,6 +12969,13 @@
       "consumers": []
     },
     {
+      "id": "verified-deterministic-cross-run-cache",
+      "providers": [
+        "game-production-runner"
+      ],
+      "consumers": []
+    },
+    {
       "id": "verified-image-transform-output",
       "providers": [
         "publish-library"
@@ -13170,17 +13795,8 @@
           "tools/accessibility-adaptation-lab/selftest.js"
         ],
         "promotionPath": "tools/accessibility-adaptation-lab/selftest.js",
-        "sha256": "c9af112755082e52345dcc69fc5d41e4042126b764cc18afecb15a05978cabe0",
-        "result": {
-          "id": "accessibility-adaptation-lab",
-          "path": "tools/accessibility-adaptation-lab/selftest.js",
-          "selftestSha256": "c9af112755082e52345dcc69fc5d41e4042126b764cc18afecb15a05978cabe0",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 8040,
-          "outputSha256": "c2fbd2eb9d7bca01a67bb0dc346a6105f5a104186b95dfb1dbfe13cad684093a",
-          "failureTail": null
-        }
+        "sha256": "30c303f17085d6dd791dddbb9e2695423802cfbc2601fc593bc17d8e636e0346",
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -13190,7 +13806,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -13246,27 +13862,20 @@
         ],
         "promotionPath": "tools/adapter-translation-garden/selftest.js",
         "sha256": "4780366337c15d51bc4c646d9c9abc21f1ebf94ba2a476421874cd94687ec21c",
-        "result": {
-          "id": "adapter-translation-garden",
-          "path": "tools/adapter-translation-garden/selftest.js",
-          "selftestSha256": "4780366337c15d51bc4c646d9c9abc21f1ebf94ba2a476421874cd94687ec21c",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 22140,
-          "outputSha256": "47d8a3bb819fff6b8b99b8b781a0e83c18731a63db21f66608cf8906b976cb2e",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
       "verifiedAt": "2026-07-27T20:47:31.6393762Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 7
+        "ageDays": 19
       },
       "promotion": {
-        "state": "CURRENT",
-        "blockers": []
+        "state": "CLAIM_NEEDS_REVERIFICATION",
+        "blockers": [
+          "current selftest PASS result is missing"
+        ]
       }
     },
     {
@@ -13332,17 +13941,8 @@
           "tools/aetherfx/selftest.js"
         ],
         "promotionPath": "tools/aetherfx/selftest.js",
-        "sha256": "d8a0cb0639ffcfc096b0c02a2249a8225e4829ba16fb86e733f85b84d26b3e16",
-        "result": {
-          "id": "aetherfx",
-          "path": "tools/aetherfx/selftest.js",
-          "selftestSha256": "d8a0cb0639ffcfc096b0c02a2249a8225e4829ba16fb86e733f85b84d26b3e16",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 2134,
-          "outputSha256": "9791b432275da1aef5cdc2f2818421cd6e3e4e531db4ddf52d02a032eefd8383",
-          "failureTail": null
-        }
+        "sha256": "ca7c815c172990726f5629f527ded9cd308ae7f245a86c148e17c82ececf49f4",
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -13352,7 +13952,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -13410,16 +14010,7 @@
         ],
         "promotionPath": "tools/agent-command-center/selftest.js",
         "sha256": "49a785d709ded4868de62ac3861cca62f90b03544bdd20e298bed6a9c69ae848",
-        "result": {
-          "id": "agent-command-center",
-          "path": "tools/agent-command-center/selftest.js",
-          "selftestSha256": "49a785d709ded4868de62ac3861cca62f90b03544bdd20e298bed6a9c69ae848",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 75,
-          "outputSha256": "41554e30b3d13e0b0ac5996d886502db85812a22edb597fea5210f1e4d137656",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -13429,7 +14020,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -13480,16 +14071,7 @@
         ],
         "promotionPath": "tools/agent-tool-forge/selftest.js",
         "sha256": "37e1872f690f3059fb36a7cf6518dbf913805d2c5f80912021248334de54c021",
-        "result": {
-          "id": "agent-tool-forge",
-          "path": "tools/agent-tool-forge/selftest.js",
-          "selftestSha256": "37e1872f690f3059fb36a7cf6518dbf913805d2c5f80912021248334de54c021",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 79,
-          "outputSha256": "9c678798bc2ad2efe8d79dda7e3770e80885c9c67af3a55162da1bc175cfe0b4",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -13499,7 +14081,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -13551,26 +14133,17 @@
         ],
         "promotionPath": "tools/ai-habitat/selftest.js",
         "sha256": "de023ff778a352c8e9bebe29ba410bedb9432a017006a2b9a8dfa7022601f206",
-        "result": {
-          "id": "ai-habitat",
-          "path": "tools/ai-habitat/selftest.js",
-          "selftestSha256": "de023ff778a352c8e9bebe29ba410bedb9432a017006a2b9a8dfa7022601f206",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 107,
-          "outputSha256": "314ce6aa5b2f457baaa78bf2fd2b75ee4fee27fd84050d7f91372ac5478d8576",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
       "verifiedAt": "2026-07-28T19:13:44Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 6
+        "ageDays": 18
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -13618,16 +14191,7 @@
         ],
         "promotionPath": "tools/ai-task-talk/selftest.js",
         "sha256": "52c10e235bfb57a726a5aae2fc03cafd203e00dbaf49b1d1570970644903de17",
-        "result": {
-          "id": "ai-task-talk",
-          "path": "tools/ai-task-talk/selftest.js",
-          "selftestSha256": "52c10e235bfb57a726a5aae2fc03cafd203e00dbaf49b1d1570970644903de17",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 69,
-          "outputSha256": "0c79d2c9e64bcfd5109be7085b2e31bb728e5e1af869cc2d2316fd66d8c8b615",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -13637,7 +14201,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -13725,16 +14289,7 @@
         ],
         "promotionPath": "tools/ai-team/selftest.js",
         "sha256": "ad6969c73b79934170fcda66ca7bb8d57b78ad9f0b39798ce09d1a000a7f5bd1",
-        "result": {
-          "id": "ai-team",
-          "path": "tools/ai-team/selftest.js",
-          "selftestSha256": "ad6969c73b79934170fcda66ca7bb8d57b78ad9f0b39798ce09d1a000a7f5bd1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 74,
-          "outputSha256": "3be973a8f3e7a5787161ae67f1ffcb083acd186853a5cd6ab1a35e8b4d881d0c",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": true,
@@ -13744,7 +14299,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -13797,17 +14352,8 @@
           "tools/ai-team-steward-lab/selftest.js"
         ],
         "promotionPath": "tools/ai-team-steward-lab/selftest.js",
-        "sha256": "f6b31590008162e25aa32bf3c7c434b5cf93e19fa89f866e103164f75c288e5d",
-        "result": {
-          "id": "ai-team-steward-lab",
-          "path": "tools/ai-team-steward-lab/selftest.js",
-          "selftestSha256": "f6b31590008162e25aa32bf3c7c434b5cf93e19fa89f866e103164f75c288e5d",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 10424,
-          "outputSha256": "7af109bef7c648852ac7364fdf22697846e22c485198e491859ab9461c950370",
-          "failureTail": null
-        }
+        "sha256": "30a5936b322eaea356b4aeb70ced003bbf8d5c4b6ae28dd585138fed5ffe48b2",
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -13817,7 +14363,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -13984,16 +14530,7 @@
         ],
         "promotionPath": "tools/archive-intake-cartographer/selftest.js",
         "sha256": "781e57ea6d52bc5a3b44c5afcf6d3e53dccaf1ecf98c1c5ca30c3626c970697e",
-        "result": {
-          "id": "archive-intake-cartographer",
-          "path": "tools/archive-intake-cartographer/selftest.js",
-          "selftestSha256": "781e57ea6d52bc5a3b44c5afcf6d3e53dccaf1ecf98c1c5ca30c3626c970697e",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 105,
-          "outputSha256": "83b65dbb9d6d3f1b24b33b0cba5e689886273f4dac2935ab205366f12634996f",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -14003,7 +14540,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -14234,16 +14771,7 @@
         ],
         "promotionPath": "tools/asset-filesystem-service/selftest.js",
         "sha256": "a045584ed45ff548d535adff0fe1e895467ea1e79d232161f1ce242499464f7d",
-        "result": {
-          "id": "asset-filesystem-service",
-          "path": "tools/asset-filesystem-service/selftest.js",
-          "selftestSha256": "a045584ed45ff548d535adff0fe1e895467ea1e79d232161f1ce242499464f7d",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 77,
-          "outputSha256": "63a1b5fda9ca578e3bac76e45145caa2efe6fa57081fcd2e6a06b786278e3bc3",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -14253,7 +14781,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -14308,16 +14836,7 @@
         ],
         "promotionPath": "tools/asset-pack-lab/selftest.js",
         "sha256": "998150e5175e57c968b0c9e97ef1c0cd5cd9860c71fe7c4e1812f93c73d46711",
-        "result": {
-          "id": "asset-pack-lab",
-          "path": "tools/asset-pack-lab/selftest.js",
-          "selftestSha256": "998150e5175e57c968b0c9e97ef1c0cd5cd9860c71fe7c4e1812f93c73d46711",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 73,
-          "outputSha256": "a4aeecd9c80749eac21f43de5a995c1ee5aaac1118af6afd9476c1068551082f",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -14327,7 +14846,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -14387,16 +14906,7 @@
         ],
         "promotionPath": "tools/asset-vault/selftest.js",
         "sha256": "1e4f4efc1424e33a7e3fb72ac07c7675b4d2847a5706d92645ff11bd0bc5fdd0",
-        "result": {
-          "id": "asset-vault",
-          "path": "tools/asset-vault/selftest.js",
-          "selftestSha256": "1e4f4efc1424e33a7e3fb72ac07c7675b4d2847a5706d92645ff11bd0bc5fdd0",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 75,
-          "outputSha256": "2db6ec8fb30140fe0a9ff03c50d1e6c559ea3c7b550fa982f5a32f0ba7dfde9c",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -14406,7 +14916,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -14526,16 +15036,7 @@
         ],
         "promotionPath": "tools/audio-studio/selftest.js",
         "sha256": "e34a970c8558d258949c05156d5e6c094a2d63fc10eb8d31d0668f85c46a3200",
-        "result": {
-          "id": "audio-studio",
-          "path": "tools/audio-studio/selftest.js",
-          "selftestSha256": "e34a970c8558d258949c05156d5e6c094a2d63fc10eb8d31d0668f85c46a3200",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 103,
-          "outputSha256": "1e7baed00cec43ccd82f732654434000e58c199f869cfa82d23d65e94b45841a",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": true,
@@ -14545,7 +15046,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -14596,16 +15097,7 @@
         ],
         "promotionPath": "tools/authority-surface-observatory/selftest.js",
         "sha256": "070dc3b3afb8c7bed495b21e012912065aaac00d6264c35cd60dc7cfa69539f1",
-        "result": {
-          "id": "authority-surface-observatory",
-          "path": "tools/authority-surface-observatory/selftest.js",
-          "selftestSha256": "070dc3b3afb8c7bed495b21e012912065aaac00d6264c35cd60dc7cfa69539f1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 199,
-          "outputSha256": "d0b98fd656f2d87234fc24e489351b822713bea92d0d9e013de17d9eb60ecb6d",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -14615,7 +15107,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -14877,16 +15369,7 @@
         ],
         "promotionPath": "tools/branch-module-return-gate/selftest.js",
         "sha256": "baaf122f265e5a3fcf664a63e33e82cbc3c787d44088feee9939472322dcf78e",
-        "result": {
-          "id": "branch-module-return-gate",
-          "path": "tools/branch-module-return-gate/selftest.js",
-          "selftestSha256": "baaf122f265e5a3fcf664a63e33e82cbc3c787d44088feee9939472322dcf78e",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 269,
-          "outputSha256": "35b8b0a402b730226308dd599376145e39bcbdc5ba86ba1a43d7c2754f95217d",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -14896,7 +15379,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -14945,16 +15428,7 @@
         ],
         "promotionPath": "tools/browser-global-surface-observatory/selftest.js",
         "sha256": "ad6ca5551baac243a801a72e0e5a14daadda2ae4a49630ca3db6cee0650ecd39",
-        "result": {
-          "id": "browser-global-surface-observatory",
-          "path": "tools/browser-global-surface-observatory/selftest.js",
-          "selftestSha256": "ad6ca5551baac243a801a72e0e5a14daadda2ae4a49630ca3db6cee0650ecd39",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 108,
-          "outputSha256": "9e7f91135f909df7f8c84e26a62933d890295cfcad77995e8ab100ae063cfb0b",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -14964,7 +15438,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -15013,16 +15487,7 @@
         ],
         "promotionPath": "tools/browser-lan-hardware-qa-lab/selftest.js",
         "sha256": "3c8e082b9d4d3ef4303c6d6b5a9f645d081aeeef537882d64d2f4e563e12d365",
-        "result": {
-          "id": "browser-lan-hardware-qa-lab",
-          "path": "tools/browser-lan-hardware-qa-lab/selftest.js",
-          "selftestSha256": "3c8e082b9d4d3ef4303c6d6b5a9f645d081aeeef537882d64d2f4e563e12d365",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 70,
-          "outputSha256": "b343a659d42765c1f21c98a9491460ee0c0e362ebe9f6fad6270d5a0ab655160",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -15087,16 +15552,7 @@
         ],
         "promotionPath": "tools/bulk-intake-conveyor/selftest.js",
         "sha256": "1fca7fb5be7e7a5aa2cfdee3b62863c0ee7e219fdc9286b4b6d4ad2426154c37",
-        "result": {
-          "id": "bulk-intake-conveyor",
-          "path": "tools/bulk-intake-conveyor/selftest.js",
-          "selftestSha256": "1fca7fb5be7e7a5aa2cfdee3b62863c0ee7e219fdc9286b4b6d4ad2426154c37",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 175,
-          "outputSha256": "04b0bacaf30069bf0f95dcaa7762422c9e86da314649fb1f69c17beb570404eb",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -15106,7 +15562,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -15156,16 +15612,7 @@
         ],
         "promotionPath": "tools/capability-gap-workbench/selftest.js",
         "sha256": "bce02631b1a30c063e11a408ce2418f180a0f74ea1f81a0743423de45777dd50",
-        "result": {
-          "id": "capability-gap-workbench",
-          "path": "tools/capability-gap-workbench/selftest.js",
-          "selftestSha256": "bce02631b1a30c063e11a408ce2418f180a0f74ea1f81a0743423de45777dd50",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 73,
-          "outputSha256": "5b7e8fab5bfbb1acfa22690e91373893f5e99b8f718172be99cdca2ca0a793a2",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -15175,7 +15622,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -15342,16 +15789,7 @@
         ],
         "promotionPath": "tools/chatgpt-connector/selftest.js",
         "sha256": "7f9ac3c7d6ae00a59f929e0300654cf9039c4a9a207a6ced05edba4adeb44821",
-        "result": {
-          "id": "chatgpt-connector",
-          "path": "tools/chatgpt-connector/selftest.js",
-          "selftestSha256": "7f9ac3c7d6ae00a59f929e0300654cf9039c4a9a207a6ced05edba4adeb44821",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 75,
-          "outputSha256": "a567053faddc7ed004976c424cd4d66247239c8d15836592f041b171a47ad1f3",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -15361,7 +15799,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -15414,16 +15852,7 @@
         ],
         "promotionPath": "tools/chroma-studio/selftest.js",
         "sha256": "95b9e093d04bfc08a60c10a889ca301300670a4acd8282a704242c7c91f156e0",
-        "result": {
-          "id": "chroma-studio",
-          "path": "tools/chroma-studio/selftest.js",
-          "selftestSha256": "95b9e093d04bfc08a60c10a889ca301300670a4acd8282a704242c7c91f156e0",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 76,
-          "outputSha256": "141db4fb7148630ca7a2a81bc0c48fa8e3329418b96334fb3f1bcb2adfc68e93",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -15433,7 +15862,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -15485,16 +15914,7 @@
         ],
         "promotionPath": "tools/claude-connector/selftest.js",
         "sha256": "d5906ea07376b61c6e25af9ebc0d0431647f9031d14fe844dc5c9dd653a4a6d3",
-        "result": {
-          "id": "claude-connector",
-          "path": "tools/claude-connector/selftest.js",
-          "selftestSha256": "d5906ea07376b61c6e25af9ebc0d0431647f9031d14fe844dc5c9dd653a4a6d3",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 68,
-          "outputSha256": "1e0a35b8a5e63078ab449addb2a3b63e1a1d0955a4807544078e81aade2c498c",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -15504,7 +15924,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -15564,26 +15984,17 @@
         ],
         "promotionPath": "tools/code-recipe-foundry/selftest.js",
         "sha256": "7a4f398d77b1dfb03f5d4ba4e1d823b35cf275ce0fcac4326b2840f60b7a7c96",
-        "result": {
-          "id": "code-recipe-foundry",
-          "path": "tools/code-recipe-foundry/selftest.js",
-          "selftestSha256": "7a4f398d77b1dfb03f5d4ba4e1d823b35cf275ce0fcac4326b2840f60b7a7c96",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 171,
-          "outputSha256": "15a2be38dac30296c0f3cbfdf3f56b5d86155be86701f85097d1dce2780c5ab2",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
       "verifiedAt": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 10
+        "ageDays": 22
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -15687,16 +16098,7 @@
         ],
         "promotionPath": "tools/cognitive-calibration-lab/selftest.js",
         "sha256": "3e43101acbd4f2ed475a4a371eda08ea72364ee6430cd8de2ed62c24aaa4003a",
-        "result": {
-          "id": "cognitive-calibration-lab",
-          "path": "tools/cognitive-calibration-lab/selftest.js",
-          "selftestSha256": "3e43101acbd4f2ed475a4a371eda08ea72364ee6430cd8de2ed62c24aaa4003a",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 68,
-          "outputSha256": "d1431aae2013d27b19dd2bfc58201e2d2a5ca27a787366f887453c0bd52b72ae",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -15706,7 +16108,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -15752,16 +16154,7 @@
         ],
         "promotionPath": "tools/cognitive-evidence-explorer/selftest.js",
         "sha256": "794a756d1921a9a66ebdc98c7cf82075c7517c433d6d6d0e15f4049965b4a2ab",
-        "result": {
-          "id": "cognitive-evidence-explorer",
-          "path": "tools/cognitive-evidence-explorer/selftest.js",
-          "selftestSha256": "794a756d1921a9a66ebdc98c7cf82075c7517c433d6d6d0e15f4049965b4a2ab",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 66,
-          "outputSha256": "0f9586c758e0c6ede9f209f88a781e11a31fb0b9bdd60c771fe0ae391f4a87ab",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -15771,7 +16164,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -15830,16 +16223,7 @@
         ],
         "promotionPath": "tools/cognitive-resource-meter/selftest.js",
         "sha256": "15ece957240b0afe787428ab6b78ac8348450f51264fd237f9a63f6ed4c7dc44",
-        "result": {
-          "id": "cognitive-resource-meter",
-          "path": "tools/cognitive-resource-meter/selftest.js",
-          "selftestSha256": "15ece957240b0afe787428ab6b78ac8348450f51264fd237f9a63f6ed4c7dc44",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 413,
-          "outputSha256": "54372d4a2d391576bc9cf51af9026beb0c5f3da3294db2541f0c76a6dda35d15",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -15849,7 +16233,69 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
+        "blockers": []
+      }
+    },
+    {
+      "id": "compute-substrate-lab",
+      "folder": "compute-substrate-lab",
+      "name": "Compute Substrate Lab",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "schema": "axm.tool-manifest/v1",
+      "kind": "product",
+      "audience": "human-machine",
+      "manifest": {
+        "path": "tools/compute-substrate-lab/manifest.json",
+        "sha256": "f213d15fbe046e426b1c670a5d9581eddbd11f49f1c017fc581adca21f936fe0",
+        "valid": true,
+        "errors": []
+      },
+      "entry": {
+        "path": "tools/compute-substrate-lab/cli.js",
+        "exists": true
+      },
+      "permissionsDeclared": true,
+      "usesDeclared": true,
+      "contract": {
+        "path": "tools/compute-substrate-lab/module.contract.json",
+        "declared": true,
+        "present": true,
+        "valid": true,
+        "errors": [],
+        "provides": [
+          "compute-substrate-package-cli",
+          "provisional-1837-root-governance-cli",
+          "compute-evidence-ledger-cli",
+          "compute-substrate-snapshot-cli"
+        ],
+        "consumes": [
+          "service:compute-substrate-lab-core",
+          "service:deterministic-research-foundry",
+          "service:hardware-research-registry-core",
+          "axm.compute-substrate-intake/v1",
+          "axm.research-observation/v1",
+          "axm.compute-hardware-reference/v1"
+        ]
+      },
+      "selftest": {
+        "paths": [
+          "tools/compute-substrate-lab/selftest.js"
+        ],
+        "promotionPath": "tools/compute-substrate-lab/selftest.js",
+        "sha256": "7aa0d0ecf5f1a164ad846841ff252323c92c76a44ccd6aad0907aa43b9ad051f",
+        "result": null
+      },
+      "readme": true,
+      "discoveryReview": true,
+      "verifiedAt": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
         "blockers": []
       }
     },
@@ -16135,16 +16581,7 @@
         ],
         "promotionPath": "tools/dependency-declaration-observatory/selftest.js",
         "sha256": "dc1b1785413bb969aa06ca406db6eb39ecaa140c72eecb3c1511406bd68d2263",
-        "result": {
-          "id": "dependency-declaration-observatory",
-          "path": "tools/dependency-declaration-observatory/selftest.js",
-          "selftestSha256": "dc1b1785413bb969aa06ca406db6eb39ecaa140c72eecb3c1511406bd68d2263",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 127,
-          "outputSha256": "47ecf0e99fded6b450f0095e6408b216762dfddb932f08e7ebd51eb58b514e3e",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -16154,7 +16591,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -16201,16 +16638,7 @@
         ],
         "promotionPath": "tools/design-lineage-lab/selftest.js",
         "sha256": "8302ed61518c920f54168c0239985bf4be940343d4867234557415758d8bd7a6",
-        "result": {
-          "id": "design-lineage-lab",
-          "path": "tools/design-lineage-lab/selftest.js",
-          "selftestSha256": "8302ed61518c920f54168c0239985bf4be940343d4867234557415758d8bd7a6",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 85,
-          "outputSha256": "21e18ad728238ef8baaa2804158d113007207e5e274bfd16c271b27a4149e532",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -16273,16 +16701,7 @@
         ],
         "promotionPath": "tools/detached-candidate-nursery/selftest.js",
         "sha256": "09e44bbb412e6d5b9f2629c72fea92b7c930ae89a8269c2a52829ff3a2b95e57",
-        "result": {
-          "id": "detached-candidate-nursery",
-          "path": "tools/detached-candidate-nursery/selftest.js",
-          "selftestSha256": "09e44bbb412e6d5b9f2629c72fea92b7c930ae89a8269c2a52829ff3a2b95e57",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 240,
-          "outputSha256": "7c084ae5394c959a24905a6b3f57b008a26ce187e3d2692b3ad2c671194cdf28",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -16292,7 +16711,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -16479,6 +16898,145 @@
       }
     },
     {
+      "id": "deterministic-pr-checkpoint",
+      "folder": "deterministic-pr-checkpoint",
+      "name": "AXM Deterministic PR Checkpoint",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "schema": "axm.tool-manifest/v1",
+      "kind": "gate",
+      "audience": "human-machine",
+      "manifest": {
+        "path": "tools/deterministic-pr-checkpoint/manifest.json",
+        "sha256": "e8934e19558ca67df67a079c0975cd351bdf4c352f70aa18e7d68e73012769e9",
+        "valid": false,
+        "errors": [
+          "kind is unsupported"
+        ]
+      },
+      "entry": {
+        "path": "tools/deterministic-pr-checkpoint/pr-checkpoint-cli.js",
+        "exists": true
+      },
+      "permissionsDeclared": true,
+      "usesDeclared": true,
+      "contract": {
+        "path": "tools/deterministic-pr-checkpoint/module.contract.json",
+        "declared": true,
+        "present": true,
+        "valid": true,
+        "errors": [],
+        "provides": [
+          "git-pr.read-only-local-checkpoint",
+          "git-pr.explicit-scope-policy-gate",
+          "git-pr.path-independent-semantic-digest",
+          "git-pr.changed-blob-digest-binding",
+          "git-pr.declared-evidence-binding",
+          "git-pr.deterministic-review-packet",
+          "git-pr.authority-preservation"
+        ],
+        "consumes": [
+          "filesystem:explicit-clean-git-working-copy",
+          "local-git-runtime",
+          "deterministic-json-core",
+          "axm.git-pr-scope-policy/v1",
+          "axm.git-pr-evidence-input/v1",
+          "axm.git-pr-review-metadata/v1"
+        ]
+      },
+      "selftest": {
+        "paths": [
+          "tools/deterministic-pr-checkpoint/selftest.js"
+        ],
+        "promotionPath": "tools/deterministic-pr-checkpoint/selftest.js",
+        "sha256": "247bbb753dc5effbcb543c73e4fcfa1446dd75abd7a725f1cb6e97505bb4dd20",
+        "result": null
+      },
+      "readme": true,
+      "discoveryReview": false,
+      "verifiedAt": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
+        "blockers": [
+          "kind is unsupported",
+          "kind is undeclared"
+        ]
+      }
+    },
+    {
+      "id": "deterministic-pr-publisher",
+      "folder": "deterministic-pr-publisher",
+      "name": "AXM Deterministic PR Publisher",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "schema": "axm.tool-manifest/v1",
+      "kind": "gate",
+      "audience": "human-machine",
+      "manifest": {
+        "path": "tools/deterministic-pr-publisher/manifest.json",
+        "sha256": "ac80b09b252894d4312606bd0d8f5bf78715ab2759e352da9e8ef15b95452b17",
+        "valid": false,
+        "errors": [
+          "kind is unsupported"
+        ]
+      },
+      "entry": {
+        "path": "tools/deterministic-pr-publisher/pr-publisher-cli.js",
+        "exists": true
+      },
+      "permissionsDeclared": true,
+      "usesDeclared": true,
+      "contract": {
+        "path": "tools/deterministic-pr-publisher/module.contract.json",
+        "declared": true,
+        "present": true,
+        "valid": true,
+        "errors": [],
+        "provides": [
+          "git-pr.checkpoint-bound-publish-plan",
+          "git-pr.public-safe-review-material-gate",
+          "git-pr.clean-feature-branch-push",
+          "git-pr.github-draft-create-or-update",
+          "git-pr.sender-receiver-transport-receipt",
+          "git-pr.platform-merge-handoff",
+          "git-pr.merge-authority-refusal"
+        ],
+        "consumes": [
+          "git-pr.read-only-local-checkpoint",
+          "git-pr.deterministic-review-packet",
+          "filesystem:explicit-clean-publish-lane-worktree",
+          "local-git-runtime",
+          "host-authenticated-github-cli-session"
+        ]
+      },
+      "selftest": {
+        "paths": [
+          "tools/deterministic-pr-publisher/selftest.js"
+        ],
+        "promotionPath": "tools/deterministic-pr-publisher/selftest.js",
+        "sha256": "19213af970bb270b1e2903ae17242f72b03be62d81049fb34da1c0ce62c5b3d2",
+        "result": null
+      },
+      "readme": true,
+      "discoveryReview": false,
+      "verifiedAt": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
+        "blockers": [
+          "kind is unsupported",
+          "kind is undeclared"
+        ]
+      }
+    },
+    {
       "id": "device-handoff",
       "folder": "device-handoff",
       "name": "AXM Local Device Handoff Bridge",
@@ -16528,16 +17086,7 @@
         ],
         "promotionPath": "tools/device-handoff/selftest.js",
         "sha256": "ed0847cde84e97b39d41e578d735128c55de726f7c2a49940107d750b3c47eb0",
-        "result": {
-          "id": "device-handoff",
-          "path": "tools/device-handoff/selftest.js",
-          "selftestSha256": "ed0847cde84e97b39d41e578d735128c55de726f7c2a49940107d750b3c47eb0",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 92,
-          "outputSha256": "7d34ee4e4eed6fecf18678ae8d182765ff1d4fd4c17303764a0c7c91adfcb2f7",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -16547,7 +17096,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -16615,16 +17164,7 @@
         ],
         "promotionPath": "tools/diagnostics-operations-center/selftest.js",
         "sha256": "abc4fe742f813bf27c0d1dc04417e811da661665d664fa2051c882506f778c37",
-        "result": {
-          "id": "diagnostics-operations-center",
-          "path": "tools/diagnostics-operations-center/selftest.js",
-          "selftestSha256": "abc4fe742f813bf27c0d1dc04417e811da661665d664fa2051c882506f778c37",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 105,
-          "outputSha256": "dfb303a44d976aa66b87623f86074a018f0353ab61b8573c6d986756cd0686a4",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -16634,7 +17174,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -16682,16 +17222,7 @@
         ],
         "promotionPath": "tools/discord-bridge/selftest.js",
         "sha256": "b0a14e0675d06744369ffe6e050256db18e8745505816c39a5a79e933607dc84",
-        "result": {
-          "id": "discord-bridge",
-          "path": "tools/discord-bridge/selftest.js",
-          "selftestSha256": "b0a14e0675d06744369ffe6e050256db18e8745505816c39a5a79e933607dc84",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 78,
-          "outputSha256": "38ac9a1b26f1442b27429c16a7a297101fe9826feadd081b58eff26b36bd5634",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -16701,7 +17232,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -16869,16 +17400,7 @@
         ],
         "promotionPath": "tools/dual-door-observatory/selftest.js",
         "sha256": "785feba4318429587cf45d560952517c3d7242a5cfcaa3ef5aed8eb70ebf9ccf",
-        "result": {
-          "id": "dual-door-observatory",
-          "path": "tools/dual-door-observatory/selftest.js",
-          "selftestSha256": "785feba4318429587cf45d560952517c3d7242a5cfcaa3ef5aed8eb70ebf9ccf",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 123,
-          "outputSha256": "3b95a736f53261bca5a687d30f686275bdaf04eabb825e6b8aa2dd380c0eec6d",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -16888,7 +17410,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -16940,16 +17462,7 @@
         ],
         "promotionPath": "tools/duo-test/selftest.js",
         "sha256": "11b7ed81131e8ed926720efb2f1437d975f8fb13461b6ce2355653b81ee4882c",
-        "result": {
-          "id": "duo-test",
-          "path": "tools/duo-test/selftest.js",
-          "selftestSha256": "11b7ed81131e8ed926720efb2f1437d975f8fb13461b6ce2355653b81ee4882c",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 83,
-          "outputSha256": "0ab532a9264432bafede85c822992ca4654b25efe909d4898e09966188eecb15",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -16959,7 +17472,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17072,16 +17585,7 @@
         ],
         "promotionPath": "tools/entry-resource-closure-observatory/selftest.js",
         "sha256": "9f3c902e2188d62a26e88da8140212338696926ae5e8069a56a49d17c2945798",
-        "result": {
-          "id": "entry-resource-closure-observatory",
-          "path": "tools/entry-resource-closure-observatory/selftest.js",
-          "selftestSha256": "9f3c902e2188d62a26e88da8140212338696926ae5e8069a56a49d17c2945798",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 151,
-          "outputSha256": "bc859ec8e3d4603fdf588f963751f6a183d9792d2c3e565bfd3f802f1f9ea0a8",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -17091,7 +17595,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17143,16 +17647,7 @@
         ],
         "promotionPath": "tools/evidence-chain-application-drill-runner/selftest.js",
         "sha256": "4ea7a6b2d8047096a6b501adbc52ca90d203170313c7a08e6346c6024f38231a",
-        "result": {
-          "id": "evidence-chain-application-drill-runner",
-          "path": "tools/evidence-chain-application-drill-runner/selftest.js",
-          "selftestSha256": "4ea7a6b2d8047096a6b501adbc52ca90d203170313c7a08e6346c6024f38231a",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 302,
-          "outputSha256": "87354a292277935507ed708e358a58904c3827f6c7e6b989721a48ad6f7712ef",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17162,7 +17657,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17214,16 +17709,7 @@
         ],
         "promotionPath": "tools/evidence-chain-application-plan-foundry/selftest.js",
         "sha256": "415a8954717e77e70f77716738ca3a0b8f60664e77012c60f241969ae1bb6821",
-        "result": {
-          "id": "evidence-chain-application-plan-foundry",
-          "path": "tools/evidence-chain-application-plan-foundry/selftest.js",
-          "selftestSha256": "415a8954717e77e70f77716738ca3a0b8f60664e77012c60f241969ae1bb6821",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 148,
-          "outputSha256": "465e93cc5b0297a83e919fa75afc951ea93218e6eaec33f01a13b7f7b85c003c",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17233,7 +17719,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17285,16 +17771,7 @@
         ],
         "promotionPath": "tools/evidence-chain-candidate-review-gate/selftest.js",
         "sha256": "70a8797198e57e186c1b4282208ae6126b49ec19a5c43c4c51f13c5f84fc00d1",
-        "result": {
-          "id": "evidence-chain-candidate-review-gate",
-          "path": "tools/evidence-chain-candidate-review-gate/selftest.js",
-          "selftestSha256": "70a8797198e57e186c1b4282208ae6126b49ec19a5c43c4c51f13c5f84fc00d1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 132,
-          "outputSha256": "b000110e82e248a41e8f7d439e2f6d1af622a666a98d81520e6f4ef511955e74",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17304,7 +17781,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17355,16 +17832,7 @@
         ],
         "promotionPath": "tools/evidence-chain-inspector/selftest.js",
         "sha256": "be0de3ec1dfd2a11a6af1e759a9a7cca7a2535dabcf05a8f3b45aa7ed91462ea",
-        "result": {
-          "id": "evidence-chain-inspector",
-          "path": "tools/evidence-chain-inspector/selftest.js",
-          "selftestSha256": "be0de3ec1dfd2a11a6af1e759a9a7cca7a2535dabcf05a8f3b45aa7ed91462ea",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 378,
-          "outputSha256": "0191d678a118180f5c4e3a12ad64b1fc1160e4c35efa991677d7589ea784fa79",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17374,7 +17842,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17429,16 +17897,7 @@
         ],
         "promotionPath": "tools/evidence-chain-recovery-adapter-conformance-lab/selftest.js",
         "sha256": "fca3c3739e40dc7460cb282154dff02ddc7a6d721170bcbb78aa60695c28c57d",
-        "result": {
-          "id": "evidence-chain-recovery-adapter-conformance-lab",
-          "path": "tools/evidence-chain-recovery-adapter-conformance-lab/selftest.js",
-          "selftestSha256": "fca3c3739e40dc7460cb282154dff02ddc7a6d721170bcbb78aa60695c28c57d",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 136,
-          "outputSha256": "674eefde22e7918a17725470dcd17b7f6ef38ea1b31b6492a53117a4018c0bca",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17448,7 +17907,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17504,16 +17963,7 @@
         ],
         "promotionPath": "tools/evidence-chain-recovery-adapter-integration-foundry/selftest.js",
         "sha256": "898c7a1fd4e5643f3b75ea834defeaa7aa58309c662d751b85569cb89784afb5",
-        "result": {
-          "id": "evidence-chain-recovery-adapter-integration-foundry",
-          "path": "tools/evidence-chain-recovery-adapter-integration-foundry/selftest.js",
-          "selftestSha256": "898c7a1fd4e5643f3b75ea834defeaa7aa58309c662d751b85569cb89784afb5",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 116,
-          "outputSha256": "c71a5e15507009ee828cb894ef2e473e7f6966d578d3598c606100687824c857",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17523,7 +17973,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17574,16 +18024,7 @@
         ],
         "promotionPath": "tools/evidence-chain-recovery-foundry/selftest.js",
         "sha256": "86a2ad112af30731be7bab2132a2f5d793fe2041e93a66d6c1a8512da429200c",
-        "result": {
-          "id": "evidence-chain-recovery-foundry",
-          "path": "tools/evidence-chain-recovery-foundry/selftest.js",
-          "selftestSha256": "86a2ad112af30731be7bab2132a2f5d793fe2041e93a66d6c1a8512da429200c",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 120,
-          "outputSha256": "f62ab4bb094864f48d1f0d1e79c580818b02c0a2609b69a4b8bca0fdf171e619",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17593,7 +18034,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17647,16 +18088,7 @@
         ],
         "promotionPath": "tools/evidence-chain-recovery-snapshot-placement-foundry/selftest.js",
         "sha256": "f5a95237bf203ee35783cab966d38ca6a0ab973835a80470428d72c6ebc74285",
-        "result": {
-          "id": "evidence-chain-recovery-snapshot-placement-foundry",
-          "path": "tools/evidence-chain-recovery-snapshot-placement-foundry/selftest.js",
-          "selftestSha256": "f5a95237bf203ee35783cab966d38ca6a0ab973835a80470428d72c6ebc74285",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 1704,
-          "outputSha256": "2c0583cdb90b98fcbadf033dd4ea2917ddc61b8967481e9ba0fee9695f6e39e2",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17666,7 +18098,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17723,16 +18155,7 @@
         ],
         "promotionPath": "tools/evidence-chain-recovery-snapshot-staging-foundry/selftest.js",
         "sha256": "db92dbbebe030de165ab6a38121c1976df8c19736a6713a306f077d52ed25493",
-        "result": {
-          "id": "evidence-chain-recovery-snapshot-staging-foundry",
-          "path": "tools/evidence-chain-recovery-snapshot-staging-foundry/selftest.js",
-          "selftestSha256": "db92dbbebe030de165ab6a38121c1976df8c19736a6713a306f077d52ed25493",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 1071,
-          "outputSha256": "da8e291c77d3a6fabe85e068dc08ec4b659c26721d74f4b612c0ce37ef3e1f5c",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17742,7 +18165,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -17800,16 +18223,7 @@
         ],
         "promotionPath": "tools/evidence-desk/selftest.js",
         "sha256": "e67f4067dbc7fb08702a16bc10696efd176acfa810a87317ae4eb12f710dbef5",
-        "result": {
-          "id": "evidence-desk",
-          "path": "tools/evidence-desk/selftest.js",
-          "selftestSha256": "e67f4067dbc7fb08702a16bc10696efd176acfa810a87317ae4eb12f710dbef5",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 97,
-          "outputSha256": "f7766e7db43f17b478775bdba40973a6d99070b665ab99b05481688098b45adc",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -17819,7 +18233,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -18002,16 +18416,7 @@
         ],
         "promotionPath": "tools/film-motion-studio/selftest.js",
         "sha256": "9929e4edb0f8fbd555de6c5ba8ad206265ff26be23dc7882f389f20a6db1f7c8",
-        "result": {
-          "id": "film-motion-studio",
-          "path": "tools/film-motion-studio/selftest.js",
-          "selftestSha256": "9929e4edb0f8fbd555de6c5ba8ad206265ff26be23dc7882f389f20a6db1f7c8",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 78,
-          "outputSha256": "8ea630fadd9ec5d528a677149e9b27875ab96d6f432688bc68d8bdd82d9d3591",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -18021,7 +18426,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -18135,16 +18540,7 @@
         ],
         "promotionPath": "tools/forge/selftest.js",
         "sha256": "7edd6eacfc24f541018c27faabb236303e43283682c44769a8bdfc8ad9f226a1",
-        "result": {
-          "id": "forge",
-          "path": "tools/forge/selftest.js",
-          "selftestSha256": "7edd6eacfc24f541018c27faabb236303e43283682c44769a8bdfc8ad9f226a1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 73,
-          "outputSha256": "d547e6303fc7741cbe5f82ff1cb95caded4bc8cb7b815e23e2567525df9b0dc4",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -18154,7 +18550,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -18208,16 +18604,7 @@
         ],
         "promotionPath": "tools/forge-line/selftest.js",
         "sha256": "1be467a4f9726cf40938b4dd42b5a637f320918935f2366d82b2631ab0093701",
-        "result": {
-          "id": "forge-line",
-          "path": "tools/forge-line/selftest.js",
-          "selftestSha256": "1be467a4f9726cf40938b4dd42b5a637f320918935f2366d82b2631ab0093701",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 85,
-          "outputSha256": "a4bb0568da901214255542b1a78d05b373c04ba80007bcef239241708511eeea",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -18227,7 +18614,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -18447,16 +18834,7 @@
         ],
         "promotionPath": "tools/game-capability-atlas/selftest.js",
         "sha256": "40c87ac6ce5c0f46ecf9bc320c69b2c575baeb61462aa1b5187c0fc00635fcb8",
-        "result": {
-          "id": "game-capability-atlas",
-          "path": "tools/game-capability-atlas/selftest.js",
-          "selftestSha256": "40c87ac6ce5c0f46ecf9bc320c69b2c575baeb61462aa1b5187c0fc00635fcb8",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 91,
-          "outputSha256": "133b0be25dbc405016c8b2bf2e515edaff49def9cf2cdd58c7d86dd3c723bf57",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -18466,7 +18844,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -18538,16 +18916,7 @@
         ],
         "promotionPath": "tools/game-forge/selftest.js",
         "sha256": "6197a5c8d813a691f276e3e24ee157ef4c1b5c3d7c2550be32ca0aab93cbf438",
-        "result": {
-          "id": "game-forge",
-          "path": "tools/game-forge/selftest.js",
-          "selftestSha256": "6197a5c8d813a691f276e3e24ee157ef4c1b5c3d7c2550be32ca0aab93cbf438",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 72,
-          "outputSha256": "da43a822f836ccdb85d0f4345770e299a40a7734db662d12623245598f910967",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": true,
@@ -18557,7 +18926,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -18695,11 +19064,107 @@
           "tools/game-organism-lab/selftest.js"
         ],
         "promotionPath": "tools/game-organism-lab/selftest.js",
-        "sha256": "61d92055a343ce346e235f15a6e7190c07ec6e3e1bafa5eed69a28c6b66a60e5",
+        "sha256": "2db98ab56f8a40ded266bc3824377a18120b8e44d1dab449418fce5a2b176c21",
         "result": null
       },
       "readme": true,
       "discoveryReview": false,
+      "verifiedAt": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
+        "blockers": []
+      }
+    },
+    {
+      "id": "game-production-runner",
+      "folder": "game-production-runner",
+      "name": "AXM Game Production Runner",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "schema": "axm.tool-manifest/v1",
+      "kind": "product",
+      "audience": "human-machine",
+      "manifest": {
+        "path": "tools/game-production-runner/manifest.json",
+        "sha256": "ad3fe8a362c092904c96114869eaa66ae16aea7f3255751bad44f58872b8f70c",
+        "valid": true,
+        "errors": []
+      },
+      "entry": {
+        "path": "tools/game-production-runner/cli.js",
+        "exists": true
+      },
+      "permissionsDeclared": true,
+      "usesDeclared": true,
+      "contract": {
+        "path": "tools/game-production-runner/module.contract.json",
+        "declared": true,
+        "present": true,
+        "valid": true,
+        "errors": [],
+        "provides": [
+          "game-production-integration-inspection",
+          "deterministic-game-production-plan",
+          "portable-production-profile-plan",
+          "neutral-portable-step-receipts",
+          "append-only-run-checkpoint-ledger",
+          "explicit-fixture-candidate-run",
+          "explicit-portable-profile-fixture-run",
+          "explicit-content-verified-document-run",
+          "verified-deterministic-cross-run-cache",
+          "fresh-verifier-cache-hit-gate",
+          "explicit-cache-entry-invalidation",
+          "bounded-terminal-ledger-cache-reference-discovery",
+          "bounded-nonterminal-checkpoint-cache-reference-discovery",
+          "append-only-bounded-inflight-cache-lease-ledger",
+          "path-private-active-cache-lease-discovery",
+          "lease-session-fencing-and-crash-expiry",
+          "per-key-runner-retention-coordination",
+          "exact-approved-inactive-lease-ledger-curation",
+          "lossless-compressed-cold-lease-archive",
+          "sealed-hot-lease-archive-anchor",
+          "fresh-process-recovery-from-archive-anchor",
+          "bounded-full-cold-archive-audit",
+          "interrupted-curation-recovery",
+          "exact-approved-lossless-cold-archive-rollup",
+          "receipt-preserving-rollup-lineage",
+          "measured-smaller-rollup-selection",
+          "interrupted-rollup-recovery",
+          "fresh-process-recovery-from-rollup-anchor",
+          "exact-approved-portable-cold-history-tier-export",
+          "content-addressed-cold-history-tier-package",
+          "path-private-cold-history-tier-package-audit",
+          "explicit-fresh-root-tier-restore",
+          "full-audit-equivalent-tier-restore",
+          "read-only-cache-retention-inventory",
+          "deterministic-cache-retention-proposal",
+          "fresh-cache-reference-snapshot-gate",
+          "exact-approved-cache-retention-application",
+          "interrupted-run-resume",
+          "read-only-godot-availability-probe",
+          "explicit-trusted-hand-confinement-substrate-probe"
+        ],
+        "consumes": [
+          "service:game-production-runner-core",
+          "service:verification-spine",
+          "service:local-godot-substrate",
+          "service:node-permission-model"
+        ]
+      },
+      "selftest": {
+        "paths": [
+          "tools/game-production-runner/selftest.js"
+        ],
+        "promotionPath": "tools/game-production-runner/selftest.js",
+        "sha256": "7b11069eeb7f8e9bed9d6b4b3bee40ac306bc525dbfff1ebd33508198222166f",
+        "result": null
+      },
+      "readme": true,
+      "discoveryReview": true,
       "verifiedAt": null,
       "freshness": {
         "state": "MISSING",
@@ -18839,7 +19304,7 @@
       "audience": "human",
       "manifest": {
         "path": "tools/geographic-market-map/manifest.json",
-        "sha256": "278fa7a58ce71e363abf13d2b42b6411403b69365ff91d76f0d94502a9319a9f",
+        "sha256": "f804e2dab7b9e598a6223339424b3403d983dc2d5319399ec3fa777e604aa569",
         "valid": true,
         "errors": []
       },
@@ -18874,7 +19339,7 @@
           "tools/geographic-market-map/selftest.js"
         ],
         "promotionPath": "tools/geographic-market-map/selftest.js",
-        "sha256": "f549454acad04447b0f98f0695d58b6685aa547a9861a38025417ccfca8060cd",
+        "sha256": "c64cf4e2d299acefb5a536d36e0166efe69ce9b3b1494c6df52e2665b9cf1b1d",
         "result": null
       },
       "readme": true,
@@ -19007,16 +19472,7 @@
         ],
         "promotionPath": "tools/graft/selftest.js",
         "sha256": "3f47e20d7bf367593a88faa744ae954ea7bba72f5a67ac04a7791c91e82dac3a",
-        "result": {
-          "id": "graft",
-          "path": "tools/graft/selftest.js",
-          "selftestSha256": "3f47e20d7bf367593a88faa744ae954ea7bba72f5a67ac04a7791c91e82dac3a",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 84,
-          "outputSha256": "638db7c9a2435beafc647385edb1fb38bc0d3d555a8c4bac50e562292e21953f",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -19079,16 +19535,7 @@
         ],
         "promotionPath": "tools/hand-forge-bridge/selftest.js",
         "sha256": "f8f7b89d40a20457a3fd9474fc3b190af5bcef0659a20eaf529b0e7317cb2b77",
-        "result": {
-          "id": "hand-forge-bridge",
-          "path": "tools/hand-forge-bridge/selftest.js",
-          "selftestSha256": "f8f7b89d40a20457a3fd9474fc3b190af5bcef0659a20eaf529b0e7317cb2b77",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 128,
-          "outputSha256": "e6e10b8083a22722abbbd7f471d5750d84b4e4cc7a272ba83dec11a9ca9883b5",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -19098,7 +19545,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -19147,16 +19594,7 @@
         ],
         "promotionPath": "tools/hand-specification-foundry/selftest.js",
         "sha256": "22dbf64483c54d86f60e71e95c842397f6c640ff326ccdbbb4c0a435dca9b34c",
-        "result": {
-          "id": "hand-specification-foundry",
-          "path": "tools/hand-specification-foundry/selftest.js",
-          "selftestSha256": "22dbf64483c54d86f60e71e95c842397f6c640ff326ccdbbb4c0a435dca9b34c",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 82,
-          "outputSha256": "b27a8c0f8d3f0a0f0cb48dd2e0427b7690e5f5c66849b4c2019cfdff867e77d0",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -19166,7 +19604,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -19215,16 +19653,7 @@
         ],
         "promotionPath": "tools/hand-verification-lab/selftest.js",
         "sha256": "e738a458c81ddb82d32ac68b298b1c70c2ad1051d8e5e1aac806fb41a9065685",
-        "result": {
-          "id": "hand-verification-lab",
-          "path": "tools/hand-verification-lab/selftest.js",
-          "selftestSha256": "e738a458c81ddb82d32ac68b298b1c70c2ad1051d8e5e1aac806fb41a9065685",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 89,
-          "outputSha256": "84548c166d9564f4b64789324973b3a37de88903ef601aa447184c452cda0742",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -19234,7 +19663,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -19285,16 +19714,7 @@
         ],
         "promotionPath": "tools/handoff-wiring-observatory/selftest.js",
         "sha256": "b4ccfb126e00768910ded2cbd34a91359024624e2161288560a132d145149749",
-        "result": {
-          "id": "handoff-wiring-observatory",
-          "path": "tools/handoff-wiring-observatory/selftest.js",
-          "selftestSha256": "b4ccfb126e00768910ded2cbd34a91359024624e2161288560a132d145149749",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 154,
-          "outputSha256": "61fe3a2f6859b014ddef759f9bb57b91e74e643ee059059cacad2305b9751d26",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -19304,7 +19724,67 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
+        "blockers": []
+      }
+    },
+    {
+      "id": "hardware-research-registry",
+      "folder": "hardware-research-registry",
+      "name": "Hardware Research & Build Registry",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "schema": "axm.tool-manifest/v1",
+      "kind": "product",
+      "audience": "human-machine",
+      "manifest": {
+        "path": "tools/hardware-research-registry/manifest.json",
+        "sha256": "2e204e2c5663081587bb7723b2375fc57d49e4a1c9ef79f5330a2395d282845a",
+        "valid": true,
+        "errors": []
+      },
+      "entry": {
+        "path": "tools/hardware-research-registry/cli.js",
+        "exists": true
+      },
+      "permissionsDeclared": true,
+      "usesDeclared": true,
+      "contract": {
+        "path": "tools/hardware-research-registry/module.contract.json",
+        "declared": true,
+        "present": true,
+        "valid": true,
+        "errors": [],
+        "provides": [
+          "hardware-research-package-cli",
+          "hardware-package-conflict-check",
+          "hardware-evidence-ledger-cli",
+          "hardware-research-snapshot-cli"
+        ],
+        "consumes": [
+          "service:hardware-research-registry-core",
+          "service:deterministic-research-foundry",
+          "axm.hardware-research-intake/v1",
+          "axm.research-observation/v1"
+        ]
+      },
+      "selftest": {
+        "paths": [
+          "tools/hardware-research-registry/selftest.js"
+        ],
+        "promotionPath": "tools/hardware-research-registry/selftest.js",
+        "sha256": "d18a8b2ec3521dd6c0df5d42f11b84bf3ee899fcb7a68d2b441e6af34caf2115",
+        "result": null
+      },
+      "readme": true,
+      "discoveryReview": true,
+      "verifiedAt": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
         "blockers": []
       }
     },
@@ -19362,16 +19842,7 @@
         ],
         "promotionPath": "tools/hermes/selftest.js",
         "sha256": "18c39c6b89f280921957c4b682c84b74b2322005ae4f865e746958f379dc144c",
-        "result": {
-          "id": "hermes-local",
-          "path": "tools/hermes/selftest.js",
-          "selftestSha256": "18c39c6b89f280921957c4b682c84b74b2322005ae4f865e746958f379dc144c",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 1702,
-          "outputSha256": "de2b46c2ab0e9f274a506f08e1a2f2122719bb153a5a67c809d76237a3bbf84a",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -19381,7 +19852,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -19432,16 +19903,7 @@
         ],
         "promotionPath": "tools/holodeck-composer/selftest.js",
         "sha256": "51e50620ec1e975881ed9951b48cbbf11fc2a27bbc213b208df11e854dcd3106",
-        "result": {
-          "id": "holodeck-composer",
-          "path": "tools/holodeck-composer/selftest.js",
-          "selftestSha256": "51e50620ec1e975881ed9951b48cbbf11fc2a27bbc213b208df11e854dcd3106",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 109,
-          "outputSha256": "b215ff3db5d9f09f2f5412f3bfaa8ef97ad750ab0da08cc8fd6f775e88921c46",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -19507,16 +19969,7 @@
         ],
         "promotionPath": "tools/holodeck-screen-deck/selftest.js",
         "sha256": "8f432e6b5fb76cb1b7329cf2fc3903097e3b8c3aa3428fe8dbb7fac0e2d742c7",
-        "result": {
-          "id": "holodeck-screen-deck",
-          "path": "tools/holodeck-screen-deck/selftest.js",
-          "selftestSha256": "8f432e6b5fb76cb1b7329cf2fc3903097e3b8c3aa3428fe8dbb7fac0e2d742c7",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 107,
-          "outputSha256": "488085a8873ca5d67dc9f81a176bcdd96be333af4ef7d8133af0a326d188bd17",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -19577,16 +20030,7 @@
         ],
         "promotionPath": "tools/host-assumption-observatory/selftest.js",
         "sha256": "5fd40c10610414d496e1e2ec7f5e8927829316f1504e983119e9eb831ccd68e8",
-        "result": {
-          "id": "host-assumption-observatory",
-          "path": "tools/host-assumption-observatory/selftest.js",
-          "selftestSha256": "5fd40c10610414d496e1e2ec7f5e8927829316f1504e983119e9eb831ccd68e8",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 108,
-          "outputSha256": "ba74b323d32e1462684ae91a33403191f7a223df3686522f70a4920042e4ae79",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -19596,7 +20040,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -19647,16 +20091,7 @@
         ],
         "promotionPath": "tools/hub-test-room/selftest.js",
         "sha256": "2bbee730ad16602184fd09f18f6d8530137a1ad1af9e37a9703a1720cb739e42",
-        "result": {
-          "id": "hub-test-room",
-          "path": "tools/hub-test-room/selftest.js",
-          "selftestSha256": "2bbee730ad16602184fd09f18f6d8530137a1ad1af9e37a9703a1720cb739e42",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 81,
-          "outputSha256": "ce09e0790034f0e490639bf5e4d4328d764b4568d33ab2843917b5d78d5875cd",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -19666,7 +20101,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -19711,16 +20146,7 @@
         ],
         "promotionPath": "tools/human-attention-ledger/selftest.js",
         "sha256": "1000a02b7a4c07d5659b00b8c663b31631ceb85e938c3cb2cde180d119feda71",
-        "result": {
-          "id": "human-attention-ledger",
-          "path": "tools/human-attention-ledger/selftest.js",
-          "selftestSha256": "1000a02b7a4c07d5659b00b8c663b31631ceb85e938c3cb2cde180d119feda71",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 68,
-          "outputSha256": "3d322143501e7f21a5995ed348dc61327c2c3cb60083546ee073a154ee81c3d9",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -19730,7 +20156,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -19779,16 +20205,7 @@
         ],
         "promotionPath": "tools/human-control-binding-observatory/selftest.js",
         "sha256": "31566810634332bf07d28359337bebf3b828296f79900f53e69246c2a80e5fba",
-        "result": {
-          "id": "human-control-binding-observatory",
-          "path": "tools/human-control-binding-observatory/selftest.js",
-          "selftestSha256": "31566810634332bf07d28359337bebf3b828296f79900f53e69246c2a80e5fba",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 111,
-          "outputSha256": "0d3d6971f7cf64fb75f8cc40ae4e515d0a4afac23a69fc4fa9fd38f0abbf15bb",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -19798,7 +20215,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -20033,16 +20450,7 @@
         ],
         "promotionPath": "tools/knowledge-canvas/selftest.js",
         "sha256": "d119cd0869c4151c880b3e413e859a558fef06c473669cbda6add79b2cfb6154",
-        "result": {
-          "id": "knowledge-canvas",
-          "path": "tools/knowledge-canvas/selftest.js",
-          "selftestSha256": "d119cd0869c4151c880b3e413e859a558fef06c473669cbda6add79b2cfb6154",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 93,
-          "outputSha256": "09877a9bd589a866854660a6e9b8f05ea6babbce02ecc86bf19ddaa8b140f55c",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": true,
@@ -20052,7 +20460,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -20105,16 +20513,7 @@
         ],
         "promotionPath": "tools/launcher-card-installer/selftest.js",
         "sha256": "b2be340a2e6a9e0aebad984cf4c5f1eba9178113a645454da440b12c12f23f0f",
-        "result": {
-          "id": "launcher-card-installer",
-          "path": "tools/launcher-card-installer/selftest.js",
-          "selftestSha256": "b2be340a2e6a9e0aebad984cf4c5f1eba9178113a645454da440b12c12f23f0f",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 81,
-          "outputSha256": "d8e1e40daf2a518bd67fcb96e7305cddec558fe389352025395011eb2d243919",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -20124,7 +20523,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -20200,16 +20599,7 @@
         ],
         "promotionPath": "tools/learning-lab/selftest.js",
         "sha256": "4053b4ec8f6e8463a9ad9480430755dc2ccf15b34ff10fdca8f84ca1d6a0f0df",
-        "result": {
-          "id": "learning-lab",
-          "path": "tools/learning-lab/selftest.js",
-          "selftestSha256": "4053b4ec8f6e8463a9ad9480430755dc2ccf15b34ff10fdca8f84ca1d6a0f0df",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 129,
-          "outputSha256": "912b76de82622ffd2d9486b401ef0e358ff54902cf51638416837363d50411bb",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -20219,7 +20609,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -20450,16 +20840,7 @@
         ],
         "promotionPath": "tools/living-world-state-server/selftest.js",
         "sha256": "2f1ae5c4684f4caad7191dc27919aa957c994daa57d63f983fe27e6c3131a796",
-        "result": {
-          "id": "living-world-state-server",
-          "path": "tools/living-world-state-server/selftest.js",
-          "selftestSha256": "2f1ae5c4684f4caad7191dc27919aa957c994daa57d63f983fe27e6c3131a796",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 148,
-          "outputSha256": "26917c62feab9c73e6f03989bbfe5e27caca94b84122620794deab4a3ca04c9d",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -20714,16 +21095,7 @@
         ],
         "promotionPath": "tools/machine-host/selftest.js",
         "sha256": "badffd6ed0e479e47887880204da435ab1851099be575f6d230de01781085346",
-        "result": {
-          "id": "machine-host",
-          "path": "tools/machine-host/selftest.js",
-          "selftestSha256": "badffd6ed0e479e47887880204da435ab1851099be575f6d230de01781085346",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 197,
-          "outputSha256": "78597251f638295323e7680e9ee6496602a0548732d4d7ccd695e247efba6d81",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -20733,7 +21105,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -20916,16 +21288,7 @@
         ],
         "promotionPath": "tools/marketplace-deployment/selftest.js",
         "sha256": "0439a215ee665c2067670d5d8aafc60066249cf220a0535366eccf9593d6ed3c",
-        "result": {
-          "id": "marketplace-deployment",
-          "path": "tools/marketplace-deployment/selftest.js",
-          "selftestSha256": "0439a215ee665c2067670d5d8aafc60066249cf220a0535366eccf9593d6ed3c",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 92,
-          "outputSha256": "ba7563addf46b9a75ce84102178df9476c51d944829bf931a261f7ae87d01bc6",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -20935,7 +21298,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -20987,16 +21350,7 @@
         ],
         "promotionPath": "tools/media-render-transcode-service/selftest.js",
         "sha256": "5b1aa1b8b9f867f9a855a61ed2bd20bcef0a350c073d5ec5aa690e8006f85ab9",
-        "result": {
-          "id": "media-render-transcode-service",
-          "path": "tools/media-render-transcode-service/selftest.js",
-          "selftestSha256": "5b1aa1b8b9f867f9a855a61ed2bd20bcef0a350c073d5ec5aa690e8006f85ab9",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 173,
-          "outputSha256": "9d0f553594d36dc1623a15ccbb07295ea3c6481b37539616e8b070e7bfe68d1a",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -21058,27 +21412,20 @@
         ],
         "promotionPath": "tools/memory-continuity-garden/selftest.js",
         "sha256": "6cb618a401645e75d1c1ef2b7b9d7097017bb989c1a0ccb3daf2d48f16dab768",
-        "result": {
-          "id": "memory-continuity-garden",
-          "path": "tools/memory-continuity-garden/selftest.js",
-          "selftestSha256": "6cb618a401645e75d1c1ef2b7b9d7097017bb989c1a0ccb3daf2d48f16dab768",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 8144,
-          "outputSha256": "43aa4f4d22f5b0a4fbd147fa65a4bef2c4fcccdd9669dd5377f5c5f548b62159",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
       "verifiedAt": "2026-07-27T21:25:31.6648828Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 7
+        "ageDays": 19
       },
       "promotion": {
-        "state": "CURRENT",
-        "blockers": []
+        "state": "CLAIM_NEEDS_REVERIFICATION",
+        "blockers": [
+          "current selftest PASS result is missing"
+        ]
       }
     },
     {
@@ -21313,16 +21660,7 @@
         ],
         "promotionPath": "tools/mirror-intake-monitor/selftest.js",
         "sha256": "987b79d5db358b8b28d079d74b1e78d2ca5a6b842f369916aea560f05f8cc150",
-        "result": {
-          "id": "mirror-intake-monitor",
-          "path": "tools/mirror-intake-monitor/selftest.js",
-          "selftestSha256": "987b79d5db358b8b28d079d74b1e78d2ca5a6b842f369916aea560f05f8cc150",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 69,
-          "outputSha256": "a852085a920b4aa5355411797efe6ab8fc18bdf794917d70c9af2b2d102e8c93",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -21332,7 +21670,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -21385,16 +21723,7 @@
         ],
         "promotionPath": "tools/mirror-learning-shell/selftest.js",
         "sha256": "f403a93a12b8751341779e761283d4d573167ce3ea6627777f12c2d4f2ca0c05",
-        "result": {
-          "id": "mirror-learning-shell",
-          "path": "tools/mirror-learning-shell/selftest.js",
-          "selftestSha256": "f403a93a12b8751341779e761283d4d573167ce3ea6627777f12c2d4f2ca0c05",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 64,
-          "outputSha256": "6c9caa9784b324248d9129d060ac4bfdeb7847c1ead14cd2d891e09d88943b86",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -21404,7 +21733,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -21458,16 +21787,7 @@
         ],
         "promotionPath": "tools/model-lab/selftest.js",
         "sha256": "dac4561be3ebed804a86879d6b967019e744be1c4b78ef097760c937c8072f50",
-        "result": {
-          "id": "model-lab",
-          "path": "tools/model-lab/selftest.js",
-          "selftestSha256": "dac4561be3ebed804a86879d6b967019e744be1c4b78ef097760c937c8072f50",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 73,
-          "outputSha256": "ececac017a314a1a3c4f10604831e396ff82068ac1e4e6fdc650357af64e5684",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -21733,16 +22053,7 @@
         ],
         "promotionPath": "tools/modular-seed-foundry/selftest.js",
         "sha256": "0a3f06f37dae2bd01dbe4049bb41017bf723a4818770094e3bcb05a86fd914a2",
-        "result": {
-          "id": "modular-seed-foundry",
-          "path": "tools/modular-seed-foundry/selftest.js",
-          "selftestSha256": "0a3f06f37dae2bd01dbe4049bb41017bf723a4818770094e3bcb05a86fd914a2",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 83,
-          "outputSha256": "69d5c833722e34327f10c7bd075c94c48cdab8cb867c77d27ed753f0f3effd34",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -21752,7 +22063,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -21804,16 +22115,7 @@
         ],
         "promotionPath": "tools/module-contract-workbench/selftest.js",
         "sha256": "408976d5e227027924f61d36488e66b995155e0fb9786aa3c412ca64448b8874",
-        "result": {
-          "id": "module-contract-workbench",
-          "path": "tools/module-contract-workbench/selftest.js",
-          "selftestSha256": "408976d5e227027924f61d36488e66b995155e0fb9786aa3c412ca64448b8874",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 68,
-          "outputSha256": "60ebb83dec10562d0f2e82234e6cc296d191af2e9271b80df3eb9ff8c7260d13",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -21823,7 +22125,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -21879,16 +22181,7 @@
         ],
         "promotionPath": "tools/module-footprint-observatory/selftest.js",
         "sha256": "168b1cdb1467cb42b713c94b7483d4fffc73e77a56b9eb3cdc63af161d88ce9d",
-        "result": {
-          "id": "module-footprint-observatory",
-          "path": "tools/module-footprint-observatory/selftest.js",
-          "selftestSha256": "168b1cdb1467cb42b713c94b7483d4fffc73e77a56b9eb3cdc63af161d88ce9d",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 139,
-          "outputSha256": "7ba0d298e3bee7e2200119b7eb4521f27115ef7e4205032f8bf4415f234e0738",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -21898,7 +22191,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -21959,16 +22252,7 @@
         ],
         "promotionPath": "tools/module-installer/selftest.js",
         "sha256": "9edbac0c6ea94f4a59f2a69a351a9219b0e2dbbe869da48c88ab932159d803be",
-        "result": {
-          "id": "module-installer",
-          "path": "tools/module-installer/selftest.js",
-          "selftestSha256": "9edbac0c6ea94f4a59f2a69a351a9219b0e2dbbe869da48c88ab932159d803be",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 75,
-          "outputSha256": "db8aea8bf5855d178a3d52dd679e05d8337ea52b09f6816ba18eb4df14fc4773",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -21978,7 +22262,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -22029,16 +22313,7 @@
         ],
         "promotionPath": "tools/module-lineage-comparator/selftest.js",
         "sha256": "f01914f0ffde7a3a4bfb4d51589cd706f68f53f41b9e926bd35d11a4536a27fc",
-        "result": {
-          "id": "module-lineage-comparator",
-          "path": "tools/module-lineage-comparator/selftest.js",
-          "selftestSha256": "f01914f0ffde7a3a4bfb4d51589cd706f68f53f41b9e926bd35d11a4536a27fc",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 107,
-          "outputSha256": "9b3b2133cb1eec7472e79b9ada50bb1eacae9acc0dc693abec4668a9128eeaa6",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -22048,7 +22323,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -22098,16 +22373,7 @@
         ],
         "promotionPath": "tools/multiplayer-controller-transport/selftest.js",
         "sha256": "9538614b034075b50f67e97e1824db79412b84c7af65017517a30a39bb9323fe",
-        "result": {
-          "id": "multiplayer-controller-transport",
-          "path": "tools/multiplayer-controller-transport/selftest.js",
-          "selftestSha256": "9538614b034075b50f67e97e1824db79412b84c7af65017517a30a39bb9323fe",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 214,
-          "outputSha256": "f504161f2ba4eb999cd3f6fcd72c1524b08dc39f1b7ed466f7091eb528a296e5",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -22836,27 +23102,20 @@
         ],
         "promotionPath": "tools/prehub/selftest.js",
         "sha256": "16e4cde8483d0c218ca4f2d736ec44774f6e92f237454b54e3b057d9c0bb452b",
-        "result": {
-          "id": "prehub",
-          "path": "tools/prehub/selftest.js",
-          "selftestSha256": "16e4cde8483d0c218ca4f2d736ec44774f6e92f237454b54e3b057d9c0bb452b",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 85,
-          "outputSha256": "53e7a76a42637ba2b338536a492dfbfbaf06f909535bdc74a682ab75bb0d0ee9",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
       "verifiedAt": "2026-07-28T19:01:43.329Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 6
+        "ageDays": 18
       },
       "promotion": {
-        "state": "CURRENT",
-        "blockers": []
+        "state": "CLAIM_NEEDS_REVERIFICATION",
+        "blockers": [
+          "current selftest PASS result is missing"
+        ]
       }
     },
     {
@@ -22909,16 +23168,7 @@
         ],
         "promotionPath": "tools/presentation-spine/selftest.js",
         "sha256": "9384a258849a4bef24d4cf5fd9c79bc6daa1c49ea2a59488f0e06a7cdb9476de",
-        "result": {
-          "id": "presentation-spine",
-          "path": "tools/presentation-spine/selftest.js",
-          "selftestSha256": "9384a258849a4bef24d4cf5fd9c79bc6daa1c49ea2a59488f0e06a7cdb9476de",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 77,
-          "outputSha256": "9d7be36c8546c24c9e4d86b6aee1798343b8f0858491afd9112da1d5bf7fc27b",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -22928,7 +23178,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -23045,16 +23295,7 @@
         ],
         "promotionPath": "tools/project-room/selftest.js",
         "sha256": "062385b38b502ee6138d5dbbf14a65a11be399e2e9b6b2fac1a2cae23a9d9999",
-        "result": {
-          "id": "project-room",
-          "path": "tools/project-room/selftest.js",
-          "selftestSha256": "062385b38b502ee6138d5dbbf14a65a11be399e2e9b6b2fac1a2cae23a9d9999",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 81,
-          "outputSha256": "220c430addd2d5b21fe9fe99aa60ca2a48f5417e2ba73102e83f13558f8df640",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -23064,7 +23305,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -23121,16 +23362,7 @@
         ],
         "promotionPath": "tools/prompt-vault/selftest.js",
         "sha256": "2796d963973eafe8ad0d8747a51154df01cefe4907a206a21e171de71bcacce1",
-        "result": {
-          "id": "prompt-vault",
-          "path": "tools/prompt-vault/selftest.js",
-          "selftestSha256": "2796d963973eafe8ad0d8747a51154df01cefe4907a206a21e171de71bcacce1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 73,
-          "outputSha256": "af51fd933e4e0f6efd9dd321b28282c2b91be72b91c4459c4b0f6385b1b4a309",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -23140,7 +23372,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -23188,16 +23420,7 @@
         ],
         "promotionPath": "tools/protocol-version-observatory/selftest.js",
         "sha256": "2aba1f35f66f38c8e4ba3bfe52c4c8451a133dfb400dd673951c836b0cc008b5",
-        "result": {
-          "id": "protocol-version-observatory",
-          "path": "tools/protocol-version-observatory/selftest.js",
-          "selftestSha256": "2aba1f35f66f38c8e4ba3bfe52c4c8451a133dfb400dd673951c836b0cc008b5",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 116,
-          "outputSha256": "db01c7c787658e4cafc784c98feedae1c8f54afd05492ee85f3f62d40b4ae796",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -23207,7 +23430,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -23326,16 +23549,7 @@
         ],
         "promotionPath": "tools/public-release-deployment-adapter/selftest.js",
         "sha256": "39b81ca21eb5c08180eed49fc16212c308ff9ee62d50ddd98f1f2e14100089d1",
-        "result": {
-          "id": "public-release-deployment-adapter",
-          "path": "tools/public-release-deployment-adapter/selftest.js",
-          "selftestSha256": "39b81ca21eb5c08180eed49fc16212c308ff9ee62d50ddd98f1f2e14100089d1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 271,
-          "outputSha256": "2e12af3ba86479a1fc17e3003c40669bab9101c65e5fd4162705375b2962181e",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -23345,7 +23559,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -23402,16 +23616,7 @@
         ],
         "promotionPath": "tools/publish-library/selftest.js",
         "sha256": "4ef209345013017c4784bd54c6916ee6c711f5ba219446a8c8a02c466957d441",
-        "result": {
-          "id": "publish-library",
-          "path": "tools/publish-library/selftest.js",
-          "selftestSha256": "4ef209345013017c4784bd54c6916ee6c711f5ba219446a8c8a02c466957d441",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 77,
-          "outputSha256": "d16b8db2a8d8ac8b98f99012de40489de258a7059afa93b1fa2533326447288e",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": true,
@@ -23421,7 +23626,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -23601,16 +23806,7 @@
         ],
         "promotionPath": "tools/reasoning-shell/selftest.js",
         "sha256": "d57276617caba33bbc769c09bed221206b13b954e08091f273223c57d5b8b197",
-        "result": {
-          "id": "reasoning-shell",
-          "path": "tools/reasoning-shell/selftest.js",
-          "selftestSha256": "d57276617caba33bbc769c09bed221206b13b954e08091f273223c57d5b8b197",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 88,
-          "outputSha256": "7283f9f283938e5b68902079a1a59eaa562304c20d648a3a14172b129a4a0859",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -23620,7 +23816,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -23675,16 +23871,7 @@
         ],
         "promotionPath": "tools/recovery-center/selftest.js",
         "sha256": "6895bb6e12ac460f5acbf23b892377184ba910dc2be7325c1beb45cbfb639f42",
-        "result": {
-          "id": "recovery-center",
-          "path": "tools/recovery-center/selftest.js",
-          "selftestSha256": "6895bb6e12ac460f5acbf23b892377184ba910dc2be7325c1beb45cbfb639f42",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 75,
-          "outputSha256": "45a57cb01c7fd4597d5d112cdba8bb167b0c4200d6950ac53f9c9b04318d7ddd",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -23694,7 +23881,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -23969,41 +24156,34 @@
         ],
         "promotionPath": "tools/repair-resilience-library/selftest.js",
         "sha256": "41674064eaa0deb9b87ae3afb22013f83966c72f07b2ecb65eb95f37ea5b85d7",
-        "result": {
-          "id": "repair-resilience-library",
-          "path": "tools/repair-resilience-library/selftest.js",
-          "selftestSha256": "41674064eaa0deb9b87ae3afb22013f83966c72f07b2ecb65eb95f37ea5b85d7",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 7643,
-          "outputSha256": "e4af2a07ab95d0ea306feff5bf108c2ab80e5724272fbc4d38e92b03b3758dee",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
       "verifiedAt": "2026-07-27T22:14:01.8589096Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 7
+        "ageDays": 19
       },
       "promotion": {
-        "state": "CURRENT",
-        "blockers": []
+        "state": "CLAIM_NEEDS_REVERIFICATION",
+        "blockers": [
+          "current selftest PASS result is missing"
+        ]
       }
     },
     {
       "id": "repairbuddy",
       "folder": "repairbuddy",
       "name": "RepairBuddy — Mirror Coder Experiment",
-      "version": "v0.3",
+      "version": "v0.5",
       "status": "EXPERIMENTAL",
       "schema": "LEGACY_UNVERSIONED",
       "kind": "UNDECLARED",
       "audience": "human-machine",
       "manifest": {
         "path": "tools/repairbuddy/manifest.json",
-        "sha256": "0f70ad5c0691a4ef5ce383ed1365546e9fb0627e541f3e48de97e1f10257600b",
+        "sha256": "1568f7ddc6f5f43da2518e0fb103a0e9ed5421053b68e44d88cc4751d6b5adb3",
         "valid": true,
         "errors": []
       },
@@ -24030,14 +24210,20 @@
           "truth-preserving-verifier-warning-routing",
           "human-warning-action-desk",
           "ai-native-bounded-warning-packets",
-          "declared-warning-destination-handoffs"
+          "declared-warning-destination-handoffs",
+          "complete-verifier-warning-baseline",
+          "deterministic-warning-delta",
+          "new-resolved-changed-warning-separation"
         ],
         "consumes": [
           "technical-glasses-snapshot",
           "human-review",
           "platform-authored-pattern-draft",
           "axm.game-package-verification/v1",
-          "axm.module-seam-gap-report/v1"
+          "axm.module-seam-gap-report/v1",
+          "axm.verify-report/v1",
+          "axm.repairbuddy.warning-baseline/v1",
+          "deterministic-json-core"
         ]
       },
       "selftest": {
@@ -24045,7 +24231,7 @@
           "tools/repairbuddy/selftest.js"
         ],
         "promotionPath": "tools/repairbuddy/selftest.js",
-        "sha256": "9074c44f96e1b5cf91fa1d7aa24afe5efc549b66587e952af872396b308972bb",
+        "sha256": "8ee358987ef2da1b5abb051f90232219d5bc4e6d840d8e81c9cd41cd20a3ce15",
         "result": null
       },
       "readme": false,
@@ -24176,16 +24362,7 @@
         ],
         "promotionPath": "tools/research-foundry/selftest.js",
         "sha256": "41d6ab0bb223434024a24585805cf94fdc905e25b44ba947a8fdd971bebba504",
-        "result": {
-          "id": "research-foundry",
-          "path": "tools/research-foundry/selftest.js",
-          "selftestSha256": "41d6ab0bb223434024a24585805cf94fdc905e25b44ba947a8fdd971bebba504",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 137,
-          "outputSha256": "b6b7e506250f780386cf3990ce6544ff01a49968e4850d26f734f08aee7ee970",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": true,
@@ -24195,7 +24372,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -24253,16 +24430,7 @@
         ],
         "promotionPath": "tools/review-inbox/selftest.js",
         "sha256": "54de227093b23e4696a2b62271edb5c6984abfeeb486c16f4defd8a80ac5c8c1",
-        "result": {
-          "id": "review-inbox",
-          "path": "tools/review-inbox/selftest.js",
-          "selftestSha256": "54de227093b23e4696a2b62271edb5c6984abfeeb486c16f4defd8a80ac5c8c1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 67,
-          "outputSha256": "cb538890188feb2bfdb3b4d6cddd6aa300782d23829a2955067fe9a167aa1fe9",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -24272,7 +24440,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -24387,16 +24555,7 @@
         ],
         "promotionPath": "tools/route/selftest.js",
         "sha256": "eef7c9bdac41c7236c4543843dfb854bd2fa0a163511985b0e0b7f2d9194eeb7",
-        "result": {
-          "id": "route",
-          "path": "tools/route/selftest.js",
-          "selftestSha256": "eef7c9bdac41c7236c4543843dfb854bd2fa0a163511985b0e0b7f2d9194eeb7",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 77,
-          "outputSha256": "18f87122e402d32804c60d17fdfaef6f096428ec6e09b9bcfe341d25e4a3f33c",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -24458,16 +24617,7 @@
         ],
         "promotionPath": "tools/runner/selftest.js",
         "sha256": "3f953b123cf16c5debc83e8f95eb79bc50151e5e58998a3146720d9ce704289a",
-        "result": {
-          "id": "runner",
-          "path": "tools/runner/selftest.js",
-          "selftestSha256": "3f953b123cf16c5debc83e8f95eb79bc50151e5e58998a3146720d9ce704289a",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 74,
-          "outputSha256": "41629b8ed28f9af946c1a7c30146cfb1032c9d28652e4087bc55771f84b02222",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -24477,7 +24627,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -24526,16 +24676,7 @@
         ],
         "promotionPath": "tools/runtime-channel-observatory/selftest.js",
         "sha256": "84e46b35ee252f5cae3f499ac0822efd97b5efcf32ba2fb20719ef6874e93ebe",
-        "result": {
-          "id": "runtime-channel-observatory",
-          "path": "tools/runtime-channel-observatory/selftest.js",
-          "selftestSha256": "84e46b35ee252f5cae3f499ac0822efd97b5efcf32ba2fb20719ef6874e93ebe",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 105,
-          "outputSha256": "31ccdfa199f6b9662921229b3faae046e1ebedf987271ff1d15985c0d79d8801",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -24545,7 +24686,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -24595,16 +24736,7 @@
         ],
         "promotionPath": "tools/sandbox/selftest.js",
         "sha256": "efdc6a0e2dd5fde254f0d54647bb36909e75d8227ec9cc07dc8ba3b7afa9ea08",
-        "result": {
-          "id": "sandbox",
-          "path": "tools/sandbox/selftest.js",
-          "selftestSha256": "efdc6a0e2dd5fde254f0d54647bb36909e75d8227ec9cc07dc8ba3b7afa9ea08",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 206,
-          "outputSha256": "f26710fe821870e1ba36a4e97794b2aed392f51c0997c0b87b367cad6b2c8740",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -24614,7 +24746,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -24783,16 +24915,7 @@
         ],
         "promotionPath": "tools/schema-identity-observatory/selftest.js",
         "sha256": "aa800b79cd0cc8ecf8fa5754af2455b1246dc118b4b8e213231efb9861e63c08",
-        "result": {
-          "id": "schema-identity-observatory",
-          "path": "tools/schema-identity-observatory/selftest.js",
-          "selftestSha256": "aa800b79cd0cc8ecf8fa5754af2455b1246dc118b4b8e213231efb9861e63c08",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 123,
-          "outputSha256": "fa08bb58569a6c6155360f22df862bed9b817476515e218f57ec088dd110a634",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -24802,7 +24925,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -24856,16 +24979,7 @@
         ],
         "promotionPath": "tools/secrets-permissions-console/selftest.js",
         "sha256": "17c26349c07d764fbded1472273130e3da5c22bbb27daf6031fa9d9c43b39831",
-        "result": {
-          "id": "secrets-permissions-console",
-          "path": "tools/secrets-permissions-console/selftest.js",
-          "selftestSha256": "17c26349c07d764fbded1472273130e3da5c22bbb27daf6031fa9d9c43b39831",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 112,
-          "outputSha256": "e890b52cf956033e53e2aaaf5d7603dca3931d8d1d787d917b061e6f59c1777f",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -24875,7 +24989,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -24985,16 +25099,7 @@
         ],
         "promotionPath": "tools/sensorium-lab/selftest.js",
         "sha256": "65dd446b60d75c4faa15fa16920954cf2566e5fdd25a1ba82d204159cee0da51",
-        "result": {
-          "id": "sensorium-lab",
-          "path": "tools/sensorium-lab/selftest.js",
-          "selftestSha256": "65dd446b60d75c4faa15fa16920954cf2566e5fdd25a1ba82d204159cee0da51",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 78,
-          "outputSha256": "797bd40c725ea25c18fae86dbe706636bdff7b4c1b651a8861877805c057ffd7",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": true,
@@ -25004,7 +25109,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -25179,16 +25284,7 @@
         ],
         "promotionPath": "tools/skinner/selftest.js",
         "sha256": "a71293fbb66e45052b6ded6f9087b9f8bea0e6cda527fa5c3248690ff5f6c5cc",
-        "result": {
-          "id": "skinner",
-          "path": "tools/skinner/selftest.js",
-          "selftestSha256": "a71293fbb66e45052b6ded6f9087b9f8bea0e6cda527fa5c3248690ff5f6c5cc",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 68,
-          "outputSha256": "a5692563c54c419ceb1916db61e5da2ca7449cbac5c1070c6a7ca975516d802c",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -25198,7 +25294,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -25247,16 +25343,7 @@
         ],
         "promotionPath": "tools/source-connector-hub/selftest.js",
         "sha256": "ac61bdfaa0cc67a0c318b966537536d3a95aa33653403d8bfcc98602e02e0f96",
-        "result": {
-          "id": "source-connector-hub",
-          "path": "tools/source-connector-hub/selftest.js",
-          "selftestSha256": "ac61bdfaa0cc67a0c318b966537536d3a95aa33653403d8bfcc98602e02e0f96",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 116,
-          "outputSha256": "df59c3e3dd2c898d119cc78844269e04a88c2c668bfce68e0059d9953b4087ee",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -25330,26 +25417,17 @@
         ],
         "promotionPath": "tools/source-control-merge-workbench/selftest.js",
         "sha256": "e46a78107b321d644e6169c99a06e23f344fe07ee88fbc49313484dc66a96f77",
-        "result": {
-          "id": "source-control-merge-workbench",
-          "path": "tools/source-control-merge-workbench/selftest.js",
-          "selftestSha256": "e46a78107b321d644e6169c99a06e23f344fe07ee88fbc49313484dc66a96f77",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 8742,
-          "outputSha256": "b82d324cfcbf358465ba3bbf367b25a5eb51c2f773680b5f1161cdae8781c2a0",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
       "verifiedAt": "2026-07-24T15:30:00.000Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 10
+        "ageDays": 22
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -25414,16 +25492,7 @@
         ],
         "promotionPath": "tools/spatial-studio/selftest.js",
         "sha256": "b431c8bb9daa38167cb37584041a6f1b37d7aff5d319bb87ef54ead866e885dd",
-        "result": {
-          "id": "spatial-studio",
-          "path": "tools/spatial-studio/selftest.js",
-          "selftestSha256": "b431c8bb9daa38167cb37584041a6f1b37d7aff5d319bb87ef54ead866e885dd",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 257,
-          "outputSha256": "a9066f67545b2667b38830a2a26a1e065357d2c16d3d65ce4756aa0e3fd781a6",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -25433,7 +25502,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -25482,16 +25551,7 @@
         ],
         "promotionPath": "tools/storage-namespace-observatory/selftest.js",
         "sha256": "91a5bef9532377ff47281d80f916dda61ae8e3644134ea69a6f6a1476688153b",
-        "result": {
-          "id": "storage-namespace-observatory",
-          "path": "tools/storage-namespace-observatory/selftest.js",
-          "selftestSha256": "91a5bef9532377ff47281d80f916dda61ae8e3644134ea69a6f6a1476688153b",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 122,
-          "outputSha256": "e6a381d4ce04c22de7dab9c0c1429f11f879c76723ba6c5ede7cb983a4310735",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -25501,7 +25561,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -25597,16 +25657,7 @@
         ],
         "promotionPath": "tools/studio/selftest.js",
         "sha256": "f7f0b353f106754d9dccc1dffb5c56d46a4ad790041d5e6452b311ca53742a0c",
-        "result": {
-          "id": "studio",
-          "path": "tools/studio/selftest.js",
-          "selftestSha256": "f7f0b353f106754d9dccc1dffb5c56d46a4ad790041d5e6452b311ca53742a0c",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 98,
-          "outputSha256": "3fd8c8909632d71da749ce4578653ff1889f2eb75f7ce81925fbe2b3b0f87f00",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -25616,7 +25667,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -25662,16 +25713,7 @@
         ],
         "promotionPath": "tools/sustainability-metrology-lab/selftest.js",
         "sha256": "ac7fb3bd8558a824a1551493295fba06f9c38d79cc8f4b371d9695e3283a9dc9",
-        "result": {
-          "id": "sustainability-metrology-lab",
-          "path": "tools/sustainability-metrology-lab/selftest.js",
-          "selftestSha256": "ac7fb3bd8558a824a1551493295fba06f9c38d79cc8f4b371d9695e3283a9dc9",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 67,
-          "outputSha256": "55686e19cd7d3aa3f6fe7cadc1b56b750239c9f940a3e2eda3f5b6eec8aeec11",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -25681,7 +25723,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -25804,16 +25846,7 @@
         ],
         "promotionPath": "tools/technical-glasses/selftest.js",
         "sha256": "05d3597f410d8baa71e9595750bdec1041ea443d4e324977acdd591b3860d1cc",
-        "result": {
-          "id": "technical-glasses",
-          "path": "tools/technical-glasses/selftest.js",
-          "selftestSha256": "05d3597f410d8baa71e9595750bdec1041ea443d4e324977acdd591b3860d1cc",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 68,
-          "outputSha256": "893dc646f67924f406a1b83ce5568b321b7ee20cf19eea04005a5e04636398d9",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -25823,7 +25856,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -25871,16 +25904,7 @@
         ],
         "promotionPath": "tools/template-runtime-pack-engine/selftest.js",
         "sha256": "f40931ac9279924db906f8cda7986236923e6dce0f06ddd56fd59cdd16baacee",
-        "result": {
-          "id": "template-runtime-pack-engine",
-          "path": "tools/template-runtime-pack-engine/selftest.js",
-          "selftestSha256": "f40931ac9279924db906f8cda7986236923e6dce0f06ddd56fd59cdd16baacee",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 125,
-          "outputSha256": "f4e979f5ca3a526cb7dda63949165410329f36cc3f44b15f02f4728dc7585668",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -26013,16 +26037,7 @@
         ],
         "promotionPath": "tools/text-fabric/selftest.js",
         "sha256": "510e179dfbbe83346a28d5c42ce3248c51aa40c5e3c5a6595eb1e8c872e9dc23",
-        "result": {
-          "id": "text-fabric",
-          "path": "tools/text-fabric/selftest.js",
-          "selftestSha256": "510e179dfbbe83346a28d5c42ce3248c51aa40c5e3c5a6595eb1e8c872e9dc23",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 8404,
-          "outputSha256": "407283031e36c0621804bda6a90041bdafe2c41e295fda5daeeba7e1c128b7ac",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -26032,7 +26047,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -26141,16 +26156,7 @@
         ],
         "promotionPath": "tools/ui-fx/selftest.js",
         "sha256": "6ccb99338c1b4a83e1dbf1e0b72e880209ed25185e64ae4a0b8bad61b716d75a",
-        "result": {
-          "id": "ui-fx",
-          "path": "tools/ui-fx/selftest.js",
-          "selftestSha256": "6ccb99338c1b4a83e1dbf1e0b72e880209ed25185e64ae4a0b8bad61b716d75a",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 90,
-          "outputSha256": "d62a42d4cf01146c6bcc8ffb2383d7a4f24ba98bd50167c386315e7958f6fbda",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -26160,7 +26166,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -26207,16 +26213,7 @@
         ],
         "promotionPath": "tools/ui-ux-builder/selftest.js",
         "sha256": "d845e0a9ec82041560e227157a77e4590fe56ccf1735a2b90626a96fd7981bc3",
-        "result": {
-          "id": "ui-ux-builder",
-          "path": "tools/ui-ux-builder/selftest.js",
-          "selftestSha256": "d845e0a9ec82041560e227157a77e4590fe56ccf1735a2b90626a96fd7981bc3",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 83,
-          "outputSha256": "6ea1edd8c593aeb21a6b947eecf3aaccb033709360b6a5f989b07dae5ffa6d13",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -26226,7 +26223,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -26289,10 +26286,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "selftest result is stale for the current selftest digest"
-        ]
+        "state": "NEEDS_SELFTEST_RUN",
+        "blockers": []
       }
     },
     {
@@ -26464,16 +26459,7 @@
         ],
         "promotionPath": "tools/verification-entry-observatory/selftest.js",
         "sha256": "6058577910f88716c1add9b1328e8068add5a648dc2dd719a858a35cb444cb5e",
-        "result": {
-          "id": "verification-entry-observatory",
-          "path": "tools/verification-entry-observatory/selftest.js",
-          "selftestSha256": "6058577910f88716c1add9b1328e8068add5a648dc2dd719a858a35cb444cb5e",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 123,
-          "outputSha256": "e0d86271f574411852af8238e8886a0994aa7cd8c2cdab33595be0eca6191186",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -26483,7 +26469,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -26546,17 +26532,8 @@
           "tools/verification-proof-lab/selftest.js"
         ],
         "promotionPath": "tools/verification-proof-lab/selftest.js",
-        "sha256": "30b08f071ceb2e488bd7f2b6afffb99b98b7e05a4eee933c0855a431c63b3bfe",
-        "result": {
-          "id": "verification-proof-lab",
-          "path": "tools/verification-proof-lab/selftest.js",
-          "selftestSha256": "30b08f071ceb2e488bd7f2b6afffb99b98b7e05a4eee933c0855a431c63b3bfe",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 19030,
-          "outputSha256": "1c05094c176c9dc568a4fbc5eba4ca2cb9a330f03122d399d444ff3a1ef88222",
-          "failureTail": null
-        }
+        "sha256": "a57239fda583cb75c8bbd2f0c1973d7840ea5d092779c073d95da7f43f04f65c",
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -26566,7 +26543,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -26624,16 +26601,7 @@
         ],
         "promotionPath": "tools/verifier/selftest.js",
         "sha256": "acc9f2296bc13d7ac76f7a64e9a222b54c93fb329b0a3a9f1d678ee93465d41d",
-        "result": {
-          "id": "verifier",
-          "path": "tools/verifier/selftest.js",
-          "selftestSha256": "acc9f2296bc13d7ac76f7a64e9a222b54c93fb329b0a3a9f1d678ee93465d41d",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 88,
-          "outputSha256": "86ea09733b3cd653561941e8523685e6df47b45737380d0b04a99c46469dcb0d",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
@@ -26643,7 +26611,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -26875,16 +26843,7 @@
         ],
         "promotionPath": "tools/visual-mirror-platform-clone/selftest.js",
         "sha256": "ff8618ae16eea82a9a6453cdf979775f6d471652a99cd5affc59199f9adfd40d",
-        "result": {
-          "id": "visual-mirror-platform-clone",
-          "path": "tools/visual-mirror-platform-clone/selftest.js",
-          "selftestSha256": "ff8618ae16eea82a9a6453cdf979775f6d471652a99cd5affc59199f9adfd40d",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 486,
-          "outputSha256": "aedfbcb7929619ed47de4b4f43a7c6db7f11304d524ede4fe4cdf503e30c54c7",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -26894,7 +26853,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -26956,16 +26915,7 @@
         ],
         "promotionPath": "tools/visual-mold-foundry/selftest.js",
         "sha256": "b854ba47bac7953734bb12dd4b3205ba140bce2c138f2ea3d33e6cd21c57d9cb",
-        "result": {
-          "id": "visual-mold-foundry",
-          "path": "tools/visual-mold-foundry/selftest.js",
-          "selftestSha256": "b854ba47bac7953734bb12dd4b3205ba140bce2c138f2ea3d33e6cd21c57d9cb",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 187,
-          "outputSha256": "c510c3550331437a7cb36c3a0823dd8a121504693377c8869a679986bfcabe81",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -26975,7 +26925,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -27086,16 +27036,7 @@
         ],
         "promotionPath": "tools/workshop-census-observatory/selftest.js",
         "sha256": "ccc33d94eb32f8b124540b46c8870e887d127bac00bf4d9ad89c6b94212d5059",
-        "result": {
-          "id": "workshop-census-observatory",
-          "path": "tools/workshop-census-observatory/selftest.js",
-          "selftestSha256": "ccc33d94eb32f8b124540b46c8870e887d127bac00bf4d9ad89c6b94212d5059",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 6577,
-          "outputSha256": "2941e41c2daf03076a4e58158c5b0e4a290695938e6a236c68b002e47d9a2e32",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -27105,7 +27046,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -27183,16 +27124,7 @@
         ],
         "promotionPath": "tools/workshop-command-center/selftest.js",
         "sha256": "e63ab3503c96bab46c08ec9f6f1e41b9102e56294e1ad775287020ed9211bcbe",
-        "result": {
-          "id": "workshop-command-center",
-          "path": "tools/workshop-command-center/selftest.js",
-          "selftestSha256": "e63ab3503c96bab46c08ec9f6f1e41b9102e56294e1ad775287020ed9211bcbe",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 132,
-          "outputSha256": "96f36a1e332e9a3bd6cc6c7fc677f1218e8e19cf54247e1545d0b7cd4b5d3368",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -27202,7 +27134,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -27388,16 +27320,7 @@
         ],
         "promotionPath": "tools/workshop-packager/selftest.js",
         "sha256": "6aa0e5ca6cab2dd4c3c467cca036dd951559a92e6bc466ec45abcebe80142beb",
-        "result": {
-          "id": "workshop-packager",
-          "path": "tools/workshop-packager/selftest.js",
-          "selftestSha256": "6aa0e5ca6cab2dd4c3c467cca036dd951559a92e6bc466ec45abcebe80142beb",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 478,
-          "outputSha256": "8bde8a38a17eb491c855afec527074e9b32c1426ac5c8926dd9de881fb5e9773",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -27407,7 +27330,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -27462,26 +27385,17 @@
         ],
         "promotionPath": "tools/workshop-search-provenance/selftest.js",
         "sha256": "4a0c5c794af2d3e3237bf3661133a02f709b6d92934924e09ec85f7c8c4c6e2d",
-        "result": {
-          "id": "workshop-search-provenance",
-          "path": "tools/workshop-search-provenance/selftest.js",
-          "selftestSha256": "4a0c5c794af2d3e3237bf3661133a02f709b6d92934924e09ec85f7c8c4c6e2d",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 90,
-          "outputSha256": "3ede80362948b90af0a6521aefd84a383584084eb71ca36f49314eff50114b3c",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": false,
       "discoveryReview": false,
       "verifiedAt": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 10
+        "ageDays": 22
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -27537,16 +27451,7 @@
         ],
         "promotionPath": "tools/workshop-updater/selftest.js",
         "sha256": "a0fe75543a814af5b42fc9ac61ce4162df2d481ea6b8b227147b78f94ffefe2d",
-        "result": {
-          "id": "workshop-updater",
-          "path": "tools/workshop-updater/selftest.js",
-          "selftestSha256": "a0fe75543a814af5b42fc9ac61ce4162df2d481ea6b8b227147b78f94ffefe2d",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 123,
-          "outputSha256": "ad5198731789b4c898f5ba380da5b625dc0e47c5242451b4a502d3ab8574843b",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -27556,7 +27461,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -27673,16 +27578,7 @@
         ],
         "promotionPath": "tools/world-tile-foundry/selftest.js",
         "sha256": "9168ad3ef6070799c58b6edbbaf7cae313f9261c59da30b397261506accb4689",
-        "result": {
-          "id": "world-tile-foundry",
-          "path": "tools/world-tile-foundry/selftest.js",
-          "selftestSha256": "9168ad3ef6070799c58b6edbbaf7cae313f9261c59da30b397261506accb4689",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 174,
-          "outputSha256": "0fb9988f615145f3e20ff64f408cca112f58baa2776bb53abfa47b9ee1c9e891",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": true,
@@ -27692,7 +27588,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     }

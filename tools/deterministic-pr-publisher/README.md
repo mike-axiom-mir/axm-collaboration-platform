@@ -27,7 +27,7 @@ tools\deterministic-pr-publisher\pr-publisher-cli.cmd plan `
   --out D:\receipts\publish-plan.json
 ```
 
-After reviewing that exact plan, publish once:
+After reviewing that exact plan, publish the exact handoff:
 
 ```powershell
 tools\deterministic-pr-publisher\pr-publisher-cli.cmd publish `
@@ -40,6 +40,12 @@ tools\deterministic-pr-publisher\pr-publisher-cli.cmd publish `
   --confirmation "PUBLISH EXACT CHECKPOINTED PR HANDOFF" `
   --out D:\receipts\publish-receipt.json
 ```
+
+The confirmation text is an **exact static phrase**, not a generated or consumed nonce.
+It prevents accidental invocation but must not be described as one-use authorization.
+Every call must still rebuild the exact plan and pass receiver verification. The
+bounded Git push runs with repository-local Git hooks disabled, and the final
+receipt fails unless the pull request remains open **and draft**.
 
 The host must already provide authenticated `git` and `gh` commands. AXM does
 not read, accept, store, or print a token. Output is create-new and must remain

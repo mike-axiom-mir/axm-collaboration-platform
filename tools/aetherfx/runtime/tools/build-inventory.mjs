@@ -3,7 +3,7 @@ const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'); cons
 const generatedReports=new Set(['reports/INVENTORY.json','reports/INVENTORY.md','reports/SHA256SUMS.txt','reports/BUILD_SUMMARY.json']);
 const relativePath=file=>path.relative(ROOT,file).replaceAll('\\','/');
 function walk(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>excluded.has(e.name)?[]:e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);}
-const files=walk(ROOT).filter(file=>!generatedReports.has(relativePath(file)));
+const files=walk(ROOT).filter(file=>!generatedReports.has(relativePath(file))&&!relativePath(file).toLowerCase().endsWith('.log'));
 const rows=files.map(f=>{const b=fs.readFileSync(f);return{path:relativePath(f),bytes:b.length,sha256:crypto.createHash('sha256').update(b).digest('hex')}}).sort((a,b)=>a.path.localeCompare(b.path));
 const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'catalog/default-catalog.json'),'utf8')); const pkg=JSON.parse(fs.readFileSync(path.join(ROOT,'package.json'),'utf8')); const byKind=Object.fromEntries([...new Set(catalog.modules.map(m=>m.kind))].sort().map(k=>[k,catalog.modules.filter(m=>m.kind===k).length]));
 const inventory={schema:'axm.artifact-inventory/1',generated:new Date().toISOString(),version:pkg.version,fileCount:rows.length,totalBytes:rows.reduce((s,r)=>s+r.bytes,0),catalog:{modules:catalog.modules.length,moods:catalog.moods.length,byKind},files:rows};

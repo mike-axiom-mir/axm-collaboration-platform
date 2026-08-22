@@ -15,6 +15,63 @@ const server = fs.readFileSync(path.join(root, 'server.js'), 'utf8');
 assert.equal(manifest.id, contract.id);
 assert.equal(manifest.version, contract.version);
 assert.deepEqual(manifest.permissions, contract.permissions);
+const curatedIntakeRoot = path.join(root, 'intakes', 'verification-proof-99-v0.1');
+
+function testCommittedPublicProofSurfaces() {
+  const publicProofCatalog = service.publicProofBatch1Catalog();
+  assert.equal(publicProofCatalog.seed_count, 10);
+  assert.equal(publicProofCatalog.status, 'IMPLEMENTED_LOCAL_CONTRACT_SLICE');
+  assert.equal(publicProofCatalog.truth.runtime_proof, false);
+  const publicProofSuite = service.selftestPublicProofBatch1();
+  assert.equal(publicProofSuite.ok, true);
+  assert.equal(publicProofSuite.fixture_count, 40);
+  assert.equal(publicProofSuite.pass_count, 40);
+  assert.equal(publicProofSuite.fail_count, 0);
+  assert.equal(publicProofSuite.network_used, false);
+  assert.equal(publicProofSuite.canon, false);
+
+  const publicProofIntakeCatalog = service.publicProofIntakeCatalog();
+  assert.equal(publicProofIntakeCatalog.counts.seeds, 100);
+  assert.equal(publicProofIntakeCatalog.counts.eligible, 52);
+  assert.equal(publicProofIntakeCatalog.counts.held, 48);
+  const publicProofIntakeSuite = service.selftestPublicProofIntake();
+  assert.equal(publicProofIntakeSuite.ok, true);
+  assert.equal(publicProofIntakeSuite.contract_checks, 100);
+  assert.equal(publicProofIntakeSuite.eligible_fixture_checks, 154);
+  assert.equal(publicProofIntakeSuite.hold_refusal_checks, 48);
+  assert.equal(publicProofIntakeSuite.pass_count, 302);
+  assert.equal(publicProofIntakeSuite.fail_count, 0);
+  const heldSeed = publicProofIntakeCatalog.held[0];
+  const heldResult = service.validatePublicProofIntake(heldSeed.id, {});
+  assert.equal(heldResult.decision, 'HELD_RESEARCH_OR_DEPENDENCY');
+  assert.equal(heldResult.blocked, true);
+
+  const publicProofFixtureRoot = path.join(root, 'shared', 'verification-proof', 'public-proof-batch1', 'fixtures');
+  const publicProofFixture = name => JSON.parse(fs.readFileSync(path.join(publicProofFixtureRoot, 'demo-descriptor', name), 'utf8'));
+  const missingInput = publicProofFixture('valid.json');
+  delete missingInput.inputs.proof_ref;
+  assert.equal(service.validatePublicProofBatch1('axm.proof.demo-descriptor', missingInput).decision, 'BLOCK');
+  const authorityEscalation = publicProofFixture('valid.json');
+  authorityEscalation.authority.live_activation_allowed = true;
+  assert.equal(service.validatePublicProofBatch1('axm.proof.demo-descriptor', authorityEscalation).decision, 'BLOCK');
+  const privacyCanary = publicProofFixture('valid.json');
+  privacyCanary.privacy_canaries.push({ kind: 'synthetic_secret', value: 'AXM_SYNTHETIC_SECRET_CANARY_SELFTEST', synthetic: true });
+  assert.equal(service.validatePublicProofBatch1('axm.proof.demo-descriptor', privacyCanary).decision, 'QUARANTINE');
+  const brokenRollback = publicProofFixture('rollback.json');
+  brokenRollback.synthetic_transition.after_rollback.digest = 'sha256:not-restored';
+  assert.equal(service.validatePublicProofBatch1('axm.proof.demo-descriptor', brokenRollback).decision, 'BLOCK');
+  assert(server.includes('/api/verification-proof/catalog'));
+  assert(server.includes('/api/verification-proof/run'));
+}
+
+testCommittedPublicProofSurfaces();
+
+if (!fs.existsSync(path.join(curatedIntakeRoot, 'modules'))) {
+  assert.throws(() => service.catalog(), /curated verification intake is missing/);
+  console.log('verification proof lab selftest: PASS WITH TEST_HOLD (local-only 99-organ intake absent; 40 committed Batch 1 fixtures and 302 committed intake checks passed)');
+  process.exit(0);
+}
+
 const catalog = service.catalog();
 assert.equal(catalog.moduleCount, 99);
 assert.equal(catalog.apiExecutableCount, 91);
@@ -22,51 +79,9 @@ assert.equal(catalog.guardedCount, 8);
 assert.equal(catalog.sourceHeldCount, 1);
 assert.equal(catalog.canon, false);
 assert.equal(catalog.authority, 'NONE');
-const publicProofCatalog = service.publicProofBatch1Catalog();
-assert.equal(publicProofCatalog.seed_count, 10);
-assert.equal(publicProofCatalog.status, 'IMPLEMENTED_LOCAL_CONTRACT_SLICE');
-assert.equal(publicProofCatalog.truth.runtime_proof, false);
-const publicProofSuite = service.selftestPublicProofBatch1();
-assert.equal(publicProofSuite.ok, true);
-assert.equal(publicProofSuite.fixture_count, 40);
-assert.equal(publicProofSuite.pass_count, 40);
-assert.equal(publicProofSuite.fail_count, 0);
-assert.equal(publicProofSuite.network_used, false);
-assert.equal(publicProofSuite.canon, false);
-const publicProofIntakeCatalog = service.publicProofIntakeCatalog();
-assert.equal(publicProofIntakeCatalog.counts.seeds, 100);
-assert.equal(publicProofIntakeCatalog.counts.eligible, 52);
-assert.equal(publicProofIntakeCatalog.counts.held, 48);
-const publicProofIntakeSuite = service.selftestPublicProofIntake();
-assert.equal(publicProofIntakeSuite.ok, true);
-assert.equal(publicProofIntakeSuite.contract_checks, 100);
-assert.equal(publicProofIntakeSuite.eligible_fixture_checks, 154);
-assert.equal(publicProofIntakeSuite.hold_refusal_checks, 48);
-assert.equal(publicProofIntakeSuite.pass_count, 302);
-assert.equal(publicProofIntakeSuite.fail_count, 0);
-const heldSeed = publicProofIntakeCatalog.held[0];
-const heldResult = service.validatePublicProofIntake(heldSeed.id, {});
-assert.equal(heldResult.decision, 'HELD_RESEARCH_OR_DEPENDENCY');
-assert.equal(heldResult.blocked, true);
-const publicProofFixtureRoot = path.join(root, 'shared', 'verification-proof', 'public-proof-batch1', 'fixtures');
-const publicProofFixture = name => JSON.parse(fs.readFileSync(path.join(publicProofFixtureRoot, 'demo-descriptor', name), 'utf8'));
-const missingInput = publicProofFixture('valid.json');
-delete missingInput.inputs.proof_ref;
-assert.equal(service.validatePublicProofBatch1('axm.proof.demo-descriptor', missingInput).decision, 'BLOCK');
-const authorityEscalation = publicProofFixture('valid.json');
-authorityEscalation.authority.live_activation_allowed = true;
-assert.equal(service.validatePublicProofBatch1('axm.proof.demo-descriptor', authorityEscalation).decision, 'BLOCK');
-const privacyCanary = publicProofFixture('valid.json');
-privacyCanary.privacy_canaries.push({ kind: 'synthetic_secret', value: 'AXM_SYNTHETIC_SECRET_CANARY_SELFTEST', synthetic: true });
-assert.equal(service.validatePublicProofBatch1('axm.proof.demo-descriptor', privacyCanary).decision, 'QUARANTINE');
-const brokenRollback = publicProofFixture('rollback.json');
-brokenRollback.synthetic_transition.after_rollback.digest = 'sha256:not-restored';
-assert.equal(service.validatePublicProofBatch1('axm.proof.demo-descriptor', brokenRollback).decision, 'BLOCK');
-assert(server.includes('/api/verification-proof/catalog'));
-assert(server.includes('/api/verification-proof/run'));
 
 function pycCount() {
-  const start = path.join(root, 'intakes', 'verification-proof-99-v0.1');
+  const start = curatedIntakeRoot;
   const scan = directory => fs.readdirSync(directory, { withFileTypes: true }).reduce((count, entry) => {
     const full = path.join(directory, entry.name);
     return count + (entry.isDirectory() ? scan(full) : entry.name.endsWith('.pyc') ? 1 : 0);

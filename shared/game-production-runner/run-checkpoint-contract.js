@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const Codec = require('./canonical');
+const PlainFiles = require('./plain-file-io');
 const Contracts = require('./contracts');
 const StepReceipts = require('./step-receipt-contract');
 
@@ -98,23 +99,13 @@ function parseLedger(raw) {
 }
 
 function readBoundedFile(file) {
-  if (!fs.existsSync(file)) return Buffer.alloc(0);
-  const stat = fs.lstatSync(file);
-  if (!stat.isFile() || stat.isSymbolicLink()) fail('RUN_CHECKPOINT_LEDGER_NOT_PLAIN');
-  const buffer = Buffer.allocUnsafe(MAX_LEDGER_BYTES + 1);
-  const handle = fs.openSync(file, 'r');
-  let offset = 0;
   try {
-    const opened = fs.fstatSync(handle);
-    if (!opened.isFile()) fail('RUN_CHECKPOINT_LEDGER_NOT_PLAIN');
-    while (offset <= MAX_LEDGER_BYTES) {
-      const read = fs.readSync(handle, buffer, offset, buffer.length - offset, null);
-      if (read === 0) break;
-      offset += read;
-    }
-  } finally { fs.closeSync(handle); }
-  if (offset > MAX_LEDGER_BYTES) fail('RUN_CHECKPOINT_LEDGER_BYTE_LIMIT');
-  return buffer.subarray(0, offset);
+    const bytes = PlainFiles.read(file, { allowMissing:true, maxBytes:MAX_LEDGER_BYTES });
+    return bytes === null ? Buffer.alloc(0) : bytes;
+  } catch (error) {
+    if (/byte limit/i.test(error.message)) fail('RUN_CHECKPOINT_LEDGER_BYTE_LIMIT');
+    fail('RUN_CHECKPOINT_LEDGER_NOT_PLAIN');
+  }
 }
 
 function readFile(file) {
@@ -128,7 +119,12 @@ function appendFile(file, checkpoint) {
   const addition = Buffer.from(separator + JSON.stringify(checkpoint) + '\n', 'utf8');
   if (existing.length + addition.length > MAX_LEDGER_BYTES) fail('RUN_CHECKPOINT_LEDGER_BYTE_LIMIT');
   parseLedger(Buffer.concat([existing, addition]));
-  fs.appendFileSync(file, addition, { flag: 'a' });
+  try {
+    PlainFiles.appendAtomic(file, addition, { maxBytes:MAX_LEDGER_BYTES });
+  } catch (error) {
+    if (/byte limit/i.test(error.message)) fail('RUN_CHECKPOINT_LEDGER_BYTE_LIMIT');
+    fail('RUN_CHECKPOINT_LEDGER_NOT_PLAIN');
+  }
   return checkpoint;
 }
 
