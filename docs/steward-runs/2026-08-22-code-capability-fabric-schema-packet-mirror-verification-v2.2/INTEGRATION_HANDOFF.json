@@ -1,0 +1,76 @@
+{
+  "schema": "axm.code-capability-fabric-schema-packet-mirror-verification-integration-handoff/v1",
+  "observedAt": "2026-08-22T15:46:15.3326416Z",
+  "source": {
+    "branch": "codex/code-capability-fabric-mirror-verification-v2.2",
+    "implementationCommit": "aabc7f9d8fcd22e2e2b37ead41c8bb6d441a3efd",
+    "baseCommit": "0c60dd8ec209d5a43852c9a1f968476a4cf311d5",
+    "intakeCommit": "d9066284e45eaedb07d8e7998b7c6a972e67c0c1",
+    "registeredInCanonicalCommonGitDirectory": true,
+    "sourceCheckoutUnderActiveDrive": true,
+    "networkPushRequiredForLocalReview": false
+  },
+  "changedPaths": [
+    "shared/code-capability-fabric/README-schema-packet-mirror-verifier-v1.md",
+    "shared/code-capability-fabric/fabric-schema-packet-mirror-verification-receipt.schema.json",
+    "shared/code-capability-fabric/fabric-schema-packet-mirror-verification-request.schema.json",
+    "shared/code-capability-fabric/fabric-schema-packet-mirror-verifier-profile.schema.json",
+    "shared/code-capability-fabric/module-schema-packet-mirror-verifier-v1.contract.json",
+    "shared/code-capability-fabric/schema-packet-mirror-verifier-v1.js",
+    "shared/code-capability-fabric/selftest-schema-packet-mirror-verifier-v1.js",
+    "docs/steward-runs/2026-08-22-code-capability-fabric-schema-packet-mirror-verification-v2.2/"
+  ],
+  "observedCanonicalCheckout": {
+    "branch": "local-visual-fabric-20260728",
+    "head": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "dirty": true,
+    "trackedChangeEntries": 3599,
+    "untrackedEntriesExpanded": 9550,
+    "allStatusEntriesExpanded": 13149,
+    "taskRelevantStatusEntries": 0,
+    "sourceBranchRefRegistered": true,
+    "containsBaseCommit": false
+  },
+  "driftRecheck": {
+    "firstObservedHead": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "currentObservedHead": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "firstTrackedChangeEntries": 3599,
+    "currentTrackedChangeEntries": 3599,
+    "firstUntrackedEntriesExpanded": 9550,
+    "currentUntrackedEntriesExpanded": 9550,
+    "headChanged": false,
+    "busyStatusChanged": false,
+    "taskRelevantOverlapObserved": false,
+    "conclusion": "The canonical checkout remained busy and stable across the bounded recheck, had zero task-relevant status overlaps, did not contain the v2.1 base, and was unsuitable for in-place integration."
+  },
+  "targetAssumption": "Mike has not selected a final integration target. A clean target must contain or intentionally reconcile base 0c60dd8ec209d5a43852c9a1f968476a4cf311d5. The observed canonical checkout does not contain that base and must not be switched, overwritten, or merged in place.",
+  "exactReadOnlyReviewActionsFromCanonicalRepository": [
+    "git show --stat --oneline aabc7f9d8fcd22e2e2b37ead41c8bb6d441a3efd",
+    "git diff --check 0c60dd8ec209d5a43852c9a1f968476a4cf311d5...codex/code-capability-fabric-mirror-verification-v2.2",
+    "git diff --stat 0c60dd8ec209d5a43852c9a1f968476a4cf311d5...codex/code-capability-fabric-mirror-verification-v2.2",
+    "git diff 0c60dd8ec209d5a43852c9a1f968476a4cf311d5...codex/code-capability-fabric-mirror-verification-v2.2 -- shared/code-capability-fabric docs/steward-runs/2026-08-22-code-capability-fabric-schema-packet-mirror-verification-v2.2"
+  ],
+  "exactSafeReviewWorktreeCommandsFromCanonicalRepository": [
+    "git worktree add -b codex/review-code-capability-fabric-mirror-v2.2 ../workshop-code-capability-fabric-mirror-v2.2-review 0c60dd8ec209d5a43852c9a1f968476a4cf311d5",
+    "git -C ../workshop-code-capability-fabric-mirror-v2.2-review merge --ff-only codex/code-capability-fabric-mirror-verification-v2.2"
+  ],
+  "exactImplementationIntegrationCommandAfterCleanTargetAndAncestryChecks": "git merge --no-ff --no-commit codex/code-capability-fabric-mirror-verification-v2.2",
+  "safeIntegrationConditions": [
+    "Re-check the Mike-selected target HEAD and full worktree status immediately before integration.",
+    "Run git merge-base --is-ancestor 0c60dd8ec209d5a43852c9a1f968476a4cf311d5 HEAD; stop and review if it returns nonzero.",
+    "Use a new clean review worktree; never reuse the busy canonical checkout.",
+    "Inspect the seven implementation paths and append-only v2.2 receipt, rerun all required and focused checks, and let Mike decide whether to create the merge commit.",
+    "Do not push to GitHub or any remote as part of this local review route."
+  ],
+  "authority": {
+    "fourRootsTechnicalGateFirst": true,
+    "mergePerformed": false,
+    "pushPerformed": false,
+    "canonicalCheckoutModified": false,
+    "installed": false,
+    "published": false,
+    "promoted": false,
+    "canonChanged": false,
+    "humanGitGate": "Mike Tobi"
+  }
+}
