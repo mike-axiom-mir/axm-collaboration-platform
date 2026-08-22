@@ -1,7 +1,6 @@
 'use strict';
 
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const PACKET_SCHEMA = 'axm.grounded-growth-feedback-packet/v1';
 const VERSION = '0.1.0';
@@ -46,11 +45,11 @@ const TRUTH_STATES = ['OBSERVED', 'DECLARED', 'TESTED', 'REPRODUCED', 'INFERRED'
 const NEED_STATUSES = ['OPEN', 'TRIAGED', 'DIRECTION_CREATED', 'IN_PROGRESS', 'VERIFIED_RESOLVED', 'PARTIALLY_RESOLVED', 'REJECTED', 'OBSOLETE'];
 
 function clone(value) {
-  return JSON.parse(stableStringify(value));
+  return JSON.parse(JSON.stringify(value));
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  return Growth.stableStringify(value);
 }
 
 function sha256(value) {

@@ -22,6 +22,16 @@ import {
   pressureDynamicsDescription
 } from './pressure-dynamics.mjs';
 import {
+  MIN_NATIVE_LAYER_AIR_TEMPERATURE_C,
+  MAX_NATIVE_LAYER_AIR_TEMPERATURE_C,
+  phaseThermalEnvelopeDescription
+} from './phase-thermal-envelope.mjs';
+import {
+  ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA,
+  createAtmosphereBoundaryEnergyReceipt,
+  atmosphereBoundaryEnergyDescription
+} from './atmosphere-boundary-energy.mjs';
+import {
   ATMOSPHERE_PRESSURE_COLUMN_HORIZONTAL_LOCAL_SCHEMA,
   pressureHorizontalTransportDescription
 } from './pressure-transport.mjs';
@@ -32,11 +42,11 @@ import {
   computeSurfaceRadiation,
   surfaceAlbedo,
   surfaceRadiationDescription
-} from './surface-radiation.mjs';
+} from './surface-radiation.mjs?v=0.62.0-r62.1';
 import {
   ATMOSPHERE_CO2_RADIATIVE_COUPLING_SCHEMA,
   atmosphereCo2RadiationDescription
-} from './atmosphere-co2-radiation.mjs';
+} from './atmosphere-co2-radiation.mjs?v=0.62.0-r62.1';
 import {
   EARTH_LAND_ECOLOGY_SCHEMA,
   EARTH_LAND_ECOLOGY_FLUX_SCHEMA,
@@ -58,7 +68,9 @@ import {
 } from './ocean-ecology.mjs';
 import {
   DEEP_OCEAN_STATE_SCHEMA,
-  DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA
+  PREVIOUS_DEEP_OCEAN_STATE_SCHEMA,
+  DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA,
+  PREVIOUS_DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA
 } from './deep-ocean.mjs';
 import {
   ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
@@ -71,11 +83,11 @@ import {
   normalizeAtmosphereBiogeochemistry,
   reconcileAtmosphereBiosphereGases,
   synchronizeAtmosphereCompatibilityMirrors
-} from './atmosphere-biogeochemistry.mjs';
+} from './atmosphere-biogeochemistry.mjs?v=0.62.0-r62.1';
 import {
   atmosphereBiogeochemistryVerticalDescription,
   transportAtmosphereBiogeochemistryVertically
-} from './atmosphere-biogeochemistry-vertical.mjs';
+} from './atmosphere-biogeochemistry-vertical.mjs?v=0.62.0-r62.1';
 import {
   SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
   PREVIOUS_SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
@@ -117,6 +129,7 @@ export {
   ATMOSPHERE_ADJACENT_LAYER_EXCHANGE_SCHEMA,
   ATMOSPHERE_PRESSURE_INTERFACE_BUOYANCY_SCHEMA,
   ATMOSPHERE_PRECIPITATION_DESCENT_SCHEMA,
+  ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA,
   ATMOSPHERE_PRESSURE_COLUMN_HORIZONTAL_LOCAL_SCHEMA,
   EARTH_SURFACE_RADIATION_SCHEMA,
   PREVIOUS_EARTH_SURFACE_RADIATION_SCHEMA,
@@ -129,7 +142,9 @@ export {
   EARTH_OCEAN_ECOLOGY_RIVER_INPUT_SCHEMA,
   EARTH_OCEAN_ECOLOGY_RUNOFF_INPUT_SCHEMA,
   DEEP_OCEAN_STATE_SCHEMA,
+  PREVIOUS_DEEP_OCEAN_STATE_SCHEMA,
   DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA,
+  PREVIOUS_DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA,
   ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
   ATMOSPHERE_BIOGEOCHEMISTRY_LAYER_SCHEMA,
   ATMOSPHERE_BIOGEOCHEMISTRY_LAYER_COUNT,
@@ -146,15 +161,17 @@ export {
 };
 
 export const EARTH_SYSTEM_COLUMN_SCHEMA = 'axm.foundation-planet.earth-system-column/v1';
-export const EARTH_SYSTEM_ENGINE_SCHEMA = 'axm.foundation-planet.earth-system-engine/v26';
+export const EARTH_SYSTEM_ENGINE_SCHEMA = 'axm.foundation-planet.earth-system-engine/v31';
 export const PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA =
-  'axm.foundation-planet.earth-system-engine/v25';
+  'axm.foundation-planet.earth-system-engine/v30';
 export const EARTH_SYSTEM_FLUX_SCHEMA = 'axm.foundation-planet.earth-system-flux/v4';
+const COMPATIBLE_EARTH_TRANSPORT_RECEIPT_SCHEMA =
+  'axm.foundation-planet.earth-transport-step/v11';
 export const EARTH_CRYOSPHERE_PHASE_SCHEMA =
   'axm.foundation-planet.cryosphere-phase-receipt/v1';
-export const EARTH_ATMOSPHERE_PHASE_CHANGE_SCHEMA = 'axm.foundation-planet.atmosphere-phase-change-receipt/v2';
+export const EARTH_ATMOSPHERE_PHASE_CHANGE_SCHEMA = 'axm.foundation-planet.atmosphere-phase-change-receipt/v3';
 export const EARTH_ATMOSPHERE_VERTICAL_EXCHANGE_SCHEMA = 'axm.foundation-planet.atmosphere-vertical-exchange-receipt/v3';
-export const EARTH_FREE_TROPOSPHERE_PHASE_SCHEMA = 'axm.foundation-planet.free-troposphere-phase-receipt/v2';
+export const EARTH_FREE_TROPOSPHERE_PHASE_SCHEMA = 'axm.foundation-planet.free-troposphere-phase-receipt/v3';
 export const EARTH_FREE_TROPOSPHERE_SCHEMA = 'axm.foundation-planet.free-troposphere/v2';
 const EARTH_FREE_TROPOSPHERE_LEGACY_SCHEMA = 'axm.foundation-planet.free-troposphere/v1';
 
@@ -553,6 +570,7 @@ export function createEarthSystemColumn(lat, lon, sample, weather, options = {})
       lastFreeTropospherePhaseReceipt: null,
       lastVerticalExchangeReceipt: null,
       lastPressureColumnDynamicsReceipt: null,
+      lastBoundaryEnergyReceipt: null,
       lastPressureColumnHorizontalTransportReceipt: null,
       biogeochemistry: createAtmosphereBiogeochemistry()
     },
@@ -611,7 +629,11 @@ export function createEarthSystemColumn(lat, lon, sample, weather, options = {})
       },
       energy: { netSurfaceFluxWm2: 0, boundaryHeatFluxWm2: 0, storageChangeJm2: 0, residualJm2: 0 },
       atmosphereEnergy: {
-        initialMoistEnthalpyJm2: 0, boundaryMoistEnthalpyJm2: 0,
+        initialMoistEnthalpyJm2: 0,
+        requestedBoundaryMoistEnthalpyJm2: 0,
+        boundaryMoistEnthalpyJm2: 0,
+        boundaryNativeEnvelopeReconciliationJm2: 0,
+        boundaryEnergyReceipt: null,
         phaseChangeLatentHeatingJm2: 0, surfaceLatentInputJm2: 0,
         surfacePrecipitationPhaseEnthalpyJm2: 0,
         verticalMechanicalConversionJm2: 0,
@@ -653,9 +675,27 @@ export function createEarthSystemColumn(lat, lon, sample, weather, options = {})
       localOceanNitrogenBudgetClosed: !land,
       localOceanPhosphorusBudgetClosed: !land,
       localOceanOxygenFluxClosed: !land,
+      localOceanAlkalinityBudgetClosed: !land,
+      mixedLayerCarbonateDiagnostic: false,
+      mixedLayerCarbonateDiagnosticSolved: false,
+      mixedLayerCarbonateMassClosed: false,
+      mixedLayerCarbonateAlkalinityResidualClosed: false,
+      mixedLayerPHTotalResolved: false,
+      mixedLayerCarbonateSurfacePressureOnly: false,
+      carbonateInformedAirSeaCo2Exchange: false,
+      airSeaCo2FugacityCorrection: false,
+      airSeaCarbonExchangeTypedRefusal: false,
+      airSeaCarbonOwnerMoveMatchedProposal: false,
+      scientificAirSeaGasTransferVelocity: false,
+      measuredAirSeaPco2: false,
+      measuredOceanSkinTemperature: false,
+      deepOceanPHResolved: false,
+      carbonatePHFeedbackModeled: false,
       physicalOceanChemistryWithLifeOff: !land,
       persistentDeepOceanReservoirs: !land,
+      persistentDeepOceanAlkalinity: !land,
       mixedToDeepMaterialClosure: !land,
+      mixedToDeepAlkalinityClosure: !land,
       persistentAtmosphereBiogeochemistry: true,
       nativePressureLayerAtmosphericBiogeochemistry: true,
       atmosphereBiosphereGasLedgerClosed: true,
@@ -670,6 +710,7 @@ export function createEarthSystemColumn(lat, lon, sample, weather, options = {})
       typedRainSnowDescent: false,
       atmosphericPhaseChangeReceipted: true,
       moistEnthalpyBudgetClosed: true,
+      boundaryForcingEnergyReceipted: false,
       freeTroposphereReservoir: true,
       hydrostaticVerticalPressurePartition: true,
       verticalAtmosphereExchangeReceipted: false,
@@ -684,6 +725,9 @@ export function createEarthSystemColumn(lat, lon, sample, weather, options = {})
       pressureColumnHydrostaticInterfaces: true,
       nativePressureLevelThermodynamics: true,
       nativePressureLevelPhaseChangeReceipted: false,
+      nativePhaseChangesBoundedByThermalHeadroom: false,
+      nativeLayerTemperaturesWithinDeclaredEnvelope: true,
+      postMaterialTemperatureClipRequired: false,
       nativePrecipitationDescentReceipted: false,
       nativeAdjacentLevelExchangeReceipted: false,
       nativePressureLevelWaterClosed: true,
@@ -729,6 +773,23 @@ export function createEarthSystemColumn(lat, lon, sample, weather, options = {})
     if (column.ocean.ecology && options.livingEnabled === false) {
       column.ocean.ecology.physiology.active = false;
     }
+    column.truth.mixedLayerCarbonateDiagnostic =
+      column.ocean.ecology?.carbonateSystem?.truth?.diagnosticOnly === true &&
+      column.ocean.ecology.carbonateSystem.truth?.mutatesMaterial === false;
+    column.truth.mixedLayerCarbonateDiagnosticSolved =
+      column.ocean.ecology?.carbonateSystem?.status === 'SOLVED';
+    column.truth.mixedLayerCarbonateMassClosed =
+      column.ocean.ecology?.carbonateSystem?.truth?.carbonateMassClosed === true;
+    column.truth.mixedLayerCarbonateAlkalinityResidualClosed =
+      column.ocean.ecology?.carbonateSystem?.truth
+        ?.alkalinityResidualClosed === true;
+    column.truth.mixedLayerPHTotalResolved = Number.isFinite(Number(
+      column.ocean.ecology?.carbonateSystem?.solution?.pHTotal));
+    column.truth.mixedLayerCarbonateSurfacePressureOnly =
+      column.ocean.ecology?.carbonateSystem?.truth?.surfacePressureOnly === true;
+    column.truth.scientificAirSeaGasTransferVelocity = false;
+    column.truth.measuredAirSeaPco2 = false;
+    column.truth.measuredOceanSkinTemperature = false;
     column.ocean.heatContentJm2 = round(
       column.ocean.mixedLayerTemperatureC * WATER_HEAT_CAPACITY_J_M3_K *
         column.ocean.mixedLayerDepthM,
@@ -1496,7 +1557,12 @@ function atmosphereEnergyBudget(
   ) * PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG;
   return {
     initialMoistEnthalpyJm2: waterContext.initialMoistEnthalpyJm2,
+    requestedBoundaryMoistEnthalpyJm2:
+      waterContext.requestedBoundaryMoistEnthalpyJm2,
     boundaryMoistEnthalpyJm2: waterContext.boundaryMoistEnthalpyJm2,
+    boundaryNativeEnvelopeReconciliationJm2:
+      waterContext.boundaryNativeEnvelopeReconciliationJm2,
+    boundaryEnergyReceipt: clone(waterContext.boundaryEnergyReceipt),
     phaseChangeLatentHeatingJm2: phaseChange.latentHeatingJm2 + freePhaseChange.latentHeatingJm2,
     surfaceLatentInputJm2,
     surfacePrecipitationPhaseEnthalpyJm2,
@@ -2072,6 +2138,7 @@ function advanceOcean(column, weather, sample, dtDays, options, waterContext) {
     temperatureC: column.ocean.mixedLayerTemperatureC,
     salinityPsu: column.ocean.salinityPsu,
     mixedLayerDepthM: column.ocean.mixedLayerDepthM,
+    surfacePressureHpa: column.atmosphere.surfacePressureHpa,
     seaIceFraction: column.cryosphere.seaIceFraction,
     windSpeedMps: finite(weather?.windSpeedMps)
   }, dtDays, {
@@ -2176,21 +2243,38 @@ export function advanceEarthSystemColumn(source, weather, sample, dtDays, option
   const duration = finite(dtDays);
   if (!(duration > 0) || duration > 1.000001) throw new Error('Earth-system step must be greater than zero and no longer than one day');
   const column = clone(source);
-  reconcilePressureColumnWithLegacy(column, { reason: 'compatibility-projection-input' });
+  const compatibilityInputSyncReceipt = reconcilePressureColumnWithLegacy(
+    column,
+    { reason: 'compatibility-projection-input' }
+  );
   syncAtmosphericHumidity(column);
   syncFreeTroposphereHumidity(column);
   const initialStorageMm = earthSystemWaterStorageMm(column);
   const atmosphereUpdate = updateAtmosphere(column, weather, duration);
-  reconcilePressureColumnWithLegacy(column, {
+  const atmosphericBoundarySyncReceipt = reconcilePressureColumnWithLegacy(column, {
     reason: 'atmospheric-boundary-forcing'
   });
+  const boundaryEnergyReceipt = createAtmosphereBoundaryEnergyReceipt({
+    atmosphereUpdate,
+    compatibilityInputSyncReceipt,
+    atmosphericBoundarySyncReceipt,
+    pressureColumn: column.atmosphere.pressureColumn
+  });
+  column.atmosphere.lastBoundaryEnergyReceipt = boundaryEnergyReceipt;
   const waterContext = {
     initialStorageMm,
     initialAtmosphereWaterMm: atmosphereUpdate.initialWaterMm,
     afterBoundaryAtmosphereWaterMm: atmosphereUpdate.afterBoundaryWaterMm,
     boundaryMoistureMm: atmosphereUpdate.boundaryMoistureMm,
-    initialMoistEnthalpyJm2: atmosphereUpdate.initialMoistEnthalpyJm2,
-    boundaryMoistEnthalpyJm2: atmosphereUpdate.boundaryMoistEnthalpyJm2
+    initialMoistEnthalpyJm2:
+      boundaryEnergyReceipt.nativeInitialMoistEnthalpyJm2,
+    requestedBoundaryMoistEnthalpyJm2:
+      boundaryEnergyReceipt.requestedBoundaryMoistEnthalpyJm2,
+    boundaryMoistEnthalpyJm2:
+      boundaryEnergyReceipt.appliedBoundaryMoistEnthalpyJm2,
+    boundaryNativeEnvelopeReconciliationJm2:
+      boundaryEnergyReceipt.nativeEnvelopeReconciliationJm2,
+    boundaryEnergyReceipt
   };
   column.atmosphere.biogeochemistry =
     synchronizeAtmosphereCompatibilityMirrors(
@@ -2275,6 +2359,7 @@ export function advanceEarthSystemColumn(source, weather, sample, dtDays, option
     lastFreeTropospherePhaseReceipt: clone(result.freePhaseChange),
     lastVerticalExchangeReceipt: clone(result.verticalExchange),
     lastPressureColumnDynamicsReceipt: clone(result.pressureDynamics),
+    lastBoundaryEnergyReceipt: clone(boundaryEnergyReceipt),
     lastPressureColumnSyncReceipt: clone(pressureColumnSyncReceipt)
   };
   const preciseLandEcology = column.kind === 'land' && column.land?.ecology
@@ -2404,6 +2489,40 @@ export function advanceEarthSystemColumn(source, weather, sample, dtDays, option
     ? result.oceanEcology?.truth?.oxygenFluxClosed === true &&
       Math.abs(finite(result.oceanEcology?.oxygen?.residualKgO2m2)) < 1e-8
     : false;
+  column.truth.localOceanAlkalinityBudgetClosed = column.kind === 'ocean'
+    ? result.oceanEcology?.truth?.alkalinityClosed === true &&
+      Math.abs(finite(result.oceanEcology?.alkalinity
+        ?.residualKgCaCO3Eqm2)) < 1e-8
+    : false;
+  column.truth.mixedLayerCarbonateDiagnostic = column.kind === 'ocean' &&
+    column.ocean.ecology?.carbonateSystem?.truth?.diagnosticOnly === true &&
+    column.ocean.ecology.carbonateSystem.truth?.mutatesMaterial === false;
+  column.truth.mixedLayerCarbonateDiagnosticSolved = column.kind === 'ocean' &&
+    column.ocean.ecology?.carbonateSystem?.status === 'SOLVED';
+  column.truth.mixedLayerCarbonateMassClosed = column.kind === 'ocean' &&
+    column.ocean.ecology?.carbonateSystem?.truth?.carbonateMassClosed === true;
+  column.truth.mixedLayerCarbonateAlkalinityResidualClosed =
+    column.kind === 'ocean' && column.ocean.ecology?.carbonateSystem?.truth
+      ?.alkalinityResidualClosed === true;
+  column.truth.mixedLayerPHTotalResolved = column.kind === 'ocean' &&
+    Number.isFinite(Number(column.ocean.ecology?.carbonateSystem?.solution
+      ?.pHTotal));
+  column.truth.mixedLayerCarbonateSurfacePressureOnly =
+    column.kind === 'ocean' && column.ocean.ecology?.carbonateSystem?.truth
+      ?.surfacePressureOnly === true;
+  column.truth.carbonateInformedAirSeaCo2Exchange = column.kind === 'ocean' &&
+    result.oceanEcology?.truth?.carbonateInformedAirSeaCo2Exchange === true;
+  column.truth.airSeaCo2FugacityCorrection = column.kind === 'ocean' &&
+    result.oceanEcology?.truth?.airSeaCo2FugacityCorrection === true;
+  column.truth.airSeaCarbonExchangeTypedRefusal = column.kind === 'ocean' &&
+    result.oceanEcology?.truth?.airSeaCarbonExchangeTypedRefusal === true;
+  column.truth.airSeaCarbonOwnerMoveMatchedProposal = column.kind === 'ocean' &&
+    result.oceanEcology?.truth?.airSeaCarbonOwnerMoveMatchedProposal === true;
+  column.truth.scientificAirSeaGasTransferVelocity = false;
+  column.truth.measuredAirSeaPco2 = false;
+  column.truth.measuredOceanSkinTemperature = false;
+  column.truth.deepOceanPHResolved = false;
+  column.truth.carbonatePHFeedbackModeled = false;
   column.truth.physicalOceanChemistryWithLifeOff = column.kind === 'ocean'
     ? result.oceanEcology?.truth?.physicalGasExchangeActive === true
     : false;
@@ -2430,6 +2549,10 @@ export function advanceEarthSystemColumn(source, weather, sample, dtDays, option
     column.atmosphere.biogeochemistry.truth?.horizontallyTransported === true;
   column.truth.persistentDeepOceanReservoirs = column.kind === 'ocean' &&
     result.oceanEcology?.truth?.persistentDeepOceanReservoirs === true;
+  column.truth.persistentDeepOceanAlkalinity = column.kind === 'ocean' &&
+    result.oceanEcology?.truth?.persistentDeepOceanAlkalinity === true;
+  column.truth.mixedToDeepAlkalinityClosure = column.kind === 'ocean' &&
+    result.oceanEcology?.truth?.mixedToDeepAlkalinityClosed === true;
   column.truth.mixedToDeepMaterialClosure = column.kind === 'ocean' &&
     result.oceanEcology?.truth?.mixedToDeepMaterialClosure === true;
   column.truth.vegetationAlbedoCoupled = column.kind === 'land'
@@ -2473,6 +2596,14 @@ export function advanceEarthSystemColumn(source, weather, sample, dtDays, option
   column.truth.nativePressureLevelPhaseChangeReceipted =
     result.pressureDynamics.schema === ATMOSPHERE_PRESSURE_COLUMN_DYNAMICS_SCHEMA &&
     result.pressureDynamics.truth.nativeLayerSaturationAndPhaseChange === true;
+  column.truth.nativePhaseChangesBoundedByThermalHeadroom =
+    result.pressureDynamics.truth
+      .nativePhaseChangesBoundedByThermalHeadroom === true;
+  column.truth.nativeLayerTemperaturesWithinDeclaredEnvelope =
+    result.pressureDynamics.truth
+      .nativeLayerTemperaturesWithinDeclaredEnvelope === true;
+  column.truth.postMaterialTemperatureClipRequired =
+    result.pressureDynamics.truth.postMaterialTemperatureClipRequired === true;
   column.truth.nativePrecipitationDescentReceipted =
     result.pressureDynamics.truth.precipitationDescentAcrossNativeInterfaces === true;
   column.truth.nativeAdjacentLevelExchangeReceipted =
@@ -2543,6 +2674,9 @@ export function advanceEarthSystemColumn(source, weather, sample, dtDays, option
   column.truth.parameterizedLandRunoffChemistryBoundary = false;
   column.truth.energyBudgetClosed = Math.abs(column.budget.energy.residualJm2) < 1;
   column.truth.moistEnthalpyBudgetClosed = Math.abs(column.budget.atmosphereEnergy.residualJm2) < 1;
+  column.truth.boundaryForcingEnergyReceipted =
+    boundaryEnergyReceipt.schema === ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA &&
+    boundaryEnergyReceipt.truth?.ledgerClosed === true;
   return column;
 }
 
@@ -2552,8 +2686,18 @@ function validateRestoredColumn(column) {
     column.surface && column.atmosphere && column.cryosphere && column.truth?.canonicalSparseCell === true;
 }
 
-function normalizeRestoredColumn(source) {
+function normalizeRestoredColumn(source, options = {}) {
   const column = clone(source);
+  const sourceEngineSchema = String(options.sourceEngineSchema ||
+    EARTH_SYSTEM_ENGINE_SCHEMA);
+  const migratingThermalEnvelopeReceipts =
+    column.atmosphere?.lastPressureColumnDynamicsReceipt &&
+      column.atmosphere.lastPressureColumnDynamicsReceipt.schema !==
+        ATMOSPHERE_PRESSURE_COLUMN_DYNAMICS_SCHEMA;
+  const migratingBoundaryEnergyReceipt =
+    sourceEngineSchema !== EARTH_SYSTEM_ENGINE_SCHEMA;
+  const migratingAtmosphereEnergyReceipts =
+    migratingThermalEnvelopeReceipts || migratingBoundaryEnergyReceipt;
   column.surface.baseElevationM = finite(column.surface.baseElevationM,
     finite(column.surface.elevationM));
   column.surface.geomorphicElevationAdjustmentM = finite(
@@ -2656,7 +2800,10 @@ function normalizeRestoredColumn(source) {
     column.budget = column.budget || {};
     column.budget.atmosphereEnergy = {
       initialMoistEnthalpyJm2: migratedMoistEnthalpyJm2,
+      requestedBoundaryMoistEnthalpyJm2: 0,
       boundaryMoistEnthalpyJm2: 0,
+      boundaryNativeEnvelopeReconciliationJm2: 0,
+      boundaryEnergyReceipt: null,
       phaseChangeLatentHeatingJm2: 0,
       surfaceLatentInputJm2: 0,
       surfacePrecipitationPhaseEnthalpyJm2: 0,
@@ -2775,6 +2922,17 @@ function normalizeRestoredColumn(source) {
   column.budget.atmosphereBiogeochemistryVertical =
     column.atmosphere.biogeochemistry.lastVerticalTransportReceipt || null;
   if (column.budget.atmosphereEnergy) {
+    column.budget.atmosphereEnergy.requestedBoundaryMoistEnthalpyJm2 = finite(
+      column.budget.atmosphereEnergy.requestedBoundaryMoistEnthalpyJm2,
+      column.budget.atmosphereEnergy.boundaryMoistEnthalpyJm2
+    );
+    column.budget.atmosphereEnergy.boundaryNativeEnvelopeReconciliationJm2 =
+      finite(column.budget.atmosphereEnergy
+        .boundaryNativeEnvelopeReconciliationJm2);
+    column.budget.atmosphereEnergy.boundaryEnergyReceipt =
+      column.budget.atmosphereEnergy.boundaryEnergyReceipt?.schema ===
+        ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA
+        ? column.budget.atmosphereEnergy.boundaryEnergyReceipt : null;
     column.budget.atmosphereEnergy.verticalMechanicalConversionJm2 = finite(
       column.budget.atmosphereEnergy.verticalMechanicalConversionJm2
     );
@@ -2824,9 +2982,44 @@ function normalizeRestoredColumn(source) {
   column.atmosphere.verticalVelocityProxyMps =
     column.atmosphere.pressureColumn.verticalInterfaces.reduce((maximum, entry) =>
       Math.max(maximum, finite(entry.updraftVelocityMps)), 0);
+  column.atmosphere.lastBoundaryEnergyReceipt =
+    column.atmosphere.lastBoundaryEnergyReceipt?.schema ===
+      ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA
+      ? column.atmosphere.lastBoundaryEnergyReceipt : null;
   if (!hadValidPressureColumn) {
     syncAtmosphericHumidity(column);
     syncFreeTroposphereHumidity(column);
+  }
+  if (migratingAtmosphereEnergyReceipts) {
+    const currentMoistEnthalpyJm2 = atmosphereMoistEnthalpyJm2(column);
+    if (migratingThermalEnvelopeReceipts) {
+      column.atmosphere.lastPhaseChangeReceipt = null;
+      column.atmosphere.lastFreeTropospherePhaseReceipt = null;
+      column.atmosphere.lastPressureColumnDynamicsReceipt = null;
+    }
+    if (migratingBoundaryEnergyReceipt) {
+      column.atmosphere.lastBoundaryEnergyReceipt = null;
+    }
+    column.budget.atmosphereEnergy = {
+      initialMoistEnthalpyJm2: currentMoistEnthalpyJm2,
+      requestedBoundaryMoistEnthalpyJm2: 0,
+      boundaryMoistEnthalpyJm2: 0,
+      boundaryNativeEnvelopeReconciliationJm2: 0,
+      boundaryEnergyReceipt: null,
+      phaseChangeLatentHeatingJm2: 0,
+      surfaceLatentInputJm2: 0,
+      surfacePrecipitationPhaseEnthalpyJm2: 0,
+      verticalMechanicalConversionJm2: 0,
+      nativeMomentumMixingConversionJm2: 0,
+      finalMoistEnthalpyJm2: currentMoistEnthalpyJm2,
+      residualJm2: 0,
+      migrationCheckpoint: true,
+      legacyPhaseReceiptDiscarded: Boolean(migratingThermalEnvelopeReceipts),
+      legacyBoundaryEnergyReceiptDiscarded: Boolean(
+        migratingBoundaryEnergyReceipt
+      ),
+      sourceEngineSchema
+    };
   }
   column.routing = {
     runoffQueueMm: Math.max(0, finite(column.routing?.runoffQueueMm)),
@@ -2889,6 +3082,42 @@ function normalizeRestoredColumn(source) {
   column.truth.localOceanOxygenFluxClosed = column.kind === 'ocean' &&
     (!column.ocean.ecology.lastFluxReceipt ||
       Math.abs(finite(column.ocean.ecology.lastFluxReceipt.oxygen?.residualKgO2m2)) < 1e-8);
+  column.truth.localOceanAlkalinityBudgetClosed = column.kind === 'ocean' &&
+    (!column.ocean.ecology.lastFluxReceipt ||
+      Math.abs(finite(column.ocean.ecology.lastFluxReceipt.alkalinity
+        ?.residualKgCaCO3Eqm2)) < 1e-8);
+  column.truth.mixedLayerCarbonateDiagnostic = column.kind === 'ocean' &&
+    column.ocean.ecology?.carbonateSystem?.truth?.diagnosticOnly === true &&
+    column.ocean.ecology.carbonateSystem.truth?.mutatesMaterial === false;
+  column.truth.mixedLayerCarbonateDiagnosticSolved = column.kind === 'ocean' &&
+    column.ocean.ecology?.carbonateSystem?.status === 'SOLVED';
+  column.truth.mixedLayerCarbonateMassClosed = column.kind === 'ocean' &&
+    column.ocean.ecology?.carbonateSystem?.truth?.carbonateMassClosed === true;
+  column.truth.mixedLayerCarbonateAlkalinityResidualClosed =
+    column.kind === 'ocean' && column.ocean.ecology?.carbonateSystem?.truth
+      ?.alkalinityResidualClosed === true;
+  column.truth.mixedLayerPHTotalResolved = column.kind === 'ocean' &&
+    Number.isFinite(Number(column.ocean.ecology?.carbonateSystem?.solution
+      ?.pHTotal));
+  column.truth.mixedLayerCarbonateSurfacePressureOnly =
+    column.kind === 'ocean' && column.ocean.ecology?.carbonateSystem?.truth
+      ?.surfacePressureOnly === true;
+  const restoredAirSeaExchange = column.ocean?.ecology?.lastFluxReceipt
+    ?.carbon?.airSeaCarbonExchange;
+  column.truth.carbonateInformedAirSeaCo2Exchange = column.kind === 'ocean' &&
+    restoredAirSeaExchange?.status?.startsWith('SOLVED_') === true;
+  column.truth.airSeaCo2FugacityCorrection = column.kind === 'ocean' &&
+    restoredAirSeaExchange?.truth?.fugacityNonidealityIncluded === true;
+  column.truth.airSeaCarbonExchangeTypedRefusal = column.kind === 'ocean' &&
+    Boolean(restoredAirSeaExchange) &&
+    restoredAirSeaExchange.status?.startsWith('SOLVED_') !== true;
+  column.truth.airSeaCarbonOwnerMoveMatchedProposal = column.kind === 'ocean' &&
+    restoredAirSeaExchange?.application?.proposalMatched === true;
+  column.truth.scientificAirSeaGasTransferVelocity = false;
+  column.truth.measuredAirSeaPco2 = false;
+  column.truth.measuredOceanSkinTemperature = false;
+  column.truth.deepOceanPHResolved = false;
+  column.truth.carbonatePHFeedbackModeled = false;
   column.truth.physicalOceanChemistryWithLifeOff = column.kind === 'ocean';
   column.truth.persistentAtmosphereBiogeochemistry =
     column.atmosphere.biogeochemistry?.schema ===
@@ -2916,6 +3145,15 @@ function normalizeRestoredColumn(source) {
   column.truth.persistentDeepOceanReservoirs = column.kind === 'ocean' &&
     column.ocean?.ecology?.deepOcean?.schema ===
       DEEP_OCEAN_STATE_SCHEMA;
+  column.truth.persistentDeepOceanAlkalinity = column.kind === 'ocean' &&
+    Number.isFinite(Number(column.ocean?.ecology?.deepOcean?.alkalinity
+      ?.dissolvedKgCaCO3Eqm2)) &&
+    Number(column.ocean.ecology.deepOcean.alkalinity
+      .dissolvedKgCaCO3Eqm2) >= 0;
+  column.truth.mixedToDeepAlkalinityClosure = column.kind === 'ocean' &&
+    (!column.ocean.ecology.lastFluxReceipt ||
+      column.ocean.ecology.lastFluxReceipt.truth
+        ?.mixedToDeepAlkalinityClosed === true);
   column.truth.mixedToDeepMaterialClosure = column.kind === 'ocean' &&
     (!column.ocean.ecology.lastFluxReceipt ||
       column.ocean.ecology.lastFluxReceipt.truth?.mixedToDeepMaterialClosure === true);
@@ -2958,6 +3196,21 @@ function normalizeRestoredColumn(source) {
   column.truth.nativePressureLevelThermodynamics = true;
   column.truth.nativePressureLevelPhaseChangeReceipted =
     nativePressureDynamics?.truth?.nativeLayerSaturationAndPhaseChange === true;
+  column.truth.nativePhaseChangesBoundedByThermalHeadroom =
+    nativePressureDynamics?.truth
+      ?.nativePhaseChangesBoundedByThermalHeadroom === true;
+  column.truth.nativeLayerTemperaturesWithinDeclaredEnvelope =
+    nativePressureDynamics
+      ? nativePressureDynamics.truth
+          ?.nativeLayerTemperaturesWithinDeclaredEnvelope === true
+      : validatePressureColumn(column.atmosphere.pressureColumn) &&
+        column.atmosphere.pressureColumn.layers.every(layer =>
+          layer.airTemperatureC >=
+            MIN_NATIVE_LAYER_AIR_TEMPERATURE_C - 1e-9 &&
+          layer.airTemperatureC <=
+            MAX_NATIVE_LAYER_AIR_TEMPERATURE_C + 1e-9);
+  column.truth.postMaterialTemperatureClipRequired =
+    nativePressureDynamics?.truth?.postMaterialTemperatureClipRequired === true;
   column.truth.nativePrecipitationDescentReceipted =
     nativePressureDynamics?.truth?.precipitationDescentAcrossNativeInterfaces === true;
   column.truth.nativeAdjacentLevelExchangeReceipted =
@@ -3000,6 +3253,10 @@ function normalizeRestoredColumn(source) {
   column.truth.moistEnthalpyBudgetClosed = column.budget?.atmosphereEnergy
     ? Math.abs(finite(column.budget.atmosphereEnergy.residualJm2)) < 1
     : true;
+  column.truth.boundaryForcingEnergyReceipted =
+    column.atmosphere.lastBoundaryEnergyReceipt?.schema ===
+      ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA &&
+    column.atmosphere.lastBoundaryEnergyReceipt.truth?.ledgerClosed === true;
   column.truth.vectorAtmosphericMomentum = true;
   column.truth.independentLayerAtmosphericMomentum = true;
   column.truth.conservativeNeighborAtmosphereMomentumReady = true;
@@ -3162,6 +3419,11 @@ export class EarthSystemEngine {
     if (!state || ![
       EARTH_SYSTEM_ENGINE_SCHEMA,
       PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA,
+      'axm.foundation-planet.earth-system-engine/v29',
+      'axm.foundation-planet.earth-system-engine/v28',
+      'axm.foundation-planet.earth-system-engine/v27',
+      'axm.foundation-planet.earth-system-engine/v26',
+      'axm.foundation-planet.earth-system-engine/v25',
       'axm.foundation-planet.earth-system-engine/v23',
       'axm.foundation-planet.earth-system-engine/v22',
       'axm.foundation-planet.earth-system-engine/v21',
@@ -3190,15 +3452,21 @@ export class EarthSystemEngine {
     for (const entry of state.columns.slice(-this.maximumColumns)) {
       if (!entry || typeof entry.key !== 'string' || !validateRestoredColumn(entry.column)) continue;
       if (entry.column.seed !== this.seed) continue;
-      restored.push([entry.key, normalizeRestoredColumn(entry.column)]);
+      restored.push([entry.key, normalizeRestoredColumn(entry.column, {
+        sourceEngineSchema: state.schema
+      })]);
     }
     this.columns = new Map(restored);
     this.transportDays = new Map((Array.isArray(state.transportDays) ? state.transportDays : [])
       .filter(entry => CONDITION_PROFILES[entry?.profileId] && Number.isFinite(entry?.day))
       .map(entry => [entry.profileId, round(entry.day, 8)]));
-    this.transportReceipts = new Map((state.schema === EARTH_SYSTEM_ENGINE_SCHEMA &&
+    this.transportReceipts = new Map(([
+      EARTH_SYSTEM_ENGINE_SCHEMA,
+      PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA
+    ].includes(state.schema) &&
       Array.isArray(state.transportReceipts) ? state.transportReceipts : [])
-      .filter(entry => CONDITION_PROFILES[entry?.profileId] && entry?.receipt)
+      .filter(entry => CONDITION_PROFILES[entry?.profileId] &&
+        entry?.receipt?.schema === COMPATIBLE_EARTH_TRANSPORT_RECEIPT_SCHEMA)
       .map(entry => [entry.profileId, clone(entry.receipt)]));
     return true;
   }
@@ -3230,6 +3498,8 @@ export function earthSystemDescription() {
     cryospherePhaseReceiptSchema: EARTH_CRYOSPHERE_PHASE_SCHEMA,
     pressureColumn: pressureColumnDescription(),
     pressureDynamics: pressureDynamicsDescription(),
+    phaseThermalEnvelope: phaseThermalEnvelopeDescription(),
+    atmosphereBoundaryEnergy: atmosphereBoundaryEnergyDescription(),
     pressureHorizontalTransport: pressureHorizontalTransportDescription(),
     surfaceRadiation: surfaceRadiationDescription(),
     atmosphereCo2Radiation: atmosphereCo2RadiationDescription(),
@@ -3240,8 +3510,8 @@ export function earthSystemDescription() {
     atmosphereBiogeochemistry: atmosphereBiogeochemistryDescription(),
     atmosphereBiogeochemistryVertical:
       atmosphereBiogeochemistryVerticalDescription(),
-    reservoirs: ['surface-pressure-dry-air-mass', 'eight-level-pressure-coordinate-dry-air-water-heat-and-momentum', 'eight-native-cloud-liquid-reservoirs', 'eight-native-cloud-ice-reservoirs', 'seven-native-pressure-interface-convective-kinetic-energy-reservoirs', 'boundary-layer-dry-air-compatibility-projection', 'free-troposphere-dry-air-compatibility-projection', 'independent-boundary-layer-eastward-and-northward-momentum', 'independent-free-troposphere-eastward-and-northward-momentum', 'column-convective-kinetic-energy-projection', 'local-atmosphere-carbon-dioxide-carbon', 'local-atmosphere-oxygen', 'local-atmosphere-nitrogen-gas', 'aged-land-snow', 'snow-on-sea-ice', 'surface-water', 'root-zone', 'deep-soil', 'groundwater', 'land-ecology-atmospheric-carbon-compatibility-mirror', 'live-biomass-carbon-and-nitrogen', 'litter-carbon-and-nitrogen', 'soil-organic-carbon-and-nitrogen', 'mineral-nitrogen', 'finite-dissolved-soil-water-carbon-nitrogen-phosphorus-oxygen-and-alkalinity', 'finite-clay-silt-sand-and-gravel-surface-sediment', 'runoff-routing-queue', 'persistent-runoff-biogeochemistry-and-alkalinity-queue', 'persistent-runoff-sediment-queue', 'external-persistent-river-reach-storage', 'persistent-coastal-suspended-and-deposited-sediment', 'ocean-mixed-layer', 'ocean-dissolved-inorganic-and-organic-carbon', 'ocean-phytoplankton-zooplankton-and-detritus', 'ocean-dissolved-nitrogen-phosphorus-oxygen-and-alkalinity', 'ocean-atmospheric-carbon-and-oxygen-compatibility-mirrors', 'deep-ocean-dissolved-carbon-nutrients-and-oxygen', 'deep-ocean-detritus', 'seafloor-buried-organic-carbon-nitrogen-and-phosphorus', 'sea-ice'],
-    fluxes: ['explicit-atmospheric-boundary-moisture-and-enthalpy', 'local-weather-pressure-momentum-and-two-band-thermal-boundary-forcing', 'loaded-neighbor-eight-level-dry-air-momentum-vapor-cloud-and-heat', 'native-pressure-level-vapor-to-cloud-condensation', 'native-pressure-level-cloud-to-vapor-evaporation', 'receipted-native-precipitation-descent-to-surface', 'seven-adjacent-native-equal-gross-dry-air-exchanges', 'native-adjacent-tracer-sensible-heat-and-tangent-momentum-exchange', 'seven-interface-virtual-temperature-buoyancy', 'seven-interface-bulk-entrainment-and-detrainment', 'explicit-updraft-and-compensating-downdraft-momentum', 'snowmelt', 'evaporation-to-boundary-layer', 'physiological-transpiration-to-boundary-layer', 'land-atmosphere-carbon-exchange', 'gross-primary-production', 'autotrophic-and-heterotrophic-respiration', 'litterfall', 'humification', 'nitrogen-uptake-and-mineralization', 'soil-water-to-runoff-queue-dissolved-carbon-nitrogen-phosphorus-and-oxygen', 'surface-runoff-detachment-of-finite-clay-silt-sand-and-gravel', 'same-water-fraction-runoff-sediment-routing', 'marine-primary-production', 'plankton-grazing-and-mortality', 'marine-community-respiration-and-remineralization', 'receipted-air-sea-carbon-and-oxygen-exchange', 'estuary-denitrification-to-local-atmospheric-nitrogen', 'marine-nitrogen-and-phosphorus-uptake', 'mixed-to-deep-dissolved-exchange', 'sinking-particle-export', 'deep-ocean-remineralization', 'seafloor-organic-burial', 'infiltration', 'recharge', 'capillary-rise', 'runoff-to-routing-queue', 'baseflow-to-routing-queue', 'runoff-queue-to-canonical-river-reach'],
+    reservoirs: ['surface-pressure-dry-air-mass', 'eight-level-pressure-coordinate-dry-air-water-heat-and-momentum', 'eight-native-cloud-liquid-reservoirs', 'eight-native-cloud-ice-reservoirs', 'seven-native-pressure-interface-convective-kinetic-energy-reservoirs', 'boundary-layer-dry-air-compatibility-projection', 'free-troposphere-dry-air-compatibility-projection', 'independent-boundary-layer-eastward-and-northward-momentum', 'independent-free-troposphere-eastward-and-northward-momentum', 'column-convective-kinetic-energy-projection', 'local-atmosphere-carbon-dioxide-carbon', 'local-atmosphere-oxygen', 'local-atmosphere-nitrogen-gas', 'aged-land-snow', 'snow-on-sea-ice', 'surface-water', 'root-zone', 'deep-soil', 'groundwater', 'land-ecology-atmospheric-carbon-compatibility-mirror', 'live-biomass-carbon-and-nitrogen', 'litter-carbon-and-nitrogen', 'soil-organic-carbon-and-nitrogen', 'mineral-nitrogen', 'finite-dissolved-soil-water-carbon-nitrogen-phosphorus-oxygen-and-alkalinity', 'finite-clay-silt-sand-and-gravel-surface-sediment', 'runoff-routing-queue', 'persistent-runoff-biogeochemistry-and-alkalinity-queue', 'persistent-runoff-sediment-queue', 'external-persistent-river-reach-storage', 'persistent-coastal-suspended-and-deposited-sediment', 'ocean-mixed-layer', 'ocean-dissolved-inorganic-and-organic-carbon', 'ocean-phytoplankton-zooplankton-and-detritus', 'ocean-dissolved-nitrogen-phosphorus-oxygen-and-alkalinity', 'ocean-atmospheric-carbon-and-oxygen-compatibility-mirrors', 'deep-ocean-dissolved-carbon-nutrients-oxygen-and-alkalinity', 'deep-ocean-detritus', 'seafloor-buried-organic-carbon-nitrogen-and-phosphorus', 'sea-ice'],
+    fluxes: ['explicit-atmospheric-boundary-moisture-and-enthalpy', 'local-weather-pressure-momentum-and-two-band-thermal-boundary-forcing', 'loaded-neighbor-eight-level-dry-air-momentum-vapor-cloud-and-heat', 'native-pressure-level-vapor-to-cloud-condensation', 'native-pressure-level-cloud-to-vapor-evaporation', 'receipted-native-precipitation-descent-to-surface', 'seven-adjacent-native-equal-gross-dry-air-exchanges', 'native-adjacent-tracer-sensible-heat-and-tangent-momentum-exchange', 'seven-interface-virtual-temperature-buoyancy', 'seven-interface-bulk-entrainment-and-detrainment', 'explicit-updraft-and-compensating-downdraft-momentum', 'snowmelt', 'evaporation-to-boundary-layer', 'physiological-transpiration-to-boundary-layer', 'land-atmosphere-carbon-exchange', 'gross-primary-production', 'autotrophic-and-heterotrophic-respiration', 'litterfall', 'humification', 'nitrogen-uptake-and-mineralization', 'soil-water-to-runoff-queue-dissolved-carbon-nitrogen-phosphorus-and-oxygen', 'surface-runoff-detachment-of-finite-clay-silt-sand-and-gravel', 'same-water-fraction-runoff-sediment-routing', 'marine-primary-production', 'plankton-grazing-and-mortality', 'marine-community-respiration-and-remineralization', 'carbonate-informed-receipted-air-sea-carbon-and-oxygen-exchange', 'estuary-denitrification-to-local-atmospheric-nitrogen', 'marine-nitrogen-and-phosphorus-uptake', 'mixed-to-deep-dissolved-carbon-nutrient-oxygen-and-alkalinity-exchange', 'sinking-particle-export', 'deep-ocean-remineralization', 'seafloor-organic-burial', 'infiltration', 'recharge', 'capillary-rise', 'runoff-to-routing-queue', 'baseflow-to-routing-queue', 'runoff-queue-to-canonical-river-reach'],
     energy: ['native-liquid-ice-cloud-shortwave-optical-depth', 'native-liquid-ice-cloud-longwave-emissivity', 'eight-level-carbon-dioxide-grey-gas-longwave-adjustment', 'dynamic-vegetation-snow-and-sea-ice-albedo', 'canopy-roughness-sensible-exchange', 'shortwave', 'longwave', 'surface-latent', 'surface-snow-and-sea-ice-fusion', 'eight-level-atmospheric-phase-change-latent', 'eight-level-moist-enthalpy', 'native-adjacent-sensible-exchange', 'native-tangent-momentum-mixing-dissipation-to-sensible-heat', 'seven-interface-virtual-temperature-buoyancy-to-convective-kinetic-energy', 'seven-interface-convective-kinetic-energy-dissipation-to-sensible-heat', 'equal-gross-vertical-pressure-and-geopotential-work', 'surface-sensible', 'boundary-heat', 'surface-storage'],
     spatialModel: 'sparse canonical 0.25-degree surface columns with a conservative neighbor-transport commit seam',
     fixedMaximumStepDays: 1,
@@ -3266,7 +3536,20 @@ export function earthSystemDescription() {
     localNitrogenBudget: true,
     persistentOceanEcology: true,
     persistentDeepOceanReservoirs: true,
+    persistentDeepOceanAlkalinity: true,
     mixedToDeepMaterialClosure: true,
+    mixedToDeepAlkalinityClosure: true,
+    mixedLayerCarbonateDiagnostic: true,
+    mixedLayerCarbonateDiagnosticMutatesMaterial: false,
+    mixedLayerPHTotalResolvedWithinEnvelope: true,
+    mixedLayerCarbonateSurfacePressureOnly: true,
+    carbonateInformedAirSeaCo2Exchange: true,
+    airSeaCo2FugacityCorrection: true,
+    scientificAirSeaGasTransferVelocity: false,
+    measuredAirSeaPco2: false,
+    measuredOceanSkinTemperature: false,
+    deepOceanPHResolved: false,
+    carbonatePHFeedbackModeled: false,
     sinkingCarbonExportAndSeafloorBurial: true,
     persistentAtmosphereBiogeochemistry: true,
     nativePressureLayerAtmosphericBiogeochemistry: true,
@@ -3276,7 +3559,7 @@ export function earthSystemDescription() {
     ecologyGasFieldsAreCompatibilityMirrors: true,
     atmosphericBiogeochemistryHorizontalTransport: true,
     atmosphericBiogeochemistryTransportDomain: 'loaded-canonical-neighbors',
-    localOceanCarbonNitrogenPhosphorusAndOxygenLedgers: true,
+    localOceanCarbonNitrogenPhosphorusOxygenAndAlkalinityLedgers: true,
     marineLightTemperatureIceAndNutrientCoupling: true,
     physicalOceanChemistryContinuesWithLifeOff: true,
     physiologicalTranspirationCoupled: true,
@@ -3307,6 +3590,13 @@ export function earthSystemDescription() {
     pressureColumnHydrostaticInterfaces: true,
     nativePressureLevelThermodynamics: true,
     nativePressureLevelPhaseChangeReceipted: true,
+    nativePhaseChangesBoundedByThermalHeadroom: true,
+    nativeLayerTemperatureEnvelope: {
+      minimumAirTemperatureC: MIN_NATIVE_LAYER_AIR_TEMPERATURE_C,
+      maximumAirTemperatureC: MAX_NATIVE_LAYER_AIR_TEMPERATURE_C
+    },
+    unsupportedPhaseChangeRemainsInSourcePhase: true,
+    postMaterialTemperatureClipRequired: false,
     nativePrecipitationDescentReceipted: true,
     nativeAdjacentLevelExchangeReceipted: true,
     nativePressureLevelWaterClosed: true,
@@ -3331,6 +3621,7 @@ export function earthSystemDescription() {
     vectorAtmosphericMomentum: true,
     independentLayerAtmosphericMomentum: true,
     resolvedCloudMicrophysics: false,
+    scientificallyCalibratedConvection: false,
     resolvedThreeDimensionalConvection: false,
     buoyancyAndGravitationalWorkResolved: true,
     fullAtmosphericBuoyancyAndGravitationalWorkResolved: false,

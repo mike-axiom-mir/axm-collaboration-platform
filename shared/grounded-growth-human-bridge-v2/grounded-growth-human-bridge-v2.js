@@ -4,7 +4,6 @@ const CapabilityLoop = require('../verified-capability-loop/verified-capability-
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
 const Human = require('../human-benefit-evidence/human-benefit-evidence');
 const BridgeV1 = require('../grounded-growth-human-bridge/grounded-growth-human-bridge');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const RECEIPT_SCHEMA = 'axm.grounded-growth-human-bridge-receipt/v2';
 const BUNDLE_SCHEMA = 'axm.grounded-growth-human-bridge-bundle/v2';
@@ -26,11 +25,11 @@ const ANCESTRY = {
 };
 
 function clone(value) {
-  return JSON.parse(stableStringify(value));
+  return JSON.parse(JSON.stringify(value));
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  return BridgeV1.stableStringify(value);
 }
 
 function sha256(value) {

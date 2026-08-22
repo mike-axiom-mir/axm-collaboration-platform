@@ -87,9 +87,6 @@ check(contract.status === 'TEST' && contract.permissions.length === 0, 'module r
 check(contract.boundaries.writes.length === 0, 'module performs no writes');
 check(contract.boundaries.refuses.includes('readiness-as-consent') && contract.boundaries.refuses.includes('frontier-receipt-as-workshop-wide-stop'), 'contract refuses consent and scope substitution');
 check(contract.boundaries.refuses.includes('candidate-count-without-exact-candidate-input'), 'contract refuses candidate presence without exact candidate evidence');
-check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
-check(Frontier.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
-checkThrows(() => Frontier.stableStringify({ lost: undefined }), /unsupported undefined/i, 'unsafe canonical state is refused');
 check(Frontier.verifyFrontier(receipt, input).pass, 'current frontier verifies by exact rebuild');
 check(receipt.sourceRefs.portfolio.sha256 === input.portfolio.portfolioDigest, 'frontier binds the exact current portfolio');
 check(receipt.sourceRefs.directionHandoff.sha256 === input.directionHandoff.handoffDigest, 'frontier binds the exact current direction handoff');
@@ -125,7 +122,7 @@ const evidenceInput = {
 };
 const evidenceReceipt = Frontier.buildEvidenceFrontier(evidenceInput);
 check(evidenceSchema.$id === Frontier.EVIDENCE_FRONTIER_SCHEMA, 'evidence-frontier schema identity matches implementation');
-check(contract.version === 'v0.4' && contract.provides.includes(Frontier.EVIDENCE_FRONTIER_SCHEMA), 'v0.4 contract preserves the evidence-frontier receipt');
+check(contract.version === 'v0.3' && contract.provides.includes(Frontier.EVIDENCE_FRONTIER_SCHEMA), 'v0.3 contract preserves the evidence-frontier receipt');
 check(Frontier.verifyEvidenceFrontier(evidenceReceipt, evidenceInput).pass, 'current evidence frontier verifies by exact rebuild');
 check(evidenceReceipt.sourceRefs.frontier.sha256 === receipt.frontierDigest, 'evidence frontier binds the exact original frontier');
 check(evidenceReceipt.sourceRefs.phoneEvidenceGate.sha256 === phoneReceipt.receiptDigest, 'evidence frontier binds the exact phone evidence gate');
@@ -167,7 +164,7 @@ const stewardshipInput = {
 };
 const stewardshipReceipt = Frontier.buildStewardshipFrontier(stewardshipInput);
 check(stewardshipSchema.$id === Frontier.STEWARDSHIP_FRONTIER_SCHEMA, 'stewardship-frontier schema identity matches implementation');
-check(contract.provides.includes(Frontier.STEWARDSHIP_FRONTIER_SCHEMA), 'v0.4 contract advertises the AI-and-human stewardship receipt');
+check(contract.provides.includes(Frontier.STEWARDSHIP_FRONTIER_SCHEMA), 'v0.3 contract advertises the AI-and-human stewardship receipt');
 check(Frontier.verifyStewardshipFrontier(stewardshipReceipt, stewardshipInput).pass, 'current stewardship frontier verifies by exact rebuild');
 check(stewardshipReceipt.sourceRefs.evidenceFrontier.sha256 === evidenceReceipt.evidenceFrontierDigest, 'stewardship frontier binds the exact evidence frontier');
 check(stewardshipReceipt.sourceRefs.challengerReadiness.sha256 === challengerReceipt.receiptDigest, 'stewardship frontier binds exact challenger readiness');

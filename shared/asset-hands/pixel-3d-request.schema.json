@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/pixel-3d-request-v1.schema.json",
+  "title": "AXM Pixel-Styled 3D Representation Request v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "identity_id", "profile_id", "animation_state", "authority"],
+  "properties": {
+    "schema": { "const": "axm.pixel-3d-request/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "identity_id": { "enum": ["axm.park.ferris-wheel", "axm.park.carousel-horse", "axm.park.ticket-gate", "axm.home.starter-sofa"] },
+    "profile_id": { "enum": ["pixel-8bit-3d", "pixel-16bit-3d"] },
+    "animation_state": { "type": "string", "minLength": 1 },
+    "authority": { "const": "candidate-only" }
+  },
+  "additionalProperties": false
+}

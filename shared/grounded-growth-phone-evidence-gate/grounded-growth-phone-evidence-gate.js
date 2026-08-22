@@ -4,7 +4,6 @@ const crypto = require('crypto');
 const Campaign = require('../voluntary-phone-qa-campaign/voluntary-phone-qa-campaign');
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
 const Handoff = require('../grounded-growth-human-handoff/grounded-growth-human-handoff');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const RECEIPT_SCHEMA = 'axm.grounded-growth-phone-evidence-gate/v1';
 const VERSION = '0.1.0';
@@ -21,16 +20,21 @@ const OBSERVATION_KEYS = [
 ];
 
 function clone(value) {
-  return JSON.parse(stableStringify(value));
+  return value == null ? value : JSON.parse(JSON.stringify(value));
 }
 
-function nativeOrderClone(value) {
-  stableStringify(value);
-  return JSON.parse(JSON.stringify(value));
+function stableValue(value) {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (value && typeof value === 'object') {
+    const result = {};
+    Object.keys(value).sort().forEach((key) => { result[key] = stableValue(value[key]); });
+    return result;
+  }
+  return value;
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  return JSON.stringify(stableValue(value));
 }
 
 function sha256(value) {
@@ -132,15 +136,12 @@ function verifyManifest(manifest) {
 
 function verifyDeviceEvidence(receipt, game) {
   if (!receipt || receipt.schema !== 'axm.device-qa-evidence/v1') throw new Error('device evidence schema mismatch');
-  stableStringify(receipt);
   requiredText(receipt.id, 'device evidence id', 180);
   timestamp(receipt.capturedAt, 'device evidence capturedAt');
   const digest = String(receipt.digest || '').toLowerCase().replace(/^sha256:/, '');
   if (!/^[a-f0-9]{64}$/.test(digest)) throw new Error('device evidence digest must be SHA-256');
-  const payload = {};
-  Object.keys(receipt).forEach((key) => {
-    if (key !== 'digest') payload[key] = receipt[key];
-  });
+  const payload = clone(receipt);
+  delete payload.digest;
   if (nativeJsonDigest(payload) !== digest) throw new Error('device evidence native digest mismatch');
   const observation = receipt.phoneObservation;
   if (!observation || observation.schema !== 'axm.qa-phone-observation/v1') throw new Error('phone observation is missing');
@@ -269,7 +270,7 @@ function build(input) {
   const binding = normalizeBinding(input.binding);
   const gameSurfaceRef = reference(gameIdentity.gameId, 'axm.game-manifest-surface/v1', sha256(manifest));
 
-  const deviceEvidence = input.deviceEvidence == null ? null : nativeOrderClone(input.deviceEvidence);
+  const deviceEvidence = input.deviceEvidence == null ? null : clone(input.deviceEvidence);
   const device = deviceEvidence == null ? null : verifyDeviceEvidence(deviceEvidence, gameIdentity);
   if (game.candidateDigest && (!device || game.candidateDigest !== device.digest)) throw new Error('campaign candidate digest does not match device evidence');
   if (game.reviewDecision && !device) throw new Error('campaign review requires its exact device evidence receipt');

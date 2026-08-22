@@ -95,7 +95,7 @@
       var response=await fetchTimed('/api/chatgpt-connector/status',2200);if(!response.ok)return;
       var payload=await response.json(),status=payload.status||{},seat=status.codingSeat||{},app=status.chatApp||{},platform=status.platformMcp||{};
       if(seat.loginVerified){
-        upsert({id:'codex',name:'Codex',kind:'ai',state:'ready',order:34,label:'READY',detail:'Codex coding seat login verified'});
+        upsert({id:'codex',name:'Keel',kind:'ai',state:'ready',order:34,label:'CODEX',detail:'Keel identity · Codex coding seat login verified'});
       }
       if(platform.connected===true&&platform.safeTunnel===true){
         upsert({id:'chatgpt',name:'ChatGPT',kind:'ai',state:'ready',order:35,label:'READY',detail:'ChatGPT Platform MCP safe tunnel explicitly connected'});

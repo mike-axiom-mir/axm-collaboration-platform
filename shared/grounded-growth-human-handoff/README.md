@@ -2,10 +2,6 @@
 
 Status: `TEST`
 
-Clone, canonical comparison, and digest preparation use the shared strict
-`deterministic-json-core`. Existing JSON-safe handoff bytes remain unchanged;
-unsupported JSON state is refused before source or package binding.
-
 This additive leaf composes the existing voluntary Human Benefit Evidence and
 Grounded Growth Human Bridge v2 contracts into a staged handoff. It closes the
 technical space between a retained session receipt and a bridge-ready package

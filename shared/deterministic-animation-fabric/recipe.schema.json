@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/deterministic-animation-recipe-v1.schema.json",
+  "title": "AXM Deterministic Animation Recipe v1",
+  "description": "A candidate-only, engine-neutral, fixed-tick graph of reusable data-only motion blocks.",
+  "type": "object",
+  "required": ["schema", "version", "id", "seed", "loop", "timebase", "blocks", "instances", "nodes", "tracks", "events", "presentation", "authority"],
+  "properties": {
+    "schema": { "const": "axm.deterministic-animation-recipe/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "$ref": "#/$defs/id" },
+    "seed": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "loop": { "type": "boolean" },
+    "timebase": {
+      "type": "object",
+      "required": ["ticks_per_second", "frames_per_second", "duration_ticks"],
+      "properties": {
+        "ticks_per_second": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+        "frames_per_second": { "type": "integer", "minimum": 1, "maximum": 240 },
+        "duration_ticks": { "type": "integer", "minimum": 1, "maximum": 600000000 }
+      },
+      "additionalProperties": false
+    },
+    "blocks": {
+      "type": "array",
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/block" }
+    },
+    "instances": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "required": ["id", "block", "parameters"],
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "block": { "$ref": "#/$defs/id" },
+          "parameters": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "maxItems": 2048,
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "tracks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "required": ["id", "target", "property", "node", "unit"],
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "target": { "$ref": "#/$defs/id" },
+          "property": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "node": { "$ref": "#/$defs/id" },
+          "unit": { "enum": ["unitless", "px", "normalized", "ratio", "deg", "rad", "game-world-unit"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "events": {
+      "type": "array",
+      "maxItems": 1024,
+      "items": {
+        "type": "object",
+        "required": ["id", "tick", "kind", "payload"],
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "tick": { "type": "integer", "minimum": 0 },
+          "kind": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "payload": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "presentation": { "type": "object" },
+    "adapter": {
+      "type": ["object", "null"],
+      "properties": {
+        "source_schema": { "type": "string" },
+        "source_id": { "type": ["string", "null"] },
+        "losses": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "authority": {
+      "type": "object",
+      "required": ["installed", "promoted", "canonical", "human_visual_review_required"],
+      "properties": {
+        "installed": { "const": false },
+        "promoted": { "const": false },
+        "canonical": { "const": false },
+        "human_visual_review_required": { "const": true }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$" },
+    "parameter": {
+      "type": "object",
+      "required": ["type", "default"],
+      "properties": {
+        "type": { "enum": ["number", "integer", "string", "array"] },
+        "default": {}
+      },
+      "additionalProperties": false
+    },
+    "block": {
+      "type": "object",
+      "required": ["id", "parameters", "nodes", "outputs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "parameters": { "type": "object", "additionalProperties": { "$ref": "#/$defs/parameter" } },
+        "nodes": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/node" } },
+        "outputs": { "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/id" } }
+      },
+      "additionalProperties": false
+    },
+    "point": {
+      "type": "object",
+      "required": ["tick", "value"],
+      "properties": {
+        "tick": { "type": "integer", "minimum": 0 },
+        "value": { "type": "number", "minimum": -1000000, "maximum": 1000000 }
+      },
+      "additionalProperties": false
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "enum": ["constant", "keyframes", "wave", "noise", "add", "multiply", "clamp", "remap", "abs"] },
+        "value": { "type": ["number", "string"] },
+        "points": { "oneOf": [{ "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/point" } }, { "type": "string" }] },
+        "interpolation": { "type": "string" },
+        "waveform": { "type": "string" },
+        "period_ticks": { "type": ["integer", "string"] },
+        "phase_ticks": { "type": ["integer", "string"] },
+        "amplitude": { "type": ["number", "string"] },
+        "offset": { "type": ["number", "string"] },
+        "hold_ticks": { "type": ["integer", "string"] },
+        "seed": { "type": "string" },
+        "input": { "$ref": "#/$defs/id" },
+        "inputs": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" } },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "input_min": { "type": "number" },
+        "input_max": { "type": "number" },
+        "output_min": { "type": "number" },
+        "output_max": { "type": "number" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

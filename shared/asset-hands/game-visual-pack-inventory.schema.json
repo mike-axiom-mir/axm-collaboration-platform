@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/game-visual-pack-inventory-v1.schema.json",
+  "title": "AXM Game Visual Pack Inventory v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "game_contract_id", "baseline_pack_id", "entries", "provenance", "authority"],
+  "properties": {
+    "schema": { "const": "axm.game-visual-pack-inventory/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "const": "EXPERIMENTAL" },
+    "game_contract_id": { "type": "string" },
+    "baseline_pack_id": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["pack_id", "pack_digest", "state", "bundled", "package_bytes"],
+        "properties": {
+          "pack_id": { "type": "string" },
+          "pack_digest": { "type": "string", "minLength": 16 },
+          "state": { "enum": ["INSTALLED", "AVAILABLE_NOT_INSTALLED", "UNAVAILABLE"] },
+          "bundled": { "type": "boolean" },
+          "package_bytes": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "provenance": { "type": "object" },
+    "authority": { "$ref": "asset-identity.schema.json#/$defs/authority" }
+  },
+  "additionalProperties": false
+}

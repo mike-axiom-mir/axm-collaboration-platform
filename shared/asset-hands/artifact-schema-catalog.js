@@ -6,6 +6,94 @@
   "use strict";
   var VERSION = "1.0.0";
   var RULES = {
+    "axm.asset-identity/v1": {
+      required: ["schema", "version", "status", "id", "asset_type", "components", "footprint", "pivots", "sockets", "semantic_actions", "invariants", "provenance", "authority"],
+      arrays: ["components", "pivots", "sockets", "semantic_actions", "invariants"],
+    },
+    "axm.visual-representation-profile/v1": {
+      required: ["schema", "version", "status", "id", "label", "installed", "preset", "axes", "limits", "provenance", "authority"],
+      arrays: [],
+    },
+    "axm.asset-representation-set/v1": {
+      required: ["schema", "version", "status", "id", "identity_id", "representations", "semantic_coverage", "compatibility", "provenance", "authority"],
+      arrays: ["representations", "semantic_coverage"],
+    },
+    "axm.missing-representation/v1": {
+      required: ["schema", "version", "status", "request", "missing", "gap_types", "fallback_used", "nearest_substitute_used", "unblock_conditions", "authority"],
+      arrays: ["missing", "gap_types", "unblock_conditions"],
+    },
+    "axm.causal-asset-simulation/v1": {
+      required: ["schema", "version", "status", "id", "identity_id", "state", "processed_event_ids", "history", "invariants", "provenance", "authority"],
+      arrays: ["processed_event_ids", "history", "invariants"],
+    },
+    "axm.upgradeable-object/v1": {
+      required: ["schema", "version", "status", "id", "identity_id", "component_slots", "installed_components", "finish", "condition", "qualities", "resource_history", "history", "replacement_required", "provenance", "authority"],
+      arrays: ["component_slots", "resource_history", "history"],
+    },
+    "axm.choice-first-request/v1": {
+      required: ["schema", "version", "id", "identity_id", "profile", "events", "sofa_upgrades", "authority"],
+      arrays: ["events", "sofa_upgrades"],
+    },
+    "axm.game-visual-contract/v1": {
+      required: ["schema", "version", "status", "id", "title", "simulation_contract", "gameplay_proxy_contract", "save_contract", "required_visual_slots", "baseline_policy", "invariants", "provenance", "authority"],
+      arrays: ["required_visual_slots", "invariants"],
+    },
+    "axm.game-visual-pack/v1": {
+      required: ["schema", "version", "status", "id", "title", "game_contract_id", "game_contract_digest", "art_direction", "semantic_bindings", "representation_profiles", "performance_profiles", "requirements", "package", "content_digest", "provenance", "authority"],
+      arrays: ["representation_profiles", "performance_profiles"],
+    },
+    "axm.hardware-capability-profile/v1": {
+      required: ["schema", "version", "status", "id", "label", "source", "capabilities", "confidence", "provenance", "authority"],
+      arrays: [],
+    },
+    "axm.game-visual-pack-inventory/v1": {
+      required: ["schema", "version", "status", "game_contract_id", "baseline_pack_id", "entries", "provenance", "authority"],
+      arrays: ["entries"],
+    },
+    "axm.game-visual-selection-request/v1": {
+      required: ["schema", "version", "id", "mode", "game_contract", "hardware_profile", "minimum_hardware_profile", "inventory", "packs", "save_state", "current_pack_id", "authority"],
+      arrays: ["packs"],
+    },
+    "axm.game-visual-selection-result/v1": {
+      required: ["schema", "version", "status", "request_id", "game_contract_id", "hardware_profile_id", "recommendation", "selection", "checks", "fallback_used", "active_pack_changed", "save_digest_before", "save_digest_after", "game_truth_digest", "message", "authority"],
+      arrays: ["checks"],
+    },
+    "axm.pixel-3d-request/v1": {
+      required: ["schema", "version", "id", "identity_id", "profile_id", "animation_state", "authority"],
+      arrays: [],
+    },
+    "axm.pixel-3d-scene-recipe/v1": {
+      required: ["schema", "version", "status", "id", "identity_id", "representation_profile_id", "animation_state", "footprint", "pivots", "sockets", "materials", "nodes", "animations", "budgets", "game_adapter", "invariants", "provenance", "authority"],
+      arrays: ["pivots", "sockets", "materials", "nodes", "animations", "invariants"],
+    },
+    "axm.pixel-3d-validation-receipt/v1": {
+      required: ["schema", "version", "status", "identity_id", "representation_profile_id", "recipe_digest", "glb_digest", "outputs", "checks", "measures", "limits", "known_losses", "authority"],
+      arrays: ["outputs", "checks", "known_losses"],
+    },
+    "axm.visual-capability-catalog/v1": {
+      required: ["schema", "version", "status", "counts", "digest", "style_fabric", "style_presets", "treatment_molds", "aetherfx_modules", "portable_fx_blocks", "pbr_material_families", "aetherglass", "adapters", "routing_policy", "authority"],
+      arrays: ["style_presets", "treatment_molds", "aetherfx_modules", "portable_fx_blocks", "pbr_material_families", "adapters"],
+    },
+    "axm.visual-treatment-request/v1": {
+      required: ["schema", "version", "id", "identity_id", "profile_id", "animation_state", "style_layers", "effect_modules", "authority"],
+      arrays: ["style_layers", "effect_modules"],
+    },
+    "axm.visual-treatment-recipe/v1": {
+      required: ["schema", "version", "id", "request_id", "identity_id", "profile_id", "catalog_digest", "style_layers", "effect_plan", "material_family", "accessibility", "story", "scene_recipe_digest", "authority"],
+      arrays: ["style_layers", "effect_plan"],
+    },
+    "axm.visual-treatment-validation-receipt/v1": {
+      required: ["schema", "version", "status", "request_id", "identity_id", "profile_id", "catalog_digest", "treatment_digest", "glb_digest", "checks", "adapter_results", "measures", "known_losses", "fallback_used", "nearest_substitute_used", "authority"],
+      arrays: ["checks", "adapter_results", "known_losses"],
+    },
+    "axm.pbr-material-recipe/v1": {
+      required: ["schema", "version", "id", "family", "seed", "size", "normal_strength", "authority"],
+      arrays: [],
+    },
+    "axm.pbr-material-bake-receipt/v1": {
+      required: ["schema", "version", "status", "recipe_id", "family", "size", "map_digests", "verification", "checks", "deterministic", "authority"],
+      arrays: ["checks"],
+    },
     "axm.visual-fx-recipe/v1": {
       required: ["schema", "version", "id", "effect", "outputs", "target_canvas", "provenance", "authority"],
       arrays: [],
@@ -17,6 +105,34 @@
     "axm.raster-composition-receipt/v1": {
       required: ["schema", "version", "status", "engine", "recipe_digest", "layers", "output", "measures", "limits", "unsupported", "authority", "visual_approval", "canonical"],
       arrays: ["layers", "unsupported"],
+    },
+    "axm.raster-operations-recipe/v1": {
+      required: ["schema", "version", "id", "source_artifact_id", "operations", "validation", "authority"],
+      arrays: ["operations"],
+    },
+    "axm.pixel-asset-package/v1": {
+      required: ["schema", "version", "status", "id", "source", "recipe", "entities", "activities", "assets", "analysis", "engine", "authority"],
+      arrays: ["entities", "activities", "assets"],
+    },
+    "axm.raster-operations-receipt/v1": {
+      required: ["schema", "version", "status", "source", "recipe", "outputs", "operations", "checks", "limits", "authority"],
+      arrays: ["outputs", "operations", "checks"],
+    },
+    "axm.pixel-animation-recipe/v1": {
+      required: ["schema", "version", "id", "source_artifact_id", "profile", "sheet", "frames", "clips", "palette", "preview", "video", "validation", "provenance", "authority"],
+      arrays: ["frames", "clips"],
+    },
+    "axm.sprite-animation/v1": {
+      required: ["schema", "version", "status", "id", "profile", "source", "sheet", "frames", "clips", "palette", "deliveries", "game_adapter", "video_adapter", "provenance", "authority"],
+      arrays: ["frames", "clips", "deliveries"],
+    },
+    "axm.pixel-video-sequence/v1": {
+      required: ["schema", "version", "status", "id", "source_manifest_id", "timebase", "dimensions", "frames", "sequences", "provenance", "authority"],
+      arrays: ["frames", "sequences"],
+    },
+    "axm.pixel-animation-receipt/v1": {
+      required: ["schema", "version", "status", "source", "recipe", "profile", "outputs", "checks", "measures", "limits", "authority"],
+      arrays: ["outputs", "checks"],
     },
     "axm.native-raster-spec/v1": {
       required: [
@@ -48,6 +164,23 @@
         "tokens",
       ],
       arrays: ["states"],
+    },
+    "axm.ui-component-recipe/v1": {
+      required: [
+        "schema",
+        "version",
+        "id",
+        "title",
+        "kind",
+        "seed",
+        "authority",
+        "target",
+        "palette",
+        "geometry",
+        "states",
+        "provenance",
+      ],
+      arrays: [],
     },
     "axm.sprite-atlas/v1": {
       required: [
@@ -1082,6 +1215,14 @@
         "CORROBORATED",
         "PARTIAL",
         "FAILED",
+        "EXPERIMENTAL",
+        "MISSING_REPRESENTATION",
+        "READY_FOR_CHOICE",
+        "SELECTED",
+        "MISSING_VISUAL_PACK",
+        "INCOMPATIBLE_VISUAL_PACK",
+        "PACK_CONTRACT_MISMATCH",
+        "INVALID_SELECTION_REQUEST",
       ].indexOf(value.status) < 0
     )
       errors.push("inspection status is unsupported");

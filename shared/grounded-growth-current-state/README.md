@@ -33,11 +33,6 @@ state coherence, and the no-authority boundary. A passing result is explicitly
 remain `UNKNOWN` until the native source receipts are available and rebuilt.
 The CLI reads one explicit file and performs no writes or network activity.
 
-The native and detached paths reuse `deterministic-json-core` for clone and
-canonical comparison. Existing JSON-safe current-state receipts retain their
-exact bytes, while undefined and other non-JSON-representable state is refused
-before a portfolio comparison or receipt digest can silently lose it.
-
 Run focused checks with:
 
 ```powershell

@@ -2,10 +2,6 @@
 
 Status: **TEST**
 
-Representation boundary: v0.2 uses the shared strict deterministic JSON core.
-Safe JSON keeps the existing canonical bytes; unsupported, cyclic, sparse, or
-otherwise non-JSON state is refused instead of being dropped or rewritten.
-
 This leaf validates one bounded simulation/research run against an exact
 Portable Baseline Capsule. It does not invoke models, execute submitted source,
 choose a winner, build a candidate, or continue recursively.

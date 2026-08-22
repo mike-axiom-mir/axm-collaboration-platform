@@ -21,11 +21,6 @@ const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contrac
 check(schema.$id === Feedback.PACKET_SCHEMA, 'feedback packet schema identity matches the implementation');
 check(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'module contract stays TEST with no permissions or writes');
 check(contract.boundaries.refuses.includes('evolution-direction-creation') && contract.boundaries.refuses.includes('automatic-canon'), 'module contract refuses direction creation and automatic CANON');
-check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'module contract declares strict representation closure');
-check(Feedback.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
-assert.throws(() => Feedback.stableStringify({ lost: undefined }), /unsupported undefined/i);
-checks += 1;
-console.log('PASS unsafe canonical state is refused');
 
 function ref(id, value, schemaName) {
   return Growth.reference(value, { id, schema: schemaName || 'axm.test-evidence/v1' });
@@ -142,12 +137,6 @@ function packet(sourceReceipt, extra) {
     sourceReceipt, routeStates: [], existingNeeds: [], coverageLinks: []
   }, extra || {}));
 }
-
-const unsafeFeedbackSource = outcome();
-unsafeFeedbackSource.lost = undefined;
-assert.throws(() => packet(unsafeFeedbackSource), /unsupported undefined/i);
-checks += 1;
-console.log('PASS unsafe source receipt is refused before cloning');
 
 const unknown = outcome();
 const basic = packet(unknown);

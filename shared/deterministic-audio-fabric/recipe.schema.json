@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/deterministic-audio-recipe.schema.json",
+  "title": "AXM Deterministic Audio Recipe",
+  "type": "object",
+  "required": ["schema", "version", "id", "seed", "sample_rate_hz", "channels", "sample_format", "sound", "authority"],
+  "properties": {
+    "schema": { "const": "axm.deterministic-audio-recipe/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$", "maxLength": 120 },
+    "seed": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "sample_rate_hz": { "const": 44100 },
+    "channels": { "const": 1 },
+    "sample_format": { "const": "pcm-s16le" },
+    "sound": {
+      "type": "object",
+      "required": ["schema", "params"],
+      "properties": {
+        "schema": { "const": "axm.audio.sound/v1" },
+        "params": {
+          "type": "object",
+          "required": ["kind", "dur", "gain"],
+          "properties": {
+            "kind": { "enum": ["tone", "noise"] },
+            "wave": { "enum": ["sine", "sawtooth", "triangle", "square"] },
+            "freq": { "type": "number", "minimum": 1, "maximum": 20000 },
+            "sweep": { "type": "boolean" },
+            "freqEnd": { "type": "number", "minimum": 1, "maximum": 20000 },
+            "dur": { "type": "number", "minimum": 0.01, "maximum": 2 },
+            "attack": { "type": "number", "exclusiveMinimum": 0, "maximum": 2 },
+            "gain": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+            "noise": { "type": "boolean" },
+            "noiseGain": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+            "filterFreq": { "type": "number", "minimum": 20, "maximum": 20000 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "authority": {
+      "type": "object",
+      "required": ["installed", "promoted", "canonical", "human_listening_review_required"],
+      "properties": {
+        "installed": { "const": false },
+        "promoted": { "const": false },
+        "canonical": { "const": false },
+        "human_listening_review_required": { "const": true }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
-const crypto = require('crypto');
 const Current = require('../grounded-growth-current-state/grounded-growth-current-state');
 const Coverage = require('../grounded-growth-human-route-coverage/grounded-growth-human-route-coverage');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const RECEIPT_SCHEMA = 'axm.grounded-growth-voluntary-choice-frontier/v1';
 const VERSION = '0.1.0';
@@ -14,18 +12,15 @@ const HOLD_STATE = 'UNAVAILABLE_PENDING_EXTERNAL_EVENT';
 const DIGEST = /^sha256:[a-f0-9]{64}$/;
 
 function clone(value) {
-  return JSON.parse(stableStringify(value));
+  return JSON.parse(JSON.stringify(value));
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  return Coverage.stableStringify(value);
 }
 
 function sha256(value) {
-  const bytes = Buffer.isBuffer(value)
-    ? value
-    : Buffer.from(typeof value === 'string' ? value : stableStringify(value), 'utf8');
-  return 'sha256:' + crypto.createHash('sha256').update(bytes).digest('hex');
+  return Coverage.sha256(value);
 }
 
 function exactKeys(value, allowed, label) {

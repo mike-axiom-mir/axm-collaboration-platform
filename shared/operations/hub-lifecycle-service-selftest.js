@@ -17,8 +17,8 @@ const index = {
   schema: 'axm.tools-index/v1', generatedAt: '2026-07-24T12:00:00.000Z', sourceDigest,
   capabilities: [], promotionQueue: {}, truth: { automaticPromotion: false },
   tools: [
-    { id:'ready-tool', status:'TEST', promotion:{ state:'READY_FOR_HUMAN_REVIEW', blockers:[] }, selftest:{ promotionPath:'tools/ready-tool/selftest.js', sha256:passDigest, result:{ verdict:'PASS', outputSha256:'c'.repeat(64) } } },
-    { id:'held-tool', status:'TEST', promotion:{ state:'BLOCKED', blockers:['valid module contract is missing'] }, selftest:{ promotionPath:'tools/held-tool/selftest.js', sha256:'d'.repeat(64), result:{ verdict:'PASS', outputSha256:'e'.repeat(64) } } },
+    { id:'ready-tool', status:'TEST', promotion:{ state:'READY_FOR_HUMAN_REVIEW', blockers:[] }, selftest:{ promotionPath:'tools/ready-tool/selftest.js', sha256:passDigest, digestScope:'all-discovered-selftests/v1', result:{ verdict:'PASS', outputSha256:'c'.repeat(64) } } },
+    { id:'held-tool', status:'TEST', promotion:{ state:'BLOCKED', blockers:['valid module contract is missing'] }, selftest:{ promotionPath:'tools/held-tool/selftest.js', sha256:'d'.repeat(64), digestScope:'all-discovered-selftests/v1', result:{ verdict:'PASS', outputSha256:'e'.repeat(64) } } },
     { id:'early-tool', status:'EXPERIMENTAL', promotion:{ state:'NOT_APPLICABLE', blockers:['kind is undeclared'] }, selftest:{ promotionPath:null, sha256:null, result:null } },
     { id:'manual-tool', status:'EXPERIMENTAL', promotion:{ state:'NOT_APPLICABLE', blockers:[] }, selftest:{ promotionPath:null, sha256:null, result:null } }
   ]
@@ -56,6 +56,7 @@ const plan = service.reconciliationPlan();
 assert.equal(plan.entries.length, 4);
 assert.equal(plan.entries.find(row => row.id === 'ready-tool').lifecycle, 'WORKING');
 assert.equal(plan.entries.find(row => row.id === 'ready-tool').evidence.selftestVerdict, 'PASS');
+assert.equal(plan.entries.find(row => row.id === 'ready-tool').evidence.selftestDigestScope, 'all-discovered-selftests/v1');
 assert.equal(plan.entries.find(row => row.id === 'held-tool').lifecycle, 'TEST-HOLD');
 assert.deepEqual(plan.entries.find(row => row.id === 'held-tool').evidence.namedHolds, ['valid module contract is missing']);
 assert.equal(plan.entries.find(row => row.id === 'early-tool').lifecycle, 'NEEDS VERIFY');

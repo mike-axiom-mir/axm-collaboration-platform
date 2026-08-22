@@ -188,11 +188,6 @@ try {
   check(moduleContract.status === 'TEST' && moduleContract.permissions.length === 0, 'module contract stays TEST with zero permissions');
   check(moduleContract.boundaries.writes.length === 0, 'module contract performs no writes');
   check(moduleContract.boundaries.refuses.includes('root-replacement') && moduleContract.boundaries.refuses.includes('runtime-proof-as-human-value'), 'module contract refuses rival roots and evidence substitution');
-  check(moduleContract.version === 'v0.2' && moduleContract.consumes.includes('strict-deterministic-canonical-json') && moduleContract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'v0.2 contract declares strict representation closure');
-  check(Intake.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
-  assert.throws(() => Intake.stableStringify({ lost: undefined }), /unsupported undefined/i);
-  checks += 1;
-  console.log('PASS unsafe canonical state is refused');
 
   check(Intake.verifyHostProfile(hostProfile).pass, 'current three-root host profile verifies natively');
   check(hostProfile.roots.map((root) => root.moduleId).join(',') === 'portable-baseline-capsule,baseline-simulation-lab,grounded-growth-challenger-lab', 'host profile binds the three exact protected roots');
@@ -272,3 +267,4 @@ try {
   if (!resolvedTemp.startsWith(resolvedSystemTemp)) throw new Error('refusing to clean a temp path outside the system temp directory');
   fs.rmSync(resolvedTemp, { recursive: true, force: true });
 }
+

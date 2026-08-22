@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-treatment-request-v1.schema.json",
+  "title": "AXM Deterministic Visual Treatment Request v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "identity_id", "profile_id", "animation_state", "style_layers", "effect_modules", "authority"],
+  "properties": {
+    "schema": { "const": "axm.visual-treatment-request/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "identity_id": { "enum": ["axm.park.ferris-wheel", "axm.park.carousel-horse", "axm.park.ticket-gate", "axm.home.starter-sofa"] },
+    "profile_id": { "enum": ["pixel-8bit-3d", "pixel-16bit-3d"] },
+    "animation_state": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "style_layers": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["id", "weight"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+          "overrides": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "effect_modules": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "params": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "material_family": { "enum": ["brick", "asphalt", "painted-metal", "glass", "skin", "vehicle-paint"] },
+    "story": {
+      "type": "object",
+      "required": ["title", "nodes"],
+      "properties": {
+        "title": { "type": "string", "maxLength": 100 },
+        "nodes": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "required": ["id", "caption", "duration_s"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "caption": { "type": "string", "maxLength": 180 },
+              "duration_s": { "type": "number", "exclusiveMinimum": 0, "maximum": 30 },
+              "focus_component": { "type": "string", "maxLength": 100 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "accessibility": {
+      "type": "object",
+      "properties": {
+        "reduced_motion": { "type": "boolean" },
+        "high_contrast": { "type": "boolean" },
+        "effect_scale": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "authority": { "const": "candidate-only" }
+  },
+  "additionalProperties": false
+}

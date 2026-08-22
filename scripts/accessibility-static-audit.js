@@ -41,7 +41,10 @@ function auditMarkup(html, relative) {
   }
   for (const match of markup.matchAll(/<(input|select|textarea)\b[^>]*>/gi)) {
     const tag = match[0], type = String(attr(tag, 'type') || '').toLowerCase();
-    if (type === 'hidden' || type === 'button' || type === 'submit') continue;
+    const classNames = String(attr(tag, 'class') || '').split(/\s+/);
+    const inlineStyle = String(attr(tag, 'style') || '');
+    const hidden = /\shidden(?:\s|=|\/?>)/i.test(tag) || classNames.includes('hidden') || String(attr(tag, 'aria-hidden') || '').toLowerCase() === 'true' || /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*hidden)(?:\s*!important)?\s*(?:;|$)/i.test(inlineStyle);
+    if (hidden || type === 'hidden' || type === 'button' || type === 'submit') continue;
     const id = attr(tag, 'id'), name = attr(tag, 'aria-label') || attr(tag, 'aria-labelledby') || attr(tag, 'title');
     if (!name && !(id && labels.has(id)) && !implicitControls.has(match.index)) findings.push(finding('ERROR', 'FORM_NAME_MISSING', relative, tag.slice(0, 180)));
   }

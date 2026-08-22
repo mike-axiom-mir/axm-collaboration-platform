@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/deterministic-audio-verification.schema.json",
+  "title": "AXM Deterministic Audio Technical Verification",
+  "type": "object",
+  "required": ["schema", "version", "status", "recipe_id", "recipe_digest", "wav_sha256", "analysis_digest", "checks", "source_receipt", "claims", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.deterministic-audio-verification/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "recipe_id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "recipe_digest": { "$ref": "#/$defs/digest" },
+    "wav_sha256": { "$ref": "#/$defs/digest" },
+    "analysis_digest": { "$ref": "#/$defs/digest" },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "pass", "details"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "pass": { "type": "boolean" },
+          "details": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "source_receipt": {
+      "type": "object",
+      "required": ["schema", "renderer", "status", "sha256", "claims"],
+      "properties": {
+        "schema": { "const": "axm.audio.sfx-bake-receipt/v1" },
+        "source_contract": { "const": "axm.audio.sound/v1" },
+        "renderer": { "const": "audio-sfx-bake/v0.1.0" },
+        "status": { "const": "RENDERED_UNREVIEWED" },
+        "seed": { "type": "number" },
+        "sample_rate_hz": { "const": 44100 },
+        "channels": { "const": 1 },
+        "sample_format": { "const": "pcm-s16le" },
+        "duration_ms": { "type": "integer", "minimum": 10, "maximum": 2000 },
+        "bytes": { "type": "integer", "minimum": 926, "maximum": 176444 },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "claims": {
+          "type": "object",
+          "required": ["deterministic_bytes", "webaudio_sample_identical", "human_listened", "approved"],
+          "properties": {
+            "deterministic_bytes": { "const": true },
+            "webaudio_sample_identical": { "const": false },
+            "human_listened": { "const": false },
+            "approved": { "const": false }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "claims": {
+      "type": "object",
+      "required": ["deterministic_wav_bytes", "canonical_pcm16_wav", "technical_analysis", "audible_playback_verified", "human_listened", "human_aesthetic_approval", "device_output_verified", "webaudio_sample_identical", "external_wav_conformance"],
+      "properties": {
+        "deterministic_wav_bytes": { "type": "boolean" },
+        "canonical_pcm16_wav": { "type": "boolean" },
+        "technical_analysis": { "type": "boolean" },
+        "audible_playback_verified": { "const": false },
+        "human_listened": { "const": false },
+        "human_aesthetic_approval": { "const": false },
+        "device_output_verified": { "const": false },
+        "webaudio_sample_identical": { "const": false },
+        "external_wav_conformance": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "authority": {
+      "type": "object",
+      "required": ["candidate_only", "installed", "promoted", "canonical", "human_listening_review_required"],
+      "properties": {
+        "candidate_only": { "const": true },
+        "installed": { "const": false },
+        "promoted": { "const": false },
+        "canonical": { "const": false },
+        "human_listening_review_required": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

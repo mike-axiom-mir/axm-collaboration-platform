@@ -16,13 +16,9 @@ manifest evidence gate is reviewed.
 The output removes source machine paths and raw notes. A review record is a
 declared input, not authenticated human identity or physical-hardware proof.
 
-Clone, digest, comparison, and exported `stableStringify` paths use the shared
-strict deterministic JSON core. Undefined values, sparse arrays, cycles,
-non-finite numbers, and other non-JSON-representable state are refused instead
-of being silently removed or rewritten.
-
 Run the focused suite with:
 
 ```powershell
 node shared/voluntary-phone-qa-campaign/selftest.js
 ```
+

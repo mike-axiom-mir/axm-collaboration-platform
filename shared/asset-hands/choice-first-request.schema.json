@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/choice-first-request-v1.schema.json",
+  "title": "AXM Choice-First Pilot Request v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "identity_id", "profile", "events", "sofa_upgrades", "authority"],
+  "properties": {
+    "schema": { "const": "axm.choice-first-request/v1" }, "version": { "const": "1.0.0" }, "id": { "type": "string" }, "identity_id": { "enum": ["axm.park.ferris-wheel", "axm.park.carousel-horse", "axm.park.ticket-gate", "axm.home.starter-sofa"] }, "profile": { "type": "object" }, "events": { "type": "array", "items": { "type": "object" } }, "sofa_upgrades": { "type": "array", "items": { "type": "string" } }, "authority": { "const": "candidate-only" }
+  },
+  "additionalProperties": false
+}

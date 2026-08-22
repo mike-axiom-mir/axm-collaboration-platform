@@ -1,12 +1,12 @@
 {
   "schema": "axm.shared-controls.physical-controller-route/v1",
-  "status": "DORMANT_RESEARCH_ROUTE",
+  "status": "DEFAULT_POLICY_ADOPTED_MIGRATION_IN_PROGRESS",
   "implemented": false,
-  "defaultInputSource": "phone-touch",
+  "defaultInputSource": "universal-gamepad-for-qualifying-shared-screen-coop-when-integrated",
   "controllerKindsRemain": ["human", "adapter", "ai"],
   "inputSources": {
-    "workingReference": ["phone-touch"],
-    "planned": ["keyboard", "host-gamepad", "device-gamepad"]
+    "workingReference": ["phone-touch", "host-gamepad-on-integrated-games"],
+    "planned": ["universal-host-gamepad-migration", "device-gamepad"]
   },
   "coreDecision": {
     "gamepadIsControllerType": false,
@@ -24,6 +24,14 @@
     "seat token and sequence gate",
     "authoritative game host"
   ],
+  "platformDefault": {
+    "policy": "default-for-party-coop-shared-screen",
+    "inputProfile": "axm-universal-xbox-brawl-v0.2.1",
+    "policySource": "tools/game-hub/universal-control-policy.js",
+    "integratedGames": ["004-relaybound", "013-toonfall-gatewatch"],
+    "missingMappingsStayVisible": true,
+    "launchesRemainAvailableDuringMigration": true
+  },
   "profileLayers": {
     "deviceBinding": "schemas/input-source-binding.schema.json",
     "gameSemantic": "schemas/controller-profile.schema.json"
@@ -35,7 +43,8 @@
     "replacementRequiresConfirmation": true,
     "gamepadIndexIsPlayerNumber": false,
     "sessionScopedByDefault": true,
-    "partyScreenPollsGamepads": false
+    "partyScreenPollsGamepads": true,
+    "partyScreenPollingScope": "qualifying shared-screen co-op games with an integrated semantic mapping"
   },
   "sourceLease": {
     "hostPrerequisiteImplemented": true,
@@ -66,7 +75,7 @@
     "phoneFallbackAllowed": true
   },
   "phases": [
-    {"phase": 1, "name": "host-connected-standard-gamepads", "status": "NOT_IMPLEMENTED"},
+    {"phase": 1, "name": "host-connected-standard-gamepads", "status": "PARTIALLY_IMPLEMENTED_004_013"},
     {"phase": 2, "name": "mixed-local-parties-and-calibration", "status": "NOT_IMPLEMENTED"},
     {"phase": 3, "name": "player-device-gamepads", "status": "NOT_IMPLEMENTED"},
     {"phase": 4, "name": "optional-uncommon-device-bridge", "status": "NOT_IMPLEMENTED"}
@@ -86,6 +95,7 @@
   "truth": {
     "hardwareTested": false,
     "runtimeAdapterIncluded": false,
+    "runtimeAdapterAvailableInReferencePackage": true,
     "compatibilityPromised": false,
     "softwarePrerequisitesAreHardwareProof": false
   }

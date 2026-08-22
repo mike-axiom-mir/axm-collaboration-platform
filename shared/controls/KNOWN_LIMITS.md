@@ -1,8 +1,8 @@
 # Known limits
 
-- **NOT IMPLEMENTED / UNTESTED** - USB, Bluetooth and wireless-receiver gamepad discovery, calibration, seat claiming and input.
+- **PARTIAL / HARDWARE UNTESTED** - The reusable standard-gamepad adapter and two target-game integrations exist; shared discovery, calibration, press-to-claim, and broad USB/Bluetooth/receiver proof remain incomplete.
 - **NOT IMPLEMENTED / UNTESTED** - Mixed phone/gamepad parties, controller reconnect, fullscreen/background reliability, and four/eight simultaneous gamepads.
-- **DORMANT ROUTE** - `PHYSICAL_CONTROLLER_ROUTE.json` records the intended adapter architecture and proof gates without claiming hardware support.
+- **DEFAULT POLICY / MIGRATION IN PROGRESS** - `PHYSICAL_CONTROLLER_ROUTE.json` records the Hub default, integrated games, missing mappings, and remaining proof gates without claiming universal hardware support.
 
 - **UNTESTED** — Physical phone comfort, multitouch behavior, aspect ratios, safe-area insets, and long play sessions.
 - **UNTESTED** — Real Wi-Fi latency, packet loss, reconnection, and several simultaneous controllers.

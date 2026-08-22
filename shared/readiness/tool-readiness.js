@@ -11,6 +11,7 @@ const STATUSES = new Set(['EXPERIMENTAL', 'TEST', 'WORKING', 'CANON', 'SHELL', '
 const KINDS = new Set(['product', 'service', 'scaffold', 'adapter', 'machine-capability']);
 const VERIFICATION_STATUSES = new Set(['TEST', 'WORKING', 'CANON']);
 const SKIP_WALK = new Set(['node_modules', 'vendor', 'exports', 'state', 'logs', 'backups']);
+const SELFTEST_DIGEST_SCOPE = 'all-discovered-selftests/v1';
 
 function readJson(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -56,6 +57,15 @@ function choosePromotionSelftest(folder, selftests) {
   return null;
 }
 
+function digestSelftestSuite(root, selftests) {
+  const hash = crypto.createHash('sha256');
+  selftests.forEach(file => {
+    const fileDigest = digestFile(path.join(root, file));
+    hash.update(file + '\0' + (fileDigest || 'MISSING') + '\n');
+  });
+  return hash.digest('hex');
+}
+
 function freshness(value, nowMs, days) {
   if (value == null || value === '') return { state: 'MISSING', ageDays: null };
   const parsed = Date.parse(value);
@@ -91,10 +101,12 @@ function buildIndex(root, options) {
   options = options || {};
   root = path.resolve(root);
   const now = new Date(options.now || Date.now());
-  const ladder = readJson(path.join(__dirname, 'promotion-ladder.json'), { freshnessDays: 30 });
+  const ladderFile = path.resolve(options.promotionLadderFile || path.join(__dirname, 'promotion-ladder.json'));
+  const ladder = readJson(ladderFile, { freshnessDays: 30 });
   const resultById = normalizeVerificationResults(options.verificationResults);
   const toolsRoot = path.join(root, 'tools');
   const sourceHash = crypto.createHash('sha256');
+  sourceHash.update('promotion-ladder:' + (digestFile(ladderFile) || 'MISSING') + '\n');
   const tools = [];
   const capabilities = new Map();
 
@@ -114,7 +126,7 @@ function buildIndex(root, options) {
       const entryExists = entryInside && fs.existsSync(entryFile);
       const selftests = listSelftests(moduleRoot, root);
       const promotionSelftest = choosePromotionSelftest(folder, selftests);
-      const selftestDigest = promotionSelftest ? digestFile(path.join(root, promotionSelftest)) : null;
+      const selftestDigest = promotionSelftest ? digestSelftestSuite(root, selftests) : null;
       sourceHash.update('selftest:' + folder + ':' + (selftestDigest || 'MISSING') + '\n');
       const conventionalContract = path.join(moduleRoot, 'module.contract.json');
       const contractFile = manifest && manifest.contract
@@ -129,7 +141,7 @@ function buildIndex(root, options) {
         : { pass: false, errors: ['module contract missing'] };
       const verified = freshness(manifest && manifest.verifiedAt, now.getTime(), Number(ladder.freshnessDays || 30));
       const verification = resultById.get(manifest && manifest.id || folder) || null;
-      const verificationCurrent = !!verification && verification.selftestSha256 === selftestDigest;
+      const verificationCurrent = !!verification && verification.selftestSha256 === selftestDigest && verification.selftestDigestScope === SELFTEST_DIGEST_SCOPE;
       const blockers = [];
       if (manifestErrors.length) blockers.push.apply(blockers, manifestErrors);
       if (!entryExists) blockers.push('declared entry is missing or escapes the tool folder');
@@ -173,7 +185,7 @@ function buildIndex(root, options) {
         permissionsDeclared: !!manifest && Array.isArray(manifest.permissions),
         usesDeclared: !!manifest && Array.isArray(manifest.uses),
         contract: { path: contractFile && contractInside ? portable(root, contractFile) : null, declared: !!(manifest && manifest.contract), present: !!contract, valid: contractCheck.pass, errors: contractCheck.errors, provides, consumes },
-        selftest: { paths: selftests, promotionPath: promotionSelftest, sha256: selftestDigest, result: verificationCurrent ? verification : null },
+        selftest: { paths: selftests, promotionPath: promotionSelftest, sha256: selftestDigest, digestScope: SELFTEST_DIGEST_SCOPE, result: verificationCurrent ? verification : null },
         readme: ['README.md', 'README.txt'].map(name => path.join(moduleRoot, name)).some(file => fs.existsSync(file)),
         discoveryReview: fs.existsSync(path.join(moduleRoot, 'discovery-seam-review.js')),
         verifiedAt: manifest && manifest.verifiedAt || null,
@@ -218,6 +230,7 @@ function buildIndex(root, options) {
       automaticPromotion: false,
       structuralEligibilityIsRuntimeProof: false,
       selftestPassIsHumanApproval: false,
+      selftestReceiptBindsDiscoveredSuite: true,
       capabilityCatalogGrantsAuthority: false,
       missingValuesRemainVisible: true
     }
@@ -235,14 +248,14 @@ function validateIndex(index) {
   if (!index.truth || index.truth.automaticPromotion !== false) errors.push('automaticPromotion must remain false');
   if (Array.isArray(index.tools)) {
     index.tools.forEach(tool => {
-      if (!tool || !['WORKING', 'CANON'].includes(tool.status) || !tool.promotion || tool.promotion.state !== 'CURRENT') return;
+      if (!tool || !tool.promotion || !['READY_FOR_HUMAN_REVIEW', 'CURRENT'].includes(tool.promotion.state)) return;
       const selftest = tool.selftest || {};
       const result = selftest.result;
-      const digestBoundPass = !!result && result.id === tool.id && result.verdict === 'PASS' && result.selftestSha256 === selftest.sha256;
-      if (!digestBoundPass) errors.push(String(tool.id || 'unknown tool') + ': CURRENT requires a digest-bound PASS selftest result');
+      const digestBoundPass = !!result && selftest.digestScope === SELFTEST_DIGEST_SCOPE && result.id === tool.id && result.verdict === 'PASS' && result.selftestSha256 === selftest.sha256 && result.selftestDigestScope === selftest.digestScope;
+      if (!digestBoundPass) errors.push(String(tool.id || 'unknown tool') + ': ' + tool.promotion.state + ' requires a digest-bound PASS selftest result');
     });
   }
   return { pass: errors.length === 0, errors };
 }
 
-module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, STATUSES, KINDS, buildIndex, validateIndex, validateTargetManifest, digestFile, isVerificationTarget };
+module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, STATUSES, KINDS, SELFTEST_DIGEST_SCOPE, buildIndex, validateIndex, validateTargetManifest, digestFile, digestSelftestSuite, isVerificationTarget };

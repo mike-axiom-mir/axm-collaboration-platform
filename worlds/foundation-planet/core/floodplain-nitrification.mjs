@@ -1,7 +1,8 @@
 import {
   FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
+  floodplainReactionMassClosureToleranceKg,
   normalizeFloodplainState
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.61.0-r61.1';
 
 export const FLOODPLAIN_NITRIFICATION_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-nitrification-state/v2';
@@ -379,8 +380,16 @@ export function advanceFloodplainNitrification(source, plan,
   const durationDays = finite(context.durationDays, 1);
   const planned = reaction(plan?.reaction);
   const reacted = reaction(reactionReceipt.reaction);
+  const reactionChannels = {
+    dissolvedAmmoniumNitrogenConsumedKgN: 'ammoniumNitrogenKgN',
+    dissolvedNitrateNitrogenProducedKgN: 'nitrogenKgN',
+    dissolvedOxygenConsumedKgO2: 'oxygenKgO2',
+    alkalinityDemandKgCaCO3: 'alkalinityKgCaCO3Eq'
+  };
   const amountsMatch = Object.keys(planned).every(key =>
-    Math.abs(planned[key] - reacted[key]) < 1e-7);
+    Math.abs(planned[key] - reacted[key]) <=
+      floodplainReactionMassClosureToleranceKg(reactionChannels[key],
+        planned[key], reacted[key]));
   if (!amountsMatch) {
     throw new Error('Floodplain nitrification plan and chemistry reaction quantities differ');
   }

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/raster-operations-receipt-v1.schema.json",
+  "title": "AXM Raster Operations Receipt v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "source", "recipe", "outputs", "operations", "checks", "limits", "authority"],
+  "properties": {
+    "schema": { "const": "axm.raster-operations-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "source": { "type": "object" },
+    "recipe": { "type": "object" },
+    "outputs": { "type": "array", "minItems": 1 },
+    "operations": { "type": "array" },
+    "checks": { "type": "array" },
+    "limits": { "type": "object" },
+    "authority": { "const": "candidate-only" }
+  },
+  "additionalProperties": false
+}

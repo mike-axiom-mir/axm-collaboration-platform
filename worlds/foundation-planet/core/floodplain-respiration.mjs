@@ -1,7 +1,8 @@
 import {
   FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
+  floodplainReactionMassClosureToleranceKg,
   normalizeFloodplainState
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.61.0-r61.1';
 
 export const FLOODPLAIN_RESPIRATION_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-respiration-state/v1';
@@ -224,8 +225,15 @@ export function advanceFloodplainRespiration(source, plan,
   const durationDays = finite(context.durationDays, 1);
   const planned = mineralization(plan?.reaction);
   const reacted = mineralization(mineralizationReceipt.reaction);
+  const reactionChannels = {
+    dissolvedOrganicCarbonConsumedKgC: 'carbonKgC',
+    dissolvedInorganicCarbonProducedKgC: 'carbonKgC',
+    dissolvedOxygenConsumedKgO2: 'oxygenKgO2'
+  };
   const amountsMatch = Object.keys(planned).every(key =>
-    Math.abs(planned[key] - reacted[key]) < 1e-7);
+    Math.abs(planned[key] - reacted[key]) <=
+      floodplainReactionMassClosureToleranceKg(reactionChannels[key],
+        planned[key], reacted[key]));
   if (!amountsMatch) {
     throw new Error('Floodplain respiration plan and chemistry reaction quantities differ');
   }

@@ -12,7 +12,7 @@ import {
   boundaryLayerVaporCapacityMm,
   earthCellIdentity,
   freeTroposphereVaporCapacityMm
-} from './earth-system.mjs';
+} from './earth-system.mjs?v=0.62.0-r62.1';
 import {
   validatePressureColumn
 } from './pressure-column.mjs';
@@ -59,7 +59,7 @@ import {
   atmosphereBiogeochemistryDomainTotals,
   atmosphereBiogeochemistryTransportDescription,
   transportAtmosphereBiogeochemistry
-} from './atmosphere-biogeochemistry-transport.mjs';
+} from './atmosphere-biogeochemistry-transport.mjs?v=0.62.0-r62.1';
 
 export {
   ATMOSPHERE_PRESSURE_HORIZONTAL_TRANSPORT_SCHEMA,

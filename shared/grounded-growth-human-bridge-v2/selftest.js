@@ -226,11 +226,6 @@ ok(linkSchema.$id === Bridge.INTERVENTION_LINK_SCHEMA, 'v2 intervention link sch
 ok(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'v2 module stays TEST with no permissions or writes');
 ok(contract.boundaries.refuses.includes('invented-candidate-for-reuse-existing'), 'contract explicitly refuses invented candidate ancestry');
 ok(contract.boundaries.refuses.includes('synthetic-fixture-as-human-benefit'), 'contract explicitly refuses synthetic fixtures as human benefit');
-ok(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
-ok(Bridge.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
-assert.throws(() => Bridge.stableStringify({ lost: undefined }), /unsupported undefined/i);
-checks += 1;
-console.log('PASS unsafe canonical state is refused');
 
 const candidateInput = buildInput('candidate');
 const reuseInput = buildInput('reuse');

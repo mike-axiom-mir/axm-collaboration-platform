@@ -999,10 +999,383 @@ pre-R51 snapshots preserve every previous pool and reaction history but add
 zero alkalinity with explicit migration checkpoints rather than inventing past
 chemistry. API v47 and experience capsules project the ledger read-only.
 
-Alkalinity is not pH. Caelus does not yet resolve carbonate species, dissolved
-inorganic-carbon equilibrium, buffering feedbacks, deep-ocean alkalinity
-exchange, measured concentrations or calibrated watershed chemistry. R51 is a
-conservative capacity ledger with declared bulk reaction stoichiometry.
+Alkalinity is not pH. At the R51 checkpoint Caelus did not resolve carbonate
+species, dissolved-inorganic-carbon equilibrium, buffering feedbacks,
+deep-ocean alkalinity exchange, measured concentrations or calibrated
+watershed chemistry. R51 is a conservative capacity ledger with declared bulk
+reaction stoichiometry.
+
+## Rung 52: mixed-layer/deep-ocean alkalinity ownership
+
+Caelus now extends the same CaCO3-equivalent capacity owner into the persistent
+deep ocean. `axm.foundation-planet.deep-ocean-state/v2` owns dissolved deep
+alkalinity, and `axm.foundation-planet.deep-ocean-exchange-receipt/v2` moves one
+signed amount between the mixed layer and that deep owner using the existing
+bounded concentration-gradient exchange depth. The sender is debited and the
+receiver is credited in one commit; the receipt closes the combined
+mixed-plus-deep residual. Physical exchange continues while Life is off, while
+particle export, remineralization and burial retain their prior Life boundary.
+
+New canonical deep-ocean state uses the same declared salinity-scaled 2,300
+micromole/kg open-ocean reference as the mixed layer. This is a parameterized
+initial condition, not a local observation. Treating total alkalinity as a
+conservative mixing quantity follows NOAA PMEL's
+[seawater carbonate-system guidance](https://www.pmel.noaa.gov/co2/files/dickson_thecarbondioxidesysteminseawater_equilibriumchemistryandmeasurementspp17-40.pdf);
+NOAA NCEI's
+[Guide to Best Practices for Ocean CO2 Measurements](https://www.ncei.noaa.gov/access/ocean-carbon-acidification-data-system/oceans/Handbook_2007/Guide_all_in_one.pdf)
+defines the larger measurement and carbonate-system boundary that Caelus does
+not claim to implement.
+
+Ocean ecology state/flux v4 includes the deep owner in total alkalinity and
+publishes the signed vertical amount beside its residual. Earth-system engine
+v27 persists that lineage. The read-only system audit v2 adds a dedicated
+`mixed-deep-ocean-alkalinity-ledger` check, and API v48 plus renderer-independent
+experience capsules project the current owners and receipt without mutation
+authority.
+
+Restoring an R51 deep-ocean v1 checkpoint preserves its C/N/P/O2 reservoirs and
+the already-owned mixed-layer alkalinity exactly, adds zero deep alkalinity,
+marks an explicit migration checkpoint, and invalidates the obsolete vertical
+receipt. It does not reconstruct historical deep alkalinity. Only a genuine
+post-migration step can earn the v2 exchange evidence.
+
+R52 still does not solve carbonate, bicarbonate, borate or minor acid-base
+species; derive pH; equilibrate DIC and alkalinity; model calcium-carbonate
+precipitation or dissolution; assimilate measured total alkalinity; resolve
+benthic or hydrothermal alkalinity reactions; or claim three-dimensional ocean
+circulation. The vertical exchange remains a bounded local bulk
+parameterization.
+
+### R52 continuity repair after the workspace move
+
+Basin routing engine v22 adds a restore-only clock-alignment checkpoint for
+browser saves whose committed Earth-transport clock and basin-routing clock
+were persisted at different instants. On the first restored synchronization,
+the committed Earth clock is authoritative: reach, floodplain, estuary,
+sediment and chemistry material are preserved exactly; the basin clock is
+aligned; and the stale latest routing receipt is invalidated. The checkpoint
+records both prior clocks and the delta.
+
+This is a one-shot state-continuity migration, not a material replay. It does
+not reconstruct unobserved river transfers or claim that the intervening
+period was simulated. Fresh state cannot invoke it, and a later clock mismatch
+still throws. The step receipt remains v21 because the routing/material
+contract itself did not change. API v48 exposes the checkpoint through
+read-only `basinRoutingStatus()`.
+
+The D-hosted live save also crossed the browser's raw `localStorage` quota at
+about 5.69 million payload characters. World-state v2 commits are therefore
+transactional: the in-memory revision changes only after storage accepts the
+new envelope. When the readable JSON envelope does not fit, the same
+checksummed envelope is stored through the explicit lossless
+`lzw-uint16-base64` fallback and validated normally after decompression.
+Compression is a storage encoding, not encryption. If both writes fail, the
+prior revision remains authoritative and the UI/console report `SAVE FAILED`
+instead of silently displaying an unpersisted revision.
+
+## Rung 53: bounded mixed-layer carbonate equilibrium
+
+Caelus now derives a read-only mixed-layer carbonate diagnostic from the
+persistent dissolved-inorganic-carbon, CaCO3-equivalent total-alkalinity and
+dissolved-inorganic-phosphorus owners plus mixed-layer depth, temperature and
+salinity. The observer solves total-scale pH by a deterministic bracketed
+alkalinity root and publishes CO2-star, bicarbonate and carbonate. Their sum
+must reconstruct the input DIC; phosphate species must reconstruct the input
+phosphorus; and the calculated alkalinity residual must close within the
+declared tolerance. No carbon, phosphorus or alkalinity is created, moved or
+owned by the diagnostic.
+Depth is converted to solution mass with the declared 1,000 kg/m3 reference
+density already used by the mixed-layer initialization; this is not a measured
+or TEOS-10 density calculation.
+
+The constant set is explicit: Lueker et al. (2000) carbonic-acid constants,
+Dickson (1990) boric acid, Millero (1995) water and phosphoric-acid constants,
+and the Lee et al. (2010) boron-to-salinity relationship, all at surface
+pressure on the total hydrogen-ion scale. NOAA NCEI recommends the Lueker set
+for open-ocean salinity 19–43 and 2–35 °C; Caelus therefore returns a typed
+`OUTSIDE_CONSTANT_VALIDITY` non-solution outside that envelope instead of
+clamping the water into it. See NOAA NCEI's
+[OCADS carbonate-system guidance](https://www.ncei.noaa.gov/products/ocean-carbon-acidification-data-system),
+the official
+[Guide to Best Practices for Ocean CO2 Measurements](https://www.nodc.noaa.gov/media/pdf/oceanacidification/Dicksonetal2007_guide_all_in_one.pdf),
+and the primary
+[Lueker et al. study](https://doi.org/10.1016/S0304-4203(00)00022-0).
+
+Ocean ecology state/flux v5 carries the current diagnostic and its source-owner
+binding. Earth-system engine v28 migrates v27 columns by recomputing this
+present-state observer while preserving all material owners and compatible
+transport receipts. System audit v3 adds
+`mixed-layer-carbonate-diagnostic`; API v49 and the live `Marine carbonate / pH`
+row expose the same read-only result. The diagnostic is EXPERIMENTAL and its
+parameterized DIC and alkalinity inputs are not observations.
+
+R53 does not include dissolved silicate, fluoride, sulfide or ammonia alkalinity; deep
+pressure corrections; deep-ocean pH; calcium ownership or calcite/aragonite
+saturation; precipitation/dissolution kinetics; observation assimilation; or
+pH feedback on biology and reactions. Those omissions stay machine-readable
+in every diagnostic and audit result.
+
+## Rung 54: carbonate-informed air-sea carbon exchange
+
+R54 replaces the old empirical target-DIC carbon exchange with a pure
+`axm.foundation-planet.air-sea-carbon-exchange-proposal/v1`. Before any owner
+move, the proposal requires a solved R53 diagnostic whose DIC, alkalinity,
+phosphorus, depth, temperature and salinity sources match the current ocean
+state. It compares that diagnostic's actual CO2-star with the atmospheric
+equilibrium CO2-star. A stale, unavailable or out-of-envelope diagnostic
+produces a typed zero-carbon-flux result; oxygen exchange remains a separate
+physical path.
+
+The atmospheric side reuses the atmosphere-owned carbon compatibility mirror
+as a dry-air ppm proxy, not a measurement. Seawater vapor pressure converts it
+to wet-air pCO2. The [Weiss (1974) primary
+paper](https://doi.org/10.1016/0304-4203(74)90015-2) supplies CO2 solubility
+`K0` and the virial `B` term; the cross-virial correction and wet-air
+construction follow NOAA NCEI's [NDP-047 calculation
+procedure](https://www.ncei.noaa.gov/access/ocean-carbon-acidification-data-system/oceans/ndp_047/datacalc047.html).
+The held 25 °C, salinity-35 value `ln(K0) = -3.5617` is checked against the
+official [Guide to Best Practices for Ocean CO2
+Measurements](https://www.ncei.noaa.gov/access/ocean-carbon-acidification-data-system/oceans/Handbook_2007/Guide_all_in_one.pdf).
+
+Actual minus equilibrium CO2-star determines direction. Wind, open water and
+duration supply the existing bounded bulk relaxation fraction; the proposal
+converts the relaxed concentration difference through the declared 1,000
+kg/m3 reference water mass and carbon molar mass. One signed amount is then
+applied as an exactly paired atmosphere-to-DIC owner move, bounded by sender
+availability. The receipt records the source diagnostic, wet and dry pressure,
+pCO2, fCO2, solubility, disequilibrium, unbounded proposal, bounded proposal
+and applied amount. System audit v4 recomputes those values and fails corrupted
+fugacity, direction, bounds, owner application or carbon closure evidence.
+
+Ocean ecology state/flux v6 migrates v5 without changing any C/N/P/O2 or
+alkalinity owner and discards the old empirical v5 flux receipt. Earth-system
+engine v29 migrates v28 while retaining compatible transport receipts. API v50
+adds read-only `airSeaCarbonExchange()` and the live
+`Air-sea CO2 equilibrium` row. R54 remains **EXPERIMENTAL**: there is no
+measured atmospheric/ocean pCO2, measured ocean skin temperature, cool-skin or
+warm-layer correction, scientifically calibrated piston velocity, or
+species-resolved pH response. It is a bounded local process model, not a
+scientific air-sea flux product.
+
+## Rung 55: native phase-change thermal headroom
+
+R55 repairs a preserved long-run atmosphere-energy failure without creating a
+new material owner. Native condensation, deposition, evaporation, sublimation,
+freezing and melting now ask the pure
+`axm.foundation-planet.atmosphere-phase-thermal-envelope/v1` helper how much
+latent heating or cooling fits between -120 and 70 °C before any water changes
+phase. The supported mass moves with its full latent heat; unsupported requested
+mass remains in its source phase. The pressure-column normalizer therefore no
+longer has to silently discard heat after a material move.
+
+Pressure dynamics v4 and its layer/precipitation and compatibility phase v3
+receipts expose the number of thermal limits, the largest rejected request,
+the declared envelope, and water/moist-enthalpy closure. Engine v30 migrates
+v29 by preserving material, temperature and momentum owners, discarding legacy
+phase receipts, and installing a neutral present-state atmosphere-energy
+checkpoint. Audit v5 independently rejects out-of-envelope layers and malformed
+native phase ledgers. API v51 shows the limit count and retained source-phase
+mass in the existing `Cloud phase change` diagnostic.
+
+The repair is **WORKING** within its held scope: the exact R54 ocean
+counterexample reaches its old day-343 trigger during a 365-day run while the
+maximum whole-atmosphere residual remains 0.005901 J/m², and a 432-step sweep
+across 36 land/ocean locations and all condition profiles remains below
+0.006682 J/m². This is not resolved cloud microphysics, upper-atmosphere
+radiative chemistry, calibrated convection or a scientific forecast.
+
+One distinct extreme stress remains **BROKEN** and is not hidden by R55: a
+365-day land column under the same constant wet-storm boundary forcing reaches
+a 207,978.797706 J/m² whole-atmosphere residual even though its native pressure
+receipt itself closes below 0.00001 J/m². That separate compatibility/column
+ledger failure remains counterevidence for a later repair; R55 does not claim
+arbitrary long-run forcing closure.
+
+## Rung 56: requested versus applied boundary energy
+
+R56 resolves that preserved R55 counterexample without subtracting the observed
+residual or expanding the native temperature envelope. The root cause was the
+prescribed two-band boundary target requesting cooling that would place the
+highest native pressure layer below -120 °C. Native reconciliation correctly
+retained the layer at the declared minimum, but the whole-atmosphere ledger was
+still charging the unachievable requested cooling instead of the energy change
+actually applied to the authoritative eight-level column.
+
+The typed
+`axm.foundation-planet.atmosphere-boundary-energy-receipt/v1` now retains the
+compatibility request, authoritative native initial and final moist enthalpy,
+applied boundary change, initial/final compatibility projection adjustments,
+and their explicit native-envelope reconciliation. The ledger charges the
+applied native boundary energy while preserving the refused request as evidence.
+It does not zero a checkpoint or claim that the boundary parameterization is a
+scientific atmosphere model.
+
+Engine v31 migrates v30 by preserving material, temperature and momentum owners
+and valid R55 phase evidence while discarding unsupported historical R56
+boundary-energy evidence into a labelled present-state checkpoint. Audit v6
+independently checks the receipt identities, its embedded budget copy, envelope
+limit evidence and the final water/surface/atmosphere ledgers. API v52 shows the
+boundary-envelope energy beside the existing moist-enthalpy residual.
+
+The repair is **WORKING** in its held scope. The exact 365-day constant wet-land
+replay first encounters boundary-envelope reconciliation on day 215, retains a
+maximum 207,978.793070 J/m² refused cooling adjustment, and keeps the maximum
+whole-atmosphere residual to 0.006005 J/m². R55's original observation remains
+part of the evidence trail; R56 changes its status from an unexplained
+compatibility-ledger failure to an explicit requested-versus-applied boundary
+receipt. This is still a bounded local process model, not a global circulation
+model, scientific forecast, or calibrated upper-atmosphere boundary solver.
+
+## Rung 57: scale-aware land subgrid mass closure
+
+R57 resolves the intermittent live `basin-routing-receipt` and
+`floodplain-plant-matter-receipts` failures that survived for an entire model
+step. The land-to-floodplain debit compared carbon and nitrogen residuals with
+a fixed 0.000001 kg (one milligram) limit even when its recorded operands were
+tens or hundreds of billions of kilograms. Binary floating-point spacing at
+that scale can be several milligrams, so an otherwise conservative debit could
+be falsely marked open and then invalidate the basin receipt that carried it.
+
+`axm.foundation-planet.land-ecology-subgrid-biomass-debit/v2` preserves the
+measured carbon and nitrogen residuals and declares a reproducible numeric
+policy: the greater of the one-milligram floor or eight IEEE-754 epsilon steps
+at the largest recorded operand magnitude. System audit v7 recomputes that
+bound from the receipt operands; a sender cannot inflate its own tolerance.
+Basin engine v23 accepts only this current evidence. Its v22 migration retains
+basin owners and clocks but discards the older v21 sender receipt rather than
+promoting unsupported history.
+
+The repair is **WORKING** within its held numeric scope. A deterministic
+48-case Earth-cell sweep changed from 11 false failures to none; the largest
+measured residue was 0.000061035 kg and the largest bound utilization was
+11.9%. In the live browser, 48 repeated observations spanning two complete
+model steps stayed at 26 pass / 0 fail / 4 not applicable. API v53 shows the
+maximum sender residue and its independently auditable bound in milligrams.
+This is a bounded floating-point accounting policy, not arbitrary-precision
+arithmetic, ecological calibration or proof over every possible planet state.
+
+## Rung 58: scale-aware floodplain plant-resource mass closure
+
+R58 applies the same evidence discipline to the persistent floodplain plant
+phosphorus and tissue-water owner. Its v1 transition receipt used a fixed
+0.0000001 kg comparison for supported carbon, phosphorus and live tissue water.
+At Earth-cell reservoir scale, an exactly conservative mortality transfer can
+leave a representational residue larger than that floor; a 10-billion-kilogram
+tissue-water fixture records 0.000000476837 kg and was therefore falsely marked
+open.
+
+`axm.foundation-planet.floodplain-plant-resources-receipt/v2` records the before,
+transfer and after operands for every guild and for the aggregate receipt. Each
+of the three material channels receives its own reproducible bound: the greater
+of the 0.0000001 kg floor or eight IEEE-754 epsilon steps at the largest operand
+magnitude in that channel. The measured residue remains visible. System audit
+v8 independently recomputes every guild and aggregate identity and rejects an
+inflated receipt-supplied tolerance. Basin engine v24 preserves v23 owners and
+clocks but discards its older step-v22 receipt rather than inventing v2
+plant-resource evidence.
+
+The repair is **WORKING** within its held numeric scope. In a 150-case bounded
+Earth-cell sweep, five conservative transitions exceeded the former fixed
+floor and none exceeded the derived per-channel bound; the largest measured
+residue was 0.000000476837 kg and maximum bound utilization was 3.36%. A wider
+250-case adversarial representation sweep found 20 former fixed-floor failures
+and no derived-bound failures. API v54 publishes the live maximum plant-resource
+residue and bound. This does not claim arbitrary-precision accounting,
+scientific plant calibration, or proof over every planet state.
+
+## Rung 59: scale-aware floodplain plant-matter mass closure
+
+R59 applies the same measured-residual policy to the persistent floodplain
+plant carbon and nitrogen transition. Its v1 receipt judged each guild and the
+aggregate owner against a fixed 0.0000001 kg limit. Large live,
+standing-dead and litter pools can conserve material while ordinary binary
+floating-point evaluation leaves a larger representational residue, so the
+former comparison could falsely open the basin truth boundary.
+
+`axm.foundation-planet.floodplain-plant-matter-receipt/v2` now records the
+before, land-credit and after operands for carbon and nitrogen separately in
+every guild and in the aggregate transition. The typed
+`axm.foundation-planet.floodplain-plant-matter-mass-closure-policy/v1` bounds
+each channel by the greater of the 0.0000001 kg floor or eight IEEE-754 epsilon
+steps at its largest recorded operand. The measured residue is preserved.
+System audit v9 independently recomputes the identities and bounds and rejects
+an inflated receipt-supplied tolerance. Basin engine v25 retains v24 profiles,
+material owners and clocks but discards its step-v23 evidence rather than
+claiming that old evidence satisfies the v2 receipt contract.
+
+The repair is **WORKING** within its held numeric scope. A deterministic
+250-case standing-dead/litter representation sweep changed from 22 false
+fixed-floor failures to no derived-bound failures. Its largest measured
+residue was 0.000030517578 kg and maximum bound utilization was 12.19%.
+API v55 publishes the live maximum plant-matter residue and bound beside the
+land sender evidence. This does not claim arbitrary-precision accounting,
+scientific plant calibration, or proof over every possible planet state.
+
+## Rung 60: scale-aware floodplain detrital-return receiver closure
+
+R60 repairs the persistent floodplain chemistry receiver at the other side of
+resource-backed plant decomposition. The former v2 credit receipt compared its
+aggregate carbon, total nitrogen, ammonium nitrogen and phosphorus identities
+against fixed absolute floors. Large existing chemistry pools can conserve a
+valid detrital credit while normal binary floating-point evaluation leaves a
+larger measured residue, falsely opening the receiver boundary even though the
+plant-matter sender, plant-resource sender and decomposition handoff remain
+closed.
+
+`axm.foundation-planet.floodplain-detrital-return-credit/v3` records separate
+carbon, total-nitrogen, ammonium, unchanged-nitrate and phosphorus identities.
+The typed
+`axm.foundation-planet.floodplain-detrital-return-mass-closure-policy/v1`
+derives each bound from that channel's recorded before, credit and after
+operands using eight IEEE-754 epsilon steps, with the prior absolute floor as a
+minimum. The receipt retains every measured residue and has no free-form
+tolerance authority. System audit v10 independently recomputes the identities,
+bounds, maximum residue and utilization, and rejects an inflated declared
+bound. Basin engine v26 preserves v25 profiles, owners and clocks but discards
+step-v24 evidence rather than relabelling the old receiver receipt as v3.
+
+The repair is **WORKING** within its held numeric scope. A deterministic
+250-case receiver representation sweep changed from 35 fixed-floor false
+failures to no derived-bound failures. Its largest measured residue was
+0.000164031982 kg and maximum bound utilization was 33.2%. API v56 publishes
+the live maximum receiver residue and derived bound in milligrams. This does
+not claim arbitrary-precision accounting, scientific decomposition
+calibration, or proof over every possible planet state.
+
+## Rung 61: scale-aware floodplain reaction receiver closure
+
+R61 extends the same measured-residual discipline to the four persistent
+floodplain chemistry reaction receivers: aerobic DOC mineralization,
+denitrification, nitrification and bidirectional floodplain gas exchange. Their
+former receipts applied fixed absolute comparisons to carbon, nitrogen,
+ammonium, oxygen and alkalinity identities. At large stored-pool scales, a
+conservative reaction could therefore retain an ordinary binary
+floating-point residue above the fixed floor and falsely open the process and
+basin truth boundaries.
+
+The typed
+`axm.foundation-planet.floodplain-reaction-mass-closure-policy/v1` derives a
+separate bound for every recorded identity from that identity's own operands:
+the greater of its declared material-channel floor or eight IEEE-754 epsilon
+steps at the largest operand magnitude. Aerobic mineralization receipt v2,
+denitrification reaction receipt v4, nitrification reaction receipt v3 and
+floodplain gas-exchange receipt v3 retain the measured identities, per-identity
+bounds, maximum residue and utilization. Their immediate process wrappers use
+the same policy for plan-to-owner comparisons instead of reintroducing a fixed
+threshold. System audit v11 independently reconstructs every identity and
+rejects an inflated receipt-supplied bound. Basin engine v27 preserves v26
+profiles, owners and clocks but discards step-v25 evidence rather than
+inventing current reaction evidence.
+
+The repair is **WORKING** within its held numeric scope. A deterministic
+240-case sweep across all four reaction families changed from 54 fixed-floor
+false failures to no derived-bound failures. Its largest measured residue was
+0.00048828125 kg and maximum derived-bound utilization stayed below 11%. API
+v57 publishes the live aggregate and per-reaction maximum residue, bound and
+utilization. The atmosphere-side gas owner retains its separate existing
+contract. R61 does not claim arbitrary-precision accounting, calibrated
+reaction kinetics, mechanistic microbial ecology or proof over every possible
+planet state.
 
 ## Why there are two render scales
 

@@ -15,12 +15,14 @@ import {
 } from './geomorphic-sediment.mjs';
 
 export const FLOODPLAIN_STATE_SCHEMA =
-  'axm.foundation-planet.floodplain-state/v4';
+  'axm.foundation-planet.floodplain-state/v5';
 export const PREVIOUS_FLOODPLAIN_STATE_SCHEMA =
-  'axm.foundation-planet.floodplain-state/v3';
+  'axm.foundation-planet.floodplain-state/v4';
 export const LEGACY_FLOODPLAIN_STATE_SCHEMA =
-  'axm.foundation-planet.floodplain-state/v2';
+  'axm.foundation-planet.floodplain-state/v3';
 export const OLDEST_FLOODPLAIN_STATE_SCHEMA =
+  'axm.foundation-planet.floodplain-state/v2';
+export const EARLIEST_FLOODPLAIN_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-state/v1';
 export const FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA =
   'axm.foundation-planet.floodplain-exchange-receipt/v3';
@@ -31,15 +33,47 @@ export const FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA =
 export const FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA =
   'axm.foundation-planet.floodplain-plant-water-return/v1';
 export const FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA =
+  'axm.foundation-planet.floodplain-detrital-return-credit/v3';
+export const PREVIOUS_FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA =
   'axm.foundation-planet.floodplain-detrital-return-credit/v2';
+export const FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA =
+  'axm.foundation-planet.floodplain-detrital-return-mass-closure-policy/v1';
+export const FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ABSOLUTE_FLOORS_KG =
+  Object.freeze({
+    carbonKgC: 1e-7,
+    nitrogenKgN: 1e-7,
+    ammoniumNitrogenKgN: 1e-7,
+    nitrateNitrogenKgN: 1e-9,
+    phosphorusKgP: 1e-9
+  });
+export const FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ULP_FACTOR = 8;
 export const FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA =
+  'axm.foundation-planet.floodplain-aerobic-mineralization-receipt/v2';
+export const PREVIOUS_FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA =
   'axm.foundation-planet.floodplain-aerobic-mineralization-receipt/v1';
 export const FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA =
+  'axm.foundation-planet.floodplain-denitrification-reaction-receipt/v4';
+export const PREVIOUS_FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA =
   'axm.foundation-planet.floodplain-denitrification-reaction-receipt/v3';
 export const FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA =
+  'axm.foundation-planet.floodplain-nitrification-reaction-receipt/v3';
+export const PREVIOUS_FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA =
   'axm.foundation-planet.floodplain-nitrification-reaction-receipt/v2';
 export const FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA =
+  'axm.foundation-planet.floodplain-gas-exchange-receipt/v3';
+export const PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA =
   'axm.foundation-planet.floodplain-gas-exchange-receipt/v2';
+export const FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA =
+  'axm.foundation-planet.floodplain-reaction-mass-closure-policy/v1';
+export const FLOODPLAIN_REACTION_MASS_CLOSURE_ABSOLUTE_FLOORS_KG =
+  Object.freeze({
+    carbonKgC: 1e-7,
+    nitrogenKgN: 1e-7,
+    ammoniumNitrogenKgN: 1e-9,
+    oxygenKgO2: 1e-7,
+    alkalinityKgCaCO3Eq: 1e-7
+  });
+export const FLOODPLAIN_REACTION_MASS_CLOSURE_ULP_FACTOR = 8;
 
 const GRAINS = Object.freeze(['clay', 'silt', 'sand', 'gravel']);
 const CHEMISTRY_KEYS = Object.freeze([
@@ -53,6 +87,67 @@ const finite = (value, fallback = 0) => Number.isFinite(Number(value))
   ? Number(value) : fallback;
 const round = (value, digits = 12) => Number(Number(value).toFixed(digits));
 const clone = value => JSON.parse(JSON.stringify(value));
+
+export function floodplainDetritalReturnMassClosureToleranceKg(channel,
+  ...values) {
+  const absoluteFloorKg =
+    FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ABSOLUTE_FLOORS_KG[channel];
+  if (!Number.isFinite(absoluteFloorKg)) {
+    throw new Error(`Unknown floodplain detrital-return material channel: ${channel}`);
+  }
+  const magnitudeKg = Math.max(1, ...values.map(value =>
+    Math.abs(finite(value))));
+  return round(Math.max(absoluteFloorKg,
+    magnitudeKg * Number.EPSILON *
+      FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ULP_FACTOR), 12);
+}
+
+export function floodplainReactionMassClosureToleranceKg(channel,
+  ...values) {
+  const absoluteFloorKg =
+    FLOODPLAIN_REACTION_MASS_CLOSURE_ABSOLUTE_FLOORS_KG[channel];
+  if (!Number.isFinite(absoluteFloorKg)) {
+    throw new Error(`Unknown floodplain reaction material channel: ${channel}`);
+  }
+  const magnitudeKg = Math.max(1, ...values.map(value =>
+    Math.abs(finite(value))));
+  return round(Math.max(absoluteFloorKg,
+    magnitudeKg * Number.EPSILON *
+      FLOODPLAIN_REACTION_MASS_CLOSURE_ULP_FACTOR), 12);
+}
+
+function reactionNumericClosure(identities = {}, numericToleranceKg = {}) {
+  const pairs = Object.keys(identities).map(key => [
+    Math.abs(finite(identities[key])),
+    finite(numericToleranceKg[key])
+  ]);
+  const maximumResidualKg = Math.max(0,
+    ...pairs.map(([residual]) => residual));
+  const maximumToleranceUtilization = Math.max(0,
+    ...pairs.map(([residual, tolerance]) =>
+      tolerance > 0 ? residual / tolerance : Infinity));
+  return {
+    closure: {
+      maximumResidualKg: round(maximumResidualKg, 12),
+      maximumToleranceUtilization: round(
+        maximumToleranceUtilization, 12),
+      ...identities,
+      numericToleranceKg,
+      policy: {
+        schema: FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
+        absoluteFloorsKg: {
+          ...FLOODPLAIN_REACTION_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+        },
+        ulpFactor: FLOODPLAIN_REACTION_MASS_CLOSURE_ULP_FACTOR,
+        recordedOperandScale: true,
+        perIdentity: true,
+        arbitraryToleranceAuthority: false
+      }
+    },
+    allIdentitiesClosed: pairs.every(([residual, tolerance]) =>
+      tolerance > 0 && residual <= tolerance)
+  };
+}
 
 function grains(source = {}) {
   return Object.fromEntries(GRAINS.map(id => [id,
@@ -114,6 +209,10 @@ function truth() {
     nitrificationAlkalinityDemandDiagnostic: false,
     nitrificationAlkalinityMaterialOwnerDebited: true,
     denitrificationAlkalinityMaterialOwnerCredited: true,
+    reactionReceiptsScaleAwareNumericClosure: true,
+    reactionReceiptsPerIdentityNumericBounds: true,
+    reactionReceiptsMeasuredResidualsPreserved: true,
+    reactionReceiptsFixedAbsoluteToleranceOnly: false,
     alkalinityIsAcidNeutralizingCapacityEquivalent: true,
     carbonateSpeciationResolved: false,
     nitrificationPHFeedbackModeled: false,
@@ -154,7 +253,8 @@ export function emptyFloodplainState(options = {}) {
 export function normalizeFloodplainState(source, options = {}) {
   const state = emptyFloodplainState(options);
   if (![FLOODPLAIN_STATE_SCHEMA, PREVIOUS_FLOODPLAIN_STATE_SCHEMA,
-    LEGACY_FLOODPLAIN_STATE_SCHEMA, OLDEST_FLOODPLAIN_STATE_SCHEMA]
+    LEGACY_FLOODPLAIN_STATE_SCHEMA, OLDEST_FLOODPLAIN_STATE_SCHEMA,
+    EARLIEST_FLOODPLAIN_STATE_SCHEMA]
     .includes(source?.schema)) return state;
   state.migrationCheckpoint = source.schema !== FLOODPLAIN_STATE_SCHEMA ||
     source.migrationCheckpoint === true;
@@ -443,10 +543,79 @@ export function applyFloodplainDetritalReturn(source, allocations = [],
   state.cumulativeDetritalReturn.phosphorusKgP += totals.phosphorusKgP;
   const after = riverChemistryTotals(state.chemistry);
   const afterNitrogenSpecies = riverNitrogenSpecies(state.chemistry);
-  const ammoniumResidualKgN = round(
-    afterNitrogenSpecies.dissolvedAmmoniumNitrogenKgN -
-    beforeNitrogenSpecies.dissolvedAmmoniumNitrogenKgN -
-    totals.nitrogenKgN, 12);
+  const recordedBefore = Object.fromEntries(Object.entries(before)
+    .map(([key, value]) => [key, round(value, 9)]));
+  const recordedBeforeNitrogenSpecies = {
+    nitrateNitrogenKgN: round(
+      beforeNitrogenSpecies.dissolvedNitrateNitrogenKgN, 9),
+    ammoniumNitrogenKgN: round(
+      beforeNitrogenSpecies.dissolvedAmmoniumNitrogenKgN, 9)
+  };
+  const recordedCredited = {
+    carbonKgC: round(totals.carbonKgC, 9),
+    nitrogenKgN: round(totals.nitrogenKgN, 9),
+    phosphorusKgP: round(totals.phosphorusKgP, 12)
+  };
+  const recordedAfter = Object.fromEntries(Object.entries(after)
+    .map(([key, value]) => [key, round(value, 9)]));
+  const recordedAfterNitrogenSpecies = {
+    nitrateNitrogenKgN: round(
+      afterNitrogenSpecies.dissolvedNitrateNitrogenKgN, 9),
+    ammoniumNitrogenKgN: round(
+      afterNitrogenSpecies.dissolvedAmmoniumNitrogenKgN, 9)
+  };
+  const closure = {
+    carbonResidualKgC: round(recordedAfter.carbonKgC -
+      recordedBefore.carbonKgC - recordedCredited.carbonKgC, 12),
+    nitrogenResidualKgN: round(recordedAfter.nitrogenKgN -
+      recordedBefore.nitrogenKgN - recordedCredited.nitrogenKgN, 12),
+    ammoniumNitrogenResidualKgN: round(
+      recordedAfterNitrogenSpecies.ammoniumNitrogenKgN -
+      recordedBeforeNitrogenSpecies.ammoniumNitrogenKgN -
+      recordedCredited.nitrogenKgN, 12),
+    nitrateNitrogenResidualKgN: round(
+      recordedAfterNitrogenSpecies.nitrateNitrogenKgN -
+      recordedBeforeNitrogenSpecies.nitrateNitrogenKgN, 12),
+    phosphorusResidualKgP: round(recordedAfter.phosphorusKgP -
+      recordedBefore.phosphorusKgP - recordedCredited.phosphorusKgP, 12)
+  };
+  const numericToleranceKg = {
+    carbonKgC: floodplainDetritalReturnMassClosureToleranceKg(
+      'carbonKgC', recordedBefore.carbonKgC,
+      recordedCredited.carbonKgC, recordedAfter.carbonKgC),
+    nitrogenKgN: floodplainDetritalReturnMassClosureToleranceKg(
+      'nitrogenKgN', recordedBefore.nitrogenKgN,
+      recordedCredited.nitrogenKgN, recordedAfter.nitrogenKgN),
+    ammoniumNitrogenKgN: floodplainDetritalReturnMassClosureToleranceKg(
+      'ammoniumNitrogenKgN',
+      recordedBeforeNitrogenSpecies.ammoniumNitrogenKgN,
+      recordedCredited.nitrogenKgN,
+      recordedAfterNitrogenSpecies.ammoniumNitrogenKgN),
+    nitrateNitrogenKgN: floodplainDetritalReturnMassClosureToleranceKg(
+      'nitrateNitrogenKgN',
+      recordedBeforeNitrogenSpecies.nitrateNitrogenKgN,
+      recordedAfterNitrogenSpecies.nitrateNitrogenKgN),
+    phosphorusKgP: floodplainDetritalReturnMassClosureToleranceKg(
+      'phosphorusKgP', recordedBefore.phosphorusKgP,
+      recordedCredited.phosphorusKgP, recordedAfter.phosphorusKgP)
+  };
+  const residualTolerancePairs = [
+    [Math.abs(closure.carbonResidualKgC), numericToleranceKg.carbonKgC],
+    [Math.abs(closure.nitrogenResidualKgN), numericToleranceKg.nitrogenKgN],
+    [Math.abs(closure.ammoniumNitrogenResidualKgN),
+      numericToleranceKg.ammoniumNitrogenKgN],
+    [Math.abs(closure.nitrateNitrogenResidualKgN),
+      numericToleranceKg.nitrateNitrogenKgN],
+    [Math.abs(closure.phosphorusResidualKgP),
+      numericToleranceKg.phosphorusKgP]
+  ];
+  const maximumResidualKg = Math.max(0,
+    ...residualTolerancePairs.map(([residual]) => residual));
+  const maximumToleranceUtilization = Math.max(0,
+    ...residualTolerancePairs.map(([residual, tolerance]) =>
+      residual / tolerance));
+  const allChannelsClosed = residualTolerancePairs.every(
+    ([residual, tolerance]) => residual <= tolerance);
   const receipt = {
     schema: FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
     reachId,
@@ -458,56 +627,44 @@ export function applyFloodplainDetritalReturn(source, allocations = [],
       nitrogenKgN: round(entry.nitrogenKgN, 9),
       phosphorusKgP: round(entry.phosphorusKgP, 12)
     })),
-    before: Object.fromEntries(Object.entries(before).map(([key, value]) =>
-      [key, round(value, 9)])),
-    beforeNitrogenSpecies: {
-      nitrateNitrogenKgN: round(
-        beforeNitrogenSpecies.dissolvedNitrateNitrogenKgN, 9),
-      ammoniumNitrogenKgN: round(
-        beforeNitrogenSpecies.dissolvedAmmoniumNitrogenKgN, 9)
-    },
-    credited: {
-      carbonKgC: round(totals.carbonKgC, 9),
-      nitrogenKgN: round(totals.nitrogenKgN, 9),
-      phosphorusKgP: round(totals.phosphorusKgP, 12)
-    },
-    after: Object.fromEntries(Object.entries(after).map(([key, value]) =>
-      [key, round(value, 9)])),
-    afterNitrogenSpecies: {
-      nitrateNitrogenKgN: round(
-        afterNitrogenSpecies.dissolvedNitrateNitrogenKgN, 9),
-      ammoniumNitrogenKgN: round(
-        afterNitrogenSpecies.dissolvedAmmoniumNitrogenKgN, 9)
-    },
+    before: recordedBefore,
+    beforeNitrogenSpecies: recordedBeforeNitrogenSpecies,
+    credited: recordedCredited,
+    after: recordedAfter,
+    afterNitrogenSpecies: recordedAfterNitrogenSpecies,
     pools: {
       carbon: 'dissolvedOrganicCarbonKgC',
       nitrogen: 'dissolvedAmmoniumNitrogenKgN',
       phosphorus: 'dissolvedInorganicPhosphorusKgP'
     },
     closure: {
-      carbonResidualKgC: round(after.carbonKgC - before.carbonKgC -
-        totals.carbonKgC, 12),
-      nitrogenResidualKgN: round(after.nitrogenKgN - before.nitrogenKgN -
-        totals.nitrogenKgN, 12),
-      ammoniumNitrogenResidualKgN: ammoniumResidualKgN,
-      phosphorusResidualKgP: round(after.phosphorusKgP -
-        before.phosphorusKgP - totals.phosphorusKgP, 12)
+      maximumResidualKg: round(maximumResidualKg, 12),
+      maximumToleranceUtilization: round(
+        maximumToleranceUtilization, 12),
+      ...closure,
+      numericToleranceKg,
+      policy: {
+        schema: FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA,
+        absoluteFloorsKg: {
+          ...FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+        },
+        ulpFactor: FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ULP_FACTOR,
+        recordedOperandScale: true,
+        perMaterialChannel: true,
+        arbitraryToleranceAuthority: false
+      }
     },
     truth: {
       persistentFloodplainChemistryReceiverCredited: true,
       exactPerGuildPoolTransferIds: true,
       detritalNitrogenCreditedToAmmoniumPool: true,
-      nitratePoolUnchanged: Math.abs(
-        afterNitrogenSpecies.dissolvedNitrateNitrogenKgN -
-        beforeNitrogenSpecies.dissolvedNitrateNitrogenKgN) < 1e-9,
-      carbonNitrogenPhosphorusClosed:
-        Math.abs(after.carbonKgC - before.carbonKgC -
-          totals.carbonKgC) < 1e-7 &&
-        Math.abs(after.nitrogenKgN - before.nitrogenKgN -
-          totals.nitrogenKgN) < 1e-7 &&
-        Math.abs(ammoniumResidualKgN) < 1e-7 &&
-        Math.abs(after.phosphorusKgP - before.phosphorusKgP -
-          totals.phosphorusKgP) < 1e-9,
+      nitratePoolUnchanged: Math.abs(closure.nitrateNitrogenResidualKgN) <=
+        numericToleranceKg.nitrateNitrogenKgN,
+      carbonNitrogenPhosphorusClosed: allChannelsClosed,
+      scaleAwareFloatingPointClosure: true,
+      perMaterialChannelNumericBounds: true,
+      measuredResidualsPreserved: true,
+      fixedAbsoluteToleranceOnly: false,
       localReceiverOnly: true,
       soilReceiverModeled: false,
       atmosphereRespirationModeled: false,
@@ -534,9 +691,14 @@ export function applyFloodplainAerobicMineralization(source, reaction = {},
   const oxygenConsumedKgO2 = Math.max(0, finite(
     reaction.dissolvedOxygenConsumedKgO2));
   const oxygenKgO2PerKgC = 32 / 12;
-  if (Math.abs(carbonConsumedKgC - carbonProducedKgC) >= 1e-7 ||
+  if (Math.abs(carbonConsumedKgC - carbonProducedKgC) >
+      floodplainReactionMassClosureToleranceKg('carbonKgC',
+        carbonConsumedKgC, carbonProducedKgC) ||
     Math.abs(oxygenConsumedKgO2 - carbonConsumedKgC *
-      oxygenKgO2PerKgC) >= 1e-7) {
+      oxygenKgO2PerKgC) >
+      floodplainReactionMassClosureToleranceKg('oxygenKgO2',
+        oxygenConsumedKgO2, carbonConsumedKgC,
+        carbonConsumedKgC * oxygenKgO2PerKgC)) {
     throw new Error('Floodplain aerobic mineralization reaction is not stoichiometrically closed');
   }
   if (context.livingEnabled === false &&
@@ -552,48 +714,87 @@ export function applyFloodplainAerobicMineralization(source, reaction = {},
     dissolvedInorganicCarbonKgC: carbonProducedKgC
   });
   const after = normalizeRiverChemistry(state.chemistry);
+  const recordedReaction = {
+    dissolvedOrganicCarbonConsumedKgC: round(carbonConsumedKgC, 9),
+    dissolvedInorganicCarbonProducedKgC: round(carbonProducedKgC, 9),
+    dissolvedOxygenConsumedKgO2: round(oxygenConsumedKgO2, 9)
+  };
+  const recordedBefore = {
+    dissolvedOrganicCarbonKgC: round(
+      before.dissolvedOrganicCarbonKgC, 9),
+    dissolvedInorganicCarbonKgC: round(
+      before.dissolvedInorganicCarbonKgC, 9),
+    dissolvedOxygenKgO2: round(before.dissolvedOxygenKgO2, 9)
+  };
+  const recordedAfter = {
+    dissolvedOrganicCarbonKgC: round(
+      after.dissolvedOrganicCarbonKgC, 9),
+    dissolvedInorganicCarbonKgC: round(
+      after.dissolvedInorganicCarbonKgC, 9),
+    dissolvedOxygenKgO2: round(after.dissolvedOxygenKgO2, 9)
+  };
   const closure = {
     dissolvedOrganicCarbonDebitResidualKgC: round(
-      before.dissolvedOrganicCarbonKgC -
-      after.dissolvedOrganicCarbonKgC - carbonConsumedKgC, 12),
+      recordedBefore.dissolvedOrganicCarbonKgC -
+      recordedAfter.dissolvedOrganicCarbonKgC -
+      recordedReaction.dissolvedOrganicCarbonConsumedKgC, 12),
     dissolvedInorganicCarbonCreditResidualKgC: round(
-      after.dissolvedInorganicCarbonKgC -
-      before.dissolvedInorganicCarbonKgC - carbonProducedKgC, 12),
+      recordedAfter.dissolvedInorganicCarbonKgC -
+      recordedBefore.dissolvedInorganicCarbonKgC -
+      recordedReaction.dissolvedInorganicCarbonProducedKgC, 12),
     carbonResidualKgC: round(
-      riverChemistryTotals(after).carbonKgC -
-      riverChemistryTotals(before).carbonKgC, 12),
+      recordedAfter.dissolvedOrganicCarbonKgC +
+      recordedAfter.dissolvedInorganicCarbonKgC -
+      recordedBefore.dissolvedOrganicCarbonKgC -
+      recordedBefore.dissolvedInorganicCarbonKgC, 12),
     dissolvedOxygenDebitResidualKgO2: round(
-      before.dissolvedOxygenKgO2 - after.dissolvedOxygenKgO2 -
-      oxygenConsumedKgO2, 12),
+      recordedBefore.dissolvedOxygenKgO2 -
+      recordedAfter.dissolvedOxygenKgO2 -
+      recordedReaction.dissolvedOxygenConsumedKgO2, 12),
     stoichiometricOxygenResidualKgO2: round(
-      oxygenConsumedKgO2 - carbonConsumedKgC *
+      recordedReaction.dissolvedOxygenConsumedKgO2 -
+      recordedReaction.dissolvedOrganicCarbonConsumedKgC *
       oxygenKgO2PerKgC, 12)
   };
+  const numericToleranceKg = {
+    dissolvedOrganicCarbonDebitResidualKgC:
+      floodplainReactionMassClosureToleranceKg('carbonKgC',
+        recordedBefore.dissolvedOrganicCarbonKgC,
+        recordedAfter.dissolvedOrganicCarbonKgC,
+        recordedReaction.dissolvedOrganicCarbonConsumedKgC),
+    dissolvedInorganicCarbonCreditResidualKgC:
+      floodplainReactionMassClosureToleranceKg('carbonKgC',
+        recordedAfter.dissolvedInorganicCarbonKgC,
+        recordedBefore.dissolvedInorganicCarbonKgC,
+        recordedReaction.dissolvedInorganicCarbonProducedKgC),
+    carbonResidualKgC: floodplainReactionMassClosureToleranceKg(
+      'carbonKgC', recordedAfter.dissolvedOrganicCarbonKgC,
+      recordedAfter.dissolvedInorganicCarbonKgC,
+      recordedBefore.dissolvedOrganicCarbonKgC,
+      recordedBefore.dissolvedInorganicCarbonKgC),
+    dissolvedOxygenDebitResidualKgO2:
+      floodplainReactionMassClosureToleranceKg('oxygenKgO2',
+        recordedBefore.dissolvedOxygenKgO2,
+        recordedAfter.dissolvedOxygenKgO2,
+        recordedReaction.dissolvedOxygenConsumedKgO2),
+    stoichiometricOxygenResidualKgO2:
+      floodplainReactionMassClosureToleranceKg('oxygenKgO2',
+        recordedReaction.dissolvedOxygenConsumedKgO2,
+        recordedReaction.dissolvedOrganicCarbonConsumedKgC,
+        recordedReaction.dissolvedOrganicCarbonConsumedKgC *
+          oxygenKgO2PerKgC)
+  };
+  const numericClosure = reactionNumericClosure(closure,
+    numericToleranceKg);
   const receipt = {
     schema: FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
     reachId,
     startDay: round(context.startDay, 8),
     durationDays: round(finite(context.durationDays, 1), 8),
-    reaction: {
-      dissolvedOrganicCarbonConsumedKgC: round(carbonConsumedKgC, 9),
-      dissolvedInorganicCarbonProducedKgC: round(carbonProducedKgC, 9),
-      dissolvedOxygenConsumedKgO2: round(oxygenConsumedKgO2, 9)
-    },
-    before: {
-      dissolvedOrganicCarbonKgC: round(
-        before.dissolvedOrganicCarbonKgC, 9),
-      dissolvedInorganicCarbonKgC: round(
-        before.dissolvedInorganicCarbonKgC, 9),
-      dissolvedOxygenKgO2: round(before.dissolvedOxygenKgO2, 9)
-    },
-    after: {
-      dissolvedOrganicCarbonKgC: round(
-        after.dissolvedOrganicCarbonKgC, 9),
-      dissolvedInorganicCarbonKgC: round(
-        after.dissolvedInorganicCarbonKgC, 9),
-      dissolvedOxygenKgO2: round(after.dissolvedOxygenKgO2, 9)
-    },
-    closure,
+    reaction: recordedReaction,
+    before: recordedBefore,
+    after: recordedAfter,
+    closure: numericClosure.closure,
     truth: {
       persistentFloodplainChemistryMutated: true,
       localFloodplainChemistryOnly: true,
@@ -601,13 +802,21 @@ export function applyFloodplainAerobicMineralization(source, reaction = {},
       dissolvedInorganicCarbonReceiverCredited: true,
       dissolvedOxygenSenderDebited: true,
       localDocToDicCarbonClosed:
-        Math.abs(closure.dissolvedOrganicCarbonDebitResidualKgC) < 1e-7 &&
-        Math.abs(closure.dissolvedInorganicCarbonCreditResidualKgC) <
-          1e-7 &&
-        Math.abs(closure.carbonResidualKgC) < 1e-7,
+        Math.abs(closure.dissolvedOrganicCarbonDebitResidualKgC) <=
+          numericToleranceKg.dissolvedOrganicCarbonDebitResidualKgC &&
+        Math.abs(closure.dissolvedInorganicCarbonCreditResidualKgC) <=
+          numericToleranceKg.dissolvedInorganicCarbonCreditResidualKgC &&
+        Math.abs(closure.carbonResidualKgC) <=
+          numericToleranceKg.carbonResidualKgC,
       dissolvedOxygenConsumptionClosed:
-        Math.abs(closure.dissolvedOxygenDebitResidualKgO2) < 1e-7 &&
-        Math.abs(closure.stoichiometricOxygenResidualKgO2) < 1e-7,
+        Math.abs(closure.dissolvedOxygenDebitResidualKgO2) <=
+          numericToleranceKg.dissolvedOxygenDebitResidualKgO2 &&
+        Math.abs(closure.stoichiometricOxygenResidualKgO2) <=
+          numericToleranceKg.stoichiometricOxygenResidualKgO2,
+      scaleAwareFloatingPointClosure: numericClosure.allIdentitiesClosed,
+      perIdentityNumericBounds: true,
+      measuredResidualsPreserved: true,
+      fixedAbsoluteToleranceOnly: false,
       atmosphericGasExchangeModeled: false,
       anaerobicPathwayModeled: false,
       independentCarbonCreation: false,
@@ -640,12 +849,22 @@ export function applyFloodplainDenitrificationReaction(source,
     reaction.alkalinityGeneratedKgCaCO3Eq));
   const nitrogenKgNPerCarbonKgC = 14 / 15;
   const alkalinityKgCaCO3EqPerKgN = 3.57;
-  if (Math.abs(carbonConsumedKgC - carbonProducedKgC) >= 1e-7 ||
-    Math.abs(nitrogenConsumedKgN - nitrogenGasProducedKgN) >= 1e-7 ||
+  if (Math.abs(carbonConsumedKgC - carbonProducedKgC) >
+      floodplainReactionMassClosureToleranceKg('carbonKgC',
+        carbonConsumedKgC, carbonProducedKgC) ||
+    Math.abs(nitrogenConsumedKgN - nitrogenGasProducedKgN) >
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        nitrogenConsumedKgN, nitrogenGasProducedKgN) ||
     Math.abs(nitrogenConsumedKgN - carbonConsumedKgC *
-      nitrogenKgNPerCarbonKgC) >= 1e-7 ||
+      nitrogenKgNPerCarbonKgC) >
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        nitrogenConsumedKgN, carbonConsumedKgC,
+        carbonConsumedKgC * nitrogenKgNPerCarbonKgC) ||
     Math.abs(alkalinityGeneratedKgCaCO3Eq - nitrogenConsumedKgN *
-      alkalinityKgCaCO3EqPerKgN) >= 1e-7) {
+      alkalinityKgCaCO3EqPerKgN) >
+      floodplainReactionMassClosureToleranceKg('alkalinityKgCaCO3Eq',
+        alkalinityGeneratedKgCaCO3Eq, nitrogenConsumedKgN,
+        nitrogenConsumedKgN * alkalinityKgCaCO3EqPerKgN)) {
     throw new Error('Floodplain denitrification reaction is not stoichiometrically closed');
   }
   if (context.livingEnabled === false &&
@@ -663,83 +882,154 @@ export function applyFloodplainDenitrificationReaction(source,
     alkalinityKgCaCO3Eq: alkalinityGeneratedKgCaCO3Eq
   });
   const after = normalizeRiverChemistry(state.chemistry);
+  const recordedReaction = {
+    dissolvedOrganicCarbonConsumedKgC: round(carbonConsumedKgC, 9),
+    dissolvedInorganicCarbonProducedKgC: round(carbonProducedKgC, 9),
+    dissolvedNitrateNitrogenConsumedKgN: round(
+      nitrogenConsumedKgN, 9),
+    nitrogenGasProducedKgN: round(nitrogenGasProducedKgN, 9),
+    alkalinityGeneratedKgCaCO3Eq: round(
+      alkalinityGeneratedKgCaCO3Eq, 9)
+  };
+  const recordedBefore = {
+    dissolvedOrganicCarbonKgC: round(
+      before.dissolvedOrganicCarbonKgC, 9),
+    dissolvedInorganicCarbonKgC: round(
+      before.dissolvedInorganicCarbonKgC, 9),
+    dissolvedInorganicNitrogenKgN: round(
+      before.dissolvedInorganicNitrogenKgN, 9),
+    dissolvedNitrateNitrogenKgN: round(
+      before.dissolvedNitrateNitrogenKgN, 9),
+    dissolvedAmmoniumNitrogenKgN: round(
+      before.dissolvedAmmoniumNitrogenKgN, 9),
+    alkalinityKgCaCO3Eq: round(before.alkalinityKgCaCO3Eq, 9)
+  };
+  const recordedAfter = {
+    dissolvedOrganicCarbonKgC: round(
+      after.dissolvedOrganicCarbonKgC, 9),
+    dissolvedInorganicCarbonKgC: round(
+      after.dissolvedInorganicCarbonKgC, 9),
+    dissolvedInorganicNitrogenKgN: round(
+      after.dissolvedInorganicNitrogenKgN, 9),
+    dissolvedNitrateNitrogenKgN: round(
+      after.dissolvedNitrateNitrogenKgN, 9),
+    dissolvedAmmoniumNitrogenKgN: round(
+      after.dissolvedAmmoniumNitrogenKgN, 9),
+    alkalinityKgCaCO3Eq: round(after.alkalinityKgCaCO3Eq, 9)
+  };
   const closure = {
     dissolvedOrganicCarbonDebitResidualKgC: round(
-      before.dissolvedOrganicCarbonKgC -
-      after.dissolvedOrganicCarbonKgC - carbonConsumedKgC, 12),
+      recordedBefore.dissolvedOrganicCarbonKgC -
+      recordedAfter.dissolvedOrganicCarbonKgC -
+      recordedReaction.dissolvedOrganicCarbonConsumedKgC, 12),
     dissolvedInorganicCarbonCreditResidualKgC: round(
-      after.dissolvedInorganicCarbonKgC -
-      before.dissolvedInorganicCarbonKgC - carbonProducedKgC, 12),
+      recordedAfter.dissolvedInorganicCarbonKgC -
+      recordedBefore.dissolvedInorganicCarbonKgC -
+      recordedReaction.dissolvedInorganicCarbonProducedKgC, 12),
     carbonResidualKgC: round(
-      riverChemistryTotals(after).carbonKgC -
-      riverChemistryTotals(before).carbonKgC, 12),
+      recordedAfter.dissolvedOrganicCarbonKgC +
+      recordedAfter.dissolvedInorganicCarbonKgC -
+      recordedBefore.dissolvedOrganicCarbonKgC -
+      recordedBefore.dissolvedInorganicCarbonKgC, 12),
     dissolvedNitrateNitrogenDebitResidualKgN: round(
-      before.dissolvedNitrateNitrogenKgN -
-      after.dissolvedNitrateNitrogenKgN - nitrogenConsumedKgN, 12),
+      recordedBefore.dissolvedNitrateNitrogenKgN -
+      recordedAfter.dissolvedNitrateNitrogenKgN -
+      recordedReaction.dissolvedNitrateNitrogenConsumedKgN, 12),
     dissolvedAmmoniumNitrogenResidualKgN: round(
-      after.dissolvedAmmoniumNitrogenKgN -
-      before.dissolvedAmmoniumNitrogenKgN, 12),
+      recordedAfter.dissolvedAmmoniumNitrogenKgN -
+      recordedBefore.dissolvedAmmoniumNitrogenKgN, 12),
     dissolvedInorganicNitrogenDebitResidualKgN: round(
-      before.dissolvedInorganicNitrogenKgN -
-      after.dissolvedInorganicNitrogenKgN - nitrogenConsumedKgN, 12),
+      recordedBefore.dissolvedInorganicNitrogenKgN -
+      recordedAfter.dissolvedInorganicNitrogenKgN -
+      recordedReaction.dissolvedNitrateNitrogenConsumedKgN, 12),
     nitrogenGasBoundaryResidualKgN: round(
-      nitrogenConsumedKgN - nitrogenGasProducedKgN, 12),
+      recordedReaction.dissolvedNitrateNitrogenConsumedKgN -
+      recordedReaction.nitrogenGasProducedKgN, 12),
     nitrogenResidualKgN: round(
-      riverChemistryTotals(before).nitrogenKgN -
-      riverChemistryTotals(after).nitrogenKgN -
-      nitrogenGasProducedKgN, 12),
+      recordedBefore.dissolvedInorganicNitrogenKgN -
+      recordedAfter.dissolvedInorganicNitrogenKgN -
+      recordedReaction.nitrogenGasProducedKgN, 12),
     stoichiometricNitrogenResidualKgN: round(
-      nitrogenConsumedKgN - carbonConsumedKgC *
+      recordedReaction.dissolvedNitrateNitrogenConsumedKgN -
+      recordedReaction.dissolvedOrganicCarbonConsumedKgC *
       nitrogenKgNPerCarbonKgC, 12),
     alkalinityCreditResidualKgCaCO3Eq: round(
-      after.alkalinityKgCaCO3Eq - before.alkalinityKgCaCO3Eq -
-      alkalinityGeneratedKgCaCO3Eq, 12),
+      recordedAfter.alkalinityKgCaCO3Eq -
+      recordedBefore.alkalinityKgCaCO3Eq -
+      recordedReaction.alkalinityGeneratedKgCaCO3Eq, 12),
     stoichiometricAlkalinityResidualKgCaCO3Eq: round(
-      alkalinityGeneratedKgCaCO3Eq - nitrogenConsumedKgN *
+      recordedReaction.alkalinityGeneratedKgCaCO3Eq -
+      recordedReaction.dissolvedNitrateNitrogenConsumedKgN *
       alkalinityKgCaCO3EqPerKgN, 12)
   };
+  const numericToleranceKg = {
+    dissolvedOrganicCarbonDebitResidualKgC:
+      floodplainReactionMassClosureToleranceKg('carbonKgC',
+        recordedBefore.dissolvedOrganicCarbonKgC,
+        recordedAfter.dissolvedOrganicCarbonKgC,
+        recordedReaction.dissolvedOrganicCarbonConsumedKgC),
+    dissolvedInorganicCarbonCreditResidualKgC:
+      floodplainReactionMassClosureToleranceKg('carbonKgC',
+        recordedAfter.dissolvedInorganicCarbonKgC,
+        recordedBefore.dissolvedInorganicCarbonKgC,
+        recordedReaction.dissolvedInorganicCarbonProducedKgC),
+    carbonResidualKgC: floodplainReactionMassClosureToleranceKg(
+      'carbonKgC', recordedAfter.dissolvedOrganicCarbonKgC,
+      recordedAfter.dissolvedInorganicCarbonKgC,
+      recordedBefore.dissolvedOrganicCarbonKgC,
+      recordedBefore.dissolvedInorganicCarbonKgC),
+    dissolvedNitrateNitrogenDebitResidualKgN:
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        recordedBefore.dissolvedNitrateNitrogenKgN,
+        recordedAfter.dissolvedNitrateNitrogenKgN,
+        recordedReaction.dissolvedNitrateNitrogenConsumedKgN),
+    dissolvedAmmoniumNitrogenResidualKgN:
+      floodplainReactionMassClosureToleranceKg('ammoniumNitrogenKgN',
+        recordedAfter.dissolvedAmmoniumNitrogenKgN,
+        recordedBefore.dissolvedAmmoniumNitrogenKgN),
+    dissolvedInorganicNitrogenDebitResidualKgN:
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        recordedBefore.dissolvedInorganicNitrogenKgN,
+        recordedAfter.dissolvedInorganicNitrogenKgN,
+        recordedReaction.dissolvedNitrateNitrogenConsumedKgN),
+    nitrogenGasBoundaryResidualKgN:
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        recordedReaction.dissolvedNitrateNitrogenConsumedKgN,
+        recordedReaction.nitrogenGasProducedKgN),
+    nitrogenResidualKgN: floodplainReactionMassClosureToleranceKg(
+      'nitrogenKgN', recordedBefore.dissolvedInorganicNitrogenKgN,
+      recordedAfter.dissolvedInorganicNitrogenKgN,
+      recordedReaction.nitrogenGasProducedKgN),
+    stoichiometricNitrogenResidualKgN:
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        recordedReaction.dissolvedNitrateNitrogenConsumedKgN,
+        recordedReaction.dissolvedOrganicCarbonConsumedKgC,
+        recordedReaction.dissolvedOrganicCarbonConsumedKgC *
+          nitrogenKgNPerCarbonKgC),
+    alkalinityCreditResidualKgCaCO3Eq:
+      floodplainReactionMassClosureToleranceKg('alkalinityKgCaCO3Eq',
+        recordedAfter.alkalinityKgCaCO3Eq,
+        recordedBefore.alkalinityKgCaCO3Eq,
+        recordedReaction.alkalinityGeneratedKgCaCO3Eq),
+    stoichiometricAlkalinityResidualKgCaCO3Eq:
+      floodplainReactionMassClosureToleranceKg('alkalinityKgCaCO3Eq',
+        recordedReaction.alkalinityGeneratedKgCaCO3Eq,
+        recordedReaction.dissolvedNitrateNitrogenConsumedKgN,
+        recordedReaction.dissolvedNitrateNitrogenConsumedKgN *
+          alkalinityKgCaCO3EqPerKgN)
+  };
+  const numericClosure = reactionNumericClosure(closure,
+    numericToleranceKg);
   const receipt = {
     schema: FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
     transferId,
     reachId,
     startDay: round(context.startDay, 8),
     durationDays: round(finite(context.durationDays, 1), 8),
-    reaction: {
-      dissolvedOrganicCarbonConsumedKgC: round(carbonConsumedKgC, 9),
-      dissolvedInorganicCarbonProducedKgC: round(carbonProducedKgC, 9),
-      dissolvedNitrateNitrogenConsumedKgN: round(
-        nitrogenConsumedKgN, 9),
-      nitrogenGasProducedKgN: round(nitrogenGasProducedKgN, 9),
-      alkalinityGeneratedKgCaCO3Eq: round(
-        alkalinityGeneratedKgCaCO3Eq, 9)
-    },
-    before: {
-      dissolvedOrganicCarbonKgC: round(
-        before.dissolvedOrganicCarbonKgC, 9),
-      dissolvedInorganicCarbonKgC: round(
-        before.dissolvedInorganicCarbonKgC, 9),
-      dissolvedInorganicNitrogenKgN: round(
-        before.dissolvedInorganicNitrogenKgN, 9),
-      dissolvedNitrateNitrogenKgN: round(
-        before.dissolvedNitrateNitrogenKgN, 9),
-      dissolvedAmmoniumNitrogenKgN: round(
-        before.dissolvedAmmoniumNitrogenKgN, 9),
-      alkalinityKgCaCO3Eq: round(before.alkalinityKgCaCO3Eq, 9)
-    },
-    after: {
-      dissolvedOrganicCarbonKgC: round(
-        after.dissolvedOrganicCarbonKgC, 9),
-      dissolvedInorganicCarbonKgC: round(
-        after.dissolvedInorganicCarbonKgC, 9),
-      dissolvedInorganicNitrogenKgN: round(
-        after.dissolvedInorganicNitrogenKgN, 9),
-      dissolvedNitrateNitrogenKgN: round(
-        after.dissolvedNitrateNitrogenKgN, 9),
-      dissolvedAmmoniumNitrogenKgN: round(
-        after.dissolvedAmmoniumNitrogenKgN, 9),
-      alkalinityKgCaCO3Eq: round(after.alkalinityKgCaCO3Eq, 9)
-    },
-    closure,
+    reaction: recordedReaction,
+    before: recordedBefore,
+    after: recordedAfter,
+    closure: numericClosure.closure,
     truth: {
       persistentFloodplainChemistryMutated: true,
       localFloodplainChemistryOnly: true,
@@ -748,25 +1038,38 @@ export function applyFloodplainDenitrificationReaction(source,
       dissolvedNitrateNitrogenSenderDebited: true,
       alkalinityReceiverCredited: true,
       dissolvedAmmoniumNitrogenUntouched: Math.abs(
-        closure.dissolvedAmmoniumNitrogenResidualKgN) < 1e-9,
+        closure.dissolvedAmmoniumNitrogenResidualKgN) <=
+          numericToleranceKg.dissolvedAmmoniumNitrogenResidualKgN,
       atmosphereNitrogenReceiverRequired: true,
       localDocToDicCarbonClosed:
-        Math.abs(closure.dissolvedOrganicCarbonDebitResidualKgC) < 1e-7 &&
-        Math.abs(closure.dissolvedInorganicCarbonCreditResidualKgC) <
-          1e-7 && Math.abs(closure.carbonResidualKgC) < 1e-7,
+        Math.abs(closure.dissolvedOrganicCarbonDebitResidualKgC) <=
+          numericToleranceKg.dissolvedOrganicCarbonDebitResidualKgC &&
+        Math.abs(closure.dissolvedInorganicCarbonCreditResidualKgC) <=
+          numericToleranceKg.dissolvedInorganicCarbonCreditResidualKgC &&
+        Math.abs(closure.carbonResidualKgC) <=
+          numericToleranceKg.carbonResidualKgC,
       nitrogenGasBoundaryClosed:
-        Math.abs(closure.dissolvedNitrateNitrogenDebitResidualKgN) <
-          1e-7 &&
-        Math.abs(closure.dissolvedAmmoniumNitrogenResidualKgN) <
-          1e-7 &&
-        Math.abs(closure.dissolvedInorganicNitrogenDebitResidualKgN) <
-          1e-7 && Math.abs(closure.nitrogenGasBoundaryResidualKgN) <
-          1e-7 && Math.abs(closure.nitrogenResidualKgN) < 1e-7 &&
-          Math.abs(closure.stoichiometricNitrogenResidualKgN) < 1e-7,
+        Math.abs(closure.dissolvedNitrateNitrogenDebitResidualKgN) <=
+          numericToleranceKg.dissolvedNitrateNitrogenDebitResidualKgN &&
+        Math.abs(closure.dissolvedAmmoniumNitrogenResidualKgN) <=
+          numericToleranceKg.dissolvedAmmoniumNitrogenResidualKgN &&
+        Math.abs(closure.dissolvedInorganicNitrogenDebitResidualKgN) <=
+          numericToleranceKg.dissolvedInorganicNitrogenDebitResidualKgN &&
+        Math.abs(closure.nitrogenGasBoundaryResidualKgN) <=
+          numericToleranceKg.nitrogenGasBoundaryResidualKgN &&
+        Math.abs(closure.nitrogenResidualKgN) <=
+          numericToleranceKg.nitrogenResidualKgN &&
+        Math.abs(closure.stoichiometricNitrogenResidualKgN) <=
+          numericToleranceKg.stoichiometricNitrogenResidualKgN,
       denitrificationAlkalinityClosed:
-        Math.abs(closure.alkalinityCreditResidualKgCaCO3Eq) < 1e-7 &&
-        Math.abs(closure.stoichiometricAlkalinityResidualKgCaCO3Eq) <
-          1e-7,
+        Math.abs(closure.alkalinityCreditResidualKgCaCO3Eq) <=
+          numericToleranceKg.alkalinityCreditResidualKgCaCO3Eq &&
+        Math.abs(closure.stoichiometricAlkalinityResidualKgCaCO3Eq) <=
+          numericToleranceKg.stoichiometricAlkalinityResidualKgCaCO3Eq,
+      scaleAwareFloatingPointClosure: numericClosure.allIdentitiesClosed,
+      perIdentityNumericBounds: true,
+      measuredResidualsPreserved: true,
+      fixedAbsoluteToleranceOnly: false,
       dissolvedInorganicNitrogenTreatedAsFullyNitrate: false,
       nitrateSpeciationResolved: true,
       nitrateAndAmmoniumMaterialPools: true,
@@ -798,11 +1101,19 @@ export function applyFloodplainNitrificationReaction(source,
     reaction.alkalinityDemandKgCaCO3));
   const oxygenKgO2PerKgN = 4.57;
   const alkalinityDemandKgCaCO3PerKgN = 7.14;
-  if (Math.abs(ammoniumConsumedKgN - nitrateProducedKgN) >= 1e-7 ||
+  if (Math.abs(ammoniumConsumedKgN - nitrateProducedKgN) >
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        ammoniumConsumedKgN, nitrateProducedKgN) ||
     Math.abs(oxygenConsumedKgO2 - ammoniumConsumedKgN *
-      oxygenKgO2PerKgN) >= 1e-7 ||
+      oxygenKgO2PerKgN) >
+      floodplainReactionMassClosureToleranceKg('oxygenKgO2',
+        oxygenConsumedKgO2, ammoniumConsumedKgN,
+        ammoniumConsumedKgN * oxygenKgO2PerKgN) ||
     Math.abs(alkalinityDemandKgCaCO3 - ammoniumConsumedKgN *
-      alkalinityDemandKgCaCO3PerKgN) >= 1e-7) {
+      alkalinityDemandKgCaCO3PerKgN) >
+      floodplainReactionMassClosureToleranceKg('alkalinityKgCaCO3Eq',
+        alkalinityDemandKgCaCO3, ammoniumConsumedKgN,
+        ammoniumConsumedKgN * alkalinityDemandKgCaCO3PerKgN)) {
     throw new Error('Floodplain nitrification reaction is not stoichiometrically closed');
   }
   if (context.livingEnabled === false &&
@@ -820,64 +1131,113 @@ export function applyFloodplainNitrificationReaction(source,
     dissolvedNitrateNitrogenKgN: nitrateProducedKgN
   });
   const after = normalizeRiverChemistry(state.chemistry);
+  const recordedReaction = {
+    dissolvedAmmoniumNitrogenConsumedKgN: round(
+      ammoniumConsumedKgN, 9),
+    dissolvedNitrateNitrogenProducedKgN: round(
+      nitrateProducedKgN, 9),
+    dissolvedOxygenConsumedKgO2: round(oxygenConsumedKgO2, 9),
+    alkalinityDemandKgCaCO3: round(alkalinityDemandKgCaCO3, 9)
+  };
+  const recordedBefore = {
+    dissolvedInorganicNitrogenKgN: round(
+      before.dissolvedInorganicNitrogenKgN, 9),
+    dissolvedNitrateNitrogenKgN: round(
+      before.dissolvedNitrateNitrogenKgN, 9),
+    dissolvedAmmoniumNitrogenKgN: round(
+      before.dissolvedAmmoniumNitrogenKgN, 9),
+    dissolvedOxygenKgO2: round(before.dissolvedOxygenKgO2, 9),
+    alkalinityKgCaCO3Eq: round(before.alkalinityKgCaCO3Eq, 9)
+  };
+  const recordedAfter = {
+    dissolvedInorganicNitrogenKgN: round(
+      after.dissolvedInorganicNitrogenKgN, 9),
+    dissolvedNitrateNitrogenKgN: round(
+      after.dissolvedNitrateNitrogenKgN, 9),
+    dissolvedAmmoniumNitrogenKgN: round(
+      after.dissolvedAmmoniumNitrogenKgN, 9),
+    dissolvedOxygenKgO2: round(after.dissolvedOxygenKgO2, 9),
+    alkalinityKgCaCO3Eq: round(after.alkalinityKgCaCO3Eq, 9)
+  };
   const closure = {
     dissolvedAmmoniumNitrogenDebitResidualKgN: round(
-      before.dissolvedAmmoniumNitrogenKgN -
-      after.dissolvedAmmoniumNitrogenKgN - ammoniumConsumedKgN, 12),
+      recordedBefore.dissolvedAmmoniumNitrogenKgN -
+      recordedAfter.dissolvedAmmoniumNitrogenKgN -
+      recordedReaction.dissolvedAmmoniumNitrogenConsumedKgN, 12),
     dissolvedNitrateNitrogenCreditResidualKgN: round(
-      after.dissolvedNitrateNitrogenKgN -
-      before.dissolvedNitrateNitrogenKgN - nitrateProducedKgN, 12),
+      recordedAfter.dissolvedNitrateNitrogenKgN -
+      recordedBefore.dissolvedNitrateNitrogenKgN -
+      recordedReaction.dissolvedNitrateNitrogenProducedKgN, 12),
     dissolvedInorganicNitrogenResidualKgN: round(
-      after.dissolvedInorganicNitrogenKgN -
-      before.dissolvedInorganicNitrogenKgN, 12),
+      recordedAfter.dissolvedInorganicNitrogenKgN -
+      recordedBefore.dissolvedInorganicNitrogenKgN, 12),
     dissolvedOxygenDebitResidualKgO2: round(
-      before.dissolvedOxygenKgO2 - after.dissolvedOxygenKgO2 -
-      oxygenConsumedKgO2, 12),
+      recordedBefore.dissolvedOxygenKgO2 -
+      recordedAfter.dissolvedOxygenKgO2 -
+      recordedReaction.dissolvedOxygenConsumedKgO2, 12),
     stoichiometricOxygenResidualKgO2: round(
-      oxygenConsumedKgO2 - ammoniumConsumedKgN *
+      recordedReaction.dissolvedOxygenConsumedKgO2 -
+      recordedReaction.dissolvedAmmoniumNitrogenConsumedKgN *
       oxygenKgO2PerKgN, 12),
     alkalinityDebitResidualKgCaCO3Eq: round(
-      before.alkalinityKgCaCO3Eq - after.alkalinityKgCaCO3Eq -
-      alkalinityDemandKgCaCO3, 12),
+      recordedBefore.alkalinityKgCaCO3Eq -
+      recordedAfter.alkalinityKgCaCO3Eq -
+      recordedReaction.alkalinityDemandKgCaCO3, 12),
     stoichiometricAlkalinityResidualKgCaCO3Eq: round(
-      alkalinityDemandKgCaCO3 - ammoniumConsumedKgN *
+      recordedReaction.alkalinityDemandKgCaCO3 -
+      recordedReaction.dissolvedAmmoniumNitrogenConsumedKgN *
       alkalinityDemandKgCaCO3PerKgN, 12)
   };
+  const numericToleranceKg = {
+    dissolvedAmmoniumNitrogenDebitResidualKgN:
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        recordedBefore.dissolvedAmmoniumNitrogenKgN,
+        recordedAfter.dissolvedAmmoniumNitrogenKgN,
+        recordedReaction.dissolvedAmmoniumNitrogenConsumedKgN),
+    dissolvedNitrateNitrogenCreditResidualKgN:
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        recordedAfter.dissolvedNitrateNitrogenKgN,
+        recordedBefore.dissolvedNitrateNitrogenKgN,
+        recordedReaction.dissolvedNitrateNitrogenProducedKgN),
+    dissolvedInorganicNitrogenResidualKgN:
+      floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+        recordedAfter.dissolvedInorganicNitrogenKgN,
+        recordedBefore.dissolvedInorganicNitrogenKgN),
+    dissolvedOxygenDebitResidualKgO2:
+      floodplainReactionMassClosureToleranceKg('oxygenKgO2',
+        recordedBefore.dissolvedOxygenKgO2,
+        recordedAfter.dissolvedOxygenKgO2,
+        recordedReaction.dissolvedOxygenConsumedKgO2),
+    stoichiometricOxygenResidualKgO2:
+      floodplainReactionMassClosureToleranceKg('oxygenKgO2',
+        recordedReaction.dissolvedOxygenConsumedKgO2,
+        recordedReaction.dissolvedAmmoniumNitrogenConsumedKgN,
+        recordedReaction.dissolvedAmmoniumNitrogenConsumedKgN *
+          oxygenKgO2PerKgN),
+    alkalinityDebitResidualKgCaCO3Eq:
+      floodplainReactionMassClosureToleranceKg('alkalinityKgCaCO3Eq',
+        recordedBefore.alkalinityKgCaCO3Eq,
+        recordedAfter.alkalinityKgCaCO3Eq,
+        recordedReaction.alkalinityDemandKgCaCO3),
+    stoichiometricAlkalinityResidualKgCaCO3Eq:
+      floodplainReactionMassClosureToleranceKg('alkalinityKgCaCO3Eq',
+        recordedReaction.alkalinityDemandKgCaCO3,
+        recordedReaction.dissolvedAmmoniumNitrogenConsumedKgN,
+        recordedReaction.dissolvedAmmoniumNitrogenConsumedKgN *
+          alkalinityDemandKgCaCO3PerKgN)
+  };
+  const numericClosure = reactionNumericClosure(closure,
+    numericToleranceKg);
   const receipt = {
     schema: FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
     transferId,
     reachId,
     startDay: round(context.startDay, 8),
     durationDays: round(finite(context.durationDays, 1), 8),
-    reaction: {
-      dissolvedAmmoniumNitrogenConsumedKgN: round(
-        ammoniumConsumedKgN, 9),
-      dissolvedNitrateNitrogenProducedKgN: round(
-        nitrateProducedKgN, 9),
-      dissolvedOxygenConsumedKgO2: round(oxygenConsumedKgO2, 9),
-      alkalinityDemandKgCaCO3: round(alkalinityDemandKgCaCO3, 9)
-    },
-    before: {
-      dissolvedInorganicNitrogenKgN: round(
-        before.dissolvedInorganicNitrogenKgN, 9),
-      dissolvedNitrateNitrogenKgN: round(
-        before.dissolvedNitrateNitrogenKgN, 9),
-      dissolvedAmmoniumNitrogenKgN: round(
-        before.dissolvedAmmoniumNitrogenKgN, 9),
-      dissolvedOxygenKgO2: round(before.dissolvedOxygenKgO2, 9),
-      alkalinityKgCaCO3Eq: round(before.alkalinityKgCaCO3Eq, 9)
-    },
-    after: {
-      dissolvedInorganicNitrogenKgN: round(
-        after.dissolvedInorganicNitrogenKgN, 9),
-      dissolvedNitrateNitrogenKgN: round(
-        after.dissolvedNitrateNitrogenKgN, 9),
-      dissolvedAmmoniumNitrogenKgN: round(
-        after.dissolvedAmmoniumNitrogenKgN, 9),
-      dissolvedOxygenKgO2: round(after.dissolvedOxygenKgO2, 9),
-      alkalinityKgCaCO3Eq: round(after.alkalinityKgCaCO3Eq, 9)
-    },
-    closure,
+    reaction: recordedReaction,
+    before: recordedBefore,
+    after: recordedAfter,
+    closure: numericClosure.closure,
     truth: {
       persistentFloodplainChemistryMutated: true,
       localFloodplainChemistryOnly: true,
@@ -886,18 +1246,26 @@ export function applyFloodplainNitrificationReaction(source,
       dissolvedOxygenSenderDebited: true,
       alkalinitySenderDebited: true,
       ammoniumToNitrateNitrogenClosed:
-        Math.abs(closure.dissolvedAmmoniumNitrogenDebitResidualKgN) <
-          1e-7 &&
-        Math.abs(closure.dissolvedNitrateNitrogenCreditResidualKgN) <
-          1e-7 &&
-        Math.abs(closure.dissolvedInorganicNitrogenResidualKgN) < 1e-7,
+        Math.abs(closure.dissolvedAmmoniumNitrogenDebitResidualKgN) <=
+          numericToleranceKg.dissolvedAmmoniumNitrogenDebitResidualKgN &&
+        Math.abs(closure.dissolvedNitrateNitrogenCreditResidualKgN) <=
+          numericToleranceKg.dissolvedNitrateNitrogenCreditResidualKgN &&
+        Math.abs(closure.dissolvedInorganicNitrogenResidualKgN) <=
+          numericToleranceKg.dissolvedInorganicNitrogenResidualKgN,
       dissolvedOxygenConsumptionClosed:
-        Math.abs(closure.dissolvedOxygenDebitResidualKgO2) < 1e-7 &&
-        Math.abs(closure.stoichiometricOxygenResidualKgO2) < 1e-7,
+        Math.abs(closure.dissolvedOxygenDebitResidualKgO2) <=
+          numericToleranceKg.dissolvedOxygenDebitResidualKgO2 &&
+        Math.abs(closure.stoichiometricOxygenResidualKgO2) <=
+          numericToleranceKg.stoichiometricOxygenResidualKgO2,
       alkalinityConsumptionClosed:
-        Math.abs(closure.alkalinityDebitResidualKgCaCO3Eq) < 1e-7 &&
-        Math.abs(closure.stoichiometricAlkalinityResidualKgCaCO3Eq) <
-          1e-7,
+        Math.abs(closure.alkalinityDebitResidualKgCaCO3Eq) <=
+          numericToleranceKg.alkalinityDebitResidualKgCaCO3Eq &&
+        Math.abs(closure.stoichiometricAlkalinityResidualKgCaCO3Eq) <=
+          numericToleranceKg.stoichiometricAlkalinityResidualKgCaCO3Eq,
+      scaleAwareFloatingPointClosure: numericClosure.allIdentitiesClosed,
+      perIdentityNumericBounds: true,
+      measuredResidualsPreserved: true,
+      fixedAbsoluteToleranceOnly: false,
       alkalinityDemandDiagnosticOnly: false,
       alkalinityMaterialOwnerDebited: true,
       pHFeedbackModeled: false,
@@ -943,15 +1311,47 @@ export function applyFloodplainGasExchange(source, exchange = {},
     dissolvedOxygenKgO2: oxygenToFloodplainKgO2
   });
   const after = normalizeRiverChemistry(state.chemistry);
+  const recordedExchange = {
+    carbonToAtmosphereKgC: round(carbonToAtmosphereKgC, 9),
+    carbonToFloodplainKgC: round(carbonToFloodplainKgC, 9),
+    oxygenToFloodplainKgO2: round(oxygenToFloodplainKgO2, 9)
+  };
+  const recordedBefore = {
+    dissolvedInorganicCarbonKgC: round(
+      before.dissolvedInorganicCarbonKgC, 9),
+    dissolvedOxygenKgO2: round(before.dissolvedOxygenKgO2, 9)
+  };
+  const recordedAfter = {
+    dissolvedInorganicCarbonKgC: round(
+      after.dissolvedInorganicCarbonKgC, 9),
+    dissolvedOxygenKgO2: round(after.dissolvedOxygenKgO2, 9)
+  };
   const closure = {
     carbonTransferResidualKgC: round(
-      after.dissolvedInorganicCarbonKgC -
-      before.dissolvedInorganicCarbonKgC + carbonToAtmosphereKgC -
-      carbonToFloodplainKgC, 12),
+      recordedAfter.dissolvedInorganicCarbonKgC -
+      recordedBefore.dissolvedInorganicCarbonKgC +
+      recordedExchange.carbonToAtmosphereKgC -
+      recordedExchange.carbonToFloodplainKgC, 12),
     oxygenTransferResidualKgO2: round(
-      after.dissolvedOxygenKgO2 - before.dissolvedOxygenKgO2 -
-      oxygenToFloodplainKgO2, 12)
+      recordedAfter.dissolvedOxygenKgO2 -
+      recordedBefore.dissolvedOxygenKgO2 -
+      recordedExchange.oxygenToFloodplainKgO2, 12)
   };
+  const numericToleranceKg = {
+    carbonTransferResidualKgC:
+      floodplainReactionMassClosureToleranceKg('carbonKgC',
+        recordedAfter.dissolvedInorganicCarbonKgC,
+        recordedBefore.dissolvedInorganicCarbonKgC,
+        recordedExchange.carbonToAtmosphereKgC,
+        recordedExchange.carbonToFloodplainKgC),
+    oxygenTransferResidualKgO2:
+      floodplainReactionMassClosureToleranceKg('oxygenKgO2',
+        recordedAfter.dissolvedOxygenKgO2,
+        recordedBefore.dissolvedOxygenKgO2,
+        recordedExchange.oxygenToFloodplainKgO2)
+  };
+  const numericClosure = reactionNumericClosure(closure,
+    numericToleranceKg);
   const receipt = {
     schema: FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
     exchangeId,
@@ -959,11 +1359,7 @@ export function applyFloodplainGasExchange(source, exchange = {},
     atmosphereCellId,
     startDay: round(context.startDay, 8),
     durationDays: round(finite(context.durationDays, 1), 8),
-    exchange: {
-      carbonToAtmosphereKgC: round(carbonToAtmosphereKgC, 9),
-      carbonToFloodplainKgC: round(carbonToFloodplainKgC, 9),
-      oxygenToFloodplainKgO2: round(oxygenToFloodplainKgO2, 9)
-    },
+    exchange: recordedExchange,
     floodplainCarbonDebit: {
       reservoir: 'floodplain-dissolved-inorganic-carbon',
       carbonKgC: round(carbonToAtmosphereKgC, 9)
@@ -976,17 +1372,9 @@ export function applyFloodplainGasExchange(source, exchange = {},
       reservoir: 'floodplain-dissolved-oxygen',
       oxygenKgO2: round(oxygenToFloodplainKgO2, 9)
     },
-    before: {
-      dissolvedInorganicCarbonKgC: round(
-        before.dissolvedInorganicCarbonKgC, 9),
-      dissolvedOxygenKgO2: round(before.dissolvedOxygenKgO2, 9)
-    },
-    after: {
-      dissolvedInorganicCarbonKgC: round(
-        after.dissolvedInorganicCarbonKgC, 9),
-      dissolvedOxygenKgO2: round(after.dissolvedOxygenKgO2, 9)
-    },
-    closure,
+    before: recordedBefore,
+    after: recordedAfter,
+    closure: numericClosure.closure,
     truth: {
       persistentFloodplainChemistryMutated: true,
       dissolvedInorganicCarbonSenderDebitedWhenEvasion: true,
@@ -994,9 +1382,15 @@ export function applyFloodplainGasExchange(source, exchange = {},
       dissolvedOxygenReceiverCredited: true,
       atmosphereOwnerReceiptRequired: true,
       carbonTransferClosed:
-        Math.abs(closure.carbonTransferResidualKgC) < 1e-7,
+        Math.abs(closure.carbonTransferResidualKgC) <=
+          numericToleranceKg.carbonTransferResidualKgC,
       oxygenTransferClosed:
-        Math.abs(closure.oxygenTransferResidualKgO2) < 1e-7,
+        Math.abs(closure.oxygenTransferResidualKgO2) <=
+          numericToleranceKg.oxygenTransferResidualKgO2,
+      scaleAwareFloatingPointClosure: numericClosure.allIdentitiesClosed,
+      perIdentityNumericBounds: true,
+      measuredResidualsPreserved: true,
+      fixedAbsoluteToleranceOnly: false,
       carbonDirectionExclusive:
         carbonToAtmosphereKgC <= 1e-12 ||
           carbonToFloodplainKgC <= 1e-12,
@@ -1244,13 +1638,37 @@ export function floodplainDescription() {
     plantWaterReturnSchema: FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA,
     detritalReturnCreditSchema:
       FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
+    previousDetritalReturnCreditSchema:
+      PREVIOUS_FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
+    detritalReturnMassClosurePolicySchema:
+      FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA,
+    detritalReturnMassClosureAbsoluteFloorsKg: {
+      ...FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+    },
+    detritalReturnMassClosureUlpFactor:
+      FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ULP_FACTOR,
     aerobicMineralizationReceiptSchema:
       FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
+    previousAerobicMineralizationReceiptSchema:
+      PREVIOUS_FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
     denitrificationReactionReceiptSchema:
       FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
+    previousDenitrificationReactionReceiptSchema:
+      PREVIOUS_FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
     nitrificationReactionReceiptSchema:
       FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
+    previousNitrificationReactionReceiptSchema:
+      PREVIOUS_FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
     gasExchangeReceiptSchema: FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+    previousGasExchangeReceiptSchema:
+      PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+    reactionMassClosurePolicySchema:
+      FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
+    reactionMassClosureAbsoluteFloorsKg: {
+      ...FLOODPLAIN_REACTION_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+    },
+    reactionMassClosureUlpFactor:
+      FLOODPLAIN_REACTION_MASS_CLOSURE_ULP_FACTOR,
     reservoirs: [
       'overbank-water',
       'dissolved-carbon-nitrate-ammonium-phosphorus-oxygen-alkalinity',

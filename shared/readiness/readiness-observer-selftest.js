@@ -49,6 +49,7 @@ const verificationResults = {
   results: [{
     id: 'alpha',
     selftestSha256: preliminary.tools[0].selftest.sha256,
+    selftestDigestScope: preliminary.tools[0].selftest.digestScope,
     verdict: 'PASS'
   }]
 };
@@ -69,6 +70,7 @@ assert.equal(current.reviewCandidates[0].evidencePaths.selftest, 'tools/alpha/se
 assert.equal(current.authority.humanPromotionRequired, true);
 assert.equal(current.authority.humanGate, 'Mike');
 assert.equal(current.truth.automaticPromotion, false);
+assert.equal(current.truth.selftestReceiptBindsDiscoveredSuite, true);
 
 manifest.summary = 'Changed after the index was built.';
 fs.writeFileSync(path.join(toolRoot, 'manifest.json'), JSON.stringify(manifest));

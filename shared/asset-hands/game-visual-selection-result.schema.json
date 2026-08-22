@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/game-visual-selection-result-v1.schema.json",
+  "title": "AXM Game Visual Selection Result v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "request_id", "game_contract_id", "hardware_profile_id", "recommendation", "selection", "checks", "fallback_used", "active_pack_changed", "save_digest_before", "save_digest_after", "game_truth_digest", "message", "authority"],
+  "properties": {
+    "schema": { "const": "axm.game-visual-selection-result/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["READY_FOR_CHOICE", "SELECTED", "MISSING_VISUAL_PACK", "INCOMPATIBLE_VISUAL_PACK", "PACK_CONTRACT_MISMATCH", "INVALID_SELECTION_REQUEST"] },
+    "request_id": { "type": "string" },
+    "game_contract_id": { "type": "string" },
+    "hardware_profile_id": { "type": "string" },
+    "recommendation": { "type": ["object", "null"] },
+    "selection": { "type": ["object", "null"] },
+    "checks": { "type": "array", "items": { "type": "object", "required": ["id", "pass"], "properties": { "id": { "type": "string" }, "pass": { "type": "boolean" }, "detail": {} }, "additionalProperties": false } },
+    "fallback_used": { "const": false },
+    "active_pack_changed": { "type": "boolean" },
+    "save_digest_before": { "type": "string", "minLength": 16 },
+    "save_digest_after": { "type": "string", "minLength": 16 },
+    "game_truth_digest": { "type": "string", "minLength": 16 },
+    "message": { "type": "string" },
+    "authority": {
+      "type": "object",
+      "required": ["recommendation_only", "player_choice_required", "silent_fallback_forbidden", "simulation_mutation_forbidden", "save_mutation_forbidden"],
+      "properties": {
+        "recommendation_only": { "type": "boolean" },
+        "player_choice_required": { "const": true },
+        "silent_fallback_forbidden": { "const": true },
+        "simulation_mutation_forbidden": { "const": true },
+        "save_mutation_forbidden": { "const": true }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

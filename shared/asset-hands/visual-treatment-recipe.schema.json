@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-treatment-recipe-v1.schema.json",
+  "title": "AXM Deterministic Visual Treatment Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "request_id", "identity_id", "profile_id", "catalog_digest", "style_layers", "effect_plan", "material_family", "accessibility", "story", "scene_recipe_digest", "authority"],
+  "properties": {
+    "schema": { "const": "axm.visual-treatment-recipe/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string" },
+    "request_id": { "type": "string" },
+    "identity_id": { "type": "string" },
+    "profile_id": { "type": "string" },
+    "catalog_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "style_layers": { "type": "array" },
+    "effect_plan": { "type": "array" },
+    "material_family": { "type": ["string", "null"] },
+    "accessibility": { "type": "object" },
+    "story": { "type": ["object", "null"] },
+    "scene_recipe_digest": { "type": "string" },
+    "authority": { "type": "object" }
+  },
+  "additionalProperties": false
+}

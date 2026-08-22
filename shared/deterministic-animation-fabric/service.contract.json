@@ -1,0 +1,57 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-animation-fabric",
+  "version": "1.1.0",
+  "provides": [
+    "animation.modular.compose",
+    "animation.clip-layer.compose",
+    "animation.time-domain.rational-remap",
+    "animation.layer.fixed-point-blend",
+    "animation.fixed-tick.sample",
+    "animation.fixed-point.bake",
+    "animation.recipe.canonical-digest",
+    "animation.procedural-motion.adapt",
+    "asset.motion.css.create",
+    "asset.motion.svg-filmstrip.create",
+    "asset.motion.svg-sprite-atlas.create",
+    "asset.motion.sprite-atlas-manifest.create"
+  ],
+  "consumes": [
+    "axm.deterministic-animation-recipe/v1",
+    "axm.deterministic-animation-composition/v1",
+    "axm.procedural-motion/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.deterministic-animation-bake/v1",
+      "axm.deterministic-animation-verification/v1",
+      "axm.sprite-atlas/v1",
+      "text/css",
+      "image/svg+xml"
+    ],
+    "accepts": [
+      "axm.deterministic-animation-recipe/v1",
+      "axm.deterministic-animation-composition/v1",
+      "axm.procedural-motion/v1"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "call-time-randomness",
+      "dynamic-code-evaluation",
+      "automatic-runtime-installation",
+      "automatic-asset-promotion",
+      "automatic-visual-approval",
+      "final-media-encoding-claim",
+      "engine-adapter-parity-claim"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller",
+    "reload": "deterministic-recompile",
+    "disconnect": "not-applicable",
+    "cleanup": "discard-compiled-value"
+  }
+}

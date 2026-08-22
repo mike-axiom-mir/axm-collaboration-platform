@@ -6,18 +6,34 @@ import {
   emptyDeepOceanState,
   normalizeDeepOceanState
 } from './deep-ocean.mjs';
+import {
+  carbonateSystemDescription,
+  solveMixedLayerCarbonateSystem
+} from './carbonate-system.mjs';
+import {
+  airSeaCarbonExchangeDescription,
+  proposeAirSeaCarbonExchange
+} from './air-sea-carbon-exchange.mjs';
 
 export const EARTH_OCEAN_ECOLOGY_SCHEMA =
-  'axm.foundation-planet.ocean-ecology-state/v3';
+  'axm.foundation-planet.ocean-ecology-state/v6';
 export const PREVIOUS_EARTH_OCEAN_ECOLOGY_SCHEMA =
-  'axm.foundation-planet.ocean-ecology-state/v2';
+  'axm.foundation-planet.ocean-ecology-state/v5';
 export const EARTH_OCEAN_ECOLOGY_FLUX_SCHEMA =
-  'axm.foundation-planet.ocean-ecology-flux-receipt/v3';
+  'axm.foundation-planet.ocean-ecology-flux-receipt/v6';
+export const PREVIOUS_EARTH_OCEAN_ECOLOGY_FLUX_SCHEMA =
+  'axm.foundation-planet.ocean-ecology-flux-receipt/v5';
 export const EARTH_OCEAN_ECOLOGY_RIVER_INPUT_SCHEMA =
   'axm.foundation-planet.ocean-ecology-river-input-receipt/v2';
 export const EARTH_OCEAN_ECOLOGY_RUNOFF_INPUT_SCHEMA =
   'axm.foundation-planet.ocean-ecology-runoff-input-receipt/v2';
 const LEGACY_OCEAN_ECOLOGY_SCHEMA = 'axm.foundation-planet.ocean-ecology-state/v1';
+const ALKALINITY_FREE_OCEAN_ECOLOGY_SCHEMA =
+  'axm.foundation-planet.ocean-ecology-state/v2';
+const PRE_DEEP_ALKALINITY_OCEAN_ECOLOGY_SCHEMA =
+  'axm.foundation-planet.ocean-ecology-state/v3';
+const PRE_CARBONATE_DIAGNOSTIC_OCEAN_ECOLOGY_SCHEMA =
+  'axm.foundation-planet.ocean-ecology-state/v4';
 
 const REFERENCE_ATMOSPHERIC_CARBON_KG_C_M2 = 3.45;
 const REFERENCE_CO2_PPM = 420;
@@ -136,8 +152,9 @@ function oxygenTotal(oxygen, deepOcean) {
     deepOceanElementTotals(deepOcean).oxygenKgO2m2;
 }
 
-function alkalinityTotal(alkalinity) {
-  return finite(alkalinity?.dissolvedKgCaCO3Eqm2);
+function alkalinityTotal(alkalinity, deepOcean) {
+  return finite(alkalinity?.dissolvedKgCaCO3Eqm2) +
+    deepOceanElementTotals(deepOcean).alkalinityKgCaCO3Eqm2;
 }
 
 export function oceanEcologyElementTotals(source) {
@@ -146,7 +163,8 @@ export function oceanEcologyElementTotals(source) {
     nitrogenKgNm2: nitrogenTotal(source?.nitrogen, source?.deepOcean),
     phosphorusKgPm2: phosphorusTotal(source?.phosphorus, source?.deepOcean),
     oxygenKgO2m2: oxygenTotal(source?.oxygen, source?.deepOcean),
-    alkalinityKgCaCO3Eqm2: alkalinityTotal(source?.alkalinity)
+    alkalinityKgCaCO3Eqm2: alkalinityTotal(source?.alkalinity,
+      source?.deepOcean)
   };
 }
 
@@ -159,7 +177,7 @@ function refreshDiagnostics(state) {
   state.phosphorus.totalKgPm2 = round(phosphorusTotal(state.phosphorus, state.deepOcean));
   state.oxygen.totalKgO2m2 = round(oxygenTotal(state.oxygen, state.deepOcean));
   state.alkalinity.totalKgCaCO3Eqm2 = round(
-    alkalinityTotal(state.alkalinity));
+    alkalinityTotal(state.alkalinity, state.deepOcean));
   const depthM = Math.max(1, finite(state.traits?.mixedLayerDepthM, 50));
   const chlorophyllProxyMgM3 = clamp(
     state.carbon.phytoplanktonKgCm2 / depthM * 1000 * 1.35,
@@ -185,6 +203,26 @@ function refreshDiagnostics(state) {
     hypoxiaRisk: round(clamp(1 - state.oxygen.dissolvedKgO2m2 /
       Math.max(.001, .003 * depthM)), 6)
   };
+  state.carbonateSystem = solveMixedLayerCarbonateSystem({
+    dissolvedInorganicCarbonKgCm2:
+      state.carbon.dissolvedInorganicKgCm2,
+    alkalinityKgCaCO3Eqm2:
+      state.alkalinity.dissolvedKgCaCO3Eqm2,
+    dissolvedInorganicPhosphorusKgPm2:
+      state.phosphorus.dissolvedInorganicKgPm2,
+    mixedLayerDepthM: depthM,
+    temperatureC: state.physiology.temperatureC,
+    salinityPsu: state.physiology.salinityPsu
+  });
+  const carbonateSolved = state.carbonateSystem.status === 'SOLVED';
+  state.truth.carbonateSpeciationResolved = carbonateSolved;
+  state.truth.pHResolved = carbonateSolved;
+  state.truth.carbonateDiagnosticOnly = true;
+  state.truth.carbonateDiagnosticMutatesMaterial = false;
+  state.truth.mixedLayerSurfacePressureOnly = true;
+  state.truth.deepOceanPHResolved = false;
+  state.truth.silicateAlkalinityIncluded = false;
+  state.truth.pHFeedbackModeled = false;
   return state;
 }
 
@@ -266,6 +304,7 @@ export function createOceanEcology(sample, ocean = {}, options = {}) {
       oxygenSaturationFraction: 0,
       hypoxiaRisk: 0
     },
+    carbonateSystem: null,
     physiology: {
       active: productivity > 0,
       temperatureC: round(temperatureC),
@@ -291,7 +330,21 @@ export function createOceanEcology(sample, ocean = {}, options = {}) {
       measuredAlkalinityClaimed: false,
       carbonateSpeciationResolved: false,
       pHResolved: false,
+      carbonateDiagnosticOnly: true,
+      carbonateDiagnosticMutatesMaterial: false,
+      carbonateInformedAirSeaCo2Exchange: false,
+      airSeaCarbonExchangeTypedRefusal: false,
+      airSeaCo2FugacityCorrection: false,
+      scientificAirSeaGasTransferVelocity: false,
+      measuredAirSeaPco2: false,
+      measuredOceanSkinTemperature: false,
+      mixedLayerSurfacePressureOnly: true,
+      deepOceanPHResolved: false,
+      silicateAlkalinityIncluded: false,
+      pHFeedbackModeled: false,
       persistentDeepOceanReservoirs: true,
+      persistentDeepOceanAlkalinity: true,
+      conservativeMixedToDeepAlkalinityExchange: true,
       sinkingCarbonExportAndBurial: true,
       physicalChemistryContinuesWithLifeOff: true,
       localExchangeableAtmosphereOnly: true,
@@ -328,6 +381,9 @@ export function normalizeOceanEcology(source, context = {}) {
   if (!source || ![
     EARTH_OCEAN_ECOLOGY_SCHEMA,
     PREVIOUS_EARTH_OCEAN_ECOLOGY_SCHEMA,
+    PRE_CARBONATE_DIAGNOSTIC_OCEAN_ECOLOGY_SCHEMA,
+    PRE_DEEP_ALKALINITY_OCEAN_ECOLOGY_SCHEMA,
+    ALKALINITY_FREE_OCEAN_ECOLOGY_SCHEMA,
     LEGACY_OCEAN_ECOLOGY_SCHEMA
   ].includes(source.schema)) {
     return context.sample && context.sample.land !== true
@@ -335,7 +391,10 @@ export function normalizeOceanEcology(source, context = {}) {
       : migratedOceanEcology(context.ocean);
   }
   const migratedFromV1 = source.schema === LEGACY_OCEAN_ECOLOGY_SCHEMA;
-  const migratedAlkalinity = source.schema !== EARTH_OCEAN_ECOLOGY_SCHEMA;
+  const migratedAlkalinity = [
+    ALKALINITY_FREE_OCEAN_ECOLOGY_SCHEMA,
+    LEGACY_OCEAN_ECOLOGY_SCHEMA
+  ].includes(source.schema);
   const state = clone(source);
   state.schema = EARTH_OCEAN_ECOLOGY_SCHEMA;
   state.migrationCheckpoint = state.migrationCheckpoint === true;
@@ -427,7 +486,25 @@ export function normalizeOceanEcology(source, context = {}) {
     measuredAlkalinityClaimed: false,
     carbonateSpeciationResolved: false,
     pHResolved: false,
+    carbonateDiagnosticOnly: true,
+    carbonateDiagnosticMutatesMaterial: false,
+    carbonateInformedAirSeaCo2Exchange: state.lastFluxReceipt?.carbon
+      ?.airSeaCarbonExchange?.status?.startsWith('SOLVED_') === true,
+    airSeaCarbonExchangeTypedRefusal: Boolean(state.lastFluxReceipt?.carbon
+      ?.airSeaCarbonExchange) && state.lastFluxReceipt.carbon
+      .airSeaCarbonExchange.status?.startsWith('SOLVED_') !== true,
+    airSeaCo2FugacityCorrection: state.lastFluxReceipt?.carbon
+      ?.airSeaCarbonExchange?.truth?.fugacityNonidealityIncluded === true,
+    scientificAirSeaGasTransferVelocity: false,
+    measuredAirSeaPco2: false,
+    measuredOceanSkinTemperature: false,
+    mixedLayerSurfacePressureOnly: true,
+    deepOceanPHResolved: false,
+    silicateAlkalinityIncluded: false,
+    pHFeedbackModeled: false,
     persistentDeepOceanReservoirs: true,
+    persistentDeepOceanAlkalinity: true,
+    conservativeMixedToDeepAlkalinityExchange: true,
     sinkingCarbonExportAndBurial: true,
     physicalChemistryContinuesWithLifeOff: true,
     localExchangeableAtmosphereOnly: true,
@@ -483,27 +560,53 @@ function physicalExchange(state, environment, duration) {
     .08, 1.35);
   const exchangeFraction = clamp((.012 + windFactor * .022) *
     (.08 + openWater * .92) * duration, 0, .08);
-  const atmosphericRatio = clamp(
-    state.carbon.atmosphericExchangeableKgCm2 /
-      REFERENCE_ATMOSPHERIC_CARBON_KG_C_M2,
-    .1,
-    2
-  );
-  const temperatureSolubility = clamp(1 - (temperatureC - 12) * .012,
-    .7, 1.35);
-  const targetDic = state.traits.referenceDissolvedInorganicCarbonKgCm2 *
-    Math.pow(atmosphericRatio, .72) * temperatureSolubility;
+  const carbonExchangeProposal = proposeAirSeaCarbonExchange({
+    carbonateSystem: state.carbonateSystem,
+    atmosphericCo2PpmProxy: state.carbon.co2PpmProxy,
+    atmosphericCarbonKgCm2:
+      state.carbon.atmosphericExchangeableKgCm2,
+    dissolvedInorganicCarbonKgCm2:
+      state.carbon.dissolvedInorganicKgCm2,
+    alkalinityKgCaCO3Eqm2:
+      state.alkalinity.dissolvedKgCaCO3Eqm2,
+    dissolvedInorganicPhosphorusKgPm2:
+      state.phosphorus.dissolvedInorganicKgPm2,
+    mixedLayerDepthM: depthM,
+    temperatureC,
+    salinityPsu,
+    surfacePressureHpa: finite(environment.surfacePressureHpa, 1013.25),
+    relaxationFraction: exchangeFraction
+  });
   const co2ToOceanKgCm2 = moveBetweenPools(state, 'carbon',
     'atmosphericExchangeableKgCm2', 'dissolvedInorganicKgCm2',
-    (targetDic - state.carbon.dissolvedInorganicKgCm2) * exchangeFraction);
+    carbonExchangeProposal.signedCarbonToOceanKgCm2);
+  const ownerMoveMatchedProposal = Math.abs(co2ToOceanKgCm2 -
+    carbonExchangeProposal.signedCarbonToOceanKgCm2) <= 1e-12;
+  const carbonExchange = {
+    ...clone(carbonExchangeProposal),
+    application: {
+      pairedOwnerMove: true,
+      appliedSignedCarbonToOceanKgCm2: round(co2ToOceanKgCm2, 12),
+      proposalMatched: ownerMoveMatchedProposal,
+      combinedAtmosphereAndOceanCarbonClosed: ownerMoveMatchedProposal
+    }
+  };
+  const carbonExchangeSolved = carbonExchange.status.startsWith('SOLVED_');
+  state.truth.carbonateInformedAirSeaCo2Exchange = carbonExchangeSolved;
+  state.truth.airSeaCarbonExchangeTypedRefusal = !carbonExchangeSolved;
+  state.truth.airSeaCo2FugacityCorrection =
+    carbonExchange.truth.fugacityNonidealityIncluded === true;
+  state.truth.scientificAirSeaGasTransferVelocity = false;
+  state.truth.measuredAirSeaPco2 = false;
+  state.truth.measuredOceanSkinTemperature = false;
   const targetOxygen = oxygenSaturationKgM3(temperatureC, salinityPsu) * depthM;
   const oxygenToOceanKgO2m2 = moveBetweenPools(state, 'oxygen',
     'atmosphericExchangeableKgO2m2', 'dissolvedKgO2m2',
     (targetOxygen - state.oxygen.dissolvedKgO2m2) * exchangeFraction * 1.4);
   return {
     co2ToOceanKgCm2,
+    carbonExchange,
     oxygenToOceanKgO2m2,
-    targetDissolvedInorganicCarbonKgCm2: targetDic,
     targetDissolvedOxygenKgO2m2: targetOxygen,
     exchangeFraction
   };
@@ -549,6 +652,7 @@ function fluxReceipt(state, initial, duration, exchange, biology, deepOceanRecei
       detritusRemineralizationKgCm2: round(biology.detritusRemineralizationKgCm2),
       dissolvedOrganicRespirationKgCm2: round(biology.dissolvedOrganicRespirationKgCm2),
       airSeaCo2FluxToOceanKgCm2: round(exchange.co2ToOceanKgCm2),
+      airSeaCarbonExchange: clone(exchange.carbonExchange),
       residualKgCm2: round(carbonResidual, 12)
     },
     nitrogen: {
@@ -568,8 +672,11 @@ function fluxReceipt(state, initial, duration, exchange, biology, deepOceanRecei
       residualKgO2m2: round(oxygenResidual, 12)
     },
     alkalinity: {
+      mixedToDeepKgCaCO3Eqm2: round(finite(deepOceanReceipt
+        ?.dissolvedExchange?.alkalinitySurfaceToDeepKgCaCO3Eqm2), 12),
       residualKgCaCO3Eqm2: round(alkalinityResidual, 12)
     },
+    carbonateSystem: clone(state.carbonateSystem),
     waterColumn: clone(state.waterColumn),
     deepOcean: deepOceanReceipt ? clone(deepOceanReceipt) : null,
     stresses: {
@@ -583,16 +690,46 @@ function fluxReceipt(state, initial, duration, exchange, biology, deepOceanRecei
     truth: {
       biologicalReservoirsFrozen: status !== 'active',
       physicalGasExchangeActive: true,
+      carbonateInformedAirSeaCo2Exchange:
+        exchange.carbonExchange.status.startsWith('SOLVED_'),
+      airSeaCarbonExchangeTypedRefusal:
+        !exchange.carbonExchange.status.startsWith('SOLVED_'),
+      airSeaCo2FugacityCorrection:
+        exchange.carbonExchange.truth.fugacityNonidealityIncluded === true,
+      airSeaCarbonExchangeSourceBound:
+        exchange.carbonExchange.truth.senderBounded === true,
+      airSeaCarbonOwnerMoveMatchedProposal:
+        exchange.carbonExchange.application.proposalMatched === true,
+      scientificAirSeaGasTransferVelocity: false,
+      measuredAirSeaPco2: false,
+      measuredOceanSkinTemperature: false,
       carbonClosed: Math.abs(carbonResidual) < 1e-9,
       nitrogenClosed: Math.abs(nitrogenResidual) < 1e-9,
       phosphorusClosed: Math.abs(phosphorusResidual) < 1e-9,
       oxygenFluxClosed: Math.abs(oxygenResidual) < 1e-9,
       alkalinityClosed: Math.abs(alkalinityResidual) < 1e-9,
       persistentDeepOceanReservoirs: true,
+      persistentDeepOceanAlkalinity: true,
+      conservativeMixedToDeepAlkalinityExchange: deepOceanReceipt?.truth
+        ?.conservativeVerticalAlkalinityExchange === true,
+      mixedToDeepAlkalinityClosed: deepOceanReceipt
+        ? Math.abs(finite(deepOceanReceipt.conservation
+          ?.alkalinityResidualKgCaCO3Eqm2)) < 1e-9
+        : false,
       mixedToDeepMaterialClosure: deepOceanReceipt
         ? Object.values(deepOceanReceipt.conservation)
           .every(value => Math.abs(finite(value)) < 1e-9)
         : false,
+      mixedLayerCarbonateDiagnosticSolved:
+        state.carbonateSystem?.status === 'SOLVED',
+      mixedLayerCarbonateDiagnosticOnly: true,
+      mixedLayerCarbonateDiagnosticMutatesMaterial: false,
+      mixedLayerCarbonateMassClosed:
+        state.carbonateSystem?.truth?.carbonateMassClosed === true,
+      mixedLayerCarbonateAlkalinityResidualClosed:
+        state.carbonateSystem?.truth?.alkalinityResidualClosed === true,
+      mixedLayerPHFeedbackModeled: false,
+      deepOceanPHResolved: false,
       localExchangeableAtmosphereOnly: true,
       globallyMixedAtmosphericGases: false,
       threeDimensionalOceanCirculation: false,
@@ -650,6 +787,8 @@ export function advanceOceanEcology(source, environment = {}, durationDays = 1,
   12, 180);
   state.physiology.temperatureC = temperatureC;
   state.physiology.salinityPsu = salinityPsu;
+  state.traits.mixedLayerDepthM = round(depthM);
+  refreshDiagnostics(state);
   const exchange = physicalExchange(state, {
     ...environment,
     temperatureC,
@@ -1080,6 +1219,8 @@ export function oceanEcologyDescription() {
     riverInputReceiptSchema: EARTH_OCEAN_ECOLOGY_RIVER_INPUT_SCHEMA,
     runoffInputReceiptSchema: EARTH_OCEAN_ECOLOGY_RUNOFF_INPUT_SCHEMA,
     deepOcean: deepOceanDescription(),
+    carbonateSystem: carbonateSystemDescription(),
+    airSeaCarbonExchange: airSeaCarbonExchangeDescription(),
     reservoirs: [
       'local-exchangeable-atmospheric-carbon',
       'dissolved-inorganic-carbon',
@@ -1092,6 +1233,7 @@ export function oceanEcologyDescription() {
       'local-exchangeable-atmospheric-oxygen',
       'dissolved-oxygen',
       'dissolved-alkalinity-as-CaCO3-equivalent'
+      , 'read-only-mixed-layer-carbonate-equilibrium-diagnostic'
       , 'deep-ocean-dissolved-carbon-nitrogen-phosphorus-and-oxygen'
       , 'deep-ocean-detritus-and-seafloor-buried-organic-matter'
     ],
@@ -1099,7 +1241,7 @@ export function oceanEcologyDescription() {
       'light-temperature-ice-and-nutrient-limited-primary-production',
       'grazing-mortality-and-detritus-formation',
       'oxygen-limited-community-respiration-and-remineralization',
-      'local-air-sea-carbon-and-oxygen-exchange',
+      'carbonate-informed-local-air-sea-carbon-and-oxygen-exchange',
       'mixed-layer-to-deep-dissolved-exchange',
       'sinking-particle-export-deep-remineralization-and-seafloor-burial',
       'parameterized-river-mouth-biogeochemistry-boundary',
@@ -1109,6 +1251,7 @@ export function oceanEcologyDescription() {
     physicalGasExchangeWhenLifeDisabled: true,
     physicalDeepExchangeWhenLifeDisabled: true,
     persistentDeepOceanReservoirs: true,
+    persistentDeepOceanAlkalinity: true,
     maximumStepDays: 1,
     globallyMixedAtmosphericGases: false,
     upstreamRiverChemistryReservoirs: true,
@@ -1116,9 +1259,22 @@ export function oceanEcologyDescription() {
     persistentMixedLayerAlkalinity: true,
     alkalinityUnit: 'kg-CaCO3-equivalent',
     alkalinityReferenceInitialization: '2300-umol-kg-at-salinity-35',
-    deepOceanAlkalinityExchange: false,
-    carbonateSpeciationResolved: false,
-    pHResolved: false,
+    deepOceanAlkalinityExchange: true,
+    deepOceanAlkalinityMigration: 'explicit-zero-for-v1-deep-ocean-state',
+    carbonateSpeciationResolved: true,
+    pHResolved: true,
+    carbonateDiagnosticOnly: true,
+    carbonateDiagnosticMutatesMaterial: false,
+    carbonateInformedAirSeaCo2Exchange: true,
+    airSeaCo2FugacityCorrection: true,
+    scientificAirSeaGasTransferVelocity: false,
+    measuredAirSeaPco2: false,
+    measuredOceanSkinTemperature: false,
+    carbonateValidityEnvelope: 'surface-pressure-2-to-35-C-salinity-19-to-43',
+    carbonateOutOfEnvelopeBehavior: 'typed-non-solution-without-clamping',
+    carbonateSilicateAlkalinityIncluded: false,
+    carbonatePHFeedbackModeled: false,
+    deepOceanPHResolved: false,
     threeDimensionalOceanCirculation: false,
     mechanisticPlanktonBiochemistry: false,
     scientificModel: false

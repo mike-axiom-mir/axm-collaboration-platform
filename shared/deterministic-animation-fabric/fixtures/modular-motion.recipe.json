@@ -1,0 +1,86 @@
+{
+  "schema": "axm.deterministic-animation-recipe/v1",
+  "version": "1.0.0",
+  "id": "modular-motion-proof",
+  "seed": "axm-motion-proof-01",
+  "loop": true,
+  "timebase": {
+    "ticks_per_second": 12000,
+    "frames_per_second": 12,
+    "duration_ticks": 24000
+  },
+  "blocks": [
+    {
+      "id": "axm.motion.offset-wave/v1",
+      "parameters": {
+        "amplitude": { "type": "number", "default": 10 },
+        "offset": { "type": "number", "default": 0 },
+        "period_ticks": { "type": "integer", "default": 12000 }
+      },
+      "nodes": [
+        { "id": "wave", "type": "wave", "waveform": "triangle", "period_ticks": "$period_ticks", "phase_ticks": 0, "amplitude": "$amplitude", "offset": "$offset" }
+      ],
+      "outputs": { "value": "wave" }
+    }
+  ],
+  "instances": [
+    {
+      "id": "horizontal",
+      "block": "axm.motion.offset-wave/v1",
+      "parameters": { "amplitude": 18, "offset": 0, "period_ticks": 24000 }
+    },
+    {
+      "id": "vertical",
+      "block": "axm.motion.oscillator/v1",
+      "parameters": { "waveform": "triangle", "period_ticks": 12000, "phase_ticks": 3000, "amplitude": 8, "offset": 0 }
+    },
+    {
+      "id": "micro",
+      "block": "axm.motion.seeded-noise/v1",
+      "parameters": { "hold_ticks": 2000, "amplitude": 1.5, "offset": 0, "seed": "micro-jitter" }
+    },
+    {
+      "id": "pulse",
+      "block": "axm.motion.envelope/v1",
+      "parameters": {
+        "points": [
+          { "tick": 0, "value": 0.9 },
+          { "tick": 6000, "value": 1.08 },
+          { "tick": 12000, "value": 0.95 },
+          { "tick": 18000, "value": 1.04 },
+          { "tick": 24000, "value": 0.9 }
+        ],
+        "interpolation": "smoothstep"
+      }
+    }
+  ],
+  "nodes": [
+    { "id": "x-composed", "type": "add", "inputs": ["horizontal.value", "micro.value"] },
+    { "id": "turn", "type": "remap", "input": "horizontal.value", "input_min": -18, "input_max": 18, "output_min": -6, "output_max": 6 },
+    { "id": "visible", "type": "constant", "value": 1 }
+  ],
+  "tracks": [
+    { "id": "mark-x", "target": "mark", "property": "transform.x", "node": "x-composed", "unit": "px" },
+    { "id": "mark-y", "target": "mark", "property": "transform.y", "node": "vertical.value", "unit": "px" },
+    { "id": "mark-scale", "target": "mark", "property": "transform.scale", "node": "pulse.value", "unit": "ratio" },
+    { "id": "mark-turn", "target": "mark", "property": "transform.rotation", "node": "turn", "unit": "deg" },
+    { "id": "mark-opacity", "target": "mark", "property": "opacity", "node": "visible", "unit": "ratio" }
+  ],
+  "events": [
+    { "id": "origin", "tick": 0, "kind": "marker", "payload": { "phase": "origin" } },
+    { "id": "accent", "tick": 12000, "kind": "accent", "payload": { "phase": "counterpoint" } }
+  ],
+  "presentation": {
+    "target": "mark",
+    "shape": "diamond",
+    "background": "#07111f",
+    "fill": "#29d8f2",
+    "stroke": "#e9fbff"
+  },
+  "authority": {
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_visual_review_required": true
+  }
+}

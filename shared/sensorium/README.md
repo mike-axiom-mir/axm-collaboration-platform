@@ -1,9 +1,5 @@
 # AXM Sensorium runtime adapters
 
-The shared core routes exported serialization and cloning through
-`tools/deterministic-json-core`, refusing unsupported or lossy JSON state. The
-legacy `stable` normalizer remains available to existing bounded adapters.
-
 These are the small executable bodies behind the Sensorium skills. The skill
 files remain the judgement procedures; these modules provide bounded, testable
 execution contracts for local AI seats and Mirror. The portable TEST pack

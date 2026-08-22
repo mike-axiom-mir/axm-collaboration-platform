@@ -1,0 +1,43 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-material-fabric",
+  "version": "1.0.0",
+  "provides": [
+    "material.pbr.result.fail-closed-gate",
+    "material.pbr.png.full-sha256",
+    "material.pbr.sampling-contract",
+    "material.pbr.create-edit-handoff"
+  ],
+  "consumes": [
+    "axm.asset-hand-result/v1",
+    "pbr-material-bake/1.1.0",
+    "axm.pbr-material-recipe/v1",
+    "axm.pbr-material-bake-receipt/v1",
+    "image/png"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.deterministic-material-handoff/v1"],
+    "accepts": ["axm.asset-hand-result/v1"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "material-generation",
+      "dynamic-browser-render-proof-claim",
+      "target-renderer-parity-claim",
+      "physical-surface-proof-claim",
+      "human-aesthetic-approval-claim",
+      "automatic-glb-binding",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-canonization"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller",
+    "reload": "re-gate-whole-result",
+    "disconnect": "human-host-degrades-read-only",
+    "cleanup": "discard-candidate"
+  }
+}

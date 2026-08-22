@@ -2,6 +2,162 @@ import { PLANET_DEFAULTS } from './planet-model.mjs';
 
 export const WORLD_STATE_SCHEMA = 'axm.foundation-planet.world-state/v2';
 export const LEGACY_SAVE_SCHEMA = 'axm.foundation-planet.save/v1';
+export const COMPRESSED_WORLD_STATE_STORAGE_SCHEMA =
+  'axm.foundation-planet.compressed-world-state-storage/v1';
+export const COMPRESSED_WORLD_STATE_ENCODING = 'lzw-uint16-base64';
+
+function bytesToBase64(bytes) {
+  let binary = '';
+  for (let offset = 0; offset < bytes.length; offset += 32_768) {
+    binary += String.fromCharCode(...bytes.subarray(
+      offset, Math.min(bytes.length, offset + 32_768)));
+  }
+  return btoa(binary);
+}
+
+function base64ToBytes(value) {
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index++) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return bytes;
+}
+
+function compressText(value) {
+  const input = new TextEncoder().encode(value);
+  if (!input.length) return { data: '', uncompressedBytes: 0 };
+  const dictionary = new Map();
+  const codes = [];
+  let nextCode = 256;
+  let prefix = input[0];
+  for (let index = 1; index < input.length; index++) {
+    const byte = input[index];
+    const key = prefix * 256 + byte;
+    const known = dictionary.get(key);
+    if (known !== undefined) {
+      prefix = known;
+      continue;
+    }
+    codes.push(prefix);
+    if (nextCode < 65_535) dictionary.set(key, nextCode++);
+    else {
+      dictionary.clear();
+      nextCode = 256;
+    }
+    prefix = byte;
+  }
+  codes.push(prefix);
+  const encoded = new Uint8Array(codes.length * 2);
+  for (let index = 0; index < codes.length; index++) {
+    encoded[index * 2] = codes[index] >>> 8;
+    encoded[index * 2 + 1] = codes[index] & 255;
+  }
+  return {
+    data: bytesToBase64(encoded),
+    uncompressedBytes: input.length
+  };
+}
+
+function decompressText(data, expectedBytes) {
+  const encoded = base64ToBytes(data);
+  if (encoded.length % 2 !== 0 || !Number.isSafeInteger(expectedBytes) ||
+      expectedBytes < 0) throw new Error('compressed world-state shape');
+  if (!encoded.length) {
+    if (expectedBytes !== 0) throw new Error('compressed world-state length');
+    return '';
+  }
+  const codes = new Uint16Array(encoded.length / 2);
+  for (let index = 0; index < codes.length; index++) {
+    codes[index] = encoded[index * 2] * 256 + encoded[index * 2 + 1];
+  }
+  const prefixes = new Uint16Array(65_535);
+  const suffixes = new Uint8Array(65_535);
+  const stack = new Uint8Array(65_535);
+  const output = new Uint8Array(expectedBytes);
+  let outputOffset = 0;
+  let nextCode = 256;
+
+  function firstByte(code) {
+    let cursor = code;
+    while (cursor >= 256) cursor = prefixes[cursor];
+    return cursor;
+  }
+
+  function emit(code) {
+    let cursor = code;
+    let length = 0;
+    while (cursor >= 256) {
+      if (cursor >= nextCode || length >= stack.length) {
+        throw new Error('compressed world-state dictionary');
+      }
+      stack[length++] = suffixes[cursor];
+      cursor = prefixes[cursor];
+    }
+    stack[length++] = cursor;
+    if (outputOffset + length > output.length) {
+      throw new Error('compressed world-state overflow');
+    }
+    for (let index = length - 1; index >= 0; index--) {
+      output[outputOffset++] = stack[index];
+    }
+  }
+
+  let previous = codes[0];
+  if (previous >= 256) throw new Error('compressed world-state first code');
+  emit(previous);
+  for (let index = 1; index < codes.length; index++) {
+    const code = codes[index];
+    if (nextCode >= 65_535) {
+      nextCode = 256;
+      if (code >= 256) throw new Error('compressed world-state reset');
+      emit(code);
+      previous = code;
+      continue;
+    }
+    if (code > nextCode) throw new Error('compressed world-state code');
+    const first = code === nextCode ? firstByte(previous) : firstByte(code);
+    prefixes[nextCode] = previous;
+    suffixes[nextCode] = first;
+    nextCode++;
+    emit(code);
+    previous = code;
+  }
+  if (outputOffset !== output.length) {
+    throw new Error('compressed world-state length');
+  }
+  return new TextDecoder('utf-8', { fatal: true }).decode(output);
+}
+
+export function encodeStoredEnvelope(envelope) {
+  const text = JSON.stringify(envelope);
+  const compressed = compressText(text);
+  return JSON.stringify({
+    schema: COMPRESSED_WORLD_STATE_STORAGE_SCHEMA,
+    encoding: COMPRESSED_WORLD_STATE_ENCODING,
+    uncompressedCharacters: text.length,
+    uncompressedBytes: compressed.uncompressedBytes,
+    data: compressed.data
+  });
+}
+
+export function decodeStoredEnvelope(value) {
+  if (value?.schema !== COMPRESSED_WORLD_STATE_STORAGE_SCHEMA) {
+    return { envelope: value, encoding: 'json' };
+  }
+  if (value.encoding !== COMPRESSED_WORLD_STATE_ENCODING ||
+      typeof value.data !== 'string') {
+    throw new Error('compressed world-state encoding');
+  }
+  const text = decompressText(value.data, value.uncompressedBytes);
+  if (text.length !== value.uncompressedCharacters) {
+    throw new Error('compressed world-state character length');
+  }
+  return {
+    envelope: JSON.parse(text),
+    encoding: COMPRESSED_WORLD_STATE_ENCODING
+  };
+}
 
 function stableValue(value) {
   if (Array.isArray(value)) return value.map(stableValue);
@@ -72,16 +228,21 @@ export class WorldStateStore {
     this.maxJournal = Math.max(8, Math.min(256, Number(options.maxJournal || 96)));
     this.envelope = null;
     this.loadStatus = 'empty';
+    this.storageEncoding = 'json';
   }
 
   load() {
     if (!this.storage) return null;
     try {
-      const current = JSON.parse(this.storage.getItem(this.key) || 'null');
+      const stored = JSON.parse(this.storage.getItem(this.key) || 'null');
+      const decoded = decodeStoredEnvelope(stored);
+      const current = decoded.envelope;
       const result = validateSaveEnvelope(current);
       if (result.valid) {
         this.envelope = current;
-        this.loadStatus = 'restored-v2';
+        this.storageEncoding = decoded.encoding;
+        this.loadStatus = decoded.encoding === 'json' ?
+          'restored-v2' : 'restored-v2-compressed';
         return current;
       }
       const legacy = JSON.parse(this.storage.getItem(this.legacyKey) || 'null');
@@ -122,11 +283,26 @@ export class WorldStateStore {
       payload: stableValue(payload),
       journal
     };
-    this.envelope = {
+    const nextEnvelope = {
       ...base,
       integrity: { algorithm: 'fnv1a32', checksum: checksum(base) }
     };
-    if (this.storage) this.storage.setItem(this.key, JSON.stringify(this.envelope));
+    let storageEncoding = 'json';
+    if (this.storage) {
+      try {
+        this.storage.setItem(this.key, JSON.stringify(nextEnvelope));
+      } catch (uncompressedError) {
+        try {
+          this.storage.setItem(this.key, encodeStoredEnvelope(nextEnvelope));
+          storageEncoding = COMPRESSED_WORLD_STATE_ENCODING;
+        } catch (compressedError) {
+          compressedError.uncompressedStorageError = uncompressedError;
+          throw compressedError;
+        }
+      }
+    }
+    this.envelope = nextEnvelope;
+    this.storageEncoding = storageEncoding;
     return this.envelope;
   }
 
@@ -140,6 +316,7 @@ export class WorldStateStore {
       revision: this.envelope?.revision || 0,
       parentRevision: this.envelope?.parentRevision ?? null,
       checksum: this.envelope?.integrity?.checksum || null,
+      storageEncoding: this.storageEncoding,
       journalLength: this.envelope?.journal?.length || 0,
       optimisticConcurrency: true,
       authoritativeSharedHost: false,
@@ -159,6 +336,8 @@ export function worldStateDescription() {
     legacyMigration: LEGACY_SAVE_SCHEMA,
     authoritativeSharedHost: false,
     authoritativeHostSeam: 'named-world-host-v1',
-    explicitAttachmentRequired: true
+    explicitAttachmentRequired: true,
+    losslessCompressedStorageFallback: COMPRESSED_WORLD_STATE_ENCODING,
+    failedWritesAreTransactional: true
   };
 }

@@ -1,7 +1,14 @@
 # AXM Shared Physical Controller Route
 
-Status: **DORMANT RESEARCH ROUTE - NOT IMPLEMENTED**  
-Default: **Phone / QR remains the universal low-barrier controller**
+Status: **DEFAULT POLICY ADOPTED - MIGRATION IN PROGRESS**  
+Default: **Universal Xbox/Brawl gamepad for party co-op on one shared screen; keyboard and phone remain fallbacks where declared**
+
+The Game Hub now applies `axm-universal-xbox-brawl-v0.2.1` as an inherited
+platform requirement for qualifying shared-screen co-op games. Bloomvale and
+Relaybound are integrated. Older qualifying games remain launchable but show a
+visible `MAPPING NEEDED` status until their semantic action mapping is migrated.
+This is a default policy and migration gate, not a false claim that every game
+already consumes the adapter.
 
 ## Core decision
 
@@ -78,7 +85,9 @@ contain vendor or product details and are not reliable player identity.
 Only a `standard` browser mapping may receive a default binding. A missing or
 non-standard mapping must pause for explicit calibration/remapping.
 
-The party screen remains display-only. Gamepad polling belongs only in:
+For qualifying shared-screen co-op games, the party screen may be the local
+gameplay surface and poll explicitly assigned gamepads. Outside that case,
+gamepad polling belongs only in:
 
 - the host-only Controller Dock;
 - an individual player's controller page; or
@@ -114,7 +123,7 @@ separate explicit-consent operation.
 
 ## Phases and proof gates
 
-### Phase 1 - Host-connected standard gamepads
+### Phase 1 - Host-connected standard gamepads (partially implemented)
 
 - USB, Bluetooth or manufacturer receiver connected to the host;
 - Controller Dock discovery and press-to-claim assignment;
@@ -142,7 +151,8 @@ separate explicit-consent operation.
 
 ## Honest current boundary
 
-No USB, Bluetooth, receiver, accessibility controller, mixed party, reconnect,
-fullscreen, background, four-device, or eight-device hardware path has been
-run. This route records an architecture and its required exams. It grants no
-runtime capability and makes no compatibility promise.
+The reusable adapter and the Bloomvale/Relaybound software paths exist, and the
+Hub now publishes the inherited default plus migration status. Broad USB,
+Bluetooth, receiver, accessibility-controller, mixed-party, reconnect,
+fullscreen, background, four-device, and eight-device hardware proof is still
+missing. Games marked `MAPPING NEEDED` do not yet have runtime capability.

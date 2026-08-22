@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/capability-intelligence-pipeline-receipt-v1.schema.json",
+  "title": "AXM Capability Intelligence Pipeline Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "pipeline_contract",
+    "generated_at",
+    "verdict",
+    "module1",
+    "module1_to_module2",
+    "module2",
+    "interface_application",
+    "module2_to_module3",
+    "module3",
+    "supplier_source_stability",
+    "native_contract_boundary",
+    "truth",
+    "receipt_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "axm.capability-intelligence-pipeline-receipt/v1"},
+    "pipeline_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "mode"],
+      "properties": {
+        "id": {"const": "axm.platform.capability-intelligence-pipeline"},
+        "version": {"const": "1.0.0"},
+        "mode": {"const": "LOCAL_TEST_NO_CANON"}
+      }
+    },
+    "generated_at": {"type": "string", "format": "date-time"},
+    "verdict": {"enum": ["PASS", "FAIL"]},
+    "module1": {"$ref": "#/$defs/stage"},
+    "module1_to_module2": {"$ref": "#/$defs/handoff"},
+    "module2": {"$ref": "#/$defs/stage"},
+    "interface_application": {"$ref": "#/$defs/stage"},
+    "module2_to_module3": {"$ref": "#/$defs/handoff"},
+    "module3": {"$ref": "#/$defs/stage"},
+    "supplier_source_stability": {
+      "type": "object",
+      "required": ["status", "before", "after"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL"]},
+        "before": {"type": "object"},
+        "after": {"type": "object"}
+      }
+    },
+    "native_contract_boundary": {
+      "type": "object",
+      "required": ["status", "hidden", "platform_bridge_claims_native_identity"],
+      "properties": {
+        "status": {"const": "BLOCKED"},
+        "hidden": {"const": false},
+        "platform_bridge_claims_native_identity": {"const": false}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "required": ["automatic_execution", "automatic_canon", "human_approval_claimed", "visual_quality_claimed"],
+      "properties": {
+        "automatic_execution": {"const": false},
+        "automatic_canon": {"const": false},
+        "human_approval_claimed": {"const": false},
+        "visual_quality_claimed": {"const": false}
+      }
+    },
+    "receipt_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "stage": {
+      "type": "object",
+      "required": ["status", "artifacts", "checks"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL"]},
+        "artifacts": {"type": "object"},
+        "checks": {"type": "object"}
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "required": ["status", "sender_sha256", "receiver_sha256", "digest_match"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL"]},
+        "sender_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "receiver_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "digest_match": {"type": "boolean"}
+      }
+    }
+  }
+}

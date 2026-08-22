@@ -196,8 +196,14 @@ const MIRROR_PORT = 8799;
 /* Mirror Native is a separate research body, not the older isolated Mirror
    Core experiment. The Workshop only exposes a same-origin, token-injecting
    door; it never serves Mirror's private state or token to the browser. */
-const MIRROR_NATIVE_HOME =
-  process.env.AXM_MIRROR_HOME || path.resolve(ROOT, "..", "AXM_MIRROR_LOCAL");
+const MIRROR_NATIVE_HOME = (() => {
+  if (process.env.AXM_MIRROR_HOME) return path.resolve(process.env.AXM_MIRROR_HOME);
+  const candidates = [
+    path.resolve(ROOT, "..", "AXM_MIRROR_LOCAL"),
+    path.resolve(ROOT, "..", "mirror"),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate)) || candidates[0];
+})();
 const MIRROR_NATIVE_PORT = Number(process.env.AXM_MIRROR_PORT || 8818);
 const GROWTH_SCAN_RUNNER = GrowthWorkerRunner.create({
   root: ROOT,
@@ -491,7 +497,15 @@ async function scanGrowthWorkshop() {
 }
 
 async function scanGrowthBodies() {
-  const result = await GROWTH_SCAN_RUNNER.scanBodies();
+  let result;
+  try {
+    result = await GROWTH_SCAN_RUNNER.scanBodies();
+  } catch (error) {
+    slog(
+      `Workshop growth scan retry · ${String(error.message || error).slice(0, 160)}`,
+    );
+    result = await GROWTH_SCAN_RUNNER.scanBodies();
+  }
   GROWTH_SCAN_STATUS = result.status;
   return result.metrics;
 }
@@ -3686,6 +3700,9 @@ const server = http.createServer((req, res) => {
         },
         });
       } catch (e) {
+        slog(
+          `Workshop growth request failed · ${String(e.message || e).slice(0, 160)}`,
+        );
         return send(res, 500, {
           ok: false,
           error: "could not measure workshop growth",

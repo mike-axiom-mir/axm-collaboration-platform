@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-treatment-validation-receipt-v1.schema.json",
+  "title": "AXM Deterministic Visual Treatment Validation Receipt v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "request_id", "identity_id", "profile_id", "catalog_digest", "treatment_digest", "glb_digest", "checks", "adapter_results", "measures", "known_losses", "fallback_used", "nearest_substitute_used", "authority"],
+  "properties": {
+    "schema": { "const": "axm.visual-treatment-validation-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "FAIL"] },
+    "request_id": { "type": "string" },
+    "identity_id": { "type": "string" },
+    "profile_id": { "type": "string" },
+    "catalog_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "treatment_digest": { "type": "string" },
+    "glb_digest": { "type": "string" },
+    "checks": { "type": "array", "items": { "type": "object", "required": ["id", "pass", "details"] } },
+    "adapter_results": { "type": "array" },
+    "measures": { "type": "object" },
+    "known_losses": { "type": "array", "items": { "type": "string" } },
+    "fallback_used": { "const": false },
+    "nearest_substitute_used": { "const": false },
+    "authority": { "type": "object" }
+  },
+  "additionalProperties": false
+}

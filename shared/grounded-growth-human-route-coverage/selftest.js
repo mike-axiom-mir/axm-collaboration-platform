@@ -227,10 +227,6 @@ const schema = JSON.parse(fs.readFileSync(path.join(__dirname, 'grounded-growth-
 const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
 check(schema.$id === Coverage.RECEIPT_SCHEMA, 'receipt schema identity matches implementation');
 check(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'module remains permissionless TEST with no writes');
-check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
-check(Coverage.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
-assert.throws(() => Coverage.stableStringify({ lost: undefined }), /unsupported undefined/i);
-checks += 1;
 
 const input = buildInput();
 const receipt = Coverage.build(input);

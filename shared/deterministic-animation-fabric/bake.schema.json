@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/deterministic-animation-bake-v1.schema.json",
+  "title": "AXM Deterministic Animation Bake v1",
+  "type": "object",
+  "required": ["schema", "version", "recipe_id", "recipe_digest", "timebase", "loop", "tracks", "frames", "events", "determinism", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.deterministic-animation-bake/v1" },
+    "version": { "const": "1.0.0" },
+    "recipe_id": { "type": "string", "minLength": 1 },
+    "recipe_digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" },
+    "timebase": {
+      "type": "object",
+      "required": ["ticks_per_second", "frames_per_second", "ticks_per_frame", "duration_ticks", "duration_seconds", "frame_count"],
+      "properties": {
+        "ticks_per_second": { "type": "integer", "minimum": 1 },
+        "frames_per_second": { "type": "integer", "minimum": 1 },
+        "ticks_per_frame": { "type": "integer", "minimum": 1 },
+        "duration_ticks": { "type": "integer", "minimum": 1 },
+        "duration_seconds": { "type": "number", "exclusiveMinimum": 0 },
+        "frame_count": { "type": "integer", "minimum": 1, "maximum": 20000 }
+      },
+      "additionalProperties": false
+    },
+    "loop": { "type": "boolean" },
+    "tracks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "target", "property", "unit", "precision", "samples_i"],
+        "properties": {
+          "id": { "type": "string" },
+          "target": { "type": "string" },
+          "property": { "type": "string" },
+          "unit": { "type": "string" },
+          "precision": { "const": 1000000 },
+          "samples_i": { "type": "array", "minItems": 1, "items": { "type": "integer" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "frames": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20000,
+      "items": {
+        "type": "object",
+        "required": ["index", "tick", "values_i"],
+        "properties": {
+          "index": { "type": "integer", "minimum": 0 },
+          "tick": { "type": "integer", "minimum": 0 },
+          "values_i": { "type": "object", "additionalProperties": { "type": "integer" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "events": { "type": "array", "items": { "type": "object" } },
+    "determinism": {
+      "type": "object",
+      "required": ["fixed_point_precision", "integer_time", "dependency_order_explicit", "seeded_noise", "call_time_randomness"],
+      "properties": {
+        "fixed_point_precision": { "const": 1000000 },
+        "integer_time": { "const": true },
+        "dependency_order_explicit": { "const": true },
+        "seeded_noise": { "const": true },
+        "call_time_randomness": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "authority": {
+      "type": "object",
+      "required": ["installed", "promoted", "canonical", "human_visual_review_required"],
+      "properties": {
+        "installed": { "const": false },
+        "promoted": { "const": false },
+        "canonical": { "const": false },
+        "human_visual_review_required": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" }
+  },
+  "additionalProperties": false
+}

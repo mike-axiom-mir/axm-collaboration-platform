@@ -2,17 +2,22 @@ import {
   ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
   ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
   normalizeAtmosphereBiogeochemistry
-} from './atmosphere-biogeochemistry.mjs';
+} from './atmosphere-biogeochemistry.mjs?v=0.62.0-r62.1';
 import {
   FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+  floodplainReactionMassClosureToleranceKg,
   normalizeFloodplainState
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.62.0-r62.1';
 
 export const FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA =
-  'axm.foundation-planet.floodplain-gas-exchange-state/v2';
+  'axm.foundation-planet.floodplain-gas-exchange-state/v3';
 export const PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA =
+  'axm.foundation-planet.floodplain-gas-exchange-state/v2';
+export const LEGACY_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-gas-exchange-state/v1';
 export const FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA =
+  'axm.foundation-planet.floodplain-gas-exchange-process-receipt/v3';
+export const PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA =
   'axm.foundation-planet.floodplain-gas-exchange-process-receipt/v2';
 export const REFERENCE_CO2_SOLUBILITY_CARBON_MG_L = .167;
 export const REFERENCE_CO2_PPM = 420;
@@ -110,11 +115,12 @@ export function emptyFloodplainGasExchangeState(options = {}) {
 export function normalizeFloodplainGasExchangeState(source, options = {}) {
   const state = emptyFloodplainGasExchangeState(options);
   if (![FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
-    PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA].includes(source?.schema)) {
+    PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
+    LEGACY_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA].includes(source?.schema)) {
     return state;
   }
-  state.migrationCheckpoint = source.schema ===
-    PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA ||
+  state.migrationCheckpoint = source.schema !==
+    FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA ||
     source.migrationCheckpoint === true;
   state.observedExchangeDays = Math.max(0,
     finite(source.observedExchangeDays));
@@ -317,9 +323,18 @@ export function advanceFloodplainGasExchange(source, plan,
   if (atmosphereAvailable) {
     const ownerFluxes = fluxes(floodplainReceipt.exchange);
     const atmosphereFluxes = fluxes(atmosphereReceipt.exchange);
+    const reactionChannels = {
+      carbonToAtmosphereKgC: 'carbonKgC',
+      carbonToFloodplainKgC: 'carbonKgC',
+      oxygenToFloodplainKgO2: 'oxygenKgO2'
+    };
     const quantitiesMatch = Object.keys(planned).every(key =>
-      Math.abs(planned[key] - ownerFluxes[key]) < 1e-7 &&
-      Math.abs(planned[key] - atmosphereFluxes[key]) < 1e-7);
+      Math.abs(planned[key] - ownerFluxes[key]) <=
+        floodplainReactionMassClosureToleranceKg(reactionChannels[key],
+          planned[key], ownerFluxes[key]) &&
+      Math.abs(planned[key] - atmosphereFluxes[key]) <=
+        floodplainReactionMassClosureToleranceKg(reactionChannels[key],
+          planned[key], atmosphereFluxes[key]));
     if (!quantitiesMatch || floodplainReceipt.exchangeId !== exchangeId ||
       atmosphereReceipt.exchangeId !== exchangeId ||
       floodplainReceipt.reachId !== reachId ||
@@ -406,9 +421,8 @@ export function advanceFloodplainGasExchange(source, plan,
       exactExchangeIdentity: atmosphereAvailable
         ? floodplainReceipt.exchangeId === atmosphereReceipt.exchangeId : true,
       ownerLedgersClosed: atmosphereAvailable
-        ? Object.values(floodplainReceipt.closure)
-          .every(value => Math.abs(finite(value)) < 1e-7) &&
-          atmosphereReceipt.truth?.carbonAndOxygenClosed === true
+        ? floodplainReceipt.truth?.scaleAwareFloatingPointClosure === true &&
+          atmosphereReceipt.truth?.scaleAwareFloatingPointClosure === true
         : true,
       migrationInventedHistory: false
     }
@@ -424,8 +438,11 @@ export function advanceFloodplainGasExchange(source, plan,
 export function floodplainGasExchangeDescription() {
   return {
     stateSchema: FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
+    previousStateSchema: PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
     transitionReceiptSchema:
       FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA,
+    previousTransitionReceiptSchema:
+      PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA,
     floodplainOwnerReceiptSchema: FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
     atmosphereOwnerReceiptSchema:
       ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,

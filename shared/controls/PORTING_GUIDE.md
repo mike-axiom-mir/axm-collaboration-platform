@@ -56,6 +56,11 @@ fireButton.onpointerdown = () => runtime.pulse('primary');
 
 The profile maps `left`, `right`, and named buttons to semantic fields. Change labels and release behavior by profile; do not fork the pointer math for every game.
 
+Mappings may be sparse. Declare and handle only the semantic actions the game
+uses; unused sticks, triggers and buttons do not need placeholder behavior.
+Keyboard bindings may mirror those actions or add PC-specific options, but
+should still enter through the same authoritative game-action path.
+
 ## Host wiring
 
 ```js
@@ -128,8 +133,10 @@ disconnect, call `await runtime.neutralize()` before stopping transport, then
 `revokeHumanInputSource(actor)` on the host. Do not derive the binding id from
 the browser's raw gamepad id.
 
-This is only the host/runtime prerequisite. The actual gamepad polling adapter
-and Controller Dock remain unimplemented until physical hardware is tested.
+This is the host/runtime prerequisite. A reusable gamepad polling adapter now
+exists in the v0.2.1 universal-control reference and Bloomvale/Relaybound have
+direct integrations. The shared Controller Dock, calibration route, mixed-party
+leases, and broad physical-hardware proof remain incomplete.
 
 ## Connected AI wiring
 

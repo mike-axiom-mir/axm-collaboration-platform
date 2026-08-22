@@ -1,6 +1,6 @@
 {
   "schema": "axm.tool-promotion-ladder/v1",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "freshnessDays": 30,
   "automaticPromotion": false,
   "levels": [
@@ -26,7 +26,7 @@
       "id": "WORKING",
       "requires": [
         "all TEST requirements",
-        "selftest passes against the current selftest digest",
+        "selftest passes against the current all-discovered-selftests suite digest",
         "verifiedAt is valid and no older than freshnessDays",
         "no unresolved high-risk capability or evidence hold"
       ]
@@ -47,6 +47,7 @@
   },
   "truth": {
     "selftestPassIsNotPromotion": true,
+    "selftestReceiptBindsDiscoveredSuite": true,
     "structuralEligibilityIsNotRuntimeProof": true,
     "humanMergeGateRequiredForCanon": true
   }

@@ -32,6 +32,7 @@ const EvidenceRetentionService = require('../evidence-retention/evidence-retenti
 const HubLifecycleService = require('./hub-lifecycle-service');
 const GitHubSyncService = require('./github-sync-service');
 const CodeDraftTechnicalReviewer = require('./code-draft-technical-reviewer');
+const PlatformCourierService = require('./platform-courier-service');
 
 function create(options) {
   const evidenceRetention = EvidenceRetentionService.forStateRoot(options.stateRoot);
@@ -51,7 +52,7 @@ function create(options) {
   const modularIntake = ModularIntakeService.create(Object.assign({}, options, { reviewService: review, installerService: installer }));
   const needsObservatory = NeedsObservatoryService.create(Object.assign({}, options, { modularIntakeService: modularIntake }));
   const readinessObserver = ReadinessObserver.create({ root: options.root, stateRoot: options.stateRoot, humanGate: 'Mike' });
-  const qa = QaLabService.create(Object.assign({}, options, { reviewService: review }));
+  const qa = QaLabService.create(options);
   const templates = TemplateRuntimeService.create(options);
   const sources = SourceConnectorService.create(Object.assign({}, options, { reviewService: review }));
   const media = MediaRenderService.create(Object.assign({}, options, { reviewService: review }));
@@ -65,7 +66,9 @@ function create(options) {
   const cognitiveResources = CognitiveResourceService.create(options);
   const cognitiveLabs = CognitiveEvidenceLabsService.create(Object.assign({}, options, { meterService:cognitiveResources }));
   const diagnostics = DiagnosticsService.create(Object.assign({}, options, { reviewService: review, permissionService: permissions, secretsService: secrets, machineHost: machine, recoveryService: recovery, searchService: search, assetService: assets, deviceHandoffService: handoff, installerService: installer, qaLabService: qa, templateRuntimeService: templates, sourceConnectorService: sources, mediaRenderService: media, livingWorldStateService: world, multiplayerTransportService: multiplayer, rulesetPhysicsAdapterService: adapters, mirrorWorldAdapterService: mirror, noveltyDiversityService: novelty, publicReleaseService: releases, windowsOfflineGateService: windowsOffline, evidenceRetentionService: evidenceRetention }));
+  const platformCourier = PlatformCourierService.create(Object.assign({}, options, { searchService:search, evidenceRetentionService:evidenceRetention }));
   recovery.startSchedule(); assets.startWatcher();
+  platformCourier.start();
 
   function body(req, max) { return new Promise((resolve, reject) => options.readJsonBody(req, max, (error, parsed) => error ? reject(error) : resolve(parsed || {}))); }
   function query(req) { try { return new URL(req.url, 'http://127.0.0.1').searchParams; } catch (_) { return new URLSearchParams(); } }
@@ -81,6 +84,10 @@ function create(options) {
     if (!url.startsWith('/api/')) return false;
 
     if (url === '/api/operations/status' && req.method === 'GET') { reply(res, diagnostics.snapshot()); return true; }
+    if ((url === '/api/platform-courier' || url === '/api/platform-connect') && req.method === 'GET') { reply(res, platformCourier.snapshot()); return true; }
+    if (url === '/api/platform-connect/settings' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-platform-connect', 'save-exact-settings'); if (parsed.confirmation !== 'SAVE PLATFORM CONNECT SETTINGS') throw new Error('confirmation required: SAVE PLATFORM CONNECT SETTINGS'); return platformCourier.configure(parsed.settings || parsed, actor(req, parsed)); })); return true; }
+    if (url === '/api/platform-connect/consent' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-platform-connect', 'grant-exact-scopes'); if (parsed.confirmation !== 'GRANT AXM PLATFORM ACCESS') throw new Error('confirmation required: GRANT AXM PLATFORM ACCESS'); return platformCourier.grantConsent(parsed, actor(req, parsed)); })); return true; }
+    if (url === '/api/platform-connect/revoke' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-platform-connect', 'revoke-platform-access'); if (parsed.confirmation !== 'REVOKE AXM PLATFORM ACCESS') throw new Error('confirmation required: REVOKE AXM PLATFORM ACCESS'); return platformCourier.revokeConsent(actor(req, parsed)); })); return true; }
     if (url === '/api/hub/lifecycle' && req.method === 'GET') { reply(res, hubLifecycle.status()); return true; }
     if (url === '/api/hub/lifecycle' && req.method === 'POST') { reply(res, body(req, 20000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-hub-lifecycle', 'explicit-local-label'); return hubLifecycle.set(Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
     if (url === '/api/hub/lifecycle/batch' && req.method === 'POST') { reply(res, body(req, 200000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-hub-lifecycle', 'explicit-verified-batch'); return hubLifecycle.batch(parsed.entries, actor(req, parsed), String(parsed.source || 'verified-batch').slice(0, 80)); })); return true; }
@@ -173,9 +180,7 @@ function create(options) {
 
     if (url === '/api/qa-lab' && req.method === 'GET') { reply(res, qa.status()); return true; }
     if (url === '/api/qa-lab/run' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'explicit-run'); requirePermission('browser-lan-hardware-qa-lab','qa.run'); return qa.run(Object.assign({}, parsed, { originPort: typeof options.getPort === 'function' ? options.getPort() : options.port })); }), 202); return true; }
-    if (url === '/api/qa-lab/evidence' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'device-evidence'); return qa.recordDeviceEvidence(parsed); })); return true; }
-    if (url === '/api/qa-lab/phone-review/open' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'explicit-phone-review-open'); if (parsed.confirmation !== 'OPEN EXACT PHONE CANDIDATE REVIEW') throw new Error('exact phone candidate review confirmation is required'); return qa.openPhoneReview({ evidenceId: parsed.evidenceId }); })); return true; }
-    if (url === '/api/qa-lab/phone-review' && req.method === 'GET') { const q=query(req); reply(res, qa.phoneReviewHandoff({ evidenceId:q.get('evidenceId'), reviewId:q.get('reviewId') || null })); return true; }
+    if (url === '/api/qa-lab/evidence' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'device-evidence'); requirePermission('browser-lan-hardware-qa-lab','qa.run'); return qa.recordDeviceEvidence(parsed); })); return true; }
 
     if (url === '/api/template-runtime' && req.method === 'GET') { reply(res, templates.status()); return true; }
     if (url === '/api/template-runtime/pack' && req.method === 'POST') { reply(res, body(req, 500000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-template', 'explicit-save'); return templates.savePack(parsed, actor(req, parsed)); })); return true; }
@@ -257,8 +262,8 @@ function create(options) {
     return false;
   }
 
-  function stop() { recovery.stopSchedule(); assets.stopWatcher(); multiplayer.stop('server-shutdown'); handoff.stop(); cognitiveResources.stop(); const evidence = evidenceRetention.seal('server-shutdown'); return { stopped: true, evidence }; }
-  return { handle, stop, services: { review, codeDraftTechnicalReviewer, permissions, secrets, machine, recovery, installer, workbench, modularIntake, needsObservatory, search, assets, handoff, diagnostics, windowsOffline, qa, templates, sources, media, world, multiplayer, adapters, mirror, novelty, releases, cognitiveResources, cognitiveLabs, evidenceRetention } };
+  function stop() { platformCourier.stop(); recovery.stopSchedule(); assets.stopWatcher(); multiplayer.stop('server-shutdown'); handoff.stop(); cognitiveResources.stop(); const evidence = evidenceRetention.seal('server-shutdown'); return { stopped: true, evidence }; }
+  return { handle, stop, services: { review, codeDraftTechnicalReviewer, permissions, secrets, machine, recovery, installer, workbench, modularIntake, needsObservatory, search, assets, handoff, diagnostics, windowsOffline, qa, templates, sources, media, world, multiplayer, adapters, mirror, novelty, releases, cognitiveResources, cognitiveLabs, evidenceRetention, platformCourier } };
 }
 
 module.exports = { create };

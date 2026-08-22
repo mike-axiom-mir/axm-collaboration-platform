@@ -39,6 +39,37 @@ function phase(id, name, checks, paths, holds) {
 function check(name, pass) { return { name, pass: pass === true }; }
 function hashArtifacts(artifacts) { return Object.keys(artifacts).sort().map(function (name) { return name + ':' + crypto.createHash('sha256').update(artifacts[name]).digest('hex'); }); }
 function memoryCompactionAdapter() { const rows = { hot: 'sealed provenance' }; return { rows, read: function (key) { return rows[key]; }, writeArchive: function (key, value) { rows[key] = value; }, replaceHotWithDigest: function (key, value) { rows[key] = value; } }; }
+async function proveLabStateWriteResilience(report) {
+  const outputPath = path.resolve(__dirname, 'lab-state-write-fixture.json');
+  function missing() { const error = new Error('missing'); error.code = 'ENOENT'; return error; }
+  function ioWithWrite(writeFile, counters) {
+    return {
+      stat: async function (subject) { if (subject === path.dirname(outputPath)) return { isDirectory: function () { return true; } }; throw missing(); },
+      access: async function () {},
+      writeFile,
+      rename: async function (from, to) { counters.renames += 1; counters.lastRename = [from, to]; },
+      unlink: async function () { counters.cleanups += 1; }
+    };
+  }
+  const retryCounters = { writes: 0, renames: 0, cleanups: 0 };
+  const retryIo = ioWithWrite(async function () {
+    retryCounters.writes += 1;
+    if (retryCounters.writes === 1) { const error = new Error('fixture lock'); error.code = 'EBUSY'; error.errno = -4082; error.syscall = 'open'; error.path = outputPath; throw error; }
+  }, retryCounters);
+  const recovered = await LabState.write({ report, at: '2026-07-22T12:00:00.000Z', outputPath, io: retryIo, delay: async function () {} });
+
+  const failureCounters = { writes: 0, renames: 0, cleanups: 0 };
+  const failureIo = ioWithWrite(async function () {
+    failureCounters.writes += 1;
+    const error = new Error('fixture denied'); error.code = 'EACCES'; error.errno = -4092; error.syscall = 'open'; error.path = outputPath; throw error;
+  }, failureCounters);
+  let captured;
+  try { await LabState.write({ report, at: '2026-07-22T12:00:00.000Z', outputPath, io: failureIo, delay: async function () {}, writeAttempts: 2 }); } catch (error) { captured = error; }
+  return {
+    recovered: recovered.senses.length === 13 && retryCounters.writes === 2 && retryCounters.renames === 1 && retryCounters.cleanups === 1 && retryCounters.lastRename[1] === outputPath,
+    diagnosed: Boolean(captured && captured.code === 'EACCES' && captured.retryCount === 1 && captured.path === outputPath && /errno=-4092/.test(captured.message) && /syscall=open/.test(captured.message) && /Repair hint:/.test(captured.message))
+  };
+}
 
 async function main() {
   const source = Inventory.readSource(), inventoryCheck = Inventory.validate(source), registry = require('./registry.json');
@@ -112,6 +143,7 @@ async function main() {
     check('Technical Glasses feed is derived', feed.derivedOnly === true && feed.handEnteredNumbers === false), check('drift baseline updater proposes only', baseline.state === 'PROPOSED_FOR_REVIEW' && baseline.automaticReplace === false)
   ], ['shared/sensorium/automation/','shared/sensorium/freshness-scheduler.js','shared/sensorium/retention-janitor.js','shared/sensorium/session-closer.js','shared/sensorium/evidence-compactor.js','shared/sensorium/regression-memory-candidate-writer.js','shared/sensorium/known-repair-router.js','shared/sensorium/technical-glasses-feed.js','shared/sensorium/drift-safe-baseline-updater.js','exports/sensorium-release/']);
 
+  const labWriteResilience = await proveLabStateWriteResilience(conformance);
   const lab = await LabState.write({ report: conformance, at: '2026-07-22T12:00:00.000Z' });
   const uiTest = childProcess.spawnSync(process.execPath, [path.resolve(__dirname, '..', '..', 'tools', 'sensorium-lab', 'selftest.js')], { encoding: 'utf8' });
   const discoveryTest = childProcess.spawnSync(process.execPath, [path.resolve(__dirname, '..', '..', 'tools', 'sensorium-lab', 'discovery-seam-review.js')], { encoding: 'utf8' });
@@ -121,6 +153,8 @@ async function main() {
     check('Workshop discovery manifest passes', discoveryTest.status === 0), check('authority is not restored', lab.authorityRestoredOnRefresh === false),
     check('Lab is not canonical source', lab.canonicalSource === false), check('zero retention visible', lab.summary.rawRetainedBytes === 0 && lab.summary.rawRetainedItems === 0),
     check('canonical holds map to their affected cards', lab.summary.holds === 2 && lab.senses.filter(function (sense) { return sense.holds.length; }).length === 2),
+    check('transient lab-state lock is retried with atomic replacement', labWriteResilience.recovered),
+    check('exhausted lab-state write reports actionable diagnostics', labWriteResilience.diagnosed),
     check('laptop and mobile visual acceptance passed', visualReceipt.claims.length === 3 && visualReceipt.claims.every(function (claim) { return claim.verdict === 'PASS'; }) && visualReceipt.cleanupComplete === true)
   ], ['tools/sensorium-lab/','shared/sensorium/lab-state.json','exports/sensorium-visual-proof/receipt.json']);
 
@@ -148,7 +182,7 @@ async function main() {
   ], ['shared/sensorium/unattended-sensing-controller.js','shared/pulse/axm-body-pulse-core.js']);
 
   const roadmap = Audit.compile(evidence, '2026-07-22T12:00:00.000Z');
-  assert.equal(roadmap.verdict, 'PASS'); Audit.write(roadmap);
+  assert.equal(roadmap.verdict, 'PASS'); await Audit.write(roadmap);
   console.log('Sensorium roadmap selftest: PASS - 9/9 phases, promotion remains at Mike gate');
   return roadmap;
 }

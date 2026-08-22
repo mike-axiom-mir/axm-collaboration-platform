@@ -5,17 +5,26 @@ const Frontier = require('../grounded-growth-frontier-gate/grounded-growth-front
 const Research = require('../research-contribution-intake/research-contribution-intake');
 const Capsule = require('../portable-baseline-capsule/portable-baseline-capsule');
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const KNOWLEDGE_FRONTIER_SCHEMA = 'axm.grounded-growth-knowledge-frontier-receipt/v1';
 const VERSION = '0.1.0';
 
 function clone(value) {
-  return JSON.parse(stableStringify(value));
+  return JSON.parse(JSON.stringify(value));
+}
+
+function stableValue(value) {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (value && typeof value === 'object') {
+    const result = {};
+    Object.keys(value).sort().forEach(key => { result[key] = stableValue(value[key]); });
+    return result;
+  }
+  return value;
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  return JSON.stringify(stableValue(value));
 }
 
 function sha256(value) {

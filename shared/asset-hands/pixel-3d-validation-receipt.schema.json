@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/pixel-3d-validation-receipt-v1.schema.json",
+  "title": "AXM Pixel-Styled 3D Validation Receipt v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "identity_id", "representation_profile_id", "recipe_digest", "glb_digest", "outputs", "checks", "measures", "limits", "known_losses", "authority"],
+  "properties": {
+    "schema": { "const": "axm.pixel-3d-validation-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "FAIL"] },
+    "identity_id": { "type": "string" },
+    "representation_profile_id": { "enum": ["pixel-8bit-3d", "pixel-16bit-3d"] },
+    "recipe_digest": { "type": "string", "minLength": 16 },
+    "glb_digest": { "type": "string", "minLength": 16 },
+    "outputs": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+    "checks": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "pass"], "properties": { "id": { "type": "string" }, "pass": { "type": "boolean" }, "detail": {} }, "additionalProperties": false } },
+    "measures": { "type": "object" },
+    "limits": { "type": "object" },
+    "known_losses": { "type": "array", "items": { "type": "string" } },
+    "authority": { "$ref": "asset-identity.schema.json#/$defs/authority" }
+  },
+  "additionalProperties": false
+}

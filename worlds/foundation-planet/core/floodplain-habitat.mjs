@@ -2,7 +2,7 @@ import {
   FLOODPLAIN_STATE_SCHEMA,
   floodplainTotals,
   normalizeFloodplainState
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.61.0-r61.1';
 
 export const FLOODPLAIN_HABITAT_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-habitat-state/v1';

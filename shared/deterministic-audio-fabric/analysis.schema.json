@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/deterministic-audio-analysis.schema.json",
+  "title": "AXM Deterministic Audio Technical Analysis",
+  "type": "object",
+  "required": ["schema", "version", "status", "recipe_id", "recipe_digest", "wav_sha256", "render_seed_u32", "renderer", "decoder", "container", "codec", "sample_format", "sample_rate_hz", "channels", "bits_per_sample", "frame_count", "sample_count", "data_bytes", "total_bytes", "duration_seconds", "duration_ms", "rms", "rms_dbfs", "sample_peak", "true_peak_estimate", "clipped_samples", "claims", "digest"],
+  "properties": {
+    "schema": { "const": "axm.deterministic-audio-analysis/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "const": "TECHNICAL_PASS" },
+    "recipe_id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "recipe_digest": { "$ref": "#/$defs/digest" },
+    "wav_sha256": { "$ref": "#/$defs/digest" },
+    "render_seed_u32": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "renderer": { "const": "audio-sfx-bake/v0.1.0" },
+    "decoder": { "const": "asset-hands/audio-production.wavDecode/v1" },
+    "container": { "const": "RIFF/WAVE" },
+    "codec": { "const": "PCM" },
+    "sample_format": { "const": "pcm-s16le" },
+    "sample_rate_hz": { "const": 44100 },
+    "channels": { "const": 1 },
+    "bits_per_sample": { "const": 16 },
+    "frame_count": { "type": "integer", "minimum": 441, "maximum": 88200 },
+    "sample_count": { "type": "integer", "minimum": 441, "maximum": 88200 },
+    "data_bytes": { "type": "integer", "minimum": 882, "maximum": 176400 },
+    "total_bytes": { "type": "integer", "minimum": 926, "maximum": 176444 },
+    "duration_seconds": { "type": "number", "minimum": 0.01, "maximum": 2 },
+    "duration_ms": { "type": "integer", "minimum": 10, "maximum": 2000 },
+    "rms": { "type": "number", "minimum": 0, "maximum": 1 },
+    "rms_dbfs": { "type": "number", "maximum": 0 },
+    "sample_peak": { "type": "number", "minimum": 0, "maximum": 1 },
+    "true_peak_estimate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "clipped_samples": { "type": "integer", "minimum": 0 },
+    "claims": { "$ref": "#/$defs/claims" },
+    "digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "claims": {
+      "type": "object",
+      "required": ["technical_decode_completed", "audible_playback_verified", "human_listened", "human_aesthetic_approval", "device_output_verified", "external_wav_conformance"],
+      "properties": {
+        "technical_decode_completed": { "const": true },
+        "audible_playback_verified": { "const": false },
+        "human_listened": { "const": false },
+        "human_aesthetic_approval": { "const": false },
+        "device_output_verified": { "const": false },
+        "external_wav_conformance": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

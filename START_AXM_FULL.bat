@@ -27,8 +27,13 @@ if exist "bridge\axm-bridge.js" (
 
 if "%AXM_GAME_PACKAGES_OK%"=="1" (
   if exist "tools\game-hub\game-hub-server.js" (
-    echo   Starting AXM Game Hub runtime on port 8789...
-    start "AXM Game Hub Runtime" /min /D "%~dp0tools\game-hub" cmd /k "set AXM_GAME_HUB_PORT=8789&& node game-hub-server.js"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $h=Invoke-RestMethod -Uri 'http://127.0.0.1:8789/health' -TimeoutSec 2; if(-not ($h.ok -and $h.name -eq 'AXM Game Hub')){exit 1}" >nul 2>nul
+    if errorlevel 1 (
+      echo   Starting AXM Game Hub runtime on port 8789...
+      start "AXM Game Hub Runtime" /min /D "%~dp0tools\game-hub" cmd /k "set AXM_GAME_HUB_PORT=8789&& set AXM_WORKSHOP_PORT=8790&& node game-hub-server.js"
+    ) else (
+      echo   AXM Game Hub runtime is already healthy on port 8789.
+    )
   ) else (
     echo   Game Hub runtime not found. Continuing without game launch support.
   )
@@ -62,7 +67,13 @@ if /I "%AXM_DISCORD_BRIDGE%"=="1" (
   echo   Discord Bridge installed but dormant. Set AXM_DISCORD_BRIDGE=1 only if you choose to use it later.
 )
 
-set "AXM_PORT=8788"
+set "AXM_PORT=8790"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $h=Invoke-RestMethod -Uri 'http://127.0.0.1:8790/api/health' -TimeoutSec 2; if(-not ($h.ok -and $h.body -eq 'axm-workshop')){exit 1}" >nul 2>nul
+if not errorlevel 1 (
+  echo   AXM Workshop is already healthy on port 8790.
+  start "" "http://127.0.0.1:8790/hub/index.html"
+  exit /b 0
+)
 echo.
 echo   Starting AXM Workshop library...
 echo   The browser opens automatically after the server is ready.

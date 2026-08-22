@@ -82,4 +82,25 @@ assert.equal(result.status, 'READY');
 assert.equal(result.validation_receipt.status, 'PASS');
 assert.equal(family.status, 'READY');
 
+const uiBrief = Hands.normalizeBrief({
+  id: 'schema-ui-proof', title: 'Schema UI proof', kind: 'button', operation_mode: 'create', intended_use: 'button',
+  palette: ['#101828', '#2e90fa', '#f9fafb', '#f79009'],
+  target_canvas: {
+    medium: 'ui', dimensions: {width: 160, height: 64, unit: 'px'},
+    colour: {space: 'srgb', transparency: 'allowed', minimum_contrast_ratio: 4.5},
+    behaviour: ['static', 'interactive', 'responsive'], intended_use: 'button',
+    responsive: {direction: 'ltr', input_modalities: ['pointer', 'keyboard'], reduced_motion: false, minimum_target_size: 44},
+    accessibility: {alternative_text: true, focus_visible: true},
+    performance: {max_file_bytes: 2097152}
+  },
+  required_outputs: ['image/svg+xml', 'application/json'], editable_recipe_formats: ['axm.ui-component-recipe/v1']
+});
+const uiHost = {capabilities:['svg','json'], permissions:[], accepts:[Hands.RESULT_SCHEMA,'image/svg+xml','application/json','axm.ui-component-spec/v1','axm.ui-component-recipe/v1']};
+const uiResult = Hands.create('ui-component', uiBrief, {seed:'schema-ui-proof', createdAt, host:uiHost});
+assert.equal(uiResult.status, 'READY');
+assert.equal(uiResult.hand.version, '1.2.0');
+assert.equal(uiResult.artifacts.length, 3);
+const uiRecipe = JSON.parse(uiResult.artifacts.find(artifact => artifact.id === 'ui-recipe').text);
+required('axm.ui-component-recipe/v1', uiRecipe, 'UI component recipe');
+
 console.log('Asset Hands schema contract selftest PASS (' + schemas.size + ' schemas, all local references resolved)');

@@ -1,6 +1,6 @@
 import {
   EARTH_SYSTEM_COLUMN_SCHEMA
-} from './earth-system.mjs';
+} from './earth-system.mjs?v=0.62.0-r62.1';
 import {
   ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
   ATMOSPHERE_BIOGEOCHEMISTRY_LAYER_SCHEMA,
@@ -8,17 +8,35 @@ import {
   ATMOSPHERE_BIOGEOCHEMISTRY_VERTICAL_TRANSPORT_SCHEMA,
   ATMOSPHERE_BIOSPHERE_GAS_FLUX_RECEIPT_SCHEMA,
   ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA,
-  ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG,
+  ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+  ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG,
+  ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
   ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA
-} from './atmosphere-biogeochemistry.mjs';
+} from './atmosphere-biogeochemistry.mjs?v=0.62.0-r62.1';
 import {
   ATMOSPHERE_PRESSURE_COLUMN_SCHEMA,
   ATMOSPHERE_PRESSURE_COLUMN_LAYER_COUNT,
   ATMOSPHERE_PRESSURE_VERTICAL_INTERFACE_SCHEMA
 } from './pressure-column.mjs';
 import {
+  ATMOSPHERE_PRESSURE_COLUMN_DYNAMICS_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_PHASE_SCHEMA
+} from './pressure-dynamics.mjs';
+import {
+  ATMOSPHERE_PHASE_THERMAL_ENVELOPE_SCHEMA,
+  MIN_NATIVE_LAYER_AIR_TEMPERATURE_C,
+  MAX_NATIVE_LAYER_AIR_TEMPERATURE_C
+} from './phase-thermal-envelope.mjs';
+import {
+  ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA
+} from './atmosphere-boundary-energy.mjs';
+import {
   EARTH_LAND_ECOLOGY_SCHEMA,
-  LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA
+  LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA,
+  LAND_ECOLOGY_MASS_CLOSURE_POLICY_SCHEMA,
+  LAND_ECOLOGY_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+  LAND_ECOLOGY_MASS_CLOSURE_ULP_FACTOR,
+  landEcologyMassClosureToleranceKg
 } from './land-ecology.mjs';
 import {
   SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
@@ -36,19 +54,32 @@ import {
   COASTAL_SEDIMENT_INPUT_SCHEMA
 } from './geomorphic-sediment.mjs';
 import { EARTH_OCEAN_ECOLOGY_SCHEMA } from './ocean-ecology.mjs';
-import { DEEP_OCEAN_STATE_SCHEMA } from './deep-ocean.mjs';
+import {
+  MIXED_LAYER_CARBONATE_DIAGNOSTIC_SCHEMA
+} from './carbonate-system.mjs';
+import {
+  AIR_SEA_CARBON_EXCHANGE_METHOD,
+  AIR_SEA_CARBON_EXCHANGE_PROPOSAL_SCHEMA,
+  weiss1974Co2FugacityFactor,
+  weiss1974Co2Solubility,
+  weissPrice1980SeawaterVaporPressureAtm
+} from './air-sea-carbon-exchange.mjs';
+import {
+  DEEP_OCEAN_STATE_SCHEMA,
+  DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA
+} from './deep-ocean.mjs';
 import {
   EARTH_TRANSPORT_STEP_SCHEMA,
   PREVIOUS_EARTH_TRANSPORT_STEP_SCHEMA,
   LEGACY_EARTH_TRANSPORT_STEP_SCHEMA
-} from './earth-transport.mjs';
+} from './earth-transport.mjs?v=0.62.0-r62.1';
 import {
   ATMOSPHERE_BIOGEOCHEMISTRY_TRANSPORT_SCHEMA
-} from './atmosphere-biogeochemistry-transport.mjs';
+} from './atmosphere-biogeochemistry-transport.mjs?v=0.62.0-r62.1';
 import {
   BASIN_ROUTING_STEP_SCHEMA,
   PREVIOUS_BASIN_ROUTING_STEP_SCHEMA
-} from './basin-routing.mjs';
+} from './basin-routing.mjs?v=0.62.0-r62.1';
 import {
   RIVER_CHEMISTRY_INPUT_SCHEMA
 } from './river-chemistry.mjs';
@@ -58,18 +89,26 @@ import {
   FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
   FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
   FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+  FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
+  FLOODPLAIN_REACTION_MASS_CLOSURE_ABSOLUTE_FLOORS_KG,
+  FLOODPLAIN_REACTION_MASS_CLOSURE_ULP_FACTOR,
+  floodplainReactionMassClosureToleranceKg,
   FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
+  FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA,
+  FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ABSOLUTE_FLOORS_KG,
+  FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ULP_FACTOR,
+  floodplainDetritalReturnMassClosureToleranceKg,
   FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
   FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.62.0-r62.1';
 import {
   FLOODPLAIN_HABITAT_RECEIPT_SCHEMA,
   FLOODPLAIN_HABITAT_TYPES
-} from './floodplain-habitat.mjs';
+} from './floodplain-habitat.mjs?v=0.61.0-r61.1';
 import {
   FLOOD_EVENT_ARCHIVE_LIMIT,
   FLOOD_EVENT_TRANSITION_RECEIPT_SCHEMA
-} from './flood-event-history.mjs';
+} from './flood-event-history.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_SUCCESSION_GUILDS,
   FLOODPLAIN_SUCCESSION_MAX_TOTAL_COVER,
@@ -77,37 +116,45 @@ import {
 } from './floodplain-succession.mjs';
 import {
   FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA,
+  FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_POLICY_SCHEMA,
+  FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+  FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ULP_FACTOR,
+  floodplainPlantMatterMassClosureToleranceKg,
   FLOODPLAIN_PLANT_DETRITUS_MATTER_DEBIT_SCHEMA
-} from './floodplain-plant-matter.mjs';
+} from './floodplain-plant-matter.mjs?v=0.60.0-r60.1';
 import {
   FLOODPLAIN_PLANT_RESOURCES_RECEIPT_SCHEMA,
+  FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_POLICY_SCHEMA,
+  FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+  FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ULP_FACTOR,
+  floodplainPlantResourceMassClosureToleranceKg,
   FLOODPLAIN_PLANT_DETRITUS_RESOURCE_DEBIT_SCHEMA
-} from './floodplain-plant-resources.mjs';
+} from './floodplain-plant-resources.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_DECOMPOSITION_RECEIPT_SCHEMA
-} from './floodplain-decomposition.mjs';
+} from './floodplain-decomposition.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_RESPIRATION_RECEIPT_SCHEMA
-} from './floodplain-respiration.mjs';
+} from './floodplain-respiration.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_DENITRIFICATION_RECEIPT_SCHEMA
-} from './floodplain-denitrification.mjs';
+} from './floodplain-denitrification.mjs?v=0.62.0-r62.1';
 import {
   FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA
-} from './floodplain-nitrification.mjs';
+} from './floodplain-nitrification.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA
-} from './floodplain-gas-exchange.mjs';
+} from './floodplain-gas-exchange.mjs?v=0.62.0-r62.1';
 import {
   EARTH_SURFACE_RADIATION_SCHEMA,
   PREVIOUS_EARTH_SURFACE_RADIATION_SCHEMA
-} from './surface-radiation.mjs';
+} from './surface-radiation.mjs?v=0.62.0-r62.1';
 import {
   ATMOSPHERE_CO2_RADIATIVE_COUPLING_SCHEMA
-} from './atmosphere-co2-radiation.mjs';
+} from './atmosphere-co2-radiation.mjs?v=0.62.0-r62.1';
 
 export const FOUNDATION_SYSTEM_AUDIT_SCHEMA =
-  'axm.foundation-planet.system-audit/v1';
+  'axm.foundation-planet.system-audit/v12';
 
 const finite = value => Number.isFinite(Number(value));
 const close = (value, tolerance) => finite(value) &&
@@ -199,6 +246,72 @@ function localBudgetCheck(column) {
     });
 }
 
+function atmosphereBoundaryEnergyCheck(column) {
+  const receipt = column?.atmosphere?.lastBoundaryEnergyReceipt;
+  const budget = column?.budget?.atmosphereEnergy;
+  if (!receipt) {
+    const migrationCheckpoint = budget?.migrationCheckpoint === true;
+    const unstepped = Number(column?.stepCount || 0) === 0;
+    return check('atmosphere-boundary-forcing-energy-ledger',
+      migrationCheckpoint || unstepped ? 'NOT_APPLICABLE' : 'FAIL',
+      'Requested compatibility forcing, applied native forcing and envelope reconciliation remain distinct and ledgered.',
+      {
+        reason: migrationCheckpoint
+          ? 'migration checkpoint intentionally discards unsupported historical receipt evidence'
+          : unstepped ? 'the column has not advanced yet' :
+            'a stepped current column is missing its boundary energy receipt'
+      }, { required: !(migrationCheckpoint || unstepped) });
+  }
+  const embedded = budget?.boundaryEnergyReceipt;
+  const valid = receipt.schema === ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA &&
+    embedded?.schema === ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA &&
+    same(receipt.appliedBoundaryMoistEnthalpyJm2,
+      receipt.requestedBoundaryMoistEnthalpyJm2 +
+        receipt.nativeEnvelopeReconciliationJm2, 1e-3) &&
+    same(receipt.appliedBoundaryMoistEnthalpyJm2,
+      receipt.nativeFinalMoistEnthalpyJm2 -
+        receipt.nativeInitialMoistEnthalpyJm2, 1e-3) &&
+    same(receipt.nativeEnvelopeReconciliationJm2,
+      receipt.finalCompatibilityProjectionAdjustmentJm2 -
+        receipt.initialCompatibilityProjectionAdjustmentJm2, 1e-3) &&
+    close(receipt.ledgerResidualJm2, 1) &&
+    same(budget.initialMoistEnthalpyJm2,
+      receipt.nativeInitialMoistEnthalpyJm2, 1e-3) &&
+    same(budget.requestedBoundaryMoistEnthalpyJm2,
+      receipt.requestedBoundaryMoistEnthalpyJm2, 1e-3) &&
+    same(budget.boundaryMoistEnthalpyJm2,
+      receipt.appliedBoundaryMoistEnthalpyJm2, 1e-3) &&
+    same(budget.boundaryNativeEnvelopeReconciliationJm2,
+      receipt.nativeEnvelopeReconciliationJm2, 1e-3) &&
+    same(embedded.appliedBoundaryMoistEnthalpyJm2,
+      receipt.appliedBoundaryMoistEnthalpyJm2, 1e-3) &&
+    Number.isInteger(receipt.nativeEnvelope?.limitedLayerCount) &&
+    receipt.nativeEnvelope.limitedLayerCount >= 0 &&
+    Array.isArray(receipt.nativeEnvelope?.limitedLayerIds) &&
+    receipt.nativeEnvelope.limitedLayerIds.length ===
+      receipt.nativeEnvelope.limitedLayerCount &&
+    receipt.truth?.requestedAndAppliedBoundaryForcingDistinguished === true &&
+    receipt.truth?.nativeEnvelopeReconciliationReceipted === true &&
+    receipt.truth?.ledgerClosed === true &&
+    receipt.truth?.nativeLayersWithinDeclaredEnvelope === true;
+  return check('atmosphere-boundary-forcing-energy-ledger',
+    valid ? 'PASS' : 'FAIL',
+    'Requested compatibility forcing, applied native forcing and envelope reconciliation remain distinct and ledgered.', {
+      schema: receipt.schema || null,
+      requestedBoundaryMoistEnthalpyJm2:
+        receipt.requestedBoundaryMoistEnthalpyJm2 ?? null,
+      appliedBoundaryMoistEnthalpyJm2:
+        receipt.appliedBoundaryMoistEnthalpyJm2 ?? null,
+      nativeEnvelopeReconciliationJm2:
+        receipt.nativeEnvelopeReconciliationJm2 ?? null,
+      boundarySyncMoistEnthalpyResidualJm2:
+        receipt.boundarySyncMoistEnthalpyResidualJm2 ?? null,
+      nativeEnvelopeLimitedLayerCount:
+        receipt.nativeEnvelope?.limitedLayerCount ?? null,
+      ledgerResidualJm2: receipt.ledgerResidualJm2 ?? null
+    });
+}
+
 function co2RadiationCheck(column) {
   const receipt = column?.surface?.lastRadiationReceipt;
   if (!receipt) {
@@ -280,6 +393,91 @@ function pressureColumnCheck(column) {
     });
 }
 
+function nativePhaseThermalEnvelopeCheck(column) {
+  const pressure = column?.atmosphere?.pressureColumn;
+  const pressureLayers = Array.isArray(pressure?.layers)
+    ? pressure.layers : [];
+  const receipt = column?.atmosphere?.lastPressureColumnDynamicsReceipt;
+  if (!receipt) {
+    const currentTemperaturesValid = pressureLayers.length ===
+        ATMOSPHERE_PRESSURE_COLUMN_LAYER_COUNT &&
+      pressureLayers.every(layer => finite(layer?.airTemperatureC) &&
+        Number(layer.airTemperatureC) >=
+          MIN_NATIVE_LAYER_AIR_TEMPERATURE_C - 1e-9 &&
+        Number(layer.airTemperatureC) <=
+          MAX_NATIVE_LAYER_AIR_TEMPERATURE_C + 1e-9);
+    return check('native-phase-thermal-envelope',
+      currentTemperaturesValid ? 'NOT_APPLICABLE' : 'FAIL',
+      'Native phase changes move only the mass whose latent heat fits the declared layer-temperature envelope.', {
+        reason: currentTemperaturesValid
+          ? 'the temperature state is valid but no committed native phase receipt is available yet'
+          : 'the current native temperature state is outside its declared envelope',
+        minimumAirTemperatureC: MIN_NATIVE_LAYER_AIR_TEMPERATURE_C,
+        maximumAirTemperatureC: MAX_NATIVE_LAYER_AIR_TEMPERATURE_C,
+        currentTemperaturesC: pressureLayers.map(layer =>
+          layer?.airTemperatureC ?? null)
+      }, { required: !currentTemperaturesValid });
+  }
+  const layerReceipts = Array.isArray(receipt.layerPhaseReceipts)
+    ? receipt.layerPhaseReceipts : [];
+  const currentTemperaturesValid = pressureLayers.length ===
+      ATMOSPHERE_PRESSURE_COLUMN_LAYER_COUNT &&
+    pressureLayers.every(layer => finite(layer?.airTemperatureC) &&
+      Number(layer.airTemperatureC) >=
+        MIN_NATIVE_LAYER_AIR_TEMPERATURE_C - 1e-9 &&
+      Number(layer.airTemperatureC) <=
+        MAX_NATIVE_LAYER_AIR_TEMPERATURE_C + 1e-9);
+  const receiptValid = receipt.schema ===
+      ATMOSPHERE_PRESSURE_COLUMN_DYNAMICS_SCHEMA &&
+    receipt.phaseThermalEnvelopeSchema ===
+      ATMOSPHERE_PHASE_THERMAL_ENVELOPE_SCHEMA &&
+    layerReceipts.length === ATMOSPHERE_PRESSURE_COLUMN_LAYER_COUNT &&
+    layerReceipts.every((entry, index) =>
+      entry?.schema === ATMOSPHERE_PRESSURE_LAYER_PHASE_SCHEMA &&
+      entry.layerIndex === index &&
+      entry.thermalEnvelopeSchema ===
+        ATMOSPHERE_PHASE_THERMAL_ENVELOPE_SCHEMA &&
+      Number.isInteger(entry.thermalEnvelopeLimitCount) &&
+      entry.thermalEnvelopeLimitCount >= 0 &&
+      finite(entry.maximumThermallyRejectedRequestMm) &&
+      Number(entry.maximumThermallyRejectedRequestMm) >= 0 &&
+      finite(entry.finalAirTemperatureC) &&
+      Number(entry.finalAirTemperatureC) >=
+        MIN_NATIVE_LAYER_AIR_TEMPERATURE_C - 1e-9 &&
+      Number(entry.finalAirTemperatureC) <=
+        MAX_NATIVE_LAYER_AIR_TEMPERATURE_C + 1e-9 &&
+      close(entry.waterResidualMm, 1e-8) &&
+      close(entry.moistEnthalpyResidualJm2, 1) &&
+      entry.truth?.phaseChangesBoundedByThermalHeadroom === true &&
+      entry.truth?.airTemperatureWithinDeclaredEnvelope === true &&
+      entry.truth?.postMaterialTemperatureClipRequired === false) &&
+    close(receipt.residuals?.phaseWaterMm, 1e-8) &&
+    close(receipt.residuals?.phaseMoistEnthalpyJm2, 1) &&
+    close(receipt.residuals?.moistEnthalpyJm2, 1) &&
+    close(receipt.residuals?.resolvedEnergyJm2, 1) &&
+    receipt.truth?.nativePhaseChangesBoundedByThermalHeadroom === true &&
+    receipt.truth?.nativeLayerTemperaturesWithinDeclaredEnvelope === true &&
+    receipt.truth?.postMaterialTemperatureClipRequired === false;
+  return check('native-phase-thermal-envelope',
+    currentTemperaturesValid && receiptValid ? 'PASS' : 'FAIL',
+    'Native phase changes move only the mass whose latent heat fits the declared layer-temperature envelope.', {
+      expectedDynamicsSchema: ATMOSPHERE_PRESSURE_COLUMN_DYNAMICS_SCHEMA,
+      actualDynamicsSchema: receipt.schema || null,
+      expectedLayerPhaseSchema: ATMOSPHERE_PRESSURE_LAYER_PHASE_SCHEMA,
+      phaseThermalEnvelopeSchema:
+        receipt.phaseThermalEnvelopeSchema || null,
+      minimumAirTemperatureC: MIN_NATIVE_LAYER_AIR_TEMPERATURE_C,
+      maximumAirTemperatureC: MAX_NATIVE_LAYER_AIR_TEMPERATURE_C,
+      currentTemperaturesValid,
+      layerReceiptCount: layerReceipts.length,
+      thermalEnvelopeLimitCount: receipt.thermalEnvelopeLimitCount ?? null,
+      thermallyLimitedLayerCount: receipt.thermallyLimitedLayerCount ?? null,
+      maximumThermallyRejectedRequestMm:
+        receipt.maximumThermallyRejectedRequestMm ?? null,
+      residuals: receipt.residuals || null
+    });
+}
+
 function deepOceanCheck(column) {
   if (column?.kind !== 'ocean') {
     return check('deep-ocean-lineage', 'NOT_APPLICABLE',
@@ -292,6 +490,347 @@ function deepOceanCheck(column) {
     'Ocean columns retain the typed persistent deep-ocean reservoir.', {
       expectedSchema: DEEP_OCEAN_STATE_SCHEMA,
       actualSchema: deep?.schema || null
+    });
+}
+
+function deepOceanAlkalinityCheck(column) {
+  if (column?.kind !== 'ocean') {
+    return check('mixed-deep-ocean-alkalinity-ledger', 'NOT_APPLICABLE',
+      'Only ocean columns require a mixed-to-deep alkalinity ledger.',
+      { kind: column?.kind || null }, { required: false });
+  }
+  const ecology = column?.ocean?.ecology;
+  const deep = ecology?.deepOcean;
+  const receipt = deep?.lastExchangeReceipt;
+  const ownerValid = ecology?.schema === EARTH_OCEAN_ECOLOGY_SCHEMA &&
+    deep?.schema === DEEP_OCEAN_STATE_SCHEMA &&
+    finite(ecology?.alkalinity?.dissolvedKgCaCO3Eqm2) &&
+    Number(ecology.alkalinity.dissolvedKgCaCO3Eqm2) >= 0 &&
+    finite(deep?.alkalinity?.dissolvedKgCaCO3Eqm2) &&
+    Number(deep.alkalinity.dissolvedKgCaCO3Eqm2) >= 0;
+  if (!receipt) {
+    return check('mixed-deep-ocean-alkalinity-ledger',
+      ownerValid ? 'NOT_APPLICABLE' : 'FAIL',
+      'Typed mixed-layer and deep-ocean alkalinity owners exchange only through a conservative signed receipt.', {
+        ownerValid,
+        reason: ownerValid
+          ? 'owners are present but no committed vertical exchange receipt is available yet'
+          : 'a typed finite alkalinity owner is missing',
+        mixedLayerAlkalinityKgCaCO3Eqm2:
+          ecology?.alkalinity?.dissolvedKgCaCO3Eqm2 ?? null,
+        deepOceanAlkalinityKgCaCO3Eqm2:
+          deep?.alkalinity?.dissolvedKgCaCO3Eqm2 ?? null,
+        migrationCheckpoint: deep?.migrationCheckpoint ?? null
+      }, { required: !ownerValid });
+  }
+  const nestedReceipt = ecology?.lastFluxReceipt?.deepOcean;
+  const valid = ownerValid &&
+    receipt.schema === DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA &&
+    nestedReceipt?.schema === DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA &&
+    finite(receipt.dissolvedExchange
+      ?.alkalinitySurfaceToDeepKgCaCO3Eqm2) &&
+    close(receipt.conservation?.alkalinityResidualKgCaCO3Eqm2, 1e-9) &&
+    receipt.truth?.persistentDeepAlkalinityReservoir === true &&
+    receipt.truth?.conservativeVerticalAlkalinityExchange === true &&
+    receipt.truth?.alkalinityIsAcidNeutralizingCapacityEquivalent === true &&
+    receipt.truth?.measuredAlkalinityClaimed === false &&
+    receipt.truth?.carbonateSpeciationResolved === false &&
+    receipt.truth?.pHResolved === false &&
+    ecology.lastFluxReceipt?.truth?.mixedToDeepAlkalinityClosed === true;
+  return check('mixed-deep-ocean-alkalinity-ledger',
+    valid ? 'PASS' : 'FAIL',
+    'Typed mixed-layer and deep-ocean alkalinity owners exchange only through a conservative signed receipt.', {
+      expectedStateSchema: DEEP_OCEAN_STATE_SCHEMA,
+      actualStateSchema: deep?.schema || null,
+      expectedReceiptSchema: DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA,
+      actualReceiptSchema: receipt?.schema || null,
+      ownerValid,
+      mixedLayerAlkalinityKgCaCO3Eqm2:
+        ecology?.alkalinity?.dissolvedKgCaCO3Eqm2 ?? null,
+      deepOceanAlkalinityKgCaCO3Eqm2:
+        deep?.alkalinity?.dissolvedKgCaCO3Eqm2 ?? null,
+      signedSurfaceToDeepKgCaCO3Eqm2: receipt.dissolvedExchange
+        ?.alkalinitySurfaceToDeepKgCaCO3Eqm2 ?? null,
+      residualKgCaCO3Eqm2: receipt.conservation
+        ?.alkalinityResidualKgCaCO3Eqm2 ?? null,
+      boundaries: {
+        measuredAlkalinityClaimed: false,
+        carbonateSpeciationResolved: false,
+        pHResolved: false,
+        threeDimensionalOceanCirculation: false
+      }
+    });
+}
+
+function mixedLayerCarbonateCheck(column) {
+  if (column?.kind !== 'ocean') {
+    return check('mixed-layer-carbonate-diagnostic', 'NOT_APPLICABLE',
+      'Only ocean columns expose the bounded mixed-layer carbonate diagnostic.',
+      { kind: column?.kind || null }, { required: false });
+  }
+  const ecology = column?.ocean?.ecology;
+  const diagnostic = ecology?.carbonateSystem;
+  const source = diagnostic?.sourceOwners;
+  const sourceBound = same(source?.dissolvedInorganicCarbonKgCm2,
+    ecology?.carbon?.dissolvedInorganicKgCm2, 1e-9) &&
+    same(source?.alkalinityKgCaCO3Eqm2,
+      ecology?.alkalinity?.dissolvedKgCaCO3Eqm2, 1e-9) &&
+    same(source?.dissolvedInorganicPhosphorusKgPm2,
+      ecology?.phosphorus?.dissolvedInorganicKgPm2, 1e-9) &&
+    same(source?.mixedLayerDepthM, ecology?.traits?.mixedLayerDepthM, 1e-6) &&
+    same(source?.temperatureC, ecology?.physiology?.temperatureC, 1e-6) &&
+    same(source?.salinityPsu, ecology?.physiology?.salinityPsu, 1e-6);
+  const boundaryTruthValid = diagnostic?.truth?.diagnosticOnly === true &&
+    diagnostic?.truth?.mutatesMaterial === false &&
+    diagnostic?.truth?.sourceOwnerBinding === true &&
+    diagnostic?.truth?.totalHydrogenScale === true &&
+    diagnostic?.truth?.surfacePressureOnly === true &&
+    diagnostic?.truth?.phosphateAlkalinityIncluded === true &&
+    diagnostic?.truth?.silicateAlkalinityIncluded === false &&
+    diagnostic?.truth?.fluorideAlkalinityIncluded === false &&
+    diagnostic?.truth?.pressureCorrectionsIncluded === false &&
+    diagnostic?.truth?.measuredInputsClaimed === false &&
+    diagnostic?.truth?.pHFeedbackModeled === false &&
+    diagnostic?.truth?.deepOceanPHResolved === false &&
+    diagnostic?.waterMassConversion?.referenceDensityKgM3 === 1000 &&
+    diagnostic?.waterMassConversion?.measuredDensityClaimed === false;
+  const solved = diagnostic?.status === 'SOLVED';
+  const solvedValid = solved && finite(diagnostic?.solution?.pHTotal) &&
+    Number(diagnostic.solution.pHTotal) >= 3 &&
+    Number(diagnostic.solution.pHTotal) <= 12 &&
+    diagnostic?.truth?.constantsWithinPublishedEnvelope === true &&
+    diagnostic?.truth?.carbonateMassClosed === true &&
+    diagnostic?.truth?.phosphateMassClosed === true &&
+    diagnostic?.truth?.alkalinityResidualClosed === true &&
+    close(diagnostic?.closure?.dicResidualMolKg, 1e-12) &&
+    close(diagnostic?.closure?.phosphateResidualMolKg, 1e-12) &&
+    close(diagnostic?.closure?.alkalinityResidualMolKg, 1e-12);
+  const typedNonSolution = diagnostic?.solution === null && (
+    (diagnostic?.status === 'OUTSIDE_CONSTANT_VALIDITY' &&
+      diagnostic?.truth?.constantsWithinPublishedEnvelope === false) ||
+    diagnostic?.status === 'INSUFFICIENT_MATERIAL_STATE');
+  const valid = ecology?.schema === EARTH_OCEAN_ECOLOGY_SCHEMA &&
+    diagnostic?.schema === MIXED_LAYER_CARBONATE_DIAGNOSTIC_SCHEMA &&
+    sourceBound && boundaryTruthValid && (solvedValid || typedNonSolution);
+  return check('mixed-layer-carbonate-diagnostic', valid ? 'PASS' : 'FAIL',
+    'The mixed-layer DIC, alkalinity and phosphate owners feed a bounded, mass-preserving total-scale carbonate observer or an explicit typed refusal.', {
+      expectedSchema: MIXED_LAYER_CARBONATE_DIAGNOSTIC_SCHEMA,
+      actualSchema: diagnostic?.schema || null,
+      status: diagnostic?.status || null,
+      reason: diagnostic?.reason || null,
+      sourceBound,
+      pHTotal: diagnostic?.solution?.pHTotal ?? null,
+      dicResidualMolKg: diagnostic?.closure?.dicResidualMolKg ?? null,
+      phosphateResidualMolKg:
+        diagnostic?.closure?.phosphateResidualMolKg ?? null,
+      alkalinityResidualMolKg:
+        diagnostic?.closure?.alkalinityResidualMolKg ?? null,
+      boundaries: {
+        diagnosticOnly: diagnostic?.truth?.diagnosticOnly ?? null,
+        surfacePressureOnly: diagnostic?.truth?.surfacePressureOnly ?? null,
+        silicateAlkalinityIncluded:
+          diagnostic?.truth?.silicateAlkalinityIncluded ?? null,
+        fluorideAlkalinityIncluded:
+          diagnostic?.truth?.fluorideAlkalinityIncluded ?? null,
+        pHFeedbackModeled: diagnostic?.truth?.pHFeedbackModeled ?? null,
+        deepOceanPHResolved: diagnostic?.truth?.deepOceanPHResolved ?? null,
+        referenceDensityKgM3:
+          diagnostic?.waterMassConversion?.referenceDensityKgM3 ?? null
+      }
+    });
+}
+
+function airSeaCarbonExchangeCheck(column) {
+  if (column?.kind !== 'ocean') {
+    return check('carbonate-informed-air-sea-carbon-exchange',
+      'NOT_APPLICABLE',
+      'Only ocean columns require carbonate-informed air-sea carbon exchange.',
+      { kind: column?.kind || null }, { required: false });
+  }
+  const ecology = column?.ocean?.ecology;
+  const receipt = ecology?.lastFluxReceipt;
+  const exchange = receipt?.carbon?.airSeaCarbonExchange;
+  if (!exchange) {
+    const ownerReady = ecology?.schema === EARTH_OCEAN_ECOLOGY_SCHEMA;
+    return check('carbonate-informed-air-sea-carbon-exchange',
+      ownerReady ? 'NOT_APPLICABLE' : 'FAIL',
+      'A committed ocean step binds carbonate CO2-star to a paired atmosphere-DIC owner move or a typed zero-flux refusal.', {
+        ownerReady,
+        reason: ownerReady
+          ? 'typed ocean owners are present but no current R54 flux receipt is committed yet'
+          : 'the current ocean ecology owner is absent',
+        actualOceanSchema: ecology?.schema || null
+      }, { required: !ownerReady });
+  }
+  const source = exchange.sourceOwners;
+  const diagnostic = exchange.sourceDiagnostic;
+  const equilibrium = exchange.equilibrium;
+  const transfer = exchange.transfer;
+  const application = exchange.application;
+  const signed = Number(exchange.signedCarbonToOceanKgCm2);
+  const applied = Number(application?.appliedSignedCarbonToOceanKgCm2);
+  const receiptFlux = Number(receipt?.carbon?.airSeaCo2FluxToOceanKgCm2);
+  const sourceBound = same(diagnostic?.sourceOwners
+    ?.dissolvedInorganicCarbonKgCm2,
+  source?.dissolvedInorganicCarbonKgCm2, 1e-9) &&
+    same(diagnostic?.sourceOwners?.alkalinityKgCaCO3Eqm2,
+      source?.alkalinityKgCaCO3Eqm2, 1e-9) &&
+    same(diagnostic?.sourceOwners?.dissolvedInorganicPhosphorusKgPm2,
+      source?.dissolvedInorganicPhosphorusKgPm2, 1e-9) &&
+    same(diagnostic?.sourceOwners?.mixedLayerDepthM,
+      source?.mixedLayerDepthM, 1e-6) &&
+    same(diagnostic?.sourceOwners?.temperatureC,
+      source?.temperatureC, 1e-6) &&
+    same(diagnostic?.sourceOwners?.salinityPsu,
+      source?.salinityPsu, 1e-6);
+  const schemaValid = ecology?.schema === EARTH_OCEAN_ECOLOGY_SCHEMA &&
+    exchange.schema === AIR_SEA_CARBON_EXCHANGE_PROPOSAL_SCHEMA &&
+    exchange.method === AIR_SEA_CARBON_EXCHANGE_METHOD.id;
+  const applicationValid = finite(signed) && finite(applied) &&
+    finite(receiptFlux) && same(applied, signed, 1e-9) &&
+    same(receiptFlux, applied, 1e-9) &&
+    application?.pairedOwnerMove === true &&
+    application?.proposalMatched === true &&
+    application?.combinedAtmosphereAndOceanCarbonClosed === true &&
+    receipt?.truth?.airSeaCarbonOwnerMoveMatchedProposal === true &&
+    receipt?.truth?.carbonClosed === true &&
+    close(receipt?.carbon?.residualKgCm2, 1e-9);
+  const boundaryTruthValid = exchange?.truth?.proposalOnly === true &&
+    exchange?.truth?.mutatesMaterial === false &&
+    exchange?.truth?.atmosphericCo2IsMeasured === false &&
+    exchange?.truth?.oceanPco2IsMeasured === false &&
+    exchange?.truth?.oceanSkinTemperatureMeasured === false &&
+    exchange?.truth?.scientificGasTransferVelocity === false &&
+    exchange?.truth?.boundedBulkRelaxation === true &&
+    receipt?.truth?.scientificAirSeaGasTransferVelocity === false &&
+    receipt?.truth?.measuredAirSeaPco2 === false &&
+    receipt?.truth?.measuredOceanSkinTemperature === false;
+  const solved = String(exchange.status || '').startsWith('SOLVED_');
+  let methodValuesValid = false;
+  let directionValid = false;
+  let senderBounded = false;
+  if (solved) {
+    const solubility = weiss1974Co2Solubility(
+      source?.temperatureC, source?.salinityPsu);
+    const vaporPressure = weissPrice1980SeawaterVaporPressureAtm(
+      source?.temperatureC, source?.salinityPsu);
+    const fugacity = weiss1974Co2FugacityFactor(
+      source?.temperatureC, source?.surfacePressureHpa);
+    const totalPressureAtm = Number(source?.surfacePressureHpa) / 1013.25;
+    const dryAirPressureAtm = totalPressureAtm - Number(vaporPressure);
+    const co2MoleFraction = Number(source?.atmosphericCo2PpmProxy) / 1e6;
+    const pco2Atm = co2MoleFraction * dryAirPressureAtm;
+    const fco2Atm = pco2Atm * Number(fugacity?.fugacityFactor);
+    const expectedEquilibriumCo2Star = Number(solubility?.k0MolKgAtm) *
+      fco2Atm * 1e6;
+    const expectedDisequilibrium = expectedEquilibriumCo2Star -
+      Number(diagnostic?.actualCo2StarMicromolKg);
+    const waterMassKgM2 = Number(source?.mixedLayerDepthM) *
+      AIR_SEA_CARBON_EXCHANGE_METHOD.referenceWaterDensityKgM3;
+    const rawSigned = expectedDisequilibrium / 1e6 * waterMassKgM2 *
+      AIR_SEA_CARBON_EXCHANGE_METHOD.carbonKgPerMol *
+      Number(source?.relaxationFraction);
+    const expectedSigned = rawSigned >= 0
+      ? Math.min(rawSigned, Number(source?.atmosphericCarbonKgCm2))
+      : Math.max(rawSigned,
+        -Number(source?.dissolvedInorganicCarbonKgCm2));
+    const expectedDirection = expectedSigned > 1e-15
+      ? 'atmosphere-to-ocean' : expectedSigned < -1e-15
+        ? 'ocean-to-atmosphere' : 'equilibrium';
+    const expectedStatus = expectedDirection === 'atmosphere-to-ocean'
+      ? 'SOLVED_UPTAKE' : expectedDirection === 'ocean-to-atmosphere'
+        ? 'SOLVED_OUTGASSING' : 'SOLVED_EQUILIBRIUM';
+    methodValuesValid = Boolean(solubility && fugacity &&
+      finite(vaporPressure)) &&
+      same(equilibrium?.weiss1974LnK0, solubility?.lnK0, 1e-12) &&
+      same(equilibrium?.weiss1974K0MolKgAtm,
+        solubility?.k0MolKgAtm, 1e-15) &&
+      same(equilibrium?.seawaterVaporPressureAtm,
+        vaporPressure, 1e-15) &&
+      same(equilibrium?.dryAirPressureAtm, dryAirPressureAtm, 1e-12) &&
+      same(equilibrium?.atmosphericPco2Atm, pco2Atm, 1e-12) &&
+      same(equilibrium?.co2FugacityFactor,
+        fugacity?.fugacityFactor, 1e-15) &&
+      same(equilibrium?.atmosphericFco2Atm, fco2Atm, 1e-12) &&
+      same(equilibrium?.equilibriumCo2StarMicromolKg,
+        expectedEquilibriumCo2Star, 1e-8) &&
+      same(equilibrium?.co2StarDisequilibriumMicromolKg,
+        expectedDisequilibrium, 1e-8) &&
+      same(transfer?.mixedLayerWaterMassKgM2, waterMassKgM2, 1e-6) &&
+      same(transfer?.unboundedSignedCarbonToOceanKgCm2,
+        rawSigned, 1e-12) && same(signed, expectedSigned, 1e-12);
+    directionValid = transfer?.direction === expectedDirection &&
+      exchange.status === expectedStatus &&
+      receipt?.truth?.carbonateInformedAirSeaCo2Exchange === true &&
+      receipt?.truth?.airSeaCarbonExchangeTypedRefusal === false;
+    senderBounded = signed >= -Number(source?.dissolvedInorganicCarbonKgCm2) -
+      1e-12 && signed <= Number(source?.atmosphericCarbonKgCm2) + 1e-12 &&
+      exchange?.truth?.senderBounded === true &&
+      receipt?.truth?.airSeaCarbonExchangeSourceBound === true;
+  }
+  const solvedValid = solved && sourceBound &&
+    diagnostic?.schema === MIXED_LAYER_CARBONATE_DIAGNOSTIC_SCHEMA &&
+    diagnostic?.status === 'SOLVED' &&
+    diagnostic?.truth?.constantsWithinPublishedEnvelope === true &&
+    diagnostic?.truth?.carbonateMassClosed === true &&
+    diagnostic?.truth?.phosphateMassClosed === true &&
+    diagnostic?.truth?.alkalinityResidualClosed === true &&
+    exchange?.truth?.sourceDiagnosticSolved === true &&
+    exchange?.truth?.sourceOwnerBinding === true &&
+    exchange?.truth?.wetAirPartialPressureIncluded === true &&
+    exchange?.truth?.fugacityNonidealityIncluded === true &&
+    receipt?.truth?.airSeaCo2FugacityCorrection === true &&
+    methodValuesValid && directionValid && senderBounded;
+  const typedStatuses = new Set([
+    'CARBONATE_DIAGNOSTIC_UNAVAILABLE',
+    'CARBONATE_SOURCE_MISMATCH',
+    'OUTSIDE_METHOD_VALIDITY',
+    'METHOD_UNRESOLVED',
+    'INVALID_INPUT'
+  ]);
+  const typedRefusalValid = !solved && typedStatuses.has(exchange.status) &&
+    same(signed, 0) && same(applied, 0) && same(receiptFlux, 0) &&
+    receipt?.truth?.carbonateInformedAirSeaCo2Exchange === false &&
+    receipt?.truth?.airSeaCarbonExchangeTypedRefusal === true;
+  const valid = schemaValid && applicationValid && boundaryTruthValid &&
+    (solvedValid || typedRefusalValid);
+  return check('carbonate-informed-air-sea-carbon-exchange',
+    valid ? 'PASS' : 'FAIL',
+    'A committed ocean step binds carbonate CO2-star and wet-air CO2 fugacity to a bounded paired atmosphere-DIC owner move or a typed zero-flux refusal.', {
+      expectedSchema: AIR_SEA_CARBON_EXCHANGE_PROPOSAL_SCHEMA,
+      actualSchema: exchange.schema || null,
+      expectedMethod: AIR_SEA_CARBON_EXCHANGE_METHOD.id,
+      actualMethod: exchange.method || null,
+      status: exchange.status || null,
+      sourceBound,
+      actualCo2StarMicromolKg:
+        equilibrium?.actualCo2StarMicromolKg ?? null,
+      equilibriumCo2StarMicromolKg:
+        equilibrium?.equilibriumCo2StarMicromolKg ?? null,
+      atmosphericPco2Atm: equilibrium?.atmosphericPco2Atm ?? null,
+      atmosphericFco2Atm: equilibrium?.atmosphericFco2Atm ?? null,
+      fugacityFactor: equilibrium?.co2FugacityFactor ?? null,
+      direction: transfer?.direction ?? null,
+      proposedSignedCarbonToOceanKgCm2: finite(signed) ? signed : null,
+      appliedSignedCarbonToOceanKgCm2: finite(applied) ? applied : null,
+      criteria: {
+        schemaValid,
+        sourceBound,
+        applicationValid,
+        boundaryTruthValid,
+        methodValuesValid,
+        directionValid,
+        senderBounded,
+        solvedValid,
+        typedRefusalValid
+      },
+      boundaries: {
+        atmosphericCo2Measured: false,
+        oceanPco2Measured: false,
+        oceanSkinTemperatureMeasured: false,
+        scientificGasTransferVelocity: false,
+        speciesResolvedPHResponse: false
+      }
     });
 }
 
@@ -520,6 +1059,10 @@ function basinCheck(receipt) {
     receipt.truth?.persistentFloodplainPlantResources === true &&
     receipt.truth?.floodplainPlantResourcesEvidenceBound === true &&
     receipt.truth?.floodplainPlantResourcesLedgersClosed === true &&
+    receipt.truth?.floodplainPlantResourceScaleAwareNumericClosure ===
+      true &&
+    receipt.truth?.floodplainPlantResourceMeasuredResidualsPreserved ===
+      true &&
     receipt.truth?.floodplainPlantResourceSendersAndReceiversClosed === true &&
     receipt.truth?.exactFloodplainPlantResourceTransferIds === true &&
     receipt.truth?.jointCarbonNitrogenPhosphorusWaterLimitedPlantGrowth === true &&
@@ -577,6 +1120,12 @@ function basinCheck(receipt) {
     receipt.truth?.floodplainNitrificationOwnerReceiptsTyped === true &&
     receipt.truth?.floodplainNitrificationEvidenceBound === true &&
     receipt.truth?.exactFloodplainNitrificationTransferIds === true &&
+    receipt.truth?.floodplainNitrificationScaleAwareNumericClosure ===
+      true &&
+    receipt.truth?.floodplainNitrificationPerIdentityNumericBounds ===
+      true &&
+    receipt.truth?.floodplainNitrificationMeasuredResidualsPreserved ===
+      true &&
     receipt.truth
       ?.floodplainNitrificationNitrogenOxygenAndAlkalinityLedgersClosed ===
       true &&
@@ -732,7 +1281,8 @@ function alkalinityLedgerCheck(receipt) {
         measuredAlkalinityClaimed: false,
         carbonateSpeciationResolved: false,
         pHResolved: false,
-        deepOceanAlkalinityExchange: false
+        deepOceanAlkalinityExchangeCoveredByThisBasinReceipt: false,
+        deepOceanAlkalinityExchangeAuditedSeparately: true
       },
       receiptDigest: receipt.digest || null
     });
@@ -759,19 +1309,199 @@ function floodplainPlantMatterCheck(receipt) {
   const senderByCell = new Map((senders || []).map(entry =>
     [entry.donorCellId, entry]));
   const receiptShapeValid = Array.isArray(entries) && Array.isArray(senders);
+  const senderNumericClosureValid = entry => {
+    const carbonIdentityKgC = Number(entry?.before?.carbonKgC) -
+      Number(entry?.debited?.carbonKgC) - Number(entry?.after?.carbonKgC);
+    const nitrogenIdentityKgN = Number(entry?.before?.nitrogenKgN) -
+      Number(entry?.debited?.nitrogenKgN) -
+      Number(entry?.after?.nitrogenKgN);
+    const expectedCarbonToleranceKgC =
+      landEcologyMassClosureToleranceKg(entry?.before?.carbonKgC,
+        entry?.debited?.carbonKgC, entry?.after?.carbonKgC);
+    const expectedNitrogenToleranceKgN =
+      landEcologyMassClosureToleranceKg(entry?.before?.nitrogenKgN,
+        entry?.debited?.nitrogenKgN, entry?.after?.nitrogenKgN);
+    return entry?.closure?.policy?.schema ===
+        LAND_ECOLOGY_MASS_CLOSURE_POLICY_SCHEMA &&
+      entry.closure.policy.absoluteFloorKg ===
+        LAND_ECOLOGY_MASS_CLOSURE_ABSOLUTE_FLOOR_KG &&
+      entry.closure.policy.ulpFactor ===
+        LAND_ECOLOGY_MASS_CLOSURE_ULP_FACTOR &&
+      entry.closure.policy.recordedOperandScale === true &&
+      entry.closure.policy.arbitraryToleranceAuthority === false &&
+      same(entry.closure?.numericToleranceKg?.carbonKgC,
+        expectedCarbonToleranceKgC, 1e-12) &&
+      same(entry.closure?.numericToleranceKg?.nitrogenKgN,
+        expectedNitrogenToleranceKgN, 1e-12) &&
+      same(entry.closure?.carbonResidualKgC, carbonIdentityKgC, 1e-9) &&
+      same(entry.closure?.nitrogenResidualKgN, nitrogenIdentityKgN, 1e-9) &&
+      close(entry.closure?.carbonResidualKgC,
+        expectedCarbonToleranceKgC) &&
+      close(entry.closure?.nitrogenResidualKgN,
+        expectedNitrogenToleranceKgN) &&
+      entry.truth?.scaleAwareFloatingPointClosure === true &&
+      entry.truth?.measuredResidualsPreserved === true &&
+      entry.truth?.fixedAbsoluteToleranceOnly === false;
+  };
   const senderReceiptsValid = receiptShapeValid && senders.every(entry =>
     entry?.schema === LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA &&
     typeof entry.donorCellId === 'string' && entry.donorCellId.length > 0 &&
     Array.isArray(entry.allocations) &&
     new Set(entry.allocations.map(allocation => allocation.transferId)).size ===
       entry.allocations.length &&
-    close(entry.closure?.carbonResidualKgC, 1e-6) &&
-    close(entry.closure?.nitrogenResidualKgN, 1e-6) &&
+    senderNumericClosureValid(entry) &&
     entry.truth?.persistentLandEcologySenderDebited === true &&
     entry.truth?.subgridPartitionCreatesMaterial === false &&
     entry.truth?.boundedDailyDebit === true &&
     entry.truth?.carbonAndNitrogenClosed === true &&
     entry.truth?.phosphorusTransferred === false);
+  const senderNumericFailures = receiptShapeValid ? senders
+    .filter(entry => !senderNumericClosureValid(entry)).slice(0, 8)
+    .map(entry => ({
+      donorCellId: entry?.donorCellId || null,
+      residualKg: {
+        carbonKgC: entry?.closure?.carbonResidualKgC ?? null,
+        nitrogenKgN: entry?.closure?.nitrogenResidualKgN ?? null
+      },
+      declaredToleranceKg: entry?.closure?.numericToleranceKg || null,
+      expectedToleranceKg: {
+        carbonKgC: landEcologyMassClosureToleranceKg(
+          entry?.before?.carbonKgC, entry?.debited?.carbonKgC,
+          entry?.after?.carbonKgC),
+        nitrogenKgN: landEcologyMassClosureToleranceKg(
+          entry?.before?.nitrogenKgN, entry?.debited?.nitrogenKgN,
+          entry?.after?.nitrogenKgN)
+      }
+    })) : [];
+  const guildMatterOperands = source => ({
+    carbonKgC: Number(source?.live?.carbonKgC || 0) +
+      Number(source?.standingDead?.carbonKgC || 0) +
+      Number(source?.litter?.carbonKgC || 0),
+    nitrogenKgN: Number(source?.live?.nitrogenKgN || 0) +
+      Number(source?.standingDead?.nitrogenKgN || 0) +
+      Number(source?.litter?.nitrogenKgN || 0)
+  });
+  const flowNumericClosure = flow => {
+    const before = guildMatterOperands(flow?.before);
+    const after = guildMatterOperands(flow?.after);
+    const credit = {
+      carbonKgC: Number(flow?.landEcologyCredit?.carbonKgC || 0),
+      nitrogenKgN: Number(flow?.landEcologyCredit?.nitrogenKgN || 0)
+    };
+    const identity = {
+      carbonKgC: after.carbonKgC - before.carbonKgC -
+        credit.carbonKgC,
+      nitrogenKgN: after.nitrogenKgN - before.nitrogenKgN -
+        credit.nitrogenKgN
+    };
+    const expectedToleranceKg = {
+      carbonKgC: floodplainPlantMatterMassClosureToleranceKg(
+        before.carbonKgC, credit.carbonKgC, after.carbonKgC),
+      nitrogenKgN: floodplainPlantMatterMassClosureToleranceKg(
+        before.nitrogenKgN, credit.nitrogenKgN, after.nitrogenKgN)
+    };
+    const valid =
+      same(flow?.closure?.carbonResidualKgC,
+        identity.carbonKgC, 1e-9) &&
+      same(flow?.closure?.nitrogenResidualKgN,
+        identity.nitrogenKgN, 1e-9) &&
+      same(flow?.closure?.numericToleranceKg?.carbonKgC,
+        expectedToleranceKg.carbonKgC, 1e-12) &&
+      same(flow?.closure?.numericToleranceKg?.nitrogenKgN,
+        expectedToleranceKg.nitrogenKgN, 1e-12) &&
+      close(flow?.closure?.carbonResidualKgC,
+        expectedToleranceKg.carbonKgC) &&
+      close(flow?.closure?.nitrogenResidualKgN,
+        expectedToleranceKg.nitrogenKgN);
+    return {
+      valid,
+      identity,
+      expectedToleranceKg,
+      declaredToleranceKg: flow?.closure?.numericToleranceKg || null
+    };
+  };
+  const receiptNumericClosure = entry => {
+    const flows = Array.isArray(entry?.guildFlows)
+      ? entry.guildFlows : [];
+    const flowChecks = flows.map(flow => flowNumericClosure(flow));
+    const credited = flows.reduce((total, flow) => ({
+      carbonKgC: total.carbonKgC +
+        Number(flow?.landEcologyCredit?.carbonKgC || 0),
+      nitrogenKgN: total.nitrogenKgN +
+        Number(flow?.landEcologyCredit?.nitrogenKgN || 0)
+    }), { carbonKgC: 0, nitrogenKgN: 0 });
+    const identity = {
+      carbonKgC: Number(entry?.after?.total?.carbonKgC || 0) -
+        Number(entry?.before?.total?.carbonKgC || 0) -
+        credited.carbonKgC,
+      nitrogenKgN: Number(entry?.after?.total?.nitrogenKgN || 0) -
+        Number(entry?.before?.total?.nitrogenKgN || 0) -
+        credited.nitrogenKgN
+    };
+    const expectedToleranceKg = {
+      carbonKgC: floodplainPlantMatterMassClosureToleranceKg(
+        entry?.before?.total?.carbonKgC, credited.carbonKgC,
+        entry?.after?.total?.carbonKgC),
+      nitrogenKgN: floodplainPlantMatterMassClosureToleranceKg(
+        entry?.before?.total?.nitrogenKgN, credited.nitrogenKgN,
+        entry?.after?.total?.nitrogenKgN)
+    };
+    const residualTolerancePairs = [
+      ...flowChecks.flatMap((item, index) => [
+        [Math.abs(Number(flows[index]?.closure?.carbonResidualKgC)),
+          item.expectedToleranceKg.carbonKgC],
+        [Math.abs(Number(flows[index]?.closure?.nitrogenResidualKgN)),
+          item.expectedToleranceKg.nitrogenKgN]
+      ]),
+      [Math.abs(Number(entry?.closure?.carbonResidualKgC)),
+        expectedToleranceKg.carbonKgC],
+      [Math.abs(Number(entry?.closure?.nitrogenResidualKgN)),
+        expectedToleranceKg.nitrogenKgN]
+    ];
+    const expectedMaximumResidualKg = Math.max(0,
+      ...residualTolerancePairs.map(([residual]) => residual));
+    const expectedMaximumToleranceUtilization = Math.max(0,
+      ...residualTolerancePairs.map(([residual, tolerance]) =>
+        tolerance > 0 ? residual / tolerance : Infinity));
+    const valid =
+      entry?.closure?.policy?.schema ===
+        FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_POLICY_SCHEMA &&
+      entry.closure.policy.absoluteFloorKg ===
+        FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG &&
+      entry.closure.policy.ulpFactor ===
+        FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ULP_FACTOR &&
+      entry.closure.policy.recordedOperandScale === true &&
+      entry.closure.policy.perMaterialChannel === true &&
+      entry.closure.policy.arbitraryToleranceAuthority === false &&
+      flowChecks.every(item => item.valid) &&
+      same(entry?.closure?.carbonResidualKgC,
+        identity.carbonKgC, 1e-9) &&
+      same(entry?.closure?.nitrogenResidualKgN,
+        identity.nitrogenKgN, 1e-9) &&
+      same(entry?.closure?.numericToleranceKg?.carbonKgC,
+        expectedToleranceKg.carbonKgC, 1e-12) &&
+      same(entry?.closure?.numericToleranceKg?.nitrogenKgN,
+        expectedToleranceKg.nitrogenKgN, 1e-12) &&
+      close(entry?.closure?.carbonResidualKgC,
+        expectedToleranceKg.carbonKgC) &&
+      close(entry?.closure?.nitrogenResidualKgN,
+        expectedToleranceKg.nitrogenKgN) &&
+      same(entry?.closure?.maximumElementResidualKg,
+        expectedMaximumResidualKg, 1e-9) &&
+      same(entry?.closure?.maximumToleranceUtilization,
+        expectedMaximumToleranceUtilization, 1e-9) &&
+      entry?.truth?.scaleAwareFloatingPointClosure === true &&
+      entry?.truth?.perMaterialChannelNumericBounds === true &&
+      entry?.truth?.measuredResidualsPreserved === true &&
+      entry?.truth?.fixedAbsoluteToleranceOnly === false;
+    return {
+      valid,
+      flowChecks,
+      identity,
+      expectedToleranceKg,
+      declaredToleranceKg: entry?.closure?.numericToleranceKg || null
+    };
+  };
   const entrySchemasValid = receiptShapeValid && entries.every(entry =>
     entry?.schema === FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA &&
     typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
@@ -787,19 +1517,33 @@ function floodplainPlantMatterCheck(receipt) {
     successions.get(entry.reachId) ===
       entry.floodplainSuccessionReceiptDigest &&
     entry.truth?.successionEvidenceBound === true);
-  const ledgersValid = receiptShapeValid && entries.every(entry =>
-    Array.isArray(entry.guildFlows) &&
-    entry.guildFlows.length === FLOODPLAIN_SUCCESSION_GUILDS.length &&
-    new Set(entry.guildFlows.map(flow => flow.guildId)).size ===
-      FLOODPLAIN_SUCCESSION_GUILDS.length &&
-    entry.guildFlows.every(flow =>
-      FLOODPLAIN_SUCCESSION_GUILDS.includes(flow.guildId) &&
-      close(flow.closure?.carbonResidualKgC, 1e-7) &&
-      close(flow.closure?.nitrogenResidualKgN, 1e-7)) &&
-    close(entry.closure?.maximumElementResidualKg, 1e-7) &&
-    close(entry.closure?.carbonResidualKgC, 1e-7) &&
-    close(entry.closure?.nitrogenResidualKgN, 1e-7) &&
-    entry.truth?.carbonAndNitrogenClosed === true);
+  const entryNumericClosures = receiptShapeValid ? entries.map(entry =>
+    ({ entry, numeric: receiptNumericClosure(entry) })) : [];
+  const ledgersValid = receiptShapeValid &&
+    entryNumericClosures.every(({ entry, numeric }) =>
+      Array.isArray(entry.guildFlows) &&
+      entry.guildFlows.length === FLOODPLAIN_SUCCESSION_GUILDS.length &&
+      new Set(entry.guildFlows.map(flow => flow.guildId)).size ===
+        FLOODPLAIN_SUCCESSION_GUILDS.length &&
+      entry.guildFlows.every(flow =>
+        FLOODPLAIN_SUCCESSION_GUILDS.includes(flow.guildId)) &&
+      numeric.valid &&
+      entry.truth?.carbonAndNitrogenClosed === true);
+  const plantMatterNumericFailures = entryNumericClosures
+    .filter(({ numeric }) => !numeric.valid).slice(0, 8)
+    .map(({ entry, numeric }) => ({
+      reachId: entry?.reachId || null,
+      residualKg: {
+        carbonKgC: entry?.closure?.carbonResidualKgC ?? null,
+        nitrogenKgN: entry?.closure?.nitrogenResidualKgN ?? null
+      },
+      declaredToleranceKg: numeric.declaredToleranceKg,
+      expectedToleranceKg: numeric.expectedToleranceKg,
+      invalidGuilds: numeric.flowChecks
+        .map((item, index) => ({ item, index }))
+        .filter(({ item }) => !item.valid)
+        .map(({ index }) => entry.guildFlows?.[index]?.guildId || null)
+    }));
   const plantMatterPairingValid = entry => {
     const transferIds = Array.isArray(entry.transferIds)
       ? entry.transferIds : [];
@@ -892,6 +1636,8 @@ function floodplainPlantMatterCheck(receipt) {
     receipt.truth?.persistentFloodplainPlantMatter === true &&
     receipt.truth?.floodplainPlantMatterEvidenceBound === true &&
     receipt.truth?.floodplainPlantMatterLedgersClosed === true &&
+    receipt.truth?.floodplainPlantMatterScaleAwareNumericClosure === true &&
+    receipt.truth?.floodplainPlantMatterMeasuredResidualsPreserved === true &&
     receipt.truth?.landEcologySubgridSenderDebited === true &&
     receipt.truth?.exactLandEcologyFloodplainPlantTransferIds === true &&
     receipt.truth?.loadedLandFloodplainPlantCarbonNitrogenClosed === true &&
@@ -914,9 +1660,11 @@ function floodplainPlantMatterCheck(receipt) {
       criteria: {
         receiptShapeValid,
         senderReceiptsValid,
+        senderNumericFailures,
         entrySchemasValid,
         successionLineageValid,
         ledgersValid,
+        plantMatterNumericFailures,
         pairedTransfersValid,
         pairedTransferFailures,
         transitionsValid,
@@ -961,6 +1709,166 @@ function floodplainPlantResourcesCheck(receipt) {
   const receiptShapeValid = Array.isArray(entries) &&
     Array.isArray(debits) && Array.isArray(returns) &&
     entries.length === debits.length && entries.length === returns.length;
+  const guildOperands = source => ({
+    supportedCarbonKgC:
+      Number(source?.live?.supportedCarbonKgC || 0) +
+      Number(source?.standingDead?.supportedCarbonKgC || 0) +
+      Number(source?.litter?.supportedCarbonKgC || 0),
+    phosphorusKgP: Number(source?.live?.phosphorusKgP || 0) +
+      Number(source?.standingDead?.phosphorusKgP || 0) +
+      Number(source?.litter?.phosphorusKgP || 0),
+    liveWaterKg: Number(source?.live?.waterKg || 0)
+  });
+  const flowNumericClosure = flow => {
+    const beforeOperands = guildOperands(flow?.before);
+    const afterOperands = guildOperands(flow?.after);
+    const carbonIdentityKgC = afterOperands.supportedCarbonKgC -
+      beforeOperands.supportedCarbonKgC -
+      Number(flow?.supportedCarbonCreditKgC || 0);
+    const phosphorusIdentityKgP = afterOperands.phosphorusKgP -
+      beforeOperands.phosphorusKgP -
+      Number(flow?.uptake?.phosphorusKgP || 0);
+    const waterIdentityKg = afterOperands.liveWaterKg -
+      beforeOperands.liveWaterKg - Number(flow?.uptake?.waterKg || 0) +
+      Number(flow?.waterReturnedToFloodplainKg || 0);
+    const expectedToleranceKg = {
+      supportedCarbonKgC: floodplainPlantResourceMassClosureToleranceKg(
+        beforeOperands.supportedCarbonKgC,
+        flow?.supportedCarbonCreditKgC,
+        afterOperands.supportedCarbonKgC),
+      phosphorusKgP: floodplainPlantResourceMassClosureToleranceKg(
+        beforeOperands.phosphorusKgP, flow?.uptake?.phosphorusKgP,
+        afterOperands.phosphorusKgP),
+      liveWaterKg: floodplainPlantResourceMassClosureToleranceKg(
+        beforeOperands.liveWaterKg, flow?.uptake?.waterKg,
+        flow?.waterReturnedToFloodplainKg,
+        afterOperands.liveWaterKg)
+    };
+    const valid =
+      same(flow?.closure?.supportedCarbonResidualKgC,
+        carbonIdentityKgC, 1e-9) &&
+      same(flow?.closure?.phosphorusResidualKgP,
+        phosphorusIdentityKgP, 1e-9) &&
+      same(flow?.closure?.liveWaterResidualKg, waterIdentityKg, 1e-9) &&
+      same(flow?.closure?.numericToleranceKg?.supportedCarbonKgC,
+        expectedToleranceKg.supportedCarbonKgC, 1e-12) &&
+      same(flow?.closure?.numericToleranceKg?.phosphorusKgP,
+        expectedToleranceKg.phosphorusKgP, 1e-12) &&
+      same(flow?.closure?.numericToleranceKg?.liveWaterKg,
+        expectedToleranceKg.liveWaterKg, 1e-12) &&
+      close(flow?.closure?.supportedCarbonResidualKgC,
+        expectedToleranceKg.supportedCarbonKgC) &&
+      close(flow?.closure?.phosphorusResidualKgP,
+        expectedToleranceKg.phosphorusKgP) &&
+      close(flow?.closure?.liveWaterResidualKg,
+        expectedToleranceKg.liveWaterKg);
+    return { valid, residualKg: {
+      supportedCarbonKgC:
+        flow?.closure?.supportedCarbonResidualKgC ?? null,
+      phosphorusKgP: flow?.closure?.phosphorusResidualKgP ?? null,
+      liveWaterKg: flow?.closure?.liveWaterResidualKg ?? null
+    }, declaredToleranceKg: flow?.closure?.numericToleranceKg || null,
+    expectedToleranceKg };
+  };
+  const receiptNumericClosure = entry => {
+    const flows = Array.isArray(entry?.guildFlows)
+      ? entry.guildFlows : [];
+    const flowChecks = flows.map(flow => flowNumericClosure(flow));
+    const carbonIdentityKgC = Number(
+      entry?.after?.total?.supportedCarbonKgC || 0) - Number(
+      entry?.before?.total?.supportedCarbonKgC || 0) -
+      flows.reduce((sum, flow) => sum + Number(
+        flow?.supportedCarbonCreditKgC || 0), 0);
+    const phosphorusIdentityKgP = Number(
+      entry?.after?.total?.phosphorusKgP || 0) - Number(
+      entry?.before?.total?.phosphorusKgP || 0) - Number(
+      entry?.transfers?.floodplainUptake?.phosphorusKgP || 0);
+    const waterIdentityKg = Number(
+      entry?.after?.total?.liveWaterKg || 0) - Number(
+      entry?.before?.total?.liveWaterKg || 0) - Number(
+      entry?.transfers?.floodplainUptake?.waterKg || 0) + Number(
+      entry?.transfers?.mortalityWaterReturnedKg || 0);
+    const expectedToleranceKg = {
+      supportedCarbonKgC: floodplainPlantResourceMassClosureToleranceKg(
+        entry?.before?.total?.supportedCarbonKgC,
+        flows.reduce((sum, flow) => sum + Number(
+          flow?.supportedCarbonCreditKgC || 0), 0),
+        entry?.after?.total?.supportedCarbonKgC),
+      phosphorusKgP: floodplainPlantResourceMassClosureToleranceKg(
+        entry?.before?.total?.phosphorusKgP,
+        entry?.transfers?.floodplainUptake?.phosphorusKgP,
+        entry?.after?.total?.phosphorusKgP),
+      liveWaterKg: floodplainPlantResourceMassClosureToleranceKg(
+        entry?.before?.total?.liveWaterKg,
+        entry?.transfers?.floodplainUptake?.waterKg,
+        entry?.transfers?.mortalityWaterReturnedKg,
+        entry?.after?.total?.liveWaterKg)
+    };
+    const residualTolerancePairs = [
+      ...flowChecks.flatMap(item => [
+        [Math.abs(Number(item.residualKg.supportedCarbonKgC)),
+          item.expectedToleranceKg.supportedCarbonKgC],
+        [Math.abs(Number(item.residualKg.phosphorusKgP)),
+          item.expectedToleranceKg.phosphorusKgP],
+        [Math.abs(Number(item.residualKg.liveWaterKg)),
+          item.expectedToleranceKg.liveWaterKg]
+      ]),
+      [Math.abs(Number(entry?.closure?.supportedCarbonResidualKgC)),
+        expectedToleranceKg.supportedCarbonKgC],
+      [Math.abs(Number(entry?.closure?.phosphorusResidualKgP)),
+        expectedToleranceKg.phosphorusKgP],
+      [Math.abs(Number(entry?.closure?.liveWaterResidualKg)),
+        expectedToleranceKg.liveWaterKg]
+    ];
+    const expectedMaximumResidualKg = Math.max(0,
+      ...residualTolerancePairs.map(([residual]) => residual));
+    const expectedMaximumToleranceUtilization = Math.max(0,
+      ...residualTolerancePairs.map(([residual, tolerance]) =>
+        tolerance > 0 ? residual / tolerance : Infinity));
+    const valid =
+      entry?.closure?.policy?.schema ===
+        FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_POLICY_SCHEMA &&
+      entry.closure.policy.absoluteFloorKg ===
+        FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG &&
+      entry.closure.policy.ulpFactor ===
+        FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ULP_FACTOR &&
+      entry.closure.policy.recordedOperandScale === true &&
+      entry.closure.policy.perMaterialChannel === true &&
+      entry.closure.policy.arbitraryToleranceAuthority === false &&
+      flowChecks.every(item => item.valid) &&
+      same(entry?.closure?.supportedCarbonResidualKgC,
+        carbonIdentityKgC, 1e-9) &&
+      same(entry?.closure?.phosphorusResidualKgP,
+        phosphorusIdentityKgP, 1e-9) &&
+      same(entry?.closure?.liveWaterResidualKg, waterIdentityKg, 1e-9) &&
+      same(entry?.closure?.numericToleranceKg?.supportedCarbonKgC,
+        expectedToleranceKg.supportedCarbonKgC, 1e-12) &&
+      same(entry?.closure?.numericToleranceKg?.phosphorusKgP,
+        expectedToleranceKg.phosphorusKgP, 1e-12) &&
+      same(entry?.closure?.numericToleranceKg?.liveWaterKg,
+        expectedToleranceKg.liveWaterKg, 1e-12) &&
+      close(entry?.closure?.supportedCarbonResidualKgC,
+        expectedToleranceKg.supportedCarbonKgC) &&
+      close(entry?.closure?.phosphorusResidualKgP,
+        expectedToleranceKg.phosphorusKgP) &&
+      close(entry?.closure?.liveWaterResidualKg,
+        expectedToleranceKg.liveWaterKg) &&
+      same(entry?.closure?.maximumResidualKg,
+        expectedMaximumResidualKg, 1e-9) &&
+      same(entry?.closure?.maximumToleranceUtilization,
+        expectedMaximumToleranceUtilization, 1e-9) &&
+      entry?.truth?.scaleAwareFloatingPointClosure === true &&
+      entry?.truth?.perMaterialChannelNumericBounds === true &&
+      entry?.truth?.measuredResidualsPreserved === true &&
+      entry?.truth?.fixedAbsoluteToleranceOnly === false;
+    return { valid, flowChecks, residualKg: {
+      supportedCarbonKgC:
+        entry?.closure?.supportedCarbonResidualKgC ?? null,
+      phosphorusKgP: entry?.closure?.phosphorusResidualKgP ?? null,
+      liveWaterKg: entry?.closure?.liveWaterResidualKg ?? null
+    }, declaredToleranceKg: entry?.closure?.numericToleranceKg || null,
+    expectedToleranceKg };
+  };
   const senderReceiptsValid = receiptShapeValid && debits.every(entry =>
     entry?.schema === FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA &&
     typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
@@ -1007,20 +1915,27 @@ function floodplainPlantResourcesCheck(receipt) {
       returned?.digest === entry.floodplainWaterReturnReceiptDigest &&
       entry.truth?.plantMatterEvidenceBound === true;
   });
-  const ledgersValid = receiptShapeValid && entries.every(entry =>
+  const numericChecks = receiptShapeValid
+    ? entries.map(entry => ({ entry, ...receiptNumericClosure(entry) })) : [];
+  const resourceNumericFailures = numericChecks.filter(item => !item.valid)
+    .slice(0, 8).map(item => ({
+      reachId: item.entry?.reachId || null,
+      residualKg: item.residualKg,
+      declaredToleranceKg: item.declaredToleranceKg,
+      expectedToleranceKg: item.expectedToleranceKg,
+      failedGuilds: item.flowChecks.map((flow, index) => ({
+        guildId: item.entry?.guildFlows?.[index]?.guildId || null,
+        ...flow
+      })).filter(flow => !flow.valid).slice(0, 5)
+    }));
+  const ledgersValid = receiptShapeValid && entries.every((entry, index) =>
     Array.isArray(entry.guildFlows) &&
     entry.guildFlows.length === FLOODPLAIN_SUCCESSION_GUILDS.length &&
     new Set(entry.guildFlows.map(flow => flow.guildId)).size ===
       FLOODPLAIN_SUCCESSION_GUILDS.length &&
     entry.guildFlows.every(flow =>
-      FLOODPLAIN_SUCCESSION_GUILDS.includes(flow.guildId) &&
-      close(flow.closure?.supportedCarbonResidualKgC, 1e-7) &&
-      close(flow.closure?.phosphorusResidualKgP, 1e-7) &&
-      close(flow.closure?.liveWaterResidualKg, 1e-7)) &&
-    close(entry.closure?.maximumResidualKg, 1e-7) &&
-    close(entry.closure?.supportedCarbonResidualKgC, 1e-7) &&
-    close(entry.closure?.phosphorusResidualKgP, 1e-7) &&
-    close(entry.closure?.liveWaterResidualKg, 1e-7) &&
+      FLOODPLAIN_SUCCESSION_GUILDS.includes(flow.guildId)) &&
+    numericChecks[index]?.valid === true &&
     entry.truth?.resourceLedgersClosed === true);
   const pairingValid = receiptShapeValid && entries.every(entry => {
     const debit = debitByReach.get(entry.reachId);
@@ -1112,7 +2027,8 @@ function floodplainPlantResourcesCheck(receipt) {
         ? entries.length : null,
       criteria: { receiptShapeValid, senderReceiptsValid,
         receiverReceiptsValid, entrySchemasValid, lineageValid,
-        ledgersValid, pairingValid, referencesBounded, transitionsValid,
+        ledgersValid, resourceNumericFailures, pairingValid,
+        referencesBounded, transitionsValid,
         conservationValid, basinTruthValid },
       conservation: {
         plantResourceWaterResidualKg: receipt.conservation
@@ -1189,7 +2105,104 @@ function floodplainDecompositionCheck(receipt) {
       entry.truth?.supportedCarbonIsNonOwningReference === true &&
       entry.truth?.phosphorusClosed === true &&
       entry.truth?.decompositionCreatesResources === false);
-  const receiversValid = receiptShapeValid && credits.every(entry =>
+  const receiverNumericClosure = entry => {
+    const identity = {
+      carbonKgC: Number(entry?.after?.carbonKgC || 0) -
+        Number(entry?.before?.carbonKgC || 0) -
+        Number(entry?.credited?.carbonKgC || 0),
+      nitrogenKgN: Number(entry?.after?.nitrogenKgN || 0) -
+        Number(entry?.before?.nitrogenKgN || 0) -
+        Number(entry?.credited?.nitrogenKgN || 0),
+      ammoniumNitrogenKgN: Number(
+        entry?.afterNitrogenSpecies?.ammoniumNitrogenKgN || 0) - Number(
+        entry?.beforeNitrogenSpecies?.ammoniumNitrogenKgN || 0) - Number(
+        entry?.credited?.nitrogenKgN || 0),
+      nitrateNitrogenKgN: Number(
+        entry?.afterNitrogenSpecies?.nitrateNitrogenKgN || 0) - Number(
+        entry?.beforeNitrogenSpecies?.nitrateNitrogenKgN || 0),
+      phosphorusKgP: Number(entry?.after?.phosphorusKgP || 0) -
+        Number(entry?.before?.phosphorusKgP || 0) -
+        Number(entry?.credited?.phosphorusKgP || 0)
+    };
+    const expectedToleranceKg = {
+      carbonKgC: floodplainDetritalReturnMassClosureToleranceKg(
+        'carbonKgC', entry?.before?.carbonKgC,
+        entry?.credited?.carbonKgC, entry?.after?.carbonKgC),
+      nitrogenKgN: floodplainDetritalReturnMassClosureToleranceKg(
+        'nitrogenKgN', entry?.before?.nitrogenKgN,
+        entry?.credited?.nitrogenKgN, entry?.after?.nitrogenKgN),
+      ammoniumNitrogenKgN:
+        floodplainDetritalReturnMassClosureToleranceKg(
+          'ammoniumNitrogenKgN',
+          entry?.beforeNitrogenSpecies?.ammoniumNitrogenKgN,
+          entry?.credited?.nitrogenKgN,
+          entry?.afterNitrogenSpecies?.ammoniumNitrogenKgN),
+      nitrateNitrogenKgN:
+        floodplainDetritalReturnMassClosureToleranceKg(
+          'nitrateNitrogenKgN',
+          entry?.beforeNitrogenSpecies?.nitrateNitrogenKgN,
+          entry?.afterNitrogenSpecies?.nitrateNitrogenKgN),
+      phosphorusKgP: floodplainDetritalReturnMassClosureToleranceKg(
+        'phosphorusKgP', entry?.before?.phosphorusKgP,
+        entry?.credited?.phosphorusKgP, entry?.after?.phosphorusKgP)
+    };
+    const declaredResidualKg = {
+      carbonKgC: entry?.closure?.carbonResidualKgC,
+      nitrogenKgN: entry?.closure?.nitrogenResidualKgN,
+      ammoniumNitrogenKgN:
+        entry?.closure?.ammoniumNitrogenResidualKgN,
+      nitrateNitrogenKgN: entry?.closure?.nitrateNitrogenResidualKgN,
+      phosphorusKgP: entry?.closure?.phosphorusResidualKgP
+    };
+    const residualTolerancePairs = Object.keys(expectedToleranceKg).map(
+      channel => [Math.abs(Number(declaredResidualKg[channel])),
+        expectedToleranceKg[channel]]);
+    const expectedMaximumResidualKg = Math.max(0,
+      ...residualTolerancePairs.map(([residual]) => residual));
+    const expectedMaximumToleranceUtilization = Math.max(0,
+      ...residualTolerancePairs.map(([residual, tolerance]) =>
+        residual / tolerance));
+    const policyFloorsValid = Object.entries(
+      FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ABSOLUTE_FLOORS_KG)
+      .every(([channel, floorKg]) => same(
+        entry?.closure?.policy?.absoluteFloorsKg?.[channel], floorKg));
+    const residualsMatchIdentities = [
+      ['carbonKgC', 'carbonResidualKgC'],
+      ['nitrogenKgN', 'nitrogenResidualKgN'],
+      ['ammoniumNitrogenKgN', 'ammoniumNitrogenResidualKgN'],
+      ['nitrateNitrogenKgN', 'nitrateNitrogenResidualKgN'],
+      ['phosphorusKgP', 'phosphorusResidualKgP']
+    ].every(([channel, receiptKey]) => same(
+      entry?.closure?.[receiptKey], identity[channel], 1e-12));
+    const tolerancesExact = Object.entries(expectedToleranceKg).every(
+      ([channel, toleranceKg]) => same(
+        entry?.closure?.numericToleranceKg?.[channel], toleranceKg, 1e-12));
+    const valid = entry?.closure?.policy?.schema ===
+        FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA &&
+      policyFloorsValid && entry.closure.policy.ulpFactor ===
+        FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ULP_FACTOR &&
+      entry.closure.policy.recordedOperandScale === true &&
+      entry.closure.policy.perMaterialChannel === true &&
+      entry.closure.policy.arbitraryToleranceAuthority === false &&
+      residualsMatchIdentities && tolerancesExact &&
+      residualTolerancePairs.every(([residual, tolerance]) =>
+        residual <= tolerance) &&
+      same(entry?.closure?.maximumResidualKg,
+        expectedMaximumResidualKg, 1e-9) &&
+      same(entry?.closure?.maximumToleranceUtilization,
+        expectedMaximumToleranceUtilization, 1e-9) &&
+      entry?.truth?.scaleAwareFloatingPointClosure === true &&
+      entry?.truth?.perMaterialChannelNumericBounds === true &&
+      entry?.truth?.measuredResidualsPreserved === true &&
+      entry?.truth?.fixedAbsoluteToleranceOnly === false;
+    return { valid, identity, declaredResidualKg,
+      declaredToleranceKg: entry?.closure?.numericToleranceKg || null,
+      expectedToleranceKg };
+  };
+  const receiverNumericClosures = receiptShapeValid ? credits.map(entry =>
+    ({ entry, numeric: receiverNumericClosure(entry) })) : [];
+  const receiversValid = receiptShapeValid &&
+    receiverNumericClosures.every(({ entry, numeric }) =>
     entry?.schema === FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA &&
     typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
     Array.isArray(entry.allocations) &&
@@ -1197,10 +2210,7 @@ function floodplainDecompositionCheck(receipt) {
       entry.allocations.length && entry.allocations.every(allocation =>
       FLOODPLAIN_SUCCESSION_GUILDS.includes(allocation.guildId) &&
       ['standingDead', 'litter'].includes(allocation.pool)) &&
-    close(entry.closure?.carbonResidualKgC, 1e-7) &&
-    close(entry.closure?.nitrogenResidualKgN, 1e-7) &&
-    close(entry.closure?.ammoniumNitrogenResidualKgN, 1e-7) &&
-    close(entry.closure?.phosphorusResidualKgP, 1e-9) &&
+    numeric.valid &&
     entry.truth?.persistentFloodplainChemistryReceiverCredited === true &&
     entry.truth?.detritalNitrogenCreditedToAmmoniumPool === true &&
     entry.truth?.nitratePoolUnchanged === true &&
@@ -1209,6 +2219,15 @@ function floodplainDecompositionCheck(receipt) {
     entry.truth?.soilReceiverModeled === false &&
     entry.truth?.atmosphereRespirationModeled === false &&
     entry.truth?.oxygenConsumptionModeled === false);
+  const receiverNumericFailures = receiverNumericClosures
+    .filter(({ numeric }) => !numeric.valid).slice(0, 8)
+    .map(({ entry, numeric }) => ({
+      reachId: entry?.reachId || null,
+      identityKg: numeric.identity,
+      declaredResidualKg: numeric.declaredResidualKg,
+      declaredToleranceKg: numeric.declaredToleranceKg,
+      expectedToleranceKg: numeric.expectedToleranceKg
+    }));
   const entrySchemasValid = receiptShapeValid && entries.every(entry =>
     entry?.schema === FLOODPLAIN_DECOMPOSITION_RECEIPT_SCHEMA &&
     typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
@@ -1294,6 +2313,11 @@ function floodplainDecompositionCheck(receipt) {
     receipt.truth?.persistentFloodplainDecomposition === true &&
     receipt.truth?.floodplainDecompositionEvidenceBound === true &&
     receipt.truth?.floodplainDecompositionSendersAndReceiverClosed === true &&
+    receipt.truth?.floodplainDetritalReturnScaleAwareNumericClosure === true &&
+    receipt.truth?.floodplainDetritalReturnPerMaterialChannelNumericBounds ===
+      true &&
+    receipt.truth?.floodplainDetritalReturnMeasuredResidualsPreserved ===
+      true &&
     receipt.truth?.exactFloodplainDecompositionTransferIds === true &&
     receipt.truth?.floodplainDecompositionLedgersClosed === true &&
     receipt.truth?.onlyResourceBackedFloodplainDetritusDecomposes === true &&
@@ -1316,10 +2340,13 @@ function floodplainDecompositionCheck(receipt) {
       expectedResourceDebitSchema:
         FLOODPLAIN_PLANT_DETRITUS_RESOURCE_DEBIT_SCHEMA,
       expectedReceiverSchema: FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
+      expectedReceiverMassClosurePolicySchema:
+        FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA,
       decompositionReceiptCount: Array.isArray(entries)
         ? entries.length : null,
       criteria: { receiptShapeValid, matterSendersValid,
-        resourceSendersValid, receiversValid, entrySchemasValid,
+        resourceSendersValid, receiversValid, receiverNumericFailures,
+        entrySchemasValid,
         lineageValid, pairingValid, transitionsValid, ledgersValid,
         conservationValid, basinTruthValid },
       conservation: {
@@ -1334,6 +2361,365 @@ function floodplainDecompositionCheck(receipt) {
       },
       receiptDigest: receipt.digest || null
     });
+}
+
+const numericRound = (value, digits = 12) =>
+  Number(Number(value).toFixed(digits));
+
+function atmosphereFloodplainGasNumericClosure(entry) {
+  const operands = entry?.conservation?.operandsKg || {};
+  const carbon = operands.carbon || {};
+  const oxygen = operands.oxygen || {};
+  const identities = {
+    carbonResidualKgC: numericRound(Number(carbon.afterKgC) -
+      Number(carbon.beforeKgC) - Number(carbon.creditKgC) +
+      Number(carbon.debitKgC)),
+    oxygenResidualKgO2: numericRound(Number(oxygen.beforeKgO2) -
+      Number(oxygen.afterKgO2) - Number(oxygen.debitKgO2))
+  };
+  const toleranceInputs = {
+    carbonResidualKgC: ['carbonKgC', carbon.beforeKgC,
+      carbon.creditKgC, carbon.debitKgC, carbon.afterKgC],
+    oxygenResidualKgO2: ['oxygenKgO2', oxygen.beforeKgO2,
+      oxygen.debitKgO2, oxygen.afterKgO2]
+  };
+  const expectedToleranceKg = Object.fromEntries(Object.entries(
+    toleranceInputs).map(([key, [channel, ...values]]) => {
+      const magnitudeKg = Math.max(1, ...values.map(value =>
+        Math.abs(Number(value))));
+      return [key, numericRound(Math.max(
+        ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG[
+          channel],
+        magnitudeKg * Number.EPSILON *
+          ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ULP_FACTOR))];
+    }));
+  const declaredResidualKg = Object.fromEntries(Object.keys(identities)
+    .map(key => [key, entry?.conservation?.[key]]));
+  const declaredToleranceKg = entry?.conservation?.numericToleranceKg || {};
+  const residualTolerancePairs = Object.keys(identities).map(key => [
+    Math.abs(Number(identities[key])), expectedToleranceKg[key]
+  ]);
+  const expectedMaximumResidualKg = Math.max(0,
+    ...residualTolerancePairs.map(([residual]) => residual));
+  const expectedMaximumToleranceUtilization = Math.max(0,
+    ...residualTolerancePairs.map(([residual, tolerance]) =>
+      tolerance > 0 ? residual / tolerance : Infinity));
+  const policyFloors = entry?.conservation?.policy?.absoluteFloorsKg || {};
+  const expectedFloorEntries = Object.entries(
+    ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG);
+  const policyFloorsValid = Object.keys(policyFloors).length ===
+      expectedFloorEntries.length && expectedFloorEntries.every(
+      ([channel, floor]) => same(policyFloors[channel], floor, 1e-18));
+  const operandsFinite = [carbon.beforeKgC, carbon.creditKgC,
+    carbon.debitKgC, carbon.afterKgC, oxygen.beforeKgO2,
+    oxygen.debitKgO2, oxygen.afterKgO2].every(finite);
+  const residualsMatch = Object.keys(identities).every(key =>
+    same(declaredResidualKg[key], identities[key], 1e-12));
+  const tolerancesExact = Object.keys(expectedToleranceKg).length ===
+      Object.keys(declaredToleranceKg).length &&
+    Object.keys(expectedToleranceKg).every(key =>
+      same(declaredToleranceKg[key], expectedToleranceKg[key], 1e-12));
+  const valid = operandsFinite &&
+    entry?.conservation?.policy?.schema ===
+      ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA &&
+    policyFloorsValid && entry.conservation.policy.ulpFactor ===
+      ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ULP_FACTOR &&
+    entry.conservation.policy.recordedOperandScale === true &&
+    entry.conservation.policy.perIdentity === true &&
+    entry.conservation.policy.arbitraryToleranceAuthority === false &&
+    residualsMatch && tolerancesExact &&
+    residualTolerancePairs.every(([residual, tolerance]) =>
+      finite(residual) && residual <= tolerance) &&
+    same(entry?.conservation?.maximumResidualKg,
+      expectedMaximumResidualKg, 1e-9) &&
+    same(entry?.conservation?.maximumToleranceUtilization,
+      expectedMaximumToleranceUtilization, 1e-9) &&
+    entry?.truth?.carbonAndOxygenClosed === true &&
+    entry?.truth?.scaleAwareFloatingPointClosure === true &&
+    entry?.truth?.perIdentityNumericBounds === true &&
+    entry?.truth?.measuredResidualsPreserved === true &&
+    entry?.truth?.fixedAbsoluteToleranceOnly === false;
+  return { valid, identities, declaredResidualKg,
+    declaredToleranceKg, expectedToleranceKg };
+}
+
+function floodplainReactionNumericClosure(entry, kind) {
+  const before = entry?.before || {};
+  const after = entry?.after || {};
+  const reaction = entry?.reaction || {};
+  const exchange = entry?.exchange || {};
+  let identities = {};
+  let toleranceInputs = {};
+  if (kind === 'aerobic') {
+    const oxygenRatio = 32 / 12;
+    identities = {
+      dissolvedOrganicCarbonDebitResidualKgC: numericRound(
+        Number(before.dissolvedOrganicCarbonKgC) -
+        Number(after.dissolvedOrganicCarbonKgC) -
+        Number(reaction.dissolvedOrganicCarbonConsumedKgC)),
+      dissolvedInorganicCarbonCreditResidualKgC: numericRound(
+        Number(after.dissolvedInorganicCarbonKgC) -
+        Number(before.dissolvedInorganicCarbonKgC) -
+        Number(reaction.dissolvedInorganicCarbonProducedKgC)),
+      carbonResidualKgC: numericRound(
+        Number(after.dissolvedOrganicCarbonKgC) +
+        Number(after.dissolvedInorganicCarbonKgC) -
+        Number(before.dissolvedOrganicCarbonKgC) -
+        Number(before.dissolvedInorganicCarbonKgC)),
+      dissolvedOxygenDebitResidualKgO2: numericRound(
+        Number(before.dissolvedOxygenKgO2) -
+        Number(after.dissolvedOxygenKgO2) -
+        Number(reaction.dissolvedOxygenConsumedKgO2)),
+      stoichiometricOxygenResidualKgO2: numericRound(
+        Number(reaction.dissolvedOxygenConsumedKgO2) -
+        Number(reaction.dissolvedOrganicCarbonConsumedKgC) * oxygenRatio)
+    };
+    toleranceInputs = {
+      dissolvedOrganicCarbonDebitResidualKgC: ['carbonKgC',
+        before.dissolvedOrganicCarbonKgC,
+        after.dissolvedOrganicCarbonKgC,
+        reaction.dissolvedOrganicCarbonConsumedKgC],
+      dissolvedInorganicCarbonCreditResidualKgC: ['carbonKgC',
+        after.dissolvedInorganicCarbonKgC,
+        before.dissolvedInorganicCarbonKgC,
+        reaction.dissolvedInorganicCarbonProducedKgC],
+      carbonResidualKgC: ['carbonKgC',
+        after.dissolvedOrganicCarbonKgC,
+        after.dissolvedInorganicCarbonKgC,
+        before.dissolvedOrganicCarbonKgC,
+        before.dissolvedInorganicCarbonKgC],
+      dissolvedOxygenDebitResidualKgO2: ['oxygenKgO2',
+        before.dissolvedOxygenKgO2, after.dissolvedOxygenKgO2,
+        reaction.dissolvedOxygenConsumedKgO2],
+      stoichiometricOxygenResidualKgO2: ['oxygenKgO2',
+        reaction.dissolvedOxygenConsumedKgO2,
+        reaction.dissolvedOrganicCarbonConsumedKgC,
+        Number(reaction.dissolvedOrganicCarbonConsumedKgC) * oxygenRatio]
+    };
+  } else if (kind === 'denitrification') {
+    const nitrogenRatio = 14 / 15;
+    const alkalinityRatio = 3.57;
+    identities = {
+      dissolvedOrganicCarbonDebitResidualKgC: numericRound(
+        Number(before.dissolvedOrganicCarbonKgC) -
+        Number(after.dissolvedOrganicCarbonKgC) -
+        Number(reaction.dissolvedOrganicCarbonConsumedKgC)),
+      dissolvedInorganicCarbonCreditResidualKgC: numericRound(
+        Number(after.dissolvedInorganicCarbonKgC) -
+        Number(before.dissolvedInorganicCarbonKgC) -
+        Number(reaction.dissolvedInorganicCarbonProducedKgC)),
+      carbonResidualKgC: numericRound(
+        Number(after.dissolvedOrganicCarbonKgC) +
+        Number(after.dissolvedInorganicCarbonKgC) -
+        Number(before.dissolvedOrganicCarbonKgC) -
+        Number(before.dissolvedInorganicCarbonKgC)),
+      dissolvedNitrateNitrogenDebitResidualKgN: numericRound(
+        Number(before.dissolvedNitrateNitrogenKgN) -
+        Number(after.dissolvedNitrateNitrogenKgN) -
+        Number(reaction.dissolvedNitrateNitrogenConsumedKgN)),
+      dissolvedAmmoniumNitrogenResidualKgN: numericRound(
+        Number(after.dissolvedAmmoniumNitrogenKgN) -
+        Number(before.dissolvedAmmoniumNitrogenKgN)),
+      dissolvedInorganicNitrogenDebitResidualKgN: numericRound(
+        Number(before.dissolvedInorganicNitrogenKgN) -
+        Number(after.dissolvedInorganicNitrogenKgN) -
+        Number(reaction.dissolvedNitrateNitrogenConsumedKgN)),
+      nitrogenGasBoundaryResidualKgN: numericRound(
+        Number(reaction.dissolvedNitrateNitrogenConsumedKgN) -
+        Number(reaction.nitrogenGasProducedKgN)),
+      nitrogenResidualKgN: numericRound(
+        Number(before.dissolvedInorganicNitrogenKgN) -
+        Number(after.dissolvedInorganicNitrogenKgN) -
+        Number(reaction.nitrogenGasProducedKgN)),
+      stoichiometricNitrogenResidualKgN: numericRound(
+        Number(reaction.dissolvedNitrateNitrogenConsumedKgN) -
+        Number(reaction.dissolvedOrganicCarbonConsumedKgC) * nitrogenRatio),
+      alkalinityCreditResidualKgCaCO3Eq: numericRound(
+        Number(after.alkalinityKgCaCO3Eq) -
+        Number(before.alkalinityKgCaCO3Eq) -
+        Number(reaction.alkalinityGeneratedKgCaCO3Eq)),
+      stoichiometricAlkalinityResidualKgCaCO3Eq: numericRound(
+        Number(reaction.alkalinityGeneratedKgCaCO3Eq) -
+        Number(reaction.dissolvedNitrateNitrogenConsumedKgN) *
+          alkalinityRatio)
+    };
+    toleranceInputs = {
+      dissolvedOrganicCarbonDebitResidualKgC: ['carbonKgC',
+        before.dissolvedOrganicCarbonKgC,
+        after.dissolvedOrganicCarbonKgC,
+        reaction.dissolvedOrganicCarbonConsumedKgC],
+      dissolvedInorganicCarbonCreditResidualKgC: ['carbonKgC',
+        after.dissolvedInorganicCarbonKgC,
+        before.dissolvedInorganicCarbonKgC,
+        reaction.dissolvedInorganicCarbonProducedKgC],
+      carbonResidualKgC: ['carbonKgC',
+        after.dissolvedOrganicCarbonKgC,
+        after.dissolvedInorganicCarbonKgC,
+        before.dissolvedOrganicCarbonKgC,
+        before.dissolvedInorganicCarbonKgC],
+      dissolvedNitrateNitrogenDebitResidualKgN: ['nitrogenKgN',
+        before.dissolvedNitrateNitrogenKgN,
+        after.dissolvedNitrateNitrogenKgN,
+        reaction.dissolvedNitrateNitrogenConsumedKgN],
+      dissolvedAmmoniumNitrogenResidualKgN: ['ammoniumNitrogenKgN',
+        after.dissolvedAmmoniumNitrogenKgN,
+        before.dissolvedAmmoniumNitrogenKgN],
+      dissolvedInorganicNitrogenDebitResidualKgN: ['nitrogenKgN',
+        before.dissolvedInorganicNitrogenKgN,
+        after.dissolvedInorganicNitrogenKgN,
+        reaction.dissolvedNitrateNitrogenConsumedKgN],
+      nitrogenGasBoundaryResidualKgN: ['nitrogenKgN',
+        reaction.dissolvedNitrateNitrogenConsumedKgN,
+        reaction.nitrogenGasProducedKgN],
+      nitrogenResidualKgN: ['nitrogenKgN',
+        before.dissolvedInorganicNitrogenKgN,
+        after.dissolvedInorganicNitrogenKgN,
+        reaction.nitrogenGasProducedKgN],
+      stoichiometricNitrogenResidualKgN: ['nitrogenKgN',
+        reaction.dissolvedNitrateNitrogenConsumedKgN,
+        reaction.dissolvedOrganicCarbonConsumedKgC,
+        Number(reaction.dissolvedOrganicCarbonConsumedKgC) * nitrogenRatio],
+      alkalinityCreditResidualKgCaCO3Eq: ['alkalinityKgCaCO3Eq',
+        after.alkalinityKgCaCO3Eq, before.alkalinityKgCaCO3Eq,
+        reaction.alkalinityGeneratedKgCaCO3Eq],
+      stoichiometricAlkalinityResidualKgCaCO3Eq:
+        ['alkalinityKgCaCO3Eq',
+          reaction.alkalinityGeneratedKgCaCO3Eq,
+          reaction.dissolvedNitrateNitrogenConsumedKgN,
+          Number(reaction.dissolvedNitrateNitrogenConsumedKgN) *
+            alkalinityRatio]
+    };
+  } else if (kind === 'nitrification') {
+    const oxygenRatio = 4.57;
+    const alkalinityRatio = 7.14;
+    identities = {
+      dissolvedAmmoniumNitrogenDebitResidualKgN: numericRound(
+        Number(before.dissolvedAmmoniumNitrogenKgN) -
+        Number(after.dissolvedAmmoniumNitrogenKgN) -
+        Number(reaction.dissolvedAmmoniumNitrogenConsumedKgN)),
+      dissolvedNitrateNitrogenCreditResidualKgN: numericRound(
+        Number(after.dissolvedNitrateNitrogenKgN) -
+        Number(before.dissolvedNitrateNitrogenKgN) -
+        Number(reaction.dissolvedNitrateNitrogenProducedKgN)),
+      dissolvedInorganicNitrogenResidualKgN: numericRound(
+        Number(after.dissolvedInorganicNitrogenKgN) -
+        Number(before.dissolvedInorganicNitrogenKgN)),
+      dissolvedOxygenDebitResidualKgO2: numericRound(
+        Number(before.dissolvedOxygenKgO2) -
+        Number(after.dissolvedOxygenKgO2) -
+        Number(reaction.dissolvedOxygenConsumedKgO2)),
+      stoichiometricOxygenResidualKgO2: numericRound(
+        Number(reaction.dissolvedOxygenConsumedKgO2) -
+        Number(reaction.dissolvedAmmoniumNitrogenConsumedKgN) *
+          oxygenRatio),
+      alkalinityDebitResidualKgCaCO3Eq: numericRound(
+        Number(before.alkalinityKgCaCO3Eq) -
+        Number(after.alkalinityKgCaCO3Eq) -
+        Number(reaction.alkalinityDemandKgCaCO3)),
+      stoichiometricAlkalinityResidualKgCaCO3Eq: numericRound(
+        Number(reaction.alkalinityDemandKgCaCO3) -
+        Number(reaction.dissolvedAmmoniumNitrogenConsumedKgN) *
+          alkalinityRatio)
+    };
+    toleranceInputs = {
+      dissolvedAmmoniumNitrogenDebitResidualKgN: ['nitrogenKgN',
+        before.dissolvedAmmoniumNitrogenKgN,
+        after.dissolvedAmmoniumNitrogenKgN,
+        reaction.dissolvedAmmoniumNitrogenConsumedKgN],
+      dissolvedNitrateNitrogenCreditResidualKgN: ['nitrogenKgN',
+        after.dissolvedNitrateNitrogenKgN,
+        before.dissolvedNitrateNitrogenKgN,
+        reaction.dissolvedNitrateNitrogenProducedKgN],
+      dissolvedInorganicNitrogenResidualKgN: ['nitrogenKgN',
+        after.dissolvedInorganicNitrogenKgN,
+        before.dissolvedInorganicNitrogenKgN],
+      dissolvedOxygenDebitResidualKgO2: ['oxygenKgO2',
+        before.dissolvedOxygenKgO2, after.dissolvedOxygenKgO2,
+        reaction.dissolvedOxygenConsumedKgO2],
+      stoichiometricOxygenResidualKgO2: ['oxygenKgO2',
+        reaction.dissolvedOxygenConsumedKgO2,
+        reaction.dissolvedAmmoniumNitrogenConsumedKgN,
+        Number(reaction.dissolvedAmmoniumNitrogenConsumedKgN) *
+          oxygenRatio],
+      alkalinityDebitResidualKgCaCO3Eq: ['alkalinityKgCaCO3Eq',
+        before.alkalinityKgCaCO3Eq, after.alkalinityKgCaCO3Eq,
+        reaction.alkalinityDemandKgCaCO3],
+      stoichiometricAlkalinityResidualKgCaCO3Eq:
+        ['alkalinityKgCaCO3Eq', reaction.alkalinityDemandKgCaCO3,
+          reaction.dissolvedAmmoniumNitrogenConsumedKgN,
+          Number(reaction.dissolvedAmmoniumNitrogenConsumedKgN) *
+            alkalinityRatio]
+    };
+  } else if (kind === 'gas-exchange') {
+    identities = {
+      carbonTransferResidualKgC: numericRound(
+        Number(after.dissolvedInorganicCarbonKgC) -
+        Number(before.dissolvedInorganicCarbonKgC) +
+        Number(exchange.carbonToAtmosphereKgC) -
+        Number(exchange.carbonToFloodplainKgC)),
+      oxygenTransferResidualKgO2: numericRound(
+        Number(after.dissolvedOxygenKgO2) -
+        Number(before.dissolvedOxygenKgO2) -
+        Number(exchange.oxygenToFloodplainKgO2))
+    };
+    toleranceInputs = {
+      carbonTransferResidualKgC: ['carbonKgC',
+        after.dissolvedInorganicCarbonKgC,
+        before.dissolvedInorganicCarbonKgC,
+        exchange.carbonToAtmosphereKgC,
+        exchange.carbonToFloodplainKgC],
+      oxygenTransferResidualKgO2: ['oxygenKgO2',
+        after.dissolvedOxygenKgO2, before.dissolvedOxygenKgO2,
+        exchange.oxygenToFloodplainKgO2]
+    };
+  }
+  const expectedToleranceKg = Object.fromEntries(
+    Object.entries(toleranceInputs).map(([key, [channel, ...values]]) =>
+      [key, floodplainReactionMassClosureToleranceKg(channel, ...values)]));
+  const declaredResidualKg = Object.fromEntries(Object.keys(identities)
+    .map(key => [key, entry?.closure?.[key]]));
+  const declaredToleranceKg = entry?.closure?.numericToleranceKg || {};
+  const residualTolerancePairs = Object.keys(identities).map(key => [
+    Math.abs(Number(identities[key])), expectedToleranceKg[key]
+  ]);
+  const expectedMaximumResidualKg = Math.max(0,
+    ...residualTolerancePairs.map(([residual]) => residual));
+  const expectedMaximumToleranceUtilization = Math.max(0,
+    ...residualTolerancePairs.map(([residual, tolerance]) =>
+      tolerance > 0 ? residual / tolerance : Infinity));
+  const policyFloors = entry?.closure?.policy?.absoluteFloorsKg || {};
+  const expectedFloorEntries = Object.entries(
+    FLOODPLAIN_REACTION_MASS_CLOSURE_ABSOLUTE_FLOORS_KG);
+  const policyFloorsValid = Object.keys(policyFloors).length ===
+      expectedFloorEntries.length && expectedFloorEntries.every(
+      ([channel, floor]) => same(policyFloors[channel], floor, 1e-18));
+  const residualsMatch = Object.keys(identities).every(key =>
+    same(declaredResidualKg[key], identities[key], 1e-12));
+  const tolerancesExact = Object.keys(expectedToleranceKg).length ===
+      Object.keys(declaredToleranceKg).length &&
+    Object.keys(expectedToleranceKg).every(key =>
+      same(declaredToleranceKg[key], expectedToleranceKg[key], 1e-12));
+  const valid = Object.keys(identities).length > 0 &&
+    entry?.closure?.policy?.schema ===
+      FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA &&
+    policyFloorsValid && entry.closure.policy.ulpFactor ===
+      FLOODPLAIN_REACTION_MASS_CLOSURE_ULP_FACTOR &&
+    entry.closure.policy.recordedOperandScale === true &&
+    entry.closure.policy.perIdentity === true &&
+    entry.closure.policy.arbitraryToleranceAuthority === false &&
+    residualsMatch && tolerancesExact &&
+    residualTolerancePairs.every(([residual, tolerance]) =>
+      finite(residual) && residual <= tolerance) &&
+    same(entry?.closure?.maximumResidualKg,
+      expectedMaximumResidualKg, 1e-9) &&
+    same(entry?.closure?.maximumToleranceUtilization,
+      expectedMaximumToleranceUtilization, 1e-9) &&
+    entry?.truth?.scaleAwareFloatingPointClosure === true &&
+    entry?.truth?.perIdentityNumericBounds === true &&
+    entry?.truth?.measuredResidualsPreserved === true &&
+    entry?.truth?.fixedAbsoluteToleranceOnly === false;
+  return { valid, identities, declaredResidualKg,
+    declaredToleranceKg, expectedToleranceKg };
 }
 
 function floodplainRespirationCheck(receipt) {
@@ -1356,14 +2742,14 @@ function floodplainRespirationCheck(receipt) {
     Array.isArray(reactions) && entries.length === reactions.length;
   const reactionByReach = new Map((reactions || []).map(entry =>
     [entry.reachId, entry]));
-  const reactionReceiptsValid = receiptShapeValid && reactions.every(entry =>
+  const reactionNumericClosures = receiptShapeValid ? reactions.map(entry =>
+    ({ entry, numeric: floodplainReactionNumericClosure(entry,
+      'aerobic') })) : [];
+  const reactionReceiptsValid = receiptShapeValid &&
+    reactionNumericClosures.every(({ entry, numeric }) =>
     entry?.schema === FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA &&
     typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
-    close(entry.closure?.dissolvedOrganicCarbonDebitResidualKgC, 1e-7) &&
-    close(entry.closure?.dissolvedInorganicCarbonCreditResidualKgC, 1e-7) &&
-    close(entry.closure?.carbonResidualKgC, 1e-7) &&
-    close(entry.closure?.dissolvedOxygenDebitResidualKgO2, 1e-7) &&
-    close(entry.closure?.stoichiometricOxygenResidualKgO2, 1e-7) &&
+    numeric.valid &&
     entry.truth?.persistentFloodplainChemistryMutated === true &&
     entry.truth?.localFloodplainChemistryOnly === true &&
     entry.truth?.dissolvedOrganicCarbonSenderDebited === true &&
@@ -1373,6 +2759,15 @@ function floodplainRespirationCheck(receipt) {
     entry.truth?.dissolvedOxygenConsumptionClosed === true &&
     entry.truth?.atmosphericGasExchangeModeled === false &&
     entry.truth?.anaerobicPathwayModeled === false);
+  const reactionNumericFailures = reactionNumericClosures
+    .filter(({ numeric }) => !numeric.valid).slice(0, 8)
+    .map(({ entry, numeric }) => ({
+      reachId: entry?.reachId || null,
+      identityKg: numeric.identities,
+      declaredResidualKg: numeric.declaredResidualKg,
+      declaredToleranceKg: numeric.declaredToleranceKg,
+      expectedToleranceKg: numeric.expectedToleranceKg
+    }));
   const entrySchemasValid = receiptShapeValid && entries.every(entry =>
     entry?.schema === FLOODPLAIN_RESPIRATION_RECEIPT_SCHEMA &&
     typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
@@ -1428,6 +2823,9 @@ function floodplainRespirationCheck(receipt) {
     receipt.truth?.persistentFloodplainAerobicRespiration === true &&
     receipt.truth?.floodplainRespirationEvidenceBound === true &&
     receipt.truth?.floodplainRespirationChemistryReceiptsClosed === true &&
+    receipt.truth?.floodplainRespirationScaleAwareNumericClosure === true &&
+    receipt.truth?.floodplainRespirationPerIdentityNumericBounds === true &&
+    receipt.truth?.floodplainRespirationMeasuredResidualsPreserved === true &&
     receipt.truth?.floodplainRespirationCarbonAndOxygenLedgersClosed === true &&
     receipt.truth?.floodplainRespirationOxygenLimited === true &&
     receipt.truth?.floodplainRespirationIndependentCreation === false &&
@@ -1447,7 +2845,10 @@ function floodplainRespirationCheck(receipt) {
       expectedReactionSchema:
         FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
       respirationReceiptCount: Array.isArray(entries) ? entries.length : null,
+      expectedReactionMassClosurePolicySchema:
+        FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
       criteria: { receiptShapeValid, reactionReceiptsValid,
+        reactionNumericFailures,
         entrySchemasValid, lineageValid, quantitiesPaired,
         transitionsValid, conservationValid, basinTruthValid },
       conservation: {
@@ -1488,28 +2889,17 @@ function floodplainDenitrificationCheck(receipt) {
     [entry.transferId, entry]));
   const atmosphereByTransfer = new Map((atmosphereOwners || []).map(entry =>
     [entry.transferId, entry]));
+  const floodplainOwnerNumericClosures = receiptShapeValid ?
+    floodplainOwners.map(entry => ({ entry,
+      numeric: floodplainReactionNumericClosure(entry,
+        'denitrification') })) : [];
   const floodplainOwnerReceiptsValid = receiptShapeValid &&
-    floodplainOwners.every(entry =>
+    floodplainOwnerNumericClosures.every(({ entry, numeric }) =>
       entry?.schema ===
         FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA &&
       typeof entry.transferId === 'string' && entry.transferId.length > 0 &&
       typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
-      close(entry.closure?.dissolvedOrganicCarbonDebitResidualKgC, 1e-7) &&
-      close(entry.closure?.dissolvedInorganicCarbonCreditResidualKgC,
-        1e-7) &&
-      close(entry.closure?.carbonResidualKgC, 1e-7) &&
-      close(entry.closure?.dissolvedNitrateNitrogenDebitResidualKgN,
-        1e-7) &&
-      close(entry.closure?.dissolvedAmmoniumNitrogenResidualKgN,
-        1e-7) &&
-      close(entry.closure?.dissolvedInorganicNitrogenDebitResidualKgN,
-        1e-7) &&
-      close(entry.closure?.nitrogenGasBoundaryResidualKgN, 1e-7) &&
-      close(entry.closure?.nitrogenResidualKgN, 1e-7) &&
-      close(entry.closure?.stoichiometricNitrogenResidualKgN, 1e-7) &&
-      close(entry.closure?.alkalinityCreditResidualKgCaCO3Eq, 1e-7) &&
-      close(entry.closure
-        ?.stoichiometricAlkalinityResidualKgCaCO3Eq, 1e-7) &&
+      numeric.valid &&
       entry.truth?.persistentFloodplainChemistryMutated === true &&
       entry.truth?.localDocToDicCarbonClosed === true &&
       entry.truth?.nitrogenGasBoundaryClosed === true &&
@@ -1524,6 +2914,16 @@ function floodplainDenitrificationCheck(receipt) {
       entry.truth?.nitritePoolResolved === false &&
       entry.truth?.independentCarbonCreation === false &&
       entry.truth?.independentNitrogenCreation === false);
+  const floodplainOwnerNumericFailures = floodplainOwnerNumericClosures
+    .filter(({ numeric }) => !numeric.valid).slice(0, 8)
+    .map(({ entry, numeric }) => ({
+      transferId: entry?.transferId || null,
+      reachId: entry?.reachId || null,
+      identityKg: numeric.identities,
+      declaredResidualKg: numeric.declaredResidualKg,
+      declaredToleranceKg: numeric.declaredToleranceKg,
+      expectedToleranceKg: numeric.expectedToleranceKg
+    }));
   const atmosphereOwnerReceiptsValid = receiptShapeValid &&
     atmosphereOwners.every(entry =>
       entry?.schema === ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA &&
@@ -1652,6 +3052,12 @@ function floodplainDenitrificationCheck(receipt) {
     receipt.truth?.floodplainDenitrificationOwnerReceiptsTyped === true &&
     receipt.truth?.floodplainDenitrificationEvidenceBound === true &&
     receipt.truth?.exactFloodplainDenitrificationTransferIds === true &&
+    receipt.truth?.floodplainDenitrificationScaleAwareNumericClosure ===
+      true &&
+    receipt.truth?.floodplainDenitrificationPerIdentityNumericBounds ===
+      true &&
+    receipt.truth?.floodplainDenitrificationMeasuredResidualsPreserved ===
+      true &&
     receipt.truth
       ?.floodplainDenitrificationCarbonNitrogenAndAlkalinityLedgersClosed ===
       true &&
@@ -1695,11 +3101,14 @@ function floodplainDenitrificationCheck(receipt) {
         FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
       expectedAtmosphereOwnerSchema:
         ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA,
+      expectedReactionMassClosurePolicySchema:
+        FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
       processReceiptCount: Array.isArray(processes)
         ? processes.length : null,
       pairedOwnerReceiptCount: Array.isArray(floodplainOwners)
         ? floodplainOwners.length : null,
       criteria: { receiptShapeValid, floodplainOwnerReceiptsValid,
+        floodplainOwnerNumericFailures,
         atmosphereOwnerReceiptsValid, processReceiptsValid, lineageValid,
         quantitiesPaired, transitionsValid, conservationValid,
         basinTruthValid },
@@ -1745,20 +3154,15 @@ function floodplainNitrificationCheck(receipt) {
     Array.isArray(owners) && processes.length === owners.length;
   const ownerByTransfer = new Map((owners || []).map(entry =>
     [entry.transferId, entry]));
-  const ownerReceiptsValid = receiptShapeValid && owners.every(entry =>
+  const ownerNumericClosures = receiptShapeValid ? owners.map(entry =>
+    ({ entry, numeric: floodplainReactionNumericClosure(entry,
+      'nitrification') })) : [];
+  const ownerReceiptsValid = receiptShapeValid &&
+    ownerNumericClosures.every(({ entry, numeric }) =>
     entry?.schema === FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA &&
     typeof entry.transferId === 'string' && entry.transferId.length > 0 &&
     typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
-    close(entry.closure
-      ?.dissolvedAmmoniumNitrogenDebitResidualKgN, 1e-7) &&
-    close(entry.closure
-      ?.dissolvedNitrateNitrogenCreditResidualKgN, 1e-7) &&
-    close(entry.closure?.dissolvedInorganicNitrogenResidualKgN, 1e-7) &&
-    close(entry.closure?.dissolvedOxygenDebitResidualKgO2, 1e-7) &&
-    close(entry.closure?.stoichiometricOxygenResidualKgO2, 1e-7) &&
-    close(entry.closure?.alkalinityDebitResidualKgCaCO3Eq, 1e-7) &&
-    close(entry.closure
-      ?.stoichiometricAlkalinityResidualKgCaCO3Eq, 1e-7) &&
+    numeric.valid &&
     entry.truth?.persistentFloodplainChemistryMutated === true &&
     entry.truth?.localFloodplainChemistryOnly === true &&
     entry.truth?.dissolvedAmmoniumNitrogenSenderDebited === true &&
@@ -1774,6 +3178,16 @@ function floodplainNitrificationCheck(receipt) {
     entry.truth?.nitriteIntermediateResolved === false &&
     entry.truth?.independentNitrogenCreation === false &&
     entry.truth?.independentOxygenCreation === false);
+  const ownerNumericFailures = ownerNumericClosures
+    .filter(({ numeric }) => !numeric.valid).slice(0, 8)
+    .map(({ entry, numeric }) => ({
+      transferId: entry?.transferId || null,
+      reachId: entry?.reachId || null,
+      identityKg: numeric.identities,
+      declaredResidualKg: numeric.declaredResidualKg,
+      declaredToleranceKg: numeric.declaredToleranceKg,
+      expectedToleranceKg: numeric.expectedToleranceKg
+    }));
   const processReceiptsValid = receiptShapeValid && processes.every(entry =>
     entry?.schema === FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA &&
     typeof entry.transferId === 'string' && entry.transferId.length > 0 &&
@@ -1909,10 +3323,13 @@ function floodplainNitrificationCheck(receipt) {
       expectedProcessSchema: FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA,
       expectedOwnerSchema:
         FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
+      expectedReactionMassClosurePolicySchema:
+        FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
       processReceiptCount: Array.isArray(processes)
         ? processes.length : null,
       ownerReceiptCount: Array.isArray(owners) ? owners.length : null,
       criteria: { receiptShapeValid, ownerReceiptsValid,
+        ownerNumericFailures,
         processReceiptsValid, lineageValid, quantitiesPaired,
         transitionsValid, conservationValid, basinTruthValid },
       conservation: {
@@ -1959,15 +3376,21 @@ function floodplainGasExchangeCheck(receipt) {
     [entry.exchangeId, entry]));
   const atmosphereByExchange = new Map((atmosphereOwners || []).map(entry =>
     [entry.exchangeId, entry]));
+  const floodplainOwnerNumericClosures = receiptShapeValid ?
+    floodplainOwners.map(entry => ({ entry,
+      numeric: floodplainReactionNumericClosure(entry,
+        'gas-exchange') })) : [];
+  const atmosphereOwnerNumericClosures = receiptShapeValid ?
+    atmosphereOwners.map(entry => ({ entry,
+      numeric: atmosphereFloodplainGasNumericClosure(entry) })) : [];
   const ownerReceiptsValid = receiptShapeValid &&
-    floodplainOwners.every(entry =>
+    floodplainOwnerNumericClosures.every(({ entry, numeric }) =>
       entry?.schema === FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA &&
       typeof entry.exchangeId === 'string' && entry.exchangeId.length > 0 &&
       typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
       typeof entry.atmosphereCellId === 'string' &&
       entry.atmosphereCellId.length > 0 &&
-      close(entry.closure?.carbonTransferResidualKgC, 1e-7) &&
-      close(entry.closure?.oxygenTransferResidualKgO2, 1e-7) &&
+      numeric.valid &&
       entry.truth?.dissolvedInorganicCarbonSenderDebitedWhenEvasion ===
         true &&
       entry.truth?.dissolvedInorganicCarbonReceiverCreditedWhenInvasion ===
@@ -1975,20 +3398,14 @@ function floodplainGasExchangeCheck(receipt) {
       entry.truth?.dissolvedOxygenReceiverCredited === true &&
       entry.truth?.carbonDirectionExclusive === true &&
       entry.truth?.atmosphericReservoirMutatedHere === false) &&
-    atmosphereOwners.every(entry =>
+    atmosphereOwnerNumericClosures.every(({ entry, numeric }) =>
       entry?.schema ===
         ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA &&
       typeof entry.exchangeId === 'string' && entry.exchangeId.length > 0 &&
       entry.atmosphereCarbonCredit?.nativeLayerIndex === 0 &&
       entry.atmosphereCarbonDebit?.nativeLayerIndex === 0 &&
       entry.atmosphereOxygenDebit?.nativeLayerIndex === 0 &&
-      close(entry.conservation?.carbonResidualKgC,
-        ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG) &&
-      close(entry.conservation?.oxygenResidualKgO2,
-        ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG) &&
-      entry.truth?.carbonAndOxygenClosed === true &&
-      entry.truth?.floatingPointAbsoluteToleranceKg ===
-        ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG &&
+      numeric.valid &&
       entry.truth?.authoritativeLocalGasReservoirMutated === true &&
       entry.truth?.surfaceLayerOnly === true &&
       entry.truth?.carbonReceiverCreditedWhenEvasion === true &&
@@ -1996,6 +3413,26 @@ function floodplainGasExchangeCheck(receipt) {
       entry.truth?.oxygenSenderDebited === true &&
       entry.truth?.carbonDirectionExclusive === true &&
       entry.truth?.globallyMixed === false);
+  const floodplainOwnerNumericFailures = floodplainOwnerNumericClosures
+    .filter(({ numeric }) => !numeric.valid).slice(0, 8)
+    .map(({ entry, numeric }) => ({
+      exchangeId: entry?.exchangeId || null,
+      reachId: entry?.reachId || null,
+      identityKg: numeric.identities,
+      declaredResidualKg: numeric.declaredResidualKg,
+      declaredToleranceKg: numeric.declaredToleranceKg,
+      expectedToleranceKg: numeric.expectedToleranceKg
+    }));
+  const atmosphereOwnerNumericFailures = atmosphereOwnerNumericClosures
+    .filter(({ numeric }) => !numeric.valid).slice(0, 8)
+    .map(({ entry, numeric }) => ({
+      exchangeId: entry?.exchangeId || null,
+      reachId: entry?.reachId || null,
+      identityKg: numeric.identities,
+      declaredResidualKg: numeric.declaredResidualKg,
+      declaredToleranceKg: numeric.declaredToleranceKg,
+      expectedToleranceKg: numeric.expectedToleranceKg
+    }));
   const processReceiptsValid = receiptShapeValid && processes.every(entry =>
     entry?.schema ===
       FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA &&
@@ -2073,6 +3510,15 @@ function floodplainGasExchangeCheck(receipt) {
     receipt.truth?.floodplainGasExchangeOwnerReceiptsTyped === true &&
     receipt.truth?.floodplainGasExchangeEvidenceBound === true &&
     receipt.truth?.exactFloodplainAtmosphereGasExchangeIds === true &&
+    receipt.truth?.floodplainGasExchangeScaleAwareNumericClosure === true &&
+    receipt.truth?.floodplainGasExchangePerIdentityNumericBounds === true &&
+    receipt.truth?.floodplainGasExchangeMeasuredResidualsPreserved === true &&
+    receipt.truth
+      ?.atmosphereFloodplainGasExchangeScaleAwareNumericClosure === true &&
+    receipt.truth
+      ?.atmosphereFloodplainGasExchangePerIdentityNumericBounds === true &&
+    receipt.truth
+      ?.atmosphereFloodplainGasExchangeMeasuredResidualsPreserved === true &&
     receipt.truth?.floodplainAtmosphereGasExchangeLedgersClosed === true &&
     receipt.truth?.floodplainGasExchangeUsesNativeAtmosphereSurfaceLayer ===
       true &&
@@ -2095,15 +3541,23 @@ function floodplainGasExchangeCheck(receipt) {
         FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA,
       expectedFloodplainOwnerSchema:
         FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+      expectedReactionMassClosurePolicySchema:
+        FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
       expectedAtmosphereOwnerSchema:
         ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
-      atmosphereOwnerFloatingPointAbsoluteToleranceKg:
-        ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG,
+      expectedAtmosphereOwnerMassClosurePolicySchema:
+        ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+      atmosphereOwnerMassClosureAbsoluteFloorsKg: {
+        ...ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+      },
+      atmosphereOwnerMassClosureUlpFactor:
+        ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
       processReceiptCount: Array.isArray(processes)
         ? processes.length : null,
       pairedOwnerReceiptCount: Array.isArray(floodplainOwners)
         ? floodplainOwners.length : null,
       criteria: { receiptShapeValid, ownerReceiptsValid,
+        floodplainOwnerNumericFailures, atmosphereOwnerNumericFailures,
         processReceiptsValid, lineageValid, quantitiesPaired,
         transitionsValid, conservationValid, basinTruthValid },
       conservation: {
@@ -2536,7 +3990,9 @@ export function auditFoundationSystem(options = {}) {
         kind: column?.kind || null
       }),
     pressureColumnCheck(column),
+    nativePhaseThermalEnvelopeCheck(column),
     localBudgetCheck(column),
+    atmosphereBoundaryEnergyCheck(column),
     co2RadiationCheck(column),
     check('local-atmosphere-gas-owner', gasStateValid ? 'PASS' : 'FAIL',
       'Atmosphere owns eight native C/O2/N2 levels and distinguishes loaded transport from global mixing.', {
@@ -2557,6 +4013,9 @@ export function auditFoundationSystem(options = {}) {
     soilRunoffBiogeochemistryCheck(column),
     geomorphicSedimentCheck(column),
     deepOceanCheck(column),
+    deepOceanAlkalinityCheck(column),
+    mixedLayerCarbonateCheck(column),
+    airSeaCarbonExchangeCheck(column),
     transportCheck(options.earthTransportReceipt),
     basinCheck(options.basinRoutingReceipt),
     alkalinityLedgerCheck(options.basinRoutingReceipt),
@@ -2597,6 +4056,12 @@ export function auditFoundationSystem(options = {}) {
       nativePressureLayerAtmosphericBiogeochemistry: true,
       nativeAdjacentInterfaceAtmosphericGasMixing: true,
       nativeLayerCo2RadiativeCoupling: true,
+      nativePhaseThermalEnvelopeBounded: true,
+      nativeBoundaryForcingEnvelopeReconciliationReceipted: true,
+      postMaterialTemperatureClipping: false,
+      resolvedCloudMicrophysics: false,
+      upperAtmosphereRadiativeChemistry: false,
+      scientificallyCalibratedConvection: false,
       broadbandGreyGasCo2Parameterization: true,
       spectralAtmosphericRadiativeTransfer: false,
       globallyMixedAtmosphericGases: false,
@@ -2675,7 +4140,22 @@ export function auditFoundationSystem(options = {}) {
       alkalinityMeasured: false,
       alkalinityCarbonateSpeciationResolved: false,
       alkalinityPHResolved: false,
-      deepOceanAlkalinityExchange: false,
+      mixedLayerCarbonateDiagnostic: true,
+      mixedLayerCarbonateSpeciationResolvedWithinEnvelope: true,
+      mixedLayerPHTotalResolvedWithinEnvelope: true,
+      mixedLayerCarbonateDiagnosticMutatesMaterial: false,
+      mixedLayerCarbonateSurfacePressureOnly: true,
+      mixedLayerCarbonateSilicateAlkalinityIncluded: false,
+      mixedLayerCarbonatePressureCorrectionsIncluded: false,
+      carbonateInformedAirSeaCo2Exchange: true,
+      airSeaCo2FugacityCorrection: true,
+      scientificAirSeaGasTransferVelocity: false,
+      measuredAirSeaPco2: false,
+      measuredOceanSkinTemperature: false,
+      speciesResolvedMarinePHResponse: false,
+      deepOceanPHResolved: false,
+      carbonatePHFeedbackModeled: false,
+      deepOceanAlkalinityExchange: true,
       floodplainNitrificationPHFeedbackModeled: false,
       floodplainNitrificationMicrobialPopulationState: false,
       scientificFloodplainNitrificationModel: false,
@@ -2710,13 +4190,18 @@ export function foundationSystemAuditDescription() {
     schema: FOUNDATION_SYSTEM_AUDIT_SCHEMA,
     purpose: 'read-only runtime integrity and handoff evidence',
     checks: [
-      'schema-lineage', 'pressure-column-shape', 'local-water-and-energy-ledgers',
+      'schema-lineage', 'pressure-column-shape',
+      'native-phase-thermal-envelope', 'local-water-and-energy-ledgers',
+      'atmosphere-boundary-forcing-energy-ledger',
       'atmosphere-co2-radiative-coupling',
       'local-atmosphere-gas-ownership', 'atmosphere-vertical-gas-ledger',
       'atmosphere-biosphere-gas-ledger',
       'ecology-gas-mirrors', 'soil-runoff-biogeochemistry-lineage',
       'geomorphic-sediment-lineage',
-      'deep-ocean-lineage', 'loaded-transport-receipt',
+      'deep-ocean-lineage', 'mixed-deep-ocean-alkalinity-ledger',
+      'mixed-layer-carbonate-diagnostic',
+      'carbonate-informed-air-sea-carbon-exchange',
+      'loaded-transport-receipt',
       'basin-routing-receipt', 'end-to-end-alkalinity-ledger',
       'floodplain-exchange-receipts',
       'floodplain-habitat-receipts', 'flood-event-history-receipts',

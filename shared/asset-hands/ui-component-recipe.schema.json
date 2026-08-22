@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/ui-component-recipe-v1.schema.json",
+  "title": "AXM UI Component Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "title", "kind", "seed", "authority", "target", "palette", "geometry", "states", "provenance"],
+  "properties": {
+    "schema": { "const": "axm.ui-component-recipe/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "kind": { "enum": ["panel", "button", "hud", "ui-component"] },
+    "seed": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "authority": { "const": "candidate-only" },
+    "target": {
+      "type": "object",
+      "required": ["medium", "dimensions", "transparency", "minimum_contrast_ratio", "direction", "input_modalities", "reduced_motion", "minimum_target_size", "alternative_text", "focus_visible", "focus_ring"],
+      "properties": {
+        "medium": { "enum": ["ui", "screen", "game-world"] },
+        "dimensions": {
+          "type": "object",
+          "required": ["width", "height", "unit"],
+          "properties": {
+            "width": { "type": "number", "minimum": 1, "maximum": 8192 },
+            "height": { "type": "number", "minimum": 1, "maximum": 8192 },
+            "unit": { "const": "px" }
+          },
+          "additionalProperties": false
+        },
+        "transparency": { "enum": ["required", "allowed", "opaque"] },
+        "minimum_contrast_ratio": { "type": "number", "minimum": 1, "maximum": 21 },
+        "direction": { "enum": ["ltr", "rtl", "auto"] },
+        "input_modalities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["pointer", "keyboard", "touch", "gamepad"] }
+        },
+        "reduced_motion": { "type": "boolean" },
+        "minimum_target_size": { "type": "number", "minimum": 1, "maximum": 1000 },
+        "alternative_text": { "type": "boolean" },
+        "focus_visible": { "type": "boolean" },
+        "focus_ring": {
+          "type": "object",
+          "required": ["colour", "width"],
+          "properties": {
+            "colour": { "$ref": "#/$defs/colour" },
+            "width": { "type": "number", "minimum": 1, "maximum": 16 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "palette": {
+      "type": "object",
+      "required": ["surface", "accent", "foreground", "attention"],
+      "properties": {
+        "surface": { "$ref": "#/$defs/colour" },
+        "accent": { "$ref": "#/$defs/colour" },
+        "foreground": { "$ref": "#/$defs/colour" },
+        "attention": { "$ref": "#/$defs/colour" }
+      },
+      "additionalProperties": false
+    },
+    "geometry": {
+      "type": "object",
+      "required": ["inset", "radius", "nine_slice"],
+      "properties": {
+        "inset": { "type": "number", "minimum": 0, "maximum": 8192 },
+        "radius": { "type": "number", "minimum": 0, "maximum": 4096 },
+        "nine_slice": {
+          "type": "object",
+          "required": ["left", "top", "right", "bottom"],
+          "properties": {
+            "left": { "type": "number", "minimum": 0, "maximum": 8192 },
+            "top": { "type": "number", "minimum": 0, "maximum": 8192 },
+            "right": { "type": "number", "minimum": 0, "maximum": 8192 },
+            "bottom": { "type": "number", "minimum": 0, "maximum": 8192 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "states": {
+      "type": "object",
+      "required": ["default", "hover", "active", "disabled"],
+      "properties": {
+        "default": { "$ref": "#/$defs/state" },
+        "hover": { "$ref": "#/$defs/state" },
+        "active": { "$ref": "#/$defs/state" },
+        "disabled": { "$ref": "#/$defs/state" }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["operation", "source_artifact_id", "source_recipe_digest"],
+          "properties": {
+            "operation": { "const": "edit" },
+            "source_artifact_id": { "const": "ui-recipe" },
+            "source_recipe_digest": { "type": "string", "minLength": 1, "maxLength": 160 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "colour": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+    "state": {
+      "type": "object",
+      "required": ["opacity", "scale"],
+      "properties": {
+        "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "scale": { "type": "number", "minimum": 0.85, "maximum": 1.15 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

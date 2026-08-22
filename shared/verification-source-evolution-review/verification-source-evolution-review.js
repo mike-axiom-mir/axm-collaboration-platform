@@ -2,7 +2,6 @@
 
 const crypto = require('crypto');
 const Continuity = require('../verification-snapshot-continuity/verification-snapshot-continuity');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const REVIEW_SCHEMA = 'axm.verification-source-evolution-review/v1';
 const ANCHOR_SCHEMA = 'axm.verification-legacy-external-anchor/v1';
@@ -16,7 +15,7 @@ const CURRENT_TRACKED_CLASSIFICATIONS = new Set([
 ]);
 
 function clone(value) {
-  return JSON.parse(DeterministicJson.canonicalJson(value));
+  return JSON.parse(JSON.stringify(value));
 }
 
 function stableValue(value) {
@@ -30,7 +29,7 @@ function stableValue(value) {
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  return JSON.stringify(stableValue(value));
 }
 
 function sha256(value) {

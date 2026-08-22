@@ -1,8 +1,10 @@
 export const ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA =
-  'axm.foundation-planet.atmosphere-biogeochemistry-state/v3';
+  'axm.foundation-planet.atmosphere-biogeochemistry-state/v4';
 export const PREVIOUS_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA =
-  'axm.foundation-planet.atmosphere-biogeochemistry-state/v2';
+  'axm.foundation-planet.atmosphere-biogeochemistry-state/v3';
 export const LEGACY_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA =
+  'axm.foundation-planet.atmosphere-biogeochemistry-state/v2';
+export const OLDEST_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA =
   'axm.foundation-planet.atmosphere-biogeochemistry-state/v1';
 export const ATMOSPHERE_BIOGEOCHEMISTRY_LAYER_SCHEMA =
   'axm.foundation-planet.atmosphere-biogeochemistry-layer/v1';
@@ -12,9 +14,17 @@ export const ATMOSPHERE_BIOSPHERE_GAS_FLUX_RECEIPT_SCHEMA =
 export const ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA =
   'axm.foundation-planet.atmosphere-gas-boundary-input-receipt/v1';
 export const ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA =
+  'axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v3';
+export const PREVIOUS_ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA =
   'axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v2';
+export const ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA =
+  'axm.foundation-planet.atmosphere-floodplain-gas-exchange-mass-closure-policy/v1';
+export const ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG =
+  Object.freeze({ carbonKgC: 1e-3, oxygenKgO2: 1e-3 });
+export const ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ULP_FACTOR = 8;
 export const ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG =
-  1e-3;
+  ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+    .carbonKgC;
 export const ATMOSPHERE_BIOGEOCHEMISTRY_HORIZONTAL_LOCAL_RECEIPT_SCHEMA =
   'axm.foundation-planet.atmosphere-biogeochemistry-horizontal-local-receipt/v2';
 export const ATMOSPHERE_BIOGEOCHEMISTRY_VERTICAL_TRANSPORT_SCHEMA =
@@ -46,6 +56,56 @@ function stableDigest(value) {
     hash = Math.imul(hash, 0x01000193);
   }
   return `fnv1a32:${(hash >>> 0).toString(16).padStart(8, '0')}`;
+}
+
+export function atmosphereFloodplainGasExchangeMassClosureToleranceKg(
+  channel, ...values) {
+  const absoluteFloorKg =
+    ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG[
+      channel];
+  if (!Number.isFinite(absoluteFloorKg)) {
+    throw new Error(`Unknown atmosphere floodplain gas material channel: ${channel}`);
+  }
+  const magnitudeKg = Math.max(1, ...values.map(value =>
+    Math.abs(finite(value))));
+  return round(Math.max(absoluteFloorKg,
+    magnitudeKg * Number.EPSILON *
+      ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ULP_FACTOR), 12);
+}
+
+function atmosphereFloodplainGasNumericClosure(identities = {},
+  numericToleranceKg = {}) {
+  const pairs = Object.keys(identities).map(key => [
+    Math.abs(finite(identities[key])), finite(numericToleranceKg[key])
+  ]);
+  const maximumResidualKg = Math.max(0,
+    ...pairs.map(([residual]) => residual));
+  const maximumToleranceUtilization = Math.max(0,
+    ...pairs.map(([residual, tolerance]) =>
+      tolerance > 0 ? residual / tolerance : Infinity));
+  return {
+    conservation: {
+      maximumResidualKg: round(maximumResidualKg, 12),
+      maximumToleranceUtilization: round(
+        maximumToleranceUtilization, 12),
+      ...identities,
+      numericToleranceKg,
+      policy: {
+        schema:
+          ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+        absoluteFloorsKg: {
+          ...ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+        },
+        ulpFactor:
+          ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
+        recordedOperandScale: true,
+        perIdentity: true,
+        arbitraryToleranceAuthority: false
+      }
+    },
+    allIdentitiesClosed: pairs.every(([residual, tolerance]) =>
+      tolerance > 0 && residual <= tolerance)
+  };
 }
 
 function dryAirFractions(pressureColumn) {
@@ -220,7 +280,8 @@ export function normalizeAtmosphereBiogeochemistry(source, options = {}) {
   const currentOrLegacy = source && [
     ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
     PREVIOUS_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
-    LEGACY_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA
+    LEGACY_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
+    OLDEST_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA
   ].includes(source.schema);
   if (!currentOrLegacy) {
     const mirrors = compatibilityMirrors(options.landEcology,
@@ -233,7 +294,9 @@ export function normalizeAtmosphereBiogeochemistry(source, options = {}) {
     });
   }
   const state = createAtmosphereBiogeochemistry({
-    layers: source.schema === ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA
+    layers: [ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
+      PREVIOUS_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA]
+      .includes(source.schema)
       ? source.layers : null,
     pressureColumn: options.pressureColumn,
     carbonDioxideCarbonKgCm2: source.carbonDioxideCarbonKgCm2,
@@ -495,15 +558,39 @@ export function applyAtmosphereFloodplainGasExchange(source, exchange = {},
   state.cumulative.floodplainCarbonInputKgCm2 += carbonCreditKgCm2;
   state.cumulative.floodplainOxygenOutputKgO2m2 += oxygenDebitKgO2m2;
   refreshAtmosphereBiogeochemistry(state, options.pressureColumn);
-  const conservation = {
-    carbonResidualKgC: round((
-      state.carbonDioxideCarbonKgCm2 -
-      before.carbonDioxideCarbonKgCm2) * area -
-      carbonToAtmosphereKgC + carbonToFloodplainKgC, 9),
-    oxygenResidualKgO2: round((
-      before.oxygenKgO2m2 - state.oxygenKgO2m2) * area -
-      oxygenToFloodplainKgO2, 9)
+  const operandsKg = {
+    carbon: {
+      beforeKgC: before.carbonDioxideCarbonKgCm2 * area,
+      creditKgC: carbonToAtmosphereKgC,
+      debitKgC: carbonToFloodplainKgC,
+      afterKgC: state.carbonDioxideCarbonKgCm2 * area
+    },
+    oxygen: {
+      beforeKgO2: before.oxygenKgO2m2 * area,
+      debitKgO2: oxygenToFloodplainKgO2,
+      afterKgO2: state.oxygenKgO2m2 * area
+    }
   };
+  const conservationIdentities = {
+    carbonResidualKgC: round(
+      operandsKg.carbon.afterKgC - operandsKg.carbon.beforeKgC -
+        operandsKg.carbon.creditKgC + operandsKg.carbon.debitKgC, 12),
+    oxygenResidualKgO2: round(
+      operandsKg.oxygen.beforeKgO2 - operandsKg.oxygen.afterKgO2 -
+        operandsKg.oxygen.debitKgO2, 12)
+  };
+  const numericToleranceKg = {
+    carbonResidualKgC:
+      atmosphereFloodplainGasExchangeMassClosureToleranceKg('carbonKgC',
+        operandsKg.carbon.beforeKgC, operandsKg.carbon.creditKgC,
+        operandsKg.carbon.debitKgC, operandsKg.carbon.afterKgC),
+    oxygenResidualKgO2:
+      atmosphereFloodplainGasExchangeMassClosureToleranceKg('oxygenKgO2',
+        operandsKg.oxygen.beforeKgO2, operandsKg.oxygen.debitKgO2,
+        operandsKg.oxygen.afterKgO2)
+  };
+  const numericClosure = atmosphereFloodplainGasNumericClosure(
+    conservationIdentities, numericToleranceKg);
   const receipt = {
     schema: ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
     exchangeId,
@@ -548,7 +635,10 @@ export function applyAtmosphereFloodplainGasExchange(source, exchange = {},
       oxygenKgO2m2: round(state.oxygenKgO2m2, 12),
       surfaceLayer: clone(state.layers[0])
     },
-    conservation,
+    conservation: {
+      ...numericClosure.conservation,
+      operandsKg
+    },
     truth: {
       authoritativeLocalGasReservoirMutated: true,
       nativePressureLayerComposition: true,
@@ -559,10 +649,12 @@ export function applyAtmosphereFloodplainGasExchange(source, exchange = {},
       carbonDirectionExclusive:
         carbonToAtmosphereKgC <= 1e-12 ||
           carbonToFloodplainKgC <= 1e-12,
-      carbonAndOxygenClosed: Object.values(conservation).every(value =>
-        Math.abs(value) <
-          ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG),
-      floatingPointAbsoluteToleranceKg:
+      carbonAndOxygenClosed: numericClosure.allIdentitiesClosed,
+      scaleAwareFloatingPointClosure: numericClosure.allIdentitiesClosed,
+      perIdentityNumericBounds: true,
+      measuredResidualsPreserved: true,
+      fixedAbsoluteToleranceOnly: false,
+      floatingPointAbsoluteFloorKg:
         ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG,
       floodplainOwnerReceiptRequired: true,
       globallyMixed: false,
@@ -582,8 +674,17 @@ export function atmosphereBiogeochemistryDescription() {
     boundaryInputReceiptSchema: ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA,
     floodplainGasExchangeReceiptSchema:
       ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+    previousFloodplainGasExchangeReceiptSchema:
+      PREVIOUS_ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
     floodplainGasExchangeAbsoluteToleranceKg:
       ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG,
+    floodplainGasExchangeMassClosurePolicySchema:
+      ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+    floodplainGasExchangeMassClosureAbsoluteFloorsKg: {
+      ...ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+    },
+    floodplainGasExchangeMassClosureUlpFactor:
+      ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
     horizontalLocalReceiptSchema:
       ATMOSPHERE_BIOGEOCHEMISTRY_HORIZONTAL_LOCAL_RECEIPT_SCHEMA,
     layerSchema: ATMOSPHERE_BIOGEOCHEMISTRY_LAYER_SCHEMA,

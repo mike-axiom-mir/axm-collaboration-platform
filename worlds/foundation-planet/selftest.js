@@ -21,10 +21,14 @@ async function run() {
   const seasonalWeather = await import(pathToFileURL(path.join(root, 'core', 'seasonal-weather.mjs')).href);
   const pressureColumn = await import(pathToFileURL(path.join(root, 'core', 'pressure-column.mjs')).href);
   const pressureDynamics = await import(pathToFileURL(path.join(root, 'core', 'pressure-dynamics.mjs')).href);
+  const phaseThermalEnvelope = await import(pathToFileURL(path.join(root, 'core', 'phase-thermal-envelope.mjs')).href);
+  const atmosphereBoundaryEnergy = await import(pathToFileURL(path.join(root, 'core', 'atmosphere-boundary-energy.mjs')).href);
   const surfaceRadiation = await import(pathToFileURL(path.join(root, 'core', 'surface-radiation.mjs')).href);
   const atmosphereCo2Radiation = await import(pathToFileURL(path.join(root, 'core', 'atmosphere-co2-radiation.mjs')).href);
   const landEcology = await import(pathToFileURL(path.join(root, 'core', 'land-ecology.mjs')).href);
   const oceanEcology = await import(pathToFileURL(path.join(root, 'core', 'ocean-ecology.mjs')).href);
+  const carbonateSystem = await import(pathToFileURL(path.join(root, 'core', 'carbonate-system.mjs')).href);
+  const airSeaCarbonExchange = await import(pathToFileURL(path.join(root, 'core', 'air-sea-carbon-exchange.mjs')).href);
   const deepOcean = await import(pathToFileURL(path.join(root, 'core', 'deep-ocean.mjs')).href);
   const atmosphereBiogeochemistry = await import(pathToFileURL(path.join(root, 'core', 'atmosphere-biogeochemistry.mjs')).href);
   const atmosphereBiogeochemistryVertical = await import(pathToFileURL(path.join(root, 'core', 'atmosphere-biogeochemistry-vertical.mjs')).href);
@@ -106,7 +110,7 @@ async function run() {
     'condition-profile failures report the error and release the loading curtain instead of remaining stuck');
 
   assert.equal(manifest.id, 'world.axm.foundation-planet');
-  assert.equal(manifest.version, '0.51.0');
+  assert.equal(manifest.version, '0.62.0');
   assert.equal(manifest.scale.logical_radius_m, 6371000);
   assert.equal(manifest.scale.surface_streaming, true);
   assert.equal(manifest.scale.surface_focus_km, 3);
@@ -221,6 +225,12 @@ async function run() {
   assert.equal(manifest.systems.v16_to_v17_land_ecology_migration, true);
   assert.equal(manifest.systems.v17_to_v18_ocean_ecology_migration, true);
   assert.equal(manifest.systems.v18_to_v19_deep_ocean_migration, true);
+  assert.equal(manifest.systems
+    .v26_to_v27_deep_ocean_alkalinity_migration, true);
+  assert.equal(manifest.systems
+    .v27_to_v28_mixed_layer_carbonate_diagnostic_migration, true);
+  assert.equal(manifest.systems
+    .v28_to_v29_carbonate_informed_air_sea_carbon_exchange_migration, true);
   assert.equal(manifest.systems.v19_to_v20_atmosphere_biogeochemistry_migration, true);
   assert.equal(manifest.systems.v20_to_v21_atmosphere_biogeochemistry_transport_migration, true);
   assert.equal(manifest.systems.v21_to_v22_native_layer_atmosphere_biogeochemistry_migration, true);
@@ -240,12 +250,34 @@ async function run() {
   assert.equal(manifest.systems.reference_neutral_bounded_grey_gas_co2_feedback, true);
   assert.equal(manifest.systems.co2_surface_longwave_adjustment_in_energy_ledger, true);
   assert.equal(manifest.systems.deterministic_read_only_system_integrity_audit, true);
+  assert.equal(manifest.systems
+    .mixed_deep_ocean_alkalinity_integrity_audited, true);
+  assert.equal(manifest.systems
+    .mixed_layer_carbonate_diagnostic_integrity_audited, true);
+  assert.equal(manifest.systems
+    .carbonate_informed_air_sea_carbon_exchange_integrity_audited, true);
   assert.equal(manifest.systems.audit_detects_corrupted_required_evidence, true);
   assert.equal(manifest.systems.audit_distinguishes_unobserved_optional_seams, true);
   assert.equal(manifest.systems.persistent_local_atmospheric_carbon_oxygen_and_nitrogen_gas, true);
   assert.equal(manifest.systems.authoritative_atmosphere_biosphere_gas_accounting, true);
   assert.equal(manifest.systems.ecology_gas_fields_are_compatibility_mirrors, true);
   assert.equal(manifest.systems.persistent_mixed_layer_carbon_oxygen_nitrogen_and_phosphorus, true);
+  assert.equal(manifest.systems.read_only_mixed_layer_carbonate_equilibrium_diagnostic, true);
+  assert.equal(manifest.systems.mixed_layer_total_scale_ph_within_declared_open_ocean_envelope, true);
+  assert.equal(manifest.systems.mixed_layer_carbonate_species_mass_closure_checked, true);
+  assert.equal(manifest.systems.mixed_layer_carbonate_alkalinity_residual_checked, true);
+  assert.equal(manifest.systems.mixed_layer_carbonate_out_of_envelope_typed_refusal, true);
+  assert.equal(manifest.systems.mixed_layer_carbonate_phosphate_alkalinity_included, true);
+  assert.equal(manifest.systems
+    .weiss_1974_co2_solubility_and_virial_fugacity_correction, true);
+  assert.equal(manifest.systems
+    .weiss_price_1980_seawater_vapor_pressure_correction, true);
+  assert.equal(manifest.systems
+    .carbonate_informed_air_sea_co2_equilibrium_proposal, true);
+  assert.equal(manifest.systems
+    .paired_atmosphere_to_mixed_layer_dic_owner_move, true);
+  assert.equal(manifest.systems.air_sea_carbon_typed_zero_flux_refusal, true);
+  assert.equal(manifest.systems.air_sea_carbon_sender_bounds_checked, true);
   assert.equal(manifest.systems.persistent_phytoplankton_zooplankton_and_detritus, true);
   assert.equal(manifest.systems.light_temperature_ice_nitrogen_and_phosphorus_limited_marine_primary_production, true);
   assert.equal(manifest.systems.oxygen_limited_marine_respiration_and_remineralization, true);
@@ -253,6 +285,9 @@ async function run() {
   assert.equal(manifest.systems.physical_ocean_chemistry_continues_when_life_disabled, true);
   assert.equal(manifest.systems.conservative_loaded_ocean_biogeochemical_tracer_mixing, true);
   assert.equal(manifest.systems.persistent_deep_ocean_carbon_nitrogen_phosphorus_and_oxygen, true);
+  assert.equal(manifest.systems.persistent_deep_ocean_alkalinity, true);
+  assert.equal(manifest.systems.conservative_mixed_to_deep_alkalinity_exchange,
+    true);
   assert.equal(manifest.systems.conservative_mixed_to_deep_dissolved_exchange, true);
   assert.equal(manifest.systems.sinking_detrital_carbon_nitrogen_and_phosphorus_export, true);
   assert.equal(manifest.systems.oxygen_limited_deep_ocean_remineralization, true);
@@ -313,6 +348,46 @@ async function run() {
   assert.equal(manifest.systems.floodplain_plant_live_standing_dead_and_litter_pools, true);
   assert.equal(manifest.systems.loaded_land_and_floodplain_plant_cn_conservation_checked, true);
   assert.equal(manifest.systems.basin_v10_to_v11_floodplain_plant_matter_migration, true);
+  assert.equal(manifest.systems
+    .scale_aware_floodplain_plant_matter_mass_closure, true);
+  assert.equal(manifest.systems
+    .floodplain_plant_matter_per_material_channel_numeric_bounds, true);
+  assert.equal(manifest.systems
+    .floodplain_plant_matter_measured_residuals_preserved, true);
+  assert.equal(manifest.systems.v24_to_v25_basin_receipt_migration, true);
+  assert.equal(manifest.systems
+    .scale_aware_floodplain_detrital_return_receiver_mass_closure, true);
+  assert.equal(manifest.systems
+    .floodplain_detrital_return_receiver_per_material_channel_numeric_bounds,
+  true);
+  assert.equal(manifest.systems
+    .floodplain_detrital_return_receiver_measured_residuals_preserved, true);
+  assert.equal(manifest.systems.v25_to_v26_basin_receipt_migration, true);
+  assert.equal(manifest.systems
+    .scale_aware_floodplain_reaction_receipt_mass_closure, true);
+  assert.equal(manifest.systems
+    .floodplain_reaction_receipt_per_identity_numeric_bounds, true);
+  assert.equal(manifest.systems
+    .floodplain_reaction_receipt_measured_residuals_preserved, true);
+  assert.equal(manifest.systems.v26_to_v27_basin_receipt_migration, true);
+  assert.equal(manifest.systems
+    .scale_aware_atmosphere_floodplain_gas_exchange_receipt_mass_closure,
+  true);
+  assert.equal(manifest.systems
+    .atmosphere_floodplain_gas_exchange_receipt_per_identity_numeric_bounds,
+  true);
+  assert.equal(manifest.systems
+    .atmosphere_floodplain_gas_exchange_receipt_measured_residuals_preserved,
+  true);
+  assert.equal(manifest.systems.v27_to_v28_basin_receipt_migration, true);
+  assert.equal(manifest.truth
+    .floodplain_plant_matter_scale_aware_numeric_closure, true);
+  assert.equal(manifest.truth
+    .floodplain_plant_matter_per_material_channel_numeric_bounds, true);
+  assert.equal(manifest.truth
+    .floodplain_plant_matter_measured_residuals_preserved, true);
+  assert.equal(manifest.truth
+    .floodplain_plant_matter_fixed_absolute_tolerance_only, false);
   assert.equal(manifest.systems.persistent_floodplain_plant_phosphorus_and_tissue_water, true);
   assert.equal(manifest.systems.paired_floodplain_plant_water_phosphorus_uptake, true);
   assert.equal(manifest.systems.paired_plant_mortality_water_return_to_floodplain, true);
@@ -322,6 +397,21 @@ async function run() {
   assert.equal(manifest.systems.river_floodplain_plus_plant_phosphorus_conservation_checked, true);
   assert.equal(manifest.systems.floodplain_plant_resources_integrity_audited, true);
   assert.equal(manifest.systems.basin_v11_to_v12_floodplain_plant_resources_migration, true);
+  assert.equal(manifest.systems
+    .scale_aware_floodplain_plant_resource_mass_closure, true);
+  assert.equal(manifest.systems
+    .floodplain_plant_resource_per_material_channel_numeric_bounds, true);
+  assert.equal(manifest.systems
+    .floodplain_plant_resource_measured_residuals_preserved, true);
+  assert.equal(manifest.systems.v23_to_v24_basin_receipt_migration, true);
+  assert.equal(manifest.truth
+    .floodplain_plant_resources_scale_aware_numeric_closure, true);
+  assert.equal(manifest.truth
+    .floodplain_plant_resources_per_material_channel_numeric_bounds, true);
+  assert.equal(manifest.truth
+    .floodplain_plant_resources_measured_residuals_preserved, true);
+  assert.equal(manifest.truth
+    .floodplain_plant_resources_fixed_absolute_tolerance_only, false);
   assert.equal(manifest.systems.persistent_floodplain_detrital_decomposition, true);
   assert.equal(manifest.systems.paired_floodplain_plant_detritus_matter_debit, true);
   assert.equal(manifest.systems.paired_floodplain_plant_detritus_resource_debit, true);
@@ -391,6 +481,17 @@ async function run() {
   assert.equal(manifest.systems.end_to_end_alkalinity_conservation_checked, true);
   assert.equal(manifest.systems.end_to_end_alkalinity_integrity_audited, true);
   assert.equal(manifest.systems.basin_v20_to_v21_alkalinity_migration, true);
+  assert.equal(manifest.systems
+    .basin_v21_to_v22_restored_clock_alignment_checkpoint, true);
+  assert.equal(manifest.systems
+    .restored_basin_clock_alignment_preserves_material, true);
+  assert.equal(manifest.systems
+    .restored_basin_clock_alignment_invalidates_stale_receipt, true);
+  assert.equal(manifest.systems.restored_basin_clock_alignment_one_shot, true);
+  assert.equal(manifest.systems.transactional_browser_local_state_commit, true);
+  assert.equal(manifest.systems
+    .lossless_compressed_browser_local_state_fallback, true);
+  assert.equal(manifest.systems.visible_browser_local_save_failure, true);
   assert.equal(manifest.systems.persistent_floodplain_atmosphere_gas_exchange, true);
   assert.equal(manifest.systems.paired_floodplain_dic_debit_and_dissolved_oxygen_credit, true);
   assert.equal(manifest.systems.paired_native_surface_atmosphere_carbon_credit_and_oxygen_debit, true);
@@ -451,9 +552,19 @@ async function run() {
   assert.equal(manifest.systems.unloaded_river_handoff_water_is_retained, true);
   assert.equal(manifest.runtime.physics, 'FLOATING_ORIGIN_SECTOR_FRAME_V1');
   assert.equal(manifest.runtime.earth_system,
-    'EIGHT_LEVEL_NATIVE_MIXED_PHASE_CO2_RADIATIVE_CRYOSPHERE_ATMOSPHERE_SOIL_RUNOFF_RIVER_FLOOD_EVENT_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_DECOMPOSITION_RESPIRATION_NITRATE_AMMONIUM_OXYGEN_AND_ALKALINITY_LEDGERED_NITRIFICATION_TEMPERATURE_RESPONSIVE_DENITRIFICATION_ESTUARY_OCEAN_BIOGEOCHEMISTRY_AND_FINITE_GEOMORPHIC_SEDIMENT_V34');
+    'EIGHT_LEVEL_BOUNDARY_ENERGY_RECEIPTED_THERMAL_HEADROOM_BOUNDED_NATIVE_MIXED_PHASE_CO2_RADIATIVE_CRYOSPHERE_ATMOSPHERE_SOIL_RUNOFF_RIVER_FLOOD_EVENT_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_SCALE_AWARE_DETRITAL_RETURN_AND_REACTION_RECEIVER_DECOMPOSITION_RESPIRATION_NITRATE_AMMONIUM_OXYGEN_AND_ALKALINITY_LEDGERED_NITRIFICATION_TEMPERATURE_RESPONSIVE_DENITRIFICATION_ESTUARY_MIXED_DEEP_OCEAN_CARBONATE_INFORMED_AIR_SEA_CARBON_BIOGEOCHEMISTRY_AND_FINITE_GEOMORPHIC_SEDIMENT_V41');
   assert.equal(manifest.seams.earth_system,
-    'PERSISTED_NATIVE_MIXED_PHASE_CO2_RADIATIVE_CRYOSPHERE_ATMOSPHERE_SOIL_RUNOFF_RIVER_FLOOD_EVENT_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_DECOMPOSITION_RESPIRATION_NITRATE_AMMONIUM_NITRIFICATION_DENITRIFICATION_AND_ALKALINITY_LEDGER_ESTUARY_OCEAN_BIOGEOCHEMISTRY_AND_FINITE_SEDIMENT_V31');
+    'PERSISTED_BOUNDARY_ENERGY_RECEIPTED_THERMAL_HEADROOM_BOUNDED_NATIVE_MIXED_PHASE_CO2_RADIATIVE_CRYOSPHERE_ATMOSPHERE_SOIL_RUNOFF_RIVER_FLOOD_EVENT_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_SCALE_AWARE_DETRITAL_RETURN_AND_REACTION_RECEIVER_DECOMPOSITION_RESPIRATION_NITRATE_AMMONIUM_NITRIFICATION_DENITRIFICATION_AND_ALKALINITY_LEDGER_ESTUARY_MIXED_DEEP_OCEAN_CARBONATE_INFORMED_AIR_SEA_CARBON_BIOGEOCHEMISTRY_AND_FINITE_SEDIMENT_V38');
+  assert.equal(manifest.seams.atmosphere_boundary_energy,
+    'REQUESTED_APPLIED_AND_NATIVE_ENVELOPE_RECONCILIATION_RECEIPT_V1');
+  assert.equal(manifest.seams.atmosphere_phase_thermal_envelope,
+    'NEGATIVE_120_TO_70_C_PRE_MATERIAL_MOVE_LATENT_HEADROOM_BOUND_V1');
+  assert.deepEqual(manifest.systems.native_layer_temperature_envelope_c,
+    [-120, 70]);
+  assert.equal(manifest.systems
+    .native_phase_changes_temperature_headroom_bounded, true);
+  assert.equal(manifest.systems.post_material_temperature_clip_required,
+    false);
   assert.equal(manifest.seams.surface_radiation,
     'NATIVE_LIQUID_ICE_AND_LAYER_CO2_BROADBAND_SHORTWAVE_LONGWAVE_RECEIPT_V2');
   assert.equal(manifest.seams.atmosphere_co2_radiation,
@@ -461,9 +572,13 @@ async function run() {
   assert.equal(manifest.seams.earth_transport,
     'CONSERVATIVE_MIXED_PHASE_EIGHT_LEVEL_ATMOSPHERIC_GAS_OCEAN_RUNOFF_BIOGEOCHEMICAL_AND_SEDIMENT_TRANSPORT_V11');
   assert.equal(manifest.seams.ocean_ecology,
-    'PERSISTENT_MIXED_AND_DEEP_OCEAN_CARBON_NITROGEN_PHOSPHORUS_OXYGEN_ALKALINITY_AND_PLANKTON_RECEIPT_V3');
+    'PERSISTENT_MIXED_AND_DEEP_OCEAN_CARBON_NITROGEN_PHOSPHORUS_OXYGEN_ALKALINITY_CARBONATE_AIR_SEA_EXCHANGE_AND_PLANKTON_RECEIPT_V6');
+  assert.equal(manifest.seams.carbonate_system,
+    'READ_ONLY_TOTAL_SCALE_SURFACE_PRESSURE_DIC_ALKALINITY_PHOSPHATE_EQUILIBRIUM_DIAGNOSTIC_V1');
+  assert.equal(manifest.seams.air_sea_carbon_exchange,
+    'WEISS_1974_WET_AIR_FUGACITY_CARBONATE_CO2_STAR_BOUNDED_PAIRED_OWNER_PROPOSAL_V1');
   assert.equal(manifest.seams.deep_ocean,
-    'PERSISTENT_DISSOLVED_PARTICLE_REMINERALIZATION_AND_SEAFLOOR_BURIAL_RECEIPT_V1');
+    'PERSISTENT_DISSOLVED_ALKALINITY_PARTICLE_REMINERALIZATION_AND_SEAFLOOR_BURIAL_RECEIPT_V2');
   assert.equal(manifest.seams.atmosphere_biogeochemistry,
     'PERSISTENT_EIGHT_LEVEL_CARBON_OXYGEN_NITROGEN_SURFACE_VERTICAL_AND_HORIZONTAL_LINEAGE_V3');
   assert.equal(manifest.seams.atmosphere_biogeochemistry_vertical,
@@ -471,7 +586,9 @@ async function run() {
   assert.equal(manifest.seams.atmosphere_biogeochemistry_transport,
     'PAIRED_NATIVE_LAYER_DRY_AIR_ROUTE_CARBON_OXYGEN_NITROGEN_RECEIPTS_V2');
   assert.equal(manifest.seams.system_audit,
-    'READ_ONLY_SCHEMA_CONSERVATION_OWNERSHIP_AND_TRUTH_BOUNDARY_AUDIT_V1');
+    'READ_ONLY_SCHEMA_CONSERVATION_PHASE_THERMAL_ENVELOPE_SCALE_AWARE_LAND_FLOODPLAIN_PLANT_MATTER_RESOURCE_DETRITAL_RETURN_AND_REACTION_RECEIVER_MASS_CARBONATE_AIR_SEA_CARBON_OWNERSHIP_AND_TRUTH_BOUNDARY_AUDIT_V11');
+  assert.equal(manifest.seams.land_ecology,
+    'PERSISTENT_LOCAL_CARBON_NITROGEN_CANOPY_ROOT_TRANSPIRATION_AND_SCALE_AWARE_SUBGRID_MASS_CLOSURE_RECEIPT_V2');
   assert.equal(manifest.seams.river_chemistry,
     'PERSISTENT_LAND_SENDER_BACKED_DISSOLVED_CARBON_NITRATE_AMMONIUM_PHOSPHORUS_OXYGEN_AND_ALKALINITY_STATE_V4');
   assert.equal(manifest.seams.soil_biogeochemistry,
@@ -485,9 +602,11 @@ async function run() {
   assert.equal(manifest.seams.flood_event_history,
     'BOUNDED_START_CONTINUE_COMPLETE_MAGNITUDE_DURATION_PAYLOAD_AND_RECURRENCE_RECEIPT_V1');
   assert.equal(manifest.seams.floodplain_plant_matter,
-    'PAIRED_LAND_ECOLOGY_SUBGRID_LIVE_STANDING_DEAD_LITTER_CARBON_NITROGEN_RECEIPT_V1');
+    'PAIRED_LAND_ECOLOGY_SUBGRID_LIVE_STANDING_DEAD_LITTER_CARBON_NITROGEN_SCALE_AWARE_PER_CHANNEL_MASS_CLOSURE_RECEIPT_V2');
+  assert.equal(manifest.seams.floodplain_plant_resources,
+    'PAIRED_FLOODPLAIN_LIVE_WATER_AND_LIVE_STANDING_DEAD_LITTER_PHOSPHORUS_SCALE_AWARE_PER_CHANNEL_MASS_CLOSURE_RECEIPT_V2');
   assert.equal(manifest.seams.floodplain_decomposition,
-    'PAIRED_RESOURCE_BACKED_PLANT_DETRITUS_DEBIT_AND_LOCAL_FLOODPLAIN_CARBON_NITROGEN_PHOSPHORUS_RETURN_RECEIPT_V1');
+    'PAIRED_RESOURCE_BACKED_PLANT_DETRITUS_DEBIT_AND_SCALE_AWARE_PER_CHANNEL_LOCAL_FLOODPLAIN_CARBON_NITROGEN_PHOSPHORUS_RETURN_RECEIVER_V2');
   assert.equal(manifest.seams.floodplain_respiration,
     'OXYGEN_LIMITED_LOCAL_FLOODPLAIN_DOC_TO_DIC_AND_DISSOLVED_OXYGEN_DEBIT_RECEIPT_V1');
   assert.equal(manifest.seams.floodplain_denitrification,
@@ -497,7 +616,7 @@ async function run() {
   assert.equal(manifest.seams.floodplain_gas_exchange,
     'PAIRED_BIDIRECTIONAL_FLOODPLAIN_AND_NATIVE_SURFACE_ATMOSPHERE_CARBON_GRADIENT_AND_OXYGEN_EXCHANGE_RECEIPTS_V2');
   assert.equal(manifest.seams.basin_routing,
-    'PERSISTENT_CANONICAL_WATER_CHEMISTRY_NITRATE_AMMONIUM_ALKALINITY_FLOODPLAIN_EVENT_HISTORY_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_DECOMPOSITION_RESPIRATION_NITRIFICATION_DENITRIFICATION_GAS_EXCHANGE_ESTUARY_ATMOSPHERE_AND_GRAIN_SEDIMENT_ROUTING_V21');
+    'PERSISTENT_CANONICAL_WATER_CHEMISTRY_NITRATE_AMMONIUM_ALKALINITY_FLOODPLAIN_EVENT_HISTORY_HABITAT_SUCCESSION_SCALE_AWARE_PLANT_MATTER_RESOURCE_DETRITAL_RETURN_AND_REACTION_RECEIVER_CLOSURE_DECOMPOSITION_RESPIRATION_NITRIFICATION_DENITRIFICATION_GAS_EXCHANGE_ESTUARY_ATMOSPHERE_AND_GRAIN_SEDIMENT_ROUTING_V26');
   assert.equal(manifest.seams.estuary_reactor,
     'PERSISTENT_SEDIMENT_OXYGEN_LIMITED_CNP_AND_ALKALINITY_REACTION_RECEIPT_V2');
   assert.equal(manifest.truth.persistent_estuary_sediment_reservoirs, true);
@@ -540,6 +659,32 @@ async function run() {
   assert.equal(manifest.truth.floodplain_decomposition_exact_sender_receiver_transfer_ids, true);
   assert.equal(manifest.truth.floodplain_decomposition_only_resource_backed_detritus_eligible, true);
   assert.equal(manifest.truth.floodplain_decomposition_local_chemistry_receiver, true);
+  assert.equal(manifest.truth
+    .floodplain_detrital_return_receiver_scale_aware_numeric_closure, true);
+  assert.equal(manifest.truth
+    .floodplain_detrital_return_receiver_per_material_channel_numeric_bounds,
+  true);
+  assert.equal(manifest.truth
+    .floodplain_detrital_return_receiver_measured_residuals_preserved, true);
+  assert.equal(manifest.truth
+    .floodplain_detrital_return_receiver_fixed_absolute_tolerance_only,
+  false);
+  assert.equal(manifest.truth
+    .floodplain_reaction_receipts_scale_aware_numeric_closure, true);
+  assert.equal(manifest.truth
+    .floodplain_reaction_receipts_per_identity_numeric_bounds, true);
+  assert.equal(manifest.truth
+    .floodplain_reaction_receipts_measured_residuals_preserved, true);
+  assert.equal(manifest.truth
+    .floodplain_reaction_receipts_fixed_absolute_tolerance_only, false);
+  assert.equal(manifest.truth
+    .atmosphere_floodplain_gas_exchange_scale_aware_numeric_closure, true);
+  assert.equal(manifest.truth
+    .atmosphere_floodplain_gas_exchange_per_identity_numeric_bounds, true);
+  assert.equal(manifest.truth
+    .atmosphere_floodplain_gas_exchange_measured_residuals_preserved, true);
+  assert.equal(manifest.truth
+    .atmosphere_floodplain_gas_exchange_fixed_absolute_tolerance_only, false);
   assert.equal(manifest.truth.floodplain_decomposition_independent_material_creation, false);
   assert.equal(manifest.truth.floodplain_decomposition_atmospheric_respiration, false);
   assert.equal(manifest.truth.floodplain_decomposition_oxygen_consumption, false);
@@ -551,6 +696,12 @@ async function run() {
   assert.equal(manifest.truth.floodplain_respiration_exact_local_doc_dic_and_oxygen_transfer_ids, true);
   assert.equal(manifest.truth.floodplain_respiration_local_doc_to_dic_carbon_conservation_checked, true);
   assert.equal(manifest.truth.floodplain_respiration_local_oxygen_stoichiometry_checked, true);
+  assert.equal(manifest.truth
+    .floodplain_respiration_scale_aware_numeric_closure, true);
+  assert.equal(manifest.truth
+    .floodplain_respiration_per_identity_numeric_bounds, true);
+  assert.equal(manifest.truth
+    .floodplain_respiration_measured_residuals_preserved, true);
   assert.equal(manifest.truth.floodplain_respiration_oxygen_limited, true);
   assert.equal(manifest.truth.floodplain_respiration_atmosphere_exchange, false);
   assert.equal(manifest.truth.floodplain_respiration_anaerobic_pathway, false);
@@ -559,6 +710,12 @@ async function run() {
   assert.equal(manifest.truth.persistent_floodplain_denitrification, true);
   assert.equal(manifest.truth.floodplain_denitrification_exact_owner_transfer_ids, true);
   assert.equal(manifest.truth.floodplain_denitrification_carbon_nitrogen_conservation_checked, true);
+  assert.equal(manifest.truth
+    .floodplain_denitrification_scale_aware_numeric_closure, true);
+  assert.equal(manifest.truth
+    .floodplain_denitrification_per_identity_numeric_bounds, true);
+  assert.equal(manifest.truth
+    .floodplain_denitrification_measured_residuals_preserved, true);
   assert.equal(manifest.truth.floodplain_denitrification_native_atmosphere_surface_layer, true);
   assert.equal(manifest.truth.floodplain_denitrification_oxygen_gated, true);
   assert.equal(manifest.truth.floodplain_denitrification_nitrogen_limited, true);
@@ -588,6 +745,12 @@ async function run() {
   assert.equal(manifest.truth.floodplain_nitrification_dissolved_oxygen_debited, true);
   assert.equal(manifest.truth.floodplain_nitrification_minimum_oxygen_reserve_honored, true);
   assert.equal(manifest.truth.floodplain_nitrification_nitrogen_and_oxygen_conservation_checked, true);
+  assert.equal(manifest.truth
+    .floodplain_nitrification_scale_aware_numeric_closure, true);
+  assert.equal(manifest.truth
+    .floodplain_nitrification_per_identity_numeric_bounds, true);
+  assert.equal(manifest.truth
+    .floodplain_nitrification_measured_residuals_preserved, true);
   assert.equal(manifest.truth.floodplain_nitrification_surface_temperature_proxy_responsive, true);
   assert.equal(manifest.truth.floodplain_nitrification_q10_temperature_response_parameterized, true);
   assert.equal(manifest.truth.floodplain_nitrification_alkalinity_demand_diagnostic, false);
@@ -600,9 +763,34 @@ async function run() {
     .persistent_soil_runoff_river_floodplain_and_ocean_alkalinity_with_estuary_flux,
   true);
   assert.equal(manifest.truth.measured_alkalinity_claimed, false);
-  assert.equal(manifest.truth.carbonate_speciation_resolved, false);
-  assert.equal(manifest.truth.ph_resolved, false);
-  assert.equal(manifest.truth.deep_ocean_alkalinity_exchange, false);
+  assert.equal(manifest.truth.carbonate_speciation_resolved, true);
+  assert.equal(manifest.truth.ph_resolved, true);
+  assert.equal(manifest.truth.carbonate_speciation_scope,
+    'mixed-layer-surface-pressure-within-lueker-2000-open-ocean-envelope');
+  assert.equal(manifest.truth.carbonate_diagnostic_mutates_material, false);
+  assert.equal(manifest.truth.carbonate_ph_scale, 'total-hydrogen-ion');
+  assert.equal(manifest.truth.carbonate_phosphate_alkalinity_included, true);
+  assert.equal(manifest.truth.carbonate_silicate_alkalinity_included, false);
+  assert.equal(manifest.truth.carbonate_fluoride_alkalinity_included, false);
+  assert.equal(manifest.truth.carbonate_pressure_corrections_included, false);
+  assert.equal(manifest.truth.carbonate_informed_air_sea_co2_exchange, true);
+  assert.equal(manifest.truth
+    .air_sea_co2_wet_air_partial_pressure_included, true);
+  assert.equal(manifest.truth.air_sea_co2_fugacity_nonideality_included, true);
+  assert.equal(manifest.truth
+    .air_sea_carbon_combined_owner_conservation_checked, true);
+  assert.equal(manifest.truth.scientific_air_sea_gas_transfer_velocity, false);
+  assert.equal(manifest.truth.measured_air_sea_pco2, false);
+  assert.equal(manifest.truth.measured_ocean_skin_temperature, false);
+  assert.equal(manifest.truth.species_resolved_marine_ph_response, false);
+  assert.equal(manifest.truth.deep_ocean_ph_resolved, false);
+  assert.equal(manifest.truth.carbonate_ph_feedback_modeled, false);
+  assert.equal(manifest.truth.deep_ocean_alkalinity_exchange, true);
+  assert.equal(manifest.truth.deep_ocean_alkalinity_explicit_zero_migration,
+    true);
+  assert.equal(manifest.truth.persistent_deep_ocean_alkalinity, true);
+  assert.equal(manifest.truth.mixed_to_deep_alkalinity_conservation_checked,
+    true);
   assert.equal(manifest.truth.floodplain_nitrification_ph_feedback_modeled, false);
   assert.equal(manifest.truth.floodplain_nitrification_microbe_population_state, false);
   assert.equal(manifest.truth.scientific_floodplain_nitrification_model, false);
@@ -612,6 +800,12 @@ async function run() {
   assert.equal(manifest.truth.persistent_floodplain_atmosphere_gas_exchange, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_exact_owner_transfer_ids, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_carbon_oxygen_conservation_checked, true);
+  assert.equal(manifest.truth
+    .floodplain_gas_exchange_scale_aware_numeric_closure, true);
+  assert.equal(manifest.truth
+    .floodplain_gas_exchange_per_identity_numeric_bounds, true);
+  assert.equal(manifest.truth
+    .floodplain_gas_exchange_measured_residuals_preserved, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_native_atmosphere_surface_layer, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_physical_with_life_off, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_bidirectional_carbon_gradient_parameterized, true);
@@ -722,6 +916,12 @@ async function run() {
   assert.equal(manifest.truth.river_water_discarded_at_unloaded_handoff, false);
   assert.equal(manifest.truth.experience_capsule_renderer_independent, true);
   assert.equal(manifest.truth.experience_capsule_is_canonical_world_state, false);
+  assert.equal(manifest.truth
+    .restored_basin_clock_alignment_reconstructs_history, false);
+  assert.equal(manifest.truth.runtime_basin_clock_mismatch_masked, false);
+  assert.equal(manifest.truth
+    .browser_save_revision_advances_before_storage_success, false);
+  assert.equal(manifest.truth.browser_save_failures_silenced, false);
   assert.equal(manifest.truth.experience_capsule_has_world_mutation_authority, false);
   assert.equal(manifest.truth.observer_can_propose_world_actions, false);
   assert.equal(manifest.truth.player_can_propose_world_actions, true);
@@ -735,10 +935,12 @@ async function run() {
   assert.equal(registry.worlds.filter(world => world.id === 'world.grafthold.globe').length, 1, 'original living globe remains registered');
 
   assert.ok(html.includes('id="lifeMaster"'), 'living master UI');
+  assert.ok(html.includes('./app.mjs?v=0.62.0-r62.1'),
+    'the browser entry requests the coherent R62 atmosphere-owner closure graph');
   assert.ok(html.includes('id="profileSelect"'), 'replaceable condition UI');
   assert.ok(html.includes('id="riverHandoffs"') && html.includes('id="physicsFrame"') && html.includes('id="persistenceRevision"') && html.includes('id="hostAuthority"'), 'continuity, physics, persistence and host diagnostics');
   assert.ok(html.includes('id="earthCell"') && html.includes('id="waterBudget"') && html.includes('id="energyBudget"') && html.includes('id="radiationBudget"') && html.includes('id="co2RadiativeFeedback"') && html.includes('id="cryospherePhase"') && html.includes('id="seaIce"'), 'Earth-system reservoirs, cloud and CO2 radiation, frozen-phase energy and conservation are visible');
-  assert.ok(html.includes('id="marineProductivity"') && html.includes('id="marineCarbon"') && html.includes('id="marineNutrients"') && html.includes('id="marineOxygen"'), 'marine productivity and C/N/P/O2 evidence are visible');
+  assert.ok(html.includes('id="marineProductivity"') && html.includes('id="marineCarbon"') && html.includes('id="marineNutrients"') && html.includes('id="marineCarbonate"') && html.includes('id="marineAirSeaCarbon"') && html.includes('id="marineOxygen"'), 'marine productivity, C/N/P/O2, bounded carbonate and air-sea equilibrium evidence are visible');
   assert.ok(html.includes('id="transportDomain"') && html.includes('id="transportWater"') && html.includes('id="transportClosure"'), 'neighbor transport graph and conservation are visible');
   assert.ok(html.includes('id="atmosphereWater"') && html.includes('id="atmosphereBiogeochemistry"') && html.includes('id="atmosphereGasProfile"') && html.includes('id="atmosphereGasTransport"') && html.includes('id="integrityAudit"') && html.includes('id="runoffQueue"') && html.includes('id="mineralSediment"') && html.includes('id="runoffDestination"'), 'closed atmospheric water, eight-level atmospheric gases, runtime integrity, runoff routing, and finite sediment are visible');
   assert.ok(html.includes('id="experienceSeam"'), 'renderer-independent observer/player/sandbox experience membrane is visible');
@@ -750,11 +952,37 @@ async function run() {
     'live diagnostics consume the native phase/descent/adjacent-exchange receipt');
   assert.ok(app.includes("from '/shared/vendor/three-r160/three.module.js'"), 'local Three.js renderer');
   assert.ok(app.includes('window.AXMFoundationPlanet'), 'read-only world API');
+  assert.ok(app.includes('options.commit !== false') &&
+    app.includes('{ allowMarine: true }') &&
+    app.includes('{ commit: false }'),
+  'orbital hover previews do not commit world coordinates and view toggles preserve marine expeditions');
   assert.ok(app.includes('SURFACE_SIZE_KM = 120'), 'bounded local surface stream');
   assert.ok(app.includes('buildHydrologySector'), 'hydrology is integrated into surface streaming');
   assert.ok(app.includes('EarthSystemEngine') && app.includes('coupleHydrologyToEarthSystem') && app.includes('earthSystemColumn'), 'stateful Earth system is integrated into runtime, rivers and read API');
   assert.ok(app.includes('transportEarthSystemColumns') && app.includes('synchronizeEarthTransportDomain') && app.includes('earthTransportDescription'), 'canonical neighbor transport is integrated into runtime and read API');
-  assert.ok(app.includes("AXMFoundationPlanet/v47") && app.includes('auditFoundationSystem') && app.includes('currentSystemAudit') && app.includes('atmosphereGasProfile') && app.includes('atmosphereGasTransport') && app.includes('lastPressureColumnDynamicsReceipt') && app.includes('verticalInterfaces') && app.includes('adjacentExchangeReceipts') && app.includes('surfaceRainfallMm') && app.includes('surfaceSnowfallMm') && app.includes('cloudIceMm') && app.includes('lastPressureColumnHorizontalTransportReceipt') && app.includes('nativePressureTransportReceipt') && app.includes('lastPressureColumnSyncReceipt') && app.includes('modelTopHeightM') && app.includes('lastVerticalExchangeReceipt') && app.includes('buoyancyWorkJm2') && app.includes('atmosphereGeopotentialEnergyResidualJ') && app.includes('lastBasinRoutingReceipt') && app.includes('basinRoutingDescription') && app.includes('floodplainDescription') && app.includes('floodplainHabitatDescription') && app.includes('floodEventHistoryDescription') && app.includes('floodplainSuccessionDescription') && app.includes('floodplainPlantMatterDescription') && app.includes('floodplainPlantResourcesDescription') && app.includes('floodplainDecompositionDescription') && app.includes('floodplainRespirationDescription') && app.includes('floodplainDenitrificationDescription') && app.includes('floodplainNitrificationDescription') && app.includes('floodplainGasExchangeDescription') && app.includes('floodplainStorage') && app.includes('floodplainHabitat') && app.includes('floodEvents') && app.includes('floodplainSuccession') && app.includes('floodplainPlantMatter') && app.includes('floodplainPlantResources') && app.includes('floodplainDecomposition') && app.includes('floodplainRespiration') && app.includes('floodplainDenitrification') && app.includes('floodplainNitrification') && app.includes('floodplainGasExchange') && app.includes('activeProfileStoredNitrogenSpecies') && app.includes('riverFloodplainNitrateAmmonium') && app.includes('alkalinityKgCaCO3Eq') && app.includes('alkalinityGeneratedKgCaCO3Eq') && app.includes('alkalinityLimitedReachCount') && app.includes('radiationBudget') && app.includes('co2RadiativeFeedback') && app.includes('atmosphereCo2RadiativeCoupling') && app.includes('cryospherePhase') && app.includes('atmosphereBiogeochemistry') && app.includes('canopyPhysiology') && app.includes('carbonFlux') && app.includes('carbonPools') && app.includes('nitrogenCycle') && app.includes('marineProductivity') && app.includes('marineCarbon') && app.includes('marineNutrients') && app.includes('marineOxygen') && app.includes('marineDeepOcean') && app.includes('channelChemistry') && app.includes('estuaryStorage') && app.includes('runoffBiogeochemistry') && app.includes('mineralSediment') && app.includes('effectiveSoilDepthM') && app.includes('geomorphicSedimentDescription') && app.includes('createExperienceSectorCapsule') && app.includes('openExperienceLease') && app.includes('dispatchExperienceIntent') && app.includes('auditExperienceProtocol'), 'Rung 51 exposes the end-to-end CaCO3-equivalent alkalinity ledger beside the governed experience membrane');
+  assert.ok(app.includes('reconcileRestoredClock') &&
+    app.includes('basinRoutingStatus') &&
+    app.includes('persistenceEncoding') &&
+    app.includes('SAVE FAILED'),
+  'the live API exposes the restored-clock checkpoint and honest browser-save status read-only');
+  assert.ok(app.includes("AXMFoundationPlanet/v58") && app.includes('plantMatterMaximumResidualKg') && app.includes('plantMatterMaximumToleranceKg') && app.includes('floodplainPlantMatterMassClosurePolicy') && app.includes('plantSenderMaximumResidualKg') && app.includes('plantSenderMaximumToleranceKg') && app.includes('floodplainPlantResourceMaximumResidualKg') && app.includes('floodplainPlantResourceMaximumToleranceKg') && app.includes('floodplainPlantResourceMassClosurePolicy') && app.includes('landEcologyMassClosurePolicy') && app.includes('boundaryNativeEnvelopeReconciliationJm2') && app.includes('lastBoundaryEnergyReceipt') && app.includes('thermalEnvelopeLimitCount') && app.includes('maximumThermallyRejectedRequestMm') && app.includes('auditFoundationSystem') && app.includes('currentSystemAudit') && app.includes('atmosphereGasProfile') && app.includes('atmosphereGasTransport') && app.includes('lastPressureColumnDynamicsReceipt') && app.includes('verticalInterfaces') && app.includes('adjacentExchangeReceipts') && app.includes('surfaceRainfallMm') && app.includes('surfaceSnowfallMm') && app.includes('cloudIceMm') && app.includes('lastPressureColumnHorizontalTransportReceipt') && app.includes('nativePressureTransportReceipt') && app.includes('lastPressureColumnSyncReceipt') && app.includes('modelTopHeightM') && app.includes('lastVerticalExchangeReceipt') && app.includes('buoyancyWorkJm2') && app.includes('atmosphereGeopotentialEnergyResidualJ') && app.includes('lastBasinRoutingReceipt') && app.includes('basinRoutingDescription') && app.includes('floodplainDescription') && app.includes('floodplainHabitatDescription') && app.includes('floodEventHistoryDescription') && app.includes('floodplainSuccessionDescription') && app.includes('floodplainPlantMatterDescription') && app.includes('floodplainPlantResourcesDescription') && app.includes('floodplainDecompositionDescription') && app.includes('floodplainRespirationDescription') && app.includes('floodplainDenitrificationDescription') && app.includes('floodplainNitrificationDescription') && app.includes('floodplainGasExchangeDescription') && app.includes('floodplainStorage') && app.includes('floodplainHabitat') && app.includes('floodEvents') && app.includes('floodplainSuccession') && app.includes('floodplainPlantMatter') && app.includes('floodplainPlantResources') && app.includes('floodplainDecomposition') && app.includes('floodplainRespiration') && app.includes('floodplainDenitrification') && app.includes('floodplainNitrification') && app.includes('floodplainGasExchange') && app.includes('activeProfileStoredNitrogenSpecies') && app.includes('riverFloodplainNitrateAmmonium') && app.includes('alkalinityKgCaCO3Eq') && app.includes('alkalinityGeneratedKgCaCO3Eq') && app.includes('alkalinityLimitedReachCount') && app.includes('radiationBudget') && app.includes('co2RadiativeFeedback') && app.includes('atmosphereCo2RadiativeCoupling') && app.includes('cryospherePhase') && app.includes('atmosphereBiogeochemistry') && app.includes('canopyPhysiology') && app.includes('carbonFlux') && app.includes('carbonPools') && app.includes('nitrogenCycle') && app.includes('marineProductivity') && app.includes('marineCarbon') && app.includes('marineNutrients') && app.includes('marineCarbonate') && app.includes('marineAirSeaCarbon') && app.includes('mixedLayerCarbonate') && app.includes('airSeaCarbonExchange') && app.includes('marineOxygen') && app.includes('marineDeepOcean') && app.includes('alkalinitySurfaceToDeepKgCaCO3Eqm2') && app.includes('channelChemistry') && app.includes('estuaryStorage') && app.includes('runoffBiogeochemistry') && app.includes('mineralSediment') && app.includes('effectiveSoilDepthM') && app.includes('geomorphicSedimentDescription') && app.includes('createExperienceSectorCapsule') && app.includes('openExperienceLease') && app.includes('dispatchExperienceIntent') && app.includes('auditExperienceProtocol'), 'established systems remain exposed through the current API');
+  assert.ok(app.includes("AXMFoundationPlanet/v56") &&
+    app.includes('detritalReturnMaximumResidualKg') &&
+    app.includes('detritalReturnMaximumToleranceKg') &&
+    app.includes('floodplainDetritalReturnMassClosurePolicy'),
+  'Rung 60 exposes measured receiver residuals, derived bounds and the typed detrital-return policy');
+  assert.ok(app.includes("AXMFoundationPlanet/v57") &&
+    app.includes('reactionOwnerNumeric') &&
+    app.includes('floodplainReactionMaximumResidualKg') &&
+    app.includes('floodplainReactionMaximumToleranceKg') &&
+    app.includes('floodplainReactionMassClosurePolicy'),
+  'Rung 61 exposes measured reaction-receiver residuals, derived bounds and the shared typed policy');
+  assert.ok(app.includes("AXMFoundationPlanet/v58") &&
+    app.includes('atmosphereGasExchangeNumeric') &&
+    app.includes('atmosphereFloodplainGasExchangeMaximumResidualKg') &&
+    app.includes('atmosphereFloodplainGasExchangeMaximumToleranceKg') &&
+    app.includes('atmosphereFloodplainGasExchangeMassClosurePolicy'),
+  'Rung 62 exposes measured atmosphere-owner residuals, derived bounds and its typed policy');
   assert.ok(app.includes('conditionTransitioning') && app.includes('if (conditionTransitioning && !force) return'), 'condition replacement cannot mix a new profile ID with the previous surface sample');
   assert.ok(app.includes('probeFoundationHost') && app.includes('proposeHostBootstrap') && app.includes('createSectorSubscription'), 'read-only API exposes explicit named-host proposals and sector subscriptions');
   assert.ok(operationsApi.includes("'/api/living-worlds'") && operationsApi.includes("'/api/living-world/create'"), 'Workshop exposes named-world catalog and explicit creation endpoints');
@@ -763,7 +991,7 @@ async function run() {
   assert.ok(!/Math\.random\(/.test(app + read('core/planet-model.mjs') + read('core/living-system.mjs')), 'world generation avoids unseeded randomness');
   assert.ok(/["']\.mjs["']\s*:\s*["']text\/javascript; charset=utf-8["']/.test(server), 'Workshop serves planet modules with JavaScript MIME');
 
-  ['app.mjs', 'core/planet-model.mjs', 'core/layer-system.mjs', 'core/living-system.mjs', 'core/geophysics.mjs', 'core/hydrology-model.mjs', 'core/species-catalog.mjs', 'core/community-model.mjs', 'core/seasonal-weather.mjs', 'core/pressure-column.mjs', 'core/pressure-transport.mjs', 'core/surface-radiation.mjs', 'core/atmosphere-co2-radiation.mjs', 'core/atmosphere-biogeochemistry.mjs', 'core/atmosphere-biogeochemistry-vertical.mjs', 'core/atmosphere-biogeochemistry-transport.mjs', 'core/land-ecology.mjs', 'core/ocean-ecology.mjs', 'core/deep-ocean.mjs', 'core/river-chemistry.mjs', 'core/soil-biogeochemistry.mjs', 'core/geomorphic-sediment.mjs', 'core/floodplain.mjs', 'core/floodplain-habitat.mjs', 'core/flood-event-history.mjs', 'core/floodplain-succession.mjs', 'core/floodplain-plant-matter.mjs', 'core/floodplain-plant-resources.mjs', 'core/floodplain-decomposition.mjs', 'core/floodplain-respiration.mjs', 'core/floodplain-denitrification.mjs', 'core/floodplain-nitrification.mjs', 'core/floodplain-gas-exchange.mjs', 'core/estuary-reactor.mjs', 'core/earth-system.mjs', 'core/earth-transport.mjs', 'core/basin-routing.mjs', 'core/system-audit.mjs', 'core/experience-protocol.mjs', 'core/ecosystem-dynamics.mjs', 'core/physics-contract.mjs', 'core/world-state.mjs', 'core/host-protocol.mjs', 'core/world-authority.mjs'].forEach(file => {
+  ['app.mjs', 'core/planet-model.mjs', 'core/layer-system.mjs', 'core/living-system.mjs', 'core/geophysics.mjs', 'core/hydrology-model.mjs', 'core/species-catalog.mjs', 'core/community-model.mjs', 'core/seasonal-weather.mjs', 'core/pressure-column.mjs', 'core/phase-thermal-envelope.mjs', 'core/atmosphere-boundary-energy.mjs', 'core/pressure-transport.mjs', 'core/surface-radiation.mjs', 'core/atmosphere-co2-radiation.mjs', 'core/atmosphere-biogeochemistry.mjs', 'core/atmosphere-biogeochemistry-vertical.mjs', 'core/atmosphere-biogeochemistry-transport.mjs', 'core/land-ecology.mjs', 'core/ocean-ecology.mjs', 'core/carbonate-system.mjs', 'core/air-sea-carbon-exchange.mjs', 'core/deep-ocean.mjs', 'core/river-chemistry.mjs', 'core/soil-biogeochemistry.mjs', 'core/geomorphic-sediment.mjs', 'core/floodplain.mjs', 'core/floodplain-habitat.mjs', 'core/flood-event-history.mjs', 'core/floodplain-succession.mjs', 'core/floodplain-plant-matter.mjs', 'core/floodplain-plant-resources.mjs', 'core/floodplain-decomposition.mjs', 'core/floodplain-respiration.mjs', 'core/floodplain-denitrification.mjs', 'core/floodplain-nitrification.mjs', 'core/floodplain-gas-exchange.mjs', 'core/estuary-reactor.mjs', 'core/earth-system.mjs', 'core/earth-transport.mjs', 'core/basin-routing.mjs', 'core/system-audit.mjs', 'core/experience-protocol.mjs', 'core/ecosystem-dynamics.mjs', 'core/physics-contract.mjs', 'core/world-state.mjs', 'core/host-protocol.mjs', 'core/world-authority.mjs'].forEach(file => {
     childProcess.execFileSync(process.execPath, ['--check', path.join(root, file)], { stdio: 'pipe' });
   });
 
@@ -1154,24 +1382,62 @@ async function run() {
       .dissolvedAmmoniumNitrogenKgN - 2.25) < 1e-12,
   'water-fraction routing debits nitrate and ammonium proportionally without collapsing their identities');
   assert.equal(floodplain.FLOODPLAIN_STATE_SCHEMA,
-    'axm.foundation-planet.floodplain-state/v4');
+    'axm.foundation-planet.floodplain-state/v5');
   assert.equal(floodplain.PREVIOUS_FLOODPLAIN_STATE_SCHEMA,
-    'axm.foundation-planet.floodplain-state/v3');
+    'axm.foundation-planet.floodplain-state/v4');
   assert.equal(floodplain.LEGACY_FLOODPLAIN_STATE_SCHEMA,
+    'axm.foundation-planet.floodplain-state/v3');
+  assert.equal(floodplain.OLDEST_FLOODPLAIN_STATE_SCHEMA,
     'axm.foundation-planet.floodplain-state/v2');
+  assert.equal(floodplain.EARLIEST_FLOODPLAIN_STATE_SCHEMA,
+    'axm.foundation-planet.floodplain-state/v1');
+  assert.equal(floodplain.FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
+    'axm.foundation-planet.floodplain-reaction-mass-closure-policy/v1');
+  assert.deepEqual(
+    floodplain.FLOODPLAIN_REACTION_MASS_CLOSURE_ABSOLUTE_FLOORS_KG, {
+      carbonKgC: 1e-7,
+      nitrogenKgN: 1e-7,
+      ammoniumNitrogenKgN: 1e-9,
+      oxygenKgO2: 1e-7,
+      alkalinityKgCaCO3Eq: 1e-7
+    });
+  assert.equal(floodplain.FLOODPLAIN_REACTION_MASS_CLOSURE_ULP_FACTOR, 8);
+  assert.ok(floodplain.floodplainReactionMassClosureToleranceKg(
+    'oxygenKgO2', 5e11, 4e11) > 1e-7,
+  'reaction closure bounds increase deterministically with recorded operand scale');
   const legacyAlkalinityFloodplain = floodplain.emptyFloodplainState();
   legacyAlkalinityFloodplain.schema = floodplain
     .PREVIOUS_FLOODPLAIN_STATE_SCHEMA;
   legacyAlkalinityFloodplain.waterKg = 500;
   legacyAlkalinityFloodplain.chemistry = JSON.parse(JSON.stringify(
     legacyAlkalinityRiver));
+  legacyAlkalinityFloodplain.lastAerobicMineralizationReceipt = {
+    schema: floodplain
+      .PREVIOUS_FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA
+  };
+  legacyAlkalinityFloodplain.lastDenitrificationReactionReceipt = {
+    schema: floodplain
+      .PREVIOUS_FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA
+  };
+  legacyAlkalinityFloodplain.lastNitrificationReactionReceipt = {
+    schema: floodplain
+      .PREVIOUS_FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA
+  };
+  legacyAlkalinityFloodplain.lastGasExchangeReceipt = {
+    schema: floodplain.PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA
+  };
   const migratedAlkalinityFloodplain = floodplain.normalizeFloodplainState(
     legacyAlkalinityFloodplain);
   assert.ok(migratedAlkalinityFloodplain.waterKg === 500 &&
     migratedAlkalinityFloodplain.chemistry.dissolvedInorganicCarbonKgC === 4 &&
     migratedAlkalinityFloodplain.chemistry.alkalinityKgCaCO3Eq === 0 &&
+    migratedAlkalinityFloodplain.lastAerobicMineralizationReceipt === null &&
+    migratedAlkalinityFloodplain.lastDenitrificationReactionReceipt ===
+      null &&
+    migratedAlkalinityFloodplain.lastNitrificationReactionReceipt === null &&
+    migratedAlkalinityFloodplain.lastGasExchangeReceipt === null &&
     migratedAlkalinityFloodplain.migrationCheckpoint === true,
-  'v3 floodplain migration preserves water and chemistry while adding zero owned alkalinity');
+  'v4-to-v5 floodplain migration preserves water and chemistry while dropping obsolete fixed-threshold reaction receipts');
   const floodChannelChemistry = riverChemistry.emptyRiverChemistry();
   floodChannelChemistry.dissolvedInorganicCarbonKgC = 12;
   floodChannelChemistry.dissolvedOrganicCarbonKgC = 4;
@@ -1635,9 +1901,85 @@ async function run() {
   assert.equal(floodplainPlantMatter.FLOODPLAIN_PLANT_MATTER_STATE_SCHEMA,
     'axm.foundation-planet.floodplain-plant-matter-state/v1');
   assert.equal(floodplainPlantMatter.FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA,
-    'axm.foundation-planet.floodplain-plant-matter-receipt/v1');
+    'axm.foundation-planet.floodplain-plant-matter-receipt/v2');
+  assert.equal(floodplainPlantMatter
+    .PREVIOUS_FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA,
+  'axm.foundation-planet.floodplain-plant-matter-receipt/v1');
+  assert.equal(floodplainPlantMatter
+    .FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_POLICY_SCHEMA,
+  'axm.foundation-planet.floodplain-plant-matter-mass-closure-policy/v1');
+  assert.equal(floodplainPlantMatter
+    .FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG, 1e-7);
+  assert.equal(floodplainPlantMatter
+    .FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ULP_FACTOR, 8);
   assert.equal(landEcology.LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA,
+    'axm.foundation-planet.land-ecology-subgrid-biomass-debit/v2');
+  assert.equal(
+    landEcology.PREVIOUS_LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA,
     'axm.foundation-planet.land-ecology-subgrid-biomass-debit/v1');
+  assert.equal(landEcology.LAND_ECOLOGY_MASS_CLOSURE_POLICY_SCHEMA,
+    'axm.foundation-planet.land-ecology-mass-closure-policy/v1');
+  const scaleAwareMatterState = floodplainPlantMatter
+    .emptyFloodplainPlantMatterState();
+  const scaleAwareMatterCarbonKgC = 5e8;
+  scaleAwareMatterState.guilds.aquaticPioneers.live = {
+    carbonKgC: scaleAwareMatterCarbonKgC,
+    nitrogenKgN: scaleAwareMatterCarbonKgC / 22
+  };
+  scaleAwareMatterState.guilds.aquaticPioneers.standingDead = {
+    carbonKgC: scaleAwareMatterCarbonKgC * .41,
+    nitrogenKgN: scaleAwareMatterCarbonKgC * .41 / 22
+  };
+  scaleAwareMatterState.guilds.aquaticPioneers.litter = {
+    carbonKgC: scaleAwareMatterCarbonKgC / 3,
+    nitrogenKgN: scaleAwareMatterCarbonKgC / 3 / 22
+  };
+  const scaleAwareMatterSuccession = {
+    schema: floodplainSuccession.FLOODPLAIN_SUCCESSION_RECEIPT_SCHEMA,
+    status: 'succession-transitioned',
+    digest: 'fnv1a32:r59-held-succession',
+    community: {
+      after: {
+        guilds: Object.fromEntries(
+          floodplainSuccession.FLOODPLAIN_SUCCESSION_GUILDS.map(id =>
+            [id, {
+              juvenileCoverFraction: 0,
+              matureCoverFraction: id === 'aquaticPioneers' ? 1 : 0
+            }]))
+      }
+    }
+  };
+  const scaleAwareMatterAreaM2 = scaleAwareMatterCarbonKgC / .24;
+  const scaleAwareMatterDemand = floodplainPlantMatter
+    .floodplainPlantMatterDemand(scaleAwareMatterState,
+      scaleAwareMatterSuccession, scaleAwareMatterAreaM2);
+  const scaleAwareMatterTransition = floodplainPlantMatter
+    .advanceFloodplainPlantMatter(scaleAwareMatterState,
+      scaleAwareMatterSuccession, {
+        totals: scaleAwareMatterDemand.totals,
+        perGuild: Object.fromEntries(
+          floodplainSuccession.FLOODPLAIN_SUCCESSION_GUILDS.map(id =>
+            [id, scaleAwareMatterDemand.perGuild[id].demand])),
+        transferIds: {}
+      }, {
+        reachId: floodReach.id, startDay: 519.5,
+        durationDays: 1, areaM2: scaleAwareMatterAreaM2
+      });
+  const scaleAwareMatterFlow = scaleAwareMatterTransition.receipt.guildFlows
+    .find(entry => entry.guildId === 'aquaticPioneers');
+  assert.ok(Math.abs(scaleAwareMatterFlow.closure.carbonResidualKgC) >
+      floodplainPlantMatter
+        .FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG &&
+    Math.abs(scaleAwareMatterFlow.closure.carbonResidualKgC) <=
+      scaleAwareMatterFlow.closure.numericToleranceKg.carbonKgC &&
+    scaleAwareMatterTransition.receipt.truth.carbonAndNitrogenClosed === true &&
+    scaleAwareMatterTransition.receipt.truth
+      .scaleAwareFloatingPointClosure === true &&
+    scaleAwareMatterTransition.receipt.truth
+      .perMaterialChannelNumericBounds === true &&
+    scaleAwareMatterTransition.receipt.truth.measuredResidualsPreserved === true &&
+    scaleAwareMatterTransition.receipt.truth.fixedAbsoluteToleranceOnly === false,
+  'a held large standing-dead/litter transition preserves its measured residual and closes inside the recorded scale-aware channel bound');
   const baselineSuccession = floodplainSuccession
     .advanceFloodplainSuccession(establishedSuccession,
       secondPulseHabitatStep.state, 1, {
@@ -1711,6 +2053,39 @@ async function run() {
       plantSenderDebit.receipt.after.nitrogenKgN -
       plantDemand.totals.nitrogenKgN) < 1e-6,
   'the land-cell sender persistently debits the exact plant C/N credit');
+  const largeScaleSenderState = landEcology.createLandEcology({
+    land: true,
+    biome: 'rainforest',
+    habitability: .79,
+    moisture: .78,
+    temperatureC: 24,
+    ecology: { productivity: .79 },
+    geology: { soilDepthM: 1.74 }
+  }, { soilDepthM: 1.74, texture: 'loam' }, { lifeAbundance: 1 });
+  const largeScaleSenderAreaM2 = 3e9;
+  const largeScaleSenderCapacity = landEcology
+    .landEcologySubgridDebitCapacity(largeScaleSenderState,
+      largeScaleSenderAreaM2, 1, { maximumDailyFraction: .0025 });
+  const largeScaleSenderDebit = landEcology
+    .applyLandEcologySubgridBiomassDebit(largeScaleSenderState,
+      largeScaleSenderAreaM2, [{
+        transferId: 'r57-large-scale-closure',
+        reachId: floodReach.id,
+        carbonKgC: largeScaleSenderCapacity.carbonKgC * .1,
+        nitrogenKgN: largeScaleSenderCapacity.nitrogenKgN * .1
+      }], {
+        donorCellId: earthColumnA.id,
+        startDay: 521,
+        durationDays: 1,
+        maximumDailyFraction: .0025
+      });
+  assert.ok(Math.abs(largeScaleSenderDebit.receipt.closure
+      .carbonResidualKgC) > 1e-6 &&
+    Math.abs(largeScaleSenderDebit.receipt.closure.carbonResidualKgC) <=
+      largeScaleSenderDebit.receipt.closure.numericToleranceKg.carbonKgC &&
+    largeScaleSenderDebit.receipt.truth.carbonAndNitrogenClosed === true &&
+    largeScaleSenderDebit.receipt.truth.measuredResidualsPreserved === true,
+  'the held Earth-cell-scale sender keeps its representational residual while closing under a receipt-derived IEEE-754 bound');
   const materializedPlantMatter = floodplainPlantMatter
     .advanceFloodplainPlantMatter(migratedPlantMatter.state,
       growingSuccession.receipt, {
@@ -1837,11 +2212,74 @@ async function run() {
     'axm.foundation-planet.floodplain-plant-resources-state/v1');
   assert.equal(
     floodplainPlantResources.FLOODPLAIN_PLANT_RESOURCES_RECEIPT_SCHEMA,
-    'axm.foundation-planet.floodplain-plant-resources-receipt/v1');
+    'axm.foundation-planet.floodplain-plant-resources-receipt/v2');
+  assert.equal(floodplainPlantResources
+    .PREVIOUS_FLOODPLAIN_PLANT_RESOURCES_RECEIPT_SCHEMA,
+  'axm.foundation-planet.floodplain-plant-resources-receipt/v1');
+  assert.equal(floodplainPlantResources
+    .FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_POLICY_SCHEMA,
+  'axm.foundation-planet.floodplain-plant-resource-mass-closure-policy/v1');
+  assert.equal(floodplainPlantResources
+    .FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG, 1e-7);
+  assert.equal(floodplainPlantResources
+    .FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ULP_FACTOR, 8);
   assert.equal(floodplain.FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
     'axm.foundation-planet.floodplain-plant-resource-debit/v1');
   assert.equal(floodplain.FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA,
     'axm.foundation-planet.floodplain-plant-water-return/v1');
+  const scaleAwareResourceState = floodplainPlantResources
+    .emptyFloodplainPlantResourcesState();
+  scaleAwareResourceState.guilds.wetMeadow.live = {
+    supportedCarbonKgC: 3, phosphorusKgP: 0, waterKg: 1e10
+  };
+  const scaleAwareMatterReceipt = {
+    schema: floodplainPlantMatter.FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA,
+    status: 'plant-matter-transitioned', digest: 'fnv1a32:r58-held-matter',
+    reachId: floodReach.id,
+    guildFlows: floodplainSuccession.FLOODPLAIN_SUCCESSION_GUILDS.map(id => ({
+      guildId: id,
+      landEcologyCredit: { carbonKgC: 0 },
+      liveToStandingDead: { carbonKgC: id === 'wetMeadow' ? 1 : 0 },
+      standingDeadToLitter: { carbonKgC: 0 },
+      before: {
+        live: { carbonKgC: id === 'wetMeadow' ? 3 : 0 },
+        standingDead: { carbonKgC: 0 }
+      }
+    }))
+  };
+  const scaleAwareResourcePlan = floodplainPlantResources
+    .floodplainPlantResourcePlan(scaleAwareResourceState,
+      scaleAwareMatterReceipt);
+  const scaleAwareResourceTransition = floodplainPlantResources
+    .advanceFloodplainPlantResources(scaleAwareResourceState,
+      scaleAwareMatterReceipt, {
+        totals: scaleAwareResourcePlan.uptakeTotals,
+        waterReturnKg: scaleAwareResourcePlan.waterReturnKg,
+        perGuild: Object.fromEntries(Object.entries(
+          scaleAwareResourcePlan.perGuild).map(([id, value]) =>
+          [id, value.uptake])),
+        uptakeTransferIds: {},
+        waterReturnTransferIds: {
+          wetMeadow: 'selftest-r58-scale-aware-water-return'
+        },
+        returnReceiptDigest: 'fnv1a32:r58-held-return'
+      }, { reachId: floodReach.id, startDay: 520.5, durationDays: 1 });
+  const scaleAwareWetMeadowFlow = scaleAwareResourceTransition.receipt
+    .guildFlows.find(flow => flow.guildId === 'wetMeadow');
+  assert.ok(Math.abs(scaleAwareWetMeadowFlow.closure
+      .liveWaterResidualKg) > 1e-7 &&
+    Math.abs(scaleAwareWetMeadowFlow.closure.liveWaterResidualKg) <=
+      scaleAwareWetMeadowFlow.closure.numericToleranceKg.liveWaterKg &&
+    scaleAwareResourceTransition.receipt.truth
+      .scaleAwareFloatingPointClosure === true &&
+    scaleAwareResourceTransition.receipt.truth
+      .perMaterialChannelNumericBounds === true &&
+    scaleAwareResourceTransition.receipt.truth
+      .measuredResidualsPreserved === true &&
+    scaleAwareResourceTransition.receipt.truth
+      .fixedAbsoluteToleranceOnly === false &&
+    scaleAwareResourceTransition.receipt.truth.resourceLedgersClosed === true,
+  'an Earth-cell-scale tissue-water transfer preserves its measured residual and closes against the recorded per-channel operand scale');
   const migratedPlantResources = floodplainPlantResources
     .advanceFloodplainPlantResources(
       floodplainPlantResources.emptyFloodplainPlantResourcesState({
@@ -2030,7 +2468,57 @@ async function run() {
     floodplainPlantResources.FLOODPLAIN_PLANT_DETRITUS_RESOURCE_DEBIT_SCHEMA,
     'axm.foundation-planet.floodplain-plant-detritus-resource-debit/v1');
   assert.equal(floodplain.FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
+    'axm.foundation-planet.floodplain-detrital-return-credit/v3');
+  assert.equal(
+    floodplain.PREVIOUS_FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
     'axm.foundation-planet.floodplain-detrital-return-credit/v2');
+  assert.equal(
+    floodplain.FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA,
+    'axm.foundation-planet.floodplain-detrital-return-mass-closure-policy/v1');
+  assert.equal(
+    floodplain.FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ULP_FACTOR, 8);
+  assert.equal(floodplain
+    .FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+    .phosphorusKgP, 1e-9);
+  assert.ok(floodplain.floodplainDetritalReturnMassClosureToleranceKg(
+    'carbonKgC', 5_000_000_000) > 1e-7,
+  'detrital-return receiver tolerance grows only when recorded Number scale requires more than the fixed carbon floor');
+  const largeDetritalReturnFloodplain = floodplain.emptyFloodplainState();
+  const largeDetritalReturnScaleKg = 500_000_000;
+  largeDetritalReturnFloodplain.chemistry.dissolvedOrganicCarbonKgC =
+    largeDetritalReturnScaleKg * 10;
+  largeDetritalReturnFloodplain.chemistry.dissolvedInorganicCarbonKgC =
+    largeDetritalReturnScaleKg * 3;
+  largeDetritalReturnFloodplain.chemistry.dissolvedNitrateNitrogenKgN =
+    largeDetritalReturnScaleKg * 2;
+  largeDetritalReturnFloodplain.chemistry.dissolvedAmmoniumNitrogenKgN =
+    largeDetritalReturnScaleKg * 4;
+  largeDetritalReturnFloodplain.chemistry.dissolvedInorganicNitrogenKgN =
+    largeDetritalReturnScaleKg * 6;
+  largeDetritalReturnFloodplain.chemistry
+    .dissolvedInorganicPhosphorusKgP = largeDetritalReturnScaleKg * .5;
+  const largeDetritalReturn = floodplain.applyFloodplainDetritalReturn(
+    largeDetritalReturnFloodplain, [{
+      transferId: 'r60-held-receiver-counterexample',
+      guildId: 'aquaticPioneers', pool: 'litter',
+      carbonKgC: largeDetritalReturnScaleKg / 3,
+      nitrogenKgN: largeDetritalReturnScaleKg / 30,
+      phosphorusKgP: largeDetritalReturnScaleKg / 300
+    }], { reachId: 'r60-held-receiver', startDay: 600,
+      durationDays: 1, livingEnabled: true });
+  assert.ok(Math.abs(largeDetritalReturn.receipt.closure
+      .carbonResidualKgC) > 1e-7 &&
+    Math.abs(largeDetritalReturn.receipt.closure
+      .phosphorusResidualKgP) > 1e-9,
+  'the held large-state receiver case preserves residuals that the former fixed thresholds falsely rejected');
+  assert.ok(largeDetritalReturn.receipt.truth
+      .carbonNitrogenPhosphorusClosed === true &&
+    largeDetritalReturn.receipt.truth.scaleAwareFloatingPointClosure ===
+      true &&
+    largeDetritalReturn.receipt.truth.measuredResidualsPreserved === true &&
+    largeDetritalReturn.receipt.closure.maximumResidualKg > 0 &&
+    largeDetritalReturn.receipt.closure.maximumToleranceUtilization < 1,
+  'recorded-operand per-channel bounds accept the valid receiver identity without erasing its measured residual');
   const decompositionMatter =
     floodplainPlantMatter.emptyFloodplainPlantMatterState();
   decompositionMatter.guilds.wetMeadow.standingDead = {
@@ -2208,7 +2696,10 @@ async function run() {
     floodplainRespiration.FLOODPLAIN_RESPIRATION_RECEIPT_SCHEMA,
     'axm.foundation-planet.floodplain-respiration-receipt/v1');
   assert.equal(floodplain.FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
-    'axm.foundation-planet.floodplain-aerobic-mineralization-receipt/v1');
+    'axm.foundation-planet.floodplain-aerobic-mineralization-receipt/v2');
+  assert.equal(floodplain
+    .PREVIOUS_FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
+  'axm.foundation-planet.floodplain-aerobic-mineralization-receipt/v1');
   const respirationFloodplain = JSON.parse(JSON.stringify(
     decompositionCredit.state));
   respirationFloodplain.chemistry.dissolvedOrganicCarbonKgC = 12;
@@ -2345,7 +2836,10 @@ async function run() {
     'axm.foundation-planet.floodplain-denitrification-receipt/v4');
   assert.equal(
     floodplain.FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
-    'axm.foundation-planet.floodplain-denitrification-reaction-receipt/v3');
+    'axm.foundation-planet.floodplain-denitrification-reaction-receipt/v4');
+  assert.equal(floodplain
+    .PREVIOUS_FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
+  'axm.foundation-planet.floodplain-denitrification-reaction-receipt/v3');
   const denitrificationFloodplain = floodplain.emptyFloodplainState();
   denitrificationFloodplain.waterKg = 1e6;
   denitrificationFloodplain.inundatedFraction = .81;
@@ -2679,6 +3173,9 @@ async function run() {
     'axm.foundation-planet.floodplain-nitrification-receipt/v2');
   assert.equal(floodplain
     .FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
+  'axm.foundation-planet.floodplain-nitrification-reaction-receipt/v3');
+  assert.equal(floodplain
+    .PREVIOUS_FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
   'axm.foundation-planet.floodplain-nitrification-reaction-receipt/v2');
   assert.equal(floodplainNitrification
     .NITRIFICATION_OXYGEN_KG_O2_PER_KG_N, 4.57);
@@ -2910,19 +3407,34 @@ async function run() {
   'a malformed nitrification oxygen ledger is refused before chemistry mutation');
   assert.equal(
     floodplainGasExchange.FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
+    'axm.foundation-planet.floodplain-gas-exchange-state/v3');
+  assert.equal(
+    floodplainGasExchange.PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
     'axm.foundation-planet.floodplain-gas-exchange-state/v2');
   assert.equal(
     floodplainGasExchange.FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA,
-    'axm.foundation-planet.floodplain-gas-exchange-process-receipt/v2');
+    'axm.foundation-planet.floodplain-gas-exchange-process-receipt/v3');
+  assert.equal(floodplainGasExchange
+    .PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA,
+  'axm.foundation-planet.floodplain-gas-exchange-process-receipt/v2');
   assert.equal(floodplain.FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+    'axm.foundation-planet.floodplain-gas-exchange-receipt/v3');
+  assert.equal(floodplain.PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
     'axm.foundation-planet.floodplain-gas-exchange-receipt/v2');
   assert.equal(atmosphereBiogeochemistry
     .ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+  'axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v3');
+  assert.equal(atmosphereBiogeochemistry
+    .PREVIOUS_ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
   'axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v2');
+  assert.deepEqual(atmosphereBiogeochemistry
+    .atmosphereBiogeochemistryDescription()
+    .floodplainGasExchangeMassClosureAbsoluteFloorsKg,
+  { carbonKgC: 1e-3, oxygenKgO2: 1e-3 });
   assert.equal(atmosphereBiogeochemistry
     .atmosphereBiogeochemistryDescription()
-    .floodplainGasExchangeAbsoluteToleranceKg, 1e-3,
-  'native atmosphere gas exchange declares its owner-level absolute floating-point bound');
+    .floodplainGasExchangeMassClosureUlpFactor, 8,
+  'native atmosphere gas exchange declares scale-aware owner-level floating-point bounds');
   const gasFloodplain = floodplain.emptyFloodplainState();
   gasFloodplain.waterKg = 1e6;
   gasFloodplain.inundatedFraction = .81;
@@ -3128,7 +3640,150 @@ async function run() {
     Object.values(migratedGas.state.cumulativeExchange)
       .every(value => value === 0),
   'v15 migration clears its checkpoint without inventing exchange history or moving C/O2');
-  assert.equal(earthSystem.EARTH_SYSTEM_ENGINE_SCHEMA, 'axm.foundation-planet.earth-system-engine/v26', 'engine schema records persistent alkalinity lineage');
+  const reactionScalesKg = [1e5, 1e6, 1e7, 1e8, 5e8, 1e9,
+    5e9, 1e10, 5e10, 1e11, 5e11, 1e12];
+  const reactionFractions = [.1, 1 / 3, .5, .9, .999999];
+  const reactionContext = {
+    reachId: 'test:reaction-scale-aware',
+    transferId: 'test:reaction-scale-aware:transfer',
+    atmosphereCellId: 'test:reaction-scale-aware:air',
+    exchangeId: 'test:reaction-scale-aware:exchange',
+    durationDays: 1,
+    livingEnabled: true
+  };
+  const reactionState = fields => {
+    const state = floodplain.emptyFloodplainState();
+    state.chemistry = {
+      ...riverChemistry.emptyRiverChemistry(),
+      ...fields
+    };
+    state.chemistry.dissolvedInorganicNitrogenKgN =
+      state.chemistry.dissolvedNitrateNitrogenKgN +
+      state.chemistry.dissolvedAmmoniumNitrogenKgN;
+    return state;
+  };
+  const reactionCases = {
+    aerobic(scale, fraction) {
+      const carbonKgC = scale * fraction;
+      return floodplain.applyFloodplainAerobicMineralization(
+        reactionState({
+          dissolvedOrganicCarbonKgC: scale,
+          dissolvedInorganicCarbonKgC: scale * 1.7,
+          dissolvedOxygenKgO2: scale * 4
+        }), {
+          dissolvedOrganicCarbonConsumedKgC: carbonKgC,
+          dissolvedInorganicCarbonProducedKgC: carbonKgC,
+          dissolvedOxygenConsumedKgO2: carbonKgC *
+            floodplainRespiration.AEROBIC_OXYGEN_KG_O2_PER_KG_C
+        }, reactionContext).receipt;
+    },
+    denitrification(scale, fraction) {
+      const carbonKgC = scale * fraction;
+      const nitrogenKgN = carbonKgC * floodplainDenitrification
+        .DENITRIFICATION_KG_N_PER_KG_C;
+      return floodplain.applyFloodplainDenitrificationReaction(
+        reactionState({
+          dissolvedOrganicCarbonKgC: scale,
+          dissolvedInorganicCarbonKgC: scale * 1.7,
+          dissolvedNitrateNitrogenKgN: scale * 1.2,
+          dissolvedAmmoniumNitrogenKgN: scale * .4,
+          alkalinityKgCaCO3Eq: scale * 5
+        }), {
+          dissolvedOrganicCarbonConsumedKgC: carbonKgC,
+          dissolvedInorganicCarbonProducedKgC: carbonKgC,
+          dissolvedNitrateNitrogenConsumedKgN: nitrogenKgN,
+          nitrogenGasProducedKgN: nitrogenKgN,
+          alkalinityGeneratedKgCaCO3Eq: nitrogenKgN *
+            floodplainDenitrification
+              .DENITRIFICATION_ALKALINITY_KG_CACO3_EQ_PER_KG_N
+        }, reactionContext).receipt;
+    },
+    nitrification(scale, fraction) {
+      const nitrogenKgN = scale * fraction;
+      return floodplain.applyFloodplainNitrificationReaction(
+        reactionState({
+          dissolvedNitrateNitrogenKgN: scale * 1.2,
+          dissolvedAmmoniumNitrogenKgN: scale,
+          dissolvedOxygenKgO2: scale * 6,
+          alkalinityKgCaCO3Eq: scale * 9
+        }), {
+          dissolvedAmmoniumNitrogenConsumedKgN: nitrogenKgN,
+          dissolvedNitrateNitrogenProducedKgN: nitrogenKgN,
+          dissolvedOxygenConsumedKgO2: nitrogenKgN *
+            floodplainNitrification.NITRIFICATION_OXYGEN_KG_O2_PER_KG_N,
+          alkalinityDemandKgCaCO3: nitrogenKgN * floodplainNitrification
+            .NITRIFICATION_ALKALINITY_DEMAND_KG_CACO3_PER_KG_N
+        }, reactionContext).receipt;
+    },
+    gasExchange(scale, fraction) {
+      const carbonKgC = scale * fraction;
+      return floodplain.applyFloodplainGasExchange(reactionState({
+        dissolvedInorganicCarbonKgC: scale,
+        dissolvedOxygenKgO2: scale * 2
+      }), {
+        carbonToAtmosphereKgC: carbonKgC,
+        carbonToFloodplainKgC: 0,
+        oxygenToFloodplainKgO2: carbonKgC * .73
+      }, reactionContext).receipt;
+    }
+  };
+  const oldFixedFailureCounts = Object.fromEntries(
+    Object.keys(reactionCases).map(key => [key, 0]));
+  let reactionCaseCount = 0;
+  let reactionMaximumResidualKg = 0;
+  let reactionMaximumToleranceUtilization = 0;
+  let heldAerobicCounterexample = null;
+  for (const [kind, createReceipt] of Object.entries(reactionCases)) {
+    for (const scale of reactionScalesKg) {
+      for (const fraction of reactionFractions) {
+        const receipt = createReceipt(scale, fraction);
+        reactionCaseCount += 1;
+        const numericKeys = Object.keys(
+          receipt.closure.numericToleranceKg);
+        const oldFixedFailure = numericKeys.some(key =>
+          Math.abs(receipt.closure[key]) >= 1e-7);
+        if (oldFixedFailure) oldFixedFailureCounts[kind] += 1;
+        assert.ok(numericKeys.length > 0 && numericKeys.every(key =>
+          Math.abs(receipt.closure[key]) <=
+            receipt.closure.numericToleranceKg[key]) &&
+          receipt.closure.policy.schema ===
+            floodplain.FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA &&
+          receipt.closure.policy.arbitraryToleranceAuthority === false &&
+          receipt.truth.scaleAwareFloatingPointClosure === true &&
+          receipt.truth.perIdentityNumericBounds === true &&
+          receipt.truth.measuredResidualsPreserved === true &&
+          receipt.truth.fixedAbsoluteToleranceOnly === false,
+        `${kind} scale-aware receiver receipt closes at ${scale} kg and fraction ${fraction}`);
+        reactionMaximumResidualKg = Math.max(reactionMaximumResidualKg,
+          receipt.closure.maximumResidualKg);
+        reactionMaximumToleranceUtilization = Math.max(
+          reactionMaximumToleranceUtilization,
+          receipt.closure.maximumToleranceUtilization);
+        if (kind === 'aerobic' && scale === 5e8 && fraction === .5) {
+          heldAerobicCounterexample = receipt;
+        }
+      }
+    }
+  }
+  assert.deepEqual(oldFixedFailureCounts, {
+    aerobic: 19,
+    denitrification: 20,
+    nitrification: 8,
+    gasExchange: 7
+  }, 'the held reaction family preserves all 54 former fixed-floor false failures as counterevidence');
+  assert.ok(reactionCaseCount === 240 &&
+    reactionMaximumResidualKg === .00048828125 &&
+    reactionMaximumToleranceUtilization > 0 &&
+    reactionMaximumToleranceUtilization < .11,
+  'all 240 reaction receiver cases close with retained residual extrema and bounded tolerance utilization');
+  assert.ok(Math.abs(heldAerobicCounterexample.closure
+      .dissolvedOxygenDebitResidualKgO2) > 1e-7 &&
+    Math.abs(heldAerobicCounterexample.closure
+      .dissolvedOxygenDebitResidualKgO2) <=
+      heldAerobicCounterexample.closure.numericToleranceKg
+        .dissolvedOxygenDebitResidualKgO2,
+  'the held 500-million-kilogram aerobic counterexample retains its nonzero oxygen residue instead of rounding it away');
+  assert.equal(earthSystem.EARTH_SYSTEM_ENGINE_SCHEMA, 'axm.foundation-planet.earth-system-engine/v31', 'engine schema records boundary-energy-aware native atmosphere lineage');
   assert.equal(earthSystem.EARTH_SYSTEM_FLUX_SCHEMA,
     'axm.foundation-planet.earth-system-flux/v4');
   assert.equal(earthSystem.EARTH_SURFACE_RADIATION_SCHEMA,
@@ -3148,9 +3803,9 @@ async function run() {
   assert.equal(earthSystem.earthSystemDescription().landEcology.stateSchema,
     landEcology.EARTH_LAND_ECOLOGY_SCHEMA);
   assert.equal(earthSystem.EARTH_OCEAN_ECOLOGY_SCHEMA,
-    'axm.foundation-planet.ocean-ecology-state/v3');
+    'axm.foundation-planet.ocean-ecology-state/v6');
   assert.equal(earthSystem.EARTH_OCEAN_ECOLOGY_FLUX_SCHEMA,
-    'axm.foundation-planet.ocean-ecology-flux-receipt/v3');
+    'axm.foundation-planet.ocean-ecology-flux-receipt/v6');
   assert.equal(earthSystem.earthSystemDescription().oceanEcology.stateSchema,
     oceanEcology.EARTH_OCEAN_ECOLOGY_SCHEMA);
   assert.equal(earthSystem.earthSystemDescription().oceanEcology.deepOcean.stateSchema,
@@ -3171,6 +3826,12 @@ async function run() {
   assert.ok(systemAudit.foundationSystemAuditDescription().checks.includes(
     'atmosphere-co2-radiative-coupling'),
   'the integrity organ declares its native-layer CO2 radiation route');
+  assert.ok(systemAudit.foundationSystemAuditDescription().checks.includes(
+    'mixed-layer-carbonate-diagnostic'),
+  'the integrity organ declares its bounded mixed-layer carbonate route');
+  assert.ok(systemAudit.foundationSystemAuditDescription().checks.includes(
+    'carbonate-informed-air-sea-carbon-exchange'),
+  'the integrity organ declares its carbonate-informed air-sea owner-move route');
 
   const heldForestSample = JSON.parse(JSON.stringify(grasslandSample));
   heldForestSample.biome = 'temperate_forest';
@@ -3262,6 +3923,147 @@ async function run() {
     'life-off freezes every persistent nitrogen reservoir');
   assert.equal(dormantEcology.receipt.truth.reservoirsFrozen, true);
 
+  const carbonateReferenceDepthM = 50;
+  const carbonateReferenceWaterKgM2 = carbonateReferenceDepthM * 1000;
+  const carbonateReferenceInput = {
+    dissolvedInorganicCarbonKgCm2: .002 * carbonateReferenceWaterKgM2 *
+      .0120107,
+    alkalinityKgCaCO3Eqm2: .0023 * carbonateReferenceWaterKgM2 *
+      .05004345,
+    dissolvedInorganicPhosphorusKgPm2: 2e-6 *
+      carbonateReferenceWaterKgM2 * .030973761998,
+    mixedLayerDepthM: carbonateReferenceDepthM,
+    temperatureC: 25,
+    salinityPsu: 35
+  };
+  const carbonateReferenceInputBefore = JSON.parse(JSON.stringify(
+    carbonateReferenceInput));
+  const carbonateReference = carbonateSystem.solveMixedLayerCarbonateSystem(
+    carbonateReferenceInput);
+  assert.deepEqual(carbonateReferenceInput, carbonateReferenceInputBefore,
+    'the carbonate solver is a pure observer of its material-owner inputs');
+  assert.equal(carbonateReference.schema,
+    carbonateSystem.MIXED_LAYER_CARBONATE_DIAGNOSTIC_SCHEMA);
+  assert.ok(carbonateReference.waterMassConversion.referenceDensityKgM3 ===
+      1000 &&
+    carbonateReference.waterMassConversion.waterMassKgM2 === 50000 &&
+    carbonateReference.waterMassConversion.measuredDensityClaimed === false,
+  'mixed-layer depth uses the explicit unmeasured 1000 kg/m3 reference-density conversion');
+  assert.ok(carbonateReference.status === 'SOLVED' &&
+    carbonateReference.solution.pHTotal > 8 &&
+    carbonateReference.solution.pHTotal < 8.1 &&
+    Math.abs(carbonateReference.solution.dicUmolKg - 2000) < 1e-6 &&
+    Math.abs(carbonateReference.solution.totalAlkalinityUmolKg - 2300) < 1e-6,
+  'the 25 C, salinity-35 held reference solves a plausible total-scale pH from 2000 DIC and 2300 alkalinity micromole/kg');
+  const heldConstants = carbonateReference.solution.equilibriumConstants;
+  assert.ok(Math.abs(Math.log10(heldConstants.k1MolKg) + 5.8472) < 1e-4 &&
+    Math.abs(Math.log10(heldConstants.k2MolKg) + 8.9660) < 1e-4 &&
+    Math.abs(Math.log(heldConstants.kBmolKg) + 19.7964) < 1e-4 &&
+    Math.abs(Math.log(heldConstants.kWmol2Kg2) + 30.434) < 1e-3 &&
+    Math.abs(heldConstants.totalBoronUmolKg - 432.6) < 1e-6,
+  '25 C, salinity-35 constants reproduce the best-practices reference values and the Lee total-boron relationship');
+  assert.ok(carbonateReference.truth.carbonateMassClosed === true &&
+    carbonateReference.truth.phosphateMassClosed === true &&
+    carbonateReference.truth.alkalinityResidualClosed === true &&
+    Math.abs(carbonateReference.closure.dicResidualMolKg) <= 1e-12 &&
+    Math.abs(carbonateReference.closure.phosphateResidualMolKg) <= 1e-12 &&
+    Math.abs(carbonateReference.closure.alkalinityResidualMolKg) <= 1e-12,
+  'held carbonate, phosphate and alkalinity identities close within their declared tolerances');
+  assert.ok(Math.abs(
+    carbonateReference.solution.speciesUmolKg.co2Star +
+    carbonateReference.solution.speciesUmolKg.bicarbonate +
+    carbonateReference.solution.speciesUmolKg.carbonate - 2000) < 2e-6,
+  'published rounded carbonate species reconstruct the held DIC input');
+  const heldCo2Solubility = airSeaCarbonExchange
+    .weiss1974Co2Solubility(25, 35);
+  const heldSeawaterVaporPressure = airSeaCarbonExchange
+    .weissPrice1980SeawaterVaporPressureAtm(25, 35);
+  const heldCo2Fugacity = airSeaCarbonExchange
+    .weiss1974Co2FugacityFactor(25, 1013.25);
+  assert.ok(Math.abs(heldCo2Solubility.lnK0 - (-3.5617)) < 5e-5 &&
+    Math.abs(heldCo2Solubility.k0MolKgAtm - .028391881804016) < 1e-15,
+  'Weiss 1974 CO2 solubility reproduces the Dickson-guide 25 C salinity-35 held value');
+  assert.ok(Math.abs(heldSeawaterVaporPressure - .03065529996318) < 1e-15 &&
+    Math.abs(heldCo2Fugacity.fugacityFactor - .996810440544798) < 1e-15,
+  'wet-air pressure and Weiss virial nonideality reproduce held surface reference values');
+  const heldAirSeaProposalInput = {
+    carbonateSystem: carbonateReference,
+    atmosphericCo2PpmProxy: 420,
+    atmosphericCarbonKgCm2: 10,
+    ...carbonateReferenceInput,
+    surfacePressureHpa: 1013.25,
+    relaxationFraction: .1
+  };
+  const heldAirSeaProposalInputBefore = JSON.parse(JSON.stringify(
+    heldAirSeaProposalInput));
+  const heldAirSeaProposal = airSeaCarbonExchange
+    .proposeAirSeaCarbonExchange(heldAirSeaProposalInput);
+  assert.deepEqual(heldAirSeaProposalInput, heldAirSeaProposalInputBefore,
+    'air-sea carbon exchange is a pure proposal over diagnostic and owner inputs');
+  assert.ok(heldAirSeaProposal.schema === airSeaCarbonExchange
+      .AIR_SEA_CARBON_EXCHANGE_PROPOSAL_SCHEMA &&
+    heldAirSeaProposal.status === 'SOLVED_UPTAKE' &&
+    heldAirSeaProposal.transfer.direction === 'atmosphere-to-ocean' &&
+    Math.abs(heldAirSeaProposal.equilibrium.actualCo2StarMicromolKg -
+      11.501166) < 1e-9 &&
+    Math.abs(heldAirSeaProposal.equilibrium
+      .equilibriumCo2StarMicromolKg - 11.522170223) < 1e-9 &&
+    heldAirSeaProposal.signedCarbonToOceanKgCm2 > 0,
+  '420 ppm dry-air proxy produces a bounded carbonate-informed uptake proposal from actual versus equilibrium CO2-star');
+  assert.ok(heldAirSeaProposal.truth.sourceDiagnosticSolved === true &&
+    heldAirSeaProposal.truth.sourceOwnerBinding === true &&
+    heldAirSeaProposal.truth.wetAirPartialPressureIncluded === true &&
+    heldAirSeaProposal.truth.fugacityNonidealityIncluded === true &&
+    heldAirSeaProposal.truth.scientificGasTransferVelocity === false &&
+    heldAirSeaProposal.truth.carbonClosureClaimedByProposal === false,
+  'the proposal names its validated chemistry, fugacity correction and uncalibrated bulk-transfer boundary');
+  const heldOutgassingProposal = airSeaCarbonExchange
+    .proposeAirSeaCarbonExchange({
+      ...heldAirSeaProposalInput,
+      atmosphericCo2PpmProxy: 300
+    });
+  assert.ok(heldOutgassingProposal.status === 'SOLVED_OUTGASSING' &&
+    heldOutgassingProposal.transfer.direction === 'ocean-to-atmosphere' &&
+    heldOutgassingProposal.signedCarbonToOceanKgCm2 < 0,
+  'lower atmospheric CO2 reverses the same owner-neutral proposal toward ocean outgassing');
+  const atmosphereBoundProposal = airSeaCarbonExchange
+    .proposeAirSeaCarbonExchange({
+      ...heldAirSeaProposalInput,
+      atmosphericCo2PpmProxy: 1000,
+      atmosphericCarbonKgCm2: 1e-12,
+      relaxationFraction: 1
+    });
+  assert.ok(atmosphereBoundProposal.status === 'SOLVED_UPTAKE' &&
+    atmosphereBoundProposal.signedCarbonToOceanKgCm2 === 1e-12 &&
+    atmosphereBoundProposal.transfer.boundedBySourceMaterial === true,
+  'uptake is sender-bounded by the atmosphere-owned carbon pool');
+  const mismatchedCarbonateProposal = airSeaCarbonExchange
+    .proposeAirSeaCarbonExchange({
+      ...heldAirSeaProposalInput,
+      dissolvedInorganicCarbonKgCm2:
+        heldAirSeaProposalInput.dissolvedInorganicCarbonKgCm2 + .01
+    });
+  assert.ok(mismatchedCarbonateProposal.status ===
+      'CARBONATE_SOURCE_MISMATCH' &&
+    mismatchedCarbonateProposal.signedCarbonToOceanKgCm2 === 0,
+  'a stale carbonate diagnostic produces a typed zero-flux refusal');
+  const brackishCarbonate = carbonateSystem.solveMixedLayerCarbonateSystem({
+    ...carbonateReferenceInput,
+    salinityPsu: 10
+  });
+  assert.ok(brackishCarbonate.status === 'OUTSIDE_CONSTANT_VALIDITY' &&
+    brackishCarbonate.solution === null &&
+    brackishCarbonate.truth.constantsWithinPublishedEnvelope === false,
+  'the Lueker open-ocean diagnostic refuses brackish water instead of clamping it into the published envelope');
+  const brackishExchange = airSeaCarbonExchange.proposeAirSeaCarbonExchange({
+    ...heldAirSeaProposalInput,
+    carbonateSystem: brackishCarbonate,
+    salinityPsu: 10
+  });
+  assert.ok(brackishExchange.status === 'CARBONATE_DIAGNOSTIC_UNAVAILABLE' &&
+    brackishExchange.signedCarbonToOceanKgCm2 === 0,
+  'air-sea carbon exchange inherits the carbonate validity boundary as typed zero flux');
+
   const heldOceanPhysical = {
     mixedLayerDepthM: 62,
     mixedLayerTemperatureC: 18,
@@ -3278,10 +4080,41 @@ async function run() {
     heldOceanEcology.oxygen.dissolvedKgO2m2 > 0 &&
     heldOceanEcology.alkalinity.dissolvedKgCaCO3Eqm2 > 0,
   'marine initialization creates explicit persistent C/N/P/O2/alkalinity and plankton reservoirs');
+  assert.ok(heldOceanEcology.carbonateSystem.schema ===
+      carbonateSystem.MIXED_LAYER_CARBONATE_DIAGNOSTIC_SCHEMA &&
+    heldOceanEcology.carbonateSystem.status === 'SOLVED' &&
+    heldOceanEcology.carbonateSystem.truth.diagnosticOnly === true &&
+    heldOceanEcology.carbonateSystem.truth.mutatesMaterial === false &&
+    heldOceanEcology.carbonateSystem.truth.silicateAlkalinityIncluded === false &&
+    heldOceanEcology.truth.carbonateSpeciationResolved === true &&
+    heldOceanEcology.truth.pHResolved === true,
+  'open-ocean initialization exposes a solved read-only carbonate diagnostic with explicit omissions');
+  const rungFiftyTwoOcean = JSON.parse(JSON.stringify(heldOceanEcology));
+  const rungFiftyTwoTotals = oceanEcology.oceanEcologyElementTotals(
+    rungFiftyTwoOcean);
+  rungFiftyTwoOcean.schema = oceanEcology
+    .PREVIOUS_EARTH_OCEAN_ECOLOGY_SCHEMA;
+  rungFiftyTwoOcean.lastFluxReceipt = {
+    schema: oceanEcology.PREVIOUS_EARTH_OCEAN_ECOLOGY_FLUX_SCHEMA,
+    reason: 'pre-r54-empirical-air-sea-carbon-receipt'
+  };
+  delete rungFiftyTwoOcean.carbonateSystem;
+  rungFiftyTwoOcean.truth.carbonateSpeciationResolved = false;
+  rungFiftyTwoOcean.truth.pHResolved = false;
+  const migratedRungFiftyTwoOcean = oceanEcology.normalizeOceanEcology(
+    rungFiftyTwoOcean, { sample: oceanSample, ocean: heldOceanPhysical });
+  assert.deepEqual(oceanEcology.oceanEcologyElementTotals(
+    migratedRungFiftyTwoOcean), rungFiftyTwoTotals,
+  'R53-to-R54 ocean migration preserves every C/N/P/O2/alkalinity material owner');
+  assert.ok(migratedRungFiftyTwoOcean.schema ===
+      oceanEcology.EARTH_OCEAN_ECOLOGY_SCHEMA &&
+    migratedRungFiftyTwoOcean.carbonateSystem.status === 'SOLVED' &&
+    migratedRungFiftyTwoOcean.lastFluxReceipt === null,
+  'R53-to-R54 migration recomputes the present diagnostic and discards the empirical carbon receipt instead of relabelling it');
   const legacyAlkalinityOcean = JSON.parse(JSON.stringify(
     heldOceanEcology));
-  legacyAlkalinityOcean.schema = oceanEcology
-    .PREVIOUS_EARTH_OCEAN_ECOLOGY_SCHEMA;
+  legacyAlkalinityOcean.schema =
+    'axm.foundation-planet.ocean-ecology-state/v2';
   delete legacyAlkalinityOcean.alkalinity;
   const migratedAlkalinityOcean = oceanEcology.normalizeOceanEcology(
     legacyAlkalinityOcean, { sample: oceanSample, ocean: heldOceanPhysical });
@@ -3294,13 +4127,40 @@ async function run() {
     deepOcean.DEEP_OCEAN_STATE_SCHEMA);
   assert.ok(heldOceanEcology.deepOcean.carbon.dissolvedInorganicKgCm2 >
     heldOceanEcology.carbon.dissolvedInorganicKgCm2 &&
-    heldOceanEcology.deepOcean.oxygen.dissolvedKgO2m2 > 0,
-  'new ocean columns initialize a persistent deep-water carbon, nutrient and oxygen interior');
+    heldOceanEcology.deepOcean.oxygen.dissolvedKgO2m2 > 0 &&
+    heldOceanEcology.deepOcean.alkalinity.dissolvedKgCaCO3Eqm2 > 0,
+  'new ocean columns initialize a persistent deep-water carbon, nutrient, oxygen and alkalinity interior');
+  const rungFiftyOneDeep = JSON.parse(JSON.stringify(
+    heldOceanEcology.deepOcean));
+  const rungFiftyOneDeepTotals = deepOcean.deepOceanElementTotals(
+    rungFiftyOneDeep);
+  rungFiftyOneDeep.schema = deepOcean.PREVIOUS_DEEP_OCEAN_STATE_SCHEMA;
+  delete rungFiftyOneDeep.alkalinity;
+  rungFiftyOneDeep.lastExchangeReceipt = {
+    schema: deepOcean.PREVIOUS_DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA
+  };
+  const migratedRungFiftyOneDeep = deepOcean.normalizeDeepOceanState(
+    rungFiftyOneDeep);
+  assert.ok(migratedRungFiftyOneDeep.schema ===
+      deepOcean.DEEP_OCEAN_STATE_SCHEMA &&
+    migratedRungFiftyOneDeep.migrationCheckpoint === true &&
+    migratedRungFiftyOneDeep.alkalinity.dissolvedKgCaCO3Eqm2 === 0 &&
+    migratedRungFiftyOneDeep.alkalinity.initialization ===
+      'explicit-zero-migration' &&
+    migratedRungFiftyOneDeep.lastExchangeReceipt === null,
+  'R51 deep-ocean state gains an explicit empty alkalinity owner and no relabelled receipt');
+  const migratedRungFiftyOneTotals = deepOcean.deepOceanElementTotals(
+    migratedRungFiftyOneDeep);
+  assert.ok(['carbonKgCm2', 'nitrogenKgNm2', 'phosphorusKgPm2',
+    'oxygenKgO2m2'].every(key => migratedRungFiftyOneTotals[key] ===
+      rungFiftyOneDeepTotals[key]),
+  'R51 deep-ocean migration preserves every prior material owner exactly');
   const heldOceanEnvironment = {
     absorbedShortwaveWm2: 225,
     temperatureC: 18,
     salinityPsu: 35,
     mixedLayerDepthM: 62,
+    surfacePressureHpa: 1008,
     seaIceFraction: 0,
     windSpeedMps: 8
   };
@@ -3320,8 +4180,49 @@ async function run() {
   assert.ok(Math.abs(productiveOceanEcology.receipt.carbon.residualKgCm2) < 1e-9 &&
     Math.abs(productiveOceanEcology.receipt.nitrogen.residualKgNm2) < 1e-9 &&
     Math.abs(productiveOceanEcology.receipt.phosphorus.residualKgPm2) < 1e-9 &&
-    Math.abs(productiveOceanEcology.receipt.oxygen.residualKgO2m2) < 1e-9,
-  'ocean-ecology carbon, nitrogen, phosphorus and oxygen flux ledgers close locally');
+    Math.abs(productiveOceanEcology.receipt.oxygen.residualKgO2m2) < 1e-9 &&
+    Math.abs(productiveOceanEcology.receipt.alkalinity
+      .residualKgCaCO3Eqm2) < 1e-9,
+  'ocean-ecology carbon, nitrogen, phosphorus, oxygen and alkalinity flux ledgers close locally');
+  const productiveAirSeaExchange = productiveOceanEcology.receipt.carbon
+    .airSeaCarbonExchange;
+  assert.ok(productiveAirSeaExchange.schema === airSeaCarbonExchange
+      .AIR_SEA_CARBON_EXCHANGE_PROPOSAL_SCHEMA &&
+    productiveAirSeaExchange.status.startsWith('SOLVED_') &&
+    productiveAirSeaExchange.sourceOwners.surfacePressureHpa === 1008 &&
+    productiveAirSeaExchange.truth.sourceDiagnosticSolved === true &&
+    productiveAirSeaExchange.truth.sourceOwnerBinding === true &&
+    productiveAirSeaExchange.truth.wetAirPartialPressureIncluded === true &&
+    productiveAirSeaExchange.truth.fugacityNonidealityIncluded === true,
+  'the coupled ocean step consumes the current carbonate diagnostic, wet-air pressure and Weiss fugacity correction');
+  assert.ok(Math.abs(productiveAirSeaExchange.application
+      .appliedSignedCarbonToOceanKgCm2 -
+    productiveOceanEcology.receipt.carbon
+      .airSeaCo2FluxToOceanKgCm2) < 1e-9 &&
+    productiveAirSeaExchange.application.proposalMatched === true &&
+    productiveAirSeaExchange.application
+      .combinedAtmosphereAndOceanCarbonClosed === true &&
+    productiveOceanEcology.receipt.truth
+      .carbonateInformedAirSeaCo2Exchange === true &&
+    productiveOceanEcology.receipt.truth
+      .airSeaCarbonOwnerMoveMatchedProposal === true &&
+    productiveOceanEcology.receipt.truth
+      .scientificAirSeaGasTransferVelocity === false,
+  'one signed proposal drives the paired atmosphere-DIC move while retaining the named bulk-relaxation limit');
+  const outsideCarbonateExchange = oceanEcology.advanceOceanEcology(
+    heldOceanEcology, { ...heldOceanEnvironment, salinityPsu: 10 }, 1,
+    { enabled: false, lifeAbundance: 1, sample: oceanSample,
+      ocean: heldOceanPhysical });
+  assert.ok(outsideCarbonateExchange.receipt.carbon.airSeaCarbonExchange
+      .status === 'CARBONATE_DIAGNOSTIC_UNAVAILABLE' &&
+    outsideCarbonateExchange.receipt.carbon
+      .airSeaCo2FluxToOceanKgCm2 === 0 &&
+    outsideCarbonateExchange.receipt.truth
+      .carbonateInformedAirSeaCo2Exchange === false &&
+    outsideCarbonateExchange.receipt.truth
+      .airSeaCarbonExchangeTypedRefusal === true &&
+    outsideCarbonateExchange.receipt.truth.physicalGasExchangeActive === true,
+  'an out-of-envelope carbonate diagnostic yields typed zero carbon exchange while the separate oxygen path remains active');
   assert.equal(productiveOceanEcology.receipt.deepOcean.schema,
     deepOcean.DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA);
   assert.ok(productiveOceanEcology.receipt.deepOcean.particleExport
@@ -3333,7 +4234,37 @@ async function run() {
   'productive mixed layers export particles into persistent depth, remineralize and bury carbon');
   assert.ok(Object.values(productiveOceanEcology.receipt.deepOcean.conservation)
     .every(value => Math.abs(value) < 1e-9),
-  'mixed-layer plus deep-ocean C/N/P/O2 transfers close exactly');
+  'mixed-layer plus deep-ocean C/N/P/O2/alkalinity transfers close exactly');
+  const alkalinityRichSurface = JSON.parse(JSON.stringify(heldOceanEcology));
+  alkalinityRichSurface.alkalinity.dissolvedKgCaCO3Eqm2 += 2;
+  const richMixedBefore = alkalinityRichSurface.alkalinity
+    .dissolvedKgCaCO3Eqm2;
+  const richDeepBefore = alkalinityRichSurface.deepOcean.alkalinity
+    .dissolvedKgCaCO3Eqm2;
+  const alkalinityDownward = oceanEcology.advanceOceanEcology(
+    alkalinityRichSurface, heldOceanEnvironment, 1,
+    { enabled: false, lifeAbundance: 1, sample: oceanSample,
+      ocean: heldOceanPhysical });
+  const downwardAlkalinity = alkalinityDownward.receipt.deepOcean
+    .dissolvedExchange.alkalinitySurfaceToDeepKgCaCO3Eqm2;
+  assert.ok(downwardAlkalinity > 0 &&
+    Math.abs((richMixedBefore - alkalinityDownward.state.alkalinity
+      .dissolvedKgCaCO3Eqm2) - downwardAlkalinity) < 1e-9 &&
+    Math.abs((alkalinityDownward.state.deepOcean.alkalinity
+      .dissolvedKgCaCO3Eqm2 - richDeepBefore) - downwardAlkalinity) < 1e-9,
+  'a high mixed-layer concentration debits the surface owner and credits the deep owner by one signed amount');
+  const alkalinityRichDeep = JSON.parse(JSON.stringify(heldOceanEcology));
+  alkalinityRichDeep.alkalinity.dissolvedKgCaCO3Eqm2 = 0;
+  const alkalinityUpward = oceanEcology.advanceOceanEcology(
+    alkalinityRichDeep, heldOceanEnvironment, 1,
+    { enabled: false, lifeAbundance: 1, sample: oceanSample,
+      ocean: heldOceanPhysical });
+  assert.ok(alkalinityUpward.receipt.deepOcean.dissolvedExchange
+      .alkalinitySurfaceToDeepKgCaCO3Eqm2 < 0 &&
+    Math.abs(alkalinityUpward.receipt.deepOcean.conservation
+      .alkalinityResidualKgCaCO3Eqm2) < 1e-9 &&
+    alkalinityUpward.receipt.truth.mixedToDeepAlkalinityClosed === true,
+  'a high deep-ocean concentration reverses the signed exchange without losing alkalinity');
   const nutrientStarvedOceanSource = JSON.parse(JSON.stringify(heldOceanEcology));
   nutrientStarvedOceanSource.nitrogen.dissolvedInorganicKgNm2 = 0;
   nutrientStarvedOceanSource.phosphorus.dissolvedInorganicKgPm2 = 0;
@@ -3606,22 +4537,66 @@ async function run() {
     clearFeedbackStep.budget.energy.radiation.absorbedShortwaveWm2 - 100 &&
     cloudyFeedbackStep.surface.temperatureC < clearFeedbackStep.surface.temperatureC,
   'native mixed-phase cloud optical depth causally changes surface heat storage under held forcing');
-  assert.equal(earthSystem.EARTH_ATMOSPHERE_PHASE_CHANGE_SCHEMA, 'axm.foundation-planet.atmosphere-phase-change-receipt/v2', 'phase change uses a typed receipt');
+  assert.equal(earthSystem.EARTH_ATMOSPHERE_PHASE_CHANGE_SCHEMA, 'axm.foundation-planet.atmosphere-phase-change-receipt/v3', 'phase change uses a temperature-envelope-aware typed receipt');
   assert.equal(earthSystem.EARTH_FREE_TROPOSPHERE_SCHEMA, 'axm.foundation-planet.free-troposphere/v2', 'the upper atmospheric reservoir has a transported vector-momentum schema');
-  assert.equal(earthSystem.EARTH_FREE_TROPOSPHERE_PHASE_SCHEMA, 'axm.foundation-planet.free-troposphere-phase-receipt/v2', 'upper phase change uses a typed receipt');
+  assert.equal(earthSystem.EARTH_FREE_TROPOSPHERE_PHASE_SCHEMA, 'axm.foundation-planet.free-troposphere-phase-receipt/v3', 'upper phase change uses a temperature-envelope-aware typed receipt');
   assert.equal(earthSystem.EARTH_ATMOSPHERE_VERTICAL_EXCHANGE_SCHEMA, 'axm.foundation-planet.atmosphere-vertical-exchange-receipt/v3', 'vertical overturning uses the native pressure-interface receipt lineage');
   assert.equal(earthSystem.ATMOSPHERE_PRESSURE_COLUMN_DYNAMICS_SCHEMA,
-    'axm.foundation-planet.atmosphere-pressure-column-dynamics-receipt/v3',
+    'axm.foundation-planet.atmosphere-pressure-column-dynamics-receipt/v4',
     'native eight-level thermodynamics use a typed composite receipt');
   assert.equal(earthSystem.ATMOSPHERE_PRESSURE_LAYER_PHASE_SCHEMA,
-    'axm.foundation-planet.atmosphere-pressure-layer-phase-receipt/v2',
+    'axm.foundation-planet.atmosphere-pressure-layer-phase-receipt/v3',
     'each native pressure layer has an independently typed phase receipt');
   assert.equal(earthSystem.ATMOSPHERE_ADJACENT_LAYER_EXCHANGE_SCHEMA,
     'axm.foundation-planet.atmosphere-adjacent-layer-exchange-receipt/v3',
     'every native vertical interface uses a typed exchange receipt');
   assert.equal(earthSystem.ATMOSPHERE_PRECIPITATION_DESCENT_SCHEMA,
-    'axm.foundation-planet.atmosphere-precipitation-descent-receipt/v2',
+    'axm.foundation-planet.atmosphere-precipitation-descent-receipt/v3',
     'native precipitation descent has a typed sender/receiver receipt');
+  assert.equal(earthSystem.ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA,
+    atmosphereBoundaryEnergy.ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA,
+    'Earth-system and boundary-energy modules expose one exact receipt schema');
+  assert.deepEqual(earthSystem.earthSystemDescription().atmosphereBoundaryEnergy,
+    atmosphereBoundaryEnergy.atmosphereBoundaryEnergyDescription(),
+    'Earth-system contract exposes requested, applied and envelope-reconciled boundary energy');
+  const heldWarmEnvelopeInput = {
+    requestedMm: 2,
+    airTemperatureC: 69.5,
+    heatCapacityJm2K: 1000,
+    latentHeatJkg: 1000,
+    direction: 'warming'
+  };
+  const heldWarmEnvelopeBefore = JSON.parse(JSON.stringify(
+    heldWarmEnvelopeInput));
+  const heldWarmEnvelope = phaseThermalEnvelope
+    .boundPhaseChangeByThermalHeadroom(heldWarmEnvelopeInput);
+  const heldColdEnvelope = phaseThermalEnvelope
+    .boundPhaseChangeByThermalHeadroom({
+      requestedMm: 1,
+      airTemperatureC: -119.75,
+      heatCapacityJm2K: 2000,
+      latentHeatJkg: 1000,
+      direction: 'cooling'
+    });
+  assert.deepEqual(heldWarmEnvelopeInput, heldWarmEnvelopeBefore,
+    'phase thermal envelope is a pure proposal over the requested material move');
+  assert.ok(heldWarmEnvelope.schema === phaseThermalEnvelope
+      .ATMOSPHERE_PHASE_THERMAL_ENVELOPE_SCHEMA &&
+    heldWarmEnvelope.appliedMm === .5 &&
+    heldWarmEnvelope.limitedMm === 1.5 &&
+    heldWarmEnvelope.finalAirTemperatureC === 70 &&
+    heldWarmEnvelope.truth.appliedWithinThermalHeadroom === true,
+  'warming phase change moves only the mass whose latent heat fits the 70 C headroom');
+  assert.ok(heldColdEnvelope.appliedMm === .5 &&
+    heldColdEnvelope.limitedMm === .5 &&
+    heldColdEnvelope.finalAirTemperatureC === -120,
+  'cooling phase change moves only the mass whose latent heat fits the -120 C headroom');
+  assert.throws(() => phaseThermalEnvelope
+    .boundPhaseChangeByThermalHeadroom({
+      ...heldWarmEnvelopeInput,
+      direction: 'sideways'
+    }), /warming or cooling/,
+  'phase thermal envelope refuses an untyped energy direction');
   assert.equal(earthSystem.ATMOSPHERE_PRESSURE_COLUMN_SCHEMA,
     pressureColumn.ATMOSPHERE_PRESSURE_COLUMN_SCHEMA,
     'Earth-system and pressure-column modules expose one exact vertical-state schema');
@@ -3635,6 +4610,10 @@ async function run() {
     'Earth-system contract exposes the native pressure-column schema');
   assert.equal(earthSystem.earthSystemDescription().pressureColumn.layerCount, 8,
     'Earth-system contract declares the exact native vertical resolution');
+  assert.deepEqual(
+    earthSystem.earthSystemDescription().pressureColumn.phaseThermalEnvelope,
+    phaseThermalEnvelope.phaseThermalEnvelopeDescription(),
+    'pressure state and phase dynamics reuse one declared native temperature envelope');
   assert.equal(earthSystem.earthSystemDescription().pressureDynamics.layerCount, 8,
     'Earth-system contract exposes eight-level thermodynamics instead of hiding them behind the compatibility projection');
   assert.equal(earthSystem.earthSystemDescription().nativePressureLevelPhaseChangeReceipted, true);
@@ -4385,14 +5364,68 @@ async function run() {
   assert.ok(Math.abs(oceanStep.budget.oceanEcology.carbon.residualKgCm2) < 1e-9 &&
     Math.abs(oceanStep.budget.oceanEcology.nitrogen.residualKgNm2) < 1e-9 &&
     Math.abs(oceanStep.budget.oceanEcology.phosphorus.residualKgPm2) < 1e-9 &&
-    Math.abs(oceanStep.budget.oceanEcology.oxygen.residualKgO2m2) < 1e-9,
-  'mixed-layer ecology closes C/N/P/O2 inside the full Earth-system step');
+    Math.abs(oceanStep.budget.oceanEcology.oxygen.residualKgO2m2) < 1e-9 &&
+    Math.abs(oceanStep.budget.oceanEcology.alkalinity
+      .residualKgCaCO3Eqm2) < 1e-9,
+  'mixed/deep ocean ecology closes C/N/P/O2/alkalinity inside the full Earth-system step');
   assert.ok(oceanStep.truth.persistentOceanEcology &&
     oceanStep.truth.localOceanCarbonBudgetClosed &&
     oceanStep.truth.localOceanNitrogenBudgetClosed &&
     oceanStep.truth.localOceanPhosphorusBudgetClosed &&
-    oceanStep.truth.localOceanOxygenFluxClosed,
+    oceanStep.truth.localOceanOxygenFluxClosed &&
+    oceanStep.truth.localOceanAlkalinityBudgetClosed &&
+    oceanStep.truth.persistentDeepOceanAlkalinity &&
+    oceanStep.truth.mixedToDeepAlkalinityClosure,
   'Earth-system truth exposes the proved ocean-ecology closures');
+  const oceanAlkalinityAuditInput = JSON.parse(JSON.stringify(oceanStep));
+  const oceanAlkalinityAudit = systemAudit.auditFoundationSystem({
+    column: oceanAlkalinityAuditInput
+  });
+  assert.equal(oceanAlkalinityAudit.checks.find(item =>
+    item.id === 'mixed-deep-ocean-alkalinity-ledger').status, 'PASS',
+  'the read-only integrity organ proves the current mixed/deep owner receipt');
+  assert.equal(oceanAlkalinityAudit.checks.find(item =>
+    item.id === 'mixed-layer-carbonate-diagnostic').status, 'PASS',
+  'the read-only integrity organ proves the current carbonate source binding and closure');
+  assert.equal(oceanAlkalinityAudit.checks.find(item =>
+    item.id === 'carbonate-informed-air-sea-carbon-exchange').status, 'PASS',
+  'the read-only integrity organ recomputes wet-air fugacity, direction, bounds and paired owner application');
+  assert.ok(oceanStep.truth.carbonateInformedAirSeaCo2Exchange === true &&
+    oceanStep.truth.airSeaCo2FugacityCorrection === true &&
+    oceanStep.truth.airSeaCarbonOwnerMoveMatchedProposal === true &&
+    oceanStep.truth.scientificAirSeaGasTransferVelocity === false &&
+    oceanStep.truth.measuredAirSeaPco2 === false &&
+    oceanStep.truth.measuredOceanSkinTemperature === false,
+  'Earth-column truth propagates the proved R54 exchange and preserves its observation and transfer boundaries');
+  assert.deepEqual(oceanAlkalinityAuditInput, oceanStep,
+    'the mixed/deep audit does not mutate the inspected column');
+  const corruptedDeepAlkalinityReceipt = JSON.parse(JSON.stringify(oceanStep));
+  corruptedDeepAlkalinityReceipt.ocean.ecology.deepOcean.lastExchangeReceipt
+    .conservation.alkalinityResidualKgCaCO3Eqm2 = .25;
+  const corruptedDeepAlkalinityAudit = systemAudit.auditFoundationSystem({
+    column: corruptedDeepAlkalinityReceipt
+  });
+  assert.equal(corruptedDeepAlkalinityAudit.checks.find(item =>
+    item.id === 'mixed-deep-ocean-alkalinity-ledger').status, 'FAIL',
+  'the audit rejects a current deep alkalinity receipt with a nonzero residual');
+  const corruptedCarbonateDiagnostic = JSON.parse(JSON.stringify(oceanStep));
+  corruptedCarbonateDiagnostic.ocean.ecology.carbonateSystem.closure
+    .alkalinityResidualMolKg = .25;
+  const corruptedCarbonateAudit = systemAudit.auditFoundationSystem({
+    column: corruptedCarbonateDiagnostic
+  });
+  assert.equal(corruptedCarbonateAudit.checks.find(item =>
+    item.id === 'mixed-layer-carbonate-diagnostic').status, 'FAIL',
+  'the audit rejects a carbonate diagnostic whose alkalinity residual is corrupted');
+  const corruptedAirSeaExchange = JSON.parse(JSON.stringify(oceanStep));
+  corruptedAirSeaExchange.ocean.ecology.lastFluxReceipt.carbon
+    .airSeaCarbonExchange.equilibrium.co2FugacityFactor *= 1.01;
+  const corruptedAirSeaAudit = systemAudit.auditFoundationSystem({
+    column: corruptedAirSeaExchange
+  });
+  assert.equal(corruptedAirSeaAudit.checks.find(item =>
+    item.id === 'carbonate-informed-air-sea-carbon-exchange').status, 'FAIL',
+  'the audit rejects a carbon receipt whose claimed Weiss fugacity factor is corrupted');
   const oceanBiologyBeforeDormancy = {
     carbon: {
       phytoplanktonKgCm2: oceanStep.ocean.ecology.carbon.phytoplanktonKgCm2,
@@ -4703,7 +5736,7 @@ async function run() {
   const migratedCo2RadiationColumn = rungThirtyTwoRestore
     .columnsForProfile('temperate')[0];
   assert.equal(rungThirtyTwoRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26');
+    'axm.foundation-planet.earth-system-engine/v31');
   assert.equal(migratedCo2RadiationColumn.surface.lastRadiationReceipt, null,
     'v22 migration invalidates legacy surface radiation instead of fabricating native-layer CO2 evidence');
   assert.equal(migratedCo2RadiationColumn.truth
@@ -4742,7 +5775,7 @@ async function run() {
   const migratedNativeLayerGas = rungThirtyOneRestore
     .columnsForProfile('temperate')[0].atmosphere.biogeochemistry;
   assert.equal(rungThirtyOneRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26');
+    'axm.foundation-planet.earth-system-engine/v31');
   assert.equal(migratedNativeLayerGas.schema,
     atmosphereBiogeochemistry.ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA);
   assert.equal(migratedNativeLayerGas.layers.length, 8,
@@ -4782,7 +5815,7 @@ async function run() {
   const migratedTransportReadyGas = rungThirtyRestore
     .columnsForProfile('temperate')[0].atmosphere.biogeochemistry;
   assert.equal(rungThirtyRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26');
+    'axm.foundation-planet.earth-system-engine/v31');
   assert.equal(migratedTransportReadyGas.schema,
     atmosphereBiogeochemistry.ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA);
   assert.equal(migratedTransportReadyGas.migrationCheckpoint, true);
@@ -4813,7 +5846,7 @@ async function run() {
   const migratedAtmosphereGas = rungTwentyEightRestore
     .columnsForProfile('temperate')[0];
   assert.equal(rungTwentyEightRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26');
+    'axm.foundation-planet.earth-system-engine/v31');
   assert.equal(migratedAtmosphereGas.atmosphere.biogeochemistry.schema,
     atmosphereBiogeochemistry.ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA);
   assert.equal(migratedAtmosphereGas.atmosphere.biogeochemistry
@@ -4850,7 +5883,7 @@ async function run() {
     state: rungTwentyThreeSave
   });
   assert.equal(rungTwentyThreeRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26',
+    'axm.foundation-planet.earth-system-engine/v31',
   'v16 cache migrates into the persistent land-and-ocean-ecology engine envelope');
   assert.ok(rungTwentyThreeRestore.columnsForProfile('temperate').every(column =>
     column.land.ecology.schema === earthSystem.EARTH_LAND_ECOLOGY_SCHEMA &&
@@ -4880,6 +5913,82 @@ async function run() {
   });
   assert.deepEqual(currentOceanRestore.snapshot(), currentOceanSave,
     'unstepped v23 ocean ecology survives exact restore without inventing a receipt');
+  const rungFiftyThreeOceanSave = JSON.parse(JSON.stringify(
+    currentOceanSave));
+  rungFiftyThreeOceanSave.schema =
+    earthSystem.PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA;
+  const rungFiftyThreeOceanTotals = rungFiftyThreeOceanSave.columns.map(
+    entry => oceanEcology.oceanEcologyElementTotals(
+      entry.column.ocean.ecology));
+  for (const entry of rungFiftyThreeOceanSave.columns) {
+    entry.column.ocean.ecology.schema =
+      oceanEcology.PREVIOUS_EARTH_OCEAN_ECOLOGY_SCHEMA;
+    entry.column.ocean.ecology.lastFluxReceipt = {
+      schema: oceanEcology.PREVIOUS_EARTH_OCEAN_ECOLOGY_FLUX_SCHEMA,
+      reason: 'pre-r54-empirical-air-sea-carbon-receipt'
+    };
+    delete entry.column.truth.carbonateInformedAirSeaCo2Exchange;
+    delete entry.column.truth.airSeaCo2FugacityCorrection;
+    delete entry.column.truth.airSeaCarbonExchangeTypedRefusal;
+    delete entry.column.truth.airSeaCarbonOwnerMoveMatchedProposal;
+  }
+  const rungFiftyThreeOceanRestore = new earthSystem.EarthSystemEngine({
+    seed: model.PLANET_DEFAULTS.seed,
+    profileId: 'temperate',
+    maximumColumns: 4,
+    state: rungFiftyThreeOceanSave
+  });
+  const rungFiftyThreeMigratedColumns = rungFiftyThreeOceanRestore
+    .columnsForProfile('temperate');
+  assert.ok(rungFiftyThreeMigratedColumns.every((column, index) =>
+    JSON.stringify(oceanEcology.oceanEcologyElementTotals(
+      column.ocean.ecology)) === JSON.stringify(rungFiftyThreeOceanTotals[index]) &&
+    column.ocean.ecology.lastFluxReceipt === null &&
+    column.truth.carbonateInformedAirSeaCo2Exchange === false &&
+    column.truth.airSeaCo2FugacityCorrection === false),
+  'R53 engine migration preserves all ocean material and invents no R54 exchange evidence');
+  assert.equal(rungFiftyThreeOceanRestore.snapshot().schema,
+    earthSystem.EARTH_SYSTEM_ENGINE_SCHEMA);
+  const rungFiftyOneOceanSave = JSON.parse(JSON.stringify(currentOceanSave));
+  rungFiftyOneOceanSave.schema =
+    'axm.foundation-planet.earth-system-engine/v26';
+  const rungFiftyOneOceanBefore = deepOcean.deepOceanElementTotals(
+    rungFiftyOneOceanSave.columns[0].column.ocean.ecology.deepOcean);
+  const rungFiftyOneMixedAlkalinity = rungFiftyOneOceanSave.columns[0]
+    .column.ocean.ecology.alkalinity.dissolvedKgCaCO3Eqm2;
+  for (const entry of rungFiftyOneOceanSave.columns) {
+    entry.column.ocean.ecology.schema =
+      oceanEcology.PREVIOUS_EARTH_OCEAN_ECOLOGY_SCHEMA;
+    entry.column.ocean.ecology.deepOcean.schema =
+      deepOcean.PREVIOUS_DEEP_OCEAN_STATE_SCHEMA;
+    delete entry.column.ocean.ecology.deepOcean.alkalinity;
+    delete entry.column.truth.localOceanAlkalinityBudgetClosed;
+    delete entry.column.truth.persistentDeepOceanAlkalinity;
+    delete entry.column.truth.mixedToDeepAlkalinityClosure;
+  }
+  const rungFiftyOneOceanRestore = new earthSystem.EarthSystemEngine({
+    seed: model.PLANET_DEFAULTS.seed,
+    profileId: 'temperate',
+    maximumColumns: 4,
+    state: rungFiftyOneOceanSave
+  });
+  const rungFiftyOneMigratedColumn = rungFiftyOneOceanRestore
+    .columnsForProfile('temperate')[0];
+  const rungFiftyOneOceanAfter = deepOcean.deepOceanElementTotals(
+    rungFiftyOneMigratedColumn.ocean.ecology.deepOcean);
+  assert.equal(rungFiftyOneOceanRestore.snapshot().schema,
+    earthSystem.EARTH_SYSTEM_ENGINE_SCHEMA);
+  assert.equal(rungFiftyOneMigratedColumn.ocean.ecology.alkalinity
+    .dissolvedKgCaCO3Eqm2, rungFiftyOneMixedAlkalinity,
+  'R51 migration preserves its already-owned mixed-layer alkalinity');
+  assert.ok(rungFiftyOneMigratedColumn.ocean.ecology.deepOcean
+      .alkalinity.dissolvedKgCaCO3Eqm2 === 0 &&
+    rungFiftyOneMigratedColumn.ocean.ecology.deepOcean
+      .migrationCheckpoint === true &&
+    ['carbonKgCm2', 'nitrogenKgNm2', 'phosphorusKgPm2', 'oxygenKgO2m2']
+      .every(key => rungFiftyOneOceanAfter[key] ===
+        rungFiftyOneOceanBefore[key]),
+  'R51 engine migration adds zero deep alkalinity while preserving prior deep material exactly');
   const rungThirtySixOceanSave = JSON.parse(JSON.stringify(currentOceanSave));
   rungThirtySixOceanSave.schema = earthSystem.PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA;
   for (const entry of rungThirtySixOceanSave.columns) {
@@ -4919,7 +6028,7 @@ async function run() {
   const migratedDeepCheckpoint = rungTwentyFiveOceanRestore
     .columnsForProfile('temperate')[0].ocean.ecology;
   assert.equal(rungTwentyFiveOceanRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26');
+    'axm.foundation-planet.earth-system-engine/v31');
   assert.equal(migratedDeepCheckpoint.schema,
     oceanEcology.EARTH_OCEAN_ECOLOGY_SCHEMA);
   assert.equal(migratedDeepCheckpoint.deepOcean.schema,
@@ -4960,7 +6069,7 @@ async function run() {
   const migratedOceanCheckpoint = rungTwentyFourOceanRestore
     .columnsForProfile('temperate')[0];
   assert.equal(rungTwentyFourOceanRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26');
+    'axm.foundation-planet.earth-system-engine/v31');
   assert.equal(migratedOceanCheckpoint.ocean.ecology.schema,
     earthSystem.EARTH_OCEAN_ECOLOGY_SCHEMA);
   assert.equal(migratedOceanCheckpoint.ocean.ecology.migrationCheckpoint, true);
@@ -5017,7 +6126,7 @@ async function run() {
     state: rungTwentyTwoSave
   });
   assert.equal(rungTwentyTwoRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26',
+    'axm.foundation-planet.earth-system-engine/v31',
   'v15 cache migrates into the radiative cryosphere engine envelope');
   assert.ok(rungTwentyTwoRestore.columnsForProfile('temperate').every(column =>
     column.surface.lastRadiationReceipt === null &&
@@ -5053,7 +6162,7 @@ async function run() {
     state: rungTwentyOneSave
   });
   assert.equal(rungTwentyOneRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26',
+    'axm.foundation-planet.earth-system-engine/v31',
   'v14 cache migrates into the native mixed-phase engine envelope');
   assert.ok(rungTwentyOneRestore.columnsForProfile('temperate').every(column =>
     column.atmosphere.cloudIceMm === 0 &&
@@ -5955,11 +7064,13 @@ async function run() {
   };
   const basinEngine = new basinRouting.BasinRoutingEngine({ maximumReachStates: 64 });
   assert.equal(basinRouting.BASIN_ROUTING_ENGINE_SCHEMA,
-    'axm.foundation-planet.basin-routing-engine/v21');
+    'axm.foundation-planet.basin-routing-engine/v27');
   assert.equal(basinRouting.BASIN_ROUTING_STEP_SCHEMA,
-    'axm.foundation-planet.basin-routing-step/v21');
+    'axm.foundation-planet.basin-routing-step/v26');
   assert.equal(basinRouting.PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA,
-    'axm.foundation-planet.basin-routing-engine/v20');
+    'axm.foundation-planet.basin-routing-engine/v26');
+  assert.equal(basinRouting.BASIN_CLOCK_ALIGNMENT_CHECKPOINT_SCHEMA,
+    'axm.foundation-planet.basin-clock-alignment-checkpoint/v1');
   const emptyBasinDescriptor = basinEngine.descriptor('temperate');
   assert.equal(emptyBasinDescriptor.activeProfileStoredChemistry
     .alkalinityKgCaCO3Eq, 0,
@@ -6169,18 +7280,84 @@ async function run() {
   assert.equal(basinIntegrityAudit.checks.find(item =>
     item.id === 'floodplain-plant-matter-receipts').status, 'PASS',
   'current basin evidence includes audited sender-backed floodplain plant C/N matter');
+  const inflatedPlantSenderToleranceReceipt = JSON.parse(JSON.stringify(
+    basinStepThree.receipt));
+  inflatedPlantSenderToleranceReceipt.landEcologySubgridDebitReceipts[0]
+    .closure.numericToleranceKg.carbonKgC *= 10;
+  const inflatedPlantSenderToleranceAudit = systemAudit.auditFoundationSystem({
+    column: basinStepThree.columns[0],
+    basinRoutingReceipt: inflatedPlantSenderToleranceReceipt
+  });
+  assert.equal(inflatedPlantSenderToleranceAudit.checks.find(item =>
+    item.id === 'floodplain-plant-matter-receipts').status, 'FAIL',
+  'the audit rejects an inflated sender tolerance even when the measured residual and green truth flags are left untouched');
   assert.equal(basinIntegrityAudit.checks.find(item =>
     item.id === 'floodplain-plant-resources-receipts').status, 'PASS',
   'current basin evidence includes audited floodplain-backed plant P/tissue-water ownership');
   assert.equal(basinIntegrityAudit.checks.find(item =>
     item.id === 'floodplain-decomposition-receipts').status, 'PASS',
   'current basin evidence includes audited resource-backed detrital C/N/P return');
+  const inflatedDetritalReturnToleranceReceipt = JSON.parse(JSON.stringify(
+    basinStepThree.receipt));
+  assert.ok(inflatedDetritalReturnToleranceReceipt
+    .floodplainDetritalReturnCreditReceipts.length > 0,
+  'the basin fixture contains a detrital-return receiver receipt to audit');
+  inflatedDetritalReturnToleranceReceipt
+    .floodplainDetritalReturnCreditReceipts[0].closure
+    .numericToleranceKg.carbonKgC *= 10;
+  const inflatedDetritalReturnToleranceAudit = systemAudit
+    .auditFoundationSystem({
+      column: basinStepThree.columns[0],
+      basinRoutingReceipt: inflatedDetritalReturnToleranceReceipt
+    });
+  assert.equal(inflatedDetritalReturnToleranceAudit.checks.find(item =>
+    item.id === 'floodplain-decomposition-receipts').status, 'FAIL',
+  'the independent audit rejects an inflated receiver tolerance while its residual and green truth flags remain untouched');
   assert.equal(basinIntegrityAudit.checks.find(item =>
     item.id === 'floodplain-respiration-receipts').status, 'PASS',
   'current basin evidence includes audited local oxygen-limited DOC respiration');
   assert.equal(basinIntegrityAudit.checks.find(item =>
     item.id === 'floodplain-denitrification-receipts').status, 'PASS',
   'current basin evidence includes audited oxygen-gated floodplain denitrification and paired atmosphere ownership');
+  const reactionToleranceTamperCases = [
+    {
+      collection: 'floodplainAerobicMineralizationReceipts',
+      auditId: 'floodplain-respiration-receipts',
+      label: 'aerobic mineralization'
+    },
+    {
+      collection: 'floodplainDenitrificationReactionReceipts',
+      auditId: 'floodplain-denitrification-receipts',
+      label: 'denitrification'
+    },
+    {
+      collection: 'floodplainNitrificationReactionReceipts',
+      auditId: 'floodplain-nitrification-receipts',
+      label: 'nitrification'
+    },
+    {
+      collection: 'floodplainGasExchangeReceipts',
+      auditId: 'floodplain-atmosphere-gas-exchange-receipts',
+      label: 'floodplain gas exchange'
+    }
+  ];
+  for (const tamperCase of reactionToleranceTamperCases) {
+    const tamperedReceipt = JSON.parse(JSON.stringify(
+      basinStepThree.receipt));
+    assert.ok(tamperedReceipt[tamperCase.collection].length > 0,
+      `the basin fixture contains a ${tamperCase.label} owner receipt to audit`);
+    const ownerReceipt = tamperedReceipt[tamperCase.collection][0];
+    const toleranceKey = Object.keys(
+      ownerReceipt.closure.numericToleranceKg)[0];
+    ownerReceipt.closure.numericToleranceKg[toleranceKey] *= 10;
+    const tamperedAudit = systemAudit.auditFoundationSystem({
+      column: basinStepThree.columns[0],
+      basinRoutingReceipt: tamperedReceipt
+    });
+    assert.equal(tamperedAudit.checks.find(item =>
+      item.id === tamperCase.auditId).status, 'FAIL',
+    `the independent audit rejects an inflated ${tamperCase.label} owner tolerance while the measured residual and green truth flags remain untouched`);
+  }
   assert.ok(basinStepThree.receipt.floodplainReceipts.length > 0 &&
     basinStepThree.receipt.floodplainReceipts.every(entry =>
       entry.truth.conservationClosed === true),
@@ -6209,6 +7386,10 @@ async function run() {
   assert.ok(basinStepThree.receipt.floodplainPlantMatterReceipts.length > 0 &&
     basinStepThree.receipt.floodplainPlantMatterReceipts.every(entry =>
       entry.truth.carbonAndNitrogenClosed === true &&
+      entry.truth.scaleAwareFloatingPointClosure === true &&
+      entry.truth.perMaterialChannelNumericBounds === true &&
+      entry.truth.measuredResidualsPreserved === true &&
+      entry.truth.fixedAbsoluteToleranceOnly === false &&
       entry.truth.plantPhosphorusOwnership === false &&
       entry.guildFlows.length ===
         floodplainSuccession.FLOODPLAIN_SUCCESSION_GUILDS.length) &&
@@ -6222,6 +7403,10 @@ async function run() {
   assert.ok(basinStepThree.receipt.floodplainPlantResourcesReceipts.length > 0 &&
     basinStepThree.receipt.floodplainPlantResourcesReceipts.every(entry =>
       entry.truth.resourceLedgersClosed === true &&
+      entry.truth.scaleAwareFloatingPointClosure === true &&
+      entry.truth.perMaterialChannelNumericBounds === true &&
+      entry.truth.measuredResidualsPreserved === true &&
+      entry.truth.fixedAbsoluteToleranceOnly === false &&
       entry.truth.independentBoundaryCreation === false &&
       entry.guildFlows.length ===
         floodplainSuccession.FLOODPLAIN_SUCCESSION_GUILDS.length) &&
@@ -6251,7 +7436,20 @@ async function run() {
       entry.truth.onlyResourceBackedDetritusEligible === true &&
       entry.truth.atmosphericRespirationModeled === false &&
       entry.truth.oxygenConsumptionModeled === false) &&
+    basinStepThree.receipt.floodplainDetritalReturnCreditReceipts.every(
+      entry => entry.closure.policy.schema === floodplain
+        .FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA &&
+        entry.truth.scaleAwareFloatingPointClosure === true &&
+        entry.truth.perMaterialChannelNumericBounds === true &&
+        entry.truth.measuredResidualsPreserved === true &&
+        entry.truth.fixedAbsoluteToleranceOnly === false) &&
     basinStepThree.receipt.truth.persistentFloodplainDecomposition === true &&
+    basinStepThree.receipt.truth
+      .floodplainDetritalReturnScaleAwareNumericClosure === true &&
+    basinStepThree.receipt.truth
+      .floodplainDetritalReturnPerMaterialChannelNumericBounds === true &&
+    basinStepThree.receipt.truth
+      .floodplainDetritalReturnMeasuredResidualsPreserved === true &&
     basinStepThree.receipt.truth
       .exactFloodplainDecompositionTransferIds === true &&
     basinStepThree.receipt.truth
@@ -6564,6 +7762,17 @@ async function run() {
   assert.equal(malformedPlantMatterAudit.checks.find(item =>
     item.id === 'floodplain-plant-matter-receipts').status, 'FAIL',
   'a wrong sender digest or open plant ledger fails the independent material audit');
+  const inflatedPlantMatterToleranceReceipt = JSON.parse(JSON.stringify(
+    basinStepThree.receipt));
+  inflatedPlantMatterToleranceReceipt.floodplainPlantMatterReceipts[0]
+    .guildFlows[0].closure.numericToleranceKg.carbonKgC *= 10;
+  const inflatedPlantMatterToleranceAudit = systemAudit.auditFoundationSystem({
+    column: basinStepThree.columns[0],
+    basinRoutingReceipt: inflatedPlantMatterToleranceReceipt
+  });
+  assert.equal(inflatedPlantMatterToleranceAudit.checks.find(item =>
+    item.id === 'floodplain-plant-matter-receipts').status, 'FAIL',
+  'a self-authored inflated plant-matter tolerance fails independent policy recomputation');
   const emptyBoundPlantMatterReceipt = JSON.parse(JSON.stringify(
     basinStepThree.receipt));
   const emptyBoundPlantEntry = emptyBoundPlantMatterReceipt
@@ -6606,6 +7815,18 @@ async function run() {
   assert.equal(malformedPlantResourcesAudit.checks.find(item =>
     item.id === 'floodplain-plant-resources-receipts').status, 'FAIL',
   'a wrong floodplain sender digest or open P ledger fails the independent plant-resource audit');
+  const inflatedPlantResourceToleranceReceipt = JSON.parse(JSON.stringify(
+    basinStepThree.receipt));
+  inflatedPlantResourceToleranceReceipt.floodplainPlantResourcesReceipts[0]
+    .guildFlows[0].closure.numericToleranceKg.liveWaterKg *= 10;
+  const inflatedPlantResourceToleranceAudit = systemAudit
+    .auditFoundationSystem({
+      column: basinStepThree.columns[0],
+      basinRoutingReceipt: inflatedPlantResourceToleranceReceipt
+    });
+  assert.equal(inflatedPlantResourceToleranceAudit.checks.find(item =>
+    item.id === 'floodplain-plant-resources-receipts').status, 'FAIL',
+  'the independent audit rejects a receipt that inflates a per-channel numeric tolerance');
   const malformedDecompositionReceipt = JSON.parse(JSON.stringify(
     basinStepThree.receipt));
   malformedDecompositionReceipt.floodplainDecompositionReceipts[0]
@@ -6877,6 +8098,91 @@ async function run() {
   const restoredBasin = new basinRouting.BasinRoutingEngine({ maximumReachStates: 64, state: basinSave });
   assert.deepEqual(restoredBasin.snapshot(), basinSave, 'river reach storage, clocks and latest receipts survive exact restore');
 
+  const previousNumericReceiptSave = JSON.parse(JSON.stringify(basinSave));
+  previousNumericReceiptSave.schema =
+    basinRouting.PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA;
+  for (const entry of previousNumericReceiptSave.receipts) {
+    entry.receipt.schema = basinRouting.PREVIOUS_BASIN_ROUTING_STEP_SCHEMA;
+  }
+  const previousNumericReceiptProfiles = JSON.parse(JSON.stringify(
+    previousNumericReceiptSave.profiles));
+  const migratedNumericReceiptBasin = new basinRouting.BasinRoutingEngine({
+    maximumReachStates: 64,
+    state: previousNumericReceiptSave
+  });
+  assert.deepEqual(migratedNumericReceiptBasin.snapshot().profiles,
+    previousNumericReceiptProfiles,
+  'v26-to-v27 migration preserves every reach owner and clock');
+  assert.equal(migratedNumericReceiptBasin.status('temperate').receipt, null,
+    'v26-to-v27 migration discards v25 receipts rather than inventing the R61 scale-aware reaction receiver policy');
+
+  const mismatchedRestoredClockSave = JSON.parse(JSON.stringify(basinSave));
+  mismatchedRestoredClockSave.schema =
+    basinRouting.PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA;
+  for (const profile of mismatchedRestoredClockSave.profiles) {
+    delete profile.clockAlignmentCheckpoint;
+  }
+  const mismatchedRestoredClockEngine = new basinRouting.BasinRoutingEngine({
+    maximumReachStates: 64,
+    state: mismatchedRestoredClockSave
+  });
+  const clockMaterialBefore = JSON.parse(JSON.stringify(
+    mismatchedRestoredClockEngine.snapshot().profiles[0].reaches));
+  const basinDayBeforeAlignment = mismatchedRestoredClockEngine
+    .status('temperate').lastDay;
+  const committedEarthTransportDay = basinDayBeforeAlignment + .5;
+  assert.ok(mismatchedRestoredClockEngine.status('temperate').receipt,
+    'a current v26 routing receipt is preserved across a state-only v26-to-v27 engine migration');
+  const restoredClockAlignment = mismatchedRestoredClockEngine
+    .reconcileRestoredClock('temperate', committedEarthTransportDay);
+  assert.equal(restoredClockAlignment.status, 'REBASED');
+  assert.equal(restoredClockAlignment.checkpoint.schema,
+    basinRouting.BASIN_CLOCK_ALIGNMENT_CHECKPOINT_SCHEMA);
+  assert.equal(restoredClockAlignment.checkpoint.previousBasinDay,
+    basinDayBeforeAlignment);
+  assert.equal(restoredClockAlignment.checkpoint.committedTransportDay,
+    committedEarthTransportDay);
+  assert.equal(restoredClockAlignment.checkpoint.materialStatePreserved, true);
+  assert.equal(restoredClockAlignment.checkpoint
+    .historicalRoutingReconstructed, false);
+  assert.deepEqual(
+    mismatchedRestoredClockEngine.snapshot().profiles[0].reaches,
+    clockMaterialBefore,
+    'restored clock alignment preserves every reach-owned material state');
+  assert.equal(mismatchedRestoredClockEngine.status('temperate').lastDay,
+    committedEarthTransportDay);
+  assert.equal(mismatchedRestoredClockEngine.status('temperate').receipt,
+    null,
+  'restored clock alignment invalidates the stale latest routing receipt');
+  assert.deepEqual(
+    mismatchedRestoredClockEngine.status('temperate')
+      .clockAlignmentCheckpoint,
+    restoredClockAlignment.checkpoint,
+  'the typed restored-clock checkpoint survives in read-only status');
+  assert.equal(mismatchedRestoredClockEngine.reconcileRestoredClock(
+    'temperate', committedEarthTransportDay + 1).status, 'NOT_ELIGIBLE',
+  'a restored profile receives at most one continuity alignment');
+  assert.throws(() => mismatchedRestoredClockEngine.advance(
+    basinStepThree.columns, basinSector, .25,
+    { profileId: 'temperate', startDay: committedEarthTransportDay + 1 }
+  ), /clock does not match/,
+  'one-shot restore alignment does not mask a later runtime clock mismatch');
+
+  const alignedRestoredClockEngine = new basinRouting.BasinRoutingEngine({
+    maximumReachStates: 64,
+    state: mismatchedRestoredClockSave
+  });
+  const alignedReceiptBefore = alignedRestoredClockEngine
+    .status('temperate').receipt;
+  assert.equal(alignedRestoredClockEngine.reconcileRestoredClock(
+    'temperate', basinDayBeforeAlignment).status, 'ALREADY_ALIGNED');
+  assert.deepEqual(alignedRestoredClockEngine.status('temperate').receipt,
+    alignedReceiptBefore,
+  'an already aligned restore retains its valid latest routing receipt');
+  assert.equal(new basinRouting.BasinRoutingEngine({ maximumReachStates: 64 })
+    .reconcileRestoredClock('temperate', 120).status, 'NOT_ELIGIBLE',
+  'fresh runtime state cannot invoke the restore-only clock authority');
+
   const basinV15Save = JSON.parse(JSON.stringify(basinSave));
   basinV15Save.schema = 'axm.foundation-planet.basin-routing-engine/v15';
   const basinV15GasMemory = new Map();
@@ -7134,7 +8440,7 @@ async function run() {
   'the first v18 migration step moves no C/N across either owner and records no invented nitrate/ammonium process history');
 
   const basinV19Save = JSON.parse(JSON.stringify(basinSave));
-  basinV19Save.schema = basinRouting.PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA;
+  basinV19Save.schema = 'axm.foundation-planet.basin-routing-engine/v20';
   const basinV19NitrificationBoundary = new Map();
   for (const profile of basinV19Save.profiles) {
     for (const reach of profile.reaches) {
@@ -7946,6 +9252,20 @@ async function run() {
   const transportSave = transportEngine.snapshot();
   const restoredTransportEngine = new earthSystem.EarthSystemEngine({ seed: model.PLANET_DEFAULTS.seed, profileId: 'temperate', maximumColumns: 4, state: transportSave });
   assert.deepEqual(restoredTransportEngine.snapshot(), transportSave, 'transport clock, receipt and exchanged reservoirs survive save/restore exactly');
+  const rungFiftyTwoTransportSave = JSON.parse(JSON.stringify(transportSave));
+  rungFiftyTwoTransportSave.schema =
+    earthSystem.PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA;
+  const rungFiftyTwoTransportRestore = new earthSystem.EarthSystemEngine({
+    seed: model.PLANET_DEFAULTS.seed,
+    profileId: 'temperate',
+    maximumColumns: 4,
+    state: rungFiftyTwoTransportSave
+  });
+  assert.deepEqual(rungFiftyTwoTransportRestore
+    .transportStatus('temperate'), transportEngine.transportStatus('temperate'),
+  'R53 engine migration preserves a compatible current transport clock and receipt');
+  assert.equal(rungFiftyTwoTransportRestore.snapshot().schema,
+    earthSystem.EARTH_SYSTEM_ENGINE_SCHEMA);
   assert.ok(restoredTransportEngine.columnsForProfile('temperate').every(column =>
     column.atmosphere.lastPressureColumnHorizontalTransportReceipt?.schema ===
       earthTransport.ATMOSPHERE_PRESSURE_COLUMN_HORIZONTAL_LOCAL_SCHEMA &&
@@ -7974,7 +9294,7 @@ async function run() {
     column.truth.nativePressureLevelHorizontalResolvedEnergyClosed === false),
   'v12 columns migrate without inventing native horizontal lineage or closure evidence');
   assert.equal(migratedRungNineteenTransportEngine.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v26',
+    'axm.foundation-planet.earth-system-engine/v31',
     'the first post-migration snapshot records the current land, mixed-layer and deep-ocean lineage');
   assert.throws(() => restoredTransportEngine.commitTransport('temperate', 155, transportedLand.columns, transportedLand.receipt), /transport clock cannot run backward/, 'transport commit refuses replay into an earlier planet day');
   const isolatedProfileEngine = new earthSystem.EarthSystemEngine({ seed: model.PLANET_DEFAULTS.seed, profileId: 'temperate', maximumColumns: 4 });
@@ -7985,6 +9305,317 @@ async function run() {
   const isolatedGlacialOcean = isolatedProfileEngine.advanceAt(-30, -160, glacialOceanSample, glacialOceanForcing, 121, { profile: 'glacial' });
   assert.notEqual(isolatedTemperateOcean.id + isolatedTemperateOcean.profileId, isolatedGlacialOcean.id + isolatedGlacialOcean.profileId, 'condition profiles retain isolated surface-history keys over the same canonical cell');
   assert.ok(isolatedGlacialOcean.surface.temperatureC < isolatedTemperateOcean.surface.temperatureC - 15, 'new glacial cell initializes from glacial water rather than stale temperate heat');
+
+  const thermalEnvelopeLongRunForcing = seasonalWeather
+    .buildSeasonalWeather(-30, -160, oceanSample, {
+      dayOfYear: 118,
+      profile: 'temperate'
+    });
+  let thermalEnvelopeLongRunColumn = earthSystem.createEarthSystemColumn(
+    -30, -160, oceanSample, thermalEnvelopeLongRunForcing, {
+      day: 118,
+      profile: 'temperate'
+    });
+  let thermalEnvelopeFirstLimitDay = null;
+  let thermalEnvelopeMaximumAtmosphereResidualJm2 = 0;
+  let thermalEnvelopeMaximumNativeResidualJm2 = 0;
+  let thermalEnvelopeMaximumResolvedResidualJm2 = 0;
+  let thermalEnvelopeMaximumRejectedRequestMm = 0;
+  for (let day = 1; day <= 365; day++) {
+    thermalEnvelopeLongRunColumn = earthSystem.advanceEarthSystemColumn(
+      thermalEnvelopeLongRunColumn,
+      thermalEnvelopeLongRunForcing,
+      oceanSample,
+      1,
+      {
+        livingEnabled: true,
+        lifeAbundance: model.CONDITION_PROFILES.temperate.lifeAbundance
+      }
+    );
+    const receipt = thermalEnvelopeLongRunColumn.atmosphere
+      .lastPressureColumnDynamicsReceipt;
+    if (thermalEnvelopeFirstLimitDay === null &&
+        receipt.thermalEnvelopeLimitCount > 0) {
+      thermalEnvelopeFirstLimitDay = day;
+    }
+    thermalEnvelopeMaximumAtmosphereResidualJm2 = Math.max(
+      thermalEnvelopeMaximumAtmosphereResidualJm2,
+      Math.abs(thermalEnvelopeLongRunColumn.budget.atmosphereEnergy
+        .residualJm2)
+    );
+    thermalEnvelopeMaximumNativeResidualJm2 = Math.max(
+      thermalEnvelopeMaximumNativeResidualJm2,
+      Math.abs(receipt.residuals.moistEnthalpyJm2)
+    );
+    thermalEnvelopeMaximumResolvedResidualJm2 = Math.max(
+      thermalEnvelopeMaximumResolvedResidualJm2,
+      Math.abs(receipt.residuals.resolvedEnergyJm2)
+    );
+    thermalEnvelopeMaximumRejectedRequestMm = Math.max(
+      thermalEnvelopeMaximumRejectedRequestMm,
+      receipt.maximumThermallyRejectedRequestMm
+    );
+    assert.ok(thermalEnvelopeLongRunColumn.atmosphere.pressureColumn.layers
+      .every(layer => layer.airTemperatureC >=
+          phaseThermalEnvelope.MIN_NATIVE_LAYER_AIR_TEMPERATURE_C - 1e-9 &&
+        layer.airTemperatureC <=
+          phaseThermalEnvelope.MAX_NATIVE_LAYER_AIR_TEMPERATURE_C + 1e-9),
+    '365-day atmosphere history keeps every native layer inside the declared thermal envelope');
+  }
+  assert.equal(thermalEnvelopeFirstLimitDay, 343,
+    'held 365-day ocean history reaches the preserved R54 day-343 thermal-headroom failure trigger');
+  assert.ok(thermalEnvelopeMaximumRejectedRequestMm > 0 &&
+    thermalEnvelopeMaximumAtmosphereResidualJm2 < 1 &&
+    thermalEnvelopeMaximumNativeResidualJm2 < 1 &&
+    thermalEnvelopeMaximumResolvedResidualJm2 < 1,
+  `temperature-headroom refusal preserves the long-run atmospheric ledger: ${JSON.stringify({
+    thermalEnvelopeMaximumRejectedRequestMm,
+    thermalEnvelopeMaximumAtmosphereResidualJm2,
+    thermalEnvelopeMaximumNativeResidualJm2,
+    thermalEnvelopeMaximumResolvedResidualJm2
+  })}`);
+  const thermalEnvelopeLongRunAudit = systemAudit.auditFoundationSystem({
+    column: thermalEnvelopeLongRunColumn
+  });
+  assert.equal(thermalEnvelopeLongRunAudit.checks.find(check =>
+    check.id === 'native-phase-thermal-envelope').status, 'PASS',
+  'the system audit independently accepts the final receipted thermal-envelope state');
+  const thermallyCorruptedColumn = JSON.parse(JSON.stringify(
+    thermalEnvelopeLongRunColumn));
+  thermallyCorruptedColumn.atmosphere.pressureColumn.layers[7]
+    .airTemperatureC =
+      phaseThermalEnvelope.MAX_NATIVE_LAYER_AIR_TEMPERATURE_C + .1;
+  assert.equal(systemAudit.auditFoundationSystem({
+    column: thermallyCorruptedColumn
+  }).checks.find(check => check.id === 'native-phase-thermal-envelope')
+    .status, 'FAIL',
+  'the thermal-envelope audit rejects an out-of-range persisted native layer');
+  const ledgerCorruptedColumn = JSON.parse(JSON.stringify(
+    thermalEnvelopeLongRunColumn));
+  ledgerCorruptedColumn.atmosphere.lastPressureColumnDynamicsReceipt
+    .layerPhaseReceipts[0].moistEnthalpyResidualJm2 = 2;
+  assert.equal(systemAudit.auditFoundationSystem({
+    column: ledgerCorruptedColumn
+  }).checks.find(check => check.id === 'native-phase-thermal-envelope')
+    .status, 'FAIL',
+  'the thermal-envelope audit rejects a phase receipt whose native moist-enthalpy ledger does not close');
+
+  const boundaryLedgerLatitudeDeg = 25.46855;
+  const boundaryLedgerLongitudeDeg = -140.963;
+  const boundaryLedgerSample = model.sampleLatLon(
+    boundaryLedgerLatitudeDeg,
+    boundaryLedgerLongitudeDeg,
+    { profile: 'temperate' }
+  );
+  const boundaryLedgerForcing = seasonalWeather.buildSeasonalWeather(
+    boundaryLedgerLatitudeDeg,
+    boundaryLedgerLongitudeDeg,
+    boundaryLedgerSample,
+    { dayOfYear: 156, profile: 'temperate' }
+  );
+  let boundaryLedgerColumn = earthSystem.createEarthSystemColumn(
+    boundaryLedgerLatitudeDeg,
+    boundaryLedgerLongitudeDeg,
+    boundaryLedgerSample,
+    boundaryLedgerForcing,
+    { day: 156, profile: 'temperate' }
+  );
+  let firstBoundaryEnvelopeReconciliationDay = null;
+  let maximumBoundaryEnvelopeReconciliationJm2 = 0;
+  let maximumBoundaryLedgerResidualJm2 = 0;
+  for (let day = 1; day <= 365; day++) {
+    boundaryLedgerColumn = earthSystem.advanceEarthSystemColumn(
+      boundaryLedgerColumn,
+      boundaryLedgerForcing,
+      boundaryLedgerSample,
+      1,
+      {
+        livingEnabled: true,
+        lifeAbundance: model.CONDITION_PROFILES.temperate.lifeAbundance
+      }
+    );
+    const budget = boundaryLedgerColumn.budget.atmosphereEnergy;
+    const receipt = boundaryLedgerColumn.atmosphere
+      .lastBoundaryEnergyReceipt;
+    const reconciliationJm2 = Math.abs(
+      receipt.nativeEnvelopeReconciliationJm2
+    );
+    if (firstBoundaryEnvelopeReconciliationDay === null &&
+        reconciliationJm2 >= 1) {
+      firstBoundaryEnvelopeReconciliationDay = day;
+    }
+    maximumBoundaryEnvelopeReconciliationJm2 = Math.max(
+      maximumBoundaryEnvelopeReconciliationJm2,
+      reconciliationJm2
+    );
+    maximumBoundaryLedgerResidualJm2 = Math.max(
+      maximumBoundaryLedgerResidualJm2,
+      Math.abs(budget.residualJm2)
+    );
+    assert.ok(receipt.schema === atmosphereBoundaryEnergy
+        .ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA &&
+      receipt.truth.requestedAndAppliedBoundaryForcingDistinguished === true &&
+      receipt.truth.nativeEnvelopeReconciliationReceipted === true &&
+      Math.abs(receipt.ledgerResidualJm2) < 1 &&
+      Math.abs(budget.boundaryMoistEnthalpyJm2 -
+        receipt.appliedBoundaryMoistEnthalpyJm2) < 1e-3,
+    'every held wet-land step preserves the typed requested-versus-applied boundary energy identity');
+  }
+  assert.equal(firstBoundaryEnvelopeReconciliationDay, 215,
+    'the preserved wet-land counterexample reaches its first native-envelope boundary reconciliation on day 215');
+  assert.ok(maximumBoundaryEnvelopeReconciliationJm2 > 200_000 &&
+    maximumBoundaryLedgerResidualJm2 < 1 &&
+    boundaryLedgerColumn.atmosphere.lastBoundaryEnergyReceipt
+      .nativeEnvelope.limitedLayerIds.includes('pressure-layer-07'),
+  `wet-land native envelope reconciliation closes the whole-atmosphere ledger: ${JSON.stringify({
+    maximumBoundaryEnvelopeReconciliationJm2,
+    maximumBoundaryLedgerResidualJm2
+  })}`);
+  const boundaryLedgerAudit = systemAudit.auditFoundationSystem({
+    column: boundaryLedgerColumn
+  });
+  assert.equal(boundaryLedgerAudit.checks.find(check =>
+    check.id === 'atmosphere-boundary-forcing-energy-ledger').status,
+  'PASS', 'the system audit independently accepts the final boundary-energy receipt');
+  const boundaryLedgerCorruptedColumn = JSON.parse(JSON.stringify(
+    boundaryLedgerColumn));
+  boundaryLedgerCorruptedColumn.atmosphere.lastBoundaryEnergyReceipt
+    .nativeEnvelopeReconciliationJm2 += 2;
+  assert.equal(systemAudit.auditFoundationSystem({
+    column: boundaryLedgerCorruptedColumn
+  }).checks.find(check =>
+    check.id === 'atmosphere-boundary-forcing-energy-ledger').status,
+  'FAIL', 'the audit rejects a tampered boundary-envelope energy reconciliation');
+
+  const thermalEnvelopeMigrationEngine = new earthSystem.EarthSystemEngine({
+    seed: model.PLANET_DEFAULTS.seed,
+    profileId: 'temperate',
+    maximumColumns: 4
+  });
+  thermalEnvelopeMigrationEngine.advanceAt(-30, -160, oceanSample,
+    thermalEnvelopeLongRunForcing, 118, { livingEnabled: true });
+  thermalEnvelopeMigrationEngine.advanceAt(-30, -160, oceanSample,
+    thermalEnvelopeLongRunForcing, 119, { livingEnabled: true });
+  const thermalEnvelopeMigrationSave = thermalEnvelopeMigrationEngine
+    .snapshot();
+  const thermalEnvelopeMigrationOwnerDigest = column => ({
+    surfaceTemperatureC: column.surface.temperatureC,
+    ocean: column.ocean,
+    cryosphere: column.cryosphere,
+    pressureLayers: column.atmosphere.pressureColumn.layers.map(layer => ({
+      pressureThicknessHpa: layer.pressureThicknessHpa,
+      airTemperatureC: layer.airTemperatureC,
+      vaporWaterMm: layer.vaporWaterMm,
+      cloudWaterMm: layer.cloudWaterMm,
+      cloudIceMm: layer.cloudIceMm,
+      eastwardWindMps: layer.eastwardWindMps,
+      northwardWindMps: layer.northwardWindMps
+    }))
+  });
+  const thermalEnvelopeCurrentRestore = new earthSystem.EarthSystemEngine({
+    seed: model.PLANET_DEFAULTS.seed,
+    profileId: 'temperate',
+    maximumColumns: 4,
+    state: JSON.parse(JSON.stringify(thermalEnvelopeMigrationSave))
+  });
+  const thermalEnvelopePreMigrationOwners =
+    thermalEnvelopeMigrationOwnerDigest(thermalEnvelopeCurrentRestore
+      .columnsForProfile('temperate')[0]);
+  const boundaryEnergyMigrationSave = JSON.parse(JSON.stringify(
+    thermalEnvelopeMigrationSave));
+  boundaryEnergyMigrationSave.schema =
+    earthSystem.PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA;
+  const boundaryEnergyLegacyColumn = boundaryEnergyMigrationSave.columns[0]
+    .column;
+  boundaryEnergyLegacyColumn.atmosphere.lastBoundaryEnergyReceipt
+    .nativeEnvelopeReconciliationJm2 += 50_000;
+  boundaryEnergyLegacyColumn.budget.atmosphereEnergy.residualJm2 = 50_000;
+  const boundaryEnergyMigratedEngine = new earthSystem.EarthSystemEngine({
+    seed: model.PLANET_DEFAULTS.seed,
+    profileId: 'temperate',
+    maximumColumns: 4,
+    state: boundaryEnergyMigrationSave
+  });
+  const boundaryEnergyMigratedColumn = boundaryEnergyMigratedEngine
+    .columnsForProfile('temperate')[0];
+  assert.deepEqual(thermalEnvelopeMigrationOwnerDigest(
+    boundaryEnergyMigratedColumn), thermalEnvelopePreMigrationOwners,
+  'v30 migration preserves material, thermal and momentum owners exactly');
+  assert.ok(boundaryEnergyMigratedColumn.atmosphere
+      .lastBoundaryEnergyReceipt === null &&
+    boundaryEnergyMigratedColumn.atmosphere
+      .lastPressureColumnDynamicsReceipt !== null &&
+    boundaryEnergyMigratedColumn.budget.atmosphereEnergy.residualJm2 === 0 &&
+    boundaryEnergyMigratedColumn.budget.atmosphereEnergy
+      .migrationCheckpoint === true &&
+    boundaryEnergyMigratedColumn.budget.atmosphereEnergy
+      .legacyBoundaryEnergyReceiptDiscarded === true &&
+    boundaryEnergyMigratedColumn.budget.atmosphereEnergy
+      .legacyPhaseReceiptDiscarded === false,
+  'v30 migration discards unsupported boundary-energy evidence without discarding valid R55 native phase evidence');
+  const boundaryEnergyMigrationAudit = systemAudit.auditFoundationSystem({
+    column: boundaryEnergyMigratedColumn
+  });
+  assert.equal(boundaryEnergyMigrationAudit.checks.find(check =>
+    check.id === 'atmosphere-boundary-forcing-energy-ledger').status,
+  'NOT_APPLICABLE', 'the v30 checkpoint does not invent an R56 boundary-energy receipt');
+  assert.equal(boundaryEnergyMigrationAudit.checks.find(check =>
+    check.id === 'native-phase-thermal-envelope').status,
+  'PASS', 'the v30 checkpoint retains independently valid R55 phase evidence');
+  thermalEnvelopeMigrationSave.schema =
+    'axm.foundation-planet.earth-system-engine/v29';
+  const thermalEnvelopeLegacyColumn = thermalEnvelopeMigrationSave.columns[0]
+    .column;
+  thermalEnvelopeLegacyColumn.atmosphere.lastPressureColumnDynamicsReceipt
+    .schema = 'axm.foundation-planet.atmosphere-pressure-column-dynamics/v3';
+  thermalEnvelopeLegacyColumn.atmosphere.lastPressureColumnDynamicsReceipt
+    .layerPhaseReceipts.forEach(receipt => {
+      receipt.schema =
+        'axm.foundation-planet.atmosphere-pressure-layer-phase/v2';
+    });
+  thermalEnvelopeLegacyColumn.atmosphere.lastPhaseChangeReceipt.schema =
+    'axm.foundation-planet.atmosphere-phase-change-receipt/v2';
+  thermalEnvelopeLegacyColumn.atmosphere.lastFreeTropospherePhaseReceipt
+    .schema = 'axm.foundation-planet.free-troposphere-phase-receipt/v2';
+  thermalEnvelopeLegacyColumn.budget.atmosphereEnergy.residualJm2 =
+    -21_595.976412;
+  const thermalEnvelopeMigratedEngine = new earthSystem.EarthSystemEngine({
+    seed: model.PLANET_DEFAULTS.seed,
+    profileId: 'temperate',
+    maximumColumns: 4,
+    state: thermalEnvelopeMigrationSave
+  });
+  const thermalEnvelopeMigratedColumn = thermalEnvelopeMigratedEngine
+    .columnsForProfile('temperate')[0];
+  assert.equal(thermalEnvelopeMigratedEngine.snapshot().schema,
+    earthSystem.EARTH_SYSTEM_ENGINE_SCHEMA);
+  assert.deepEqual(thermalEnvelopeMigrationOwnerDigest(
+    thermalEnvelopeMigratedColumn), thermalEnvelopePreMigrationOwners,
+  'v29 migration preserves material, thermal and momentum owners exactly');
+  assert.ok(thermalEnvelopeMigratedColumn.atmosphere
+      .lastPressureColumnDynamicsReceipt === null &&
+    thermalEnvelopeMigratedColumn.atmosphere.lastPhaseChangeReceipt === null &&
+    thermalEnvelopeMigratedColumn.atmosphere
+      .lastFreeTropospherePhaseReceipt === null &&
+    thermalEnvelopeMigratedColumn.budget.atmosphereEnergy.residualJm2 === 0 &&
+    thermalEnvelopeMigratedColumn.budget.atmosphereEnergy
+      .migrationCheckpoint === true &&
+    thermalEnvelopeMigratedColumn.budget.atmosphereEnergy
+      .legacyPhaseReceiptDiscarded === true &&
+    thermalEnvelopeMigratedColumn.budget.atmosphereEnergy
+      .legacyBoundaryEnergyReceiptDiscarded === true &&
+    thermalEnvelopeMigratedColumn.truth
+      .nativePhaseChangesBoundedByThermalHeadroom === false,
+  'v29 migration discards unsupported phase evidence and installs a neutral current-state energy checkpoint without inventing R55 truth');
+  const thermalEnvelopeMigrationAudit = systemAudit.auditFoundationSystem({
+    column: thermalEnvelopeMigratedColumn
+  });
+  assert.equal(thermalEnvelopeMigrationAudit.checks.find(check =>
+    check.id === 'native-phase-thermal-envelope').status, 'NOT_APPLICABLE');
+  assert.notEqual(thermalEnvelopeMigrationAudit.checks.find(check =>
+    check.id === 'local-water-and-energy-ledgers').status, 'FAIL',
+  'the migrated current-state checkpoint remains auditable without relabeling legacy evidence');
+
   let conservativeLandSteps = 0, conservativeOceanSteps = 0;
   const profileIds = Object.keys(model.CONDITION_PROFILES);
   for (let index = 0; index < 36; index++) {
@@ -8019,6 +9650,21 @@ async function run() {
       });
       assert.ok(Math.abs(column.budget.water.residualMm) < 1e-5, 'adversarial global column closes water budget');
       assert.ok(Math.abs(column.budget.energy.residualJm2) < 1, 'adversarial global column closes energy budget');
+      assert.ok(Math.abs(column.budget.atmosphereEnergy.residualJm2) < 1 &&
+        column.atmosphere.lastBoundaryEnergyReceipt.schema ===
+          atmosphereBoundaryEnergy.ATMOSPHERE_BOUNDARY_ENERGY_RECEIPT_SCHEMA &&
+        Math.abs(column.atmosphere.lastBoundaryEnergyReceipt
+          .ledgerResidualJm2) < 1 &&
+        Math.abs(column.atmosphere.lastPressureColumnDynamicsReceipt
+          .residuals.moistEnthalpyJm2) < 1 &&
+        Math.abs(column.atmosphere.lastPressureColumnDynamicsReceipt
+          .residuals.resolvedEnergyJm2) < 1,
+      'adversarial global column closes boundary, whole-atmosphere and native resolved-energy ledgers');
+      assert.ok(column.truth.nativePhaseChangesBoundedByThermalHeadroom ===
+          true &&
+        column.truth.nativeLayerTemperaturesWithinDeclaredEnvelope === true &&
+        column.truth.postMaterialTemperatureClipRequired === false,
+      'adversarial global phase changes are source-bounded before movement and require no post-material temperature clip');
       assert.ok(Number.isFinite(column.surface.temperatureC) && column.surface.albedo >= 0 && column.surface.albedo <= 1, 'adversarial global surface stays finite and bounded');
       assert.ok(column.cryosphere.snowWaterEquivalentMm >= 0 && column.cryosphere.seaIceFraction >= 0 && column.cryosphere.seaIceFraction <= 1, 'adversarial cryosphere reservoirs stay bounded');
       assert.ok(column.cryosphere.snowAgeDays >= 0 && column.cryosphere.snowAgeDays <= 3650 &&
@@ -8060,8 +9706,12 @@ async function run() {
         assert.ok(Math.abs(column.ocean.ecology.lastFluxReceipt.carbon.residualKgCm2) < 1e-8 &&
           Math.abs(column.ocean.ecology.lastFluxReceipt.nitrogen.residualKgNm2) < 1e-8 &&
           Math.abs(column.ocean.ecology.lastFluxReceipt.phosphorus.residualKgPm2) < 1e-8 &&
-          Math.abs(column.ocean.ecology.lastFluxReceipt.oxygen.residualKgO2m2) < 1e-8,
-        'global ocean histories close carbon, nitrogen, phosphorus and oxygen flux ledgers');
+          Math.abs(column.ocean.ecology.lastFluxReceipt.oxygen.residualKgO2m2) < 1e-8 &&
+          Math.abs(column.ocean.ecology.lastFluxReceipt.alkalinity
+            .residualKgCaCO3Eqm2) < 1e-8 &&
+          Math.abs(column.ocean.ecology.lastFluxReceipt.deepOcean.conservation
+            .alkalinityResidualKgCaCO3Eqm2) < 1e-8,
+        'global ocean histories close carbon, nitrogen, phosphorus, oxygen and mixed/deep alkalinity ledgers');
         assert.ok(column.ocean.ecology.carbon.dissolvedInorganicKgCm2 >= 0 &&
           column.ocean.ecology.carbon.dissolvedOrganicKgCm2 >= 0 &&
           column.ocean.ecology.carbon.phytoplanktonKgCm2 >= 0 &&
@@ -8070,15 +9720,18 @@ async function run() {
           column.ocean.ecology.nitrogen.dissolvedInorganicKgNm2 >= 0 &&
           column.ocean.ecology.phosphorus.dissolvedInorganicKgPm2 >= 0 &&
           column.ocean.ecology.oxygen.dissolvedKgO2m2 >= 0 &&
+          column.ocean.ecology.alkalinity.dissolvedKgCaCO3Eqm2 >= 0 &&
           column.ocean.ecology.deepOcean.carbon.dissolvedInorganicKgCm2 >= 0 &&
           column.ocean.ecology.deepOcean.carbon.detritusKgCm2 >= 0 &&
           column.ocean.ecology.deepOcean.carbon.seafloorBuriedOrganicKgCm2 >= 0 &&
           column.ocean.ecology.deepOcean.oxygen.dissolvedKgO2m2 >= 0 &&
+          column.ocean.ecology.deepOcean.alkalinity
+            .dissolvedKgCaCO3Eqm2 >= 0 &&
           column.ocean.ecology.waterColumn.oxygenSaturationFraction >= 0 &&
           column.ocean.ecology.waterColumn.oxygenSaturationFraction <= 2.5 &&
           column.ocean.ecology.waterColumn.hypoxiaRisk >= 0 &&
           column.ocean.ecology.waterColumn.hypoxiaRisk <= 1,
-        'global ocean C/N/P/O2, plankton and diagnostic reservoirs stay finite and bounded');
+        'global ocean C/N/P/O2/alkalinity, plankton and diagnostic reservoirs stay finite and bounded');
         if (step % 4 === 0) {
           assert.equal(column.ocean.ecology.lastFluxReceipt.status,
             'physical-only');
@@ -8820,6 +10473,67 @@ async function run() {
   assert.equal(revisionTwo.parentRevision, 1, 'world-state revisions retain parent revision');
   assert.equal(revisionTwo.journal.length, 2, 'world-state keeps a compact event journal');
   assert.notEqual(revisionOne.integrity.checksum, revisionTwo.integrity.checksum, 'world-state checksum changes with revision and payload');
+  assert.equal(restoredStore.descriptor().storageEncoding, 'json',
+    'ordinary browser-local state remains readable JSON when it fits');
+
+  const quotaStorage = {
+    values: new Map(), maximumCharacters: 8000,
+    getItem(key) { return this.values.has(key) ? this.values.get(key) : null; },
+    setItem(key, value) {
+      if (value.length > this.maximumCharacters) {
+        const error = new Error('storage quota exceeded');
+        error.name = 'QuotaExceededError';
+        throw error;
+      }
+      this.values.set(key, value);
+    }
+  };
+  const quotaStore = new worldStateModule.WorldStateStore({
+    storage: quotaStorage, key: 'quota-v2', legacyKey: 'quota-v1'
+  });
+  const repetitivePayload = {
+    profileId: 'temperate',
+    rows: Array.from({ length: 1200 }, () =>
+      'persistent-canonical-earth-system-column')
+  };
+  quotaStore.commit(repetitivePayload,
+    { kind: 'compressed-save-proof', actor: 'selftest' },
+    { expectedRevision: 0 });
+  assert.equal(quotaStore.descriptor().storageEncoding,
+    worldStateModule.COMPRESSED_WORLD_STATE_ENCODING,
+  'a quota-limited backend falls back to lossless compressed storage');
+  assert.equal(JSON.parse(quotaStorage.values.get('quota-v2')).schema,
+    worldStateModule.COMPRESSED_WORLD_STATE_STORAGE_SCHEMA,
+  'the compressed fallback is explicit rather than disguised as a normal envelope');
+  const restoredQuotaStore = new worldStateModule.WorldStateStore({
+    storage: quotaStorage, key: 'quota-v2', legacyKey: 'quota-v1'
+  });
+  assert.ok(restoredQuotaStore.load());
+  assert.deepEqual(restoredQuotaStore.payload(), repetitivePayload,
+    'compressed browser-local state restores without losing payload material');
+  assert.equal(restoredQuotaStore.descriptor().loadStatus,
+    'restored-v2-compressed');
+
+  const revisionBeforeFailedWrite = restoredStore.descriptor().revision;
+  const payloadBeforeFailedWrite = JSON.parse(JSON.stringify(
+    restoredStore.payload()));
+  const workingSetItem = stateStorage.setItem;
+  stateStorage.setItem = () => {
+    const error = new Error('storage unavailable');
+    error.name = 'QuotaExceededError';
+    throw error;
+  };
+  assert.throws(() => restoredStore.commit(
+    { profileId: 'temperate', day: 120 },
+    { kind: 'must-not-appear' },
+    { expectedRevision: revisionBeforeFailedWrite }
+  ), /storage unavailable/);
+  assert.equal(restoredStore.descriptor().revision,
+    revisionBeforeFailedWrite,
+  'a failed raw and compressed write does not advance the in-memory revision');
+  assert.deepEqual(restoredStore.payload(), payloadBeforeFailedWrite,
+    'a failed raw and compressed write leaves the prior in-memory payload intact');
+  stateStorage.setItem = workingSetItem;
 
   const hostLocalState = {
     schema: worldStateModule.WORLD_STATE_SCHEMA,

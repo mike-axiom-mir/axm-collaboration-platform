@@ -2,10 +2,6 @@
 
 Status: `TEST`
 
-Clone, canonical comparison, and digest preparation use the shared strict
-`deterministic-json-core`. Existing JSON-safe ancestry and bridge bytes remain
-unchanged; unsupported JSON state is refused before native link composition.
-
 This additive leaf preserves the v1 bridge while closing one exact contract
 gap: a verified capability cycle may represent either a new candidate at
 `cycle.candidate.artifactRef` or an already-existing capability at

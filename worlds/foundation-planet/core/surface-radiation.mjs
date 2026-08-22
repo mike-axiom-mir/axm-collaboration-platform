@@ -2,7 +2,7 @@ import {
   ATMOSPHERE_CO2_RADIATIVE_COUPLING_SCHEMA,
   atmosphereCo2RadiationDescription,
   computeAtmosphereCo2RadiativeCoupling
-} from './atmosphere-co2-radiation.mjs';
+} from './atmosphere-co2-radiation.mjs?v=0.62.0-r62.1';
 
 export const EARTH_SURFACE_RADIATION_SCHEMA =
   'axm.foundation-planet.surface-radiation-receipt/v2';

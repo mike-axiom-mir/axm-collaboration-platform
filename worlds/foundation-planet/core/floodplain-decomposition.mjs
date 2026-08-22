@@ -6,11 +6,11 @@ import {
 import {
   FLOODPLAIN_PLANT_DETRITUS_RESOURCE_DEBIT_SCHEMA,
   normalizeFloodplainPlantResourcesState
-} from './floodplain-plant-resources.mjs';
+} from './floodplain-plant-resources.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
   normalizeFloodplainState
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.61.0-r61.1';
 
 export const FLOODPLAIN_DECOMPOSITION_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-decomposition-state/v1';

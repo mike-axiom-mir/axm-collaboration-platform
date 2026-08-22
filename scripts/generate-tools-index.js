@@ -39,17 +39,17 @@ function runOne(tool) {
       if (settled) return;
       settled = true;
       child.kill();
-      resolve({ id: tool.id, path: tool.selftest.promotionPath, selftestSha256: tool.selftest.sha256, verdict: 'TIMEOUT', exitCode: null, durationMs: Date.now() - started, outputSha256: digest(stdout + '\n' + stderr), failureTail: (stderr || stdout).slice(-1200) });
+      resolve({ id: tool.id, path: tool.selftest.promotionPath, selftestSha256: tool.selftest.sha256, selftestDigestScope: tool.selftest.digestScope, verdict: 'TIMEOUT', exitCode: null, durationMs: Date.now() - started, outputSha256: digest(stdout + '\n' + stderr), failureTail: (stderr || stdout).slice(-1200) });
     }, timeoutMs);
     child.on('error', error => {
       if (settled) return;
       settled = true; clearTimeout(timer);
-      resolve({ id: tool.id, path: tool.selftest.promotionPath, selftestSha256: tool.selftest.sha256, verdict: 'ERROR', exitCode: null, durationMs: Date.now() - started, outputSha256: digest(error.message), failureTail: error.message });
+      resolve({ id: tool.id, path: tool.selftest.promotionPath, selftestSha256: tool.selftest.sha256, selftestDigestScope: tool.selftest.digestScope, verdict: 'ERROR', exitCode: null, durationMs: Date.now() - started, outputSha256: digest(error.message), failureTail: error.message });
     });
     child.on('exit', code => {
       if (settled) return;
       settled = true; clearTimeout(timer);
-      resolve({ id: tool.id, path: tool.selftest.promotionPath, selftestSha256: tool.selftest.sha256, verdict: code === 0 ? 'PASS' : 'FAIL', exitCode: code, durationMs: Date.now() - started, outputSha256: digest(stdout + '\n' + stderr), failureTail: code === 0 ? null : (stderr || stdout).slice(-1200) });
+      resolve({ id: tool.id, path: tool.selftest.promotionPath, selftestSha256: tool.selftest.sha256, selftestDigestScope: tool.selftest.digestScope, verdict: code === 0 ? 'PASS' : 'FAIL', exitCode: code, durationMs: Date.now() - started, outputSha256: digest(stdout + '\n' + stderr), failureTail: code === 0 ? null : (stderr || stdout).slice(-1200) });
     });
   });
 }

@@ -45,7 +45,7 @@ function assertRequiredSchema(schema, value) {
 
 assert.equal(
   Hands.list().length,
-  36,
+  45,
   "all admitted modular creation hands should be registered",
 );
 assert.equal(
@@ -54,6 +54,9 @@ assert.equal(
   "the curated fifteen-hand build should have no remaining catalog gaps",
 );
 assert.ok(contract.builtInHands.includes("physical-mark"));
+assert.ok(contract.builtInHands.includes("visual-treatment-composer"));
+assert.ok(contract.builtInHands.includes("pbr-material-bake"));
+assert.ok(contract.builtInHands.includes("deterministic-audio-fabric"));
 assert.equal(
   targetCanvasSchema.properties.schema.const,
   TargetCanvas.SCHEMA,
@@ -898,5 +901,5 @@ assert.equal(Finisher.descriptor().id, "delivery-finisher");
 assert.equal(Finisher.descriptor().schema, Core.HAND_SCHEMA);
 assert.ok(Finisher.source(legacySvg).text.startsWith("<svg"));
 console.log(
-  "AXM Asset Hands selftest: PASS (Hand Contract v2, 36 providers, 0 curated gaps, real cross-format interchange, legacy state and honest dynamic failure)",
+  "AXM Asset Hands selftest: PASS (Hand Contract v2, 45 providers, 0 curated gaps, deterministic modular animation and audio, choice-first 2D/game-pack/pixel-3D/treatment representations, real PBR maps and cross-format interchange, legacy state and honest dynamic failure)",
 );

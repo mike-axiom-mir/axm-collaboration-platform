@@ -270,11 +270,6 @@ function noNewInput(active) {
   check(schema.$id === Lab.RUN_SCHEMA, 'run schema identity matches the implementation');
   check(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'contract remains TEST with no permissions or writes');
   check(['model-invocation', 'recursive-generation', 'majority-vote-as-truth', 'automatic-canon'].every(value => contract.boundaries.refuses.includes(value)), 'contract refuses model recursion, voting as truth, and automatic CANON');
-  check(contract.version === 'v0.2' && contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'v0.2 contract declares strict representation closure');
-  check(Lab.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
-  assert.throws(() => Lab.stableStringify({ lost: undefined }), /unsupported undefined/i);
-  checks += 1;
-  console.log('PASS unsafe canonical state is refused');
 
   const active = await activeInput();
   const run = await Lab.build(active);

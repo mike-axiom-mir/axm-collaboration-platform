@@ -2,11 +2,6 @@
 
 Status: `TEST`
 
-Clone, canonical comparison, and digest preparation use the shared strict
-`deterministic-json-core`. Existing JSON-safe plan, evaluation, and readiness
-bytes remain unchanged; unsupported JSON state is refused before it can be
-silently dropped.
-
 This leaf composes existing AXM organs into a bounded improvement experiment:
 
 ```text

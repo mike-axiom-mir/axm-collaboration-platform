@@ -18,12 +18,6 @@ and beneficiary counts. Detached verification checks integrity, count
 coherence, neutral-selection rules, and authority boundaries while leaving
 source truth/currentness `UNKNOWN`.
 
-Canonical cloning, comparison, and object digests reuse the strict
-`deterministic-json-core`. Existing JSON-safe receipts keep their historical
-canonical bytes, while undefined values, sparse arrays, non-finite numbers,
-cycles, and other non-JSON-representable state are refused before they can be
-silently dropped or hashed into invalid receipt text.
-
 The leaf prompts nobody and performs no I/O, participation, execution, write,
 network action, installation, permission grant, promotion, merge, `CANON`
 decision, Foundation mutation, or model training.

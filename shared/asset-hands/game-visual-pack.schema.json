@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/game-visual-pack-v1.schema.json",
+  "title": "AXM Game Visual Pack v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "id", "title", "game_contract_id", "game_contract_digest", "art_direction", "semantic_bindings", "representation_profiles", "performance_profiles", "requirements", "package", "content_digest", "provenance", "authority"],
+  "properties": {
+    "schema": { "const": "axm.game-visual-pack/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "const": "EXPERIMENTAL" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "game_contract_id": { "type": "string" },
+    "game_contract_digest": { "type": "string", "minLength": 16 },
+    "art_direction": { "type": "object", "required": ["medium", "projection", "detail_language", "intent"], "properties": { "medium": { "type": "string" }, "projection": { "type": "string" }, "detail_language": { "type": "string" }, "intent": { "type": "string" } }, "additionalProperties": true },
+    "semantic_bindings": { "type": "object", "minProperties": 1, "additionalProperties": { "type": "object", "required": ["representation_profile_id"], "properties": { "representation_profile_id": { "type": "string" }, "notes": { "type": "string" } }, "additionalProperties": true } },
+    "representation_profiles": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+    "performance_profiles": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["legacy", "balanced", "showcase", "reduced-motion"] } },
+    "requirements": { "$ref": "#/$defs/resources" },
+    "package": { "type": "object", "required": ["bytes", "format"], "properties": { "bytes": { "type": "integer", "minimum": 0 }, "format": { "type": "string" } }, "additionalProperties": false },
+    "content_digest": { "type": "string", "minLength": 16 },
+    "recommendation_rank": { "type": "integer", "minimum": 0 },
+    "provenance": { "type": "object" },
+    "authority": { "$ref": "asset-identity.schema.json#/$defs/authority" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "resources": {
+      "type": "object",
+      "required": ["memory_mb", "video_memory_mb", "max_texture_dimension", "runtime_features"],
+      "properties": {
+        "memory_mb": { "type": "integer", "minimum": 0 },
+        "video_memory_mb": { "type": "integer", "minimum": 0 },
+        "max_texture_dimension": { "type": "integer", "minimum": 1 },
+        "runtime_features": { "type": "array", "uniqueItems": true, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  }
+}

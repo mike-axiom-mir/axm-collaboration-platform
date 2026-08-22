@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/missing-representation-v1.schema.json",
+  "title": "AXM Missing Representation Result v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "request", "missing", "gap_types", "fallback_used", "nearest_substitute_used", "unblock_conditions", "authority"],
+  "properties": {
+    "schema": { "const": "axm.missing-representation/v1" }, "version": { "const": "1.0.0" }, "status": { "const": "MISSING_REPRESENTATION" }, "request": { "type": "object" }, "missing": { "type": "array", "minItems": 1, "items": { "type": "string" } }, "gap_types": { "type": "array", "minItems": 1, "items": { "enum": ["HAND", "SKILL", "AUTHORITY", "SUBSTRATE", "EVIDENCE", "CONTRACT"] } }, "fallback_used": { "const": false }, "nearest_substitute_used": { "const": false }, "unblock_conditions": { "type": "array", "items": { "type": "string" } }, "authority": { "$ref": "asset-identity.schema.json#/$defs/authority" }
+  },
+  "additionalProperties": false
+}

@@ -2,10 +2,6 @@
 
 Status: `TEST`
 
-Representation boundary: v0.2 uses the shared strict deterministic JSON core.
-Safe JSON keeps the existing canonical bytes; unsupported, cyclic, sparse, or
-otherwise non-JSON state is refused instead of being dropped or rewritten.
-
 This leaf binds a caller-observed baseline to exact references without scanning,
 executing, installing, promoting, or changing it. It supports three adapter
 kinds:

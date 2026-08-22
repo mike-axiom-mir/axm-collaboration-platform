@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/game-visual-selection-request-v1.schema.json",
+  "title": "AXM Game Visual Selection Request v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "mode", "game_contract", "hardware_profile", "minimum_hardware_profile", "inventory", "packs", "save_state", "current_pack_id", "authority"],
+  "properties": {
+    "schema": { "const": "axm.game-visual-selection-request/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "mode": { "enum": ["recommend", "select"] },
+    "game_contract": { "$ref": "game-visual-contract.schema.json" },
+    "hardware_profile": { "$ref": "hardware-capability-profile.schema.json" },
+    "minimum_hardware_profile": { "$ref": "hardware-capability-profile.schema.json" },
+    "inventory": { "$ref": "game-visual-pack-inventory.schema.json" },
+    "packs": { "type": "array", "minItems": 1, "items": { "$ref": "game-visual-pack.schema.json" } },
+    "save_state": { "type": "object" },
+    "current_pack_id": { "type": ["string", "null"] },
+    "requested_pack_id": { "type": "string" },
+    "accept_recommendation": { "type": "boolean" },
+    "authority": { "const": "player-choice-required" }
+  },
+  "additionalProperties": false
+}

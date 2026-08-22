@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const C = require('../core');
 const Inventory = require('./inventory-compiler');
+const ResilientOutput = require('./resilient-output-writer');
 const ROOT = Inventory.ROOT;
 const PACK_ROOT = path.join(ROOT, 'tools', 'agent-tool-forge', 'skills', 'sensorium');
 
@@ -83,10 +84,19 @@ function render(source) {
   outputs[path.join(PACK_ROOT, 'HANDOFF_TO_CODEX.md')] = handoff(source);
   return outputs;
 }
-function write(outputs) { Object.keys(outputs).forEach(function (file) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, outputs[file], 'utf8'); }); }
+async function write(outputs, options) {
+  for (const file of Object.keys(outputs)) {
+    await fs.promises.mkdir(path.dirname(file), { recursive: true });
+    await ResilientOutput.writePayload(file, outputs[file], options);
+  }
+}
+async function main() {
+  const outputs = render();
+  await write(outputs);
+  console.log('Sensorium dual-form compiler: PASS - ' + Object.keys(outputs).length + ' artifacts');
+}
 if (require.main === module) {
-  try { const outputs = render(); write(outputs); console.log('Sensorium dual-form compiler: PASS - ' + Object.keys(outputs).length + ' artifacts'); }
-  catch (error) { console.error(error.stack || error.message); process.exitCode = 1; }
+  main().catch(function (error) { console.error(error.stack || error.message); process.exitCode = 1; });
 }
 
 module.exports = { ROOT, PACK_ROOT, definition, markdown, index, packReadme, handoff, render, write };

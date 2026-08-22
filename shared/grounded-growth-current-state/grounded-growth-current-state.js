@@ -2,7 +2,6 @@
 
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
 const Participation = require('../grounded-growth-participation-frontier/grounded-growth-participation-frontier');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const RECEIPT_SCHEMA = 'axm.grounded-growth-current-state-receipt/v1';
 const DETACHED_VERIFICATION_SCHEMA = 'axm.grounded-growth-current-state-detached-verification/v1';
@@ -10,11 +9,11 @@ const VERSION = '0.1.0';
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
 
 function clone(value) {
-  return JSON.parse(stableStringify(value));
+  return JSON.parse(JSON.stringify(value));
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  return Growth.stableStringify(value);
 }
 
 function sha256(value) {

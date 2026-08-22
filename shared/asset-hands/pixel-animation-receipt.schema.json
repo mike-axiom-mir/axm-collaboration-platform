@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/pixel-animation-receipt-v1.schema.json",
+  "title": "AXM Pixel Animation Receipt v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "source", "recipe", "profile", "outputs", "checks", "measures", "limits", "authority"],
+  "properties": {
+    "schema": { "const": "axm.pixel-animation-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "source": { "type": "object" },
+    "recipe": { "type": "object" },
+    "profile": { "type": "object" },
+    "outputs": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "role", "mime", "filename", "sha256"] } },
+    "checks": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["name", "pass"], "properties": { "name": { "type": "string", "minLength": 1 }, "pass": { "type": "boolean" }, "details": {} }, "additionalProperties": true } },
+    "measures": { "type": "object" },
+    "limits": { "type": "object" },
+    "authority": { "const": "candidate-only" }
+  },
+  "additionalProperties": false
+}

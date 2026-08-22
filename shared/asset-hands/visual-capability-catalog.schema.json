@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-capability-catalog-v1.schema.json",
+  "title": "AXM Visual Capability Catalog v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "style_presets", "treatment_molds", "aetherfx_modules", "portable_fx_blocks", "pbr_material_families", "aetherglass", "adapters", "routing_policy", "authority", "counts", "digest"],
+  "properties": {
+    "schema": { "const": "axm.visual-capability-catalog/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "const": "EXPERIMENTAL" },
+    "style_presets": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "name", "intent", "source"] } },
+    "treatment_molds": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "name", "palette", "legacy", "effectStack", "lightingRig", "source"] } },
+    "style_fabric": { "type": "object" },
+    "aetherfx_modules": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "name", "kind", "category", "source"] } },
+    "portable_fx_blocks": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "kind", "css", "svg", "tokens", "source"] } },
+    "pbr_material_families": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "label", "base", "accent", "source"] } },
+    "aetherglass": { "type": "object", "required": ["version", "visual_axes", "capabilities", "storycraft"] },
+    "adapters": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "integration", "entry", "source_digest", "automatic_apply", "canon_authority"] } },
+    "routing_policy": { "type": "object", "required": ["exact_ids_only", "nearest_substitution", "declared_is_not_executed"] },
+    "authority": { "type": "object", "required": ["candidate_only", "installed", "promoted", "canonical"] },
+    "counts": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

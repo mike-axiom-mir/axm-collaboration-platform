@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hardware-capability-profile-v1.schema.json",
+  "title": "AXM Declared Hardware Capability Profile v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "id", "label", "source", "capabilities", "confidence", "provenance", "authority"],
+  "properties": {
+    "schema": { "const": "axm.hardware-capability-profile/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "const": "EXPERIMENTAL" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$" },
+    "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "source": { "enum": ["declared-fixture", "user-declared", "host-measured"] },
+    "capabilities": {
+      "type": "object",
+      "required": ["memory_mb", "video_memory_mb", "max_texture_dimension", "runtime_features", "storage_free_bytes"],
+      "properties": {
+        "memory_mb": { "type": "integer", "minimum": 0 },
+        "video_memory_mb": { "type": "integer", "minimum": 0 },
+        "max_texture_dimension": { "type": "integer", "minimum": 1 },
+        "runtime_features": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "storage_free_bytes": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "confidence": { "enum": ["fixture", "declared", "measured"] },
+    "measurement_receipt": { "type": "object" },
+    "provenance": { "type": "object" },
+    "authority": { "$ref": "asset-identity.schema.json#/$defs/authority" }
+  },
+  "additionalProperties": false
+}

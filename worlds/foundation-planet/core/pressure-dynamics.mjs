@@ -10,17 +10,24 @@ import {
   pressureColumnTotals,
   validatePressureColumn
 } from './pressure-column.mjs';
+import {
+  ATMOSPHERE_PHASE_THERMAL_ENVELOPE_SCHEMA,
+  MIN_NATIVE_LAYER_AIR_TEMPERATURE_C,
+  MAX_NATIVE_LAYER_AIR_TEMPERATURE_C,
+  boundPhaseChangeByThermalHeadroom,
+  phaseThermalEnvelopeDescription
+} from './phase-thermal-envelope.mjs';
 
 export const ATMOSPHERE_PRESSURE_COLUMN_DYNAMICS_SCHEMA =
-  'axm.foundation-planet.atmosphere-pressure-column-dynamics-receipt/v3';
+  'axm.foundation-planet.atmosphere-pressure-column-dynamics-receipt/v4';
 export const ATMOSPHERE_PRESSURE_LAYER_PHASE_SCHEMA =
-  'axm.foundation-planet.atmosphere-pressure-layer-phase-receipt/v2';
+  'axm.foundation-planet.atmosphere-pressure-layer-phase-receipt/v3';
 export const ATMOSPHERE_ADJACENT_LAYER_EXCHANGE_SCHEMA =
   'axm.foundation-planet.atmosphere-adjacent-layer-exchange-receipt/v3';
 export const ATMOSPHERE_PRESSURE_INTERFACE_BUOYANCY_SCHEMA =
   'axm.foundation-planet.atmosphere-pressure-interface-buoyancy-receipt/v1';
 export const ATMOSPHERE_PRECIPITATION_DESCENT_SCHEMA =
-  'axm.foundation-planet.atmosphere-precipitation-descent-receipt/v2';
+  'axm.foundation-planet.atmosphere-precipitation-descent-receipt/v3';
 
 const STANDARD_GRAVITY_MPS2 = 9.80665;
 const LATENT_HEAT_VAPORIZATION_J_KG = 2.45e6;
@@ -198,14 +205,47 @@ function maximumEquilibriumEvaporationMm(layer, requestedMm, targetSaturation = 
   return low;
 }
 
-function condense(layer, requestedMm, cloudCapacityMm, minimumVaporMm = MIN_LAYER_VAPOR_MM) {
-  const amount = Math.min(
+function recordThermalLimit(ledger, envelope) {
+  if (!ledger || !envelope || envelope.limitedMm <= 1e-15) return;
+  ledger.thermalEnvelopeLimitCount += 1;
+  ledger.maximumThermallyRejectedRequestMm = Math.max(
+    ledger.maximumThermallyRejectedRequestMm,
+    envelope.limitedMm
+  );
+  if (envelope.direction === 'warming') {
+    ledger.warmSideThermalLimitEncountered = true;
+  } else {
+    ledger.coldSideThermalLimitEncountered = true;
+  }
+}
+
+function condense(
+  layer,
+  requestedMm,
+  cloudCapacityMm,
+  minimumVaporMm = MIN_LAYER_VAPOR_MM,
+  ledger = null
+) {
+  const materialBoundMm = Math.min(
     Math.max(0, finite(requestedMm)),
     Math.max(0, finite(layer.vaporWaterMm) - minimumVaporMm),
     Math.max(0, cloudCapacityMm - finite(layer.cloudWaterMm) - finite(layer.cloudIceMm))
   );
-  if (amount <= 0) return { amount: 0, liquidMm: 0, iceMm: 0 };
-  const iceMm = amount * equilibriumIceFraction(layer.airTemperatureC);
+  const iceFraction = equilibriumIceFraction(layer.airTemperatureC);
+  const thermalEnvelope = boundPhaseChangeByThermalHeadroom({
+    requestedMm: materialBoundMm,
+    airTemperatureC: layer.airTemperatureC,
+    heatCapacityJm2K: layerHeatCapacityJm2K(layer),
+    latentHeatJkg: LATENT_HEAT_VAPORIZATION_J_KG +
+      iceFraction * PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG,
+    direction: 'warming'
+  });
+  recordThermalLimit(ledger, thermalEnvelope);
+  const amount = thermalEnvelope.appliedMm;
+  if (amount <= 0) return {
+    amount: 0, liquidMm: 0, iceMm: 0, thermalEnvelope
+  };
+  const iceMm = amount * iceFraction;
   const liquidMm = amount - iceMm;
   layer.vaporWaterMm -= amount;
   layer.cloudWaterMm += liquidMm;
@@ -213,17 +253,31 @@ function condense(layer, requestedMm, cloudCapacityMm, minimumVaporMm = MIN_LAYE
   layer.airTemperatureC += (amount * LATENT_HEAT_VAPORIZATION_J_KG +
     iceMm * PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG) /
     layerHeatCapacityJm2K(layer);
-  return { amount, liquidMm, iceMm };
+  return { amount, liquidMm, iceMm, thermalEnvelope };
 }
 
-function evaporate(layer, requestedMm) {
+function evaporate(layer, requestedMm, ledger = null) {
   const condensedTotalMm = Math.max(0,
     finite(layer.cloudWaterMm) + finite(layer.cloudIceMm));
-  const amount = Math.min(
+  const materialBoundMm = Math.min(
     Math.max(0, finite(requestedMm)),
     condensedTotalMm
   );
-  if (amount <= 0) return { amount: 0, liquidMm: 0, iceMm: 0 };
+  const iceFraction = finite(layer.cloudIceMm) /
+    Math.max(1e-15, condensedTotalMm);
+  const thermalEnvelope = boundPhaseChangeByThermalHeadroom({
+    requestedMm: materialBoundMm,
+    airTemperatureC: layer.airTemperatureC,
+    heatCapacityJm2K: layerHeatCapacityJm2K(layer),
+    latentHeatJkg: LATENT_HEAT_VAPORIZATION_J_KG +
+      iceFraction * PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG,
+    direction: 'cooling'
+  });
+  recordThermalLimit(ledger, thermalEnvelope);
+  const amount = thermalEnvelope.appliedMm;
+  if (amount <= 0) return {
+    amount: 0, liquidMm: 0, iceMm: 0, thermalEnvelope
+  };
   const liquidMm = Math.min(layer.cloudWaterMm,
     amount * finite(layer.cloudWaterMm) / Math.max(1e-15, condensedTotalMm));
   const iceMm = amount - liquidMm;
@@ -233,7 +287,7 @@ function evaporate(layer, requestedMm) {
   layer.airTemperatureC -= (amount * LATENT_HEAT_VAPORIZATION_J_KG +
     iceMm * PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG) /
     layerHeatCapacityJm2K(layer);
-  return { amount, liquidMm, iceMm };
+  return { amount, liquidMm, iceMm, thermalEnvelope };
 }
 
 function equilibrateCondensedPhase(layer, ledger, response = 1) {
@@ -241,16 +295,34 @@ function equilibrateCondensedPhase(layer, ledger, response = 1) {
   if (totalMm <= 0) return;
   const targetIceMm = totalMm * equilibriumIceFraction(layer.airTemperatureC);
   if (targetIceMm > layer.cloudIceMm) {
-    const amount = Math.min(layer.cloudWaterMm,
+    const requestedMm = Math.min(layer.cloudWaterMm,
       (targetIceMm - layer.cloudIceMm) * clamp(response, 0, 1));
+    const thermalEnvelope = boundPhaseChangeByThermalHeadroom({
+      requestedMm,
+      airTemperatureC: layer.airTemperatureC,
+      heatCapacityJm2K: layerHeatCapacityJm2K(layer),
+      latentHeatJkg: PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG,
+      direction: 'warming'
+    });
+    recordThermalLimit(ledger, thermalEnvelope);
+    const amount = thermalEnvelope.appliedMm;
     layer.cloudWaterMm -= amount;
     layer.cloudIceMm += amount;
     layer.airTemperatureC += amount * PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG /
       layerHeatCapacityJm2K(layer);
     ledger.cloudFreezingMm += amount;
   } else if (targetIceMm < layer.cloudIceMm) {
-    const amount = Math.min(layer.cloudIceMm,
+    const requestedMm = Math.min(layer.cloudIceMm,
       (layer.cloudIceMm - targetIceMm) * clamp(response, 0, 1));
+    const thermalEnvelope = boundPhaseChangeByThermalHeadroom({
+      requestedMm,
+      airTemperatureC: layer.airTemperatureC,
+      heatCapacityJm2K: layerHeatCapacityJm2K(layer),
+      latentHeatJkg: PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG,
+      direction: 'cooling'
+    });
+    recordThermalLimit(ledger, thermalEnvelope);
+    const amount = thermalEnvelope.appliedMm;
     layer.cloudIceMm -= amount;
     layer.cloudWaterMm += amount;
     layer.airTemperatureC -= amount * PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG /
@@ -276,7 +348,8 @@ function phaseAdjustLayers(pressureColumn, durationDays, phaseLedgers, capacitie
         layer,
         amount,
         capacities[index],
-        minimumVaporForLayer(pressureColumn, index)
+        minimumVaporForLayer(pressureColumn, index),
+        phaseLedgers[index]
       );
       phaseLedgers[index].naturalCondensationMm += condensed.liquidMm;
       phaseLedgers[index].naturalDepositionMm += condensed.iceMm;
@@ -286,7 +359,7 @@ function phaseAdjustLayers(pressureColumn, durationDays, phaseLedgers, capacitie
         evaporationResponse *
         clamp((.76 - saturationBefore) / .76, 0, 1);
       const amount = maximumEquilibriumEvaporationMm(layer, requested, .88);
-      const evaporated = evaporate(layer, amount);
+      const evaporated = evaporate(layer, amount, phaseLedgers[index]);
       phaseLedgers[index].cloudEvaporationMm += evaporated.liquidMm;
       phaseLedgers[index].cloudSublimationMm += evaporated.iceMm;
     }
@@ -316,17 +389,39 @@ function addFalloutRoute(
     const receivingLayer = pressureColumn.layers[interfaceIndex];
     let meltingMm = 0;
     let freezingMm = 0;
+    let thermallyLimitedMeltingMm = 0;
+    let thermallyLimitedFreezingMm = 0;
     if (receivingLayer.airTemperatureC > 0 && snowMm > 0) {
-      meltingMm = Math.min(snowMm,
+      const requestedMeltingMm = Math.min(snowMm,
         snowMm * clamp(receivingLayer.airTemperatureC / 6, 0, 1));
+      const thermalEnvelope = boundPhaseChangeByThermalHeadroom({
+        requestedMm: requestedMeltingMm,
+        airTemperatureC: receivingLayer.airTemperatureC,
+        heatCapacityJm2K: layerHeatCapacityJm2K(receivingLayer),
+        latentHeatJkg: PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG,
+        direction: 'cooling'
+      });
+      recordThermalLimit(phaseLedgers[interfaceIndex], thermalEnvelope);
+      meltingMm = thermalEnvelope.appliedMm;
+      thermallyLimitedMeltingMm = thermalEnvelope.limitedMm;
       snowMm -= meltingMm;
       rainMm += meltingMm;
       receivingLayer.airTemperatureC -= meltingMm *
         PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG / layerHeatCapacityJm2K(receivingLayer);
       phaseLedgers[interfaceIndex].descentMeltingMm += meltingMm;
     } else if (receivingLayer.airTemperatureC < -4 && rainMm > 0) {
-      freezingMm = Math.min(rainMm,
+      const requestedFreezingMm = Math.min(rainMm,
         rainMm * clamp((-receivingLayer.airTemperatureC - 4) / 8, 0, 1));
+      const thermalEnvelope = boundPhaseChangeByThermalHeadroom({
+        requestedMm: requestedFreezingMm,
+        airTemperatureC: receivingLayer.airTemperatureC,
+        heatCapacityJm2K: layerHeatCapacityJm2K(receivingLayer),
+        latentHeatJkg: PRESSURE_COLUMN_LATENT_HEAT_FUSION_J_KG,
+        direction: 'warming'
+      });
+      recordThermalLimit(phaseLedgers[interfaceIndex], thermalEnvelope);
+      freezingMm = thermalEnvelope.appliedMm;
+      thermallyLimitedFreezingMm = thermalEnvelope.limitedMm;
       rainMm -= freezingMm;
       snowMm += freezingMm;
       receivingLayer.airTemperatureC += freezingMm *
@@ -342,6 +437,8 @@ function addFalloutRoute(
       receivingLayerId: receivingLayer.id,
       meltingMm: round(meltingMm, 12),
       freezingMm: round(freezingMm, 12),
+      thermallyLimitedMeltingMm: round(thermallyLimitedMeltingMm, 12),
+      thermallyLimitedFreezingMm: round(thermallyLimitedFreezingMm, 12),
       rainBelowInterfaceMm: round(rainMm, 12),
       snowBelowInterfaceMm: round(snowMm, 12),
       fusionHeatToLayerJm2: round((freezingMm - meltingMm) *
@@ -490,7 +587,8 @@ function forceCondensationForPrecipitation(
       pressureColumn.layers[item.index],
       amount,
       capacities[item.index],
-      minimumVaporForLayer(pressureColumn, item.index)
+      minimumVaporForLayer(pressureColumn, item.index),
+      phaseLedgers[item.index]
     );
     phaseLedgers[item.index].forcedCondensationMm += applied.liquidMm;
     phaseLedgers[item.index].forcedDepositionMm += applied.iceMm;
@@ -512,7 +610,8 @@ function forceCondensationForPrecipitation(
         layer,
         additional,
         capacities[item.index],
-        minimumVaporForLayer(pressureColumn, item.index)
+        minimumVaporForLayer(pressureColumn, item.index),
+        phaseLedgers[item.index]
       );
       phaseLedgers[item.index].forcedCondensationMm += applied.liquidMm;
       phaseLedgers[item.index].forcedDepositionMm += applied.iceMm;
@@ -538,7 +637,11 @@ function createPhaseLedgers(pressureColumn) {
     rainSourceMm: 0,
     snowSourceMm: 0,
     descentMeltingMm: 0,
-    descentFreezingMm: 0
+    descentFreezingMm: 0,
+    thermalEnvelopeLimitCount: 0,
+    maximumThermallyRejectedRequestMm: 0,
+    warmSideThermalLimitEncountered: false,
+    coldSideThermalLimitEncountered: false
   }));
 }
 
@@ -592,6 +695,16 @@ function completePhaseReceipts(pressureColumn, ledgers) {
       snowSourceMm: round(ledger.snowSourceMm, 12),
       descentMeltingMm: round(ledger.descentMeltingMm, 12),
       descentFreezingMm: round(ledger.descentFreezingMm, 12),
+      thermalEnvelopeSchema: ATMOSPHERE_PHASE_THERMAL_ENVELOPE_SCHEMA,
+      thermalEnvelopeLimitCount: ledger.thermalEnvelopeLimitCount,
+      maximumThermallyRejectedRequestMm: round(
+        ledger.maximumThermallyRejectedRequestMm,
+        12
+      ),
+      warmSideThermalLimitEncountered:
+        ledger.warmSideThermalLimitEncountered,
+      coldSideThermalLimitEncountered:
+        ledger.coldSideThermalLimitEncountered,
       latentHeatingJm2: round(
         (condensationMm + depositionMm - ledger.cloudEvaporationMm -
           ledger.cloudSublimationMm) * LATENT_HEAT_VAPORIZATION_J_KG +
@@ -607,6 +720,13 @@ function completePhaseReceipts(pressureColumn, ledgers) {
         levelLocalSaturationCapacity: true,
         vaporCloudMassConservative: true,
         latentHeatCoupledToNativeLayer: true,
+        phaseChangesBoundedByThermalHeadroom: true,
+        airTemperatureWithinDeclaredEnvelope:
+          finite(layer.airTemperatureC) >=
+            MIN_NATIVE_LAYER_AIR_TEMPERATURE_C - 1e-9 &&
+          finite(layer.airTemperatureC) <=
+            MAX_NATIVE_LAYER_AIR_TEMPERATURE_C + 1e-9,
+        postMaterialTemperatureClipRequired: false,
         mixedPhaseCloudReservoirs: true,
         fusionHeatCoupledToNativeLayer: true,
         weatherNucleationParameterization: ledger.forcedCondensationMm > 0,
@@ -937,11 +1057,25 @@ function bandPhaseSummary(layerReceipts, start, end) {
     summary.descentMeltingMm += receipt.descentMeltingMm;
     summary.descentFreezingMm += receipt.descentFreezingMm;
     summary.latentHeatingJm2 += receipt.latentHeatingJm2;
+    summary.thermalEnvelopeLimitCount += receipt.thermalEnvelopeLimitCount;
+    summary.maximumThermallyRejectedRequestMm = Math.max(
+      summary.maximumThermallyRejectedRequestMm,
+      receipt.maximumThermallyRejectedRequestMm
+    );
+    summary.warmSideThermalLimitEncountered ||= Boolean(
+      receipt.warmSideThermalLimitEncountered
+    );
+    summary.coldSideThermalLimitEncountered ||= Boolean(
+      receipt.coldSideThermalLimitEncountered
+    );
     return summary;
   }, { condensationMm: 0, depositionMm: 0, cloudEvaporationMm: 0,
     cloudSublimationMm: 0, cloudFreezingMm: 0, cloudMeltingMm: 0,
     precipitationSourceMm: 0, rainSourceMm: 0, snowSourceMm: 0,
-    descentMeltingMm: 0, descentFreezingMm: 0, latentHeatingJm2: 0 });
+    descentMeltingMm: 0, descentFreezingMm: 0, latentHeatingJm2: 0,
+    thermalEnvelopeLimitCount: 0, maximumThermallyRejectedRequestMm: 0,
+    warmSideThermalLimitEncountered: false,
+    coldSideThermalLimitEncountered: false });
 }
 
 function compatibilityPhaseReceipts(
@@ -972,6 +1106,12 @@ function compatibilityPhaseReceipts(
       cloudSublimationMm: round(boundary.cloudSublimationMm, 9),
       cloudFreezingMm: round(boundary.cloudFreezingMm, 9),
       cloudMeltingMm: round(boundary.cloudMeltingMm, 9),
+      thermalEnvelopeSchema: ATMOSPHERE_PHASE_THERMAL_ENVELOPE_SCHEMA,
+      thermalEnvelopeLimitCount: boundary.thermalEnvelopeLimitCount,
+      maximumThermallyRejectedRequestMm: round(
+        boundary.maximumThermallyRejectedRequestMm,
+        9
+      ),
       rainSourceMm: round(boundary.rainSourceMm, 9),
       snowSourceMm: round(boundary.snowSourceMm, 9),
       latentHeatingJm2: round(boundary.latentHeatingJm2, 3),
@@ -988,6 +1128,8 @@ function compatibilityPhaseReceipts(
       truth: {
         waterConservative: true,
         latentHeatCoupledToAir: true,
+        phaseChangesBoundedByThermalHeadroom: true,
+        postMaterialTemperatureClipRequired: false,
         precipitationWithdrawsMixedPhaseCloud: true,
         nativeMixedPhaseCloudReservoirs: true,
         nativePressureLayerParameterization: true,
@@ -1005,6 +1147,12 @@ function compatibilityPhaseReceipts(
       cloudSublimationMm: round(free.cloudSublimationMm, 9),
       cloudFreezingMm: round(free.cloudFreezingMm, 9),
       cloudMeltingMm: round(free.cloudMeltingMm, 9),
+      thermalEnvelopeSchema: ATMOSPHERE_PHASE_THERMAL_ENVELOPE_SCHEMA,
+      thermalEnvelopeLimitCount: free.thermalEnvelopeLimitCount,
+      maximumThermallyRejectedRequestMm: round(
+        free.maximumThermallyRejectedRequestMm,
+        9
+      ),
       precipitationDescentMm: round(free.precipitationSourceMm, 9),
       rainSourceMm: round(free.rainSourceMm, 9),
       snowSourceMm: round(free.snowSourceMm, 9),
@@ -1031,6 +1179,8 @@ function compatibilityPhaseReceipts(
       truth: {
         waterConservative: true,
         latentHeatCoupledToFreeTroposphere: true,
+        phaseChangesBoundedByThermalHeadroom: true,
+        postMaterialTemperatureClipRequired: false,
         nativeMixedPhaseCloudReservoirs: true,
         directPrecipitation: false,
         precipitationDescentToSurface: free.precipitationSourceMm > 0,
@@ -1345,9 +1495,9 @@ export function advancePressureColumnDynamics(earthColumn, options = {}) {
     phaseMoistEnthalpyResidualJm2,
     {
       boundary: String(options.boundaryPhaseSchema ||
-        'axm.foundation-planet.atmosphere-phase-change-receipt/v2'),
+        'axm.foundation-planet.atmosphere-phase-change-receipt/v3'),
       free: String(options.freePhaseSchema ||
-        'axm.foundation-planet.free-troposphere-phase-receipt/v2')
+        'axm.foundation-planet.free-troposphere-phase-receipt/v3')
     }
   );
   const verticalExchange = compatibilityVerticalExchangeReceipt(
@@ -1392,6 +1542,19 @@ export function advancePressureColumnDynamics(earthColumn, options = {}) {
       sum + entry.cloudFreezingMm, 0), 12),
     cloudMeltingMm: round(layerPhaseReceipts.reduce((sum, entry) =>
       sum + entry.cloudMeltingMm, 0), 12),
+    phaseThermalEnvelopeSchema: ATMOSPHERE_PHASE_THERMAL_ENVELOPE_SCHEMA,
+    phaseThermalEnvelope: phaseThermalEnvelopeDescription(),
+    thermalEnvelopeLimitCount: layerPhaseReceipts.reduce((sum, entry) =>
+      sum + entry.thermalEnvelopeLimitCount, 0),
+    thermallyLimitedLayerCount: layerPhaseReceipts.filter(entry =>
+      entry.thermalEnvelopeLimitCount > 0).length,
+    maximumThermallyRejectedRequestMm: round(
+      layerPhaseReceipts.reduce((maximum, entry) => Math.max(
+        maximum,
+        entry.maximumThermallyRejectedRequestMm
+      ), 0),
+      12
+    ),
     adjacentInterfaceCount: exchange.receipts.length,
     activeAdjacentInterfaceCount: exchange.receipts.filter(entry =>
       entry.grossDryAirExchangeKgM2 > 0).length,
@@ -1427,6 +1590,13 @@ export function advancePressureColumnDynamics(earthColumn, options = {}) {
       nativeLayerCloudLiquidReservoirs: true,
       nativeLayerCloudIceReservoirs: true,
       nativeMixedPhaseClouds: true,
+      nativePhaseChangesBoundedByThermalHeadroom:
+        layerPhaseReceipts.every(entry =>
+          entry.truth?.phaseChangesBoundedByThermalHeadroom === true),
+      nativeLayerTemperaturesWithinDeclaredEnvelope:
+        layerPhaseReceipts.every(entry =>
+          entry.truth?.airTemperatureWithinDeclaredEnvelope === true),
+      postMaterialTemperatureClipRequired: false,
       typedRainSnowDescent: true,
       fusionHeatCoupledDuringDescent: true,
       precipitationDescentAcrossNativeInterfaces: true,
@@ -1479,6 +1649,7 @@ export function pressureDynamicsDescription() {
     adjacentExchangeSchema: ATMOSPHERE_ADJACENT_LAYER_EXCHANGE_SCHEMA,
     pressureInterfaceBuoyancySchema: ATMOSPHERE_PRESSURE_INTERFACE_BUOYANCY_SCHEMA,
     precipitationDescentSchema: ATMOSPHERE_PRECIPITATION_DESCENT_SCHEMA,
+    phaseThermalEnvelope: phaseThermalEnvelopeDescription(),
     layerCount: ATMOSPHERE_PRESSURE_COLUMN_LAYER_COUNT,
     adjacentInterfaceCount: ATMOSPHERE_PRESSURE_COLUMN_LAYER_COUNT - 1,
     nativeLayerSaturationAndPhaseChange: true,
@@ -1487,6 +1658,8 @@ export function pressureDynamicsDescription() {
     nativeMixedPhaseClouds: true,
     typedRainSnowDescent: true,
     latentFusionEnergyCoupled: true,
+    phaseChangesBoundedByThermalHeadroom: true,
+    unsupportedPhaseChangeRemainsInSourcePhase: true,
     precipitationDescentAcrossInterfaces: true,
     equalGrossAdjacentDryAirExchange: true,
     tracerHeatAndTangentMomentumExchange: true,

@@ -3,7 +3,6 @@
 
 const Direction = require('../grounded-growth-direction-handoff/grounded-growth-direction-handoff');
 const ToolCommon = require('../../tools/repair-resilience-library/components/common');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const PLAN_SCHEMA = 'axm.grounded-growth-challenger-plan/v1';
 const EVALUATION_SCHEMA = 'axm.grounded-growth-challenger-evaluation/v1';
@@ -17,11 +16,11 @@ const DIGEST = /^sha256:[0-9a-f]{64}$/;
 const HEX_DIGEST = /^[0-9a-f]{64}$/;
 
 function clone(value) {
-  return JSON.parse(stableStringify(value));
+  return JSON.parse(JSON.stringify(value));
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  return Direction.stableStringify(value);
 }
 
 function sha256(value) {

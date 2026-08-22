@@ -27,11 +27,6 @@ check(schema.$id === Handoff.HANDOFF_SCHEMA, 'direction handoff schema identity 
 check(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'module contract stays TEST with no permissions or writes');
 check(contract.boundaries.refuses.includes('machine-selection-among-multiple-actions'), 'module contract refuses machine selection among multiple actions');
 check(contract.boundaries.refuses.includes('technical-proof-as-human-benefit') && contract.boundaries.refuses.includes('automatic-canon'), 'module contract separates beneficiary proof and refuses automatic CANON');
-check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
-check(Handoff.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
-assert.throws(() => Handoff.stableStringify({ lost: undefined }), /unsupported undefined/i);
-checks += 1;
-console.log('PASS unsafe canonical state is refused');
 
 function ref(id, value, schemaName) {
   return Growth.reference(value, { id, schema: schemaName || 'axm.test-evidence/v1' });
@@ -216,3 +211,4 @@ check(reordered.handoffDigest === basic.handoffDigest, 'same exact inputs reprod
 check(basic.summary.acceptedDirectionCount === 0 && basic.summary.executedDirectionCount === 0, 'summary records zero accepted and zero executed directions');
 
 console.log('Grounded Growth direction handoff selftest passed: ' + checks + ' checks.');
+

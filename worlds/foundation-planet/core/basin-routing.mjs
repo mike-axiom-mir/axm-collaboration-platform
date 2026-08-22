@@ -1,6 +1,6 @@
 import { HYDROLOGY_SCHEMA } from './hydrology-model.mjs';
-import { EARTH_SYSTEM_COLUMN_SCHEMA, earthCellIdentity } from './earth-system.mjs';
-import { earthCellAreaM2 } from './earth-transport.mjs';
+import { EARTH_SYSTEM_COLUMN_SCHEMA, earthCellIdentity } from './earth-system.mjs?v=0.62.0-r62.1';
+import { earthCellAreaM2 } from './earth-transport.mjs?v=0.62.0-r62.1';
 import {
   applyRiverBiogeochemistryInput,
   oceanEcologyElementTotals
@@ -31,12 +31,13 @@ import {
 } from './estuary-reactor.mjs';
 import {
   ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+  ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
   ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA,
   applyAtmosphereFloodplainGasExchange,
   applyAtmosphereGasBoundaryInput,
   normalizeAtmosphereBiogeochemistry,
   synchronizeAtmosphereCompatibilityMirrors
-} from './atmosphere-biogeochemistry.mjs';
+} from './atmosphere-biogeochemistry.mjs?v=0.62.0-r62.1';
 import {
   debitRunoffSedimentQueue,
   runoffSedimentAbsoluteGrains,
@@ -59,6 +60,8 @@ import {
   FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
   FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
   FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
+  FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA,
+  FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
   FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
   FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA,
   FLOODPLAIN_STATE_SCHEMA,
@@ -74,7 +77,7 @@ import {
   floodplainPlantResourceCapacity,
   floodplainTotals,
   normalizeFloodplainState
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.62.0-r62.1';
 import {
   FLOODPLAIN_HABITAT_RECEIPT_SCHEMA,
   FLOODPLAIN_HABITAT_STATE_SCHEMA,
@@ -84,7 +87,7 @@ import {
   floodplainHabitatDescription,
   floodplainHabitatSummary,
   normalizeFloodplainHabitatState
-} from './floodplain-habitat.mjs';
+} from './floodplain-habitat.mjs?v=0.61.0-r61.1';
 import {
   FLOOD_EVENT_HISTORY_STATE_SCHEMA,
   FLOOD_EVENT_TRANSITION_RECEIPT_SCHEMA,
@@ -93,7 +96,7 @@ import {
   floodEventHistoryDescription,
   floodEventHistorySummary,
   normalizeFloodEventHistoryState
-} from './flood-event-history.mjs';
+} from './flood-event-history.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_SUCCESSION_RECEIPT_SCHEMA,
   FLOODPLAIN_SUCCESSION_STATE_SCHEMA,
@@ -120,7 +123,7 @@ import {
   floodplainPlantMatterDescription,
   floodplainPlantMatterSummary,
   normalizeFloodplainPlantMatterState
-} from './floodplain-plant-matter.mjs';
+} from './floodplain-plant-matter.mjs?v=0.60.0-r60.1';
 import {
   FLOODPLAIN_PLANT_RESOURCES_RECEIPT_SCHEMA,
   FLOODPLAIN_PLANT_RESOURCES_STATE_SCHEMA,
@@ -133,7 +136,7 @@ import {
   floodplainPlantResourcesDescription,
   floodplainPlantResourcesSummary,
   normalizeFloodplainPlantResourcesState
-} from './floodplain-plant-resources.mjs';
+} from './floodplain-plant-resources.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_DECOMPOSITION_RECEIPT_SCHEMA,
   FLOODPLAIN_DECOMPOSITION_STATE_SCHEMA,
@@ -143,7 +146,7 @@ import {
   floodplainDecompositionPlan,
   floodplainDecompositionSummary,
   normalizeFloodplainDecompositionState
-} from './floodplain-decomposition.mjs';
+} from './floodplain-decomposition.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_RESPIRATION_RECEIPT_SCHEMA,
   FLOODPLAIN_RESPIRATION_STATE_SCHEMA,
@@ -153,7 +156,7 @@ import {
   floodplainRespirationPlan,
   floodplainRespirationSummary,
   normalizeFloodplainRespirationState
-} from './floodplain-respiration.mjs';
+} from './floodplain-respiration.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_DENITRIFICATION_RECEIPT_SCHEMA,
   FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA,
@@ -163,7 +166,7 @@ import {
   floodplainDenitrificationPlan,
   floodplainDenitrificationSummary,
   normalizeFloodplainDenitrificationState
-} from './floodplain-denitrification.mjs';
+} from './floodplain-denitrification.mjs?v=0.62.0-r62.1';
 import {
   FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA,
   FLOODPLAIN_NITRIFICATION_STATE_SCHEMA,
@@ -173,7 +176,7 @@ import {
   floodplainNitrificationPlan,
   floodplainNitrificationSummary,
   normalizeFloodplainNitrificationState
-} from './floodplain-nitrification.mjs';
+} from './floodplain-nitrification.mjs?v=0.61.0-r61.1';
 import {
   FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA,
   FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
@@ -183,14 +186,16 @@ import {
   floodplainGasExchangePlan,
   floodplainGasExchangeSummary,
   normalizeFloodplainGasExchangeState
-} from './floodplain-gas-exchange.mjs';
+} from './floodplain-gas-exchange.mjs?v=0.62.0-r62.1';
 
-export const BASIN_ROUTING_ENGINE_SCHEMA = 'axm.foundation-planet.basin-routing-engine/v21';
+export const BASIN_ROUTING_ENGINE_SCHEMA = 'axm.foundation-planet.basin-routing-engine/v28';
 export const PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA =
-  'axm.foundation-planet.basin-routing-engine/v20';
-export const BASIN_ROUTING_STEP_SCHEMA = 'axm.foundation-planet.basin-routing-step/v21';
+  'axm.foundation-planet.basin-routing-engine/v27';
+export const BASIN_ROUTING_STEP_SCHEMA = 'axm.foundation-planet.basin-routing-step/v27';
 export const PREVIOUS_BASIN_ROUTING_STEP_SCHEMA =
-  'axm.foundation-planet.basin-routing-step/v20';
+  'axm.foundation-planet.basin-routing-step/v26';
+export const BASIN_CLOCK_ALIGNMENT_CHECKPOINT_SCHEMA =
+  'axm.foundation-planet.basin-clock-alignment-checkpoint/v1';
 export const BASIN_INLET_RECEIPT_SCHEMA = 'axm.foundation-planet.basin-inlet-receipt/v7';
 export const RIVER_REACH_TRANSFER_SCHEMA = 'axm.foundation-planet.river-reach-transfer/v6';
 export const OCEAN_MOUTH_RECEIPT_SCHEMA = 'axm.foundation-planet.ocean-mouth-receipt/v7';
@@ -1297,16 +1302,60 @@ export class BasinRoutingEngine {
     this.maximumReachStates = Math.max(16, Math.min(65_536, Math.round(finite(options.maximumReachStates, 4096))));
     this.profiles = new Map();
     this.receipts = new Map();
+    this.restoredProfileIds = new Set();
     if (options.state) this.restore(options.state);
   }
 
   profile(profileId) {
     let profile = this.profiles.get(profileId);
     if (!profile) {
-      profile = { profileId, lastDay: null, reaches: new Map() };
+      profile = {
+        profileId,
+        lastDay: null,
+        clockAlignmentCheckpoint: null,
+        reaches: new Map()
+      };
       this.profiles.set(profileId, profile);
     }
     return profile;
+  }
+
+  reconcileRestoredClock(profileId, committedTransportDay) {
+    const targetDay = Number(committedTransportDay);
+    if (!Number.isFinite(targetDay)) {
+      throw new Error('Committed transport clock must be finite');
+    }
+    const profile = this.profiles.get(profileId);
+    if (!profile || !this.restoredProfileIds.has(profileId)) {
+      return { status: 'NOT_ELIGIBLE', checkpoint: null };
+    }
+    this.restoredProfileIds.delete(profileId);
+    if (profile.lastDay === null ||
+        Math.abs(profile.lastDay - targetDay) <= CLOCK_TOLERANCE_DAYS) {
+      return { status: 'ALREADY_ALIGNED', checkpoint: null };
+    }
+    const previousBasinDay = profile.lastDay;
+    const checkpoint = {
+      schema: BASIN_CLOCK_ALIGNMENT_CHECKPOINT_SCHEMA,
+      profileId,
+      previousBasinDay,
+      committedTransportDay: round(targetDay, 8),
+      deltaDays: round(targetDay - previousBasinDay, 8),
+      status: 'RESTORED_CLOCK_REBASED_WITHOUT_MATERIAL_REPLAY',
+      materialStatePreserved: true,
+      latestRoutingReceiptInvalidated: true,
+      historicalRoutingReconstructed: false,
+      truth: {
+        committedEarthTransportClockAuthoritative: true,
+        restoredStateOnly: true,
+        runtimeClockMismatchMasked: false,
+        historicalMaterialTransferClaimed: false
+      }
+    };
+    profile.lastDay = checkpoint.committedTransportDay;
+    profile.clockAlignmentCheckpoint = checkpoint;
+    this.receipts.delete(profileId);
+    return { status: 'REBASED', checkpoint: clone(checkpoint) };
   }
 
   advance(sourceColumns, sector, dtDays, options = {}) {
@@ -1331,6 +1380,8 @@ export class BasinRoutingEngine {
     const working = {
       profileId,
       lastDay: current.lastDay,
+      clockAlignmentCheckpoint: current.clockAlignmentCheckpoint ?
+        clone(current.clockAlignmentCheckpoint) : null,
       reaches: new Map([...current.reaches.entries()].map(([id, state]) => [id, normalizedReachState(state)]))
     };
     const initialEarth = earthWaterMass(columns);
@@ -3361,12 +3412,25 @@ export class BasinRoutingEngine {
             typeof entry.floodplainSuccessionReceiptDigest === 'string'),
         floodplainPlantMatterLedgersClosed:
           floodplainPlantMatterReceipts.every(entry =>
-            entry.truth?.carbonAndNitrogenClosed === true),
+            entry.truth?.carbonAndNitrogenClosed === true &&
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.perMaterialChannelNumericBounds === true &&
+            entry.truth?.measuredResidualsPreserved === true),
+        floodplainPlantMatterScaleAwareNumericClosure:
+          floodplainPlantMatterReceipts.every(entry =>
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.perMaterialChannelNumericBounds === true &&
+            entry.truth?.fixedAbsoluteToleranceOnly === false),
+        floodplainPlantMatterMeasuredResidualsPreserved:
+          floodplainPlantMatterReceipts.every(entry =>
+            entry.truth?.measuredResidualsPreserved === true),
         landEcologySubgridSenderDebited:
           landEcologySubgridDebitReceipts.every(entry =>
             entry.schema === LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA &&
             entry.truth?.persistentLandEcologySenderDebited === true &&
-            entry.truth?.carbonAndNitrogenClosed === true),
+            entry.truth?.carbonAndNitrogenClosed === true &&
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.measuredResidualsPreserved === true),
         exactLandEcologyFloodplainPlantTransferIds:
           floodplainPlantMatterReceipts.every(entry => {
             const sender = landEcologySubgridDebitReceipts.find(candidate =>
@@ -3403,7 +3467,18 @@ export class BasinRoutingEngine {
           }),
         floodplainPlantResourcesLedgersClosed:
           floodplainPlantResourcesReceipts.every(entry =>
-            entry.truth?.resourceLedgersClosed === true),
+            entry.truth?.resourceLedgersClosed === true &&
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.perMaterialChannelNumericBounds === true &&
+            entry.truth?.measuredResidualsPreserved === true),
+        floodplainPlantResourceScaleAwareNumericClosure:
+          floodplainPlantResourcesReceipts.every(entry =>
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.perMaterialChannelNumericBounds === true &&
+            entry.truth?.fixedAbsoluteToleranceOnly === false),
+        floodplainPlantResourceMeasuredResidualsPreserved:
+          floodplainPlantResourcesReceipts.every(entry =>
+            entry.truth?.measuredResidualsPreserved === true),
         floodplainPlantResourceSendersAndReceiversClosed:
           floodplainPlantResourceDebitReceipts.every(entry =>
             entry.schema === FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA &&
@@ -3458,6 +3533,17 @@ export class BasinRoutingEngine {
               entry.resourceDebitReceiptDigest === resourceDebit?.digest &&
               entry.floodplainCreditReceiptDigest === credit?.digest;
           }),
+        floodplainDetritalReturnScaleAwareNumericClosure:
+          floodplainDetritalReturnCreditReceipts.every(entry =>
+            entry.schema === FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA &&
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.fixedAbsoluteToleranceOnly === false),
+        floodplainDetritalReturnPerMaterialChannelNumericBounds:
+          floodplainDetritalReturnCreditReceipts.every(entry =>
+            entry.truth?.perMaterialChannelNumericBounds === true),
+        floodplainDetritalReturnMeasuredResidualsPreserved:
+          floodplainDetritalReturnCreditReceipts.every(entry =>
+            entry.truth?.measuredResidualsPreserved === true),
         floodplainDecompositionSendersAndReceiverClosed:
           floodplainPlantDetritusMatterDebitReceipts.every(entry =>
             entry.schema ===
@@ -3469,7 +3555,10 @@ export class BasinRoutingEngine {
             entry.truth?.phosphorusClosed === true) &&
           floodplainDetritalReturnCreditReceipts.every(entry =>
             entry.schema === FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA &&
-            entry.truth?.carbonNitrogenPhosphorusClosed === true),
+            entry.truth?.carbonNitrogenPhosphorusClosed === true &&
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.perMaterialChannelNumericBounds === true &&
+            entry.truth?.measuredResidualsPreserved === true),
         exactFloodplainDecompositionTransferIds:
           floodplainDecompositionReceipts.every(entry => {
             const matterDebit =
@@ -3518,6 +3607,16 @@ export class BasinRoutingEngine {
               FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA &&
             entry.truth?.localDocToDicCarbonClosed === true &&
             entry.truth?.dissolvedOxygenConsumptionClosed === true),
+        floodplainRespirationScaleAwareNumericClosure:
+          floodplainAerobicMineralizationReceipts.every(entry =>
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.fixedAbsoluteToleranceOnly === false),
+        floodplainRespirationPerIdentityNumericBounds:
+          floodplainAerobicMineralizationReceipts.every(entry =>
+            entry.truth?.perIdentityNumericBounds === true),
+        floodplainRespirationMeasuredResidualsPreserved:
+          floodplainAerobicMineralizationReceipts.every(entry =>
+            entry.truth?.measuredResidualsPreserved === true),
         floodplainRespirationCarbonAndOxygenLedgersClosed:
           Object.values(respirationResiduals).every(value =>
             Math.abs(value) < 1),
@@ -3537,6 +3636,16 @@ export class BasinRoutingEngine {
           atmosphereFloodplainDenitrificationReceipts.every(entry =>
             entry.schema === ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA &&
             entry.sourceKind === 'floodplain-denitrification'),
+        floodplainDenitrificationScaleAwareNumericClosure:
+          floodplainDenitrificationReactionReceipts.every(entry =>
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.fixedAbsoluteToleranceOnly === false),
+        floodplainDenitrificationPerIdentityNumericBounds:
+          floodplainDenitrificationReactionReceipts.every(entry =>
+            entry.truth?.perIdentityNumericBounds === true),
+        floodplainDenitrificationMeasuredResidualsPreserved:
+          floodplainDenitrificationReactionReceipts.every(entry =>
+            entry.truth?.measuredResidualsPreserved === true),
         floodplainDenitrificationEvidenceBound:
           floodplainDenitrificationProcessReceipts.every(entry => {
             if (entry.atmosphereCellId == null) {
@@ -3586,6 +3695,16 @@ export class BasinRoutingEngine {
           floodplainNitrificationReactionReceipts.every(entry =>
             entry.schema ===
               FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA),
+        floodplainNitrificationScaleAwareNumericClosure:
+          floodplainNitrificationReactionReceipts.every(entry =>
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.fixedAbsoluteToleranceOnly === false),
+        floodplainNitrificationPerIdentityNumericBounds:
+          floodplainNitrificationReactionReceipts.every(entry =>
+            entry.truth?.perIdentityNumericBounds === true),
+        floodplainNitrificationMeasuredResidualsPreserved:
+          floodplainNitrificationReactionReceipts.every(entry =>
+            entry.truth?.measuredResidualsPreserved === true),
         floodplainNitrificationEvidenceBound:
           floodplainNitrificationProcessReceipts.length ===
             floodplainNitrificationReactionReceipts.length &&
@@ -3637,6 +3756,26 @@ export class BasinRoutingEngine {
           atmosphereFloodplainGasExchangeReceipts.every(entry =>
             entry.schema ===
               ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA),
+        floodplainGasExchangeScaleAwareNumericClosure:
+          floodplainGasExchangeReceipts.every(entry =>
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.fixedAbsoluteToleranceOnly === false),
+        floodplainGasExchangePerIdentityNumericBounds:
+          floodplainGasExchangeReceipts.every(entry =>
+            entry.truth?.perIdentityNumericBounds === true),
+        floodplainGasExchangeMeasuredResidualsPreserved:
+          floodplainGasExchangeReceipts.every(entry =>
+            entry.truth?.measuredResidualsPreserved === true),
+        atmosphereFloodplainGasExchangeScaleAwareNumericClosure:
+          atmosphereFloodplainGasExchangeReceipts.every(entry =>
+            entry.truth?.scaleAwareFloatingPointClosure === true &&
+            entry.truth?.fixedAbsoluteToleranceOnly === false),
+        atmosphereFloodplainGasExchangePerIdentityNumericBounds:
+          atmosphereFloodplainGasExchangeReceipts.every(entry =>
+            entry.truth?.perIdentityNumericBounds === true),
+        atmosphereFloodplainGasExchangeMeasuredResidualsPreserved:
+          atmosphereFloodplainGasExchangeReceipts.every(entry =>
+            entry.truth?.measuredResidualsPreserved === true),
         floodplainGasExchangeEvidenceBound:
           floodplainGasExchangeProcessReceipts.every(entry => {
             if (entry.atmosphereCellId == null) {
@@ -3969,6 +4108,8 @@ export class BasinRoutingEngine {
       schema: BASIN_ROUTING_ENGINE_SCHEMA,
       profileId,
       lastDay: profile?.lastDay ?? null,
+      clockAlignmentCheckpoint: profile?.clockAlignmentCheckpoint ?
+        clone(profile.clockAlignmentCheckpoint) : null,
       reachStateCount: profile?.reaches.size || 0,
       storedWaterKg: profile ? round(profileStorageKg(profile), 3) : 0,
       storedChannelWaterKg: profile ? round(profileChannelStorageKg(profile), 3) : 0,
@@ -4032,6 +4173,8 @@ export class BasinRoutingEngine {
       profiles: [...this.profiles.values()].sort((a, b) => a.profileId.localeCompare(b.profileId)).map(profile => ({
         profileId: profile.profileId,
         lastDay: profile.lastDay,
+        clockAlignmentCheckpoint: profile.clockAlignmentCheckpoint ?
+          clone(profile.clockAlignmentCheckpoint) : null,
         reaches: [...profile.reaches.values()].map(normalizedReachState).sort((a, b) => a.reachId.localeCompare(b.reachId))
       })),
       receipts: [...this.receipts.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([profileId, receipt]) => ({
@@ -4044,6 +4187,13 @@ export class BasinRoutingEngine {
     if (!state || ![
       BASIN_ROUTING_ENGINE_SCHEMA,
       PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA,
+      'axm.foundation-planet.basin-routing-engine/v26',
+      'axm.foundation-planet.basin-routing-engine/v25',
+      'axm.foundation-planet.basin-routing-engine/v24',
+      'axm.foundation-planet.basin-routing-engine/v23',
+      'axm.foundation-planet.basin-routing-engine/v22',
+      'axm.foundation-planet.basin-routing-engine/v21',
+      'axm.foundation-planet.basin-routing-engine/v20',
       'axm.foundation-planet.basin-routing-engine/v18',
       'axm.foundation-planet.basin-routing-engine/v17',
       'axm.foundation-planet.basin-routing-engine/v16',
@@ -4063,7 +4213,10 @@ export class BasinRoutingEngine {
       'axm.foundation-planet.basin-routing-engine/v2',
       'axm.foundation-planet.basin-routing-engine/v1'
     ].includes(state.schema) || !Array.isArray(state.profiles)) return false;
-    const migratedFromLegacy = state.schema !== BASIN_ROUTING_ENGINE_SCHEMA;
+    const migratedFromLegacy = ![
+      BASIN_ROUTING_ENGINE_SCHEMA,
+      PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA
+    ].includes(state.schema);
     const migratedFromV1 = state.schema === 'axm.foundation-planet.basin-routing-engine/v1';
     const profiles = new Map();
     for (const candidate of state.profiles) {
@@ -4144,10 +4297,15 @@ export class BasinRoutingEngine {
       profiles.set(candidate.profileId, {
         profileId: candidate.profileId,
         lastDay: candidate.lastDay === null ? null : round(finite(candidate.lastDay), 8),
+        clockAlignmentCheckpoint:
+          candidate.clockAlignmentCheckpoint?.schema ===
+            BASIN_CLOCK_ALIGNMENT_CHECKPOINT_SCHEMA ?
+            clone(candidate.clockAlignmentCheckpoint) : null,
         reaches
       });
     }
     this.profiles = profiles;
+    this.restoredProfileIds = new Set(profiles.keys());
     this.receipts = migratedFromLegacy ? new Map() :
       new Map((Array.isArray(state.receipts) ? state.receipts : [])
         .filter(entry => entry && typeof entry.profileId === 'string' &&
@@ -4164,6 +4322,9 @@ export class BasinRoutingEngine {
       activeProfiles: this.profiles.size,
       activeProfileId: profileId,
       activeProfileLastDay: profile?.lastDay ?? null,
+      activeProfileClockAlignmentCheckpoint:
+        profile?.clockAlignmentCheckpoint ?
+          clone(profile.clockAlignmentCheckpoint) : null,
       activeProfileReachStates: profile?.reaches.size || 0,
       activeProfileStoredWaterKg: profile ? round(profileStorageKg(profile), 3) : 0,
       activeProfileChannelWaterKg: profile ?
@@ -4229,6 +4390,8 @@ export function basinRoutingDescription() {
   return {
     engineSchema: BASIN_ROUTING_ENGINE_SCHEMA,
     stepSchema: BASIN_ROUTING_STEP_SCHEMA,
+    clockAlignmentCheckpointSchema:
+      BASIN_CLOCK_ALIGNMENT_CHECKPOINT_SCHEMA,
     inletReceiptSchema: BASIN_INLET_RECEIPT_SCHEMA,
     reachTransferSchema: RIVER_REACH_TRANSFER_SCHEMA,
     oceanMouthReceiptSchema: OCEAN_MOUTH_RECEIPT_SCHEMA,
@@ -4261,6 +4424,8 @@ export function basinRoutingDescription() {
       FLOODPLAIN_PLANT_DETRITUS_RESOURCE_DEBIT_SCHEMA,
     floodplainDetritalReturnCreditSchema:
       FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
+    floodplainDetritalReturnMassClosurePolicySchema:
+      FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA,
     floodplainDecompositionStateSchema:
       FLOODPLAIN_DECOMPOSITION_STATE_SCHEMA,
     floodplainDecompositionReceiptSchema:
@@ -4289,8 +4454,12 @@ export function basinRoutingDescription() {
       FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA,
     floodplainGasExchangeReceiptSchema:
       FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+    floodplainReactionMassClosurePolicySchema:
+      FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
     atmosphereFloodplainGasExchangeReceiptSchema:
       ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+    atmosphereFloodplainGasExchangeMassClosurePolicySchema:
+      ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
     landEcologySubgridBiomassDebitSchema:
       LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA,
     riverChemistry: riverChemistryDescription(),

@@ -1,0 +1,48 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-audio-fabric",
+  "version": "1.0.0",
+  "provides": [
+    "audio.recipe.canonical-edit",
+    "audio.wav.pcm16.deterministic-render",
+    "audio.wav.local-technical-analyze",
+    "audio.wav.repeat-byte-verify",
+    "asset.fabric.sound-effect.route"
+  ],
+  "consumes": [
+    "axm.audio.sound/v1",
+    "audio-sfx-bake/v0.1.0",
+    "asset-hands/audio-production.wavDecode/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.deterministic-audio-recipe/v1",
+      "audio/wav",
+      "axm.deterministic-audio-analysis/v1",
+      "axm.deterministic-audio-verification/v1"
+    ],
+    "accepts": ["axm.deterministic-audio-recipe/v1"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "dynamic-code-evaluation",
+      "browser-direct-synthesis-claim",
+      "audible-playback-proof-claim",
+      "human-listening-claim",
+      "human-aesthetic-approval-claim",
+      "device-output-proof-claim",
+      "external-wav-conformance-claim",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-canonization"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller",
+    "reload": "deterministic-regeneration",
+    "disconnect": "host-bridge-degrades-read-only",
+    "cleanup": "discard-candidate"
+  }
+}

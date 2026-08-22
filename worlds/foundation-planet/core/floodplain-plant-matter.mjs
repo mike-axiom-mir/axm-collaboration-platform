@@ -6,7 +6,14 @@ import {
 export const FLOODPLAIN_PLANT_MATTER_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-plant-matter-state/v1';
 export const FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA =
+  'axm.foundation-planet.floodplain-plant-matter-receipt/v2';
+export const PREVIOUS_FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA =
   'axm.foundation-planet.floodplain-plant-matter-receipt/v1';
+export const FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_POLICY_SCHEMA =
+  'axm.foundation-planet.floodplain-plant-matter-mass-closure-policy/v1';
+export const FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG =
+  1e-7;
+export const FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ULP_FACTOR = 8;
 export const FLOODPLAIN_PLANT_DETRITUS_MATTER_DEBIT_SCHEMA =
   'axm.foundation-planet.floodplain-plant-detritus-matter-debit/v1';
 
@@ -39,6 +46,16 @@ const clamp = (value, min = 0, max = 1) =>
   Math.max(min, Math.min(max, value));
 const round = (value, digits = 12) => Number(Number(value).toFixed(digits));
 const clone = value => JSON.parse(JSON.stringify(value));
+
+export function floodplainPlantMatterMassClosureToleranceKg(...values) {
+  const magnitudeKg = Math.max(1, ...values.map(value =>
+    Math.abs(finite(value))));
+  return round(Math.max(
+    FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+    magnitudeKg * Number.EPSILON *
+      FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ULP_FACTOR
+  ), 12);
+}
 
 function stableDigest(value) {
   const text = JSON.stringify(value);
@@ -289,13 +306,78 @@ export function floodplainPlantMatterDemand(source, successionReceipt,
   };
 }
 
+function guildMatterOperands(source = {}) {
+  return addElements(source.live, source.standingDead, source.litter);
+}
+
+function withNumericClosure(flow, beforeGuild = {}, afterGuild = {}) {
+  const before = clone(flow.before || beforeGuild || {});
+  const after = clone(flow.after || afterGuild || {});
+  const beforeOperands = guildMatterOperands(before);
+  const afterOperands = guildMatterOperands(after);
+  const landEcologyCredit = roundedElements(flow.landEcologyCredit);
+  const closure = {
+    carbonResidualKgC: round(afterOperands.carbonKgC -
+      beforeOperands.carbonKgC - landEcologyCredit.carbonKgC, 12),
+    nitrogenResidualKgN: round(afterOperands.nitrogenKgN -
+      beforeOperands.nitrogenKgN - landEcologyCredit.nitrogenKgN, 12)
+  };
+  closure.numericToleranceKg = {
+    carbonKgC: floodplainPlantMatterMassClosureToleranceKg(
+      beforeOperands.carbonKgC, landEcologyCredit.carbonKgC,
+      afterOperands.carbonKgC),
+    nitrogenKgN: floodplainPlantMatterMassClosureToleranceKg(
+      beforeOperands.nitrogenKgN, landEcologyCredit.nitrogenKgN,
+      afterOperands.nitrogenKgN)
+  };
+  return {
+    ...flow,
+    landEcologyCredit,
+    before,
+    after,
+    closure
+  };
+}
+
 function makeReceipt(state, successionReceipt, context, status, areaM2,
   before, after, flows, credit) {
-  const maximumResidual = Math.max(0, ...flows.flatMap(flow => [
-    Math.abs(flow.closure.carbonResidualKgC),
-    Math.abs(flow.closure.nitrogenResidualKgN)
-  ]));
-  const credited = addElements(...flows.map(flow => flow.landEcologyCredit));
+  const recordedFlows = flows.map(flow => withNumericClosure(flow,
+    before.guilds?.[flow.guildId], after.guilds?.[flow.guildId]));
+  const credited = addElements(...recordedFlows.map(flow =>
+    flow.landEcologyCredit));
+  const totalClosure = {
+    carbonResidualKgC: round(after.total.carbonKgC -
+      before.total.carbonKgC - credited.carbonKgC, 12),
+    nitrogenResidualKgN: round(after.total.nitrogenKgN -
+      before.total.nitrogenKgN - credited.nitrogenKgN, 12)
+  };
+  const totalNumericToleranceKg = {
+    carbonKgC: floodplainPlantMatterMassClosureToleranceKg(
+      before.total.carbonKgC, credited.carbonKgC,
+      after.total.carbonKgC),
+    nitrogenKgN: floodplainPlantMatterMassClosureToleranceKg(
+      before.total.nitrogenKgN, credited.nitrogenKgN,
+      after.total.nitrogenKgN)
+  };
+  const residualTolerancePairs = [
+    ...recordedFlows.flatMap(flow => [
+      [Math.abs(flow.closure.carbonResidualKgC),
+        flow.closure.numericToleranceKg.carbonKgC],
+      [Math.abs(flow.closure.nitrogenResidualKgN),
+        flow.closure.numericToleranceKg.nitrogenKgN]
+    ]),
+    [Math.abs(totalClosure.carbonResidualKgC),
+      totalNumericToleranceKg.carbonKgC],
+    [Math.abs(totalClosure.nitrogenResidualKgN),
+      totalNumericToleranceKg.nitrogenKgN]
+  ];
+  const maximumResidual = Math.max(0, ...residualTolerancePairs.map(
+    ([residual]) => residual));
+  const maximumToleranceUtilization = Math.max(0,
+    ...residualTolerancePairs.map(([residual, tolerance]) =>
+      tolerance > 0 ? residual / tolerance : Infinity));
+  const carbonAndNitrogenClosed = residualTolerancePairs.every(
+    ([residual, tolerance]) => residual <= tolerance);
   const receipt = {
     schema: FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA,
     transitionId: String(context.transitionId ||
@@ -313,23 +395,33 @@ function makeReceipt(state, successionReceipt, context, status, areaM2,
     floodplainSuccessionReceiptDigest: successionReceipt.digest,
     landEcologySenderReceiptDigest: credit?.senderReceiptDigest || null,
     donorCellId: credit?.donorCellId || null,
-    transferIds: flows.map(flow => flow.transferId).filter(Boolean).sort(),
+    transferIds: recordedFlows.map(flow => flow.transferId)
+      .filter(Boolean).sort(),
     before: clone(before),
     after: clone(after),
-    guildFlows: clone(flows),
+    guildFlows: clone(recordedFlows),
     transfers: {
       landEcologyCredits: roundedElements(credited),
-      liveToStandingDead: roundedElements(addElements(...flows.map(flow =>
-        flow.liveToStandingDead))),
-      standingDeadToLitter: roundedElements(addElements(...flows.map(flow =>
-        flow.standingDeadToLitter)))
+      liveToStandingDead: roundedElements(addElements(...recordedFlows.map(
+        flow => flow.liveToStandingDead))),
+      standingDeadToLitter: roundedElements(addElements(
+        ...recordedFlows.map(flow => flow.standingDeadToLitter)))
     },
     closure: {
       maximumElementResidualKg: round(maximumResidual, 12),
-      carbonResidualKgC: round(after.total.carbonKgC -
-        before.total.carbonKgC - credited.carbonKgC, 12),
-      nitrogenResidualKgN: round(after.total.nitrogenKgN -
-        before.total.nitrogenKgN - credited.nitrogenKgN, 12)
+      maximumToleranceUtilization: round(
+        maximumToleranceUtilization, 12),
+      ...totalClosure,
+      numericToleranceKg: totalNumericToleranceKg,
+      policy: {
+        schema: FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_POLICY_SCHEMA,
+        absoluteFloorKg:
+          FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+        ulpFactor: FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ULP_FACTOR,
+        recordedOperandScale: true,
+        perMaterialChannel: true,
+        arbitraryToleranceAuthority: false
+      }
     },
     truth: {
       ...truth(),
@@ -337,15 +429,15 @@ function makeReceipt(state, successionReceipt, context, status, areaM2,
       landEcologySenderDebited: credited.carbonKgC <= 1e-12 &&
         credited.nitrogenKgN <= 1e-12
         ? true : typeof credit?.senderReceiptDigest === 'string',
-      pairedTransferIds: flows.every(flow =>
+      pairedTransferIds: recordedFlows.every(flow =>
         flow.landEcologyCredit.carbonKgC <= 1e-12 &&
           flow.landEcologyCredit.nitrogenKgN <= 1e-12 ||
           typeof flow.transferId === 'string'),
-      carbonAndNitrogenClosed: maximumResidual < 1e-7 &&
-        Math.abs(after.total.carbonKgC - before.total.carbonKgC -
-          credited.carbonKgC) < 1e-7 &&
-        Math.abs(after.total.nitrogenKgN - before.total.nitrogenKgN -
-          credited.nitrogenKgN) < 1e-7,
+      carbonAndNitrogenClosed,
+      scaleAwareFloatingPointClosure: true,
+      perMaterialChannelNumericBounds: true,
+      measuredResidualsPreserved: true,
+      fixedAbsoluteToleranceOnly: false,
       migrationInventedMaterial: false,
       materialPoolsFrozen: status === 'life-disabled-dormant'
     }
@@ -608,9 +700,21 @@ export function floodplainPlantMatterDescription() {
   return {
     stateSchema: FLOODPLAIN_PLANT_MATTER_STATE_SCHEMA,
     transitionReceiptSchema: FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA,
+    previousTransitionReceiptSchema:
+      PREVIOUS_FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA,
+    massClosurePolicy: {
+      schema: FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorKg:
+        FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+      ulpFactor: FLOODPLAIN_PLANT_MATTER_MASS_CLOSURE_ULP_FACTOR,
+      recordedOperandScale: true,
+      perMaterialChannel: true,
+      measuredResidualsPreserved: true,
+      arbitraryToleranceAuthority: false
+    },
     detritusDebitReceiptSchema:
       FLOODPLAIN_PLANT_DETRITUS_MATTER_DEBIT_SCHEMA,
-    senderContract: 'axm.foundation-planet.land-ecology-subgrid-biomass-debit/v1',
+    senderContract: 'axm.foundation-planet.land-ecology-subgrid-biomass-debit/v2',
     guilds: FLOODPLAIN_SUCCESSION_GUILDS.map(id => ({
       id, ...GUILD_MATTER_TRAITS[id]
     })),

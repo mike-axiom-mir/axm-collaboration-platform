@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-representation-profile-v1.schema.json",
+  "title": "AXM Choice-First Visual Representation Profile v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "id", "label", "installed", "preset", "axes", "limits", "provenance", "authority"],
+  "properties": {
+    "schema": { "const": "axm.visual-representation-profile/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "const": "EXPERIMENTAL" },
+    "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "installed": { "type": "boolean" },
+    "preset": { "type": "boolean" },
+    "axes": {
+      "type": "object",
+      "required": ["medium", "projection", "detail", "palette", "motion", "materials", "lighting", "camera", "target_canvas", "budgets"],
+      "properties": {
+        "medium": { "type": "string" }, "projection": { "type": "string" }, "detail": { "type": "object" }, "palette": { "type": "object" }, "motion": { "type": "object" }, "materials": { "type": "object" }, "lighting": { "type": "object" }, "camera": { "type": "object" }, "target_canvas": { "type": "object" }, "budgets": { "type": "object" }, "extensions": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "limits": { "type": "object" },
+    "provenance": { "type": "object" },
+    "authority": { "$ref": "asset-identity.schema.json#/$defs/authority" }
+  },
+  "additionalProperties": false
+}

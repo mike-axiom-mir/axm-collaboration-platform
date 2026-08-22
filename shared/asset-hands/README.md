@@ -1,4 +1,4 @@
-# AXM Asset Hands v2.5
+# AXM Asset Hands v2.7
 
 Asset Hands are modular executable capabilities shared by Workshop modules.
 They are not identities, agents, permissions or claims of artistic judgment.
@@ -62,6 +62,15 @@ providers, while `brief.target_canvas` is the authoritative contract.
 
 Built-in creation providers:
 
+- Game Visual Pack Selection - complete game art-direction packs bound to stable
+  simulation, gameplay-proxy, and save contracts; declared-hardware compatibility;
+  advisory recommendations; explicit player selection; digest-bound old-machine
+  baseline continuity; and typed refusal without silent fallback.
+
+- Choice-First Visual & Simulation — persistent asset identities, exact modular
+  pixel representation profiles, typed missing-representation results, causal
+  replay with no time-only decay, and resource-bound upgradeable-object state.
+
 - Vector Form — scalable screen, UI and game symbols.
 - Surface & Pattern — seamless screen and game-world tiles.
 - Native Raster Texture — direct bounded PNG pixels and editable procedural
@@ -70,6 +79,18 @@ Built-in creation providers:
   offsets, 14 blend modes and 13 filters; emits real PNG, an editable recipe
   and an exact SHA-256-bound pixel round-trip receipt without granting visual
   approval.
+- Pixel Asset Workshop — preserves one imported PNG byte-for-byte and derives
+  explicit crop, alpha, nearest-resize, padding, palette, grid-slice and packing
+  candidates through the reusable Raster Operations Core. It emits the recipe,
+  parent-child asset graph and SHA-256-bound validation receipt; JPEG/WebP,
+  semantic masks, artistic abstraction and generative pixels remain unsupported.
+- Pixel Animation Workshop — layers engine-neutral frame, clip, direction,
+  pivot, event, palette and variable timing data over a preserved PNG sheet. Its
+  explicit 8-bit and 16-bit workflow profiles remain RGBA8 art-direction presets,
+  not hardware-emulation claims. The hand emits individual PNG frames, native
+  and integer-nearest APNGs, a game-animation-spine clip adapter, and a
+  codec-neutral millisecond video sequence without granting installation,
+  promotion or canon authority.
 - UI Component — responsive and interactive interface components.
 - Pixel & Sprite — pixel grids, spritesheets and timing metadata.
 - Layered Composition — screen compositions and Studio draw packets.
@@ -143,6 +164,39 @@ language without gaining authority to apply a theme to a host automatically.
 The shared workbench at `shared/asset-hands/index.html` can run alone or be
 embedded. Pressing **Send to host** is explicit; creation never publishes,
 promotes or writes into a game package automatically.
+
+### Pixel animation authoring surface
+
+Humans, AI systems and deterministic programs can author the same draft object
+and normalize it before handoff. `normalizeRecipe(draft, sourceDimensions)` is
+the convenience boundary; its return value is the portable
+`axm.pixel-animation-recipe/v1` wire artifact consumed and emitted by the hand.
+The profile names describe workflow defaults and never change the RGBA8/sRGB
+storage contract:
+
+```js
+const draft = {
+  schema: PixelAnimation.RECIPE_SCHEMA,
+  id: "hero-walk",
+  source_artifact_id: "hero-sheet",
+  profile: "pixel-8bit", // or "pixel-16bit" / "pixel-custom"
+  sheet: { cell_width: 16, cell_height: 16 },
+  frames: [
+    { id: "walk-0", cell_index: 0, animation: "Walk", direction: "right", index: 0 },
+    { id: "walk-1", cell_index: 1, animation: "Walk", direction: "right", index: 1 },
+  ],
+  clips: [
+    { id: "walk-right", animation: "Walk", direction: "right", frame_ids: ["walk-0", "walk-1"] },
+  ],
+  provenance: { author_type: "human", actor_id: "author-id", contributors: [] },
+};
+const wireRecipe = PixelAnimation.normalizeRecipe(draft, { width: 32, height: 16 });
+```
+
+The manifest bridges clip names and millisecond timing to the shared game
+animation spine. The separate video-sequence artifact only binds ordered PNG
+frames and durations; an installed encoder remains responsible for making a
+video container.
 
 ## Results and honest failure
 

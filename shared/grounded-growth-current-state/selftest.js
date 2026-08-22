@@ -42,16 +42,8 @@ const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contrac
 ok(schema.$id === Current.RECEIPT_SCHEMA, 'schema identity matches implementation');
 ok(contract.status === 'TEST' && contract.permissions.length === 0, 'contract is TEST and permissionless');
 ok(contract.boundaries.refuses.includes('review-readiness-as-human-benefit'), 'contract refuses readiness as human benefit');
-ok(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
-ok(Current.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
-assert.throws(() => Current.stableStringify({ lost: undefined }), /unsupported undefined/i);
-checks += 1;
 
 const input = currentInput();
-const unsafeInput = currentInput();
-unsafeInput.participationFrontierReceipt.lost = undefined;
-assert.throws(() => Current.build(unsafeInput), /unsupported undefined/i);
-checks += 1;
 const receipt = Current.build(input);
 ok(Current.verify(receipt, input).pass, 'current receipt verifies by exact rebuild');
 const detached = Current.inspectDetached(receipt);

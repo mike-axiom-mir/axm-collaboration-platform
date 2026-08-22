@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/upgradeable-object-v1.schema.json",
+  "title": "AXM Persistent Upgradeable Object v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "id", "identity_id", "component_slots", "installed_components", "finish", "condition", "qualities", "resource_history", "history", "replacement_required", "provenance", "authority"],
+  "properties": {
+    "schema": { "const": "axm.upgradeable-object/v1" }, "version": { "const": "1.0.0" }, "status": { "const": "EXPERIMENTAL" }, "id": { "type": "string" }, "identity_id": { "type": "string" }, "component_slots": { "type": "array", "minItems": 1, "items": { "type": "object" } }, "installed_components": { "type": "object" }, "finish": { "type": "object" }, "condition": { "type": "object", "required": ["structural", "cleanliness"] }, "qualities": { "type": "object", "required": ["comfort", "durability", "capacity", "cleanliness", "style_tags", "footprint", "maintenance_demand"] }, "resource_history": { "type": "array" }, "history": { "type": "array" }, "replacement_required": { "const": false }, "provenance": { "type": "object" }, "authority": { "$ref": "asset-identity.schema.json#/$defs/authority" }
+  },
+  "additionalProperties": false
+}

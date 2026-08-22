@@ -15,6 +15,8 @@ function formFindings(body) {
 assert.deepEqual(formFindings('<label>Claim<textarea class="claim-text"></textarea></label>'), []);
 assert.deepEqual(formFindings('<label for="named">Claim</label><textarea id="named"></textarea>'), []);
 assert.deepEqual(formFindings('<input aria-label="Search">'), []);
+assert.deepEqual(formFindings('<input hidden><input hidden="hidden"><input class="upload hidden"><input aria-hidden="true">'), []);
+assert.deepEqual(formFindings('<input style="display: none"><textarea style="visibility:hidden!important"></textarea>'), []);
 assert.equal(formFindings('<input placeholder="Placeholder is not a name">').length, 1);
 assert.equal(formFindings('<label>Invalid pair<input><select></select></label>').length, 2);
 

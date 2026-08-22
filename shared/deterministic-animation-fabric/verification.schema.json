@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/deterministic-animation-verification-v1.schema.json",
+  "title": "AXM Deterministic Animation Verification v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "recipe_id", "recipe_digest", "bake_digest", "checks", "summary", "claims", "authority"],
+  "properties": {
+    "schema": { "const": "axm.deterministic-animation-verification/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "recipe_id": { "type": ["string", "null"] },
+    "recipe_digest": { "type": ["string", "null"] },
+    "bake_digest": { "type": ["string", "null"] },
+    "checks": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "status", "evidence"] } },
+    "summary": { "type": "object", "required": ["total", "passed", "failed"] },
+    "claims": { "type": "object", "required": ["proves", "does_not_prove"] },
+    "authority": { "type": "object" }
+  },
+  "additionalProperties": false
+}

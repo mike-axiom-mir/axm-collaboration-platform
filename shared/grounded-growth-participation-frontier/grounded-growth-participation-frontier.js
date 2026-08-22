@@ -4,7 +4,6 @@ const Knowledge = require('../grounded-growth-knowledge-frontier/grounded-growth
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
 const Human = require('../human-benefit-evidence/human-benefit-evidence');
 const Bridge = require('../grounded-growth-human-bridge-v2/grounded-growth-human-bridge-v2');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const PARTICIPATION_FRONTIER_SCHEMA = 'axm.grounded-growth-participation-frontier-receipt/v1';
 const PARTICIPANT_PACKET_SCHEMA = 'axm.human-benefit-participant-packet/v1';
@@ -12,11 +11,11 @@ const HANDOFF_READINESS_SCHEMA = 'axm.grounded-growth-human-handoff-readiness/v1
 const VERSION = '0.1.0';
 
 function clone(value) {
-  return JSON.parse(stableStringify(value));
+  return JSON.parse(JSON.stringify(value));
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  return Knowledge.stableStringify(value);
 }
 
 function sha256(value) {
@@ -405,3 +404,4 @@ module.exports = {
   buildParticipationFrontier,
   verifyParticipationFrontier
 };
+

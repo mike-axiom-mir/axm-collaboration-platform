@@ -1,14 +1,21 @@
 import { FLOODPLAIN_SUCCESSION_GUILDS } from './floodplain-succession.mjs';
-import { FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA } from './floodplain-plant-matter.mjs';
+import { FLOODPLAIN_PLANT_MATTER_RECEIPT_SCHEMA } from './floodplain-plant-matter.mjs?v=0.59.0-r59.2';
 import {
   FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
   FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.61.0-r61.1';
 
 export const FLOODPLAIN_PLANT_RESOURCES_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-plant-resources-state/v1';
 export const FLOODPLAIN_PLANT_RESOURCES_RECEIPT_SCHEMA =
+  'axm.foundation-planet.floodplain-plant-resources-receipt/v2';
+export const PREVIOUS_FLOODPLAIN_PLANT_RESOURCES_RECEIPT_SCHEMA =
   'axm.foundation-planet.floodplain-plant-resources-receipt/v1';
+export const FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_POLICY_SCHEMA =
+  'axm.foundation-planet.floodplain-plant-resource-mass-closure-policy/v1';
+export const FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG =
+  1e-7;
+export const FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ULP_FACTOR = 8;
 export const FLOODPLAIN_PLANT_DETRITUS_RESOURCE_DEBIT_SCHEMA =
   'axm.foundation-planet.floodplain-plant-detritus-resource-debit/v1';
 
@@ -36,6 +43,16 @@ const clamp = (value, min = 0, max = 1) =>
   Math.max(min, Math.min(max, value));
 const round = (value, digits = 12) => Number(Number(value).toFixed(digits));
 const clone = value => JSON.parse(JSON.stringify(value));
+
+export function floodplainPlantResourceMassClosureToleranceKg(...values) {
+  const magnitudeKg = Math.max(1, ...values.map(value =>
+    Math.abs(finite(value))));
+  return round(Math.max(
+    FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+    magnitudeKg * Number.EPSILON *
+      FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ULP_FACTOR
+  ), 12);
+}
 
 function stableDigest(value) {
   const text = JSON.stringify(value);
@@ -356,16 +373,115 @@ export function floodplainPlantResourcePlan(source, plantMatterReceipt) {
   };
 }
 
+function guildResourceOperands(source = {}) {
+  return {
+    supportedCarbonKgC: finite(source.live?.supportedCarbonKgC) +
+      finite(source.standingDead?.supportedCarbonKgC) +
+      finite(source.litter?.supportedCarbonKgC),
+    phosphorusKgP: finite(source.live?.phosphorusKgP) +
+      finite(source.standingDead?.phosphorusKgP) +
+      finite(source.litter?.phosphorusKgP),
+    liveWaterKg: finite(source.live?.waterKg)
+  };
+}
+
+function withNumericClosure(flow, beforeGuild = {}, afterGuild = {}) {
+  const before = clone(flow.before || beforeGuild || {});
+  const after = clone(flow.after || afterGuild || {});
+  const beforeOperands = guildResourceOperands(before);
+  const afterOperands = guildResourceOperands(after);
+  const uptake = rounded(flow.uptake);
+  const supportedCarbonCreditKgC = round(
+    finite(flow.supportedCarbonCreditKgC), 9);
+  const waterReturnedToFloodplainKg = round(
+    finite(flow.waterReturnedToFloodplainKg), 9);
+  const closure = {
+    supportedCarbonResidualKgC: round(
+      afterOperands.supportedCarbonKgC -
+      beforeOperands.supportedCarbonKgC -
+      supportedCarbonCreditKgC, 12),
+    phosphorusResidualKgP: round(
+      afterOperands.phosphorusKgP - beforeOperands.phosphorusKgP -
+      uptake.phosphorusKgP, 12),
+    liveWaterResidualKg: round(
+      afterOperands.liveWaterKg - beforeOperands.liveWaterKg -
+      uptake.waterKg + waterReturnedToFloodplainKg, 12)
+  };
+  closure.numericToleranceKg = {
+    supportedCarbonKgC: floodplainPlantResourceMassClosureToleranceKg(
+      beforeOperands.supportedCarbonKgC, supportedCarbonCreditKgC,
+      afterOperands.supportedCarbonKgC),
+    phosphorusKgP: floodplainPlantResourceMassClosureToleranceKg(
+      beforeOperands.phosphorusKgP, uptake.phosphorusKgP,
+      afterOperands.phosphorusKgP),
+    liveWaterKg: floodplainPlantResourceMassClosureToleranceKg(
+      beforeOperands.liveWaterKg, uptake.waterKg,
+      waterReturnedToFloodplainKg, afterOperands.liveWaterKg)
+  };
+  return {
+    ...flow,
+    supportedCarbonCreditKgC,
+    uptake,
+    waterReturnedToFloodplainKg,
+    before,
+    after,
+    closure
+  };
+}
+
 function makeReceipt(state, matter, context, status, before, after, flows,
   exchange) {
-  const credited = addResourceFlux(...flows.map(flow => flow.uptake));
-  const returnedWaterKg = flows.reduce((sum, flow) => sum +
+  const recordedFlows = flows.map(flow => withNumericClosure(flow,
+    before.guilds?.[flow.guildId], after.guilds?.[flow.guildId]));
+  const credited = addResourceFlux(...recordedFlows.map(flow =>
+    flow.uptake));
+  const returnedWaterKg = recordedFlows.reduce((sum, flow) => sum +
     finite(flow.waterReturnedToFloodplainKg), 0);
-  const maximumResidual = Math.max(0, ...flows.flatMap(flow => [
-    Math.abs(flow.closure.supportedCarbonResidualKgC),
-    Math.abs(flow.closure.phosphorusResidualKgP),
-    Math.abs(flow.closure.liveWaterResidualKg)
-  ]));
+  const totalClosure = {
+    supportedCarbonResidualKgC: round(after.total.supportedCarbonKgC -
+      before.total.supportedCarbonKgC - recordedFlows.reduce((sum, flow) =>
+        sum + finite(flow.supportedCarbonCreditKgC), 0), 12),
+    phosphorusResidualKgP: round(after.total.phosphorusKgP -
+      before.total.phosphorusKgP - credited.phosphorusKgP, 12),
+    liveWaterResidualKg: round(after.total.liveWaterKg -
+      before.total.liveWaterKg - credited.waterKg + returnedWaterKg, 12)
+  };
+  const totalNumericToleranceKg = {
+    supportedCarbonKgC: floodplainPlantResourceMassClosureToleranceKg(
+      before.total.supportedCarbonKgC,
+      recordedFlows.reduce((sum, flow) => sum +
+        finite(flow.supportedCarbonCreditKgC), 0),
+      after.total.supportedCarbonKgC),
+    phosphorusKgP: floodplainPlantResourceMassClosureToleranceKg(
+      before.total.phosphorusKgP, credited.phosphorusKgP,
+      after.total.phosphorusKgP),
+    liveWaterKg: floodplainPlantResourceMassClosureToleranceKg(
+      before.total.liveWaterKg, credited.waterKg, returnedWaterKg,
+      after.total.liveWaterKg)
+  };
+  const residualTolerancePairs = [
+    ...recordedFlows.flatMap(flow => [
+      [Math.abs(flow.closure.supportedCarbonResidualKgC),
+        flow.closure.numericToleranceKg.supportedCarbonKgC],
+      [Math.abs(flow.closure.phosphorusResidualKgP),
+        flow.closure.numericToleranceKg.phosphorusKgP],
+      [Math.abs(flow.closure.liveWaterResidualKg),
+        flow.closure.numericToleranceKg.liveWaterKg]
+    ]),
+    [Math.abs(totalClosure.supportedCarbonResidualKgC),
+      totalNumericToleranceKg.supportedCarbonKgC],
+    [Math.abs(totalClosure.phosphorusResidualKgP),
+      totalNumericToleranceKg.phosphorusKgP],
+    [Math.abs(totalClosure.liveWaterResidualKg),
+      totalNumericToleranceKg.liveWaterKg]
+  ];
+  const maximumResidual = Math.max(0, ...residualTolerancePairs.map(
+    ([residual]) => residual));
+  const maximumToleranceUtilization = Math.max(0,
+    ...residualTolerancePairs.map(([residual, tolerance]) =>
+      tolerance > 0 ? residual / tolerance : Infinity));
+  const resourceLedgersClosed = residualTolerancePairs.every(
+    ([residual, tolerance]) => residual <= tolerance);
   const receipt = {
     schema: FLOODPLAIN_PLANT_RESOURCES_RECEIPT_SCHEMA,
     transitionId: String(context.transitionId ||
@@ -385,30 +501,38 @@ function makeReceipt(state, matter, context, status, before, after, flows,
       exchange?.debitReceiptDigest || null,
     floodplainWaterReturnReceiptDigest:
       exchange?.returnReceiptDigest || null,
-    uptakeTransferIds: flows.map(flow => flow.uptakeTransferId)
+    uptakeTransferIds: recordedFlows.map(flow => flow.uptakeTransferId)
       .filter(Boolean).sort(),
-    waterReturnTransferIds: flows.map(flow => flow.waterReturnTransferId)
+    waterReturnTransferIds: recordedFlows.map(
+      flow => flow.waterReturnTransferId)
       .filter(Boolean).sort(),
     before: clone(before),
     after: clone(after),
-    guildFlows: clone(flows),
+    guildFlows: clone(recordedFlows),
     transfers: {
       floodplainUptake: rounded(credited),
       mortalityWaterReturnedKg: round(returnedWaterKg, 9),
-      liveToStandingDeadPhosphorusKgP: round(flows.reduce((sum, flow) =>
+      liveToStandingDeadPhosphorusKgP: round(recordedFlows.reduce(
+        (sum, flow) =>
         sum + finite(flow.liveToStandingDead.phosphorusKgP), 0), 9),
-      standingDeadToLitterPhosphorusKgP: round(flows.reduce((sum, flow) =>
+      standingDeadToLitterPhosphorusKgP: round(recordedFlows.reduce(
+        (sum, flow) =>
         sum + finite(flow.standingDeadToLitter.phosphorusKgP), 0), 9)
     },
     closure: {
       maximumResidualKg: round(maximumResidual, 12),
-      supportedCarbonResidualKgC: round(after.total.supportedCarbonKgC -
-        before.total.supportedCarbonKgC - flows.reduce((sum, flow) =>
-          sum + finite(flow.supportedCarbonCreditKgC), 0), 12),
-      phosphorusResidualKgP: round(after.total.phosphorusKgP -
-        before.total.phosphorusKgP - credited.phosphorusKgP, 12),
-      liveWaterResidualKg: round(after.total.liveWaterKg -
-        before.total.liveWaterKg - credited.waterKg + returnedWaterKg, 12)
+      maximumToleranceUtilization: round(maximumToleranceUtilization, 12),
+      ...totalClosure,
+      numericToleranceKg: totalNumericToleranceKg,
+      policy: {
+        schema: FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_POLICY_SCHEMA,
+        absoluteFloorKg:
+          FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+        ulpFactor: FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ULP_FACTOR,
+        recordedOperandScale: true,
+        perMaterialChannel: true,
+        arbitraryToleranceAuthority: false
+      }
     },
     truth: {
       ...truth(),
@@ -418,18 +542,19 @@ function makeReceipt(state, matter, context, status, before, after, flows,
         ? true : typeof exchange?.debitReceiptDigest === 'string',
       mortalityWaterReceiverCredited: returnedWaterKg <= 1e-12
         ? true : typeof exchange?.returnReceiptDigest === 'string',
-      exactPairedTransferIds: flows.every(flow =>
+      exactPairedTransferIds: recordedFlows.every(flow =>
         flow.uptake.phosphorusKgP <= 1e-15 && flow.uptake.waterKg <= 1e-12
           ? flow.uptakeTransferId == null
           : typeof flow.uptakeTransferId === 'string') &&
-        flows.every(flow => flow.waterReturnedToFloodplainKg <= 1e-12
+        recordedFlows.every(flow =>
+          flow.waterReturnedToFloodplainKg <= 1e-12
           ? flow.waterReturnTransferId == null
           : typeof flow.waterReturnTransferId === 'string'),
-      resourceLedgersClosed: maximumResidual < 1e-7 &&
-        Math.abs(after.total.phosphorusKgP - before.total.phosphorusKgP -
-          credited.phosphorusKgP) < 1e-7 &&
-        Math.abs(after.total.liveWaterKg - before.total.liveWaterKg -
-          credited.waterKg + returnedWaterKg) < 1e-7,
+      resourceLedgersClosed,
+      scaleAwareFloatingPointClosure: true,
+      perMaterialChannelNumericBounds: true,
+      measuredResidualsPreserved: true,
+      fixedAbsoluteToleranceOnly: false,
       migrationInventedResources: false,
       resourcePoolsFrozen: status === 'life-disabled-dormant'
     }
@@ -714,6 +839,17 @@ export function floodplainPlantResourcesDescription() {
   return {
     stateSchema: FLOODPLAIN_PLANT_RESOURCES_STATE_SCHEMA,
     transitionReceiptSchema: FLOODPLAIN_PLANT_RESOURCES_RECEIPT_SCHEMA,
+    previousTransitionReceiptSchema:
+      PREVIOUS_FLOODPLAIN_PLANT_RESOURCES_RECEIPT_SCHEMA,
+    massClosurePolicy: {
+      schema: FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorKg:
+        FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+      ulpFactor: FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_ULP_FACTOR,
+      recordedOperandScale: true,
+      perMaterialChannel: true,
+      arbitraryToleranceAuthority: false
+    },
     debitReceiptSchema: FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
     waterReturnReceiptSchema: FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA,
     detritusResourceDebitReceiptSchema:
@@ -729,6 +865,7 @@ export function floodplainPlantResourcesDescription() {
       'mortality-phosphorus-to-standing-dead',
       'standing-dead-phosphorus-to-litter',
       'mortality-tissue-water-return-to-local-floodplain',
+      'per-material-channel-scale-aware-numeric-closure',
       'paired-detritus-decomposition-resource-debit',
       'v11-zero-resource-migration', 'Life-off-freeze'],
     maximumStepDays: 1,

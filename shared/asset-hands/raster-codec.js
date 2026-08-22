@@ -5,7 +5,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "1.2.0";
+  var VERSION = "1.3.0";
   var CRC_TABLE = (function () {
     var table = new Uint32Array(256),
       n,
@@ -425,7 +425,8 @@
       plays = null,
       firstIdat = -1,
       animationIndex = -1,
-      frameDataChecks = [];
+      frameDataChecks = [],
+      delays = [];
     if (
       !(bytes instanceof Uint8Array) ||
       bytes.length < 40 ||
@@ -520,8 +521,17 @@
                 (data[17] << 16) |
                 (data[18] << 8) |
                 data[19]) >>>
-              0;
+              0,
+            delayNumerator = (data[20] << 8) | data[21],
+            encodedDelayDenominator = (data[22] << 8) | data[23],
+            delayDenominator = encodedDelayDenominator || 100;
           sequence.push(seq);
+          delays.push({
+            numerator: delayNumerator,
+            denominator: delayDenominator,
+            encodedDenominator: encodedDelayDenominator,
+            durationMs: (delayNumerator / delayDenominator) * 1000,
+          });
           if (
             !frameWidth ||
             !frameHeight ||
@@ -587,6 +597,10 @@
       width: width,
       height: height,
       sequence: sequence,
+      delays: delays,
+      durationMs: delays.reduce(function (sum, delay) {
+        return sum + delay.durationMs;
+      }, 0),
       decodedFrames: frameDataChecks.length,
     };
   }

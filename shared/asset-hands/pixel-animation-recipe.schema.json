@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/pixel-animation-recipe-v1.schema.json",
+  "title": "AXM Pixel Animation Recipe v1",
+  "description": "Engine-neutral, provenance-aware frame, clip, timing and retro pixel workflow instructions. The 8-bit and 16-bit names are art-direction presets, not hardware emulation or PNG bit-depth claims.",
+  "type": "object",
+  "required": ["schema", "version", "id", "source_artifact_id", "profile", "sheet", "frames", "clips", "palette", "preview", "video", "validation", "provenance", "authority"],
+  "properties": {
+    "schema": { "const": "axm.pixel-animation-recipe/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "$ref": "#/$defs/id" },
+    "identity_id": { "type": ["string", "null"], "minLength": 1, "maxLength": 160 },
+    "representation_profile_id": { "type": ["string", "null"], "minLength": 1, "maxLength": 160 },
+    "source_artifact_id": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "profile": {
+      "type": "object",
+      "required": ["id", "label", "interpretation", "pixel_format", "colour_space", "max_colours", "grid_presets", "default_cell_size", "default_frame_duration_ms", "default_preview_scale", "nearest_neighbour", "integer_scale_only"],
+      "properties": {
+        "id": { "enum": ["pixel-8bit", "pixel-16bit", "pixel-custom"] },
+        "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "interpretation": { "const": "workflow-preset-not-hardware-emulation" },
+        "pixel_format": { "const": "RGBA8" },
+        "colour_space": { "const": "sRGB" },
+        "max_colours": { "type": "integer", "minimum": 1, "maximum": 256 },
+        "grid_presets": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "integer", "minimum": 1, "maximum": 256 } },
+        "default_cell_size": { "type": "integer", "minimum": 1, "maximum": 256 },
+        "default_frame_duration_ms": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "default_preview_scale": { "type": "integer", "minimum": 1, "maximum": 16 },
+        "nearest_neighbour": { "const": true },
+        "integer_scale_only": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "sheet": {
+      "type": "object",
+      "required": ["source_width", "source_height", "cell_width", "cell_height", "columns", "rows", "margin_x", "margin_y", "spacing_x", "spacing_y", "order"],
+      "properties": {
+        "source_width": { "type": "integer", "minimum": 1, "maximum": 16384 },
+        "source_height": { "type": "integer", "minimum": 1, "maximum": 16384 },
+        "cell_width": { "type": "integer", "minimum": 1, "maximum": 256 },
+        "cell_height": { "type": "integer", "minimum": 1, "maximum": 256 },
+        "columns": { "type": "integer", "minimum": 1, "maximum": 256 },
+        "rows": { "type": "integer", "minimum": 1, "maximum": 256 },
+        "margin_x": { "type": "integer", "minimum": 0, "maximum": 1024 },
+        "margin_y": { "type": "integer", "minimum": 0, "maximum": 1024 },
+        "spacing_x": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "spacing_y": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "order": { "const": "row-major" }
+      },
+      "additionalProperties": false
+    },
+    "frames": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": { "$ref": "#/$defs/frame" }
+    },
+    "clips": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": { "$ref": "#/$defs/clip" }
+    },
+    "palette": {
+      "type": "object",
+      "required": ["enforcement", "max_colours", "colours", "include_transparent"],
+      "properties": {
+        "enforcement": { "enum": ["limit", "exact"] },
+        "max_colours": { "type": "integer", "minimum": 1, "maximum": 256 },
+        "colours": { "type": "array", "maxItems": 256, "uniqueItems": true, "items": { "$ref": "#/$defs/colour" } },
+        "include_transparent": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "preview": {
+      "type": "object",
+      "required": ["emit_integer_preview", "integer_scale", "background"],
+      "properties": {
+        "emit_integer_preview": { "type": "boolean" },
+        "integer_scale": { "type": "integer", "minimum": 1, "maximum": 16 },
+        "background": { "$ref": "#/$defs/colour" }
+      },
+      "additionalProperties": false
+    },
+    "video": {
+      "type": "object",
+      "required": ["emit_sequence", "cycles", "timebase"],
+      "properties": {
+        "emit_sequence": { "type": "boolean" },
+        "cycles": { "type": "integer", "minimum": 1, "maximum": 16 },
+        "timebase": { "const": "milliseconds" }
+      },
+      "additionalProperties": false
+    },
+    "validation": {
+      "type": "object",
+      "required": ["reject_duplicate_frames", "max_clip_duration_ms"],
+      "properties": {
+        "reject_duplicate_frames": { "type": "boolean" },
+        "max_clip_duration_ms": { "type": "integer", "minimum": 1, "maximum": 120000 }
+      },
+      "additionalProperties": false
+    },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "authority": { "const": "candidate-only" }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+    "colour": { "type": "string", "pattern": "^#[0-9A-F]{8}$" },
+    "rect": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "integer", "minimum": 0 },
+        "y": { "type": "integer", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "frame": {
+      "type": "object",
+      "required": ["id", "asset_id", "animation", "direction", "index", "duration_ms", "cell", "atlas", "bounds", "pivot", "tags", "events"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "asset_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "animation": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "direction": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "index": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "duration_ms": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "cell": {
+          "type": "object",
+          "required": ["column", "row"],
+          "properties": { "column": { "type": "integer", "minimum": 0 }, "row": { "type": "integer", "minimum": 0 } },
+          "additionalProperties": false
+        },
+        "atlas": { "$ref": "#/$defs/rect" },
+        "bounds": { "$ref": "#/$defs/rect" },
+        "pivot": {
+          "type": "object",
+          "required": ["x", "y", "unit"],
+          "properties": { "x": { "type": "number" }, "y": { "type": "number" }, "unit": { "enum": ["normalized", "px"] } },
+          "additionalProperties": false
+        },
+        "tags": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 80 } },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "at_ms", "data"],
+            "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1, "maxLength": 80 }, "at_ms": { "type": "integer", "minimum": 0 }, "data": { "type": "object" } },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "clip": {
+      "type": "object",
+      "required": ["id", "runtime_name", "animation", "direction", "frame_ids", "playback", "duration_ms", "tags"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "runtime_name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "animation": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "direction": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "frame_ids": { "type": "array", "minItems": 2, "maxItems": 256, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "playback": {
+          "type": "object",
+          "required": ["mode", "order", "repeat_count"],
+          "properties": { "mode": { "enum": ["loop", "once"] }, "order": { "enum": ["forward", "reverse", "ping-pong"] }, "repeat_count": { "type": "integer", "minimum": 0, "maximum": 65535 } },
+          "additionalProperties": false
+        },
+        "duration_ms": { "type": "integer", "minimum": 1, "maximum": 120000 },
+        "tags": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 80 } }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["author_type", "actor_id", "parent_package_id", "parent_recipe_id", "contributors", "ai_used"],
+      "properties": {
+        "author_type": { "enum": ["human", "ai", "program", "mixed", "unknown"] },
+        "actor_id": { "type": ["string", "null"], "maxLength": 120 },
+        "parent_package_id": { "type": ["string", "null"], "maxLength": 160 },
+        "parent_recipe_id": { "type": ["string", "null"], "maxLength": 160 },
+        "contributors": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "role", "tool", "version"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+              "type": { "enum": ["human", "ai", "program", "mixed", "unknown"] },
+              "role": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "tool": { "type": ["string", "null"], "maxLength": 120 },
+              "version": { "type": ["string", "null"], "maxLength": 80 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "ai_used": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

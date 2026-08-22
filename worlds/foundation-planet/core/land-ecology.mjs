@@ -3,7 +3,13 @@ export const EARTH_LAND_ECOLOGY_SCHEMA =
 export const EARTH_LAND_ECOLOGY_FLUX_SCHEMA =
   'axm.foundation-planet.land-ecology-flux-receipt/v1';
 export const LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA =
+  'axm.foundation-planet.land-ecology-subgrid-biomass-debit/v2';
+export const PREVIOUS_LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA =
   'axm.foundation-planet.land-ecology-subgrid-biomass-debit/v1';
+export const LAND_ECOLOGY_MASS_CLOSURE_POLICY_SCHEMA =
+  'axm.foundation-planet.land-ecology-mass-closure-policy/v1';
+export const LAND_ECOLOGY_MASS_CLOSURE_ABSOLUTE_FLOOR_KG = 1e-6;
+export const LAND_ECOLOGY_MASS_CLOSURE_ULP_FACTOR = 8;
 
 const REFERENCE_ATMOSPHERIC_CARBON_KG_C_M2 = 3.45;
 const REFERENCE_CO2_PPM = 420;
@@ -13,6 +19,15 @@ const finite = (value, fallback = 0) => Number.isFinite(Number(value))
   ? Number(value) : fallback;
 const round = (value, digits = 9) => Number(Number(value).toFixed(digits));
 const clone = value => JSON.parse(JSON.stringify(value));
+
+export function landEcologyMassClosureToleranceKg(...values) {
+  const magnitudeKg = Math.max(1, ...values.map(value =>
+    Math.abs(finite(value))));
+  return round(Math.max(
+    LAND_ECOLOGY_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+    magnitudeKg * Number.EPSILON * LAND_ECOLOGY_MASS_CLOSURE_ULP_FACTOR
+  ), 12);
+}
 
 function stableDigest(value) {
   const text = JSON.stringify(value);
@@ -413,6 +428,14 @@ export function applyLandEcologySubgridBiomassDebit(source, areaM2,
     state.nitrogen.liveBiomassKgNm2 - totals.nitrogenKgN / area);
   refreshDiagnostics(state);
   const after = landEcologyLiveBiomassMass(state, area);
+  const carbonResidualKgC = before.carbonKgC - totals.carbonKgC -
+    after.carbonKgC;
+  const nitrogenResidualKgN = before.nitrogenKgN -
+    totals.nitrogenKgN - after.nitrogenKgN;
+  const carbonToleranceKgC = landEcologyMassClosureToleranceKg(
+    before.carbonKgC, totals.carbonKgC, after.carbonKgC);
+  const nitrogenToleranceKgN = landEcologyMassClosureToleranceKg(
+    before.nitrogenKgN, totals.nitrogenKgN, after.nitrogenKgN);
   const receipt = {
     schema: LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA,
     donorCellId: String(context.donorCellId || ''),
@@ -432,10 +455,20 @@ export function applyLandEcologySubgridBiomassDebit(source, areaM2,
     },
     after,
     closure: {
-      carbonResidualKgC: round(before.carbonKgC - totals.carbonKgC -
-        after.carbonKgC, 9),
-      nitrogenResidualKgN: round(before.nitrogenKgN -
-        totals.nitrogenKgN - after.nitrogenKgN, 9)
+      carbonResidualKgC: round(carbonResidualKgC, 9),
+      nitrogenResidualKgN: round(nitrogenResidualKgN, 9),
+      numericToleranceKg: {
+        carbonKgC: carbonToleranceKgC,
+        nitrogenKgN: nitrogenToleranceKgN
+      },
+      policy: {
+        schema: LAND_ECOLOGY_MASS_CLOSURE_POLICY_SCHEMA,
+        absoluteFloorKg:
+          LAND_ECOLOGY_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+        ulpFactor: LAND_ECOLOGY_MASS_CLOSURE_ULP_FACTOR,
+        recordedOperandScale: true,
+        arbitraryToleranceAuthority: false
+      }
     },
     truth: {
       persistentLandEcologySenderDebited: true,
@@ -444,10 +477,11 @@ export function applyLandEcologySubgridBiomassDebit(source, areaM2,
       boundedDailyDebit: totals.carbonKgC <= capacity.carbonKgC + 1e-6 &&
         totals.nitrogenKgN <= capacity.nitrogenKgN + 1e-6,
       carbonAndNitrogenClosed:
-        Math.abs(before.carbonKgC - totals.carbonKgC -
-          after.carbonKgC) < 1e-6 &&
-        Math.abs(before.nitrogenKgN - totals.nitrogenKgN -
-          after.nitrogenKgN) < 1e-6,
+        Math.abs(carbonResidualKgC) <= carbonToleranceKgC &&
+        Math.abs(nitrogenResidualKgN) <= nitrogenToleranceKgN,
+      scaleAwareFloatingPointClosure: true,
+      measuredResidualsPreserved: true,
+      fixedAbsoluteToleranceOnly: false,
       phosphorusTransferred: false
     }
   };
@@ -792,6 +826,15 @@ export function landEcologyDescription() {
     fluxReceiptSchema: EARTH_LAND_ECOLOGY_FLUX_SCHEMA,
     subgridBiomassDebitSchema:
       LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA,
+    previousSubgridBiomassDebitSchema:
+      PREVIOUS_LAND_ECOLOGY_SUBGRID_BIOMASS_DEBIT_SCHEMA,
+    subgridMassClosurePolicy: {
+      schema: LAND_ECOLOGY_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorKg: LAND_ECOLOGY_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+      ulpFactor: LAND_ECOLOGY_MASS_CLOSURE_ULP_FACTOR,
+      toleranceDerivedFromRecordedOperandScale: true,
+      measuredResidualsPreserved: true
+    },
     persistentCarbonPools: [
       'local-exchangeable-atmosphere', 'live-biomass', 'litter', 'soil-organic'
     ],

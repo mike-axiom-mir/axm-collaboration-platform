@@ -29,9 +29,6 @@ check(capsuleSchema.$id === Capsule.CAPSULE_SCHEMA, 'capsule schema identity mat
 check(comparisonSchema.$id === Capsule.COMPARISON_SCHEMA, 'comparison schema identity matches the implementation');
 check(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'module remains TEST with no permissions or writes');
 check(contract.boundaries.refuses.includes('source-execution') && contract.boundaries.refuses.includes('automatic-canon'), 'module refuses execution and automatic CANON');
-check(contract.version === 'v0.2' && contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'v0.2 contract declares strict representation closure');
-check(Capsule.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
-rejects(() => Capsule.stableStringify({ lost: undefined }), /unsupported undefined/i, 'unsafe canonical state is refused');
 
 function ref(id, value, schema) {
   return Capsule.reference(value, { id, schema: schema || 'axm.fixture/v1' });

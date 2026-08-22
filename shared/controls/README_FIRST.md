@@ -5,7 +5,7 @@ Status: **WORKING REFERENCE KIT**
 
 This ZIP extracts the reusable control and connected-AI boundary from AXM District Party v0.1.7. It is deliberately independent from the city map, combat, missions, assets, Phaser, and the District Party server.
 
-Use it to give several AXM games the same phone-first controls while changing only a small machine-readable profile and the game-side meaning of each intention. Physical gamepads are a compatible future input source, not a different seat identity; see [PHYSICAL_CONTROLLER_ROUTE.md](PHYSICAL_CONTROLLER_ROUTE.md).
+Use it to give several AXM games the same semantic controls while changing only a small machine-readable profile and the game-side meaning of each intention. The Game Hub now makes the universal Xbox/Brawl input profile the default requirement for party co-op on one shared screen; physical gamepads remain a `human` input source, not a different seat identity. See [PHYSICAL_CONTROLLER_ROUTE.md](PHYSICAL_CONTROLLER_ROUTE.md).
 
 ## Included
 
@@ -57,14 +57,19 @@ Start with [PORTING_GUIDE.md](PORTING_GUIDE.md). The exact AI boundary is in [AI
 
 Empty seats remain empty. This kit does not invent substitute players.
 
-## Future physical controllers
+## Physical-controller migration
 
-Phone / QR remains the default. A future USB or Bluetooth gamepad adapter will
-feed generic vectors, buttons and pulses into the existing runtime while the
-seat remains `human`. The route is deliberately recorded as **not implemented**
-until real hardware is available. Its machine-readable contract is
-`PHYSICAL_CONTROLLER_ROUTE.json`.
+The Hub inherits `axm-universal-xbox-brawl-v0.2.1` for qualifying shared-screen
+co-op games. Bloomvale and Relaybound currently consume it. Phone / QR remains
+an optional fallback where a game declares it. Games without a migrated
+semantic mapping are visibly marked `MAPPING NEEDED`; the shared Controller
+Dock and broad hardware proof are not complete. The machine-readable contract
+is `PHYSICAL_CONTROLLER_ROUTE.json`.
+
+This is a sparse baseline, not a demand to consume every physical button. A
+game maps only the semantic actions it needs, may leave the rest unused, and
+may offer keyboard bindings that mirror or extend those actions on PC.
 
 ## Honest boundary
 
-Automated tests cover the portable math, mappings, packet sanitation, token and sequence checks, pulse latching, human/adapter parity, Host AI rejection, visibility filtering, and example files. Physical phone comfort, Wi-Fi latency, physical gamepads, real Game Hub launch, and any target game integration remain **UNTESTED** here.
+Automated tests cover the portable math, mappings, packet sanitation, token and sequence checks, pulse latching, human/adapter parity, Host AI rejection, visibility filtering, and example files. The Hub policy and Bloomvale/Relaybound software integrations are tested separately; broad physical-controller, mixed-party, phone-comfort, and Wi-Fi evidence remains incomplete.

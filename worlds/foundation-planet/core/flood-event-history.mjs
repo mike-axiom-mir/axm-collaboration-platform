@@ -3,7 +3,7 @@ import {
   FLOODPLAIN_STATE_SCHEMA,
   floodplainTotals,
   normalizeFloodplainState
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.61.0-r61.1';
 
 export const FLOOD_EVENT_HISTORY_STATE_SCHEMA =
   'axm.foundation-planet.flood-event-history-state/v1';

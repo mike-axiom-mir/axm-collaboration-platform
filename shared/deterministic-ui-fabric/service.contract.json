@@ -1,0 +1,46 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-ui-fabric",
+  "version": "1.0.0",
+  "status": "TEST",
+  "provides": [
+    "ui.component.result.fail-closed-gate",
+    "ui.recipe.spec.svg-cross-binding",
+    "ui.svg.inert-image-safety-gate",
+    "ui.artifact.full-sha256",
+    "ui.create-edit.handoff"
+  ],
+  "consumes": [
+    "axm.asset-hand-result/v1",
+    "ui-component/1.2.0",
+    "axm.ui-component-recipe/v1",
+    "axm.ui-component-spec/v1",
+    "image/svg+xml"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.deterministic-ui-handoff/v1"],
+    "accepts": ["axm.asset-hand-result/v1"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "provider-or-registry-mutation",
+      "svg-dom-injection",
+      "static-svg-as-interactive-proof",
+      "browser-as-target-runtime-parity-proof",
+      "simulated-gamepad-as-physical-device-proof",
+      "assistive-technology-proof-without-native-evidence",
+      "human-aesthetic-approval-claim",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-canonization"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller",
+    "reload": "re-gate-whole-result",
+    "disconnect": "graceful-degrade",
+    "cleanup": "discard-candidate"
+  }
+}

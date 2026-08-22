@@ -1,7 +1,6 @@
 'use strict';
 
 const crypto = require('crypto');
-const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const BUNDLE_SCHEMA = 'axm.research-contribution-bundle/v1';
 const ASSESSMENT_SCHEMA = 'axm.research-contribution-assessment/v1';
@@ -31,11 +30,15 @@ const TRUTH_KEYS = [
 ];
 
 function clone(value) {
-  return JSON.parse(DeterministicJson.canonicalJson(value));
+  return JSON.parse(JSON.stringify(value));
 }
 
 function stableStringify(value) {
-  return DeterministicJson.canonicalJson(value);
+  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+  if (value && typeof value === 'object') {
+    return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+  }
+  return JSON.stringify(value);
 }
 
 function sha256(value) {

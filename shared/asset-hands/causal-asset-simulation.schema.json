@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/causal-asset-simulation-v1.schema.json",
+  "title": "AXM Causal Asset Simulation v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "id", "identity_id", "state", "processed_event_ids", "history", "invariants", "provenance", "authority"],
+  "properties": {
+    "schema": { "const": "axm.causal-asset-simulation/v1" }, "version": { "const": "1.0.0" }, "status": { "const": "EXPERIMENTAL" }, "id": { "type": "string" }, "identity_id": { "type": "string" }, "state": { "type": "object", "required": ["operating_state", "condition", "cleanliness", "cycle_count", "load", "simulated_time_ms", "faults", "upgrades", "animation_state"] }, "processed_event_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string" } }, "history": { "type": "array", "items": { "type": "object" } }, "invariants": { "type": "array", "contains": { "const": "elapsed-time-alone-does-not-change-condition" } }, "provenance": { "type": "object" }, "authority": { "$ref": "asset-identity.schema.json#/$defs/authority" }
+  },
+  "additionalProperties": false
+}

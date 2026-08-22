@@ -1,0 +1,98 @@
+{
+  "schema": "axm.interface-world-signal-registry/v1",
+  "status": "TEST",
+  "curated_at": "2026-08-09T05:00:00Z",
+  "truth_boundary": "Statements are concise AXM paraphrases of official sources. They are advisory checks, not copied design assets, conformance evidence, or permission to change an interface.",
+  "signals": [
+    {
+      "signal_id": "world.wcag.focus-visible-and-unobscured",
+      "source_id": "w3c-wcag-2-2",
+      "evidence_class": "NORMATIVE_STANDARD",
+      "statement": "Keyboard focus must remain visible and must not be hidden by interface content.",
+      "fit_check": "Verify every interactive state at keyboard focus, including sticky headers, overlays, and dialogs.",
+      "pattern_ids": ["*"],
+      "priority": "HIGH"
+    },
+    {
+      "signal_id": "world.wcag.target-size-and-drag-alternative",
+      "source_id": "w3c-wcag-2-2",
+      "evidence_class": "NORMATIVE_STANDARD",
+      "statement": "Pointer targets need sufficient size, and dragging interactions need an alternative where the criterion applies.",
+      "fit_check": "Check touch targets and provide a non-drag path for spatial or direct-manipulation controls.",
+      "pattern_ids": ["drag_drop_workspace", "node_graph_editor", "canvas", "timeline", "layer_editor", "map_spatial_interface", "controller_game_style"],
+      "priority": "HIGH"
+    },
+    {
+      "signal_id": "world.wcag.consistent-help-and-input",
+      "source_id": "w3c-wcag-2-2",
+      "evidence_class": "NORMATIVE_STANDARD",
+      "statement": "Help, repeated entry, authentication, and error prevention should reduce avoidable cognitive and input burden.",
+      "fit_check": "Keep help predictable, preserve known values, explain errors, and avoid memory-only authentication tasks.",
+      "pattern_ids": ["guided_form", "wizard", "structured_prompt_builder", "approval_confirmation", "conversational_interface", "automation_recipe_builder"],
+      "priority": "HIGH"
+    },
+    {
+      "signal_id": "world.aria.name-role-value-status",
+      "source_id": "w3c-wai-aria-1-2",
+      "evidence_class": "NORMATIVE_STANDARD",
+      "statement": "Interactive components need programmatically determinable names, roles, values, states, and status changes.",
+      "fit_check": "Prefer native semantics; verify custom controls and live status with assistive technology-oriented inspection.",
+      "pattern_ids": ["*"],
+      "priority": "HIGH"
+    },
+    {
+      "signal_id": "world.apg.keyboard-and-widget-patterns",
+      "source_id": "w3c-aria-apg",
+      "evidence_class": "IMPLEMENTATION_GUIDANCE",
+      "statement": "Complex widgets need an established keyboard model, accessible names, and understandable landmark structure.",
+      "fit_check": "Match the relevant APG interaction pattern before inventing keyboard behavior for a custom widget.",
+      "pattern_ids": ["command_palette", "searchable_library", "drag_drop_workspace", "node_graph_editor", "canvas", "timeline", "layer_editor", "table_spreadsheet", "dashboard", "file_browser", "map_spatial_interface", "code_editor", "hybrid_visual_code"],
+      "priority": "HIGH"
+    },
+    {
+      "signal_id": "world.html.native-controls-first",
+      "source_id": "whatwg-html-forms",
+      "evidence_class": "LIVING_STANDARD",
+      "statement": "Use native HTML controls and form behavior when they can express the task safely.",
+      "fit_check": "Choose labelled native inputs, buttons, selects, and form validation before a custom control.",
+      "pattern_ids": ["simple_action_button", "guided_form", "wizard", "searchable_library", "structured_prompt_builder", "property_inspector", "table_spreadsheet", "template_selector", "approval_confirmation"],
+      "priority": "MEDIUM"
+    },
+    {
+      "signal_id": "world.material.adaptive-and-redundant-state",
+      "source_id": "google-material-3",
+      "evidence_class": "ECOSYSTEM_GUIDANCE",
+      "statement": "Material interfaces should adapt across layouts and communicate interaction state with more than one visual cue.",
+      "fit_check": "Apply only when the module explicitly targets Material or Android conventions.",
+      "pattern_ids": ["*"],
+      "priority": "CONTEXTUAL"
+    },
+    {
+      "signal_id": "world.apple.platform-conventions",
+      "source_id": "apple-human-interface-guidelines",
+      "evidence_class": "ECOSYSTEM_GUIDANCE",
+      "statement": "Apple-platform experiences should follow the interaction conventions and accessibility expectations of the target Apple device.",
+      "fit_check": "Apply only when an Apple platform is declared; verify the device-specific interaction path.",
+      "pattern_ids": ["*"],
+      "priority": "CONTEXTUAL"
+    },
+    {
+      "signal_id": "world.fluent.zoom-reflow-and-plain-language",
+      "source_id": "microsoft-fluent-2-accessibility",
+      "evidence_class": "ECOSYSTEM_GUIDANCE",
+      "statement": "Microsoft-ecosystem interfaces should preserve reflow, focus, semantic structure, and concise meaningful language.",
+      "fit_check": "Apply only for declared Microsoft or Windows contexts and verify zoom and keyboard behavior independently.",
+      "pattern_ids": ["*"],
+      "priority": "CONTEXTUAL"
+    },
+    {
+      "signal_id": "world.govuk.user-task-patterns",
+      "source_id": "govuk-design-system-patterns",
+      "evidence_class": "RESEARCHED_PATTERN_LIBRARY",
+      "statement": "Public-service interfaces benefit from tested task patterns, clear questions, recoverable errors, and small-screen-first layouts.",
+      "fit_check": "Apply only to declared public-service contexts; reuse the research logic without copying government branding.",
+      "pattern_ids": ["guided_form", "wizard", "searchable_library", "approval_confirmation"],
+      "priority": "CONTEXTUAL"
+    }
+  ]
+}

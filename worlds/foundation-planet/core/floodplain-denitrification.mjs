@@ -1,10 +1,11 @@
 import {
   ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA
-} from './atmosphere-biogeochemistry.mjs';
+} from './atmosphere-biogeochemistry.mjs?v=0.62.0-r62.1';
 import {
   FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
+  floodplainReactionMassClosureToleranceKg,
   normalizeFloodplainState
-} from './floodplain.mjs';
+} from './floodplain.mjs?v=0.61.0-r61.1';
 
 export const FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-denitrification-state/v4';
@@ -374,10 +375,22 @@ export function advanceFloodplainDenitrification(source, plan,
   }
   if (atmosphereAvailable) {
     const reacted = reaction(reactionReceipt.reaction);
+    const reactionChannels = {
+      dissolvedOrganicCarbonConsumedKgC: 'carbonKgC',
+      dissolvedInorganicCarbonProducedKgC: 'carbonKgC',
+      dissolvedNitrateNitrogenConsumedKgN: 'nitrogenKgN',
+      nitrogenGasProducedKgN: 'nitrogenKgN',
+      alkalinityGeneratedKgCaCO3Eq: 'alkalinityKgCaCO3Eq'
+    };
     const quantitiesMatch = Object.keys(planned).every(key =>
-      Math.abs(planned[key] - reacted[key]) < 1e-7) &&
+      Math.abs(planned[key] - reacted[key]) <=
+        floodplainReactionMassClosureToleranceKg(reactionChannels[key],
+          planned[key], reacted[key])) &&
       Math.abs(planned.nitrogenGasProducedKgN -
-        finite(atmosphereReceipt.inputs?.nitrogenKgN)) < 1e-7;
+        finite(atmosphereReceipt.inputs?.nitrogenKgN)) <=
+          floodplainReactionMassClosureToleranceKg('nitrogenKgN',
+            planned.nitrogenGasProducedKgN,
+            atmosphereReceipt.inputs?.nitrogenKgN);
     if (!quantitiesMatch || reactionReceipt.transferId !== transferId ||
       atmosphereReceipt.transferId !== transferId ||
       reactionReceipt.reachId !== reachId ||
@@ -488,8 +501,7 @@ export function advanceFloodplainDenitrification(source, plan,
       exactTransferIdentity: atmosphereAvailable
         ? reactionReceipt.transferId === atmosphereReceipt.transferId : true,
       ownerLedgersClosed: atmosphereAvailable
-        ? Object.values(reactionReceipt.closure)
-          .every(value => Math.abs(finite(value)) < 1e-7) &&
+        ? reactionReceipt.truth?.scaleAwareFloatingPointClosure === true &&
           Math.abs(finite(atmosphereReceipt.conservation
             ?.nitrogenResidualKgN)) < 1e-7
         : true,

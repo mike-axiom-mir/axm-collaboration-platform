@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/pbr-material-recipe-v1.schema.json",
+  "title": "AXM PBR Material Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "family", "seed", "size", "normal_strength", "authority"],
+  "properties": {
+    "schema": { "const": "axm.pbr-material-recipe/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "family": { "enum": ["brick", "asphalt", "painted-metal", "glass", "skin", "vehicle-paint"] },
+    "seed": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "size": { "type": "integer", "minimum": 32, "maximum": 512 },
+    "normal_strength": { "type": "number", "minimum": 0.25, "maximum": 8 },
+    "authority": { "const": "candidate-only" }
+  },
+  "additionalProperties": false
+}

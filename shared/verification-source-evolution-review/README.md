@@ -30,7 +30,3 @@ semantic-count comparison. Semantic sameness is not historical byte sameness.
 
 The module performs no I/O and grants no execution, write, permission,
 installation, promotion, merge, Foundation, or `CANON` authority.
-
-Its exported serialization and clone boundaries use the shared deterministic
-JSON core. Unsupported or lossy states are refused instead of being silently
-removed, coerced, or emitted as invalid JSON.

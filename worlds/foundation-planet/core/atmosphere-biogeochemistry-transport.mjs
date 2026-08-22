@@ -3,7 +3,7 @@ import {
   ATMOSPHERE_BIOGEOCHEMISTRY_LAYER_COUNT,
   normalizeAtmosphereBiogeochemistry,
   synchronizeAtmosphereCompatibilityMirrors
-} from './atmosphere-biogeochemistry.mjs';
+} from './atmosphere-biogeochemistry.mjs?v=0.62.0-r62.1';
 
 export const ATMOSPHERE_BIOGEOCHEMISTRY_TRANSPORT_SCHEMA =
   'axm.foundation-planet.atmosphere-biogeochemistry-transport-receipt/v2';

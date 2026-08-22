@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const C = require('./core');
+const ResilientOutput = require('./automation/resilient-output-writer');
 const PHASES = ['P0','P1','P2','P3','P4','P5','P6','P7','P8'];
 const STATUS_PATH = path.join(__dirname, 'roadmap-status.json');
 const RECEIPT_PATH = path.resolve(__dirname, '..', '..', 'exports', 'sensorium-roadmap-acceptance.json');
@@ -22,10 +23,12 @@ function compile(evidence, at) {
     verdict: complete ? 'PASS' : 'FAIL', evidenceDigest: C.digest(phases)
   };
 }
-function write(receipt) {
-  fs.mkdirSync(path.dirname(RECEIPT_PATH), { recursive: true });
-  fs.writeFileSync(STATUS_PATH, JSON.stringify(receipt, null, 2) + '\n', 'utf8');
-  fs.writeFileSync(RECEIPT_PATH, JSON.stringify(receipt, null, 2) + '\n', 'utf8');
+async function write(receipt, options) {
+  options = options || {};
+  await fs.promises.mkdir(path.dirname(RECEIPT_PATH), { recursive: true });
+  const payload = JSON.stringify(receipt, null, 2) + '\n';
+  await ResilientOutput.writePayload(STATUS_PATH, payload, options);
+  await ResilientOutput.writePayload(RECEIPT_PATH, payload, options);
 }
 
 module.exports = { PHASES, STATUS_PATH, RECEIPT_PATH, compile, write };

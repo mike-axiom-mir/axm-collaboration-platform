@@ -1,5 +1,9 @@
-export const DEEP_OCEAN_STATE_SCHEMA = 'axm.foundation-planet.deep-ocean-state/v1';
+export const DEEP_OCEAN_STATE_SCHEMA = 'axm.foundation-planet.deep-ocean-state/v2';
+export const PREVIOUS_DEEP_OCEAN_STATE_SCHEMA =
+  'axm.foundation-planet.deep-ocean-state/v1';
 export const DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA =
+  'axm.foundation-planet.deep-ocean-exchange-receipt/v2';
+export const PREVIOUS_DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA =
   'axm.foundation-planet.deep-ocean-exchange-receipt/v1';
 
 const OXYGEN_KG_PER_RESPIRATED_KG_C = 32 / 12;
@@ -33,6 +37,12 @@ export function emptyDeepOceanState(options = {}) {
       dissolvedKgO2m2: 0,
       saturationFraction: 0
     },
+    alkalinity: {
+      dissolvedKgCaCO3Eqm2: 0,
+      initialization: options.migrationCheckpoint === true
+        ? 'explicit-zero-migration'
+        : 'explicit-empty'
+    },
     cumulative: {
       sinkingCarbonKgCm2: 0,
       remineralizedCarbonKgCm2: 0,
@@ -49,6 +59,8 @@ export function createDeepOceanState(sample = {}, ocean = {}) {
     3600 - finite(ocean?.mixedLayerDepthM, 60)), 350, 5600);
   const temperatureC = clamp(finite(ocean?.mixedLayerTemperatureC,
     finite(sample?.temperatureC, 8)) - 9, -1.8, 5);
+  const salinityPsu = clamp(finite(ocean?.salinityPsu,
+    finite(sample?.ecology?.salinityPsu, 35)), 2, 43);
   const oxygenConcentrationKgM3 = clamp(.0062 -
     Math.max(0, temperatureC + 1) * .00018, .0022, .0072);
   const state = emptyDeepOceanState({ deepWaterDepthM: depthM });
@@ -62,11 +74,18 @@ export function createDeepOceanState(sample = {}, ocean = {}) {
   state.phosphorus.detritusKgPm2 = state.carbon.detritusKgCm2 / 72;
   state.oxygen.dissolvedKgO2m2 = depthM * oxygenConcentrationKgM3;
   state.oxygen.saturationFraction = .72;
+  state.alkalinity.dissolvedKgCaCO3Eqm2 = depthM * .115 *
+    (salinityPsu / 35);
+  state.alkalinity.initialization =
+    'parameterized-open-ocean-2300-umol-kg-reference';
   return state;
 }
 
 export function normalizeDeepOceanState(source, options = {}) {
-  if (!source || source.schema !== DEEP_OCEAN_STATE_SCHEMA) {
+  if (!source || ![
+    DEEP_OCEAN_STATE_SCHEMA,
+    PREVIOUS_DEEP_OCEAN_STATE_SCHEMA
+  ].includes(source.schema)) {
     return options.initialize === true
       ? createDeepOceanState(options.sample, options.ocean)
       : emptyDeepOceanState({
@@ -74,6 +93,7 @@ export function normalizeDeepOceanState(source, options = {}) {
         migrationCheckpoint: options.migrationCheckpoint === true
       });
   }
+  const migratedAlkalinity = source.schema === PREVIOUS_DEEP_OCEAN_STATE_SCHEMA;
   const state = emptyDeepOceanState({ deepWaterDepthM: source.deepWaterDepthM });
   for (const [group, fields] of Object.entries({
     carbon: ['dissolvedInorganicKgCm2', 'dissolvedOrganicKgCm2',
@@ -90,10 +110,16 @@ export function normalizeDeepOceanState(source, options = {}) {
     finite(source.oxygen?.dissolvedKgO2m2));
   state.oxygen.saturationFraction = clamp(
     finite(source.oxygen?.saturationFraction));
+  state.alkalinity.dissolvedKgCaCO3Eqm2 = migratedAlkalinity ? 0 : Math.max(0,
+    finite(source.alkalinity?.dissolvedKgCaCO3Eqm2));
+  state.alkalinity.initialization = migratedAlkalinity
+    ? 'explicit-zero-migration'
+    : String(source.alkalinity?.initialization || 'normalized');
   for (const key of Object.keys(state.cumulative)) {
     state.cumulative[key] = Math.max(0, finite(source.cumulative?.[key]));
   }
-  state.migrationCheckpoint = source.migrationCheckpoint === true;
+  state.migrationCheckpoint = migratedAlkalinity ||
+    source.migrationCheckpoint === true;
   state.lastExchangeReceipt = source.lastExchangeReceipt?.schema ===
     DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA ? clone(source.lastExchangeReceipt) : null;
   return state;
@@ -109,7 +135,8 @@ export function deepOceanElementTotals(source) {
       state.nitrogen.detritusKgNm2 + state.nitrogen.seafloorBuriedKgNm2,
     phosphorusKgPm2: state.phosphorus.dissolvedInorganicKgPm2 +
       state.phosphorus.detritusKgPm2 + state.phosphorus.seafloorBuriedKgPm2,
-    oxygenKgO2m2: state.oxygen.dissolvedKgO2m2
+    oxygenKgO2m2: state.oxygen.dissolvedKgO2m2,
+    alkalinityKgCaCO3Eqm2: state.alkalinity.dissolvedKgCaCO3Eqm2
   };
 }
 
@@ -147,7 +174,9 @@ export function advanceDeepOcean(source, surface, environment = {},
       finite(surface.nitrogen?.detritusKgNm2),
     phosphorusKgPm2: finite(surface.phosphorus?.dissolvedInorganicKgPm2) +
       finite(surface.phosphorus?.detritusKgPm2),
-    oxygenKgO2m2: finite(surface.oxygen?.dissolvedKgO2m2)
+    oxygenKgO2m2: finite(surface.oxygen?.dissolvedKgO2m2),
+    alkalinityKgCaCO3Eqm2:
+      finite(surface.alkalinity?.dissolvedKgCaCO3Eqm2)
   };
   const surfaceDepthM = clamp(finite(environment.mixedLayerDepthM, 60), 12, 180);
   const deepDepthM = state.deepWaterDepthM;
@@ -170,7 +199,10 @@ export function advanceDeepOcean(source, surface, environment = {},
       surfaceDepthM, deepDepthM, exchangeDepthM),
     oxygenSurfaceToDeepKgO2m2: moveDissolved(surface.oxygen,
       'dissolvedKgO2m2', state.oxygen, 'dissolvedKgO2m2',
-      surfaceDepthM, deepDepthM, exchangeDepthM)
+      surfaceDepthM, deepDepthM, exchangeDepthM),
+    alkalinitySurfaceToDeepKgCaCO3Eqm2: moveDissolved(surface.alkalinity,
+      'dissolvedKgCaCO3Eqm2', state.alkalinity,
+      'dissolvedKgCaCO3Eqm2', surfaceDepthM, deepDepthM, exchangeDepthM)
   };
 
   let sinkingCarbonKgCm2 = 0;
@@ -248,7 +280,9 @@ export function advanceDeepOcean(source, surface, environment = {},
       finite(surface.nitrogen?.detritusKgNm2),
     phosphorusKgPm2: finite(surface.phosphorus?.dissolvedInorganicKgPm2) +
       finite(surface.phosphorus?.detritusKgPm2),
-    oxygenKgO2m2: finite(surface.oxygen?.dissolvedKgO2m2)
+    oxygenKgO2m2: finite(surface.oxygen?.dissolvedKgO2m2),
+    alkalinityKgCaCO3Eqm2:
+      finite(surface.alkalinity?.dissolvedKgCaCO3Eqm2)
   };
   const receipt = {
     schema: DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA,
@@ -284,7 +318,12 @@ export function advanceDeepOcean(source, surface, environment = {},
         initialSurface.phosphorusKgPm2 - initialDeep.phosphorusKgPm2),
       oxygenResidualKgO2m2: round(finalSurface.oxygenKgO2m2 + finalDeep.oxygenKgO2m2 -
         initialSurface.oxygenKgO2m2 - initialDeep.oxygenKgO2m2 +
-        oxygenConsumedKgO2m2)
+        oxygenConsumedKgO2m2),
+      alkalinityResidualKgCaCO3Eqm2: round(
+        finalSurface.alkalinityKgCaCO3Eqm2 +
+        finalDeep.alkalinityKgCaCO3Eqm2 -
+        initialSurface.alkalinityKgCaCO3Eqm2 -
+        initialDeep.alkalinityKgCaCO3Eqm2)
     },
     truth: {
       persistentDeepReservoirs: true,
@@ -292,6 +331,12 @@ export function advanceDeepOcean(source, surface, environment = {},
       sinkingParticleExport: biologicalEnabled,
       oxygenLimitedDeepRemineralization: biologicalEnabled,
       persistentSeafloorBurial: true,
+      persistentDeepAlkalinityReservoir: true,
+      conservativeVerticalAlkalinityExchange: true,
+      alkalinityIsAcidNeutralizingCapacityEquivalent: true,
+      measuredAlkalinityClaimed: false,
+      carbonateSpeciationResolved: false,
+      pHResolved: false,
       biologicalPoolsFrozenWhenLifeDisabled: !biologicalEnabled,
       resolvedThreeDimensionalCirculation: false
     }
@@ -303,16 +348,24 @@ export function advanceDeepOcean(source, surface, environment = {},
 export function deepOceanDescription() {
   return {
     stateSchema: DEEP_OCEAN_STATE_SCHEMA,
+    previousStateSchema: PREVIOUS_DEEP_OCEAN_STATE_SCHEMA,
     exchangeReceiptSchema: DEEP_OCEAN_EXCHANGE_RECEIPT_SCHEMA,
     persistentReservoirs: true,
     processes: [
       'mixed-to-deep-dissolved-exchange',
+      'mixed-to-deep-conservative-alkalinity-exchange',
       'sinking-detrital-carbon-nitrogen-phosphorus-export',
       'oxygen-limited-deep-remineralization',
       'persistent-seafloor-organic-burial'
     ],
     physicalExchangeWhenLifeDisabled: true,
     biologicalExportAndRemineralizationWhenLifeDisabled: false,
+    persistentAlkalinityReservoir: true,
+    alkalinityUnit: 'kg-CaCO3-equivalent',
+    alkalinityReferenceInitialization: '2300-umol-kg-at-salinity-35',
+    measuredAlkalinityClaimed: false,
+    carbonateSpeciationResolved: false,
+    pHResolved: false,
     resolvedThreeDimensionalCirculation: false
   };
 }

@@ -7,6 +7,7 @@ const Registry = require('../registry.json');
 const Matrix = require('../capability-matrix.json');
 const Adapters = require('../canonical/adapters.json');
 const Conformance = require('./conformance-runner');
+const ResilientOutput = require('./resilient-output-writer');
 const OUT = path.resolve(__dirname, '..', 'lab-state.json');
 
 async function build(options) {
@@ -29,7 +30,14 @@ async function build(options) {
     syntheticControls: true, canonicalSource: false, automaticAction: false, authorityRestoredOnRefresh: false
   };
 }
-async function write(options) { const state = await build(options); fs.writeFileSync(OUT, JSON.stringify(state, null, 2) + '\n', 'utf8'); return state; }
+
+async function write(options) {
+  options = options || {};
+  const state = await build(options);
+  const outputPath = options.outputPath ? path.resolve(options.outputPath) : OUT;
+  await ResilientOutput.writePayload(outputPath, JSON.stringify(state, null, 2) + '\n', options);
+  return state;
+}
 if (require.main === module) write().then(function (state) { console.log('Sensorium Lab state: PASS - ' + state.senses.length + ' senses'); }).catch(function (error) { console.error(error.stack || error.message); process.exitCode = 1; });
 
 module.exports = { OUT, build, write };

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/asset-representation-set-v1.schema.json",
+  "title": "AXM Asset Representation Set v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "id", "identity_id", "representations", "semantic_coverage", "compatibility", "provenance", "authority"],
+  "properties": {
+    "schema": { "const": "axm.asset-representation-set/v1" }, "version": { "const": "1.0.0" }, "status": { "const": "EXPERIMENTAL" }, "id": { "type": "string" }, "identity_id": { "type": "string" },
+    "representations": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["profile_id", "recipe_id", "artifacts", "digest", "availability"], "properties": { "profile_id": { "type": "string" }, "recipe_id": { "type": "string" }, "artifacts": { "type": "array", "items": { "type": "object" } }, "digest": { "type": "string" }, "availability": { "enum": ["AVAILABLE", "MISSING_REPRESENTATION"] } }, "additionalProperties": true } },
+    "semantic_coverage": { "type": "array", "items": { "type": "string" } }, "compatibility": { "type": "object", "required": ["footprint_preserved", "pivots_preserved", "sockets_preserved", "simulation_state_shared"] }, "provenance": { "type": "object" }, "authority": { "$ref": "asset-identity.schema.json#/$defs/authority" }
+  },
+  "additionalProperties": false
+}

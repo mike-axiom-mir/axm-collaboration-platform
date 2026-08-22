@@ -1,0 +1,184 @@
+{
+  "advanced_layer": {
+    "additional_controls": [
+      "Inspect source evidence and contract boundaries"
+    ],
+    "additional_risks": [
+      "An explanation may be incomplete when the source is incomplete"
+    ],
+    "available": true,
+    "required_knowledge": [
+      "Start with the quick view",
+      "Open practical details",
+      "Inspect evidence in deep view"
+    ],
+    "unlock_method": "manual_choice"
+  },
+  "beginner_layer": {
+    "allowed_operations": [
+      "Search and preview a capability without changing it"
+    ],
+    "default_values": {
+      "confirmation_required": false,
+      "preview_before_apply": true,
+      "retain_recovery_point": true,
+      "show_hidden_control_summary": true
+    },
+    "enabled": true,
+    "estimated_capability_cost": {
+      "attention": "low",
+      "complexity": "low",
+      "compute": "low"
+    },
+    "explanation_depth": "practical",
+    "guided_steps": [
+      "State the intended goal in plain language.",
+      "Provide only the inputs required for the selected safe operation.",
+      "Review a preview or consequence summary before applying the operation.",
+      "Run the operation.",
+      "Show the result, proof/status, and the available recovery action.",
+      "Offer advanced mode as an explicit user choice; do not switch silently."
+    ],
+    "operation_class": "simplified_control",
+    "reasons_for_restrictions": [
+      "Show plain language before technical detail"
+    ],
+    "restricted_operations": [
+      "Inspect source evidence and contract boundaries"
+    ]
+  },
+  "capability_id": "axm.workshop.capability.explain",
+  "context": {
+    "accessibility_needs": [
+      "screen_reader"
+    ],
+    "available_tools": [],
+    "collaboration_mode": "human_ai_shared",
+    "device_types": [
+      "desktop",
+      "phone"
+    ],
+    "offline_required": true,
+    "privacy_mode": "local_only",
+    "resource_budget": {
+      "attention": "low",
+      "complexity": "low",
+      "compute": "low",
+      "time": "short"
+    },
+    "task_type": "browse",
+    "user_goal": "Find and understand a Workshop capability before using it",
+    "user_skill_level": "beginner"
+  },
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "cost_comparison": {
+    "alternative_interfaces": [
+      {
+        "interface_name": "Guided form",
+        "interface_pattern_id": "guided_form",
+        "score": 77.0,
+        "tradeoff": "Base pattern requires augmentation for declared features: filters, metadata, search."
+      },
+      {
+        "interface_name": "File browser",
+        "interface_pattern_id": "file_browser",
+        "score": 60.0,
+        "tradeoff": "Base pattern requires augmentation for declared features: filters."
+      },
+      {
+        "interface_name": "Template selector",
+        "interface_pattern_id": "template_selector",
+        "score": 52.0,
+        "tradeoff": "Base pattern requires augmentation for declared features: filters, metadata, search."
+      }
+    ],
+    "selected_interface_cost": {
+      "attention": "low",
+      "compute_overhead": "low",
+      "deterministic_score": 123.0,
+      "interaction": "low",
+      "minimum_skill": "beginner",
+      "required_tool_any": []
+    },
+    "unnecessary_costs_avoided": []
+  },
+  "evidence": {
+    "conflicts": [],
+    "facts_used": [
+      "Declared task types: browse, search.",
+      "Declared input types: query, filters.",
+      "Declared output types: list, preview, metadata.",
+      "Risk level: low.",
+      "Reversibility: fully_reversible.",
+      "Proof status: tested."
+    ],
+    "inferences_used": [],
+    "source_references": [
+      {
+        "confidence": 1.0,
+        "last_verified_at": "2026-08-09T02:45:00Z",
+        "source_hash": "385b27530fd03b8eba52bc7494fa93ff480f8c64762b1b9067a5a5990ef4f90f",
+        "source_location": "shared/capability-intelligence/fixtures/workshop-capability-explain.source.json",
+        "source_type": "manifest"
+      }
+    ],
+    "unknowns": []
+  },
+  "generated_at": "2026-08-09T02:45:00Z",
+  "recommendation_id": "axm.hii.recommendation.8183d9047ab925bd",
+  "recommended_interface": {
+    "confidence": 0.9,
+    "error_recovery_flow": [
+      "Validate inputs before execution.",
+      "Keep cancel available until the commit point.",
+      "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+      "Record failure details without claiming success."
+    ],
+    "hidden_advanced_controls": [
+      "Inspect source evidence and contract boundaries"
+    ],
+    "interface_family": "discovery",
+    "interface_name": "Searchable library",
+    "interface_pattern_id": "searchable_library",
+    "optional_controls": [
+      "detail levels",
+      "copy link"
+    ],
+    "preview_and_confirmation_flow": [
+      "Generate a non-destructive preview or consequence summary.",
+      "Show applied result and proof/status after execution."
+    ],
+    "progressive_disclosure_plan": [
+      "Start with the declared beginner-safe operation and necessary controls only.",
+      "Show a plain-language summary of hidden advanced controls.",
+      "Reveal optional controls when the user asks or the task requires them.",
+      "Require explicit user choice before entering advanced mode."
+    ],
+    "recommendation_status": "recommended",
+    "required_controls": [
+      "search",
+      "filters",
+      "preview",
+      "metadata"
+    ],
+    "why_not_other_interfaces": [
+      "Guided form: Base pattern requires augmentation for declared features: filters, metadata, search.",
+      "File browser: Base pattern requires augmentation for declared features: filters.",
+      "Template selector: Base pattern requires augmentation for declared features: filters, metadata, search."
+    ],
+    "why_this_interface": [
+      "Pattern explicitly supports task type 'browse'.",
+      "Input fit: filters, query.",
+      "Output fit: list, metadata, preview.",
+      "User skill meets the pattern's minimum.",
+      "Pattern is suitable for beginners.",
+      "Pattern fits an available device.",
+      "Preview support lowers avoidable error cost.",
+      "Interface overhead stays within the compute budget.",
+      "Pattern stays within the attention budget.",
+      "Required feature fit: filters, metadata, preview, search."
+    ]
+  },
+  "record_kind": "interface_recommendation"
+}

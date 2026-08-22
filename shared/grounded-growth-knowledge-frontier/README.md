@@ -2,10 +2,6 @@
 
 Status: `TEST`
 
-Clone, canonical comparison, and digest preparation use the shared strict
-`deterministic-json-core`. Existing JSON-safe knowledge-frontier bytes remain
-unchanged; unsupported JSON state is refused before source composition.
-
 This additive leaf cross-binds the current AI-and-human stewardship frontier
 to one verified research contribution assessment, its exact portable baseline,
 and the Grounded Growth portfolio outcome that evaluated the same research

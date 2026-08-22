@@ -96,9 +96,9 @@ components against the compatibility target. It also names native shear kinetic 
 geopotential representation adjustment between the old two representative heights and the eight
 hypsometric layer centers.
 
-Each fixed step is no longer than one planet day. Land fluxes include rain, snow, melt, sublimation, infiltration, evaporation, transpiration, percolation, recharge, capillary rise, surface runoff and baseflow. Ocean fluxes include typed rain and snow, evaporation, mixed-layer heat storage and sea-ice freeze/melt. Every native level computes a pressure-local saturation capacity blended over water and ice from its dry-air mass, center pressure and temperature. `axm.foundation-planet.atmosphere-pressure-layer-phase-receipt/v2` records that level's initial/final vapor, cloud liquid, cloud ice and temperature; condensation/deposition; evaporation/sublimation; liquid/ice freezing and melting; precipitation source phase; descent phase changes; vaporization and fusion heat; and water and moist-enthalpy residuals. The lower-two and upper-six results are also projected into `axm.foundation-planet.atmosphere-phase-change-receipt/v2` and `axm.foundation-planet.free-troposphere-phase-receipt/v2` compatibility schemas so existing consumers do not need to invent a second atmosphere.
+Each fixed step is no longer than one planet day. Land fluxes include rain, snow, melt, sublimation, infiltration, evaporation, transpiration, percolation, recharge, capillary rise, surface runoff and baseflow. Ocean fluxes include typed rain and snow, evaporation, mixed-layer heat storage and sea-ice freeze/melt. Every native level computes a pressure-local saturation capacity blended over water and ice from its dry-air mass, center pressure and temperature. `axm.foundation-planet.atmosphere-pressure-layer-phase-receipt/v3` records that level's initial/final vapor, cloud liquid, cloud ice and temperature; condensation/deposition; evaporation/sublimation; liquid/ice freezing and melting; precipitation source phase; descent phase changes; vaporization and fusion heat; water and moist-enthalpy residuals; and any phase mass retained because its latent heat would cross the declared -120 to 70 °C native-layer envelope. The lower-two and upper-six results are also projected into `axm.foundation-planet.atmosphere-phase-change-receipt/v3` and `axm.foundation-planet.free-troposphere-phase-receipt/v3` compatibility schemas so existing consumers do not need to invent a second atmosphere.
 
-Combined native cloud liquid plus ice remains bounded to 12 mm across the lower two levels and 8 mm across the upper six, apportioned by pressure thickness. When a long step needs more precipitation than that instantaneous capacity, deterministic condensation/deposition-to-precipitation subcycles may repeat without exceeding it. Each `axm.foundation-planet.atmosphere-precipitation-descent-receipt/v2` identifies the source level and rain/snow phase, every crossed interface, each melting/freezing transition with its receiving-layer fusion heat, and the typed surface rain/snow destination with equal sender debit and receiver credit. Upper condensate can therefore reach the surface only through an explicit native descent route. Precipitation can never exceed cloud plus vapor actually available above the declared 0.2 mm boundary-band vapor floor and the finite per-upper-level numerical floor. Weather-demanded condensation and deposition are bounded nucleation parameterizations, not resolved aerosol, droplets, ice crystals or collision/coalescence microphysics. Surface evaporation and transpiration return vapor to the boundary compatibility band and are reconciled back into the native column.
+Combined native cloud liquid plus ice remains bounded to 12 mm across the lower two levels and 8 mm across the upper six, apportioned by pressure thickness. When a long step needs more precipitation than that instantaneous capacity, deterministic condensation/deposition-to-precipitation subcycles may repeat without exceeding it. Each `axm.foundation-planet.atmosphere-precipitation-descent-receipt/v3` identifies the source level and rain/snow phase, every crossed interface, each thermally bounded melting/freezing transition with its receiving-layer fusion heat, and the typed surface rain/snow destination with equal sender debit and receiver credit. Upper condensate can therefore reach the surface only through an explicit native descent route. Precipitation can never exceed cloud plus vapor actually available above the declared 0.2 mm boundary-band vapor floor and the finite per-upper-level numerical floor. Weather-demanded condensation and deposition are bounded nucleation parameterizations, not resolved aerosol, droplets, ice crystals or collision/coalescence microphysics. Surface evaporation and transpiration return vapor to the boundary compatibility band and are reconciled back into the native column.
 
 `axm.foundation-planet.native-cloud-optics/v1` derives independent liquid and ice water paths from all
 eight native layers. Those paths produce bounded broadband shortwave and longwave optical depths,
@@ -747,8 +747,9 @@ water fraction. Basin v19 reports independent nitrate, ammonium and aggregate
 compatibility residuals, each under the existing one-kilogram numerical
 tolerance.
 
-`axm.foundation-planet.floodplain-detrital-return-credit/v2` credits returned
-plant nitrogen to ammonium and proves nitrate is unchanged. Denitrification
+`axm.foundation-planet.floodplain-detrital-return-credit/v3` credits returned
+plant nitrogen to ammonium and proves nitrate is unchanged under the R60
+per-channel numeric policy. Denitrification
 then reads actual owned nitrate. The v2 local reaction receipt debits nitrate,
 leaves ammonium invariant, closes DOC-to-DIC carbon and nitrate-to-N2-N
 stoichiometry, and preserves the exact native-atmosphere receiver lineage.
@@ -884,15 +885,406 @@ equilibrium; calculate pH; exchange alkalinity with the deep ocean; claim
 measured concentrations; or claim calibrated watershed, estuary or ocean
 chemistry.
 
+## Rung 52 mixed-layer/deep-ocean alkalinity addendum
+
+R52 extends, but does not reinterpret, R51's kg-CaCO3-equivalent
+acid-neutralizing-capacity ledger. The additional material owner is
+`axm.foundation-planet.deep-ocean-state/v2`, whose
+`alkalinity.dissolvedKgCaCO3Eqm2` field is finite, non-negative and included in
+the ocean column's total alkalinity. The mixed owner remains
+`axm.foundation-planet.ocean-ecology-state/v4`;
+`axm.foundation-planet.deep-ocean-exchange-receipt/v2` is the only local
+vertical transfer authority between them.
+
+The existing bounded exchange-depth calculation compares mixed and deep
+concentrations and produces a signed
+`alkalinitySurfaceToDeepKgCaCO3Eqm2`. A positive value debits the mixed layer
+and credits the deep ocean; a negative value performs the exact reverse. The
+receipt publishes
+`alkalinityResidualKgCaCO3Eqm2 = finalMixed + finalDeep - initialMixed -
+initialDeep`, with tolerance `1e-9 kg-CaCO3-equivalent/m2`. Ocean ecology flux
+v4 includes the deep owner in its initial/final total and requires both its
+local total residual and the nested vertical residual to close. Physical
+alkalinity exchange continues when Life is disabled and creates no biological
+reaction claim.
+
+New canonical deep state receives the same declared salinity-scaled 2,300
+micromole/kg open-ocean reference used at the R51 mixed-layer boundary. It is a
+model initial condition, never a measured local value. NOAA PMEL's
+[carbonate-system guidance](https://www.pmel.noaa.gov/co2/files/dickson_thecarbondioxidesysteminseawater_equilibriumchemistryandmeasurementspp17-40.pdf)
+identifies DIC and total alkalinity as conservative quantities with respect to
+mixing. NOAA NCEI's
+[Guide to Best Practices for Ocean CO2 Measurements](https://www.ncei.noaa.gov/access/ocean-carbon-acidification-data-system/oceans/Handbook_2007/Guide_all_in_one.pdf)
+defines measured total alkalinity and the broader equilibrium system; R52 does
+not claim either.
+
+Normalization of `axm.foundation-planet.deep-ocean-state/v1` preserves all
+prior carbon, nitrogen, phosphorus and oxygen values, creates deep alkalinity
+at exact zero with `explicit-zero-migration`, sets a migration checkpoint, and
+drops the obsolete v1 exchange receipt. A v26 Earth-system checkpoint preserves
+the R51 mixed-layer alkalinity unchanged while applying that deep migration.
+No historical deep alkalinity or vertical flux is fabricated. Current v27
+snapshots restore byte-for-byte through the JSON checkpoint boundary.
+
+`axm.foundation-planet.system-audit/v2` adds
+`mixed-deep-ocean-alkalinity-ledger`. When a current vertical receipt exists,
+the check requires current owner and receipt schemas, finite non-negative
+owners, a finite signed exchange, exact residual closure, nested receipt
+lineage, and false measurement/speciation/pH claims. With typed owners but no
+committed step it reports the exchange seam as honestly unobserved. The audit,
+API v48 and experience projection remain read-only.
+
+This addendum does not implement carbonate or bicarbonate pools, borate or
+other minor species, DIC/alkalinity equilibrium, pH, buffering feedbacks,
+calcium-carbonate precipitation/dissolution, measured-chemistry assimilation,
+benthic or hydrothermal alkalinity reactions, unloaded-column exchange or
+three-dimensional circulation. The local exchange-depth proxy is not a
+scientific ocean-circulation model.
+
+### R52 restore-clock continuity boundary
+
+`axm.foundation-planet.basin-routing-engine/v22` adds
+`axm.foundation-planet.basin-clock-alignment-checkpoint/v1`. It is available
+once, and only for a profile loaded through `restore()`. If that saved basin
+clock differs from the already committed Earth-transport clock, the latter is
+the continuity authority. The engine records the old basin day, committed
+transport day and signed delta; preserves all reach-owned material exactly;
+sets the basin clock to the committed day; and invalidates the latest routing
+receipt because it no longer describes the aligned boundary.
+
+The checkpoint explicitly states that no historical routing was reconstructed
+and no material replay occurred. A matching restored clock is left unchanged.
+Fresh profiles are ineligible, a profile cannot align twice, and all later
+clock mismatches retain the existing hard refusal. Basin routing step v21 is
+unchanged because this repair changes saved-state continuity, not transport or
+material-transfer semantics. API v48 projects the result read-only through
+`basinRoutingStatus()`.
+
+Browser-local world-state v2 also defines a transactional storage boundary.
+The next in-memory envelope and revision are installed only after `setItem`
+succeeds. If the normal JSON envelope exceeds the origin quota, the store
+retries with
+`axm.foundation-planet.compressed-world-state-storage/v1` using the explicit
+lossless `lzw-uint16-base64` encoding. Loading decompresses first and then
+applies the unchanged world identity and checksum validation. Compression does
+not grant secrecy or authority. If raw and compressed writes both fail, the
+old envelope remains active and the runtime exposes a visible `SAVE FAILED`
+diagnostic plus a console error.
+
+## Rung 53 mixed-layer carbonate diagnostic addendum
+
+R53 adds no material owner. The persistent mixed-layer DIC, total-alkalinity
+and dissolved-inorganic-phosphorus fields remain authoritative. The new
+`axm.foundation-planet.mixed-layer-carbonate-diagnostic/v1` is a deterministic,
+read-only observer of those fields plus mixed-layer depth, temperature and
+salinity. Its output is current equilibrium state, not a separate pool and not
+historical evidence.
+Mixed-layer depth is converted to solution mass with an explicit 1,000 kg/m3
+reference density. R53 does not claim a measured density or TEOS-10 state.
+
+The declared surface-pressure constant set uses Lueker et al. (2000) K1/K2,
+Dickson (1990) KB, Millero (1995) KW and phosphate constants, and the Lee et
+al. (2010) boron-to-salinity relationship. Hydrogen ion and equilibrium
+constants use the total scale. The Lueker open-ocean validity envelope is
+2–35 °C and salinity 19–43. Inputs outside it produce a typed
+`OUTSIDE_CONSTANT_VALIDITY` result with no pH or species; clamping and silent
+extrapolation are forbidden.
+
+For a solved result, CO2-star + bicarbonate + carbonate must reproduce input
+DIC, the four phosphate species must reproduce input dissolved inorganic
+phosphorus, and calculated total alkalinity must match the owner within
+`1e-12 mol/kg`. The output publishes the pH bracket, iteration count and all
+three residuals. Bisection is bounded to 80 iterations and pH 3–12. A failure
+to bracket or converge is not a valid typed environmental refusal and fails
+the runtime integrity check.
+
+`axm.foundation-planet.ocean-ecology-state/v5` and flux v5 carry the diagnostic
+and exact source-owner binding. Restoring ocean state v4 preserves all
+C/N/P/O2/alkalinity owners, recomputes only the current observer and invalidates
+the old v4 ocean flux receipt rather than relabelling it. Earth-system engine
+v28 preserves compatible v27 transport receipts, while system audit v3 adds
+`mixed-layer-carbonate-diagnostic`. API v49 and experience projections are
+read-only.
+
+The observer includes carbonate, borate, water and phosphate alkalinity. It
+does not include silicate, fluoride, sulfide or ammonia alkalinity; pressure corrections;
+deep-ocean pH; calcium or mineral saturation; precipitation/dissolution;
+measured inputs; or pH feedback on any process. It must not be used as evidence
+for those absent capabilities.
+
+## Rung 54 carbonate-informed air-sea carbon addendum
+
+R54 grants no new material owner. The persistent local atmosphere carbon pool
+and mixed-layer DIC pool remain authoritative. The pure
+`axm.foundation-planet.air-sea-carbon-exchange-proposal/v1` may propose one
+signed transfer, and only the existing paired owner-move seam may apply it.
+Positive means atmosphere to mixed-layer DIC; negative means mixed-layer DIC
+to atmosphere. The applied amount must equal the proposal after sender bounds,
+and combined atmosphere-plus-ocean carbon must remain unchanged.
+
+A solved proposal requires the current
+`axm.foundation-planet.mixed-layer-carbonate-diagnostic/v1`. Its DIC,
+alkalinity, dissolved inorganic phosphorus, depth, temperature and salinity
+source signature must match the proposal inputs at their declared publication
+precision. `CARBONATE_DIAGNOSTIC_UNAVAILABLE`,
+`CARBONATE_SOURCE_MISMATCH` and other typed method refusals carry zero proposed
+and applied carbon. A refusal cannot be relabelled as active exchange.
+
+Atmospheric dry CO2 is the local atmosphere-owned ppm compatibility proxy, not
+an observation. At surface pressure, the proposal applies Weiss-and-Price
+seawater vapor pressure, Weiss (1974) CO2 solubility, and the Weiss virial `B`
+plus cross-virial delta fugacity correction. The audit holds
+`ln(K0) = -3.5617` at 25 °C and salinity 35 and independently recomputes wet-air
+pCO2, fCO2, equilibrium CO2-star, disequilibrium, raw relaxed mass, sender
+bound, direction and application. The declared method pressure envelope is
+800–1,150 hPa; it is not authority for deep or unusual-pressure chemistry.
+
+The relaxation fraction may respond to wind, sea ice and duration but is an
+explicit bounded bulk parameterization. R54 does not claim a calibrated
+gas-transfer velocity, measured ocean skin temperature, measured pCO2,
+cool-skin/warm-layer correction, global ocean circulation, or
+species-resolved pH response. Those absent capabilities remain false in state,
+receipt, audit, manifest and API projections.
+
+Ocean ecology state/flux v6 migrates v5 material exactly and invalidates the
+empirical v5 flux receipt. Earth-system engine v29 migrates v28 and may retain
+compatible transport receipts. System audit v4 adds
+`carbonate-informed-air-sea-carbon-exchange`; API v50 exposes the current
+receipt read-only. None of these migrations fabricates historical R54 evidence.
+
+## Rung 55 native phase thermal-envelope addendum
+
+R55 grants no new water, heat or momentum owner. The pure
+`axm.foundation-planet.atmosphere-phase-thermal-envelope/v1` proposal bounds
+each warming or cooling phase change by the native layer's available sensible
+temperature headroom between -120 and 70 °C. Only the supported mass moves and
+its complete latent energy is applied. The unsupported request remains in its
+source phase; a later pressure-column normalization may not use temperature
+clipping to erase energy after the material move.
+
+Pressure dynamics v4, layer phase v3, precipitation descent v3, and both
+compatibility phase v3 schemas publish their envelope lineage, limit counts,
+largest rejected request and closure residuals. Earth-system engine v30
+migrates v29 by preserving current material, thermal and momentum owners,
+invalidating old phase receipts and resetting only the ephemeral atmosphere
+energy receipt to a labelled present-state checkpoint. It may not fabricate
+historical R55 evidence. System audit v5 requires current envelope lineage,
+eight valid layer receipts, in-envelope temperatures and sub-tolerance native
+water, moist-enthalpy and resolved-energy residuals when a current receipt is
+present. With valid state but no current receipt, the check is honestly
+`NOT_APPLICABLE`.
+
+The held R54 ocean counterexample and the 36-location adversarial sweep support
+the bounded repair. They do not establish resolved cloud microphysics,
+upper-atmosphere chemistry, calibrated convection, scientific forecast quality
+or closure under every indefinitely repeated boundary forcing. The separately
+observed constant-wet 365-day land residual remains typed **BROKEN**
+counterevidence outside this repair's acceptance claim.
+
+## Rung 56 boundary-energy ledger addendum
+
+The prescribed compatibility boundary may request an aggregate two-band
+temperature that cannot be represented without moving one or more native
+pressure layers outside the declared -120 to 70 °C envelope. Native state
+remains authoritative. A reconciliation that retains a layer at an envelope
+limit is not allowed to silently charge the compatibility request as though it
+were fully applied.
+
+Every current local step therefore persists
+`axm.foundation-planet.atmosphere-boundary-energy-receipt/v1`. It records the
+compatibility initial and requested final moist enthalpy, native initial and
+final moist enthalpy, requested and applied boundary changes, initial and final
+projection adjustments, their native-envelope reconciliation, the boundary
+sync residual, envelope-limited layer IDs and a closed receipt identity. The
+whole-atmosphere ledger uses the applied native boundary change. Requested and
+applied values remain separately inspectable; the reconciliation term may not
+be used to erase an unrelated phase, transport, surface or rounding residual.
+
+Earth-system engine v31 migrates v30 material, temperature and momentum owners
+unchanged. Valid v4 native pressure-dynamics evidence remains valid, while the
+new boundary receipt is `NOT_APPLICABLE` until a current v31 step produces it.
+A migration checkpoint must say whether legacy phase evidence or legacy
+boundary-energy evidence was discarded. System audit v6 fails a stepped current
+column when the receipt is missing, its identity is altered, its budget copy
+diverges, or its applied value is not the value charged by the atmosphere
+ledger.
+
+The held constant-wet land replay proves the bounded contract only: the first
+material boundary-envelope reconciliation occurs on day 215; the maximum
+explicit adjustment is 207,978.793070 J/m²; and the 365-day maximum
+whole-atmosphere residual is 0.006005 J/m². It does not grant scientific
+boundary-layer calibration, global circulation, upper-atmosphere chemistry, or
+forecast authority.
+
+## Rung 57 land subgrid numeric-closure addendum
+
+A land-to-floodplain biomass debit must preserve its measured carbon and
+nitrogen residuals. It may not erase those residuals, round them to zero, or
+declare a free-form tolerance. Current evidence uses
+`axm.foundation-planet.land-ecology-subgrid-biomass-debit/v2` and the typed
+`axm.foundation-planet.land-ecology-mass-closure-policy/v1`.
+
+For each mass channel, the permitted representation bound is the greater of
+0.000001 kg and eight times `Number.EPSILON` times the largest absolute recorded
+operand participating in the debit identity. The receipt records the operand
+scale, factor, floor, derived bound and unmodified residual. System audit v7
+must independently recompute the bound from the before, debit and after values;
+it fails missing policy evidence, changed residuals, altered factors or an
+inflated sender-supplied bound. Passing this check proves only that the measured
+closure error is consistent with the declared binary floating-point policy.
+
+Basin engine v23 and step receipt v22 require current v2 land sender evidence
+before `truthBoundaryValid` can pass. Migration from engine v22 preserves
+basin-owned profiles, material owners and clocks, but an older step v21 receipt
+is discarded into an explicit no-current-receipt state. Migration does not
+rewrite old evidence as though it satisfied the new policy.
+
+The held 48-case Earth-cell sweep observed a maximum 0.000061035 kg residual
+and no failures after this repair, versus 11 failures under the former fixed
+one-milligram comparison. The maximum observed use of the derived bound was
+11.9%. These measurements bound the tested contract; they do not establish
+arbitrary-precision conservation, scientific calibration or closure for all
+unobserved states.
+
+## Rung 58 floodplain plant-resource numeric-closure addendum
+
+A floodplain plant-resource transition must preserve the measured supported
+carbon, phosphorus and live tissue-water residuals separately for every guild
+and for the aggregate owner. Current evidence uses
+`axm.foundation-planet.floodplain-plant-resources-receipt/v2` and the typed
+`axm.foundation-planet.floodplain-plant-resource-mass-closure-policy/v1`.
+
+For each material channel, the representation bound is the greater of
+0.0000001 kg and eight times `Number.EPSILON` times the largest absolute
+recorded operand in that channel's before-transfer-after identity. A receipt
+may not substitute an operand from another channel, erase the measured residue,
+or choose a larger free-form tolerance. System audit v8 independently derives
+all guild and aggregate bounds from the recorded operands, verifies the
+reported maximum residue and utilization, and fails an inflated tolerance even
+when the underlying transition is otherwise conservative.
+
+Basin engine v24 and step receipt v23 require current v2 plant-resource
+evidence before the basin plant-resource truth boundary can pass. Migration
+from engine v23 preserves profiles, material owners and clocks, but discards an
+older step-v22 receipt until a current step creates current evidence. It does
+not reconstruct historical floating-point closure.
+
+The held 150-case Earth-cell sweep observed a maximum 0.000000476837 kg
+residual and no failures under the derived policy, versus five failures under
+the former fixed 0.0000001 kg comparison. Maximum observed bound utilization
+was 3.36%. A wider 250-case adversarial representation sweep produced no
+derived-bound failures while preserving a maximum 0.25 kg residue at a
+5-quadrillion-kilogram operand scale. These are bounded representation tests,
+not scientific calibration, arbitrary-precision conservation or an exhaustive
+planet-state proof.
+
+## Rung 59 floodplain plant-matter numeric-closure addendum
+
+A floodplain plant-matter transition must preserve measured carbon and
+nitrogen residuals separately for every functional guild and for the aggregate
+owner. Current evidence uses
+`axm.foundation-planet.floodplain-plant-matter-receipt/v2` and the typed
+`axm.foundation-planet.floodplain-plant-matter-mass-closure-policy/v1`.
+
+For each material channel, the representation bound is the greater of
+0.0000001 kg and eight times `Number.EPSILON` times the largest absolute
+recorded operand in that channel's before-credit-after identity. The receipt
+must retain its measured residue and may not choose a larger free-form
+tolerance. System audit v9 independently recomputes every guild and aggregate
+identity, policy bound, maximum residue and maximum utilization. A changed
+receipt-supplied tolerance fails even when the underlying transition remains
+conservative.
+
+Basin engine v25 and step receipt v24 require current v2 plant-matter evidence
+before the basin plant-matter truth boundary can pass. Migration from engine
+v24 preserves profiles, material owners and clocks, but discards older
+step-v23 evidence until a current transition creates current evidence. It does
+not reconstruct historical floating-point closure.
+
+The held 250-case standing-dead/litter representation sweep observed a maximum
+0.000030517578 kg residual and no failures under the derived policy, versus 22
+failures under the former fixed 0.0000001 kg comparison. Maximum observed bound
+utilization was 12.19%. These are bounded representation tests, not scientific
+calibration, arbitrary-precision conservation or an exhaustive planet-state
+proof.
+
+## Rung 60 floodplain detrital-return receiver numeric-closure addendum
+
+A persistent floodplain detrital-return credit must preserve the measured
+carbon, total-nitrogen, ammonium-nitrogen, unchanged-nitrate and phosphorus
+residuals as separate material-channel evidence. Current receiver evidence uses
+`axm.foundation-planet.floodplain-detrital-return-credit/v3` and the typed
+`axm.foundation-planet.floodplain-detrital-return-mass-closure-policy/v1`.
+
+Carbon, total nitrogen and ammonium retain a 0.0000001 kg absolute floor;
+unchanged nitrate and phosphorus retain a 0.000000001 kg floor. Each actual
+bound is the greater of its floor and eight times `Number.EPSILON` times that
+channel's largest absolute recorded before-credit-after operand. The receiver
+must retain its measured residual, may not use an operand from another material
+channel, and may not choose a larger free-form tolerance. System audit v10
+independently recomputes all five identities, policy bounds, maximum residue and
+maximum utilization; a changed receipt-supplied tolerance fails even when its
+truth flags remain green.
+
+Basin engine v26 and step receipt v25 require current v3 receiver evidence
+before the decomposition sender-and-receiver truth boundary can pass.
+Migration from engine v25 preserves profiles, material owners and clocks, but
+discards older step-v24 evidence until a current step creates current receiver
+evidence. Historical floating-point closure is never reconstructed.
+
+The held 250-case receiver representation sweep observed a maximum
+0.000164031982 kg residual and no failures under the derived policy, versus 35
+failures under the former fixed thresholds. Maximum observed bound utilization
+was 33.2%. These are bounded representation tests, not scientific calibration,
+arbitrary-precision conservation or an exhaustive planet-state proof.
+
+## Rung 61 floodplain reaction receiver numeric-closure addendum
+
+Every persistent floodplain aerobic-mineralization, denitrification,
+nitrification and gas-exchange chemistry owner must preserve each measured
+carbon, nitrogen, ammonium, oxygen and alkalinity residual that its reaction
+actually produces. Current evidence uses aerobic-mineralization receipt v2,
+denitrification-reaction receipt v4, nitrification-reaction receipt v3 and
+floodplain gas-exchange receipt v3 under the shared typed
+`axm.foundation-planet.floodplain-reaction-mass-closure-policy/v1`.
+
+Carbon, total nitrogen, oxygen and alkalinity retain a 0.0000001 kg absolute
+floor; ammonium nitrogen retains a 0.000000001 kg floor. Each identity's actual
+bound is the greater of its material-channel floor and eight times
+`Number.EPSILON` times the largest absolute operand recorded for that identity.
+A receipt may not borrow another identity's operand scale, erase a measured
+residue or choose a larger free-form tolerance. Immediate process wrappers use
+the same derived policy when comparing a process plan with its chemistry owner.
+The atmosphere-side gas-exchange owner remains governed by its existing
+separate contract.
+
+System audit v11 independently reconstructs every receiver identity and bound,
+including the declared maxima and utilization. Altering any one of the four
+reaction families' receipt-supplied bounds fails its owning process audit even
+when its residuals and truth flags are left untouched. Basin engine v27 and
+step receipt v26 require current reaction-owner evidence before their reaction
+truth boundaries can pass. Migration from engine v26 preserves profiles,
+material owners and clocks, but discards step-v25 evidence until a current step
+creates current receipts; it never manufactures historical numeric closure.
+
+The held 240-case representation sweep observed a maximum
+0.00048828125 kg residual and no failures under the derived policy, versus 54
+false failures under the former fixed thresholds. Maximum observed bound
+utilization remained below 11%. These are bounded representation tests, not
+scientific calibration, arbitrary-precision conservation or an exhaustive
+planet-state proof.
+
 ## Runtime integrity and handoff
 
-`axm.foundation-planet.system-audit/v1` is a read-only report over the currently selected Earth-system
+`axm.foundation-planet.system-audit/v11` is a read-only report over the currently selected Earth-system
 column plus the latest loaded transport and basin receipts when those optional seams have run. It
 routes each claim to evidence that can prove it: current schema lineage; the eight-level/seven-interface
-pressure shape; water, surface-energy and moist-enthalpy residuals; atmosphere-owned gas state and gas
+pressure shape; the native phase thermal envelope and per-layer latent ledger; requested, applied and envelope-reconciled atmosphere boundary energy; water, surface-energy and moist-enthalpy residuals; atmosphere-owned gas state and gas
 receipt; nested native-layer CO2-radiation schema, eight-layer shape, longwave accounting and truth
-boundary; exact land/ocean compatibility mirrors; deep-ocean lineage; loaded gas-domain receipt and
-area-weighted C/O2/N2 residuals; transport truth boundaries; and
+boundary; exact land/ocean compatibility mirrors; deep-ocean lineage and mixed/deep alkalinity closure; bounded mixed-layer carbonate source binding, species closure, alkalinity residual and typed refusals; carbonate-informed air-sea wet-air fugacity, direction, sender bound, paired owner application and carbon closure; loaded gas-domain receipt and
+area-weighted C/O2/N2 residuals; transport truth boundaries; scale-aware
+land-subgrid and per-channel floodplain plant-matter, plant-resource and
+detrital-return and reaction-receiver numeric closure; and
 finite surface/runoff sediment ownership, paired land/river/coast sediment receipts, coupled
 per-grain basin material residuals, and typed channel/floodplain exchange receipts. A required failure makes the verdict `FAIL`. An optional seam with no
 receipt is `NOT_APPLICABLE`, producing `PASS_WITH_UNOBSERVED_OPTIONAL_SEAMS` instead of an invented pass.

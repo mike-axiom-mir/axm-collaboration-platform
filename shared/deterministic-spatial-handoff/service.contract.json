@@ -1,0 +1,47 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-spatial-handoff",
+  "version": "1.0.0",
+  "provides": [
+    "spatial.parametric.result.fail-closed-gate",
+    "spatial.glb.project-binding",
+    "spatial.artifact.full-sha256",
+    "spatial.delivery.loss-ledger",
+    "spatial.create-edit.handoff"
+  ],
+  "consumes": [
+    "axm.asset-hand-result/v1",
+    "parametric-mesh/1.1.0",
+    "axm.spatial.project/v1",
+    "glTF.2.0",
+    "model/obj",
+    "image/svg+xml",
+    "spatial-geometry/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.deterministic-spatial-handoff/v1"],
+    "accepts": ["axm.asset-hand-result/v1"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "mesh-generation",
+      "provider-or-registry-mutation",
+      "svg-as-dynamic-spatial-proof",
+      "target-renderer-parity-claim",
+      "physical-scale-proof-claim",
+      "controller-or-xr-proof-claim",
+      "human-aesthetic-approval-claim",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-canonization"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller",
+    "reload": "re-gate-whole-result",
+    "disconnect": "graceful-degrade",
+    "cleanup": "discard-candidate"
+  }
+}

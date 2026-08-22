@@ -1,3 +1,9 @@
+import {
+  MIN_NATIVE_LAYER_AIR_TEMPERATURE_C,
+  MAX_NATIVE_LAYER_AIR_TEMPERATURE_C,
+  phaseThermalEnvelopeDescription
+} from './phase-thermal-envelope.mjs';
+
 export const ATMOSPHERE_PRESSURE_COLUMN_SCHEMA =
   'axm.foundation-planet.atmosphere-pressure-column/v2';
 export const ATMOSPHERE_PRESSURE_LAYER_SCHEMA =
@@ -371,7 +377,11 @@ function recomputePressureGeometry(pressureColumn, surfaceElevationM) {
       ? 'boundary-layer' : 'free-troposphere';
     layer.pressureThicknessHpa = Math.max(MIN_PRESSURE_THICKNESS_HPA,
       finite(layer.pressureThicknessHpa));
-    layer.airTemperatureC = clamp(finite(layer.airTemperatureC), -120, 70);
+    layer.airTemperatureC = clamp(
+      finite(layer.airTemperatureC),
+      MIN_NATIVE_LAYER_AIR_TEMPERATURE_C,
+      MAX_NATIVE_LAYER_AIR_TEMPERATURE_C
+    );
     layer.vaporWaterMm = Math.max(0, finite(layer.vaporWaterMm));
     layer.cloudWaterMm = Math.max(0, finite(layer.cloudWaterMm));
     layer.cloudIceMm = Math.max(0, finite(layer.cloudIceMm));
@@ -990,6 +1000,7 @@ export function pressureColumnDescription() {
     layerSchema: ATMOSPHERE_PRESSURE_LAYER_SCHEMA,
     verticalInterfaceSchema: ATMOSPHERE_PRESSURE_VERTICAL_INTERFACE_SCHEMA,
     syncReceiptSchema: ATMOSPHERE_PRESSURE_COLUMN_SYNC_SCHEMA,
+    phaseThermalEnvelope: phaseThermalEnvelopeDescription(),
     coordinate: 'terrain-following-pressure-thickness',
     order: 'bottom-to-top',
     layerCount: ATMOSPHERE_PRESSURE_COLUMN_LAYER_COUNT,

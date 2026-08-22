@@ -446,6 +446,7 @@ if (typeof window !== 'undefined') (function () {
 
   const Hub = window.AXMHubShell = {
     registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', sidebarCollapsed: false, records: {}, store, continuityRecords: [], navigation: null, pendingShutdown: null, frameLoadSequence: 0,
+    humanUsabilityByModule: null, humanUsabilityPromise: null, humanUsabilityError: null,
     layers: [], assign: {}, unlocked: [], revealed: [],   /* unlocked+revealed = this session only */
     /* lifecycle badge classes for the sidebar */
     lifeClass(l) {
@@ -1098,10 +1099,74 @@ if (typeof window !== 'undefined') (function () {
       lay.onclick = () => this.openLayers();
       g.appendChild(lay);
     },
+    async loadHumanUsabilityCatalog() {
+      if (this.humanUsabilityByModule) return this.humanUsabilityByModule;
+      if (this.humanUsabilityPromise) return this.humanUsabilityPromise;
+      this.humanUsabilityPromise = fetch('/shared/capability-intelligence/generated/platform-usability/catalog.json', {cache:'no-store'})
+        .then(response => { if (!response.ok) throw Error('HTTP ' + response.status); return response.json(); })
+        .then(payload => {
+          if (!payload || payload.schema !== 'axm.platform-human-usability-catalog/v1' || !Array.isArray(payload.items)) throw Error('catalog contract mismatch');
+          if (!payload.coverage || !payload.coverage.all_registered_modules_guided) throw Error('catalog coverage is incomplete');
+          const index = {};
+          payload.items.forEach(item => { if (item && item.module_id) index[item.module_id] = item; });
+          this.humanUsabilityByModule = index;
+          this.humanUsabilityError = null;
+          this.updateHumanGuideQuick();
+          return index;
+        })
+        .catch(error => {
+          this.humanUsabilityError = String(error && error.message || error);
+          this.humanUsabilityPromise = null;
+          this.updateHumanGuideQuick();
+          this.log('warn', 'human usability guide unavailable · module behavior unchanged');
+          return null;
+        });
+      return this.humanUsabilityPromise;
+    },
+    humanUsabilityFor(id, destinationId) {
+      const index = this.humanUsabilityByModule || {};
+      return index[id] || index[destinationId] || null;
+    },
+    updateHumanGuideQuick() {
+      const button = $('humanGuideQuick'); if (!button) return;
+      button.hidden = !this.active;
+      if (!this.active) return;
+      const record = this.humanUsabilityFor(this.active);
+      button.disabled = !record && !this.humanUsabilityError;
+      button.title = record ? 'Understand ' + record.module_name + ' before using it' : this.humanUsabilityError ? 'Human guide unavailable' : 'Loading human guide';
+    },
+    async openHumanGuide(id) {
+      const screen = $('humanGuideScreen'), body = $('humanGuideBody'), state = $('humanGuideState'), title = $('humanGuideTitle');
+      if (!screen || !body || !state || !title) return;
+      screen.classList.add('show'); body.replaceChildren(); state.textContent = 'Loading source-bound guidance…';
+      await this.loadHumanUsabilityCatalog();
+      const record = this.humanUsabilityFor(id || this.active);
+      if (!record) { title.textContent = 'Human guide unavailable'; state.textContent = 'The catalog could not be loaded. The module remains unchanged and no guidance is guessed.'; return; }
+      title.textContent = record.module_name;
+      state.textContent = record.status + ' · risk ' + record.risk + ' · source-bound TEST guidance';
+      const addCard = (label, heading, text, list, wide) => {
+        const card=document.createElement('section');card.className='human-guide-card'+(wide?' wide':'');
+        const eyebrow=document.createElement('span');eyebrow.textContent=label;const h=document.createElement('h3');h.textContent=heading;const p=document.createElement('p');p.textContent=text||'';
+        card.appendChild(eyebrow);card.appendChild(h);card.appendChild(p);
+        if(Array.isArray(list)&&list.length){const ul=document.createElement('ul');list.slice(0,8).forEach(value=>{const li=document.createElement('li');li.textContent=value;ul.appendChild(li);});card.appendChild(ul);}
+        body.appendChild(card);return card;
+      };
+      addCard('MODULE 1 · UNDERSTAND', 'What it does', record.module1.plain_explanation, [record.module1.why_it_matters], true);
+      addCard('DECLARED ENVELOPE', 'What it needs', 'Inputs declared by this module:', record.module1.inputs);
+      addCard('DECLARED ENVELOPE', 'What it produces', 'Outputs declared by this module:', record.module1.outputs);
+      const pattern = record.module2.interface_name || 'No safe interface selected';
+      const interfaceCard=addCard('MODULE 2 · INTERFACE', pattern, record.module2.interface_name ? 'Recommended for a beginner, desktop/phone, local-first and screen-reader-aware context.' : 'The recommendation is held because critical source information is missing.', null, true);
+      const chips=document.createElement('div');chips.className='human-guide-chip-row';(record.module2.required_controls||[]).forEach(value=>{const chip=document.createElement('span');chip.className='human-guide-chip';chip.textContent=value.replace(/_/g,' ');chips.appendChild(chip);});interfaceCard.appendChild(chips);
+      const assurance=document.createElement('span');assurance.className='human-guide-status'+(record.module2.assurance_status==='PASS'?'':' review');assurance.textContent='ASSURANCE ' + record.module2.assurance_status + ' · ' + record.module2.recommendation_status.replace(/_/g,' ');interfaceCard.appendChild(assurance);
+      const gapText = record.module3.gap_state === 'GUIDANCE_READY' ? 'The advisory guidance passed deterministic assurance. Implementation and visual approval remain separate.' : 'Module 3 retained this as a review need; nothing was auto-fixed, promoted, or canonized.';
+      addCard('MODULE 3 · EVOLVE SAFELY', record.module3.gap_state.replace(/_/g,' '), gapText, record.module3.candidate_id ? ['Candidate: ' + record.module3.candidate_id] : []);
+      const sourceCard=addCard('SOURCE & LIMITS', 'How much to trust', 'Manifest: ' + record.source.manifest + ' · SHA-256 ' + record.source.manifest_sha256, record.module1.known_limitations);sourceCard.classList.add('human-guide-source');
+    },
     async renderCapabilityGuide(query) {
       const out = $('capabilityResults'), input = $('capabilityQuery'); if (!out || !window.AXMCapabilityIndex) return;
       const q = String(query == null ? (input && input.value) : query).trim().slice(0, 200); if (input) input.value = q;
       out.innerHTML = ''; if (!q) return;
+      await this.loadHumanUsabilityCatalog();
       let matches = [];
       try { const response=await fetch('/api/workshop/capabilities?q='+encodeURIComponent(q),{cache:'no-store'}); if(!response.ok)throw Error('HTTP '+response.status); matches=(await response.json()).matches||[]; }
       catch(e){ matches=window.AXMCapabilityIndex.search(this.registry,q,{limit:6}); this.log('warn','capability readiness unavailable · local recommendations kept'); }
@@ -1114,6 +1179,8 @@ if (typeof window !== 'undefined') (function () {
         const ready=document.createElement('small');ready.textContent=blocked?'Not usable yet · '+readiness.replace('_',' '):'Usable now · '+readiness.replace('_',' ');
         card.appendChild(title);card.appendChild(summary);card.appendChild(ready);
         if(blocked&&match.readiness&&match.readiness.attention&&match.readiness.attention.length){const guidance=document.createElement('span'),first=match.readiness.attention[0];guidance.className='readiness-guidance';guidance.textContent=first.label+': '+first.nextStep;card.appendChild(guidance);}
+        const human=this.humanUsabilityFor(match.id,match.destinationId);
+        if(human){const guide=document.createElement('div');guide.className='human-usability';const label=document.createElement('small');label.textContent='HUMAN GUIDE · 1 → 2 → 3';const explanation=document.createElement('span');explanation.textContent=human.module1.plain_explanation;const pattern=document.createElement('em');pattern.textContent=human.module2.interface_name?'Best interface: '+human.module2.interface_name+' · assurance '+human.module2.assurance_status:'Interface held: critical source information is missing';const see=document.createElement('button');see.type='button';see.className='capability-human-open';see.textContent='Understand inputs, outputs, controls and limits';see.onclick=()=>this.openHumanGuide(human.module_id);guide.appendChild(label);guide.appendChild(explanation);guide.appendChild(pattern);guide.appendChild(see);card.appendChild(guide);}
         if(!blocked&&!hideOpen){const open=document.createElement('button');open.type='button';open.className='capability-open';open.textContent='Open '+title.textContent;open.onclick=()=>this.openCapability(match.destinationId,{goal:q,creationMode:'self'});card.appendChild(open);}
         return card;
       };
@@ -1223,6 +1290,7 @@ if (typeof window !== 'undefined') (function () {
       $('homeScreen').scrollTop = 0;
       $('activeName').textContent = this.homeLayer ? ((this.layers.find(l => l.id === this.homeLayer) || {}).name || 'Home') : 'Home';
       this.updatePresentationQuick();
+      this.updateHumanGuideQuick();
       [...document.querySelectorAll('.mod')].forEach(x => x.classList.remove('active'));
       const workflowHome = this.homeLayer && document.querySelector('.workflow-nav[data-layer="' + this.homeLayer + '"]');
       if (workflowHome) workflowHome.classList.add('active');
@@ -1248,6 +1316,7 @@ if (typeof window !== 'undefined') (function () {
       if (navigationToken !== this.frameLoadSequence) return;
       this.active = id;
       this.updatePresentationQuick();
+      this.updateHumanGuideQuick();
       $('homeScreen').style.display = 'none';
       const err = $('vpError'); err.classList.remove('show');
       const load = $('vpLoading'); load.classList.add('show');
@@ -1778,6 +1847,8 @@ if (typeof window !== 'undefined') (function () {
       $('viewModeQuick').onclick = () => this.toggleMode();
       $('presentationModeQuick').onchange = event => this.setActivePresentationMode(event.target.value);
       $('presentationEditQuick').onclick = () => this.openScreenEditor();
+      $('humanGuideQuick').onclick = () => this.openHumanGuide(this.active);
+      this.loadHumanUsabilityCatalog();
       const systemSource = $('systemStatus');
       if (systemSource && window.MutationObserver) {
         new MutationObserver(() => this.renderSystemDeck()).observe(systemSource, { childList:true, characterData:true, subtree:true, attributes:true });

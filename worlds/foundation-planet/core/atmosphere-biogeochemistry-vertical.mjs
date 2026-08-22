@@ -4,7 +4,7 @@ import {
   ATMOSPHERE_BIOGEOCHEMISTRY_VERTICAL_TRANSPORT_SCHEMA,
   normalizeAtmosphereBiogeochemistry,
   refreshAtmosphereBiogeochemistry
-} from './atmosphere-biogeochemistry.mjs';
+} from './atmosphere-biogeochemistry.mjs?v=0.62.0-r62.1';
 import {
   ATMOSPHERE_ADJACENT_LAYER_EXCHANGE_SCHEMA
 } from './pressure-dynamics.mjs';

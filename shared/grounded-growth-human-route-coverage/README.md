@@ -2,10 +2,6 @@
 
 Status: `TEST`
 
-Clone, canonical comparison, and digest preparation use the shared strict
-`deterministic-json-core`. Existing JSON-safe coverage bytes remain unchanged;
-unsupported JSON state is refused before route classification.
-
 This pure additive leaf verifies that every current Grounded Growth capability
 chain has exactly one honest human-evidence disposition:
 

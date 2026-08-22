@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/pbr-material-bake-receipt-v1.schema.json",
+  "title": "AXM PBR Material Bake Receipt v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "recipe_id", "family", "size", "map_digests", "verification", "checks", "deterministic", "authority"],
+  "properties": {
+    "schema": { "const": "axm.pbr-material-bake-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "FAIL"] },
+    "recipe_id": { "type": "string" },
+    "family": { "type": "string" },
+    "size": { "type": "integer" },
+    "map_digests": { "type": "object" },
+    "verification": { "type": "object" },
+    "checks": { "type": "array", "items": { "type": "object", "required": ["id", "pass", "details"] } },
+    "deterministic": { "type": "boolean" },
+    "authority": { "type": "object" }
+  },
+  "additionalProperties": false
+}

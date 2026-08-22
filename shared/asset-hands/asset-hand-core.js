@@ -81,6 +81,7 @@
       "3d-object",
       "prop",
       "animation",
+      "procedural-animation",
       "material",
       "shader",
       "document",

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/pixel-asset-package-v1.schema.json",
+  "title": "AXM Pixel Asset Package v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "id", "source", "recipe", "entities", "activities", "assets", "analysis", "engine", "authority"],
+  "properties": {
+    "schema": { "const": "axm.pixel-asset-package/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "const": "EXPERIMENTAL" },
+    "id": { "type": "string", "minLength": 1 },
+    "source": { "type": "object" },
+    "recipe": { "type": "object" },
+    "entities": { "type": "array" },
+    "activities": { "type": "array" },
+    "assets": { "type": "array", "minItems": 1 },
+    "analysis": { "type": "object" },
+    "engine": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "required": ["candidate_only", "installed", "promoted", "canonical", "human_review_required"]
+    }
+  },
+  "additionalProperties": false
+}

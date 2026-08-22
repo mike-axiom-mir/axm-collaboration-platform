@@ -15,6 +15,7 @@ function truthBoundary() {
     automaticPromotion: false,
     structuralEligibilityIsRuntimeProof: false,
     selftestPassIsHumanApproval: false,
+    selftestReceiptBindsDiscoveredSuite: true,
     capabilityCatalogGrantsAuthority: false,
     missingValuesRemainVisible: true
   };
@@ -74,7 +75,7 @@ function create(options) {
     ['tools', 'capabilities', 'contractsValid', 'topLevelSelftests', 'kindsDeclared'].forEach(field => {
       if (!index.summary || !Number.isFinite(Number(index.summary[field]))) structuralErrors.push('summary.' + field + ' must be numeric');
     });
-    if (!truth || truth.structuralEligibilityIsRuntimeProof !== false || truth.selftestPassIsHumanApproval !== false || truth.capabilityCatalogGrantsAuthority !== false || truth.missingValuesRemainVisible !== true) structuralErrors.push('readiness truth boundaries are incomplete');
+    if (!truth || truth.structuralEligibilityIsRuntimeProof !== false || truth.selftestPassIsHumanApproval !== false || truth.selftestReceiptBindsDiscoveredSuite !== true || truth.capabilityCatalogGrantsAuthority !== false || truth.missingValuesRemainVisible !== true) structuralErrors.push('readiness truth boundaries are incomplete');
     if (structuralErrors.length) return hold('INVALID', 'The deterministic tools index failed its truth contract.', structuralErrors);
 
     let verificationResults = null;
