@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.evidence-bound-value-trial/v1",
+  "title": "AXM Shadow Clone Evidence-Bound Held-Out Value Trial",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "trialId", "asOf", "prospectivePlanDigest", "rubric", "cases", "authority"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.evidence-bound-value-trial/v1" },
+    "trialId": { "$ref": "#/$defs/id" },
+    "asOf": { "type": "string", "format": "date-time" },
+    "prospectivePlanDigest": { "$ref": "#/$defs/digest" },
+    "rubric": { "type": "object" },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["assignment", "presentation", "outcomes", "evaluations"],
+        "properties": {
+          "assignment": { "type": "object" },
+          "presentation": { "oneOf": [{ "type": "null" }, { "$ref": "axm.shadow-clone.lesson-presentation-ack/v1" }] },
+          "outcomes": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["baseline", "learningRoute"],
+            "properties": {
+              "baseline": { "oneOf": [{ "type": "null" }, { "$ref": "axm.shadow-clone.trial-arm-outcome/v1" }] },
+              "learningRoute": { "oneOf": [{ "type": "null" }, { "$ref": "axm.shadow-clone.trial-arm-outcome/v1" }] }
+            }
+          },
+          "evaluations": { "type": "array", "maxItems": 16, "items": { "$ref": "axm.shadow-clone.trial-case-evaluation/v1" } }
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hostAuthenticatedEvidenceReceipts", "automaticPresentation", "automaticApplication", "automaticScoring", "automaticInheritance"],
+      "properties": {
+        "hostAuthenticatedEvidenceReceipts": { "type": "boolean" },
+        "automaticPresentation": { "const": false },
+        "automaticApplication": { "const": false },
+        "automaticScoring": { "const": false },
+        "automaticInheritance": { "const": false }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

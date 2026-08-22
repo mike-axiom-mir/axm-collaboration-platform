@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.evidence-bound-value-receipt/v1",
+  "title": "AXM Shadow Clone Conservative Evidence-Bound Value Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptDigest", "trialId", "status", "state", "asOf", "inputDigest", "prospectivePlanDigest", "rubricDigest", "cases", "blockers", "summary", "authority", "claimBoundary"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.evidence-bound-value-receipt/v1" },
+    "receiptDigest": { "$ref": "#/$defs/digest" },
+    "trialId": { "$ref": "#/$defs/id" },
+    "status": { "const": "EXPERIMENTAL" },
+    "state": { "enum": ["HOLD_EVIDENCE_BOUND_VALUE_TRIAL", "IN_PROGRESS_NOT_CLAIMABLE", "CONTESTED_EVALUATION", "BOUNDED_TARGET_MET", "BOUNDED_TARGET_NOT_MET"] },
+    "asOf": { "type": "string", "format": "date-time" },
+    "inputDigest": { "$ref": "#/$defs/digest" },
+    "prospectivePlanDigest": { "$ref": "#/$defs/digest" },
+    "rubricDigest": { "$ref": "#/$defs/digest" },
+    "cases": { "type": "array", "items": { "type": "object" } },
+    "blockers": { "type": "array", "items": { "type": "object" } },
+    "summary": { "type": "object" },
+    "authority": { "type": "object" },
+    "claimBoundary": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

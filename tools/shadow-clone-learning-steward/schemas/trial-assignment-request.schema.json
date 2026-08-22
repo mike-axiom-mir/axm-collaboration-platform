@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.trial-assignment-request/v1",
+  "title": "AXM Shadow Clone Held-Out Trial Assignment Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "requestId", "asOf", "prospectivePlanDigest", "lessonKey", "candidateDigest", "reviewDecision", "recipients", "rubric", "authority"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.trial-assignment-request/v1" },
+    "requestId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "asOf": { "type": "string", "format": "date-time" },
+    "prospectivePlanDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "lessonKey": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "candidateDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "reviewDecision": { "oneOf": [{ "type": "null" }, { "$ref": "axm.shadow-clone.candidate-review-decision/v1" }] },
+    "recipients": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline", "learningRoute"],
+      "properties": {
+        "baseline": { "$ref": "#/$defs/recipient" },
+        "learningRoute": { "$ref": "#/$defs/recipient" }
+      }
+    },
+    "rubric": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hostAuthenticatedMikeReview", "automaticPresentation", "crossTaskMessaging", "automaticApplication", "automaticInheritance"],
+      "properties": {
+        "hostAuthenticatedMikeReview": { "type": "boolean" },
+        "automaticPresentation": { "const": false },
+        "crossTaskMessaging": { "const": false },
+        "automaticApplication": { "const": false },
+        "automaticInheritance": { "const": false }
+      }
+    }
+  },
+  "$defs": {
+    "recipient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alias", "baseContextDigest", "explicitRequest"],
+      "properties": {
+        "alias": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+        "baseContextDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "explicitRequest": { "type": "boolean" }
+      }
+    }
+  }
+}

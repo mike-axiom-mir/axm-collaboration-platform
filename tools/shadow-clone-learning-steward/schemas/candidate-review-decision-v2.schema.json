@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.candidate-review-decision/v2",
+  "title": "AXM Shadow Clone Receipt-Bound Candidate Review Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptDigest", "decisionId", "decisionOwner", "decision", "decidedAt", "sourceLedgerDigest", "candidateDigest", "reviewPacketDigest", "reviewReceiptDigest", "authorizationReceiptDigest", "prospectivePlanDigest", "assignmentRequestId", "reviewSubjectDigest", "hostAuthenticated"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.candidate-review-decision/v2" },
+    "receiptDigest": { "$ref": "#/$defs/digest" },
+    "decisionId": { "$ref": "#/$defs/id" },
+    "decisionOwner": { "const": "MIKE" },
+    "decision": { "enum": ["ACCEPT_FOR_ONE_HELD_OUT_TRIAL_CASE", "HOLD_FOR_REFRESH", "REJECT_CANDIDATE"] },
+    "decidedAt": { "type": "string", "format": "date-time" },
+    "sourceLedgerDigest": { "$ref": "#/$defs/digest" },
+    "candidateDigest": { "$ref": "#/$defs/digest" },
+    "reviewPacketDigest": { "$ref": "#/$defs/digest" },
+    "reviewReceiptDigest": { "$ref": "#/$defs/digest" },
+    "authorizationReceiptDigest": { "$ref": "#/$defs/digest" },
+    "prospectivePlanDigest": { "$ref": "#/$defs/digest" },
+    "assignmentRequestId": { "$ref": "#/$defs/id" },
+    "reviewSubjectDigest": { "$ref": "#/$defs/digest" },
+    "hostAuthenticated": { "const": true }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.trial-assignment-request/v2",
+  "title": "AXM Shadow Clone Receipt-Bound Held-Out Trial Assignment Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "requestId", "asOf", "prospectivePlanDigest", "lessonKey", "candidateDigest", "reviewDecision", "recipients", "rubric", "authority"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.trial-assignment-request/v2" },
+    "requestId": { "$ref": "#/$defs/id" },
+    "asOf": { "type": "string", "format": "date-time" },
+    "prospectivePlanDigest": { "$ref": "#/$defs/digest" },
+    "lessonKey": { "$ref": "#/$defs/id" },
+    "candidateDigest": { "$ref": "#/$defs/digest" },
+    "reviewDecision": { "oneOf": [{ "type": "null" }, { "$ref": "axm.shadow-clone.candidate-review-decision/v2" }] },
+    "recipients": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline", "learningRoute"],
+      "properties": {
+        "baseline": { "$ref": "#/$defs/recipient" },
+        "learningRoute": { "$ref": "#/$defs/recipient" }
+      }
+    },
+    "rubric": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hostAuthenticatedMikeReview", "hostAuthenticatedRecipientRequests", "automaticPresentation", "crossTaskMessaging", "automaticApplication", "automaticInheritance"],
+      "properties": {
+        "hostAuthenticatedMikeReview": { "type": "boolean" },
+        "hostAuthenticatedRecipientRequests": { "type": "boolean" },
+        "automaticPresentation": { "const": false },
+        "crossTaskMessaging": { "const": false },
+        "automaticApplication": { "const": false },
+        "automaticInheritance": { "const": false }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "recipient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alias", "baseContextDigest", "participationReceipt"],
+      "properties": {
+        "alias": { "$ref": "#/$defs/id" },
+        "baseContextDigest": { "$ref": "#/$defs/digest" },
+        "participationReceipt": { "oneOf": [{ "type": "null" }, { "$ref": "axm.shadow-clone.trial-participation-receipt/v1" }] }
+      }
+    }
+  }
+}

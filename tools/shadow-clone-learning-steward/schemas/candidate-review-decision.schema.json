@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.candidate-review-decision/v1",
+  "title": "AXM Shadow Clone Candidate Review Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptDigest", "decisionId", "decisionOwner", "decision", "decidedAt", "sourceLedgerDigest", "candidateDigest", "reviewPacketDigest"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.candidate-review-decision/v1" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "decisionId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "decisionOwner": { "const": "MIKE" },
+    "decision": { "enum": ["ACCEPT_FOR_ONE_HELD_OUT_TRIAL_CASE", "HOLD_FOR_REFRESH", "REJECT_CANDIDATE"] },
+    "decidedAt": { "type": "string", "format": "date-time" },
+    "sourceLedgerDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "candidateDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "reviewPacketDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

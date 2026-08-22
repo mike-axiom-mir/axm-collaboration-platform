@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.trial-assignment/v2",
+  "title": "AXM Shadow Clone Receipt-Bound Held-Out Trial Assignment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assignmentDigest", "assignmentId", "status", "state", "createdAt", "expiresAt", "sourceLedgerDigest", "prospectivePlanDigest", "candidate", "reviewBinding", "recipients", "blockers", "trialCaseTemplate", "adoption", "claimBoundary"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.trial-assignment/v2" },
+    "assignmentDigest": { "$ref": "#/$defs/digest" },
+    "assignmentId": { "$ref": "#/$defs/id" },
+    "status": { "const": "EXPERIMENTAL" },
+    "state": { "enum": ["HOLD_TRIAL_ASSIGNMENT", "READY_RECIPIENT_INITIATED_PAIRED_TRIAL"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "sourceLedgerDigest": { "$ref": "#/$defs/digest" },
+    "prospectivePlanDigest": { "$ref": "#/$defs/digest" },
+    "candidate": { "type": "object" },
+    "reviewBinding": { "type": ["object", "null"] },
+    "recipients": { "type": "object" },
+    "blockers": { "type": "array", "items": { "type": "object" } },
+    "trialCaseTemplate": { "type": ["object", "null"] },
+    "adoption": { "type": "object" },
+    "claimBoundary": { "type": "string" }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

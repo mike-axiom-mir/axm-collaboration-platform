@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.lesson-presentation-ack/v1",
+  "title": "AXM Shadow Clone Lesson Presentation and Recipient Acknowledgement",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptDigest", "presentationId", "assignmentDigest", "caseAlias", "candidateDigest", "recipientAlias", "senderReceiptDigest", "recipientAcknowledgementDigest", "presentedAt", "acknowledgedAt", "recipientAcknowledged", "recipientElectedUse", "automaticPromptRewrite"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.lesson-presentation-ack/v1" },
+    "receiptDigest": { "$ref": "#/$defs/digest" },
+    "presentationId": { "$ref": "#/$defs/id" },
+    "assignmentDigest": { "$ref": "#/$defs/digest" },
+    "caseAlias": { "$ref": "#/$defs/id" },
+    "candidateDigest": { "$ref": "#/$defs/digest" },
+    "recipientAlias": { "$ref": "#/$defs/id" },
+    "senderReceiptDigest": { "$ref": "#/$defs/digest" },
+    "recipientAcknowledgementDigest": { "$ref": "#/$defs/digest" },
+    "presentedAt": { "type": "string", "format": "date-time" },
+    "acknowledgedAt": { "type": "string", "format": "date-time" },
+    "recipientAcknowledged": { "const": true },
+    "recipientElectedUse": { "const": true },
+    "automaticPromptRewrite": { "const": false }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

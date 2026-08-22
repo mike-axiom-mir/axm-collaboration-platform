@@ -1,0 +1,173 @@
+{
+  "schema": "axm.shadow-clone.compact-snapshot-set/v1",
+  "collectionId": "synthetic-compact-cycle-01",
+  "asOf": "2026-08-22T12:00:00.000Z",
+  "authorization": {
+    "authority": "MIKE_DECLARED",
+    "scope": "ACTIVE_AXM_CODEX_COMPACT_LEARNING",
+    "authorizationReceiptDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "declaredConsent": true
+  },
+  "providerBoundary": {
+    "mode": "HOST_SUPPLIED_REDACTED_COMPACT_SNAPSHOTS",
+    "capabilityReceiptDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "automaticEnumeration": false,
+    "taskHistoryRead": false,
+    "compactSnapshotsOnly": true,
+    "crossTaskMessaging": false,
+    "credentialInspection": false,
+    "rawTaskDataPresent": false
+  },
+  "activeTaskAliases": ["build-alpha", "steward-beta", "tester-gamma", "verifier-delta"],
+  "sourceDigests": [
+    "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  ],
+  "snapshots": [
+    {
+      "snapshotId": "snapshot-build-alpha",
+      "sourceKind": "COMPACT_TASK_SNAPSHOT",
+      "sourceDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "sourceVersion": "synthetic-redacted/v1",
+      "task": { "alias": "build-alpha", "role": "BUILDER", "status": "ACTIVE" },
+      "observedAt": "2026-08-22T10:00:00.000Z",
+      "expiresAt": "2026-08-29T10:00:00.000Z",
+      "observations": [
+        {
+          "signalId": "signal-build-frozen-check",
+          "lessonKey": "anti-drift.frozen-source-check",
+          "pattern": "Bind every reusable lesson to a frozen source digest and refresh it before reuse.",
+          "consumer": "MIRROR_PRIVATE_LESSON",
+          "evidenceKind": "STATUS_SUMMARY",
+          "statement": "The build stayed aligned when inherited material was compared with its frozen source.",
+          "stance": "SUPPORTS",
+          "result": "OBSERVED",
+          "evidenceDigest": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        {
+          "signalId": "signal-build-direct-control",
+          "lessonKey": "coordination.direct-control",
+          "pattern": "Let one task directly alter another task when a shortcut appears useful.",
+          "consumer": "GENERIC",
+          "evidenceKind": "STATUS_SUMMARY",
+          "statement": "A shortcut proposed direct cross-task control.",
+          "stance": "SUPPORTS",
+          "result": "OBSERVED",
+          "evidenceDigest": "2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      ],
+      "userFeedback": [],
+      "verifications": [],
+      "declaredLimits": ["Synthetic redacted fixture only.", "No raw task history is retained."]
+    },
+    {
+      "snapshotId": "snapshot-steward-beta",
+      "sourceKind": "HANDOFF_RECEIPT",
+      "sourceDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "sourceVersion": "synthetic-redacted/v1",
+      "task": { "alias": "steward-beta", "role": "STEWARD", "status": "ACTIVE" },
+      "observedAt": "2026-08-22T10:05:00.000Z",
+      "expiresAt": "2026-08-29T10:05:00.000Z",
+      "observations": [
+        {
+          "signalId": "signal-steward-frozen-check",
+          "lessonKey": "anti-drift.frozen-source-check",
+          "pattern": "Bind every reusable lesson to a frozen source digest and refresh it before reuse.",
+          "consumer": "MIRROR_PRIVATE_LESSON",
+          "evidenceKind": "HANDOFF_RECEIPT",
+          "statement": "The steward handoff required frozen-source comparison before inheritance.",
+          "stance": "SUPPORTS",
+          "result": "PASS",
+          "evidenceDigest": "3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        {
+          "signalId": "signal-steward-no-direct-control",
+          "lessonKey": "coordination.direct-control",
+          "pattern": "Use external proposal receipts so tasks cannot directly control one another.",
+          "consumer": "GENERIC",
+          "evidenceKind": "HANDOFF_RECEIPT",
+          "statement": "The authority boundary rejected direct cross-task control.",
+          "stance": "CONTRADICTS",
+          "result": "PASS",
+          "evidenceDigest": "4444444444444444444444444444444444444444444444444444444444444444"
+        }
+      ],
+      "userFeedback": [],
+      "verifications": [],
+      "declaredLimits": ["Receipt proves only the declared bounded handoff."]
+    },
+    {
+      "snapshotId": "snapshot-tester-gamma",
+      "sourceKind": "DECLARED_USER_FEEDBACK",
+      "sourceDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "sourceVersion": "synthetic-redacted/v1",
+      "task": { "alias": "tester-gamma", "role": "TESTER", "status": "ACTIVE" },
+      "observedAt": "2026-08-22T10:10:00.000Z",
+      "expiresAt": "2026-08-29T10:10:00.000Z",
+      "observations": [],
+      "userFeedback": [
+        {
+          "feedbackId": "feedback-tester-frozen-check",
+          "lessonKey": "anti-drift.frozen-source-check",
+          "pattern": "Bind every reusable lesson to a frozen source digest and refresh it before reuse.",
+          "consumer": "MIRROR_PRIVATE_LESSON",
+          "evidenceKind": "USER_SIDE_FEEDBACK",
+          "statement": "The tester found the source-bound handoff easier to verify and less likely to drift.",
+          "stance": "SUPPORTS",
+          "result": "OBSERVED",
+          "evidenceDigest": "5555555555555555555555555555555555555555555555555555555555555555"
+        }
+      ],
+      "verifications": [],
+      "declaredLimits": ["Synthetic declared tester feedback only."]
+    },
+    {
+      "snapshotId": "snapshot-verifier-delta",
+      "sourceKind": "TEST_RECEIPT",
+      "sourceDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "sourceVersion": "synthetic-redacted/v1",
+      "task": { "alias": "verifier-delta", "role": "TESTER", "status": "ACTIVE" },
+      "observedAt": "2026-08-22T10:15:00.000Z",
+      "expiresAt": "2026-08-29T10:15:00.000Z",
+      "observations": [
+        {
+          "signalId": "signal-verifier-frozen-check",
+          "lessonKey": "anti-drift.frozen-source-check",
+          "pattern": "Bind every reusable lesson to a frozen source digest and refresh it before reuse.",
+          "consumer": "MIRROR_PRIVATE_LESSON",
+          "evidenceKind": "TEST_RECEIPT",
+          "statement": "A detached replay reproduced the expected source-bound output digest.",
+          "stance": "SUPPORTS",
+          "result": "PASS",
+          "evidenceDigest": "6666666666666666666666666666666666666666666666666666666666666666"
+        }
+      ],
+      "userFeedback": [],
+      "verifications": [
+        {
+          "verificationId": "verification-frozen-check",
+          "lessonKey": "anti-drift.frozen-source-check",
+          "statement": "Detached replay matched the predeclared output digest.",
+          "result": "PASS",
+          "implementationDigest": "7777777777777777777777777777777777777777777777777777777777777777",
+          "testReceiptDigest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "replayInputDigest": "8888888888888888888888888888888888888888888888888888888888888888",
+          "expectedOutputDigest": "9999999999999999999999999999999999999999999999999999999999999999",
+          "observedOutputDigest": "9999999999999999999999999999999999999999999999999999999999999999"
+        }
+      ],
+      "declaredLimits": ["Synthetic deterministic verification receipt only."]
+    }
+  ],
+  "previousLedger": null,
+  "limits": { "maxCycles": 16, "maxLessons": 128, "maxSignals": 2048, "maxActiveTasks": 16 },
+  "retention": {
+    "localOnly": true,
+    "rawTaskDataRetained": false,
+    "retainUntil": "2026-09-05T12:00:00.000Z",
+    "refreshAfter": "2026-08-29T12:00:00.000Z"
+  }
+}
+
