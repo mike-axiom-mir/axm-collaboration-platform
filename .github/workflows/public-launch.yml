@@ -29,6 +29,9 @@ jobs:
   windows-clean-launch:
     runs-on: windows-latest
     steps:
+      - name: Enable Windows long-path checkout support
+        shell: powershell
+        run: git config --system core.longpaths true
       - name: Check out the public candidate
         uses: actions/checkout@v4
       - name: Launch from a clean path with no Node.js on PATH

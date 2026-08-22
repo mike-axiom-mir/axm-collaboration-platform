@@ -1,9 +1,6 @@
 name: AXM v0.6.1 corrective gate
 
 on:
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -104,6 +101,9 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 25
     steps:
+      - name: Enable Windows long-path checkout support
+        shell: powershell
+        run: git config --system core.longpaths true
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0

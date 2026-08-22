@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - .github/release-requests/v0.7.0-experimental.md
+      - .github/workflows/release-v0.7.0-experimental.yml
 
 permissions: {}
 
@@ -26,6 +27,9 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Enable Windows long-path checkout support
+        shell: powershell
+        run: git config --system core.longpaths true
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
