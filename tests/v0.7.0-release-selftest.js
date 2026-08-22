@@ -25,6 +25,8 @@ assert.ok(notes.startsWith('# AXM Workshop v0.7.0 Experimental\n'), 'release tit
 assert.ok(changelog.includes('## v0.7.0-experimental — 2026-08-22'), 'changelog must preserve the release entry');
 assert.ok(!/\b(?:TBD|TODO)\b/.test(notes), 'release notes must contain no placeholder');
 assert.ok(workflow.includes('TAG: v0.7.0-experimental'), 'workflow tag must be exact');
+assert.ok(workflow.includes('  workflow_dispatch:\n'),
+  'the exact release must support an explicit reviewed dispatch');
 assert.ok(!sourceJob.includes('core.longpaths'),
   'the Ubuntu source job must not receive Windows-only setup');
 assert.ok(windowsJob.includes('git config --system core.longpaths true') &&
@@ -42,4 +44,4 @@ assert.ok(notes.includes('126 raw session-event traces intentionally omitted'), 
 assert.ok(notes.includes('219 indexed tools') && notes.includes('2,022 declared capabilities'),
   'measured discovery surface must stay visible');
 
-console.log('v0.7.0 release selftest: PASS (16 checks)');
+console.log('v0.7.0 release selftest: PASS (17 checks)');
