@@ -2,21 +2,21 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `0adcb6d32f19d25f619a6a74fcef45f2f3e0fe0306420cfc4ad0783acf0d08ec`
+Twin digest: `e20eac84cf1238a98d3e0731d8450243f08d222e1ed3bfbfe6c9f5af232bab4d`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
 | Block | Kind | Status | Capability | Effects | Risk | Exact packet |
 |---|---|---|---:|---|---|---|
-| accessibility-adaptation-lab | HAND | TEST | 4 | WRITE_CANDIDATE | MEDIUM | `fd815fd1cf167261…` |
+| accessibility-adaptation-lab | HAND | TEST | 4 | WRITE_CANDIDATE | MEDIUM | `d579133ec5a4c301…` |
 | adapter-translation-garden | BRIDGE | WORKING | 10 | NONE | UNKNOWN | `650710d9186f5e5a…` |
-| aetherfx | HAND | TEST | 18 | WRITE_CANDIDATE | UNKNOWN | `812eb521a3006a8f…` |
+| aetherfx | HAND | TEST | 18 | WRITE_CANDIDATE | UNKNOWN | `4f99e4026f51e8c2…` |
 | agent-command-center | BRIDGE | TEST | 7 | NONE | UNKNOWN | `4f3b01a84f5bd018…` |
 | agent-tool-forge | HAND | TEST | 6 | WRITE_CANDIDATE | UNKNOWN | `082142fa4cab385f…` |
 | ai-habitat | BRIDGE | TEST | 6 | NETWORK_READ | UNKNOWN | `b2e0b00c67e2481d…` |
 | ai-task-talk | ROUTE | TEST | 3 | NONE | UNKNOWN | `66a4d5d15b5b3037…` |
 | ai-team | BRIDGE | TEST | 30 | NONE | UNKNOWN | `feb2289b7dcc9f2b…` |
-| ai-team-steward-lab | ROOM | TEST | 8 | NONE | LOW | `26c2a3bc84eed750…` |
+| ai-team-steward-lab | ROOM | TEST | 8 | NONE | LOW | `133567c38d321e09…` |
 | ai-tool-skill-regression-harness | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `8e7477272f7726d3…` |
 | anim-kit | BRIDGE | EXPERIMENTAL | 3 | WRITE_CANDIDATE | UNKNOWN | `aeaf68ccf8db5efa…` |
 | archive-intake-cartographer | HAND | TEST | 8 | WRITE_CANDIDATE | UNKNOWN | `75238800f7b963bb…` |
@@ -33,7 +33,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | branch-backfeed-lab | HAND | EXPERIMENTAL | 5 | WRITE_CANDIDATE | MEDIUM | `00305620bc4de081…` |
 | branch-module-return-gate | ROUTE | TEST | 5 | WRITE_CANDIDATE | UNKNOWN | `203b2f67442d5a6e…` |
 | browser-global-surface-observatory | ROOM | TEST | 5 | NONE | UNKNOWN | `7fd59e1eb7d51db5…` |
-| browser-lan-hardware-qa-lab | HAND | TEST | 4 | PHYSICAL_ACTUATION | HIGH | `4e9b2f838416c65f…` |
+| browser-lan-hardware-qa-lab | ROUTE | TEST | 7 | PHYSICAL_ACTUATION, WRITE_CANDIDATE | HIGH | `c978a4e6303806b5…` |
 | bulk-intake-conveyor | HAND | TEST | 7 | WRITE_CANDIDATE | UNKNOWN | `46335417c3c9f353…` |
 | capability-gap-workbench | HAND | TEST | 5 | WRITE_CANDIDATE | MEDIUM | `e8c183f4486ef4ae…` |
 | character-animation-mocap-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `2aea59965e3adca5…` |
@@ -46,6 +46,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | cognitive-calibration-lab | HAND | TEST | 2 | WRITE_CANDIDATE | UNKNOWN | `170803f956857bb0…` |
 | cognitive-evidence-explorer | ROOM | TEST | 2 | NONE | LOW | `c7a8e9044100e887…` |
 | cognitive-resource-meter | HAND | TEST | 13 | READ_PRIVATE, WRITE_CANDIDATE | UNKNOWN | `4f5d878494197497…` |
+| compute-substrate-lab | ROOM | EXPERIMENTAL | 4 | NONE | UNKNOWN | `233c33c86285bfc2…` |
 | consent-agent-memory-dataset-curator | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `32520de82b8aeb03…` |
 | copy-composer-hand | HAND | EXPERIMENTAL | 4 | NONE | LOW | `9291755d8fd46a48…` |
 | crash-replay-symbolication-center | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `c885dc166182f835…` |
@@ -54,9 +55,13 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | design-lineage-lab | HAND | TEST | 4 | WRITE_CANDIDATE | MEDIUM | `b13d550e60fa6172…` |
 | detached-candidate-nursery | HAND | TEST | 6 | WRITE_CANDIDATE | UNKNOWN | `f165ce5a1dcea63e…` |
 | deterministic-build-cook-patch-pipeline | ROUTE | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `7088b46ee8069b41…` |
+| deterministic-continuation-capsule | HAND | EXPERIMENTAL | 6 | OBSERVE_LOCAL, WRITE_CANDIDATE | MEDIUM | `1a49f4047edf1e23…` |
 | deterministic-job-cache-scheduler | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `b92fee38bf6a5a2f…` |
 | deterministic-json-core | BRICK | EXPERIMENTAL | 2 | NONE | LOW | `5ce6587723d9943e…` |
+| deterministic-pr-base-refresh | HAND | EXPERIMENTAL | 5 | NETWORK_READ, WRITE_CANDIDATE | UNKNOWN | `c33cc63a1cf679c2…` |
 | deterministic-pr-checkpoint | HAND | EXPERIMENTAL | 7 | WRITE_CANDIDATE | MEDIUM | `ba04356053c73262…` |
+| deterministic-pr-publisher | HAND | EXPERIMENTAL | 7 | NETWORK_READ, WRITE_CANDIDATE | UNKNOWN | `91227e0079d1e6c8…` |
+| deterministic-pr-sequencer | ROUTE | EXPERIMENTAL | 7 | NETWORK_READ, WRITE_CANDIDATE | MEDIUM | `83c2b076d14ac807…` |
 | device-handoff | ROUTE | TEST | 8 | WRITE_CANDIDATE | UNKNOWN | `af123a8c903aac1b…` |
 | diagnostics-operations-center | HAND | TEST | 12 | WRITE_CANDIDATE | UNKNOWN | `f0af4233954ac812…` |
 | discord-bridge | BRIDGE | TEST | 3 | NETWORK_READ | UNKNOWN | `2248c227e5361c2a…` |
@@ -87,8 +92,9 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | game-balance-telemetry-advisor | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `8a24e81e2ba1f55a…` |
 | game-capability-atlas | HAND | TEST | 4 | WRITE_CANDIDATE | UNKNOWN | `7348b250717cd41b…` |
 | game-forge | HAND | TEST | 21 | WRITE_CANDIDATE | UNKNOWN | `19df359e8b17ff82…` |
-| game-hub | HAND | TEST | 3 | WRITE_CANDIDATE | UNKNOWN | `7abf859fd3f64bf9…` |
-| game-organism-lab | ROUTE | EXPERIMENTAL | 3 | WRITE_CANDIDATE | MEDIUM | `405d3a91c6d8239d…` |
+| game-hub | HAND | TEST | 3 | WRITE_CANDIDATE | UNKNOWN | `e56872c2cb80c436…` |
+| game-organism-lab | ROUTE | EXPERIMENTAL | 3 | WRITE_CANDIDATE | MEDIUM | `8b73d2cab4192ebb…` |
+| game-production-runner | HAND | EXPERIMENTAL | 40 | NETWORK_READ, ROOT_CHANGE | HIGH | `4191d893de639b1a…` |
 | game-ui-hud-menu-runtime | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `2b62729c137d7a5a…` |
 | gameplay-ability-rules-graph | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `ac2eafa74cac6252…` |
 | geographic-market-map | HAND | EXPERIMENTAL | 6 | WRITE_CANDIDATE | UNKNOWN | `1a7eae70e9066114…` |
@@ -98,9 +104,10 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | hand-specification-foundry | HAND | TEST | 4 | WRITE_CANDIDATE | MEDIUM | `775e87a22d4f0a4e…` |
 | hand-verification-lab | HAND | TEST | 5 | WRITE_CANDIDATE | MEDIUM | `6938d10baa06cb9f…` |
 | handoff-wiring-observatory | BRIDGE | TEST | 6 | WRITE_CANDIDATE | UNKNOWN | `57cde5bbd5c688b4…` |
+| hardware-research-registry | ROOM | EXPERIMENTAL | 4 | NONE | UNKNOWN | `ef27c133d27157dc…` |
 | hermes-local | BRIDGE | TEST | 8 | EXECUTE_TRUSTED, NETWORK_READ | HIGH | `72d1164b298c1e7c…` |
-| holodeck-composer | HAND | TEST | 4 | WRITE_CANDIDATE | UNKNOWN | `6c28940c068222c0…` |
-| holodeck-screen-deck | ROOM | TEST | 7 | NONE | UNKNOWN | `0df16f70d98a7133…` |
+| holodeck-composer | HAND | TEST | 4 | WRITE_CANDIDATE | UNKNOWN | `0f7ce6371889cb97…` |
+| holodeck-screen-deck | ROOM | TEST | 7 | NONE | UNKNOWN | `6700b48376e421dc…` |
 | host-assumption-observatory | ROOM | TEST | 6 | NONE | UNKNOWN | `4e5411727b7878e3…` |
 | hub-test-room | ROOM | TEST | 5 | NONE | UNKNOWN | `9fdb4a6a35ae0e40…` |
 | human-attention-ledger | HAND | TEST | 2 | WRITE_CANDIDATE | UNKNOWN | `db9fc6d68ad2347c…` |
@@ -166,10 +173,10 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | reference-to-3d-reconstruction-lab | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `90003c1513edff7a…` |
 | release-size-delta-patch-optimizer | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `7cd914e6d3d82517…` |
 | repair-resilience-library | ROOM | WORKING | 5 | NONE | LOW | `9a2d2acd1fb1bfdc…` |
-| repairbuddy | ROUTE | EXPERIMENTAL | 11 | NONE | LOW | `aa5c4f828e85eed4…` |
+| repairbuddy | ROUTE | EXPERIMENTAL | 14 | NONE | LOW | `e41e06ad959c082d…` |
 | reproducible-build-sbom-generator | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `935bea9d9abb8044…` |
 | research-foundry | HAND | TEST | 10 | WRITE_CANDIDATE | MEDIUM | `af5498b5d95b2961…` |
-| review-inbox | HAND | TEST | 10 | WRITE_CANDIDATE | MEDIUM | `1b5efeb172a9364d…` |
+| review-inbox | HAND | TEST | 96 | WRITE_CANDIDATE | MEDIUM | `fe3383b19247fcfa…` |
 | rigging-retargeting-studio | HAND | EXPERIMENTAL | 8 | WRITE_CANDIDATE | MEDIUM | `8dff5fb68daf0604…` |
 | route | ROUTE | TEST | 8 | WRITE_CANDIDATE | UNKNOWN | `0cc48df791499c28…` |
 | runner | ROOM | TEST | 3 | NONE | LOW | `3146a0bbac5cc4eb…` |
@@ -181,32 +188,104 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | secrets-permissions-console | BRIDGE | TEST | 9 | NONE | UNKNOWN | `8a18e4f3f5728b3c…` |
 | security-fuzz-supply-chain-lab | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `0b573401743f5de7…` |
 | sensorium-lab | ROOM | TEST | 4 | NONE | UNKNOWN | `1eaaf922612eb8a1…` |
+| shadow-clone-learning-steward | ROOM | EXPERIMENTAL | 12 | NONE | UNKNOWN | `01c545d3669b08c1…` |
 | shapeable-builder | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | UNKNOWN | `4d4a805e069f8cb7…` |
 | shared/ai-native-hands | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `1fc69e231f6b7547…` |
 | shared/artifact-depot | ORGAN | EXPERIMENTAL | 4 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `fa0b6d0dcf6fcea0…` |
 | shared/asset-hands | ORGAN | EXPERIMENTAL | 78 | NONE | LOW | `c3524a8b7740896c…` |
 | shared/audio-sfx-bake | ORGAN | EXPERIMENTAL | 0 | NONE | LOW | `19624a5c348f72a2…` |
 | shared/authority-grid | BRICK | EXPERIMENTAL | 4 | NONE | LOW | `13c645c797db787b…` |
+| shared/baseline-simulation-lab | ORGAN | EXPERIMENTAL | 11 | NONE | LOW | `7941a41c089dd390…` |
 | shared/city-gates | BRIDGE | EXPERIMENTAL | 5 | NETWORK_WRITE, PUBLIC_RELEASE | HIGH | `80831a1116ef8216…` |
 | shared/city-graph | ORGAN | EXPERIMENTAL | 5 | NONE | UNKNOWN | `a1c481486b694ed5…` |
+| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `edf3e41b76df4b65…` |
+| shared/compute-substrate-lab | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `65884a71a64101f4…` |
 | shared/event-journal | ORGAN | EXPERIMENTAL | 3 | WRITE_CANDIDATE | UNKNOWN | `50f70d4749dc628d…` |
 | shared/evidence-grid | SENSOR | EXPERIMENTAL | 4 | OBSERVE_LOCAL | LOW | `7c6cb1abf8d16976…` |
 | shared/game-asset-foundation | ORGAN | EXPERIMENTAL | 13 | NONE | UNKNOWN | `456c13324dabcd13…` |
 | shared/game-capability-atlas | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | UNKNOWN | `033a0c374407801a…` |
 | shared/game-fsm | ORGAN | EXPERIMENTAL | 0 | NONE | LOW | `35c58c436b2d812c…` |
+| shared/game-production-runner | HAND | EXPERIMENTAL | 52 | NETWORK_READ, ROOT_CHANGE | HIGH | `2525f56db7c0ba00…` |
+| shared/grounded-growth-challenger-lab | ORGAN | EXPERIMENTAL | 12 | NONE | LOW | `3cfb4ca5d6647b4a…` |
+| shared/grounded-growth-current-state | ORGAN | EXPERIMENTAL | 11 | NONE | LOW | `b123ddd818946735…` |
+| shared/grounded-growth-direction-handoff | ORGAN | EXPERIMENTAL | 7 | NONE | LOW | `49176d753191cc12…` |
+| shared/grounded-growth-feedback | ORGAN | EXPERIMENTAL | 8 | NONE | LOW | `f54f14a630c200b7…` |
+| shared/grounded-growth-frontier-gate | ORGAN | EXPERIMENTAL | 15 | NONE | LOW | `f2ec27821fa81357…` |
+| shared/grounded-growth-human-bridge | BRIDGE | EXPERIMENTAL | 10 | NONE | LOW | `b10c3db7f38cb324…` |
+| shared/grounded-growth-human-bridge-v2 | BRIDGE | EXPERIMENTAL | 13 | NONE | LOW | `293de28d875b84ec…` |
+| shared/grounded-growth-human-handoff | ORGAN | EXPERIMENTAL | 10 | NONE | LOW | `68df08fb345c063a…` |
+| shared/grounded-growth-human-route-coverage | ROUTE | EXPERIMENTAL | 9 | NONE | LOW | `283dcf6b893f9181…` |
+| shared/grounded-growth-knowledge-frontier | ORGAN | EXPERIMENTAL | 11 | NONE | LOW | `934fdeadebde1f0b…` |
+| shared/grounded-growth-outcomes | ORGAN | EXPERIMENTAL | 7 | NONE | LOW | `7f4377cecb9834bc…` |
+| shared/grounded-growth-participation-frontier | ORGAN | EXPERIMENTAL | 10 | NONE | LOW | `5b76819f02fa8ca1…` |
+| shared/grounded-growth-phone-evidence-gate | SENSOR | EXPERIMENTAL | 7 | NONE | LOW | `13fa4fb44ba9ff96…` |
+| shared/grounded-growth-signal-lineage | ORGAN | EXPERIMENTAL | 8 | NONE | LOW | `b5ced51bceb727ee…` |
+| shared/grounded-growth-voluntary-choice-frontier | ORGAN | EXPERIMENTAL | 1 | NONE | LOW | `10ae0906211fe8ba…` |
 | shared/hands-rail | HAND | EXPERIMENTAL | 4 | EXECUTE_CONFINED, WRITE_CANDIDATE | MEDIUM | `e5a021e1983e91c0…` |
+| shared/hardware-research-registry | ORGAN | EXPERIMENTAL | 5 | NONE | LOW | `805bd4a72ec812a6…` |
+| shared/human-benefit-evidence | SENSOR | EXPERIMENTAL | 8 | NONE | LOW | `57347b3bb37e9d98…` |
+| shared/identity-shell-fabric | ORGAN | EXPERIMENTAL | 19 | NONE | LOW | `f51e0db08c29c5c6…` |
 | shared/intake-harbor | ORGAN | EXPERIMENTAL | 4 | NONE | LOW | `53bdc534834fa7b8…` |
 | shared/local-sync | BRICK | EXPERIMENTAL | 3 | NONE | LOW | `4c19fefb969055e2…` |
+| shared/model-shadow-challenger-gate | ORGAN | EXPERIMENTAL | 13 | NONE | LOW | `66f37b2ad30db90a…` |
+| shared/model-shadow-continuity | ORGAN | EXPERIMENTAL | 25 | NONE | LOW | `c27aed550c9fcc1d…` |
+| shared/model-shadow-history-checkpoint-anchor | HAND | EXPERIMENTAL | 21 | ROOT_CHANGE | HIGH | `6ba813c69a83db93…` |
+| shared/model-shadow-history-checkpoint-pairwise | ORGAN | EXPERIMENTAL | 21 | NONE | LOW | `cda4985327567326…` |
+| shared/model-shadow-history-checkpoint-pin-settlement-ledger | HAND | EXPERIMENTAL | 29 | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `b11b2cc0a7f6f756…` |
+| shared/model-shadow-history-checkpoint-pin-transition | ORGAN | EXPERIMENTAL | 26 | NONE | LOW | `b176110039187b67…` |
+| shared/model-shadow-history-checkpoint-retention-ledger | HAND | EXPERIMENTAL | 33 | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `d51e3002ff22850e…` |
+| shared/model-shadow-portable-pin-settlement-history-checkpoint | HAND | EXPERIMENTAL | 26 | OBSERVE_LOCAL, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `4418612e2065ac3f…` |
+| shared/model-shadow-retention-audit-observation-ledger | HAND | EXPERIMENTAL | 22 | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `95e2b80b31a47465…` |
+| shared/model-shadow-retention-audit-review-outcome | HAND | EXPERIMENTAL | 22 | NETWORK_READ, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `8b8b6f8dbbb7f051…` |
+| shared/model-shadow-retention-audit-review-outcome-history-checkpoint | HAND | EXPERIMENTAL | 26 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `03af8d012ca1f473…` |
+| shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor | HAND | EXPERIMENTAL | 23 | OBSERVE_LOCAL, WRITE_CANDIDATE | MEDIUM | `0cf7019c02094b9c…` |
+| shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise | ORGAN | EXPERIMENTAL | 24 | OBSERVE_LOCAL | LOW | `60424228cb0c94ee…` |
+| shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger | HAND | EXPERIMENTAL | 27 | CANON_CHANGE, OBSERVE_LOCAL, ROOT_CHANGE | HIGH | `6c2a264443713035…` |
+| shared/model-shadow-retention-audit-review-outcome-ledger | HAND | EXPERIMENTAL | 26 | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `d3c5f3bba54be400…` |
+| shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observer | HAND | EXPERIMENTAL | 23 | ROOT_CHANGE | HIGH | `544b07b931dfe948…` |
+| shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-review-request | HAND | EXPERIMENTAL | 12 | NETWORK_READ, ROOT_CHANGE | HIGH | `914dd77f56b2830b…` |
+| shared/model-shadow-retention-audit-review-outcome-transition-settlement-ledger | HAND | EXPERIMENTAL | 31 | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `6aa35ce4137eac57…` |
+| shared/model-shadow-retention-audit-review-outcome-transition-settlement-pairwise-observer | HAND | EXPERIMENTAL | 21 | ROOT_CHANGE | HIGH | `91713758424de172…` |
+| shared/model-shadow-retention-audit-review-request | HAND | EXPERIMENTAL | 21 | NETWORK_READ, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `c38a58afcf932db1…` |
+| shared/model-shadow-review-challenge-anchor-gate | ORGAN | EXPERIMENTAL | 15 | NONE | LOW | `89c7e6b4268775a8…` |
+| shared/model-shadow-review-challenge-continuity | ORGAN | EXPERIMENTAL | 14 | NONE | LOW | `b2b56f01cc46df05…` |
+| shared/model-shadow-review-challenge-ledger | HAND | EXPERIMENTAL | 10 | ROOT_CHANGE | HIGH | `05c56fe82d7d034b…` |
+| shared/model-shadow-review-challenge-separation-gate | ORGAN | EXPERIMENTAL | 9 | NONE | LOW | `149e2e0946d44a4d…` |
+| shared/model-shadow-review-challenge-transition-declared-disclosure | ORGAN | EXPERIMENTAL | 15 | NONE | LOW | `8c31bfe09c1ac2ec…` |
+| shared/model-shadow-review-challenge-transition-gate | ORGAN | EXPERIMENTAL | 12 | NONE | LOW | `36439634e031cbdc…` |
+| shared/model-shadow-review-challenge-transition-ledger | HAND | EXPERIMENTAL | 13 | WRITE_CANDIDATE | MEDIUM | `2b69c22ef4b43d8c…` |
+| shared/model-shadow-review-challenge-transition-local-possession-challenge | HAND | EXPERIMENTAL | 15 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `1b578a17e955330e…` |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-anchor | ORGAN | EXPERIMENTAL | 19 | NONE | LOW | `1924173b0f29405b…` |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition | ORGAN | EXPERIMENTAL | 16 | NONE | LOW | `9bf16043b5f5f4fa…` |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-separation | ORGAN | EXPERIMENTAL | 13 | NONE | LOW | `a26a82b019c2bfd7…` |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger | HAND | EXPERIMENTAL | 9 | CANON_CHANGE, OBSERVE_LOCAL, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `67a00f8ef34cbdf1…` |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger | HAND | EXPERIMENTAL | 14 | CANON_CHANGE, OBSERVE_LOCAL, ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `46681647bc3e82c9…` |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-witness | ORGAN | EXPERIMENTAL | 16 | NONE | LOW | `5d6dd87ca85c7cc1…` |
+| shared/model-shadow-review-challenge-transition-local-possession-continuity | HAND | EXPERIMENTAL | 16 | ROOT_CHANGE | HIGH | `dac3efaab8d65941…` |
+| shared/model-shadow-review-challenge-transition-local-receiver-custody | HAND | EXPERIMENTAL | 18 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `ceb63476b263a9f5…` |
+| shared/model-shadow-review-challenge-transition-receiver-ack | ORGAN | EXPERIMENTAL | 17 | NONE | LOW | `7ab6576a291dfa05…` |
+| shared/model-shadow-review-challenge-transition-reconciliation | ORGAN | EXPERIMENTAL | 15 | NONE | LOW | `a03263ad78f58832…` |
+| shared/model-shadow-review-challenge-witness | ORGAN | EXPERIMENTAL | 13 | NONE | LOW | `f7abd7fca92a4da0…` |
+| shared/model-shadow-signed-review-evidence | SENSOR | EXPERIMENTAL | 11 | NONE | LOW | `15c78cd81c759fcb…` |
+| shared/model-shadow-two-phase-history-checkpoint | HAND | EXPERIMENTAL | 18 | ROOT_CHANGE | HIGH | `cdc9168516421c6f…` |
 | shared/module-evolution-ledger | ORGAN | EXPERIMENTAL | 8 | NONE | LOW | `b3e7eebe543568ed…` |
 | shared/neural-visual | ORGAN | EXPERIMENTAL | 4 | NONE | LOW | `7e007e10db7b4d19…` |
+| shared/portable-baseline-capsule | ORGAN | EXPERIMENTAL | 10 | NONE | LOW | `f117167242fcfcac…` |
 | shared/procedural-animation-blocks | ORGAN | EXPERIMENTAL | 3 | NONE | LOW | `4557b087664d59a5…` |
+| shared/research-contribution-intake | ORGAN | EXPERIMENTAL | 12 | NONE | LOW | `93a285f8d1ccb9d9…` |
+| shared/resource-grounded-capability-gate | ORGAN | EXPERIMENTAL | 7 | NONE | LOW | `3d9de8c8432cef29…` |
 | shared/schema-registry | ORGAN | EXPERIMENTAL | 4 | NONE | UNKNOWN | `f8acf85267f9be94…` |
+| shared/simulation-lab-extension-intake | ORGAN | EXPERIMENTAL | 12 | NONE | LOW | `d4bc8c7cc45b0e3d…` |
 | shared/style-fabric | ORGAN | WORKING_TEST | 0 | NONE | LOW | `fe57a8081e7f6ec1…` |
 | shared/twin-surfaces | ORGAN | EXPERIMENTAL | 4 | WRITE_CANDIDATE | UNKNOWN | `16bf06a2a9ef7b45…` |
+| shared/verification-snapshot-continuity | SENSOR | EXPERIMENTAL | 10 | NONE | LOW | `423254e509bc8625…` |
+| shared/verification-source-evolution-review | SENSOR | EXPERIMENTAL | 13 | NONE | LOW | `aecd48094798c71d…` |
+| shared/verified-capability-loop | ORGAN | EXPERIMENTAL | 5 | NONE | LOW | `857eb367e3bc33e5…` |
 | shared/visual-actions | ORGAN | EXPERIMENTAL | 7 | NONE | LOW | `2c1cf1c77e574dc9…` |
 | shared/visual-fx | ORGAN | EXPERIMENTAL | 5 | NONE | LOW | `06b596c0e7993918…` |
 | shared/visual-kernel | ORGAN | EXPERIMENTAL | 5 | NONE | LOW | `243dbe96e7747fd6…` |
 | shared/visual-proof | ORGAN | EXPERIMENTAL | 5 | NONE | LOW | `a351f36f44af1a45…` |
+| shared/voluntary-phone-qa-campaign | ORGAN | EXPERIMENTAL | 9 | NONE | LOW | `00ab34156a2c55e2…` |
 | shared/workflow-transit | ROUTE | EXPERIMENTAL | 4 | NONE | LOW | `744111f085ce7dca…` |
 | shell-guardian | HAND | TEST | 4 | EXECUTE_TRUSTED, WRITE_CANDIDATE | HIGH | `8d99482d191d46b0…` |
 | skinner | HAND | TEST | 9 | WRITE_CANDIDATE | UNKNOWN | `531dec54211e9830…` |
@@ -228,7 +307,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | uv-lightmap-studio | HAND | EXPERIMENTAL | 7 | WRITE_CANDIDATE | MEDIUM | `15fb2acb5262fe36…` |
 | vehicle-assembly-damage-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `b482e33d438c54ca…` |
 | verification-entry-observatory | ROOM | TEST | 5 | NONE | UNKNOWN | `7f0bf5749e8f2b5b…` |
-| verification-proof-lab | HAND | TEST | 16 | EXECUTE_TRUSTED | HIGH | `da47e695b553f003…` |
+| verification-proof-lab | HAND | TEST | 16 | EXECUTE_TRUSTED | HIGH | `6b818e43f7c989ed…` |
 | verifier | ROOM | TEST | 6 | NONE | LOW | `89c01227ef140947…` |
 | vfx-particle-shader-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `78a0b3d96efb4c8b…` |
 | visual-art-director-lab | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `4a5c060ece7bea54…` |
@@ -237,7 +316,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | visual-mold-foundry | HAND | TEST | 11 | WRITE_CANDIDATE | UNKNOWN | `b8e6ccd757b4287d…` |
 | vram-memory-streaming-analyzer | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `e6d8e283f2bb75a6…` |
 | workshop-census-observatory | HAND | TEST | 6 | WRITE_CANDIDATE | UNKNOWN | `ab2b4722a37fda0d…` |
-| workshop-command-center | ROUTE | TEST | 20 | WRITE_CANDIDATE | UNKNOWN | `741cbbe0cab00e54…` |
+| workshop-command-center | ROUTE | TEST | 20 | WRITE_CANDIDATE | UNKNOWN | `73aa4eeccf8ca8bf…` |
 | workshop-direction | HAND | EXPERIMENTAL | 7 | WRITE_CANDIDATE | UNKNOWN | `21f832c26199aef9…` |
 | workshop-needs-observatory | ROOM | EXPERIMENTAL | 6 | NONE | UNKNOWN | `455502bbafac3dd8…` |
 | workshop-packager | HAND | TEST | 13 | WRITE_CANDIDATE | UNKNOWN | `360490b400b6527a…` |

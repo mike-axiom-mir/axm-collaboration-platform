@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `9ade59d2008f9f124b151be71fd16e7d79014ceb1bc0558c7f161e5348ceb1c7`
+Semantic graph digest: `9f7bbaf8da5e865b9ee606af2c07b935e367390b8339a6d7ac1c099444730a82`
 
-Blocks: 239 · Capabilities: 1993 · Schemas: 427 · Unresolved edges: 1532
+Blocks: 318 · Capabilities: 3535 · Schemas: 744 · Unresolved edges: 1950
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -37,7 +37,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | branch-backfeed-lab | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 5 | 1 | 1 selftest(s) |
 | branch-module-return-gate | ROUTE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 4 | 1 selftest(s) |
 | browser-global-surface-observatory | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 5 | 2 | 1 selftest(s) |
-| browser-lan-hardware-qa-lab | HAND (INFERRED_UNCONFIRMED) | TEST | PHYSICAL_ACTUATION | 4 | 3 | 1 selftest(s) |
+| browser-lan-hardware-qa-lab | ROUTE (INFERRED_UNCONFIRMED) | TEST | PHYSICAL_ACTUATION, WRITE_CANDIDATE | 7 | 5 | 1 selftest(s) |
 | bulk-intake-conveyor | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 7 | 4 | 1 selftest(s) |
 | capability-gap-workbench | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 3 | 1 selftest(s) |
 | character-animation-mocap-studio | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
@@ -50,6 +50,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | cognitive-calibration-lab | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 2 | 1 | 1 selftest(s) |
 | cognitive-evidence-explorer | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 2 | 2 | 1 selftest(s) |
 | cognitive-resource-meter | HAND (INFERRED_UNCONFIRMED) | TEST | READ_PRIVATE, WRITE_CANDIDATE | 13 | 4 | 1 selftest(s) |
+| compute-substrate-lab | ROOM (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 6 | 1 selftest(s) |
 | consent-agent-memory-dataset-curator | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | copy-composer-hand | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
 | crash-replay-symbolication-center | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
@@ -58,9 +59,13 @@ This file is generated from the same graph as the machine views. Labels never gr
 | design-lineage-lab | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 4 | 1 | 1 selftest(s) |
 | detached-candidate-nursery | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 6 | 3 | 1 selftest(s) |
 | deterministic-build-cook-patch-pipeline | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
+| deterministic-continuation-capsule | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | OBSERVE_LOCAL, WRITE_CANDIDATE | 6 | 5 | 1 selftest(s) |
 | deterministic-job-cache-scheduler | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | deterministic-json-core | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 2 | 1 | 1 selftest(s) |
+| deterministic-pr-base-refresh | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, WRITE_CANDIDATE | 5 | 5 | 1 selftest(s) |
 | deterministic-pr-checkpoint | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 7 | 6 | 1 selftest(s) |
+| deterministic-pr-publisher | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, WRITE_CANDIDATE | 7 | 5 | 1 selftest(s) |
+| deterministic-pr-sequencer | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, WRITE_CANDIDATE | 7 | 4 | 1 selftest(s) |
 | device-handoff | ROUTE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 8 | 4 | 1 selftest(s) |
 | diagnostics-operations-center | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 12 | 14 | 1 selftest(s) |
 | discord-bridge | BRIDGE (INFERRED_UNCONFIRMED) | TEST | NETWORK_READ | 3 | 3 | 1 selftest(s) |
@@ -91,8 +96,9 @@ This file is generated from the same graph as the machine views. Labels never gr
 | game-balance-telemetry-advisor | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | game-capability-atlas | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | game-forge | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 21 | 8 | 2 selftest(s) |
-| game-hub | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 3 | 3 | 33 selftest(s) |
+| game-hub | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 3 | 3 | 34 selftest(s) |
 | game-organism-lab | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 3 | 2 | 1 selftest(s) |
+| game-production-runner | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, ROOT_CHANGE | 40 | 4 | 1 selftest(s) |
 | game-ui-hud-menu-runtime | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | gameplay-ability-rules-graph | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | geographic-market-map | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 6 | 3 | 1 selftest(s) |
@@ -102,6 +108,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | hand-specification-foundry | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | hand-verification-lab | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 2 | 1 selftest(s) |
 | handoff-wiring-observatory | BRIDGE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 6 | 3 | 1 selftest(s) |
+| hardware-research-registry | ROOM (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 4 | 1 selftest(s) |
 | hermes-local | BRIDGE (INFERRED_UNCONFIRMED) | TEST | EXECUTE_TRUSTED, NETWORK_READ | 8 | 8 | 1 selftest(s) |
 | holodeck-composer | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 4 | 5 | 1 selftest(s) |
 | holodeck-screen-deck | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 7 | 5 | 1 selftest(s) |
@@ -170,10 +177,10 @@ This file is generated from the same graph as the machine views. Labels never gr
 | reference-to-3d-reconstruction-lab | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | release-size-delta-patch-optimizer | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | repair-resilience-library | ROOM (INFERRED_UNCONFIRMED) | WORKING | NONE | 5 | 5 | 102 selftest(s) |
-| repairbuddy | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 5 | 1 selftest(s) |
+| repairbuddy | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 14 | 8 | 1 selftest(s) |
 | reproducible-build-sbom-generator | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | research-foundry | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 10 | 5 | 1 selftest(s) |
-| review-inbox | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 10 | 6 | 1 selftest(s) |
+| review-inbox | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 96 | 22 | 3 selftest(s) |
 | rigging-retargeting-studio | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 8 | 2 | 1 selftest(s) |
 | route | ROUTE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 8 | 3 | 1 selftest(s) |
 | runner | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 3 | 5 | 1 selftest(s) |
@@ -185,32 +192,104 @@ This file is generated from the same graph as the machine views. Labels never gr
 | secrets-permissions-console | BRIDGE (INFERRED_UNCONFIRMED) | TEST | NONE | 9 | 3 | 1 selftest(s) |
 | security-fuzz-supply-chain-lab | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | sensorium-lab | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 4 | 3 | 1 selftest(s) |
+| shadow-clone-learning-steward | ROOM (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 24 | 1 selftest(s) |
 | shapeable-builder | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | shared/ai-native-hands | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 0 | 1 selftest(s) |
 | shared/artifact-depot | ORGAN (DECLARED) | EXPERIMENTAL | ROOT_CHANGE, WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | shared/asset-hands | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 78 | 0 | 35 selftest(s) |
 | shared/audio-sfx-bake | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 0 | 1 | 1 selftest(s) |
 | shared/authority-grid | BRICK (DECLARED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
+| shared/baseline-simulation-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 1 selftest(s) |
 | shared/city-gates | BRIDGE (DECLARED) | EXPERIMENTAL | NETWORK_WRITE, PUBLIC_RELEASE | 5 | 3 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
+| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 5 | 9 selftest(s) |
+| shared/compute-substrate-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 4 | 1 selftest(s) |
 | shared/event-journal | ORGAN (DECLARED) | EXPERIMENTAL | WRITE_CANDIDATE | 3 | 2 | 1 selftest(s) |
 | shared/evidence-grid | SENSOR (DECLARED) | EXPERIMENTAL | OBSERVE_LOCAL | 4 | 2 | 1 selftest(s) |
 | shared/game-asset-foundation | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 3 | 1 selftest(s) |
 | shared/game-capability-atlas | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | shared/game-fsm | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 0 | 3 | 1 selftest(s) |
+| shared/game-production-runner | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, ROOT_CHANGE | 52 | 12 | 1 selftest(s) |
+| shared/grounded-growth-challenger-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 7 | 1 selftest(s) |
+| shared/grounded-growth-current-state | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 5 | 1 selftest(s) |
+| shared/grounded-growth-direction-handoff | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 7 | 5 | 1 selftest(s) |
+| shared/grounded-growth-feedback | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 8 | 7 | 1 selftest(s) |
+| shared/grounded-growth-frontier-gate | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 15 | 8 | 1 selftest(s) |
+| shared/grounded-growth-human-bridge | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 10 | 6 | 1 selftest(s) |
+| shared/grounded-growth-human-bridge-v2 | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 7 | 1 selftest(s) |
+| shared/grounded-growth-human-handoff | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 10 | 8 | 1 selftest(s) |
+| shared/grounded-growth-human-route-coverage | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 9 | 6 | 1 selftest(s) |
+| shared/grounded-growth-knowledge-frontier | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 1 selftest(s) |
+| shared/grounded-growth-outcomes | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 7 | 6 | 1 selftest(s) |
+| shared/grounded-growth-participation-frontier | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 10 | 7 | 1 selftest(s) |
+| shared/grounded-growth-phone-evidence-gate | SENSOR (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 7 | 6 | 1 selftest(s) |
+| shared/grounded-growth-signal-lineage | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 8 | 5 | 1 selftest(s) |
+| shared/grounded-growth-voluntary-choice-frontier | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 1 | 0 | 1 selftest(s) |
 | shared/hands-rail | HAND (DECLARED) | EXPERIMENTAL | EXECUTE_CONFINED, WRITE_CANDIDATE | 4 | 4 | 1 selftest(s) |
+| shared/hardware-research-registry | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 1 selftest(s) |
+| shared/human-benefit-evidence | SENSOR (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 8 | 4 | 1 selftest(s) |
+| shared/identity-shell-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 19 | 6 | 5 selftest(s) |
 | shared/intake-harbor | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
 | shared/local-sync | BRICK (DECLARED) | EXPERIMENTAL | NONE | 3 | 2 | 1 selftest(s) |
+| shared/model-shadow-challenger-gate | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 6 | 1 selftest(s) |
+| shared/model-shadow-continuity | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 25 | 4 | 1 selftest(s) |
+| shared/model-shadow-history-checkpoint-anchor | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE | 21 | 4 | 2 selftest(s) |
+| shared/model-shadow-history-checkpoint-pairwise | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 21 | 3 | 3 selftest(s) |
+| shared/model-shadow-history-checkpoint-pin-settlement-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | 29 | 5 | 3 selftest(s) |
+| shared/model-shadow-history-checkpoint-pin-transition | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 26 | 4 | 2 selftest(s) |
+| shared/model-shadow-history-checkpoint-retention-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | 33 | 5 | 3 selftest(s) |
+| shared/model-shadow-portable-pin-settlement-history-checkpoint | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | OBSERVE_LOCAL, ROOT_CHANGE, WRITE_CANDIDATE | 26 | 6 | 3 selftest(s) |
+| shared/model-shadow-retention-audit-observation-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | 22 | 4 | 3 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, ROOT_CHANGE, WRITE_CANDIDATE | 22 | 6 | 3 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome-history-checkpoint | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE, WRITE_CANDIDATE | 26 | 3 | 2 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | OBSERVE_LOCAL, WRITE_CANDIDATE | 23 | 5 | 2 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | OBSERVE_LOCAL | 24 | 3 | 3 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | CANON_CHANGE, OBSERVE_LOCAL, ROOT_CHANGE | 27 | 4 | 3 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | 26 | 3 | 3 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observer | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE | 23 | 3 | 3 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-review-request | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, ROOT_CHANGE | 12 | 2 | 2 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome-transition-settlement-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | CANON_CHANGE, ROOT_CHANGE, WRITE_CANDIDATE | 31 | 4 | 3 selftest(s) |
+| shared/model-shadow-retention-audit-review-outcome-transition-settlement-pairwise-observer | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE | 21 | 3 | 3 selftest(s) |
+| shared/model-shadow-retention-audit-review-request | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, ROOT_CHANGE, WRITE_CANDIDATE | 21 | 3 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-anchor-gate | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 15 | 7 | 2 selftest(s) |
+| shared/model-shadow-review-challenge-continuity | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 14 | 5 | 2 selftest(s) |
+| shared/model-shadow-review-challenge-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE | 10 | 5 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-separation-gate | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 9 | 6 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-declared-disclosure | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 15 | 5 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-gate | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 4 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 13 | 5 | 2 selftest(s) |
+| shared/model-shadow-review-challenge-transition-local-possession-challenge | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE, WRITE_CANDIDATE | 15 | 7 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-anchor | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 19 | 7 | 2 selftest(s) |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 16 | 4 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-separation | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 6 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | CANON_CHANGE, OBSERVE_LOCAL, ROOT_CHANGE, WRITE_CANDIDATE | 9 | 6 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | CANON_CHANGE, OBSERVE_LOCAL, ROOT_CHANGE, WRITE_CANDIDATE | 14 | 6 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-local-possession-checkpoint-witness | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 16 | 6 | 2 selftest(s) |
+| shared/model-shadow-review-challenge-transition-local-possession-continuity | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE | 16 | 6 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-local-receiver-custody | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE, WRITE_CANDIDATE | 18 | 6 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-receiver-ack | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 17 | 4 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-transition-reconciliation | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 15 | 5 | 3 selftest(s) |
+| shared/model-shadow-review-challenge-witness | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 5 | 2 selftest(s) |
+| shared/model-shadow-signed-review-evidence | SENSOR (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 2 selftest(s) |
+| shared/model-shadow-two-phase-history-checkpoint | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE | 18 | 6 | 2 selftest(s) |
 | shared/module-evolution-ledger | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 8 | 4 | 2 selftest(s) |
 | shared/neural-visual | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 0 | 1 selftest(s) |
+| shared/portable-baseline-capsule | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 10 | 6 | 1 selftest(s) |
 | shared/procedural-animation-blocks | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 3 | 1 | 1 selftest(s) |
+| shared/research-contribution-intake | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 6 | 1 selftest(s) |
+| shared/resource-grounded-capability-gate | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 7 | 4 | 1 selftest(s) |
 | shared/schema-registry | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
+| shared/simulation-lab-extension-intake | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 5 | 1 selftest(s) |
 | shared/style-fabric | ORGAN (INFERRED_UNCONFIRMED) | WORKING_TEST | NONE | 0 | 0 | 1 selftest(s) |
 | shared/twin-surfaces | ORGAN (DECLARED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
+| shared/verification-snapshot-continuity | SENSOR (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 10 | 4 | 1 selftest(s) |
+| shared/verification-source-evolution-review | SENSOR (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 5 | 1 selftest(s) |
+| shared/verified-capability-loop | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 9 | 1 selftest(s) |
 | shared/visual-actions | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 7 | 0 | 1 selftest(s) |
 | shared/visual-fx | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 0 | 1 selftest(s) |
 | shared/visual-kernel | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 0 | 1 selftest(s) |
 | shared/visual-proof | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 0 | 1 selftest(s) |
+| shared/voluntary-phone-qa-campaign | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 9 | 5 | 1 selftest(s) |
 | shared/workflow-transit | ROUTE (DECLARED) | EXPERIMENTAL | NONE | 4 | 3 | 1 selftest(s) |
 | shell-guardian | HAND (INFERRED_UNCONFIRMED) | TEST | EXECUTE_TRUSTED, WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | skinner | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 9 | 4 | 2 selftest(s) |
@@ -507,10 +586,15 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `browser-global-surface-observatory` → `axm.entry-resource-graph/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `browser-lan-hardware-qa-lab` → `axm.qa-evidence-request/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `browser-lan-hardware-qa-lab` → `browser-device-metadata` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `browser-lan-hardware-qa-lab` → `explicit-voluntary-human-observation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `browser-lan-hardware-qa-lab` → `service:review-inbox` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `browser-lan-hardware-qa-lab` → `service:runtime` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `browser-lan-hardware-qa-lab` → `axm.device-qa-evidence/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `browser-lan-hardware-qa-lab` → `axm.qa-device-evidence/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `browser-lan-hardware-qa-lab` → `axm.qa-evidence-request/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `browser-lan-hardware-qa-lab` → `axm.qa-journey-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `browser-lan-hardware-qa-lab` → `axm.qa-phone-review-handoff/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `browser-lan-hardware-qa-lab` → `axm.review-item/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `bulk-intake-conveyor` → `axm.archive-intake-map/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `bulk-intake-conveyor` → `axm.bulk-intake-conveyor-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `bulk-intake-conveyor` → `filesystem:explicit-archive-supply-root` (UNKNOWN)
@@ -571,6 +655,14 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `cognitive-resource-meter` → `provider:explicit-declaration` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `cognitive-resource-meter` → `service:technical-glasses` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `cognitive-resource-meter` → `axm.workshop.codex-goal-completion-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `compute-substrate-lab` → `axm.compute-hardware-reference/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `compute-substrate-lab` → `axm.compute-substrate-intake/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `compute-substrate-lab` → `axm.research-observation/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `compute-substrate-lab` → `service:compute-substrate-lab-core` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `compute-substrate-lab` → `service:deterministic-research-foundry` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `compute-substrate-lab` → `service:hardware-research-registry-core` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `compute-substrate-lab` → `axm.compute-hardware-reference/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `compute-substrate-lab` → `axm.research-evidence-ledger/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `consent-agent-memory-dataset-curator` → `bounded-local-fixture` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `consent-agent-memory-dataset-curator` → `human-direction` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `consent-agent-memory-dataset-curator` → `human-review` (UNKNOWN)
@@ -610,18 +702,39 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `deterministic-build-cook-patch-pipeline` → `human-visual-approval` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `deterministic-build-cook-patch-pipeline` → `axm.cooked-package/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `deterministic-build-cook-patch-pipeline` → `axm.p1-production-scenario-verification/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-continuation-capsule` → `axm.local-continuation-declaration/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-continuation-capsule` → `deterministic-json-core` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-continuation-capsule` → `filesystem:explicit-source-files` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-continuation-capsule` → `memory-reference:axm.memory.reentry-capsule` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-continuation-capsule` → `memory-reference:axm.memory.session-handoff-packet` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-job-cache-scheduler` → `bounded-local-fixture` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-job-cache-scheduler` → `human-direction` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-job-cache-scheduler` → `human-review` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `deterministic-job-cache-scheduler` → `axm.deterministic-job-run/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `deterministic-job-cache-scheduler` → `axm.p34-release-verification/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-json-core` → `application/json-compatible-value` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-base-refresh` → `approved-git-remote` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-base-refresh` → `filesystem:explicit-clean-publish-lane-worktree` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-base-refresh` → `git-pr.checkpoint-verification` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-base-refresh` → `local-git-runtime` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `deterministic-pr-base-refresh` → `axm.git-pr-base-refresh-plan-verification/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `deterministic-pr-base-refresh` → `axm.git-pr-base-refresh-receipt-verification/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-pr-checkpoint` → `axm.git-pr-evidence-input/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-pr-checkpoint` → `axm.git-pr-review-metadata/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-pr-checkpoint` → `axm.git-pr-scope-policy/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-pr-checkpoint` → `deterministic-json-core` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-pr-checkpoint` → `filesystem:explicit-clean-git-working-copy` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-pr-checkpoint` → `local-git-runtime` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-publisher` → `filesystem:explicit-clean-publish-lane-worktree` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-publisher` → `host-authenticated-github-cli-session` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-publisher` → `local-git-runtime` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-sequencer` → `git-pr.deterministic-checkpoint-handoff` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-sequencer` → `git-pr.publisher-transport-handoff-optional` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-sequencer` → `host-authenticated-github-cli-session` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-pr-sequencer` → `human-or-steward-explicit-sequence-policy` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `deterministic-pr-sequencer` → `axm.chatgpt-platform-merge-handoff/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `deterministic-pr-sequencer` → `axm.git-pr-next-action-handoff-verification/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `deterministic-pr-sequencer` → `axm.git-pr-sequence-plan-verification/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `device-handoff` → `browser-file-picker` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `device-handoff` → `explicit-command-deck-or-chroma-route` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `device-handoff` → `private-lan` (UNKNOWN)
@@ -838,6 +951,10 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `game-organism-lab` → `axm.game-organism-blueprint/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `game-organism-lab` → `axm.game-organism-assembly-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `game-organism-lab` → `axm.game-organism-blueprint/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `game-production-runner` → `service:game-production-runner-core` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `game-production-runner` → `service:local-godot-substrate` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `game-production-runner` → `service:node-permission-model` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `game-production-runner` → `service:verification-spine` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `game-ui-hud-menu-runtime` → `bounded-local-fixture` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `game-ui-hud-menu-runtime` → `human-direction` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `game-ui-hud-menu-runtime` → `human-review` (UNKNOWN)
@@ -902,6 +1019,12 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `handoff-wiring-observatory` → `axm.handoff-wiring-map/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `handoff-wiring-observatory` → `axm.module-contract/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `handoff-wiring-observatory` → `axm.workshop-capability-index/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hardware-research-registry` → `axm.hardware-research-intake/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hardware-research-registry` → `axm.research-observation/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hardware-research-registry` → `service:deterministic-research-foundry` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hardware-research-registry` → `service:hardware-research-registry-core` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `hardware-research-registry` → `axm.compute-hardware-reference/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `hardware-research-registry` → `axm.research-evidence-ledger/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `hermes-local` → `filesystem:tools/agent-tool-forge/prompt-packs` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `hermes-local` → `filesystem:tools/hermes` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `hermes-local` → `human:explicit-bootstrap-command` (UNKNOWN)
@@ -1324,6 +1447,9 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `repair-resilience-library` → `axm.repair.component-id/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `repairbuddy` → `axm.game-package-verification/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `repairbuddy` → `axm.module-seam-gap-report/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `repairbuddy` → `axm.repairbuddy.warning-baseline/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `repairbuddy` → `axm.verify-report/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `repairbuddy` → `deterministic-json-core` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `repairbuddy` → `human-review` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `repairbuddy` → `platform-authored-pattern-draft` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `repairbuddy` → `technical-glasses-snapshot` (UNKNOWN)
@@ -1334,6 +1460,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `repairbuddy` → `axm.repairbuddy.pattern/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `repairbuddy` → `axm.repairbuddy.replay-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `repairbuddy` → `axm.repairbuddy.report/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `repairbuddy` → `axm.verify-report/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `reproducible-build-sbom-generator` → `bounded-local-fixture` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `reproducible-build-sbom-generator` → `human-direction` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `reproducible-build-sbom-generator` → `human-review` (UNKNOWN)
@@ -1346,10 +1473,25 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `research-foundry` → `axm.workshop-direction.plan/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `review-inbox` → `artifact-sha256` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `review-inbox` → `attributed-review-votes` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.authenticated-review-envelope/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.model-shadow-retention-audit-review-action/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-review-action/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.review-authentication-ledger/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.review-authentication-ledger/v2` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.review-item/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.review-operation-lease-owner/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.review-operation-lease-retirement-publication-archival-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.review-operation-lease-retirement-recovery-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.review-operation-lease-retirement-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.review-operation-lease-retirement-withdrawal-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.review-trust-policy/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.tool-selftest-results/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.tools-index/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `review-inbox` → `axm.workshop-readiness-view/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `browser-web-crypto-sha256` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `deterministic-canonical-json` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `review-inbox` → `host-configured-ed25519-public-keys` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `review-inbox` → `axm.review-authentication-ledger/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `review-inbox` → `axm.review-candidate/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `review-inbox` → `axm.review-decision/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `review-inbox` → `axm.review-discussion/v1` (UNKNOWN)
@@ -1411,6 +1553,38 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `sensorium-lab` → `axm.sensorium-lab-state/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `sensorium-lab` → `axm.sensorium-runtime-registry/v2` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `sensorium-lab` → `axm.sensorium-lab-state/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.grand-garden.instance-learning-steward-ledger/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.review-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.candidate-review-decision/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.candidate-review-decision/v2` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.candidate-review-intake-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.compact-snapshot-set/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.evidence-bound-value-trial/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.lesson-presentation-ack/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.mirror-proposal-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.pickup-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.scored-value-trial/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.trial-arm-outcome/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.trial-assignment-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.trial-assignment-request/v2` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.trial-case-evaluation/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `axm.shadow-clone.trial-participation-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `future:codex.task.compact-snapshot.read/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `human:explicit-learning-authorization` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `human:explicit-mirror-review` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `human:explicit-paired-recipient-requests` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `human:explicit-pickup-selection` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `human:host-authenticated-candidate-review` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `human:host-authenticated-evidence-receipts` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shadow-clone-learning-steward` → `human:two-independent-evaluator-seats` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shadow-clone-learning-steward` → `axm.code-capability.compact-snapshot-provider/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shadow-clone-learning-steward` → `axm.grand-garden.instance-learning-steward-ledger/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shadow-clone-learning-steward` → `axm.review-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shadow-clone-learning-steward` → `axm.shadow-clone.learning-ledger/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shadow-clone-learning-steward` → `axm.shadow-clone.mirror-proposal-request/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shadow-clone-learning-steward` → `axm.shadow-clone.pickup-request/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shadow-clone-learning-steward` → `axm.shadow-clone.provider-capability-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shadow-clone-learning-steward` → `axm.shadow-clone.scored-value-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shapeable-builder` → `axm.agent.proposal` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shapeable-builder` → `axm.shapeable.block-pack` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shapeable-builder` → `axm.shapeable.project` (UNKNOWN)
@@ -1419,6 +1593,10 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/audio-sfx-bake` → `axm.audio.sound/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/authority-grid` → `axm.authority-policy/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/authority-grid` → `axm.effect-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/baseline-simulation-lab` → `axm.evidence-receipt/v2` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/baseline-simulation-lab` → `axm.verified-capability-cycle-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/baseline-simulation-lab` → `caller-supplied adapter and transport receipts` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/baseline-simulation-lab` → `caller-supplied digest-bound observations` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-gates` → `axm.artifact-export/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-gates` → `axm.decision/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-gates` → `axm.effect-request/v1` (UNKNOWN)
@@ -1427,6 +1605,16 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `filesystem:explicit-workshop-root` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `git:local-source-commit` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `json-schema:draft-2020-12` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `exact descriptor digests` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `explicit request authority policy` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `host-observed availability` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `provider descriptors` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.compute-hardware-reference/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.compute-substrate-intake/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.research-observation/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `service:deterministic-research-foundry` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/compute-substrate-lab` → `axm.compute-hardware-reference/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/compute-substrate-lab` → `axm.research-evidence-ledger/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/event-journal` → `axm.event/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/event-journal` → `filesystem:explicit-journal-file` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/evidence-grid` → `domain-receipt` (UNKNOWN)
@@ -1442,23 +1630,332 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/game-fsm` → `axm.game-fsm/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-fsm` → `discrete events` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-fsm` → `named guard/action registries` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `axm.game-intent-lock/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `axm.game-organism-assembly-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `axm.game-production-graph/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `axm.game-production-package/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `axm.production-graph/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `axm.production-intent-lock/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `axm.production-package/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `axm.verification-receipt/v2` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `service:game-forge` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `service:game-hub` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `service:local-godot-substrate` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/game-production-runner` → `service:node-permission-model` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-challenger-lab` → `axm.diagnostic-experiment.receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-challenger-lab` → `axm.grounded-growth-direction-readiness/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-challenger-lab` → `axm.shadow-simulation/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-challenger-lab` → `bounded experimental organ contracts` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-challenger-lab` → `caller-declared held-out case references` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-current-state` → `axm.grounded-growth-portfolio/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-current-state` → `its exact rebuild inputs` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-current-state` → `optional detached axm.grounded-growth-current-state-receipt/v1 JSON file` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-direction-handoff` → `Grounded Evolution Intelligence evolution_direction v0.1.0` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-direction-handoff` → `Grounded Evolution Intelligence improvement_need v0.1.0` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-direction-handoff` → `optional digest-bound proposal selection declaration` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-feedback` → `axm.grounded-growth-outcome-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-feedback` → `axm.grounded-growth-portfolio/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-feedback` → `digest-bound declared route-state references` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-feedback` → `explicit need-coverage links` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-feedback` → `pinned Grounded Evolution Intelligence evidence_record v0.1.0 schema snapshot` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-feedback` → `pinned Grounded Evolution Intelligence improvement_need v0.1.0 schema snapshot` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/grounded-growth-feedback` → `axm.improvement-need/candidate` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-frontier-gate` → `axm.grounded-growth-human-handoff-readiness/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-frontier-gate` → `axm.grounded-growth-portfolio/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-frontier-gate` → `axm.simulation-lab-extension-intake-readiness/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-bridge-v2` → `axm.human-benefit-evaluation-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-bridge-v2` → `axm.human-benefit-judgment-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-bridge-v2` → `axm.human-benefit-protocol/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-bridge-v2` → `axm.verified-capability-cycle-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-bridge-v2` → `claim-scoped external source-trust reference` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-bridge` → `axm.human-benefit-evaluation-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-bridge` → `axm.human-benefit-judgment-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-bridge` → `axm.verified-capability-cycle-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-bridge` → `claim-scoped external source-trust reference` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-handoff` → `axm.human-benefit-evaluation-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-handoff` → `axm.human-benefit-judgment-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-handoff` → `axm.human-benefit-protocol/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-handoff` → `axm.human-benefit-session-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-handoff` → `axm.verified-capability-cycle-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-route-coverage` → `axm.grounded-growth-portfolio/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-route-coverage` → `axm.human-benefit-participant-packet/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-route-coverage` → `axm.human-benefit-protocol/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-human-route-coverage` → `explicit held-route evidence` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-knowledge-frontier` → `axm.grounded-growth-outcome-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-knowledge-frontier` → `axm.grounded-growth-portfolio/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-outcomes` → `axm.evidence-closure-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-outcomes` → `axm.gei.intervention-reference/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-outcomes` → `axm.verified-capability-cycle-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-outcomes` → `held-out-ai-workflow-evaluation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-outcomes` → `human-native-outcome-evidence` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-participation-frontier` → `axm.grounded-growth-human-handoff-readiness/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-participation-frontier` → `axm.grounded-growth-outcome-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-participation-frontier` → `axm.human-benefit-participant-packet/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-participation-frontier` → `axm.human-benefit-protocol/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-phone-evidence-gate` → `current game manifest surface` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-phone-evidence-gate` → `optional axm.device-qa-evidence/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-phone-evidence-gate` → `optional axm.grounded-growth-human-handoff-package/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-phone-evidence-gate` → `optional later axm.game-package-verification/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-signal-lineage` → `axm.grounded-growth-portfolio/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-signal-lineage` → `axm.research-disposition/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-signal-lineage` → `digest-bound current evidence references` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/grounded-growth-signal-lineage` → `explicit signal and proposal lineage declarations` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/hands-rail` → `axm.decision/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/hands-rail` → `axm.effect-request/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/hands-rail` → `axm.executor-declaration/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/hardware-research-registry` → `axm.hardware-research-intake/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/hardware-research-registry` → `axm.research-observation/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/hardware-research-registry` → `service:deterministic-research-foundry` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/hardware-research-registry` → `axm.compute-hardware-reference/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/hardware-research-registry` → `axm.research-evidence-ledger/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/human-benefit-evidence` → `digest-bound baseline and candidate artifact references` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/human-benefit-evidence` → `explicit claim-scoped human judgment` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/human-benefit-evidence` → `voluntary structured human responses` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/identity-shell-fabric` → `axm.human-acceptance/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/identity-shell-fabric` → `caller-authored-blueprint` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/identity-shell-fabric` → `exact-component-descriptors-and-digests` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/identity-shell-fabric` → `exact-parent-continuity-lineage-and-human-decision-references` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/identity-shell-fabric` → `explicit-authority-and-resource-envelope` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/intake-harbor` → `axm.artifact-ref/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/intake-harbor` → `axm.intake-step-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/local-sync` → `axm.merge-rule/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/local-sync` → `axm.state-snapshot/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-challenger-gate` → `axm.review-item/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-challenger-gate` → `caller-declared held-out case references` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/model-shadow-challenger-gate` → `axm.model-shadow-challenger-review-projection/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-continuity` → `caller-supplied digest-bound structured model traces` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-continuity` → `caller-supplied exact task context seat and provenance references` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-continuity` → `shared Baseline Simulation Lab seat and signal input shape` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/model-shadow-continuity` → `axm.model-shadow-review-projection/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/model-shadow-continuity` → `axm.model-shadow-simulation-projection/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-anchor` → `for audit, exact current v2.1 ledger service options and complete caller packages when current state is valid` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-anchor` → `one caller-supplied anchor policy, expected anchor digest, and detached Ed25519 authorizations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-anchor` → `one caller-supplied witness policy and detached Ed25519 attestations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-anchor` → `one self-validating caller-presented v2.1 portable settlement-history checkpoint` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pairwise` → `one caller-supplied transition id and untrusted UTC comparison time` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pairwise` → `the two self-validating v2.1 portable checkpoints nested inside those packages` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pairwise` → `two exact caller-presented v2.2 anchored checkpoint rebuild packages` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pin-settlement-ledger` → `caller-supplied untrusted UTC manifest proposal and settlement times` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pin-settlement-ledger` → `one exact caller-presented v2.4 genesis pin package as service configuration data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pin-settlement-ledger` → `one exact eligible v2.4 successor transition package per proposal` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pin-settlement-ledger` → `one explicit caller-owned local state root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pin-settlement-ledger` → `separate exact proposal and settlement confirmation strings` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pin-transition` → `one caller-supplied transition id, successor pin id, and untrusted UTC comparison time` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pin-transition` → `one self-validating caller-presented v2.4 pin as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pin-transition` → `the exact unchanged v2.3 pairwise transition derived from those packages` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-pin-transition` → `two exact caller-presented v2.2 anchored checkpoint rebuild packages` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-retention-ledger` → `one exact current v2.5 presentation or an absent or invalid current namespace for later audit` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-retention-ledger` → `one exact original proposal package plus separate settlement id time and confirmation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-retention-ledger` → `one existing caller-owned local retention root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-retention-ledger` → `one retention proposal id untrusted canonical UTC time and exact proposal confirmation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-history-checkpoint-retention-ledger` → `one v2.6 checkpoint plus its complete exact v2.5 origin package as transient proposal input` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-portable-pin-settlement-history-checkpoint` → `one caller-presented unauthenticated portable checkpoint for later audit` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-portable-pin-settlement-history-checkpoint` → `one caller-supplied audit id and untrusted canonical UTC audit time` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-portable-pin-settlement-history-checkpoint` → `one caller-supplied checkpoint id and untrusted canonical UTC checkpoint time` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-portable-pin-settlement-history-checkpoint` → `one deduplicated exact caller package for every persisted v2.5 proposal and settlement` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-portable-pin-settlement-history-checkpoint` → `one exact current v2.5 service configuration and complete package set when current state is valid` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-portable-pin-settlement-history-checkpoint` → `one explicit v2.5 service configuration as transient caller data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-observation-ledger` → `one exact v2.7 current audit input and receipt as transient input` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-observation-ledger` → `one exact v2.7 retention service configuration as transient input` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-observation-ledger` → `one existing caller-owned local observation root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-observation-ledger` → `one observation id caller UTC time and exact unauthenticated confirmation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger` → `one entry id untrusted UTC recording time and exact explicit confirmation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger` → `one exact v3.5 forward transition input and receipt as transient caller data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger` → `one existing explicit caller-owned local state root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger` → `one explicitly configured log id exact genesis anchored-checkpoint reference checkpoint reference and caller epoch` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise` → `one caller-supplied transition id and untrusted UTC comparison time` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise` → `the two self-validating v3.3 checkpoints nested inside those packages` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise` → `two exact caller-presented v3.4 anchored checkpoint packages` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor` → `caller-supplied ids epochs and untrusted UTC times` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor` → `one caller-configured current v3.2 ledger for optional anchored audit` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor` → `one caller-supplied anchor policy expected anchor digest and detached Ed25519 authorizations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor` → `one caller-supplied witness policy and detached Ed25519 attestations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint-anchor` → `one exact self-validating v3.3 checkpoint` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint` → `caller-supplied checkpoint and audit ids plus untrusted UTC times` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint` → `one caller-retained self-validating v3.3 checkpoint and one later configured v3.2 ledger for audit` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-history-checkpoint` → `one exact configured caller-owned v3.2 review-outcome ledger for checkpoint origin` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-ledger` → `one exact v3.1 outcome plus its complete exact-rebuild input as transient capture data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-ledger` → `one existing caller-owned local outcome ledger root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-ledger` → `one record id caller UTC time and exact unauthenticated confirmation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observer` → `one caller-supplied observation id and untrusted UTC observation time` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observer` → `the fixed canonical manifest proposal and settlement records already stored beneath each explicit root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observer` → `two explicit v3.7 service configurations for existing caller-owned settlement roots` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observer` → `axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observation/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-review-request` → `one caller request id UTC time and one-to-ten requested review seats` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-review-request` → `one exact axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observation/v1 and its original caller package` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-ledger` → `one exact original proposal package settlement id later untrusted UTC time and separate exact settlement confirmation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-ledger` → `one exact persisted v3.6 entry and its complete caller rebuild package as transient proposal input` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-ledger` → `one existing caller-owned settlement root distinct and nonnested from one existing v3.6 source root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-ledger` → `one proposal id untrusted UTC time and exact proposal confirmation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-pairwise-observer` → `one caller-supplied observation id and untrusted UTC observation time` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-pairwise-observer` → `the complete caller-retained exact package for each presented latest v3.7 settlement receipt` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome-transition-settlement-pairwise-observer` → `two explicit v3.7 service configurations for existing caller-owned roots` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome` → `axm.review-item/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-outcome` → `caller-presented persisted Review Inbox item with one to ten exact-digest votes` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-request` → `one caller request id UTC time and one-to-ten requested review seats` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-request` → `one caller-presented initial axm.review-item/v1 and one separately reloaded exact copy for optional pending handoff` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-retention-audit-review-request` → `one exact persisted held axm.model-shadow-retention-audit-observation-ledger-observation/v1 and its v2.8 service configuration` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-anchor-gate` → `axm.model-shadow-review-challenge-ledger-snapshot/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-anchor-gate` → `axm.model-shadow-review-challenge-witness/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-anchor-gate` → `caller-presented checkpoint-witness anchor policy` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-anchor-gate` → `caller-presented expected anchor digest` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-anchor-gate` → `detached anchor authorization signatures` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-anchor-gate` → `exact witness rebuild inputs` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-anchor-gate` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-continuity` → `axm.model-shadow-review-challenge-consumption/v1 entries as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-continuity` → `axm.model-shadow-review-challenge-ledger-manifest/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-continuity` → `caller-owned existing state root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-continuity` → `caller-presented prior checkpoint as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-continuity` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-ledger` → `caller-owned existing state root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-ledger` → `exact explicit consumption confirmation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-ledger` → `exact signed-review receipt rebuild input` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-ledger` → `filesystem exclusive-create and file-fsync` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-separation-gate` → `axm.model-shadow-review-challenge-anchored-witness/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-separation-gate` → `axm.model-shadow-review-challenge-ledger-snapshot/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-separation-gate` → `exact anchored-witness rebuild inputs` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-separation-gate` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-separation-gate` → `verified anchor key fingerprints and declared steward digests` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-separation-gate` → `verified witness key fingerprints and declared actor digests` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-declared-disclosure` → `one caller-declared roster of two to sixty-four member labels` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-declared-disclosure` → `one exact v0.9 presentation reference commitment per declared member label` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-declared-disclosure` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-declared-disclosure` → `transient v0.8 history and v0.7 transition packages required by each submitted v0.9 presentation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-declared-disclosure` → `zero or one exact v0.9 presentation package per declared member label` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-gate` → `canonical checkpoint entries and anchor references from both chains` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-gate` → `exact rebuild inputs for both separated chains` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-gate` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-gate` → `two axm.model-shadow-review-challenge-separated-witness/v1 receipts as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-ledger` → `one axm.model-shadow-review-challenge-pairwise-transition/v1 receipt as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-ledger` → `one caller-owned existing state root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-ledger` → `one caller-supplied log id and genesis separated-witness reference` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-ledger` → `one exact explicit confirmation phrase` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-ledger` → `the exact v0.7 transition rebuild input` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-challenge` → `exact explicit confirmation before answer persistence` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-challenge` → `one caller-declared challenger label and transient Ed25519 key` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-challenge` → `one caller-declared receiver label and matching transient Ed25519 key for answer only` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-challenge` → `one exact 32-byte nonce and caller-declared challenge time window no longer than 24 hours` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-challenge` → `one exact persisted v1.2 local receiver custody record` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-challenge` → `one existing caller-owned local receiver custody root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-challenge` → `the exact v1.1 receiver policy referenced by that custody record` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-anchor` → `axm.model-shadow-review-challenge-transition-local-possession-checkpoint-witness/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-anchor` → `axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-anchor` → `caller-presented expected anchor digest` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-anchor` → `caller-presented local-possession checkpoint-witness anchor policy` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-anchor` → `detached anchor authorization signatures` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-anchor` → `exact v1.5 witness rebuild inputs` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-anchor` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition` → `canonical local-possession checkpoint response entries and anchor/policy references` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition` → `exact v1.7 rebuild inputs for both separated chains` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition` → `two axm.model-shadow-review-challenge-transition-local-possession-checkpoint-separated-witness/v1 receipts as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-separation` → `axm.model-shadow-review-challenge-transition-local-possession-checkpoint-anchored-witness/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-separation` → `axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-separation` → `exact v1.6 anchored-witness rebuild inputs` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-separation` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-separation` → `verified v1.5 witness key fingerprints and declared actor digests` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-separation` → `verified v1.6 anchor key fingerprints and declared steward digests` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger` → `caller-supplied untrusted UTC timestamps` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger` → `exact explicit confirmation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger` → `one exact axm.model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition/v1 forward-extension receipt and rebuild input as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger` → `one explicit caller-owned ledger root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger` → `one explicitly configured local possession source root observed through the v1.4 continuity adapter` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger` → `the candidate axm.model-shadow-review-challenge-transition-local-possession-checkpoint-separated-witness/v1 package embedded in that rebuild input` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger` → `caller-supplied untrusted UTC timestamps` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger` → `one exact v1.8 forward transition and rebuild package as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger` → `one explicit caller-owned ledger root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger` → `one later v1.4 source capture and v1.7 separated audit before settlement` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger` → `one v1.4 source capture and v1.7 separated audit before proposal` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger` → `separate exact proposal and settlement confirmations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-witness` → `one caller-supplied checkpoint-specific Ed25519 public key policy as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-witness` → `one exact axm.model-shadow-review-challenge-transition-local-possession-checkpoint/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-witness` → `one exact axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-witness` → `one through ten detached checkpoint witness attestations as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-witness` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-checkpoint-witness` → `the unchanged v1.4 checkpoint, snapshot and continuity validators` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-continuity` → `one caller-owned v1.3 local possession response namespace as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-continuity` → `one caller-presented prior v1.4 checkpoint as data for continuity comparison` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-continuity` → `one configured receiver label, challenger label and challenger Ed25519 public key as transient validation data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-continuity` → `one exact v1.1 receiver policy as transient validation data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-continuity` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-possession-continuity` → `the exact v1.2 custody records referenced by those responses as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-receiver-custody` → `exact explicit confirmation for each sender or receiver write` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-receiver-custody` → `one caller-selected enabled receiver label and matching transient Ed25519 private key` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-receiver-custody` → `one exact v1.0 declared-disclosure assessment package as transient data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-receiver-custody` → `one exact v1.1 caller receiver policy as transient data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-receiver-custody` → `one existing caller-owned local transport root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-local-receiver-custody` → `one separate existing caller-owned local receiver custody root` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-receiver-ack` → `one caller-supplied two-to-ten receiver Ed25519 public-key policy as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-receiver-ack` → `one exact v1.0 declared-disclosure assessment package as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-receiver-ack` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-receiver-ack` → `zero or one detached acknowledgement per enabled declared receiver label` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-reconciliation` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-reconciliation` → `the transient exact v0.8 advance input for every presented entry` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-reconciliation` → `two bounded ordered arrays of v0.8 entries as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-reconciliation` → `two exact presentation receipts as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-transition-reconciliation` → `two exact v0.8 manifests as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-witness` → `axm.model-shadow-review-challenge-checkpoint/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-witness` → `axm.model-shadow-review-challenge-ledger-snapshot/v1 as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-witness` → `caller-supplied checkpoint-specific Ed25519 public key policy` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-witness` → `detached checkpoint witness signatures` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-review-challenge-witness` → `strict deterministic canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-signed-review-evidence` → `axm.model-shadow-challenger-review-evidence/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-signed-review-evidence` → `caller-supplied digest-bound challenge` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-signed-review-evidence` → `caller-supplied Ed25519 public key policy` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-signed-review-evidence` → `detached Ed25519 signatures` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-two-phase-history-checkpoint` → `one caller-presented unauthenticated portable checkpoint for later audit` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-two-phase-history-checkpoint` → `one caller-supplied audit id and untrusted UTC audit time` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-two-phase-history-checkpoint` → `one caller-supplied checkpoint id and untrusted UTC checkpoint time` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-two-phase-history-checkpoint` → `one exact caller package for every persisted v2.0 proposal and settlement` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-two-phase-history-checkpoint` → `one exact current v2.0 service configuration and complete caller package set when current state is valid` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/model-shadow-two-phase-history-checkpoint` → `one explicit v2.0 service configuration as transient caller data` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/module-evolution-ledger` → `axm.module-install-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/module-evolution-ledger` → `axm.verification-receipt/v2` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/module-evolution-ledger` → `mike-explicit-approval-reference` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/module-evolution-ledger` → `recovery-center-snapshot-reference` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/portable-baseline-capsule` → `axm.specialist-mask/v2 identity-overlay boundary` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/portable-baseline-capsule` → `axm.verified-capability-cycle-receipt/v1 baseline reference shape` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/portable-baseline-capsule` → `caller-supplied digest-bound observations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/portable-baseline-capsule` → `generated-view freshness declarations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/portable-baseline-capsule` → `Mirror original/private-lessons/disposable-challenger separation` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/procedural-animation-blocks` → `axm.procedural-motion/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `shared/procedural-animation-blocks` → `axm.procedural-motion-block/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/research-contribution-intake` → `caller-supplied claim-native evidence references` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/research-contribution-intake` → `caller-supplied contributor-seat provenance` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/research-contribution-intake` → `caller-supplied digest-bound inert research artifacts` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/research-contribution-intake` → `caller-supplied retained signals and proposal dispositions` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/research-contribution-intake` → `one exact portable baseline reference` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/resource-grounded-capability-gate` → `axm.verified-capability-cycle-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/resource-grounded-capability-gate` → `direct-machine-meter-or-imported-attestation` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/resource-grounded-capability-gate` → `workload-and-environment-references` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/schema-registry` → `axm.city-graph/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/schema-registry` → `filesystem:declared-schema-files` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/simulation-lab-extension-intake` → `axm.branch-return-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/simulation-lab-extension-intake` → `axm.modular-piece-package/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/simulation-lab-extension-intake` → `axm.module-contract/v1 host roots` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/simulation-lab-extension-intake` → `caller-supplied simulation extension declaration` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/twin-surfaces` → `axm.city-graph/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/twin-surfaces` → `axm.schema-registry/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verification-snapshot-continuity` → `axm.verification-spine-report/v2 metadata as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verification-snapshot-continuity` → `current exact source digests from a caller-owned adapter` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verification-snapshot-continuity` → `historical verification receipt as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verification-snapshot-continuity` → `tools/deterministic-json-core strict canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verification-source-evolution-review` → `current candidate continuity receipts as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verification-source-evolution-review` → `historical and candidate verification receipts as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verification-source-evolution-review` → `optional exact generated-view evidence as data` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verification-source-evolution-review` → `tools/deterministic-json-core strict canonical JSON` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verified-capability-loop` → `availability-receipt` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verified-capability-loop` → `axm.capability-gap-report/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verified-capability-loop` → `axm.review-decision/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verified-capability-loop` → `axm.workshop-need/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verified-capability-loop` → `candidate-artifact-digest` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verified-capability-loop` → `refresh-signal` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verified-capability-loop` → `source-provenance-receipt` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/verified-capability-loop` → `verification-receipt` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/voluntary-phone-qa-campaign` → `axm.device-qa-evidence/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/voluntary-phone-qa-campaign` → `axm.game-package-verification/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/voluntary-phone-qa-campaign` → `browser-lan-hardware-qa-lab:v0.3` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/voluntary-phone-qa-campaign` → `explicit-voluntary-review-records` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/workflow-transit` → `axm.route-profile/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/workflow-transit` → `axm.route-step-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/workflow-transit` → `axm.route/v1` (UNKNOWN)
