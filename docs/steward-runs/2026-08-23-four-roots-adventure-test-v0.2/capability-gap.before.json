@@ -1,0 +1,304 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "promote-exact-proven-ancestor-to-test",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "game.promotion.mike-exact-decision",
+        "game.status.test-without-canon"
+      ],
+      "degraded": [
+        "game.rollback.immutable-ancestor"
+      ],
+      "unknown": [],
+      "missing": [
+        "game.promotion.exact-byte-adapter"
+      ],
+      "declaredConstraints": {
+        "game.promotion.mike-exact-decision": [
+          "Mike explicitly directed promotion of the proven Four Roots Run game; this run construes that as internal Workshop TEST only, never CANON."
+        ],
+        "game.rollback.immutable-ancestor": [
+          "The v0.1 packet is byte-bound at the v2.5 source commit, but no installed game package records it as a rollback ancestor yet."
+        ],
+        "game.status.test-without-canon": [
+          "Workshop status vocabulary and Game Hub manifests distinguish TEST from CANON."
+        ]
+      }
+    },
+    {
+      "id": "generate-versioned-adventure-content",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [
+        "game.content.generate.deterministic",
+        "game.generated-content.byte-lineage"
+      ],
+      "unknown": [],
+      "missing": [
+        "game.adventure.content-engine",
+        "game.growth.immutable-release"
+      ],
+      "declaredConstraints": {
+        "game.content.generate.deterministic": [
+          "The Fabric deterministically generates the v0.1 maze, not an adventure content release."
+        ],
+        "game.generated-content.byte-lineage": [
+          "v0.1 has byte lineage; no installed content-release comparison exists."
+        ]
+      }
+    },
+    {
+      "id": "provide-complete-small-adventure",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [
+        "game.adventure.ending"
+      ],
+      "unknown": [],
+      "missing": [
+        "game.adventure.exploration",
+        "game.adventure.narrative",
+        "game.adventure.interaction",
+        "game.adventure.quest-inventory"
+      ],
+      "declaredConstraints": {
+        "game.adventure.ending": [
+          "The v0.1 maze has a visible finish but no authored adventure ending."
+        ]
+      }
+    },
+    {
+      "id": "run-through-existing-game-hub",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "game.runtime.game-hub-managed",
+        "game.runtime.no-outbound-network"
+      ],
+      "degraded": [
+        "game.runtime.server-authority"
+      ],
+      "unknown": [],
+      "missing": [
+        "game.persistence.server-restart"
+      ],
+      "declaredConstraints": {
+        "game.runtime.game-hub-managed": [
+          "Game Hub discovers validated game.manifest.json packages and launches an allowlisted server entry."
+        ],
+        "game.runtime.no-outbound-network": [
+          "The proposed native runtime can remain local-only and dependency-free; this is not a general sandbox claim."
+        ],
+        "game.runtime.server-authority": [
+          "Existing Game Hub packages expose the seam, but the v0.1 candidate is browser-local."
+        ]
+      }
+    },
+    {
+      "id": "prove-real-player-experience",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "game.verify.static-and-http",
+        "game.verify.complete-play-journey",
+        "game.verify.live-render-and-click"
+      ],
+      "degraded": [
+        "game.verify.keyboard-accessibility",
+        "game.verify.restart-recovery"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.verify.complete-play-journey": [
+          "Requires a deterministic semantic journey test plus a real browser journey."
+        ],
+        "game.verify.live-render-and-click": [
+          "In-app browser evidence only; script tests cannot substitute."
+        ],
+        "game.verify.keyboard-accessibility": [
+          "Must be proven on the new live runtime."
+        ],
+        "game.verify.restart-recovery": [
+          "The harness exists in other games; no Four Roots Adventure state exists yet."
+        ]
+      }
+    },
+    {
+      "id": "preserve-authority-and-rights-boundaries",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.install.separate-human-gate",
+        "game.public-reuse-rights.hold",
+        "game.canon.self-change-denied",
+        "foundation.direct-change.denied"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.install.separate-human-gate": [
+          "Generated content has no installation authority; branch integration remains Mike-controlled."
+        ],
+        "game.public-reuse-rights.hold": [
+          "Mike's internal TEST direction does not resolve public copying rights."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "game.adventure.content-engine",
+    "game.adventure.exploration",
+    "game.adventure.interaction",
+    "game.adventure.narrative",
+    "game.adventure.quest-inventory",
+    "game.growth.immutable-release",
+    "game.persistence.server-restart",
+    "game.promotion.exact-byte-adapter"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "game.adventure.content-engine",
+      "requiredBy": [
+        "generate-versioned-adventure-content"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.adventure.exploration",
+      "requiredBy": [
+        "provide-complete-small-adventure"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.adventure.interaction",
+      "requiredBy": [
+        "provide-complete-small-adventure"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.adventure.narrative",
+      "requiredBy": [
+        "provide-complete-small-adventure"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.adventure.quest-inventory",
+      "requiredBy": [
+        "provide-complete-small-adventure"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.growth.immutable-release",
+      "requiredBy": [
+        "generate-versioned-adventure-content"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.persistence.server-restart",
+      "requiredBy": [
+        "run-through-existing-game-hub"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.promotion.exact-byte-adapter",
+      "requiredBy": [
+        "promote-exact-proven-ancestor-to-test"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}
