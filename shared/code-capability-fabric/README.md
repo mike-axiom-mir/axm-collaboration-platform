@@ -47,23 +47,3 @@ Run:
 ```powershell
 node shared/code-capability-fabric/selftest.js
 ```
-
-## Later bounded `TEST` rungs
-
-The intake planner remains intact. Later files in this folder add separately
-reviewable pure contracts for v2 routing, readiness, grounded consent,
-assurance, inert blueprint composition and schema compilation, exact schema
-packet comparison, and signed Git object-inventory comparison. None of those
-contracts turns a plan into execution or grants ambient host authority.
-
-The Git object-inventory comparator is documented in
-`README-git-object-inventory-comparator-v1.md`. It compares only exact signed,
-host-supplied object records. It does not open a repository, invoke Git, read
-object bytes, prove enumeration completeness, connect the experimental mirror
-runtime, merge, promote, or decide `CANON`.
-
-Run its focused boundary suite with:
-
-```powershell
-node shared/code-capability-fabric/selftest-git-object-inventory-comparator-v1.js
-```
