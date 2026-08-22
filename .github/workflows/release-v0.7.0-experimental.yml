@@ -27,9 +27,6 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Enable Windows long-path checkout support
-        shell: powershell
-        run: git config --system core.longpaths true
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -94,6 +91,9 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Enable Windows long-path checkout support
+        shell: powershell
+        run: git config --system core.longpaths true
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
