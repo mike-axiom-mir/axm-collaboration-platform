@@ -170,22 +170,15 @@ const after = {
 };
 
 const receipt = Frontier.buildStewardshipFrontier(stewardshipInput);
+writeJson('CAPABILITY_REQUIREMENTS.json', requirements);
+writeJson('CAPABILITY_INVENTORY_BEFORE.json', before);
+writeJson('CAPABILITY_INVENTORY_AFTER.json', after);
+writeJson('CURRENT_STEWARDSHIP_FRONTIER_RECEIPT.json', receipt);
 
-function writeAll() {
-  writeJson('CAPABILITY_REQUIREMENTS.json', requirements);
-  writeJson('CAPABILITY_INVENTORY_BEFORE.json', before);
-  writeJson('CAPABILITY_INVENTORY_AFTER.json', after);
-  writeJson('CURRENT_STEWARDSHIP_FRONTIER_RECEIPT.json', receipt);
-  return receipt;
-}
-
-if (require.main === module) {
-  writeAll();
-  console.log('PASS current Grounded Growth stewardship frontier built');
-  console.log('portfolio=' + receipt.counts.portfolioCapabilityChains + ' aiPass=' + receipt.counts.portfolioAiWorkflowPass + ' humanPass=' + receipt.counts.portfolioHumanPass);
-  console.log('phoneDevice=' + receipt.counts.phoneDeviceBehaviorPass + ' phoneHuman=' + receipt.counts.phoneHumanUsefulnessPass);
-  console.log('challengerDirections=' + receipt.counts.challengerActionableDirections + ' plans=' + receipt.counts.challengerPlans + ' evaluations=' + receipt.counts.challengerEvaluations);
-}
+console.log('PASS current Grounded Growth stewardship frontier built');
+console.log('portfolio=' + receipt.counts.portfolioCapabilityChains + ' aiPass=' + receipt.counts.portfolioAiWorkflowPass + ' humanPass=' + receipt.counts.portfolioHumanPass);
+console.log('phoneDevice=' + receipt.counts.phoneDeviceBehaviorPass + ' phoneHuman=' + receipt.counts.phoneHumanUsefulnessPass);
+console.log('challengerDirections=' + receipt.counts.challengerActionableDirections + ' plans=' + receipt.counts.challengerPlans + ' evaluations=' + receipt.counts.challengerEvaluations);
 
 module.exports = {
   frontierInput,
@@ -196,6 +189,5 @@ module.exports = {
   requirements,
   before,
   after,
-  receipt,
-  writeAll
+  receipt
 };

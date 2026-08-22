@@ -1,0 +1,129 @@
+{
+  "schema": "axm.human-grounded-bridge-verification-receipt/v1",
+  "version": "0.1.0",
+  "verifiedAt": "2026-08-19T06:45:00.000Z",
+  "status": "TEST",
+  "result": "VERIFIED_WITH_LIMITS",
+  "persistentStewardshipGoal": "ACTIVE",
+  "subject": "Native Human Benefit Evidence to Grounded Growth bridge",
+  "workspace": {
+    "branch": "local-visual-fabric-20260728",
+    "head": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "directGitStatusEntriesObserved": 3977,
+    "previousExpandedSnapshotStatusEntriesObserved": 12239,
+    "snapshotTruncated": true,
+    "sharedWorkspace": true,
+    "stableWholeWorkspaceClaimed": false,
+    "lane": [
+      "shared/grounded-growth-human-bridge",
+      "docs/steward-runs/2026-08-19-human-grounded-bridge"
+    ],
+    "existingSharedSeamsTouched": [],
+    "newLeafSeamsAdded": [
+      "native human-evidence to Grounded Growth adapter",
+      "digest-bound bridge closure, receipt and bundle schemas",
+      "TEST module contract"
+    ],
+    "foreignChangesModified": false
+  },
+  "outcome": {
+    "bridgeRequirementBefore": "BLOCKED",
+    "bridgeRequirementAfter": "READY",
+    "overallAfter": "DEGRADED",
+    "currentBridgeReadinessState": "WAITING_FOR_LIVE_HUMAN_EVIDENCE",
+    "currentGroundedGrowthState": "CANDIDATE_ONLY",
+    "currentHumanClaim": "NOT_RUN / NOT_PROVEN",
+    "liveHumanSession": "NOT_RUN",
+    "explicitLiveHumanJudgment": "NOT_RUN",
+    "positiveLiveBridgePath": "NOT_RUN",
+    "humanBenefit": "NOT_PROVEN",
+    "currentGroundedOutcomeUpdated": false
+  },
+  "focusedVerification": [
+    {
+      "command": "node shared/grounded-growth-human-bridge/selftest.js",
+      "result": "PASS",
+      "detail": "33 checks covering native receipt validation, synthetic PASS refusal, forged LIVE labels, claim/capability/scope/source-trust binding, candidate-surface relation, closure integrity, chronology, tampering and authority ceilings."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-human-grounded-bridge/current-bridge-readiness.js --check-recorded",
+      "result": "PASS",
+      "detail": "Exact current sources rebuild WAITING_FOR_LIVE_HUMAN_EVIDENCE; no bridge bundle or human verdict was fabricated."
+    },
+    {
+      "command": "python compare_capabilities.py --requirements ... --capabilities capabilities.before.json",
+      "result": "PASS",
+      "detail": "Normalized before state is BLOCKED with three missing bridge capabilities."
+    },
+    {
+      "command": "python compare_capabilities.py --requirements ... --capabilities capabilities.after.json",
+      "result": "PASS",
+      "detail": "Bridge contract requirement is READY with no missing capabilities; overall remains DEGRADED because live operation is NOT_RUN."
+    }
+  ],
+  "adjacentVerification": [
+    { "command": "node shared/evidence-retention/selftest.js", "result": "PASS", "detail": "27 checks" },
+    { "command": "node shared/verified-capability-loop/selftest.js", "result": "PASS", "detail": "21 checks" },
+    { "command": "node shared/grounded-growth-outcomes/selftest.js", "result": "PASS", "detail": "31 checks" },
+    { "command": "node shared/human-benefit-evidence/selftest.js", "result": "PASS", "detail": "46 checks" },
+    {
+      "command": "node docs/steward-runs/2026-08-19-human-benefit-readiness/runner-selftest.js",
+      "result": "PASS",
+      "detail": "5 checks with an explicit disposable test root; an earlier invocation stopped at the declared AXM_TEST_TEMP setup boundary before testing."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-grounded-growth/current-outcome.js --check-recorded",
+      "result": "PASS",
+      "detail": "Prior current outcome remains exact, CANDIDATE_ONLY, with human benefit NOT_RUN."
+    },
+    { "command": "all scoped JSON parse and node -c", "result": "PASS" },
+    { "command": "scoped machine-path, credential-like literal and trailing-whitespace scans", "result": "PASS" },
+    { "command": "capability comparator self-test", "result": "PASS" }
+  ],
+  "requiredWorkshopChecks": [
+    { "command": "node verify.js", "result": "PASS", "detail": "0 FAIL; 17 warnings" },
+    { "command": "node hub/hub-selftest.js", "result": "PASS", "detail": "0 FAIL" },
+    { "command": "node hub/route-selftest.js", "result": "PASS", "detail": "0 FAIL" },
+    { "command": "node hub/graft-selftest.js", "result": "PASS", "detail": "0 FAIL" },
+    { "command": "node hub/skin-selftest.js", "result": "PASS", "detail": "0 FAIL" },
+    { "command": "node hub/verify-plus.js", "result": "VERIFIED_WITH_LIMITS", "detail": "6 receipts; 9 atomic claims; 0 FAIL; 17 warnings" },
+    { "command": "node tests/html-script-syntax-test.js", "result": "PASS", "detail": "55 PASS; 0 FAIL" },
+    { "command": "node tests/tool-forge-package-test.js", "result": "PASS", "detail": "generated test package remained EXPERIMENTAL and installed false" },
+    { "command": "node tools/agent-tool-forge/selftest.js", "result": "PASS", "detail": "17 PASS; 0 FAIL" },
+    { "command": "node tools/evidence-desk/selftest.js", "result": "PASS", "detail": "36 PASS; 0 FAIL" }
+  ],
+  "subjectRefs": [
+    { "path": "shared/grounded-growth-human-bridge/grounded-growth-human-bridge.js", "sha256": "sha256:093a80c72d938f9b6a256dc730523d6a978fac3f03b3cd2e205ad4ac38abc946" },
+    { "path": "shared/grounded-growth-human-bridge/selftest.js", "sha256": "sha256:96ea4dfc28e8eb65f1d22fd90d234bbca0beb8566bd28adf8b346fe613fe3bbe" },
+    { "path": "shared/grounded-growth-human-bridge/module.contract.json", "sha256": "sha256:34894fc2e0d26704cb35a7ac4ab0c3a9838164aab155d5a3353ccaca5cdc65ba" },
+    { "path": "shared/grounded-growth-human-bridge/grounded-growth-human-closure-receipt.schema.json", "sha256": "sha256:2843e147eebf75e63b3ec9773adb441933454437d1a98784f9085c57be740c90" },
+    { "path": "docs/steward-runs/2026-08-19-human-grounded-bridge/capability-gap.before.json", "sha256": "sha256:1bc8ad95a50feceeea5ee31187e6e8bfd821ac2dd1606bebc585a4d21453b886" },
+    { "path": "docs/steward-runs/2026-08-19-human-grounded-bridge/capability-gap.after.json", "sha256": "sha256:9f70f0d5b7bc622ba89dc7b7cc6eba9e968bf23955cb0c0cbb544cd44b4206fe" },
+    { "path": "docs/steward-runs/2026-08-19-human-grounded-bridge/current-bridge-readiness.js", "sha256": "sha256:1754925526de17b79aa85f5f58ee06a9e30abd0f17553c74e0f95c984f51fad8" },
+    { "path": "docs/steward-runs/2026-08-19-human-grounded-bridge/current-bridge-readiness-receipt.json", "sha256": "sha256:a4f2b0d4c8a793ca74015a235acbeec1e75e91259923dc08cd5e6ae088b6fbb5" },
+    { "path": "docs/steward-runs/2026-08-19-human-grounded-bridge/EVIDENCE_ROUTES.md", "sha256": "sha256:558c64964e1977f599c46562052b5265f605da3d5c920ce4ce5005601f277f12" },
+    { "path": "docs/steward-runs/2026-08-19-human-grounded-bridge/README.md", "sha256": "sha256:c737f795373608ff5b430a318ee5cc1004c3bd31009437a246a0eaed370daeea" },
+    { "path": "docs/steward-runs/2026-08-19-human-grounded-bridge/CURATION_RECEIPT.md", "sha256": "sha256:dcd50a2b7448116c83e10deb0b5af477fb4191e97ea3bceffe451a2fe8093c36" }
+  ],
+  "proofNotRun": [
+    "No person completed the voluntary human journey in this increment.",
+    "No native LIVE evaluation or explicit final human-benefit judgment was supplied.",
+    "The positive LIVE bridge mapping branch was not executed or claimed verified.",
+    "No human-source authentication was performed or claimed.",
+    "No external artifact bytes were authenticated by the bridge closure; external state remains declared by its caller or host.",
+    "No browser render/click test was run because no browser-facing UI changed.",
+    "No cohort, general-human, accessibility, demographic, cultural, device or long-session claim was tested."
+  ],
+  "authority": {
+    "automaticExecution": false,
+    "installed": false,
+    "registered": false,
+    "promoted": false,
+    "published": false,
+    "pushed": false,
+    "committed": false,
+    "canon": false,
+    "foundationMutation": false,
+    "humanMergeGatePreserved": true
+  }
+}

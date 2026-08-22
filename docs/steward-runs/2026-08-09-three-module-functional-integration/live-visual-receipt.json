@@ -1,0 +1,107 @@
+{
+  "schema": "axm.live-visual-verification-receipt/v1",
+  "generated_at": "2026-08-09T02:45:00Z",
+  "visual_backend": "BROWSER_PRIMARY",
+  "fallback_reason": null,
+  "surface": "http://127.0.0.1:8790/tools/{human-capability-atlas,human-interface-intelligence,grounded-evolution-intelligence}/",
+  "claims": [
+    {
+      "claim": "Module 1 search hides a nonmatching capability and exposes an honest empty state.",
+      "viewport": "1280x900 desktop",
+      "baseline_evidence": "Verified capability preview visible with receipt-bound quick view.",
+      "action": "Filled the Search capabilities control with no-such-capability.",
+      "expected_visible_change": "Preview hidden; no-match message visible.",
+      "observed_sequence": "Initial live run exposed a CSS seam: both preview and empty state were visible. After adding a global hidden rule, the bounded replay showed previewVisible=false and emptyVisible=true.",
+      "typed_observation": {
+        "preview_visible": false,
+        "empty_visible": true,
+        "empty_text": "No verified capability matches that search."
+      },
+      "verdict": "PASS",
+      "named_seam": "RESOLVED_VISUAL_SEAM_HIDDEN_ATTRIBUTE_OVERRIDE",
+      "buffer_digest": "sha256:4b38b2ba435f5b3868bceeef6bdd84eb985f807d6d2121e4e4b1f1a64e168b85"
+    },
+    {
+      "claim": "Module 1 detail filter loads the deep provenance and truth view.",
+      "viewport": "1280x900 desktop",
+      "baseline_evidence": "Quick view loaded from the Module 1 output directory.",
+      "action": "Searched Workshop and selected Deep — provenance and truth state.",
+      "expected_visible_change": "Preview remains visible and its output contains Source and Unknown fields sections.",
+      "observed_sequence": "The selected value became deep and the rendered text exposed Identity, Source, Technical profile, Unknown fields, and Conflicts.",
+      "typed_observation": {
+        "preview_visible": true,
+        "empty_visible": false,
+        "selected": "deep",
+        "has_source_section": true,
+        "has_truth_section": true
+      },
+      "verdict": "PASS",
+      "named_seam": "NONE",
+      "buffer_digest": "sha256:566b6de33d6f53a27f7c6399946e2e760dbb36f7ebb21021c687ec3e1bee8f6b"
+    },
+    {
+      "claim": "The shared module interface remains usable at phone width.",
+      "viewport": "390x844 phone",
+      "baseline_evidence": "First narrow frame revealed overflow from the raw platform status string.",
+      "action": "Changed the human label to INTEGRATED · NATIVE HOLD, reloaded, and repeated the width probe.",
+      "expected_visible_change": "Search, filter, and preview remain visible with no document-level horizontal overflow.",
+      "observed_sequence": "After the label fix, scrolling width equaled client width and all required controls remained visible.",
+      "typed_observation": {
+        "viewport_width": 390,
+        "document_width": 375,
+        "horizontal_overflow": false,
+        "search_visible": true,
+        "filter_visible": true,
+        "preview_visible": true,
+        "status_label": "INTEGRATED · NATIVE HOLD"
+      },
+      "verdict": "PASS",
+      "named_seam": "RESOLVED_RESPONSIVE_SEAM_MACHINE_STATUS_OVERFLOW",
+      "buffer_digest": "sha256:4ae7d2b492847705f507a3091d85d07484da296652f62993a55df1b810a71a7c"
+    },
+    {
+      "claim": "Module 2 visibly presents the recommendation actually used to improve Module 1.",
+      "viewport": "1280x900 desktop",
+      "baseline_evidence": "Fresh local route loaded from generated workflow evidence.",
+      "action": "Observed the settled recommendation page.",
+      "expected_visible_change": "Searchable library, recommended, PASS assurance/application, and all four required controls visible.",
+      "observed_sequence": "The live page showed pattern searchable_library, recommendation recommended, PASS assurance, PASS application, search, filters, preview, and metadata.",
+      "typed_observation": {
+        "pattern_id": "searchable_library",
+        "recommendation": "recommended",
+        "assurance": "PASS",
+        "application": "PASS",
+        "required_controls": ["search", "filters", "preview", "metadata"],
+        "horizontal_overflow": false
+      },
+      "verdict": "PASS",
+      "named_seam": "NONE",
+      "buffer_digest": "sha256:64725d4d07f45cb942c1af1405d971c16bf1ed5321c894fda7ce40702252c33f"
+    },
+    {
+      "claim": "Module 3 visibly reports the received signal chain and closed authority boundary.",
+      "viewport": "1280x900 desktop",
+      "baseline_evidence": "Fresh local route loaded from generated workflow evidence.",
+      "action": "Observed the settled evolution page.",
+      "expected_visible_change": "Two signals, retained need candidate, CLOSED authority, PASS append-only proof, and native HOLD visible.",
+      "observed_sequence": "Every expected state appeared and the page exposed the Module 2 digest and signal-chain head without horizontal overflow.",
+      "typed_observation": {
+        "signals": 2,
+        "need_candidate": "axm:need:apply-searchable-capability-library",
+        "authority": "CLOSED",
+        "proof": "PASS · append-only",
+        "native_merge_gate": "HOLD",
+        "horizontal_overflow": false
+      },
+      "verdict": "PASS",
+      "named_seam": "NONE",
+      "buffer_digest": "sha256:7daf7afd04255936227943f71dd2a7fc0f788e323e2c23bcc912a0ddda277268"
+    }
+  ],
+  "console_warnings_and_errors": [],
+  "temporary_paths_deleted": [],
+  "cleanup_complete": true,
+  "cleanup_note": "No video or screenshot files were written; bounded frames remained in browser memory and the test tab was finalized without retention.",
+  "viewport_override_reset": true,
+  "next_cheapest_test": "Run the complete disposable-copy engine regression and platform verification receipt."
+}

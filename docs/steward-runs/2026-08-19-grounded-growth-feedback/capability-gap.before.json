@@ -1,0 +1,63 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "grounded-growth-feedback-adapter",
+      "required": true,
+      "status": "BLOCKED",
+      "available": ["growth.feedback.authority.none"],
+      "degraded": ["growth.feedback.outcome-native-verify", "growth.feedback.gei-compatible"],
+      "unknown": [],
+      "missing": ["growth.feedback.need-map", "growth.feedback.blocked-order", "growth.feedback.route-state-bind", "growth.feedback.deduplicate"],
+      "declaredConstraints": {
+        "growth.feedback.outcome-native-verify": ["Grounded Growth Outcomes verifies its own receipts, but no feedback adapter requires that verification before creating an evolution need."],
+        "growth.feedback.need-map": ["Verified nextEvidenceNeeds are not translated into bounded improvement-need candidates."],
+        "growth.feedback.blocked-order": ["No seam prevents beneficiary tests from being proposed ahead of evidence repair, regression repair, refresh, or lifecycle holds."],
+        "growth.feedback.route-state-bind": ["Operational readiness, voluntary participation, in-progress work, and satisfied routes cannot be bound to outcome-derived needs."],
+        "growth.feedback.gei-compatible": ["Grounded Evolution Intelligence accepts evidence and improvement needs, but Grounded Growth emits neither native GEI record shape."],
+        "growth.feedback.deduplicate": ["No exact need identity or explicit coverage link prevents repeated outcome generations from proposing duplicate work."],
+        "growth.feedback.authority.none": ["Both source systems refuse autonomous execution, merge, promotion and CANON authority."]
+      }
+    },
+    {
+      "id": "current-feedback-steward-review",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": ["growth.feedback.current-review"],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.feedback.current-review": ["No current feedback packet has been generated or reviewed by a steward."]
+      }
+    }
+  ],
+  "missingCapabilities": ["growth.feedback.blocked-order", "growth.feedback.deduplicate", "growth.feedback.need-map", "growth.feedback.route-state-bind"],
+  "proposedHands": [
+    {
+      "capabilityId": "growth.feedback.blocked-order",
+      "requiredBy": ["grounded-growth-feedback-adapter"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "growth.feedback.deduplicate",
+      "requiredBy": ["grounded-growth-feedback-adapter"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "growth.feedback.need-map",
+      "requiredBy": ["grounded-growth-feedback-adapter"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "growth.feedback.route-state-bind",
+      "requiredBy": ["grounded-growth-feedback-adapter"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

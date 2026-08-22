@@ -1,0 +1,68 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "human-grounded-evidence-bridge",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.human-evidence.native-verify",
+        "growth.human-evidence.live-only",
+        "growth.human-evidence.scope-bind",
+        "growth.human-evidence.closure-bind",
+        "growth.human-evidence.synthetic-hold",
+        "growth.human-evidence.grounded-map",
+        "growth.human-evidence.authority.none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.native-verify": [
+          "TEST leaf bridge requires deterministic verification by the native Verified Capability Loop, Human Benefit Evidence and Grounded Growth Outcomes implementations.",
+          "The positive LIVE admission path has not been exercised because no real human evidence exists."
+        ],
+        "growth.human-evidence.live-only": [
+          "Synthetic PASS maps to UNKNOWN and changing synthetic labels to LIVE fails native verification.",
+          "Human source authentication remains external and exact source trust is preserved as a reference rather than claimed by the module."
+        ],
+        "growth.human-evidence.scope-bind": [
+          "Claim, capability, protocol, judgment, source-trust mode and target scope must agree.",
+          "Scope is preserved structurally in the bridge receipt and explicitly in Grounded claim text and limitations."
+        ],
+        "growth.human-evidence.closure-bind": [
+          "Current closure must cover native cycle, protocol, evaluation, judgment, comparison artifacts, capability ancestry, candidate-surface relation and source-trust digests.",
+          "Missing or held closure maps the human decision to UNKNOWN."
+        ],
+        "growth.human-evidence.synthetic-hold": [
+          "Focused fixtures prove a native synthetic PASS remains SYNTHETIC_HOLD and cannot produce HUMAN_GROWTH_ONLY even when the capability is available."
+        ],
+        "growth.human-evidence.grounded-map": [
+          "The TEST bridge deterministically emits a digest-bound bridge receipt and Grounded Growth outcome.",
+          "Only an admitted live Human Benefit judgment may supply PASS or FAIL; every held path maps to UNKNOWN."
+        ],
+        "growth.human-evidence.authority.none": [
+          "The bridge performs no writes and grants no execution, install, permission, promotion, CANON, root-mutation or model-training authority."
+        ]
+      }
+    },
+    {
+      "id": "current-live-human-grounded-outcome",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": ["growth.human-evidence.live-path.verify"],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.live-path.verify": [
+          "The live path is structurally gated but remains operationally NOT_RUN because no voluntary live session or final human judgment occurred.",
+          "A future local result is limited to the named steward unless a declared cohort and external cohort-authentication reference are supplied."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "complete-module-queue",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "module.inventory.complete",
+        "audit.ledger.persist"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "module.inventory.complete": [
+          "214 registered modules in the bound platform catalog"
+        ],
+        "audit.ledger.persist": [
+          "append-only evidence-backed module results"
+        ]
+      }
+    },
+    {
+      "id": "module-native-behavior",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "interface.inspect.source",
+        "interface.test.deterministic"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "interface.inspect.source": [
+          "current shared Workshop files"
+        ],
+        "interface.test.deterministic": [
+          "module self-tests and focused assertions"
+        ]
+      }
+    },
+    {
+      "id": "live-human-surface",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.capture.live",
+        "interaction.verify.browser",
+        "responsive.verify.browser"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.capture.live": [
+          "in-app browser only for browser modules"
+        ],
+        "interaction.verify.browser": [
+          "bounded local browser interactions"
+        ],
+        "responsive.verify.browser": [
+          "explicit browser viewport override"
+        ]
+      }
+    },
+    {
+      "id": "human-meaning-gate",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "human.usability.independent-review"
+      ],
+      "declaredConstraints": {
+        "human.usability.independent-review": [
+          "Mike or another appointed human must judge final usefulness and meaning"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "human.usability.independent-review"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "human.usability.independent-review",
+      "requiredBy": [
+        "human-meaning-gate"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

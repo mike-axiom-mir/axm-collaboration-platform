@@ -1,0 +1,76 @@
+{
+  "schema": "axm.live-browser-evidence/v1",
+  "status": "EXPERIMENTAL",
+  "observed_at": "2026-08-12T02:00:12+02:00",
+  "url": "http://127.0.0.1:8877/tools/choice-first-visual-lab/",
+  "runtime": "NativeWebGL2Renderer",
+  "browser_console_errors": 0,
+  "observations": [
+    {
+      "identity_id": "axm.park.ferris-wheel",
+      "profile_id": "pixel-8bit-3d",
+      "canvas": [320, 180],
+      "structure": { "nodes": 24, "meshes": 6, "materials": 6, "animations": 1 },
+      "model_triangles": 392,
+      "viewer_frame": { "draw_calls": 24, "triangles": 406 },
+      "animation": "running",
+      "screenshot": "evidence/live-pixel-8bit-3d.png",
+      "screenshot_sha256": "15B01652EB72048FEEAF04E4C4E9843A6A6FF6501C5CEA012F13F372D88EC796"
+    },
+    {
+      "identity_id": "axm.park.ferris-wheel",
+      "profile_id": "pixel-16bit-3d",
+      "canvas": [640, 360],
+      "structure": { "nodes": 44, "meshes": 7, "materials": 6, "animations": 1 },
+      "model_triangles": 1776,
+      "viewer_frame": { "draw_calls": 44, "triangles": 1790 },
+      "animation": "running",
+      "screenshot": "evidence/live-pixel-16bit-3d.png",
+      "screenshot_sha256": "67A4F4EBCC90A7D2E3F8713CE186EA4017D8FD05AFEB67FE8CAC2E0E81DCB609"
+    },
+    {
+      "identity_id": "axm.park.carousel-horse",
+      "profile_id": "pixel-8bit-3d",
+      "canvas": [320, 180],
+      "structure": { "nodes": 12, "meshes": 6, "materials": 6, "animations": 1 },
+      "model_triangles": 320,
+      "viewer_frame": { "draw_calls": 13, "triangles": 334 },
+      "animation": "running",
+      "screenshot": "evidence/live-carousel-8bit-3d.png",
+      "screenshot_sha256": "432CC79E36C49EA2A2D135DD5C9ABB2C3F41873254EDE75CA0D599E2E19BB681"
+    },
+    {
+      "identity_id": "axm.park.ticket-gate",
+      "profile_id": "pixel-16bit-3d",
+      "canvas": [640, 360],
+      "structure": { "nodes": 9, "meshes": 6, "materials": 5, "animations": 1 },
+      "model_triangles": 604,
+      "viewer_frame": { "draw_calls": 9, "triangles": 618 },
+      "animation": "open",
+      "screenshot": "evidence/live-ticket-gate-16bit-3d.png",
+      "screenshot_sha256": "295C3C8AF87131A674629ABDBE8F5635E4F02C626903FECB517A02340A831FB7"
+    },
+    {
+      "identity_id": "axm.home.starter-sofa",
+      "profile_id": "pixel-16bit-3d",
+      "canvas": [640, 360],
+      "structure": { "nodes": 15, "meshes": 4, "materials": 4, "animations": 1 },
+      "model_triangles": 168,
+      "viewer_frame": { "draw_calls": 16, "triangles": 182 },
+      "animation": "sit",
+      "screenshot": "evidence/live-sofa-16bit-3d.png",
+      "screenshot_sha256": "E4669E5DCE4344A4815B7225179980A325BB44124DDC7BFCEA7B98819CB0986C"
+    }
+  ],
+  "interactions": [
+    { "id": "exact-profile-switch", "pass": true, "detail": "The pressed profile changed from pixel-8bit-3d to pixel-16bit-3d and the internal canvas changed from 320x180 to 640x360." },
+    { "id": "identity-switch", "pass": true, "detail": "Ferris wheel, carousel horse, ticket gate, and sofa each loaded their exact GLB without a fallback panel." },
+    { "id": "node-animation", "pass": true, "detail": "Two screenshots 700 ms apart produced different hashes while the selected running clip remained active." },
+    { "id": "camera-control", "pass": true, "detail": "Orbit right changed the explicit orbit control from 30 to 45 degrees." },
+    { "id": "download-route", "pass": true, "detail": "The download link followed the exact selected identity/profile GLB path." },
+    { "id": "typed-boundary-visible", "pass": true, "detail": "The UI states that high-detail/cinematic are MISSING_REPRESENTATION and that the whole-game 3D pack is not yet available." },
+    { "id": "no-console-errors", "pass": true }
+  ],
+  "measurement_note": "Viewer frame totals include the runtime's 2-triangle ground plane and 12-triangle off-camera player proxy; model receipts use model-only instanced triangle counts.",
+  "review_boundary": "Visual observation proves that the models render and move. It does not substitute for Mike's originality, readability, animation-quality, or game-fitness review."
+}

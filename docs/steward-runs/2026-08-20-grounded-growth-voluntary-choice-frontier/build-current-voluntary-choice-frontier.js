@@ -52,8 +52,8 @@ function inputFromCurrent(signal, routes) {
 
 function buildAll() {
   const gaps = gapReports();
-  const signal = SignalBuilder.loadRecordedCurrentRoute();
-  const routes = RouteBuilder.loadRecordedCoverageRoute();
+  const signal = SignalBuilder.checkRecorded();
+  const routes = RouteBuilder.checkRecorded();
   const input = inputFromCurrent(signal, routes);
   const frontier = Choice.build(input);
   const check = Choice.verify(frontier, input);

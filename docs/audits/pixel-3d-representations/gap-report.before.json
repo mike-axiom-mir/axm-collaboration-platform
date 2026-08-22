@@ -1,0 +1,199 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "exact-profiles",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "representation.pixel-3d.profile-8-16/v1"
+      ],
+      "declaredConstraints": {
+        "representation.pixel-3d.profile-8-16/v1": [
+          "8-bit and 16-bit currently resolve only to 2D pixel-raster profiles"
+        ]
+      }
+    },
+    {
+      "id": "engine-neutral-model",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "asset.pixel-3d.glb/v1"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "asset.pixel-3d.glb/v1": [
+          "static parametric GLB export exists, but it is not identity-bound, pixel-directed, hierarchical, or animated"
+        ]
+      }
+    },
+    {
+      "id": "animation",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "asset.pixel-3d.node-animation/v1"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "asset.pixel-3d.node-animation/v1": [
+          "the local runtime can play glTF node animation, but the choice-first asset system cannot author it"
+        ]
+      }
+    },
+    {
+      "id": "identity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "asset.pixel-3d.identity-anchors/v1"
+      ],
+      "declaredConstraints": {
+        "asset.pixel-3d.identity-anchors/v1": [
+          "no 3D delivery binds AXM asset identity, footprint, pivots, sockets, and semantic state into glTF extras"
+        ]
+      }
+    },
+    {
+      "id": "modular-hand",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "hand.pixel-3d.representation/v1"
+      ],
+      "declaredConstraints": {
+        "hand.pixel-3d.representation/v1": [
+          "no modular Asset Hand produces exact pixel-styled 3D representations"
+        ]
+      }
+    },
+    {
+      "id": "live-viewer",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "visual.capture.browser-screenshot/v1"
+      ],
+      "degraded": [
+        "visual.interact.webgl2-pixel-3d/v1"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.interact.webgl2-pixel-3d/v1": [
+          "a local WebGL2 GLB runtime exists, but no choice-first 3D pilot or profile switch is wired into the lab"
+        ],
+        "visual.capture.browser-screenshot/v1": [
+          "repeated screenshots are available; no rolling-buffer claim"
+        ]
+      }
+    },
+    {
+      "id": "human-review",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "quality.taste.human-review/v1"
+      ],
+      "declaredConstraints": {
+        "quality.taste.human-review/v1": [
+          "Mike review remains required"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "asset.pixel-3d.identity-anchors/v1",
+    "hand.pixel-3d.representation/v1",
+    "quality.taste.human-review/v1",
+    "representation.pixel-3d.profile-8-16/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "asset.pixel-3d.identity-anchors/v1",
+      "requiredBy": [
+        "identity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "hand.pixel-3d.representation/v1",
+      "requiredBy": [
+        "modular-hand"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "quality.taste.human-review/v1",
+      "requiredBy": [
+        "human-review"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "representation.pixel-3d.profile-8-16/v1",
+      "requiredBy": [
+        "exact-profiles"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

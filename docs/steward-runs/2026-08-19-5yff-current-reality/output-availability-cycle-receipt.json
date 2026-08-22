@@ -1,0 +1,101 @@
+{
+  "schema": "axm.verified-capability-cycle-receipt/v1",
+  "version": "0.1.0",
+  "cycleId": "cycle-output-availability-20260819",
+  "capabilityId": "evidence.registered-source-closure/v1",
+  "generatedAt": "2026-08-19T03:32:11.325Z",
+  "state": "AWAITING_STEWARD",
+  "baseline": {
+    "kind": "git-and-worktree",
+    "identity": "public baseline 7147b97f; local head c6e79092; merge base b2ae9a58; public/local divergence 46/3 commits",
+    "receiptRef": {
+      "id": "current-baseline-observation",
+      "schema": "axm.baseline-observation/v1",
+      "sha256": "sha256:09d41c67ff1a0c8838e93559d93988e066d40c6ded6d714d7ba9b3cc72f0e194"
+    }
+  },
+  "need": {
+    "id": "need-output-availability",
+    "statement": "Registered raw evidence output must still exist with the registered bytes when a later verifier relies on it.",
+    "sourceRef": {
+      "id": "5yff-experimental-run-01",
+      "schema": "application/zip",
+      "sha256": "sha256:0770f0d915d2d9bbe7bfbc29609dc8fd476d90df23b1e1eee1ccc44bad5b8463"
+    },
+    "directionRef": {
+      "id": "long-term-stewardship-blueprint",
+      "schema": "text/plain",
+      "sha256": "sha256:6846e0665ed709273dab90657e1a8135ce927b65336c743ab258873cfeb752c4"
+    }
+  },
+  "gap": {
+    "state": "OPEN",
+    "reason": "Evidence Retention registered source digests but did not re-check later removal, corruption, or summary replacement.",
+    "reportRef": {
+      "id": "output-availability-before-v2",
+      "schema": "text/javascript",
+      "sha256": "sha256:aeb8edd6324d35302d207349840ec9fa7c0efc026c2d194bb0bc64009dae00b1"
+    },
+    "existingCapabilityRef": null
+  },
+  "provenance": [
+    {
+      "id": "output-availability-before-v2",
+      "schema": "text/javascript",
+      "sha256": "sha256:aeb8edd6324d35302d207349840ec9fa7c0efc026c2d194bb0bc64009dae00b1"
+    },
+    {
+      "id": "output-availability-after",
+      "schema": "text/javascript",
+      "sha256": "sha256:c2dc648482c61b3bebb3a3d8c534a5c9aaf00948ef5cfa3a9f9694f0c1c6340f"
+    }
+  ],
+  "candidate": {
+    "strategy": "ADAPT",
+    "status": "EXPERIMENTAL",
+    "artifactRef": {
+      "id": "evidence-retention-service",
+      "schema": "text/javascript",
+      "sha256": "sha256:496a1288ade34522911dc71e04ffb75dbb7d7738554e86c0bbc4127778e39d67"
+    },
+    "sourceMutationPerformed": true,
+    "installed": false,
+    "promoted": false,
+    "canon": false
+  },
+  "verification": {
+    "verdict": "PASS",
+    "subjectDigest": "sha256:496a1288ade34522911dc71e04ffb75dbb7d7738554e86c0bbc4127778e39d67",
+    "receiptRef": {
+      "id": "output-availability-focused-verification",
+      "schema": "axm.focused-test-receipt/v1",
+      "sha256": "sha256:2ebdf4add7aa0723a70325e43b2dff72d8ebf14b55ed5fb4eed6ce154865d20c"
+    },
+    "evidenceAuthority": "MIXED",
+    "limitations": [
+      "Focused local tests cover missing and byte-changed registered files, not every filesystem race or remote storage behavior.",
+      "The candidate is a working-tree change and has not been accepted, installed, promoted, or made CANON."
+    ]
+  },
+  "stewardDecision": null,
+  "availability": null,
+  "refresh": {
+    "trigger": "NEW_INFORMATION",
+    "checkedAt": "2026-08-19T03:32:11.325Z",
+    "due": false,
+    "reason": "Recheck when the candidate bytes, baseline identity, source behavior, or relevant storage contract changes."
+  },
+  "improvementClaim": "VERIFIED_CANDIDATE_ONLY",
+  "truth": {
+    "cycleAuthority": "RECEIPT_LINKING_ONLY",
+    "automaticExecution": false,
+    "automaticInstall": false,
+    "automaticPermissionGrant": false,
+    "automaticPromotion": false,
+    "automaticCanon": false,
+    "automaticRootMutation": false,
+    "modelWeightTrainingClaimed": false,
+    "humanStewardDecisionRequired": true
+  },
+  "receiptDigest": "sha256:4e46d2a10d0cde7c9be861217783fb059602e31e89fda298f455eb8a23814a52"
+}

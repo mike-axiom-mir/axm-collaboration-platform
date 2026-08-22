@@ -1,0 +1,117 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "profile-resolution",
+      "required": true,
+      "status": "READY",
+      "available": ["representation.profile.resolve.exact/v1"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "representation.profile.resolve.exact/v1": ["pure resolver; explicit axes override preset defaults; hard limits return typed errors"]
+      }
+    },
+    {
+      "id": "typed-gap",
+      "required": true,
+      "status": "READY",
+      "available": ["representation.missing.typed/v1"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "representation.missing.typed/v1": ["MISSING_REPRESENTATION only; fallback_used and nearest_substitute_used are always false"]
+      }
+    },
+    {
+      "id": "causal-simulation",
+      "required": true,
+      "status": "READY",
+      "available": ["simulation.causal.replay/v1", "simulation.idle-no-decay/v1"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.causal.replay/v1": ["event identifiers are exact-once; stable digest verifies replay"],
+        "simulation.idle-no-decay/v1": ["elapsed-time events record time and produce zero condition or cleanliness delta"]
+      }
+    },
+    {
+      "id": "upgradeable-object",
+      "required": true,
+      "status": "READY",
+      "available": ["simulation.object.upgrade-branches/v1"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.object.upgrade-branches/v1": ["resource-bound mutually exclusive slots; persistent object identity"]
+      }
+    },
+    {
+      "id": "pixel-pilots",
+      "required": true,
+      "status": "READY",
+      "available": ["asset.raster.rgba8/v1", "asset.animation.apng/v1", "asset.pixel.profile-8-16/v1"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "asset.raster.rgba8/v1": ["local deterministic PNG codec"],
+        "asset.animation.apng/v1": ["local deterministic APNG codec"],
+        "asset.pixel.profile-8-16/v1": ["original AXM pilot art over RGBA8 sRGB; aesthetic approval pending"]
+      }
+    },
+    {
+      "id": "film",
+      "required": true,
+      "status": "READY",
+      "available": ["video.sparse-rational-sequence/v1", "video.container.mp4-motion-jpeg/v1", "video.container.webm-vp8/v1"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "video.sparse-rational-sequence/v1": ["1..64 unique RGBA frames, 2..600 sample references, at most 30 seconds; legacy 120-frame encoder unchanged"],
+        "video.container.mp4-motion-jpeg/v1": ["bounded local muxer; exact rational sample timing"],
+        "video.container.webm-vp8/v1": ["bounded local muxer; millisecond container timecode"]
+      }
+    },
+    {
+      "id": "live-browser",
+      "required": true,
+      "status": "READY",
+      "available": ["visual.capture.browser-screenshot/v1", "visual.interact.browser/v1"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.capture.browser-screenshot/v1": ["repeated screenshots used; no rolling-buffer or realtime-observation claim"],
+        "visual.interact.browser/v1": ["profile, missing-gap, sofa, causality, zoom and video controls exercised"]
+      }
+    },
+    {
+      "id": "human-review",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["quality.taste.human-review/v1"],
+      "declaredConstraints": {
+        "quality.taste.human-review/v1": ["Mike review remains required and cannot be automated"]
+      }
+    }
+  ],
+  "missingCapabilities": ["quality.taste.human-review/v1"],
+  "proposedHands": [
+    {
+      "capabilityId": "quality.taste.human-review/v1",
+      "requiredBy": ["human-review"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

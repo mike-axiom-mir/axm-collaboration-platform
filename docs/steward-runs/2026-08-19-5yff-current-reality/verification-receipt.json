@@ -1,0 +1,109 @@
+{
+  "schema": "axm.steward-verification-receipt/v1",
+  "runId": "5yff-current-reality-20260819",
+  "generatedAt": "2026-08-19T03:48:06.101Z",
+  "status": "TEST",
+  "result": "VERIFIED_WITH_LIMITS",
+  "candidateState": "AWAITING_STEWARD",
+  "subjects": [
+    {
+      "id": "evidence-retention-service",
+      "sha256": "sha256:496a1288ade34522911dc71e04ffb75dbb7d7738554e86c0bbc4127778e39d67"
+    },
+    {
+      "id": "evidence-retention-selftest",
+      "sha256": "sha256:1db047e8f13353298957a245ad47afde66f3189448f5d246223eadf31fab180f"
+    },
+    {
+      "id": "verified-capability-loop",
+      "sha256": "sha256:5bdaa91ab1be5d0eb714684b78a46f1226834a2eb68e343e24d1d48e3f178fa8"
+    },
+    {
+      "id": "verified-capability-loop-selftest",
+      "sha256": "sha256:050b145769db02ab8d181f876924ee820d27e92825cb55271780835e4f76f544"
+    },
+    {
+      "id": "output-availability-cycle-generator",
+      "sha256": "sha256:a3684d89be8b7ac21a5ec406af13cc8a3a5b993341da0cad2469a04f3d218b17"
+    },
+    {
+      "id": "output-availability-cycle-receipt-file",
+      "sha256": "sha256:4e343a3d79cfbc1541400796dd43434cbe060b06376dbaa44b70a3e51e6502ec"
+    }
+  ],
+  "targetedChecks": [
+    {
+      "command": "node shared/evidence-retention/selftest.js",
+      "result": "PASS",
+      "assertions": 27
+    },
+    {
+      "command": "node shared/verified-capability-loop/selftest.js",
+      "result": "PASS",
+      "assertions": 21
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-5yff-current-reality/output-availability-cycle.js --check-recorded",
+      "result": "PASS",
+      "state": "AWAITING_STEWARD",
+      "receiptDigest": "sha256:4e46d2a10d0cde7c9be861217783fb059602e31e89fda298f455eb8a23814a52"
+    },
+    {
+      "command": "git diff --check -- scoped-lanes",
+      "result": "PASS_WITH_LINE_ENDING_WARNINGS"
+    },
+    {
+      "command": "delimiter-aware exact Windows path probe on new lanes",
+      "result": "PASS",
+      "note": "A first naive probe falsely matched the s:/ substring in https://; the corrected delimiter-aware probe passed."
+    },
+    {
+      "command": "credential-like material probe on new lanes",
+      "result": "PASS"
+    }
+  ],
+  "requiredChecks": [
+    { "command": "node verify.js", "result": "PASS_WITH_WARNINGS", "failures": 0, "warnings": 17, "tools": 218, "declaredCapabilities": 1907 },
+    { "command": "node hub/hub-selftest.js", "result": "PASS" },
+    { "command": "node hub/route-selftest.js", "result": "PASS" },
+    { "command": "node hub/graft-selftest.js", "result": "PASS" },
+    { "command": "node hub/skin-selftest.js", "result": "PASS" },
+    { "command": "node hub/verify-plus.js", "result": "VERIFIED_WITH_LIMITS", "receipts": 6, "atomicClaims": 9 },
+    { "command": "node tests/html-script-syntax-test.js", "result": "PASS", "checks": 55 },
+    { "command": "node tests/tool-forge-package-test.js", "result": "PASS", "installed": false },
+    { "command": "node tools/agent-tool-forge/selftest.js", "result": "PASS", "checks": 17 },
+    { "command": "node tools/evidence-desk/selftest.js", "result": "PASS", "checks": 36 }
+  ],
+  "workspaceClosure": {
+    "snapshotSchema": "shared-workspace-snapshot/v1",
+    "filesScanned": 50001,
+    "gitStatusEntries": 12191,
+    "scanTruncated": true,
+    "candidateHashesStableAfterRequiredChecks": true,
+    "foreignChangesRewrittenOrReverted": false
+  },
+  "notRun": [
+    {
+      "check": "browser render/click",
+      "reason": "No browser UI was changed; no visual or interaction claim is made."
+    },
+    {
+      "check": "10-signal human review comparison",
+      "reason": "Requires a real human comparison; usefulness and comprehension remain UNKNOWN."
+    },
+    {
+      "check": "remote storage and filesystem race coverage",
+      "reason": "The output-availability repair is proven only for the focused local contract and negative fixtures."
+    }
+  ],
+  "authority": {
+    "packageCodeExecuted": false,
+    "candidateInstalled": false,
+    "permissionsGranted": false,
+    "candidatePromoted": false,
+    "canonChanged": false,
+    "foundationMutated": false,
+    "publicPushOrRelease": false,
+    "humanMergeDecisionRequired": true
+  }
+}

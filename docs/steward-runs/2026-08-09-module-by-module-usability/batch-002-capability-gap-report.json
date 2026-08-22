@@ -1,0 +1,154 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "observe-official-interface-sources",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "world.interface.source.allowlist",
+        "world.interface.source.observe.https",
+        "world.interface.source.digest.bounded"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "world.interface.source.allowlist": [
+          "Eight manually curated official HTTPS sources"
+        ],
+        "world.interface.source.observe.https": [
+          "On-demand local network access",
+          "Per-source failure remains visible"
+        ],
+        "world.interface.source.digest.bounded": [
+          "Twelve-megabyte source limit",
+          "Raw page bodies are discarded"
+        ]
+      }
+    },
+    {
+      "id": "retain-interface-source-change-truth",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "world.interface.change.append-only",
+        "world.interface.check.aggregate",
+        "world.interface.review.acknowledge.explicit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "world.interface.change.append-only": [
+          "Digest-chained JSONL durable events"
+        ],
+        "world.interface.check.aggregate": [
+          "Unchanged checks retained as aggregate counts"
+        ],
+        "world.interface.review.acknowledge.explicit": [
+          "Reviewer and note required",
+          "Acknowledges source baseline only"
+        ]
+      }
+    },
+    {
+      "id": "route-world-fit-to-modules",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "world.interface.module.impact.derive",
+        "world.interface.context.gate",
+        "world.interface.authority.close"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "world.interface.module.impact.derive": [
+          "214 registered modules",
+          "Derived advisory impact map"
+        ],
+        "world.interface.context.gate": [
+          "Ecosystem guidance requires declared context tags"
+        ],
+        "world.interface.authority.close": [
+          "No automatic rewrite, execution, merge, conformance, or CANON"
+        ]
+      }
+    },
+    {
+      "id": "automatic-recurring-refresh",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "automation.recurring.schedule"
+      ],
+      "declaredConstraints": {
+        "automation.recurring.schedule": [
+          "No cadence or scheduling authority was requested"
+        ]
+      }
+    },
+    {
+      "id": "accept-source-meaning-and-module-change",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "human.review.interface-world-change"
+      ],
+      "declaredConstraints": {
+        "human.review.interface-world-change": [
+          "Mike or another appointed human must judge meaning and desirability"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "automation.recurring.schedule",
+    "human.review.interface-world-change"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "automation.recurring.schedule",
+      "requiredBy": [
+        "automatic-recurring-refresh"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "human.review.interface-world-change",
+      "requiredBy": [
+        "accept-source-meaning-and-module-change"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "claims": [
+    {
+      "claim_id": "official-source-boundary",
+      "claim": "Only allowlisted official interface sources enter the tracker.",
+      "kind": "technical",
+      "risk": "medium",
+      "pass_condition": "Every fetched source identity appears in the checked-in allowlist.",
+      "primary_surface": "source registry and synchronizer inspection",
+      "counterevidence": "A runtime fetch targets a URL absent from sources.json.",
+      "observed_evidence": "Eight registry entries; the synchronizer iterates only registry sources.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "change-tracking",
+      "claim": "A changed source creates durable review evidence without automatic module mutation.",
+      "kind": "behavioral-and-authorization",
+      "risk": "high",
+      "pass_condition": "A simulated digest change appends one chained event, changes tracking state to REVIEW_REQUIRED, and leaves all authority flags false.",
+      "primary_surface": "world-interface deterministic self-test",
+      "counterevidence": "No event, unchanged state, or an automatic application flag becomes true.",
+      "secondary_surface_if_needed": "generated source event chain and platform impact map",
+      "observed_evidence": "Simulation and authority assertions pass.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "module-coverage",
+      "claim": "Every registered module receives a bounded world-fit context.",
+      "kind": "coverage",
+      "risk": "medium",
+      "pass_condition": "The impact map contains 214 unique registered module IDs and every catalog item has a context digest.",
+      "primary_surface": "catalog and impact-map deterministic verification",
+      "counterevidence": "Missing, duplicate, or unhashed module context.",
+      "observed_evidence": "214 TRACKED module contexts; platform verification PASS.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "visible-world-fit-ui",
+      "claim": "People can read source context and tracking state in Modules 1, 2, and 3 without phone overflow.",
+      "kind": "visual",
+      "risk": "medium",
+      "pass_condition": "World-fit state, summaries, checks, and source links render; 390 by 844 scroll width does not exceed viewport.",
+      "primary_surface": "live in-app browser and selected proof screenshots",
+      "counterevidence": "Missing content, clipped columns, horizontal overflow, or console error.",
+      "observed_evidence": "Desktop and phone states rendered; overflow was non-positive; no new console errors.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "human-meaning",
+      "claim": "The selected guidance is desirable and sufficient for real people.",
+      "kind": "human-judgment",
+      "risk": "high",
+      "pass_condition": "Mike or another appointed human reviews representative affected modules and records the judgment.",
+      "primary_surface": "independent human review",
+      "counterevidence": "Human reports that guidance is irrelevant, confusing, or harmful.",
+      "observed_evidence": "No independent human judgment retained yet.",
+      "verdict": "UNKNOWN",
+      "named_seam": "human.review.interface-world-change"
+    }
+  ]
+}

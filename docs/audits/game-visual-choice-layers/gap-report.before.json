@@ -1,0 +1,302 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "game-pack-contract",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.visual.pack.contract/v1"
+      ],
+      "declaredConstraints": {
+        "game.visual.pack.contract/v1": [
+          "per-asset representation profiles exist, but no game-wide visual pack contract binds a complete art direction to stable game truth"
+        ]
+      }
+    },
+    {
+      "id": "hardware-compatibility",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.visual.hardware.compatibility/v1"
+      ],
+      "declaredConstraints": {
+        "game.visual.hardware.compatibility/v1": [
+          "performance profiles and frame measurements exist, but no honest declared-hardware compatibility resolver exists"
+        ]
+      }
+    },
+    {
+      "id": "player-choice",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.visual.selection.player-authority/v1"
+      ],
+      "declaredConstraints": {
+        "game.visual.selection.player-authority/v1": [
+          "no recommendation-versus-explicit-selection authority boundary"
+        ]
+      }
+    },
+    {
+      "id": "old-machine-continuity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.visual.baseline-continuity/v1"
+      ],
+      "declaredConstraints": {
+        "game.visual.baseline-continuity/v1": [
+          "no digest-bound bundled baseline policy or proof that minimum hardware retains a selectable representation"
+        ]
+      }
+    },
+    {
+      "id": "save-independence",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.visual.save-independence/v1"
+      ],
+      "declaredConstraints": {
+        "game.visual.save-independence/v1": [
+          "no game-level selection receipt proving save and simulation digests remain unchanged"
+        ]
+      }
+    },
+    {
+      "id": "semantic-overhaul",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.visual.pack.semantic-coverage/v1"
+      ],
+      "declaredConstraints": {
+        "game.visual.pack.semantic-coverage/v1": [
+          "individual assets can resolve 8-bit and 16-bit representations, but required whole-game visual slots are not coverage checked"
+        ]
+      }
+    },
+    {
+      "id": "typed-failure",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.visual.selection.typed-failure/v1"
+      ],
+      "declaredConstraints": {
+        "game.visual.selection.typed-failure/v1": [
+          "per-asset MISSING_REPRESENTATION exists; game-wide missing, incompatible, and contract-mismatch outcomes do not"
+        ]
+      }
+    },
+    {
+      "id": "live-browser",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.capture.browser-screenshot/v1",
+        "visual.interact.browser/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.capture.browser-screenshot/v1": [
+          "repeated screenshots are available; no rolling-buffer claim"
+        ],
+        "visual.interact.browser/v1": [
+          "bounded in-app browser interaction is available"
+        ]
+      }
+    },
+    {
+      "id": "human-review",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "quality.taste.human-review/v1"
+      ],
+      "declaredConstraints": {
+        "quality.taste.human-review/v1": [
+          "Mike review remains required and cannot be automated"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "game.visual.baseline-continuity/v1",
+    "game.visual.hardware.compatibility/v1",
+    "game.visual.pack.contract/v1",
+    "game.visual.pack.semantic-coverage/v1",
+    "game.visual.save-independence/v1",
+    "game.visual.selection.player-authority/v1",
+    "game.visual.selection.typed-failure/v1",
+    "quality.taste.human-review/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "game.visual.baseline-continuity/v1",
+      "requiredBy": [
+        "old-machine-continuity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.visual.hardware.compatibility/v1",
+      "requiredBy": [
+        "hardware-compatibility"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.visual.pack.contract/v1",
+      "requiredBy": [
+        "game-pack-contract"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.visual.pack.semantic-coverage/v1",
+      "requiredBy": [
+        "semantic-overhaul"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.visual.save-independence/v1",
+      "requiredBy": [
+        "save-independence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.visual.selection.player-authority/v1",
+      "requiredBy": [
+        "player-choice"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.visual.selection.typed-failure/v1",
+      "requiredBy": [
+        "typed-failure"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "quality.taste.human-review/v1",
+      "requiredBy": [
+        "human-review"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

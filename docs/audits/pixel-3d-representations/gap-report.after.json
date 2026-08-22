@@ -1,0 +1,144 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "exact-profiles",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "representation.pixel-3d.profile-8-16/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "representation.pixel-3d.profile-8-16/v1": [
+          "Exact pixel-8bit-3d and pixel-16bit-3d presets are implemented; names describe art direction, not literal GPU colour depth."
+        ]
+      }
+    },
+    {
+      "id": "engine-neutral-model",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "asset.pixel-3d.glb/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "asset.pixel-3d.glb/v1": [
+          "Eight deterministic candidate GLB 2.0 models are generated for four pilot identities; collision, physics, and engine-specific import settings are excluded."
+        ]
+      }
+    },
+    {
+      "id": "animation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "asset.pixel-3d.node-animation/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "asset.pixel-3d.node-animation/v1": [
+          "Each pilot GLB contains at least one deterministic STEP or LINEAR translation, rotation, or scale animation driven by semantic state."
+        ]
+      }
+    },
+    {
+      "id": "identity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "asset.pixel-3d.identity-anchors/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "asset.pixel-3d.identity-anchors/v1": [
+          "GLB extras and editable recipes bind exact identity, profile, footprint, pivots, sockets, state, and engine-neutral adapter metadata."
+        ]
+      }
+    },
+    {
+      "id": "modular-hand",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "hand.pixel-3d.representation/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "hand.pixel-3d.representation/v1": [
+          "The 41st modular Asset Hand emits GLB, scene recipe, profile, identity, representation set, diagram, and validation receipt with no permissions or network."
+        ]
+      }
+    },
+    {
+      "id": "live-viewer",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.interact.webgl2-pixel-3d/v1",
+        "visual.capture.browser-screenshot/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.interact.webgl2-pixel-3d/v1": [
+          "The live lab loads generated GLBs through the existing native WebGL2 runtime, animates them, switches exact profiles, and exposes orbit/zoom and runtime structure/draw evidence."
+        ],
+        "visual.capture.browser-screenshot/v1": [
+          "Repeated live screenshots were retained for both installed profiles; animation was checked with distinct bounded screenshots, not a rolling buffer."
+        ]
+      }
+    },
+    {
+      "id": "human-review",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "quality.taste.human-review/v1"
+      ],
+      "declaredConstraints": {
+        "quality.taste.human-review/v1": [
+          "Mike review remains required for originality, silhouette readability, motion quality, art direction, and game fitness."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "quality.taste.human-review/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "quality.taste.human-review/v1",
+      "requiredBy": [
+        "human-review"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

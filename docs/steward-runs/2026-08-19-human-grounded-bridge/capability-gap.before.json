@@ -1,0 +1,57 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "human-grounded-evidence-bridge",
+      "required": true,
+      "status": "BLOCKED",
+      "available": ["growth.human-evidence.authority.none"],
+      "degraded": ["growth.human-evidence.scope-bind", "growth.human-evidence.closure-bind", "growth.human-evidence.synthetic-hold"],
+      "unknown": [],
+      "missing": ["growth.human-evidence.native-verify", "growth.human-evidence.live-only", "growth.human-evidence.grounded-map"],
+      "declaredConstraints": {
+        "growth.human-evidence.native-verify": ["Human Benefit Evidence and Grounded Growth Outcomes verify independently; no connector requires both native checks."],
+        "growth.human-evidence.live-only": ["Grounded Growth accepts a human-native evidence reference without inspecting LIVE versus SYNTHETIC receipt content."],
+        "growth.human-evidence.scope-bind": ["Human Benefit receipts preserve target scope, but Grounded Growth has no structural scope field or cross-receipt binding."],
+        "growth.human-evidence.closure-bind": ["Grounded Growth checks exact referenced digests, but no route requires the native evaluation, judgment, protocol, capability and source-trust ancestry together."],
+        "growth.human-evidence.synthetic-hold": ["Human Benefit marks synthetic judgments unusable, but the generic Grounded Growth reference boundary does not inspect that marker."],
+        "growth.human-evidence.grounded-map": ["No leaf adapter maps a verified human judgment to a bounded Grounded Growth outcome."],
+        "growth.human-evidence.authority.none": ["Both source modules grant no execution, install, promotion, CANON or Foundation authority."]
+      }
+    },
+    {
+      "id": "current-live-human-grounded-outcome",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": ["growth.human-evidence.live-path.verify"],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.live-path.verify": ["No real voluntary live session and final human judgment have occurred."]
+      }
+    }
+  ],
+  "missingCapabilities": ["growth.human-evidence.grounded-map", "growth.human-evidence.live-only", "growth.human-evidence.native-verify"],
+  "proposedHands": [
+    {
+      "capabilityId": "growth.human-evidence.grounded-map",
+      "requiredBy": ["human-grounded-evidence-bridge"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "growth.human-evidence.live-only",
+      "requiredBy": ["human-grounded-evidence-bridge"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "growth.human-evidence.native-verify",
+      "requiredBy": ["human-grounded-evidence-bridge"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

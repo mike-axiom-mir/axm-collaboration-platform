@@ -555,37 +555,6 @@ function loadRecordedRoute(capabilityId) {
   };
 }
 
-function loadRecordedRoutes() {
-  const portfolio = readJson(PORTFOLIO_RELATIVE);
-  const sourceProtocol = readJson(SOURCE_CLOSURE_PROTOCOL_RELATIVE);
-  const sourcePacket = readJson(SOURCE_CLOSURE_PACKET_RELATIVE);
-  const sourceDefinition = {
-    slug: 'source-closure',
-    capabilityId: 'evidence.registered-source-closure/v1',
-    claimId: sourceProtocol.claim.id,
-    protocolId: sourceProtocol.protocolId,
-    packetId: sourcePacket.packetId
-  };
-  return [sourceDefinition, ...DEFINITIONS].map((definition) => {
-    const recordedRoute = loadRecordedRoute(definition.capabilityId);
-    const current = findCurrent(portfolio, definition.capabilityId);
-    const protocolCheck = Human.verifyProtocol(recordedRoute.protocol);
-    const packetCheck = verifyParticipantPacket(recordedRoute.protocol, recordedRoute.packet);
-    if (!protocolCheck.pass || !packetCheck.pass) {
-      throw new Error('recorded portfolio route invalid for ' + definition.capabilityId);
-    }
-    return {
-      definition,
-      current,
-      protocol: recordedRoute.protocol,
-      packet: recordedRoute.packet,
-      provenance: definition.capabilityId === 'evidence.registered-source-closure/v1'
-        ? 'REUSED_EXACT_EXISTING_ROUTE'
-        : 'NEW_SCOPED_ROUTE'
-    };
-  });
-}
-
 function verifyRecorded() {
   const result = buildAll();
   const expected = outputFiles(result);
@@ -625,7 +594,6 @@ module.exports = {
   buildParticipantPacket,
   verifyParticipantPacket,
   loadRecordedRoute,
-  loadRecordedRoutes,
   verifyRecorded,
   writeAll
 };

@@ -1,0 +1,176 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "game-pack-contract",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.visual.pack.contract/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.visual.pack.contract/v1": [
+          "versioned candidate contracts bind complete visual packs to stable game, simulation, gameplay-proxy, and save boundaries"
+        ]
+      }
+    },
+    {
+      "id": "hardware-compatibility",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.visual.hardware.compatibility/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.visual.hardware.compatibility/v1": [
+          "pure resolver compares declared capability profiles; automatic device detection is intentionally not claimed"
+        ]
+      }
+    },
+    {
+      "id": "player-choice",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.visual.selection.player-authority/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.visual.selection.player-authority/v1": [
+          "recommendation returns READY_FOR_CHOICE; SELECTED requires an explicit pack id or accepted recommendation"
+        ]
+      }
+    },
+    {
+      "id": "old-machine-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.visual.baseline-continuity/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.visual.baseline-continuity/v1": [
+          "digest-bound pixel-8 baseline is bundled, installed, semantically complete, and compatible with the minimum declared fixture"
+        ]
+      }
+    },
+    {
+      "id": "save-independence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.visual.save-independence/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.visual.save-independence/v1": [
+          "deterministic receipts and live browser states retain an identical save digest across recommendation, selection, and refusal routes"
+        ]
+      }
+    },
+    {
+      "id": "semantic-overhaul",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.visual.pack.semantic-coverage/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.visual.pack.semantic-coverage/v1": [
+          "every pack must bind all nine pilot game visual slots before compatibility can pass"
+        ]
+      }
+    },
+    {
+      "id": "typed-failure",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.visual.selection.typed-failure/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.visual.selection.typed-failure/v1": [
+          "missing, incompatible, and contract-mismatched packs return distinct results with fallback_used false"
+        ]
+      }
+    },
+    {
+      "id": "live-browser",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.capture.browser-screenshot/v1",
+        "visual.interact.browser/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.capture.browser-screenshot/v1": [
+          "two selected 1265x712 proof screenshots retained; no rolling-buffer claim"
+        ],
+        "visual.interact.browser/v1": [
+          "real select, button, zoom, simulation, and video-control interactions completed in the local browser"
+        ]
+      }
+    },
+    {
+      "id": "human-review",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "quality.taste.human-review/v1"
+      ],
+      "declaredConstraints": {
+        "quality.taste.human-review/v1": [
+          "Mike review remains required for originality, readability, animation quality, and whether the direction is worth keeping"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "quality.taste.human-review/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "quality.taste.human-review/v1",
+      "requiredBy": [
+        "human-review"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,289 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "profile-resolution",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "representation.profile.resolve.exact/v1"
+      ],
+      "declaredConstraints": {
+        "representation.profile.resolve.exact/v1": [
+          "no shared multi-axis profile contract"
+        ]
+      }
+    },
+    {
+      "id": "typed-gap",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "representation.missing.typed/v1"
+      ],
+      "declaredConstraints": {
+        "representation.missing.typed/v1": [
+          "generic Asset Hand gaps exist but not representation-set gaps"
+        ]
+      }
+    },
+    {
+      "id": "causal-simulation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "simulation.causal.replay/v1",
+        "simulation.idle-no-decay/v1"
+      ],
+      "declaredConstraints": {
+        "simulation.causal.replay/v1": [
+          "no asset-bound causal reducer"
+        ],
+        "simulation.idle-no-decay/v1": [
+          "no explicit invariant"
+        ]
+      }
+    },
+    {
+      "id": "upgradeable-object",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "simulation.object.upgrade-branches/v1"
+      ],
+      "declaredConstraints": {
+        "simulation.object.upgrade-branches/v1": [
+          "no persistent upgradeable object contract"
+        ]
+      }
+    },
+    {
+      "id": "pixel-pilots",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "asset.raster.rgba8/v1",
+        "asset.animation.apng/v1",
+        "asset.pixel.profile-8-16/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "asset.raster.rgba8/v1": [
+          "local deterministic PNG codec"
+        ],
+        "asset.animation.apng/v1": [
+          "local deterministic APNG codec"
+        ],
+        "asset.pixel.profile-8-16/v1": [
+          "workflow presets over RGBA8 sRGB"
+        ]
+      }
+    },
+    {
+      "id": "film",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "video.container.mp4-motion-jpeg/v1",
+        "video.container.webm-vp8/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "video.sparse-rational-sequence/v1"
+      ],
+      "declaredConstraints": {
+        "video.sparse-rational-sequence/v1": [
+          "existing final-video API accepts 2..120 expanded raw frames"
+        ],
+        "video.container.mp4-motion-jpeg/v1": [
+          "bounded local muxer"
+        ],
+        "video.container.webm-vp8/v1": [
+          "bounded local muxer"
+        ]
+      }
+    },
+    {
+      "id": "live-browser",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.capture.browser-screenshot/v1",
+        "visual.interact.browser/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.capture.browser-screenshot/v1": [
+          "repeated screenshots; no rolling buffer claim"
+        ],
+        "visual.interact.browser/v1": [
+          "bounded in-app browser interaction"
+        ]
+      }
+    },
+    {
+      "id": "human-review",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "quality.taste.human-review/v1"
+      ],
+      "declaredConstraints": {
+        "quality.taste.human-review/v1": [
+          "Mike review remains required and cannot be automated"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "quality.taste.human-review/v1",
+    "representation.missing.typed/v1",
+    "representation.profile.resolve.exact/v1",
+    "simulation.causal.replay/v1",
+    "simulation.idle-no-decay/v1",
+    "simulation.object.upgrade-branches/v1",
+    "video.sparse-rational-sequence/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "quality.taste.human-review/v1",
+      "requiredBy": [
+        "human-review"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "representation.missing.typed/v1",
+      "requiredBy": [
+        "typed-gap"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "representation.profile.resolve.exact/v1",
+      "requiredBy": [
+        "profile-resolution"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "simulation.causal.replay/v1",
+      "requiredBy": [
+        "causal-simulation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "simulation.idle-no-decay/v1",
+      "requiredBy": [
+        "causal-simulation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "simulation.object.upgrade-branches/v1",
+      "requiredBy": [
+        "upgradeable-object"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "video.sparse-rational-sequence/v1",
+      "requiredBy": [
+        "film"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}
