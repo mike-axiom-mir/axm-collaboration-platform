@@ -1,0 +1,244 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "author-bounded-game",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "game.project.game-forge-compatible"
+      ],
+      "degraded": [
+        "game.brief.typed"
+      ],
+      "unknown": [],
+      "missing": [
+        "game.candidate.generate.deterministic"
+      ],
+      "declaredConstraints": {
+        "game.brief.typed": [
+          "Game Forge has a typed project document, but no exact deterministic generation brief."
+        ],
+        "game.project.game-forge-compatible": [
+          "axm.game-forge-project/v1 with a 16 by 10 semantic world."
+        ]
+      }
+    },
+    {
+      "id": "build-inside-repaired-sandbox",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [
+        "sandbox.network.default-deny",
+        "sandbox.resource.bytes-enforced"
+      ],
+      "unknown": [],
+      "missing": [
+        "sandbox.source-output-evidence.disjoint",
+        "sandbox.candidate.build.allowlisted",
+        "sandbox.host-authority.not-inherited"
+      ],
+      "declaredConstraints": {
+        "sandbox.network.default-deny": [
+          "Existing Sandbox host is loopback-only but does not execute candidate previews."
+        ],
+        "sandbox.resource.bytes-enforced": [
+          "Existing request bytes are bounded; candidate build bytes are not yet modeled."
+        ]
+      }
+    },
+    {
+      "id": "grow-without-installing",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "sandbox.candidate.repair.immutable-iterations",
+        "sandbox.lesson.candidate.privacy-safe"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "prove-one-playable-game",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "visual.capture.live",
+        "game.play.journey"
+      ],
+      "degraded": [
+        "game.runtime.browser",
+        "game.accessibility.keyboard"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.runtime.browser": [
+          "Workshop has game runtimes, but no exact generated-game sandbox route."
+        ],
+        "visual.capture.live": [
+          "In-app browser only."
+        ],
+        "game.play.journey": [
+          "Bounded browser input and visible outcome only."
+        ],
+        "game.accessibility.keyboard": [
+          "Verifier exists; generated candidate behavior is unknown."
+        ]
+      }
+    },
+    {
+      "id": "show-before-installation",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "game.install.human-gate"
+      ],
+      "degraded": [
+        "game.install.review-packet"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.install.review-packet": [
+          "Review Inbox exists; no generated-game packet is bound to it."
+        ],
+        "game.install.human-gate": [
+          "Mike remains the final installation and merge gate."
+        ]
+      }
+    },
+    {
+      "id": "future-persistent-game",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "game.persistence.restart"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.persistence.restart": [
+          "Save/replay service exists; first generated game is intentionally session-only."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "game.candidate.generate.deterministic",
+    "sandbox.candidate.build.allowlisted",
+    "sandbox.candidate.repair.immutable-iterations",
+    "sandbox.host-authority.not-inherited",
+    "sandbox.lesson.candidate.privacy-safe",
+    "sandbox.source-output-evidence.disjoint"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "game.candidate.generate.deterministic",
+      "requiredBy": [
+        "author-bounded-game"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sandbox.candidate.build.allowlisted",
+      "requiredBy": [
+        "build-inside-repaired-sandbox"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sandbox.candidate.repair.immutable-iterations",
+      "requiredBy": [
+        "grow-without-installing"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sandbox.host-authority.not-inherited",
+      "requiredBy": [
+        "build-inside-repaired-sandbox"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sandbox.lesson.candidate.privacy-safe",
+      "requiredBy": [
+        "grow-without-installing"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sandbox.source-output-evidence.disjoint",
+      "requiredBy": [
+        "build-inside-repaired-sandbox"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}
