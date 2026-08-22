@@ -1,0 +1,61 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "grounded-growth-current-state",
+  "version": "v0.3",
+  "status": "TEST",
+  "provides": [
+    "growth.current-state.compose",
+    "growth.current-state.portfolio-extension-verify",
+    "growth.current-state.participation-preserve",
+    "growth.current-state.rebind-hold",
+    "growth.current-state.digest",
+    "growth.current-state.exact-source-rebuild",
+    "growth.current-state.detached-integrity.verify",
+    "growth.current-state.detached-coherence.verify",
+    "growth.current-state.detached-authority.verify",
+    "growth.current-state.detached-cli.read-only",
+    "axm.grounded-growth-current-state-receipt/v1"
+  ],
+  "consumes": [
+    "axm.grounded-growth-participation-frontier-receipt/v1",
+    "its exact rebuild inputs",
+    "axm.grounded-growth-portfolio/v1",
+    "optional detached axm.grounded-growth-current-state-receipt/v1 JSON file",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.grounded-growth-current-state-receipt/v1"],
+    "accepts": ["exact verified participation frontier plus a native verified forward portfolio extension"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "historical-outcome-removal",
+      "historical-outcome-rewrite",
+      "historical-outcome-reordering",
+      "invalid-participation-frontier",
+      "invalid-latest-portfolio",
+      "stale-human-binding-as-current",
+      "review-readiness-as-participation",
+      "review-readiness-as-human-benefit",
+      "ai-workflow-pass-as-human-benefit",
+      "detached-integrity-as-source-truth",
+      "detached-integrity-as-source-currentness",
+      "self-digest-only-as-semantic-coherence",
+      "recomputed-authority-inflation",
+      "undefined-or-non-json-representable-state",
+      "automatic-participation",
+      "automatic-execution",
+      "automatic-promotion",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "exact source mode rebuilds from inputs; detached mode rereads one explicit receipt",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

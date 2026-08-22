@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-proposal/v1",
+  "title": "AXM local-possession two-phase settlement proposal v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "proposalId", "proposedAt", "status", "log", "manifestRef", "previousProposalRef", "transitionReceipt", "prewriteCurrentnessAuditReceipt", "prewriteSnapshotRef", "previousSettledWitnessRef", "candidateSeparatedWitnessRef", "state", "nextGate", "truth", "proposalDigest"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-proposal/v1" },
+    "version": { "const": "2.0.0" },
+    "proposalId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "proposedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "log": { "type": "object", "additionalProperties": false, "required": ["logId", "authorityOrigin", "storageMode", "sequence"], "properties": { "logId": { "type": "string" }, "authorityOrigin": { "const": "CALLER_STATE_ROOT_AND_CONFIRMATIONS_UNAUTHENTICATED" }, "storageMode": { "const": "PREWRITE_MATCHED_PROPOSAL_THEN_POSTWRITE_RECAPTURED_EXCLUSIVE_SETTLEMENT" }, "sequence": { "type": "integer", "minimum": 1 } } },
+    "manifestRef": { "$ref": "#/$defs/reference" },
+    "previousProposalRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] },
+    "transitionReceipt": { "type": "object" },
+    "prewriteCurrentnessAuditReceipt": { "type": "object" },
+    "prewriteSnapshotRef": { "$ref": "#/$defs/reference" },
+    "previousSettledWitnessRef": { "$ref": "#/$defs/reference" },
+    "candidateSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "state": { "const": "PROPOSED_AFTER_EXACT_PREWRITE_SOURCE_MATCH_SETTLED_HEAD_NOT_ADVANCED" },
+    "nextGate": { "const": "EXACT_POSTWRITE_SOURCE_RECAPTURE_AND_EXCLUSIVE_SETTLEMENT" },
+    "truth": { "type": "object" },
+    "proposalDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reference": { "type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": { "id": { "type": "string", "minLength": 1, "maxLength": 180 }, "schema": { "type": "string", "minLength": 1, "maxLength": 180 }, "sha256": { "$ref": "#/$defs/digest" } } }
+  }
+}

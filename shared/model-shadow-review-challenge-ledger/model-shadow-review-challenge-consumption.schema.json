@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-consumption/v1",
+  "title": "Model Shadow review challenge consumption receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "consumptionId", "consumedAt", "status", "ledger",
+    "signedReviewReceiptRef", "reviewedHandoffRef", "proposalRef", "planRef",
+    "reviewEvidenceRef", "keyPolicyRef", "challengeRef", "state", "nextGate",
+    "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-consumption/v1"},
+    "version": {"const": "0.2.0"},
+    "consumptionId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "consumedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "ledger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledgerId", "authorityOrigin", "storageMode"],
+      "properties": {
+        "ledgerId": {"type": "string", "minLength": 1, "maxLength": 180},
+        "authorityOrigin": {"const": "CALLER_STATE_ROOT_UNAUTHENTICATED"},
+        "storageMode": {"const": "APPEND_ONLY_EXCLUSIVE_CREATE"}
+      }
+    },
+    "signedReviewReceiptRef": {"$ref": "#/$defs/reference"},
+    "reviewedHandoffRef": {"$ref": "#/$defs/reference"},
+    "proposalRef": {"$ref": "#/$defs/reference"},
+    "planRef": {"$ref": "#/$defs/reference"},
+    "reviewEvidenceRef": {"$ref": "#/$defs/reference"},
+    "keyPolicyRef": {"$ref": "#/$defs/reference"},
+    "challengeRef": {"$ref": "#/$defs/reference"},
+    "state": {"const": "CHALLENGE_REPLAY_REFUSED_WHILE_CALLER_LEDGER_STATE_IS_PRESERVED_EXECUTION_NOT_AUTHORIZED"},
+    "nextGate": {"const": "HOST_TRUST_ANCHOR_AND_PROTECTED_LEDGER_STATE_THEN_SEPARATE_EXECUTION_DECISION"},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "signedReviewReceiptVerifiedByExactRebuild", "exactProposalPlanReviewAndChallengeBound",
+        "ledgerManifestVerified", "stateWritePerformed", "writeRequiredExplicitConfirmation", "exclusiveEntryCreateWon",
+        "entryFileFsyncCompleted", "challengeReplayRefusedWhileLedgerStatePreserved",
+        "ledgerDeletionOrRollbackResistanceProven",
+        "challengeGloballySingleUseProven", "ledgerAuthorityAuthenticated",
+        "callerPolicyAuthorityAuthenticated", "hostAuthorizationAuthenticated",
+        "actorRealWorldIdentityProven", "actualHumanParticipationProven",
+        "verificationTimeExternallyTrusted", "consumptionTimeExternallyTrusted",
+        "durabilityBeyondReportedFileFsyncProven", "rawActorIdentityEmbedded",
+        "reviewDiscussionIngested", "voteNotesIngested", "rawPublicKeyEmbedded",
+        "rawSignatureEmbedded", "privateKeyIngested", "rawModelOutputEmbedded",
+        "privateContextEmbedded", "experimentExecuted", "evaluationPerformed",
+        "executionAuthorized", "adoptionAuthorized", "humanBenefitProven",
+        "sharedGrowthClaimed", "broadLearningClaimed", "automaticExecution",
+        "automaticInstall", "automaticPermissionGrant", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "signedReviewReceiptVerifiedByExactRebuild": {"const": true},
+        "exactProposalPlanReviewAndChallengeBound": {"const": true},
+        "ledgerManifestVerified": {"const": true},
+        "stateWritePerformed": {"const": true},
+        "writeRequiredExplicitConfirmation": {"const": true},
+        "exclusiveEntryCreateWon": {"const": true},
+        "entryFileFsyncCompleted": {"const": true},
+        "challengeReplayRefusedWhileLedgerStatePreserved": {"const": true},
+        "ledgerDeletionOrRollbackResistanceProven": {"const": false},
+        "challengeGloballySingleUseProven": {"const": false},
+        "ledgerAuthorityAuthenticated": {"const": false},
+        "callerPolicyAuthorityAuthenticated": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "actorRealWorldIdentityProven": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "verificationTimeExternallyTrusted": {"const": false},
+        "consumptionTimeExternallyTrusted": {"const": false},
+        "durabilityBeyondReportedFileFsyncProven": {"const": false},
+        "rawActorIdentityEmbedded": {"const": false},
+        "reviewDiscussionIngested": {"const": false},
+        "voteNotesIngested": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "privateKeyIngested": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "sharedGrowthClaimed": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticExecution": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

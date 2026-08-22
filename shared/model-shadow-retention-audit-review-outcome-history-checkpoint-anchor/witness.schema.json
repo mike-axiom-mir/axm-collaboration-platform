@@ -1,0 +1,15 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-witness/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","witnessId","verifiedAt","checkpointRef","witnessPolicyRef","state","signatureEvidence","truth","witnessDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-witness/v1"},"version":{"const":"3.4.0"},"status":{"const":"TEST"},
+    "witnessId":{"type":"string","minLength":1,"maxLength":180},"verifiedAt":{"$ref":"#/$defs/time"},
+    "checkpointRef":{"$ref":"#/$defs/ref"},"witnessPolicyRef":{"$ref":"#/$defs/ref"},
+    "state":{"const":"CHECKPOINT_SIGNATURES_VERIFIED_RELATIVE_TO_CALLER_POLICY_AUTHORITY_NOT_AUTHENTICATED"},
+    "signatureEvidence":{"type":"object","additionalProperties":false,"required":["algorithm","requiredSignatures","verifiedSignatures","keyFingerprintSetDigest","declaredPrincipalSetDigest","attestationSetDigest","policyAuthorityOrigin"],"properties":{"algorithm":{"const":"Ed25519"},"requiredSignatures":{"type":"integer","minimum":1,"maximum":10},"verifiedSignatures":{"type":"integer","minimum":1,"maximum":10},"keyFingerprintSetDigest":{"$ref":"#/$defs/digest"},"declaredPrincipalSetDigest":{"$ref":"#/$defs/digest"},"attestationSetDigest":{"$ref":"#/$defs/digest"},"policyAuthorityOrigin":{"const":"CALLER_SUPPLIED_UNAUTHENTICATED"}}},
+    "truth":{"type":"object"},"witnessDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{"digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},"time":{"type":"string","format":"date-time","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"},"ref":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}}}
+}

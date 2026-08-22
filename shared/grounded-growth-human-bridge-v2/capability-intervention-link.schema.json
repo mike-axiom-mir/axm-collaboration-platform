@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-intervention-link/v2",
+  "title": "AXM Capability Intervention Link v2",
+  "type": "object",
+  "required": [
+    "schema", "version", "linkId", "generatedAt", "capabilityId", "claimId",
+    "cycleRef", "protocolRef", "ancestry", "evaluatedCandidateRef", "truth", "linkDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.capability-intervention-link/v2" },
+    "version": { "const": "0.2.0" },
+    "ancestry": {
+      "type": "object",
+      "required": ["mode", "relation", "capabilitySurfaceRef"],
+      "properties": {
+        "mode": { "enum": ["CANDIDATE", "REUSE_EXISTING"] },
+        "relation": {
+          "enum": [
+            "EVALUATED_SURFACE_PRESENTS_CAPABILITY_CANDIDATE",
+            "EVALUATED_SURFACE_PRESENTS_REUSED_CAPABILITY"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "linkDigest": { "pattern": "^sha256:[0-9a-f]{64}$" }
+  },
+  "additionalProperties": true
+}
+

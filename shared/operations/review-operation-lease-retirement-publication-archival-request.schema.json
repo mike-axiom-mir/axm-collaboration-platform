@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-publication-archival-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "stageFile", "stageDigest", "assertion", "confirmation", "reason"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-publication-archival-request/v1" },
+    "stageFile": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\\.(?:intent\\.json|decision\\.json|result\\.json)\\.[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\\.stage$" },
+    "stageDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "assertion": { "const": "I_ASSERT_THE_RETIREMENT_PUBLICATION_STAGE_PUBLISHER_TERMINATED_OR_ABANDONED_THIS_STAGE" },
+    "confirmation": { "type": "string", "minLength": 1 },
+    "reason": { "type": "string", "minLength": 20, "maxLength": 500 }
+  }
+}

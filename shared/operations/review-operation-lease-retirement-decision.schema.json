@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-decision/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "state", "retirementId", "recordedAt", "ownerDigest", "intentDigest", "callerAssertion", "reason", "intentFile", "decisionFile", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-decision/v1" },
+    "status": { "const": "TEST" },
+    "state": { "enum": ["PROCEED_RETIREMENT", "WITHDRAW_RETIREMENT_INTENT"] },
+    "retirementId": { "type": "string", "format": "uuid" },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "ownerDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "intentDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "callerAssertion": { "enum": ["HOLDER_TERMINATED_OR_ABANDONED", "DO_NOT_CONTINUE_REVIEW_OPERATION_LEASE_RETIREMENT"] },
+    "reason": { "type": "string", "minLength": 20, "maxLength": 500 },
+    "intentFile": { "type": "string", "pattern": "^[a-f0-9-]+\\.intent\\.json$" },
+    "decisionFile": { "type": "string", "pattern": "^[a-f0-9-]+\\.decision\\.json$" },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exactIntentDigestRequired", "exactOwnerDigestRequired", "exclusiveDecisionCreateRequired", "cooperatingSingleHostProceedWithdrawArbitration", "withdrawalDecisionRecorded", "ownerLockMutationByDecision", "ownerEvidenceQuarantinedByDecision", "retirementCompletedByDecision", "holderTerminatedOrAbandonedProven", "holderLivenessProven", "generalRetirementCancellationSafetyProven", "crossFileAtomicityProven", "nonCooperatingExternalWritersExcluded", "protectedStorageOrRollbackPreventionProven", "browserRoute", "apiRoute", "executionAuthorized", "adoptionAuthorized", "promotionAuthorized", "mergeAuthorized", "canonAuthorized"],
+      "properties": {
+        "exactIntentDigestRequired": { "const": true },
+        "exactOwnerDigestRequired": { "const": true },
+        "exclusiveDecisionCreateRequired": { "const": true },
+        "cooperatingSingleHostProceedWithdrawArbitration": { "const": true },
+        "withdrawalDecisionRecorded": { "type": "boolean" },
+        "ownerLockMutationByDecision": { "const": false },
+        "ownerEvidenceQuarantinedByDecision": { "const": false },
+        "retirementCompletedByDecision": { "const": false },
+        "holderTerminatedOrAbandonedProven": { "const": false },
+        "holderLivenessProven": { "const": false },
+        "generalRetirementCancellationSafetyProven": { "const": false },
+        "crossFileAtomicityProven": { "const": false },
+        "nonCooperatingExternalWritersExcluded": { "const": false },
+        "protectedStorageOrRollbackPreventionProven": { "const": false },
+        "browserRoute": { "const": false },
+        "apiRoute": { "const": false },
+        "executionAuthorized": { "const": false },
+        "adoptionAuthorized": { "const": false },
+        "promotionAuthorized": { "const": false },
+        "mergeAuthorized": { "const": false },
+        "canonAuthorized": { "const": false }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "state": { "const": "PROCEED_RETIREMENT" } } },
+      "then": {
+        "properties": {
+          "callerAssertion": { "const": "HOLDER_TERMINATED_OR_ABANDONED" },
+          "truth": { "properties": { "withdrawalDecisionRecorded": { "const": false } } }
+        }
+      },
+      "else": {
+        "properties": {
+          "callerAssertion": { "const": "DO_NOT_CONTINUE_REVIEW_OPERATION_LEASE_RETIREMENT" },
+          "truth": { "properties": { "withdrawalDecisionRecorded": { "const": true } } }
+        }
+      }
+    }
+  ]
+}

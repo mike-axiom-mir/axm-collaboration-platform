@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-withdrawal-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "retirementId", "ownerDigest", "assertion", "confirmation", "reason"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-withdrawal-request/v1" },
+    "retirementId": { "type": "string", "format": "uuid" },
+    "ownerDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "assertion": { "const": "DO_NOT_CONTINUE_REVIEW_OPERATION_LEASE_RETIREMENT" },
+    "confirmation": { "type": "string", "minLength": 1 },
+    "reason": { "type": "string", "minLength": 20, "maxLength": 500 }
+  }
+}

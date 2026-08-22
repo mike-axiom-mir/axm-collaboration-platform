@@ -1,0 +1,68 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "grounded-growth-human-handoff",
+  "version": "v0.2",
+  "status": "TEST",
+  "provides": [
+    "human.evidence.evaluation.compose",
+    "human.judgment.explicit-input-preserve",
+    "human.source.local-declaration.native",
+    "human.bridge.v2.handoff-compose",
+    "human.handoff.candidate-ancestry",
+    "human.handoff.reuse-existing-ancestry",
+    "human.handoff.synthetic-hold",
+    "human.handoff.authority.none",
+    "axm.local-steward-source-declaration/v1",
+    "axm.grounded-growth-human-handoff-package/v1"
+  ],
+  "consumes": [
+    "axm.verified-capability-cycle-receipt/v1",
+    "axm.human-benefit-protocol/v1",
+    "axm.human-benefit-session-receipt/v1",
+    "axm.human-benefit-evaluation-receipt/v1",
+    "axm.human-benefit-judgment-receipt/v1",
+    "axm.capability-intervention-link/v2",
+    "axm.grounded-growth-human-bridge-bundle/v2",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.local-steward-source-declaration/v1",
+      "axm.grounded-growth-human-handoff-package/v1"
+    ],
+    "accepts": [
+      "exact verified session receipts plus a separate explicit claim-scoped judgment and local source declaration"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "automatic-participation",
+      "judgment-derived-from-numeric-signal",
+      "synthetic-fixture-as-human-benefit",
+      "source-declaration-as-identity-authentication",
+      "source-declaration-as-presence-authentication",
+      "local-declaration-as-cohort-authentication",
+      "cross-capability-session-or-link",
+      "ambiguous-capability-ancestry",
+      "invented-candidate-for-reuse-existing",
+      "missing-or-held-evidence-closure-as-admitted",
+      "automatic-write",
+      "automatic-execution",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-canon",
+      "foundation-mutation",
+      "model-weight-training-claim",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller",
+    "reload": "rebuild from exact retained receipts",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned; module writes nothing"
+  }
+}

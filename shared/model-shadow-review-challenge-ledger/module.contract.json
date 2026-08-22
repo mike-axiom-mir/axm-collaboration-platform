@@ -1,0 +1,92 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-ledger",
+  "version": "v0.2",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.signed-receipt-exact-rebuild",
+    "model.shadow.review.challenge-caller-ledger-replay-refusal-while-state-preserved",
+    "model.shadow.review.challenge-ledger-id-immutable-bind",
+    "model.shadow.review.challenge-exclusive-create",
+    "model.shadow.review.challenge-fresh-process-replay-refusal",
+    "model.shadow.review.challenge-corruption-fail-closed",
+    "model.shadow.review.challenge-consumption-receipt-exact-rebuild",
+    "model.shadow.review.execution-authority-none",
+    "axm.model-shadow-review-challenge-consumption/v1",
+    "axm.model-shadow-review-challenge-ledger-manifest/v1"
+  ],
+  "consumes": [
+    "axm.model-shadow-signed-review-receipt/v1",
+    "exact signed-review receipt rebuild input",
+    "caller-owned existing state root",
+    "exact explicit consumption confirmation",
+    "filesystem exclusive-create and file-fsync"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.model-shadow-review-challenge-consumption/v1"],
+    "accepts": [
+      "one exact-rebuild signed review receipt and its rebuild input",
+      "one caller-scoped ledger id and existing state root"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "<caller-state-root>/model-shadow-review-challenge-ledger/ledger.json",
+      "<caller-state-root>/model-shadow-review-challenge-ledger/entries/<challenge-sha256>.json"
+    ],
+    "refuses": [
+      "write-without-exact-confirmation",
+      "explicit-confirmation-as-host-authorization",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "test-leaf-as-installed-or-promoted",
+      "filesystem-root-as-state-root",
+      "missing-or-non-directory-state-root",
+      "symlink-or-junction-state-root",
+      "symlink-ledger-directory",
+      "symlink-entry-file",
+      "conflicting-ledger-id-in-one-state-root",
+      "corrupt-ledger-manifest-as-new-ledger",
+      "missing-ledger-manifest-with-existing-state-as-new-ledger",
+      "invalid-signed-review-receipt",
+      "replayed-challenge-in-the-same-ledger",
+      "corrupt-entry-as-absent-challenge",
+      "partial-write-as-reusable-challenge",
+      "caller-owned-state-as-deletion-or-rollback-resistant",
+      "caller-ledger-single-use-as-global-single-use",
+      "caller-ledger-id-as-authenticated-host-authority",
+      "caller-key-policy-as-authenticated-host-trust-root",
+      "signature-as-real-world-identity",
+      "declared-human-key-as-authenticated-human",
+      "signature-as-actual-human-participation",
+      "caller-time-as-trusted-time",
+      "consumption-as-execution-authority",
+      "consumption-as-adoption-authority",
+      "raw-actor-identity-retention",
+      "raw-public-key-retention",
+      "raw-signature-retention",
+      "review-discussion-ingestion",
+      "vote-note-ingestion",
+      "private-key-ingestion",
+      "raw-model-output-ingestion",
+      "private-context-ingestion",
+      "automatic-execution",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller-provided state root",
+    "reload": "read and validate the exact challenge-digest entry in a new process",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned; removal or rollback can reopen local replay and requires explicit steward review",
+    "installed": false,
+    "promoted": false
+  }
+}

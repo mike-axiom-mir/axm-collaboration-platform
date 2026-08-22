@@ -1,0 +1,64 @@
+{
+  "capabilities": [
+    {
+      "id": "review.retirement.intent.write-exclusive",
+      "status": "available",
+      "constraints": ["TEST", "single host", "append-only intent file"]
+    },
+    {
+      "id": "review.retirement.recovery.explicit",
+      "status": "available",
+      "constraints": ["RESUME_RETIREMENT or FINALIZE_RESULT only", "operator assertion required"]
+    },
+    {
+      "id": "review.retirement.recovery.checkpoint-convergence",
+      "status": "available",
+      "constraints": ["cooperating exact callers", "single host", "bounded observation"]
+    },
+    {
+      "id": "review.retirement.intent.withdraw.explicit",
+      "status": "unavailable",
+      "constraints": ["no withdrawal method or CLI command"]
+    },
+    {
+      "id": "review.retirement.intent.withdraw.append-only-evidence",
+      "status": "unavailable",
+      "constraints": ["no withdrawal evidence schema"]
+    },
+    {
+      "id": "review.retirement.intent.withdraw.owner-lock-preserved",
+      "status": "unavailable",
+      "constraints": ["no withdrawal operation"]
+    },
+    {
+      "id": "review.retirement.decision.exclusive-cooperating-single-host",
+      "status": "unavailable",
+      "constraints": ["resume and direct retirement do not claim a shared proceed-or-withdraw decision"]
+    },
+    {
+      "id": "review.retirement.decision.concurrent-convergence",
+      "status": "unavailable",
+      "constraints": ["no proceed-versus-withdraw race contract"]
+    },
+    {
+      "id": "review.retirement.intent.withdraw.closed-host-local-contract",
+      "status": "unavailable",
+      "constraints": ["no request, result, or host-local route"]
+    },
+    {
+      "id": "review.retirement.cancel.general-safety",
+      "status": "unavailable",
+      "constraints": ["external writers and arbitrary phases are outside scope"]
+    },
+    {
+      "id": "storage.cross-file.atomicity",
+      "status": "unavailable",
+      "constraints": ["intent, decision, quarantine, and result remain separate files"]
+    },
+    {
+      "id": "review.lease.holder-liveness.authenticated",
+      "status": "unavailable",
+      "constraints": ["process id is evidence, not authenticated liveness"]
+    }
+  ]
+}

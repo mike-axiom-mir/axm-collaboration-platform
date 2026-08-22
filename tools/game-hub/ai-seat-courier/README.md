@@ -22,7 +22,7 @@ The courier cannot run arbitrary shell commands, navigate to remote sites, call 
 
 Double-click `START_AI_SEAT_COURIER.cmd`. The helper runs hidden and writes status to:
 
-`D:\AXM_ACTIVE\workshop\state\ai-seat-courier\status.json`
+`<AXM_WORKSHOP>\state\ai-seat-courier\status.json`
 
 Double-click `STOP_AI_SEAT_COURIER.cmd` to stop the active browser, owned game server, and courier cleanly.
 

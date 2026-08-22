@@ -1,0 +1,96 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise",
+  "version":"v3.5",
+  "status":"TEST",
+  "provides":[
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.two-v34-package-exact-rebuild",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.two-v33-checkpoint-self-validation",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.anchor-identity-comparison",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.anchor-continuity-profile-comparison",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.witness-policy-identity-comparison",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.witness-continuity-profile-comparison",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.ledger-identity-comparison",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.caller-time-ordering",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.caller-anchor-epoch-ordering",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.exact-anchored-package-replay",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.exact-history-recheckpoint",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.forward-complete-history-prefix",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.strict-history-rollback",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.history-replacement-or-fork",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.checkpoint-id-equivocation",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.snapshot-drift-without-extension",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.history-extension-without-snapshot-change",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.closed-classification-and-decision",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.fresh-process-exact-rebuild",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.same-next-epoch-fork-counterexample",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.withheld-branch-nonexclusion",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.joint-pair-replacement-counterexample",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise.data-minimization-resource-authority-boundary",
+    "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored-pairwise-transition/v1"
+  ],
+  "consumes":[
+    "two exact caller-presented v3.4 anchored checkpoint packages",
+    "the two self-validating v3.3 checkpoints nested inside those packages",
+    "one caller-supplied transition id and untrusted UTC comparison time"
+  ],
+  "permissions":[
+    "read caller-presented JSON data and public keys"
+  ],
+  "handoffs":{
+    "emits":[
+      "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored-pairwise-transition/v1"
+    ],
+    "accepts":[
+      "one exact previous v3.4 anchored checkpoint package",
+      "one exact candidate v3.4 anchored checkpoint package"
+    ]
+  },
+  "boundaries":{
+    "reads":[
+      "two caller-presented v3.4 anchored checkpoint inputs and receipts"
+    ],
+    "writes":[],
+    "refuses":[
+      "invalid-extra-missing-oversized-or-noncanonical-input-or-receipt",
+      "invalid-previous-or-candidate-v34-anchored-checkpoint-package",
+      "comparison-time-before-either-anchored-checkpoint-verification",
+      "anchor-witness-ledger-or-policy-profile-drift-as-forward-continuity",
+      "same-checkpoint-id-with-different-digest-as-valid-recheckpoint",
+      "same-history-with-different-snapshot-binding-as-exact-recheckpoint",
+      "history-extension-with-unchanged-snapshot-binding-as-forward-continuity",
+      "caller-epoch-rollback-nonadvance-or-gap-as-sequential-continuity",
+      "candidate-history-that-removes-replaces-or-diverges-from-any-prior-ordered-entry-as-forward-extension",
+      "caller-presented-checkpoint-policy-anchor-or-epoch-as-authenticated-origin-authority-or-monotonic-state",
+      "normalized-profile-match-as-authenticated-policy-rotation-or-controller-independence",
+      "pairwise-forward-classification-as-retention-execution-or-adoption-authority",
+      "pairwise-comparison-as-withheld-branch-exclusion-global-transition-uniqueness-or-globally-consistent-log",
+      "pairwise-hold-as-deletion-or-rollback-prevention",
+      "joint-replacement-of-both-presented-packages-as-original-pair-continuity",
+      "declared-actor-kind-as-authenticated-human-participation",
+      "caller-time-as-externally-trusted-time",
+      "raw-public-key-signature-private-key-review-material-model-output-private-context-or-ledger-path-persistence",
+      "provider-invocation-experiment-evaluation-learning-or-human-benefit",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle":{
+    "state_owner":"none",
+    "state_owner_detail":"caller retains both v3.4 packages and the pairwise receipt",
+    "reload":"not-applicable",
+    "reload_detail":"exact-rebuild both v3.4 packages and the v3.5 transition receipt in a fresh process",
+    "disconnect":"not-applicable",
+    "disconnect_detail":"no network provider Review Inbox custody clock or trust-root service is opened",
+    "cleanup":"not-applicable",
+    "cleanup_detail":"caller owns all inputs and outputs; this module stores nothing and cannot observe withheld or jointly replaced packages",
+    "installed":false,
+    "promoted":false
+  },
+  "merge_gate":"Mike Tobi / AXM"
+}

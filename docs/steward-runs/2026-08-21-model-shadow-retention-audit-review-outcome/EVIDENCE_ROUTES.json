@@ -1,0 +1,65 @@
+{
+  "schema":"axm.evidence-routes/v1",
+  "routes":[
+    {
+      "claimId":"outcome-state-binding",
+      "claim":"Only an exact post-pending APPROVED HOLD or REJECTED Review Inbox item can produce the corresponding v3.1 outcome state.",
+      "kind":"deterministic behavior",
+      "risk":"high",
+      "passCondition":"Exact approved held and rejected fixtures produce their matching states; unsupported state route artifact action or immutable-field drift fails closed.",
+      "primarySurface":"focused execution with native ReviewService fixtures and corrupt copies",
+      "counterevidence":"a contradictory unsupported or wrong-artifact item produces an outcome",
+      "secondarySurface":"closed output schema and exact-rebuild verifier"
+    },
+    {
+      "claimId":"vote-integrity-and-minimization",
+      "claim":"An outcome built or exactly rebuilt from its caller package binds distinct exact-digest votes while omitting raw actors notes and discussion; standalone validation does not prove actor-digest provenance.",
+      "kind":"deterministic behavior",
+      "risk":"high",
+      "passCondition":"Case-insensitive duplicates digest drift invalid actors excess votes conflicting approval and state-vote mismatch fail; valid output contains only actor digests and bounded vote fields; a self-consistent standalone digest rewrite validates but exact rebuild rejects it and truth fixes standalone provenance proof false.",
+      "primarySurface":"focused vote corruption and public-artifact scans",
+      "counterevidence":"raw identity or note leaks duplicate/conflicting votes satisfy the outcome or standalone validation is represented as actor-digest provenance proof",
+      "secondarySurface":"schema inspection and output digest rebuild"
+    },
+    {
+      "claimId":"transition-and-replay",
+      "claim":"The outcome binds an exact v2.9 request and pending handoff to one later persisted Review Inbox item and can be rebuilt in a fresh process.",
+      "kind":"transport and deterministic behavior",
+      "risk":"high",
+      "passCondition":"Request and pending handoff exact-rebuild; immutable transition fields match; a fresh Node process rebuilds byte-identical outcome; early or altered inputs fail.",
+      "primarySurface":"exact upstream rebuild plus fresh-process receiver execution",
+      "counterevidence":"different pending identity or altered input rebuilds the same output",
+      "secondarySurface":"normalized source and receiver tree digests before and after"
+    },
+    {
+      "claimId":"authority-boundary",
+      "claim":"Observed Review Inbox outcome grants no identity human-review hold-resolution remediation or consequential authority.",
+      "kind":"authorization",
+      "risk":"high",
+      "passCondition":"Truth and schema fix all such claims false; source performs no host call or mutation; README and contract preserve Mike merge/CANON gate.",
+      "primarySurface":"closed contract schema source and rendered outcome inspection",
+      "counterevidence":"outcome claims authenticated human review resolves the hold or authorizes action",
+      "secondarySurface":"focused authority-inflation corruption tests"
+    },
+    {
+      "claimId":"resource-and-mutation-boundary",
+      "claim":"The data-only leaf is bounded and changes no source observation or Review Inbox bytes.",
+      "kind":"resource safety and persistence",
+      "risk":"medium",
+      "passCondition":"Input output votes and text are bounded; oversized packages fail; normalized source and receiver tree digests remain equal around builds; runtime imports no service filesystem network or process module.",
+      "primarySurface":"focused bounds execution source inspection and before/after tree digests",
+      "counterevidence":"unbounded accepted input or any durable byte change",
+      "secondarySurface":"repository regression checks"
+    },
+    {
+      "claimId":"repository-regression",
+      "claim":"The additive v3.1 leaf preserves the inherited Workshop and Model Shadow chain.",
+      "kind":"deterministic behavior",
+      "risk":"medium",
+      "passCondition":"Focused v3.1 v3.0 v2.9 inherited all ten AGENTS and clean detached replay commands exit zero on stable inputs.",
+      "primarySurface":"recorded command-result ledger",
+      "counterevidence":"any nonzero command or task-relevant moving-workspace conflict",
+      "secondarySurface":"final shared-workspace snapshot and detached replay"
+    }
+  ]
+}

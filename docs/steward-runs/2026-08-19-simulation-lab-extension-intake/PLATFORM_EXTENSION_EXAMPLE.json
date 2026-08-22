@@ -1,0 +1,58 @@
+{
+  "schema": "axm.simulation-lab-extension/v1",
+  "version": "0.1.0",
+  "extensionId": "platform-baseline-adapter-extension",
+  "candidate": {
+    "moduleId": "platform-baseline-adapter",
+    "version": "v0.1-experimental"
+  },
+  "relation": "ADAPTER",
+  "hostProfileDigest": "sha256:07960a606ffb30d48a37cee29e1e795fe33c1789aabc5cd61b4e22c155744031",
+  "subjectKinds": [
+    "MIRROR_STATE",
+    "SOFTWARE_REPOSITORY",
+    "SPECIALIST_MASK"
+  ],
+  "mappings": [
+    {
+      "subjectKind": "MIRROR_STATE",
+      "candidateCapability": "simulation.extension.translate.mirror",
+      "hostModuleId": "portable-baseline-capsule",
+      "hostCapability": "simulation.baseline.mirror.separate-realms",
+      "inputSchema": "axm.portable-baseline-capsule/v1",
+      "outputSchema": "axm.baseline-simulation-lab-run/v1",
+      "unsupportedFieldPolicy": "DIGEST_BOUND_REFERENCE",
+      "nativeSchemaIdentityClaimed": false
+    },
+    {
+      "subjectKind": "SOFTWARE_REPOSITORY",
+      "candidateCapability": "simulation.extension.translate.software",
+      "hostModuleId": "portable-baseline-capsule",
+      "hostCapability": "simulation.baseline.software.bind-git-dirty",
+      "inputSchema": "axm.portable-baseline-capsule/v1",
+      "outputSchema": "axm.baseline-simulation-lab-run/v1",
+      "unsupportedFieldPolicy": "DIGEST_BOUND_REFERENCE",
+      "nativeSchemaIdentityClaimed": false
+    },
+    {
+      "subjectKind": "SPECIALIST_MASK",
+      "candidateCapability": "simulation.extension.translate.specialist",
+      "hostModuleId": "portable-baseline-capsule",
+      "hostCapability": "simulation.baseline.specialist.bind-host-mask-ceiling",
+      "inputSchema": "axm.portable-baseline-capsule/v1",
+      "outputSchema": "axm.baseline-simulation-lab-run/v1",
+      "unsupportedFieldPolicy": "DIGEST_BOUND_REFERENCE",
+      "nativeSchemaIdentityClaimed": false
+    }
+  ],
+  "boundaries": {
+    "truthRulesChanged": false,
+    "rootReplacement": false,
+    "originalSourceMutation": false,
+    "candidateCodeExecuted": false,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false,
+    "permissionsRequested": []
+  }
+}

@@ -1,0 +1,533 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "exact-snapshot-identity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.snapshot.exact-digest",
+        "model.shadow.snapshot.strict-json"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "comparison-validity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.task-context.exact-bind",
+        "model.shadow.seat-identity.exact-bind",
+        "model.shadow.forward-sequence.require"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "structured-drift",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.commitment.drift-detect",
+        "model.shadow.capability.drift-detect",
+        "model.shadow.source-lineage.drift-visible"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authority-drift",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.permission-expansion.critical",
+        "model.shadow.authority-request-expansion.critical",
+        "model.shadow.boundary-loss.critical"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "privacy-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.raw-output.not-embedded",
+        "model.shadow.private-context.not-embedded"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "simulation-handoff",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.baseline-planning-projection",
+        "model.shadow.review-projection.note-free"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "rebuild-and-tamper",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.receipt.exact-rebuild",
+        "model.shadow.receipt.tamper-detect"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "bounded-authority",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.model-invocation.none",
+        "model.shadow.training.none",
+        "model.shadow.automatic-action.none",
+        "model.shadow.canon.none"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "live-provider-shadowing",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.provider.live-transport"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.provider.live-transport": [
+          "No provider connector is in scope for this data-only milestone."
+        ]
+      }
+    },
+    {
+      "id": "human-value-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.human-review.actual",
+        "model.shadow.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.human-review.actual": [
+          "No actual human review has been requested or performed."
+        ],
+        "model.shadow.human-benefit.held-out": [
+          "No held-out human-benefit study exists for this capability."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "model.shadow.authority-request-expansion.critical",
+    "model.shadow.automatic-action.none",
+    "model.shadow.baseline-planning-projection",
+    "model.shadow.boundary-loss.critical",
+    "model.shadow.canon.none",
+    "model.shadow.capability.drift-detect",
+    "model.shadow.commitment.drift-detect",
+    "model.shadow.forward-sequence.require",
+    "model.shadow.model-invocation.none",
+    "model.shadow.permission-expansion.critical",
+    "model.shadow.private-context.not-embedded",
+    "model.shadow.raw-output.not-embedded",
+    "model.shadow.receipt.exact-rebuild",
+    "model.shadow.receipt.tamper-detect",
+    "model.shadow.review-projection.note-free",
+    "model.shadow.seat-identity.exact-bind",
+    "model.shadow.snapshot.exact-digest",
+    "model.shadow.snapshot.strict-json",
+    "model.shadow.source-lineage.drift-visible",
+    "model.shadow.task-context.exact-bind",
+    "model.shadow.training.none"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "model.shadow.authority-request-expansion.critical",
+      "requiredBy": [
+        "authority-drift"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.automatic-action.none",
+      "requiredBy": [
+        "bounded-authority"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.baseline-planning-projection",
+      "requiredBy": [
+        "simulation-handoff"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.boundary-loss.critical",
+      "requiredBy": [
+        "authority-drift"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.canon.none",
+      "requiredBy": [
+        "bounded-authority"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.capability.drift-detect",
+      "requiredBy": [
+        "structured-drift"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.commitment.drift-detect",
+      "requiredBy": [
+        "structured-drift"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.forward-sequence.require",
+      "requiredBy": [
+        "comparison-validity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.model-invocation.none",
+      "requiredBy": [
+        "bounded-authority"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.permission-expansion.critical",
+      "requiredBy": [
+        "authority-drift"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.private-context.not-embedded",
+      "requiredBy": [
+        "privacy-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.raw-output.not-embedded",
+      "requiredBy": [
+        "privacy-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.receipt.exact-rebuild",
+      "requiredBy": [
+        "rebuild-and-tamper"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.receipt.tamper-detect",
+      "requiredBy": [
+        "rebuild-and-tamper"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review-projection.note-free",
+      "requiredBy": [
+        "simulation-handoff"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.seat-identity.exact-bind",
+      "requiredBy": [
+        "comparison-validity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.snapshot.exact-digest",
+      "requiredBy": [
+        "exact-snapshot-identity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.snapshot.strict-json",
+      "requiredBy": [
+        "exact-snapshot-identity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.source-lineage.drift-visible",
+      "requiredBy": [
+        "structured-drift"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.task-context.exact-bind",
+      "requiredBy": [
+        "comparison-validity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.training.none",
+      "requiredBy": [
+        "bounded-authority"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

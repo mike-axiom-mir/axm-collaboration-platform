@@ -1,0 +1,256 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "exact-upstream-reviewed-handoff",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.receipt-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.receipt-exact-rebuild": [
+          "The v1.0 proposal and declared-review handoff rebuild from exact caller inputs; actor authentication remains absent."
+        ]
+      }
+    },
+    {
+      "id": "detached-signature-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.detached-ed25519-verify",
+        "model.shadow.review.exact-artifact-bind",
+        "model.shadow.review.retained-approval-bind"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "caller-policy-authority-admission",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.caller-policy-authority-admission"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.execution-authority-none"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "receipt-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.receipt-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "host-trust-anchor",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.host-trust-anchor.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.host-trust-anchor.actual": [
+          "No Mike- or host-provisioned reviewer public-key trust root was supplied or inspected."
+        ]
+      }
+    },
+    {
+      "id": "single-use-challenge-ledger",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-single-use.actual": [
+          "No persistent nonce or challenge-consumption ledger exists in this pure leaf."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "No real person reviewed or signed a current challenger plan in this stewardship run."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "model.shadow.review.caller-policy-authority-admission",
+    "model.shadow.review.detached-ed25519-verify",
+    "model.shadow.review.exact-artifact-bind",
+    "model.shadow.review.execution-authority-none",
+    "model.shadow.review.receipt-exact-rebuild",
+    "model.shadow.review.retained-approval-bind"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "model.shadow.review.caller-policy-authority-admission",
+      "requiredBy": [
+        "caller-policy-authority-admission"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.detached-ed25519-verify",
+      "requiredBy": [
+        "detached-signature-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.exact-artifact-bind",
+      "requiredBy": [
+        "detached-signature-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.execution-authority-none",
+      "requiredBy": [
+        "authority-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.receipt-exact-rebuild",
+      "requiredBy": [
+        "receipt-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.retained-approval-bind",
+      "requiredBy": [
+        "detached-signature-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

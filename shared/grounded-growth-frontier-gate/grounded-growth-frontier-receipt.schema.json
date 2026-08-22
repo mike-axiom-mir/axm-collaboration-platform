@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-frontier-receipt/v1",
+  "title": "AXM Grounded Growth frontier receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "frontierId", "generatedAt", "status", "scope",
+    "sourceRefs", "counts", "lanes", "decision", "truth", "frontierDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.grounded-growth-frontier-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "frontierId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "generatedAt": {"type": "string", "minLength": 1, "maxLength": 80},
+    "status": {"const": "TEST"},
+    "scope": {"const": "CURRENT_GROUNDED_GROWTH_AND_EXTENSION_INPUTS"},
+    "sourceRefs": {"type": "object"},
+    "counts": {"type": "object"},
+    "lanes": {"type": "array", "minItems": 3, "maxItems": 3},
+    "decision": {"type": "object"},
+    "truth": {"type": "object"},
+    "frontierDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}
+

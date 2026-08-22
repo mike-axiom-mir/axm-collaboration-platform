@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const childProcess = require('child_process');
 const crypto = require('crypto');
+const DiagnosticRedaction = require('../shared/readiness/diagnostic-redaction');
 
 const root = path.resolve(__dirname, '..');
 const checks = [
@@ -17,7 +18,7 @@ function run(check) {
   const started = Date.now();
   const result = childProcess.spawnSync(process.execPath, [path.join(root, check.file)], { cwd: root, encoding: 'utf8', timeout: 180000, windowsHide: true, maxBuffer: 4 * 1024 * 1024 });
   const output = String(result.stdout || '') + '\n' + String(result.stderr || '');
-  return { id: check.id, file: check.file, verdict: result.status === 0 ? 'PASS' : result.error && result.error.code === 'ETIMEDOUT' ? 'TIMEOUT' : 'FAIL', exitCode: result.status, durationMs: Date.now() - started, outputSha256: sha(output), failureTail: result.status === 0 ? null : output.slice(-2000) };
+  return { id: check.id, file: check.file, verdict: result.status === 0 ? 'PASS' : result.error && result.error.code === 'ETIMEDOUT' ? 'TIMEOUT' : 'FAIL', exitCode: result.status, durationMs: Date.now() - started, outputSha256: sha(output), failureTail: result.status === 0 ? null : DiagnosticRedaction.failureTail(output, { workspaceRoot:root, limit:2000 }) };
 }
 
 const generatedAt = new Date();

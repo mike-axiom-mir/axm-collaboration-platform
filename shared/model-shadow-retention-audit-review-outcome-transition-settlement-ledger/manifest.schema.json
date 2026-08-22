@@ -1,0 +1,24 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-manifest/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","settlementLogId","sourceLogId","sourceManifestRef","sourceGenesisAnchoredCheckpointRef","sourceGenesisCheckpointRef","sourceGenesisAnchorEpoch","sourceAnchorPolicyIdentity","sourceAnchorProfileDigest","sourceWitnessPolicyIdentity","sourceWitnessProfileDigest","authorityOrigin","storageMode","manifestDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-manifest/v1"},
+    "version":{"const":"3.7.0"},"status":{"const":"TEST"},
+    "settlementLogId":{"$ref":"#/$defs/text"},"sourceLogId":{"$ref":"#/$defs/text"},
+    "sourceManifestRef":{"$ref":"#/$defs/ref"},"sourceGenesisAnchoredCheckpointRef":{"$ref":"#/$defs/ref"},
+    "sourceGenesisCheckpointRef":{"$ref":"#/$defs/ref"},"sourceGenesisAnchorEpoch":{"type":"integer","minimum":1},
+    "sourceAnchorPolicyIdentity":{"$ref":"#/$defs/identity"},"sourceAnchorProfileDigest":{"$ref":"#/$defs/digest"},
+    "sourceWitnessPolicyIdentity":{"$ref":"#/$defs/identity"},"sourceWitnessProfileDigest":{"$ref":"#/$defs/digest"},
+    "authorityOrigin":{"const":"CALLER_OWNED_DISTINCT_LOCAL_ROOTS_AND_CONFIRMATIONS_UNAUTHENTICATED"},
+    "storageMode":{"const":"EXACT_V36_PERSISTED_ENTRY_REFERENCE_THEN_SEPARATE_LOCAL_SETTLEMENT"},
+    "manifestDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "text":{"type":"string","minLength":1,"maxLength":180},
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "identity":{"type":"object","additionalProperties":false,"required":["id","schema"],"properties":{"id":{"$ref":"#/$defs/text"},"schema":{"$ref":"#/$defs/text"}}},
+    "ref":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"$ref":"#/$defs/text"},"schema":{"$ref":"#/$defs/text"},"sha256":{"$ref":"#/$defs/digest"}}}
+  }
+}

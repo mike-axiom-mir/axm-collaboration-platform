@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-two-phase-history-checkpoint-anchor-authorization/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "authorizationId", "keyId", "stewardDigest", "stewardKind", "verdict", "scope", "policyDigest", "expectedAnchorDigest", "checkpointDigest", "witnessDigest", "witnessPolicyDigest", "witnessKeyFingerprintSetDigest", "witnessDeclaredPrincipalSetDigest", "issuedAt", "expiresAt", "signatureAlgorithm", "signature"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-two-phase-history-checkpoint-anchor-authorization/v1" }, "authorizationId": { "type": "string" }, "keyId": { "type": "string" },
+    "stewardDigest": { "$ref": "#/$defs/digest" }, "stewardKind": { "enum": ["human", "machine", "unknown"] }, "verdict": { "const": "AUTHORIZE" },
+    "scope": { "const": "AUTHORIZE_EXACT_WITNESSED_MODEL_SHADOW_TWO_PHASE_HISTORY_CHECKPOINT" }, "policyDigest": { "$ref": "#/$defs/digest" },
+    "expectedAnchorDigest": { "$ref": "#/$defs/digest" }, "checkpointDigest": { "$ref": "#/$defs/digest" }, "witnessDigest": { "$ref": "#/$defs/digest" },
+    "witnessPolicyDigest": { "$ref": "#/$defs/digest" }, "witnessKeyFingerprintSetDigest": { "$ref": "#/$defs/digest" }, "witnessDeclaredPrincipalSetDigest": { "$ref": "#/$defs/digest" },
+    "issuedAt": { "type": "string", "format": "date-time" }, "expiresAt": { "type": "string", "format": "date-time" }, "signatureAlgorithm": { "const": "Ed25519" },
+    "signature": { "type": "string", "minLength": 88, "maxLength": 88 }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" } }
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger-entry/v1",
+  "title": "AXM local-possession checkpoint transition ledger entry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "entryId", "recordedAt", "status", "log", "manifestRef", "previousEntryRef", "transitionReceipt", "candidateCurrentnessAuditReceipt", "capturedSnapshotRef", "previousSeparatedWitnessRef", "candidateSeparatedWitnessRef", "state", "nextGate", "truth", "entryDigest"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger-entry/v1" },
+    "version": { "const": "1.9.0" },
+    "entryId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "log": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logId", "authorityOrigin", "storageMode", "sequence"],
+      "properties": {
+        "logId": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "authorityOrigin": { "const": "CALLER_STATE_ROOT_AND_CONFIRMATION_UNAUTHENTICATED" },
+        "storageMode": { "const": "EXACT_PREWRITE_CURRENTNESS_CAPTURE_THEN_EXCLUSIVE_LOCAL_SEQUENCE_ENTRY_CREATE" },
+        "sequence": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "manifestRef": { "$ref": "#/$defs/reference" },
+    "previousEntryRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] },
+    "transitionReceipt": { "type": "object" },
+    "candidateCurrentnessAuditReceipt": { "type": "object" },
+    "capturedSnapshotRef": { "$ref": "#/$defs/reference" },
+    "previousSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "candidateSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "state": { "const": "LOCAL_TRANSITION_RECORDED_AFTER_EXACT_PREWRITE_SOURCE_MATCH_NO_ATOMIC_SOURCE_BINDING_OR_GLOBAL_CONSISTENCY" },
+    "nextGate": { "const": "HOST_AUTHENTICATED_EXTERNALLY_RETAINED_GLOBALLY_CONSISTENT_TRANSITION_LOG_OR_PROTECTED_MONOTONIC_STORE_WITH_ATOMIC_SOURCE_BINDING" },
+    "truth": { "type": "object" },
+    "entryDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

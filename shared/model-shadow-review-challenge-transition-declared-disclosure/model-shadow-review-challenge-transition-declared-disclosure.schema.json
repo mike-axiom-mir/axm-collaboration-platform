@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-declared-disclosure/v1",
+  "title": "Model Shadow review challenge transition declared disclosure assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "assessmentId", "assessedAt", "status", "rosterRef",
+    "declaredMemberCount", "submittedMemberCount", "matchingCommitmentCount",
+    "missingMemberIds", "mismatchedCommitments", "submissions", "pairwiseComparisons",
+    "decision", "state", "nextGate", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-declared-disclosure/v1"},
+    "version": {"const": "1.0.0"},
+    "assessmentId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "assessedAt": {"type": "string", "format": "date-time", "maxLength": 64},
+    "status": {"const": "TEST"},
+    "rosterRef": {"$ref": "#/$defs/rosterReference"},
+    "declaredMemberCount": {"type": "integer", "minimum": 2, "maximum": 64},
+    "submittedMemberCount": {"type": "integer", "minimum": 0, "maximum": 64},
+    "matchingCommitmentCount": {"type": "integer", "minimum": 0, "maximum": 64},
+    "missingMemberIds": {
+      "type": "array", "maxItems": 64, "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 120}
+    },
+    "mismatchedCommitments": {
+      "type": "array", "maxItems": 64,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["memberId", "expectedPresentationRef", "submittedPresentationRef"],
+        "properties": {
+          "memberId": {"type": "string", "minLength": 1, "maxLength": 120},
+          "expectedPresentationRef": {"$ref": "#/$defs/presentationReference"},
+          "submittedPresentationRef": {"$ref": "#/$defs/presentationReference"}
+        }
+      }
+    },
+    "submissions": {
+      "type": "array", "maxItems": 64,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["memberId", "expectedPresentationRef", "submittedPresentationRef", "commitmentMatches"],
+        "properties": {
+          "memberId": {"type": "string", "minLength": 1, "maxLength": 120},
+          "expectedPresentationRef": {"$ref": "#/$defs/presentationReference"},
+          "submittedPresentationRef": {"$ref": "#/$defs/presentationReference"},
+          "commitmentMatches": {"type": "boolean"}
+        }
+      }
+    },
+    "pairwiseComparisons": {
+      "type": "array", "maxItems": 2016,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["leftMemberId", "rightMemberId", "reconciliationRef", "classification", "pairwiseConsistency", "commonPrefixEntryCount"],
+        "properties": {
+          "leftMemberId": {"type": "string", "minLength": 1, "maxLength": 120},
+          "rightMemberId": {"type": "string", "minLength": 1, "maxLength": 120},
+          "reconciliationRef": {"$ref": "#/$defs/reconciliationReference"},
+          "classification": {
+            "enum": [
+              "PRESENTED_LOCAL_HISTORIES_EXACT_REPLAY",
+              "LEFT_PRESENTED_HISTORY_IS_EXACT_PREFIX",
+              "RIGHT_PRESENTED_HISTORY_IS_EXACT_PREFIX",
+              "HOLD_LOG_IDENTITY_DRIFT",
+              "HOLD_GENESIS_DRIFT",
+              "HOLD_SIBLING_FORK_AT_PRESENTED_SEQUENCE",
+              "HOLD_ENTRY_ID_EQUIVOCATION_AT_PRESENTED_SEQUENCE",
+              "HOLD_ALTERNATE_LOCAL_RECORD_FOR_SAME_CANDIDATE_HEAD"
+            ]
+          },
+          "pairwiseConsistency": {"enum": ["CONSISTENT_REPLAY", "CONSISTENT_PREFIX", "CONTRADICTION"]},
+          "commonPrefixEntryCount": {"type": "integer", "minimum": 0, "maximum": 4096}
+        }
+      }
+    },
+    "decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["classification", "declaredCommitmentCoverage", "pairwiseContradictionCount", "reviewRequired", "bestAction", "autonomousActionCount"],
+      "properties": {
+        "classification": {
+          "enum": [
+            "HOLD_DECLARED_PRESENTATION_COMMITMENT_COVERAGE_INCOMPLETE",
+            "HOLD_DECLARED_SET_PRESENTED_HISTORY_CONTRADICTION",
+            "DECLARED_SET_PRESENTATIONS_PAIRWISE_COMPATIBLE"
+          ]
+        },
+        "declaredCommitmentCoverage": {"enum": ["COMPLETE", "INCOMPLETE"]},
+        "pairwiseContradictionCount": {"type": "integer", "minimum": 0, "maximum": 2016},
+        "reviewRequired": {"type": "boolean"},
+        "bestAction": {"type": "string", "minLength": 1, "maxLength": 180},
+        "autonomousActionCount": {"const": 0}
+      }
+    },
+    "state": {"const": "DECLARED_PRESENTATION_COMMITMENTS_ASSESSED_UNLISTED_ROOTS_NOT_EXCLUDED"},
+    "nextGate": {"const": "HOST_AUTHENTICATED_APPEND_ONLY_ROOT_REGISTRY_WITH_INDEPENDENT_RECEIVER_RECEIPTS_OR_PROTECTED_MONOTONIC_STORE"},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "rosterVerifiedByExactRebuild", "everySubmittedPresentationVerifiedByExactRebuild",
+        "everyMatchingPresentationPairDeterministicallyReconciled",
+        "declaredPresentationCommitmentCoverageComplete",
+        "declaredMissingPresentationCommitmentsDetected",
+        "declaredPresentationCommitmentMismatchDetected", "coPresentedContradictionDetected",
+        "allDeclaredMatchingPairsPairwiseCompatible", "declaredMemberSetExhaustiveProven",
+        "unlistedRootsExcluded", "undeclaredHistoryAbsenceProven", "actualMultiPartyDisclosureCompelled",
+        "declaredMemberSetAuthorityAuthenticated", "declaredMemberIdentitiesAuthenticated",
+        "realWorldControllerIndependenceProven", "globallyConsistentTransitionLogProven",
+        "globalTransitionUniquenessProven", "externalTransitionRetentionProven",
+        "protectedMonotonicStateProven", "deletionOrRollbackPrevented",
+        "assessmentTimeExternallyTrusted", "actualHumanParticipationProven",
+        "rawPublicKeyEmbedded", "rawSignatureEmbedded", "privateKeyIngested",
+        "rawModelOutputEmbedded", "privateContextEmbedded", "experimentExecuted",
+        "evaluationPerformed", "executionAuthorized", "adoptionAuthorized",
+        "humanBenefitProven", "broadLearningClaimed", "automaticWrite",
+        "automaticPermissionGrant", "automaticInstall", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "rosterVerifiedByExactRebuild": {"const": true},
+        "everySubmittedPresentationVerifiedByExactRebuild": {"const": true},
+        "everyMatchingPresentationPairDeterministicallyReconciled": {"const": true},
+        "declaredPresentationCommitmentCoverageComplete": {"type": "boolean"},
+        "declaredMissingPresentationCommitmentsDetected": {"type": "boolean"},
+        "declaredPresentationCommitmentMismatchDetected": {"type": "boolean"},
+        "coPresentedContradictionDetected": {"type": "boolean"},
+        "allDeclaredMatchingPairsPairwiseCompatible": {"type": "boolean"},
+        "declaredMemberSetExhaustiveProven": {"const": false},
+        "unlistedRootsExcluded": {"const": false},
+        "undeclaredHistoryAbsenceProven": {"const": false},
+        "actualMultiPartyDisclosureCompelled": {"const": false},
+        "declaredMemberSetAuthorityAuthenticated": {"const": false},
+        "declaredMemberIdentitiesAuthenticated": {"const": false},
+        "realWorldControllerIndependenceProven": {"const": false},
+        "globallyConsistentTransitionLogProven": {"const": false},
+        "globalTransitionUniquenessProven": {"const": false},
+        "externalTransitionRetentionProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "assessmentTimeExternallyTrusted": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "privateKeyIngested": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "presentationReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"const": "axm.model-shadow-review-challenge-transition-ledger-presentation/v1"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "rosterReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"const": "axm.model-shadow-review-challenge-transition-disclosure-roster/v1"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "reconciliationReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"const": "axm.model-shadow-review-challenge-transition-reconciliation/v1"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

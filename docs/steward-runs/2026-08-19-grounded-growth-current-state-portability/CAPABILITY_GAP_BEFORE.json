@@ -1,0 +1,167 @@
+{
+  "schema": "axm.capability-gap-report/v1",
+  "capability": "capability.compare.requirements/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "exact-source-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.current-state.exact-source-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": []
+    },
+    {
+      "id": "detached-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.current-state.detached-integrity.verify"
+      ]
+    },
+    {
+      "id": "detached-semantic-coherence",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.current-state.detached-coherence.verify"
+      ]
+    },
+    {
+      "id": "detached-authority-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.current-state.detached-authority.verify"
+      ]
+    },
+    {
+      "id": "portable-read-only-cli",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.current-state.detached-cli.read-only"
+      ]
+    },
+    {
+      "id": "source-truth-without-sources",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "growth.current-state.detached-source-truth.verify"
+      ],
+      "missing": []
+    },
+    {
+      "id": "native-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "human.outcome.live.native"
+      ],
+      "missing": []
+    }
+  ],
+  "missingCapabilities": [
+    "growth.current-state.detached-authority.verify",
+    "growth.current-state.detached-cli.read-only",
+    "growth.current-state.detached-coherence.verify",
+    "growth.current-state.detached-integrity.verify"
+  ],
+  "proposedContracts": [
+    {
+      "capabilityId": "growth.current-state.detached-authority.verify",
+      "gapType": "UNKNOWN",
+      "requiredBy": [
+        "detached-authority-boundary"
+      ],
+      "contractState": "SPEC_REQUIRED",
+      "requiredFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.current-state.detached-cli.read-only",
+      "gapType": "UNKNOWN",
+      "requiredBy": [
+        "portable-read-only-cli"
+      ],
+      "contractState": "SPEC_REQUIRED",
+      "requiredFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.current-state.detached-coherence.verify",
+      "gapType": "UNKNOWN",
+      "requiredBy": [
+        "detached-semantic-coherence"
+      ],
+      "contractState": "SPEC_REQUIRED",
+      "requiredFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.current-state.detached-integrity.verify",
+      "gapType": "UNKNOWN",
+      "requiredBy": [
+        "detached-integrity"
+      ],
+      "contractState": "SPEC_REQUIRED",
+      "requiredFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ],
+  "automaticInstall": false,
+  "automaticPermission": false,
+  "automaticQualityReduction": false
+}

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-disclosure-roster/v1",
+  "title": "Model Shadow review challenge transition disclosure roster",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "rosterId", "declaredAt", "status", "members", "memberCount", "truth", "rosterDigest"],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-disclosure-roster/v1"},
+    "version": {"const": "1.0.0"},
+    "rosterId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "declaredAt": {"type": "string", "format": "date-time", "maxLength": 64},
+    "status": {"const": "TEST"},
+    "members": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["memberId", "expectedPresentationRef"],
+        "properties": {
+          "memberId": {"type": "string", "minLength": 1, "maxLength": 120},
+          "expectedPresentationRef": {"$ref": "#/$defs/presentationReference"}
+        }
+      }
+    },
+    "memberCount": {"type": "integer", "minimum": 2, "maximum": 64},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "memberSetCallerDeclared", "expectedPresentationDigestsCommitted",
+        "declaredMemberSetAuthorityAuthenticated", "declaredMemberIdentitiesAuthenticated",
+        "allExistingRootsEnumerated", "actualMultiPartyDisclosureCompelled",
+        "realWorldControllerIndependenceProven", "externallyRetained",
+        "protectedMonotonicStateProven", "declarationTimeExternallyTrusted",
+        "executionAuthorized", "adoptionAuthorized", "automaticWrite",
+        "automaticPromotion", "automaticCanon"
+      ],
+      "properties": {
+        "memberSetCallerDeclared": {"const": true},
+        "expectedPresentationDigestsCommitted": {"const": true},
+        "declaredMemberSetAuthorityAuthenticated": {"const": false},
+        "declaredMemberIdentitiesAuthenticated": {"const": false},
+        "allExistingRootsEnumerated": {"const": false},
+        "actualMultiPartyDisclosureCompelled": {"const": false},
+        "realWorldControllerIndependenceProven": {"const": false},
+        "externallyRetained": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "declarationTimeExternallyTrusted": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticCanon": {"const": false}
+      }
+    },
+    "rosterDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "presentationReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"const": "axm.model-shadow-review-challenge-transition-ledger-presentation/v1"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

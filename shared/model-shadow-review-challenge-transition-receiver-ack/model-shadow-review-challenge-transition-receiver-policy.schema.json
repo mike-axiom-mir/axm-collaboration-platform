@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-receiver-policy/v1",
+  "title": "Model Shadow declared receiver acknowledgement policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "policyId", "assessmentRef", "issuedAt", "expiresAt",
+    "requiredAcknowledgements", "receivers", "status", "truth", "policyDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-receiver-policy/v1"},
+    "version": {"const": "1.1.0"},
+    "policyId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "assessmentRef": {"$ref": "#/$defs/assessmentReference"},
+    "issuedAt": {"type": "string", "format": "date-time", "maxLength": 64},
+    "expiresAt": {"type": "string", "format": "date-time", "maxLength": 64},
+    "requiredAcknowledgements": {"type": "integer", "minimum": 2, "maximum": 10},
+    "receivers": {
+      "type": "array", "minItems": 2, "maxItems": 10,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["receiverId", "publicKeyPem", "enabled"],
+        "properties": {
+          "receiverId": {"type": "string", "minLength": 1, "maxLength": 120},
+          "publicKeyPem": {"type": "string", "minLength": 1, "maxLength": 4096},
+          "enabled": {"type": "boolean"}
+        }
+      }
+    },
+    "status": {"const": "TEST"},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "callerSuppliedReceiverPolicy", "distinctReceiverLabelsVerified",
+        "distinctReceiverKeysVerified", "receiverPolicyAuthorityAuthenticated",
+        "receiverIdentitiesAuthenticated", "realWorldReceiverIndependenceProven",
+        "externallyRetained", "protectedMonotonicStateProven",
+        "issuedAndExpiryTimesExternallyTrusted", "executionAuthorized",
+        "adoptionAuthorized", "automaticWrite", "automaticPromotion", "automaticCanon"
+      ],
+      "properties": {
+        "callerSuppliedReceiverPolicy": {"const": true},
+        "distinctReceiverLabelsVerified": {"const": true},
+        "distinctReceiverKeysVerified": {"const": true},
+        "receiverPolicyAuthorityAuthenticated": {"const": false},
+        "receiverIdentitiesAuthenticated": {"const": false},
+        "realWorldReceiverIndependenceProven": {"const": false},
+        "externallyRetained": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "issuedAndExpiryTimesExternallyTrusted": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticCanon": {"const": false}
+      }
+    },
+    "policyDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "assessmentReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"const": "axm.model-shadow-review-challenge-transition-declared-disclosure/v1"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

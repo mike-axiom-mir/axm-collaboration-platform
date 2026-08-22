@@ -1,0 +1,69 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "current-state-compose",
+      "required": true,
+      "status": "READY",
+      "available": ["growth.current-state.compose"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.current-state.compose": ["pure TEST leaf over exact verified inputs"]
+      }
+    },
+    {
+      "id": "portfolio-extension-verify",
+      "required": true,
+      "status": "READY",
+      "available": ["growth.current-state.portfolio-extension-verify"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.current-state.portfolio-extension-verify": ["requires byte-identical ordered history before appended outcomes"]
+      }
+    },
+    {
+      "id": "participation-preserve-or-hold",
+      "required": true,
+      "status": "READY",
+      "available": ["growth.current-state.participation-preserve", "growth.current-state.rebind-hold"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.current-state.participation-preserve": ["preserves readiness only when appended outcomes do not advance a protected handoff capability"],
+        "growth.current-state.rebind-hold": ["holds rather than presenting a stale protected handoff as current"]
+      }
+    },
+    {
+      "id": "current-state-digest",
+      "required": true,
+      "status": "READY",
+      "available": ["growth.current-state.digest"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.current-state.digest": ["deterministic SHA-256 receipt digest"]
+      }
+    },
+    {
+      "id": "native-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": ["human.outcome.live.native"],
+      "missing": [],
+      "declaredConstraints": {
+        "human.outcome.live.native": ["requires a new independent voluntary human event"]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

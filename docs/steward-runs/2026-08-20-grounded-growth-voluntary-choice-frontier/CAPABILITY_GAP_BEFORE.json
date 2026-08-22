@@ -1,0 +1,302 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "exact-current-state-and-route-coverage-crossbind",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "growth.choice.current-state.native-verify",
+        "growth.choice.human-route-coverage.native-verify"
+      ],
+      "degraded": [
+        "growth.choice.portfolio.crossbind"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.choice.current-state.native-verify": [
+          "The six-chain current-state receipt already supports exact native rebuild."
+        ],
+        "growth.choice.human-route-coverage.native-verify": [
+          "The 5-ready/1-held coverage receipt already supports exact native rebuild."
+        ],
+        "growth.choice.portfolio.crossbind": [
+          "Current state and route coverage target the same portfolio, but no single choice frontier proves that relation."
+        ]
+      }
+    },
+    {
+      "id": "exact-current-route-catalog",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "growth.choice.catalog.digest-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.choice.catalog.semantic-crossbind",
+        "growth.choice.catalog.command-boundary"
+      ],
+      "declaredConstraints": {
+        "growth.choice.catalog.digest-verify": [
+          "The route catalog has a declared self-digest."
+        ]
+      }
+    },
+    {
+      "id": "neutral-voluntary-selection-policy",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [
+        "human.choice.wait-or-opt-out"
+      ],
+      "unknown": [],
+      "missing": [
+        "human.choice.no-default",
+        "human.choice.no-ranking",
+        "human.choice.no-preselection"
+      ],
+      "declaredConstraints": {
+        "human.choice.wait-or-opt-out": [
+          "Older guidance permits waiting, but it is not reconciled with all five current routes."
+        ]
+      }
+    },
+    {
+      "id": "held-route-preservation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.choice.held-route.commandless",
+        "human.choice.held-route.external-event"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.choice.held-route.commandless": [
+          "The coverage catalog gives the held signal-lineage route no command."
+        ],
+        "human.choice.held-route.external-event": [
+          "The held route names an explicit steward decision and claim-native surface as its required event."
+        ]
+      }
+    },
+    {
+      "id": "ai-human-evidence-balance",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "growth.choice.beneficiary-separation"
+      ],
+      "degraded": [
+        "growth.choice.technical-ahead-visible"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.choice.beneficiary-separation": [
+          "Current state keeps shared-system, AI-workflow, and human verdicts separate."
+        ],
+        "growth.choice.technical-ahead-visible": [
+          "Technical/human asymmetry is present in counts but not bound to the current five-route choice surface."
+        ]
+      }
+    },
+    {
+      "id": "authority-and-side-effect-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "authority.choice-frontier.none",
+        "side-effect.choice-frontier.none"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "explicit-human-selection-event",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "human.choice.selection.live"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "human.choice.selection.live": [
+          "No person has explicitly requested, selected, started, completed, or withdrawn from a current route."
+        ]
+      }
+    },
+    {
+      "id": "live-human-beneficiary-outcome",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "growth.human-evidence.live"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.live": [
+          "All six current human claims remain NOT_RUN."
+        ]
+      }
+    },
+    {
+      "id": "human-source-authentication",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "human.source.authentication"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "human.source.authentication": [
+          "Local pseudonymous references do not authenticate identity or human presence."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "authority.choice-frontier.none",
+    "growth.choice.catalog.command-boundary",
+    "growth.choice.catalog.semantic-crossbind",
+    "human.choice.no-default",
+    "human.choice.no-preselection",
+    "human.choice.no-ranking",
+    "side-effect.choice-frontier.none"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "authority.choice-frontier.none",
+      "requiredBy": [
+        "authority-and-side-effect-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.choice.catalog.command-boundary",
+      "requiredBy": [
+        "exact-current-route-catalog"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.choice.catalog.semantic-crossbind",
+      "requiredBy": [
+        "exact-current-route-catalog"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "human.choice.no-default",
+      "requiredBy": [
+        "neutral-voluntary-selection-policy"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "human.choice.no-preselection",
+      "requiredBy": [
+        "neutral-voluntary-selection-policy"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "human.choice.no-ranking",
+      "requiredBy": [
+        "neutral-voluntary-selection-policy"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "side-effect.choice-frontier.none",
+      "requiredBy": [
+        "authority-and-side-effect-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "consent-bound-human-outcome-observation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.outcome.protocol.predeclared",
+        "human.outcome.consent.bound",
+        "human.outcome.observation.structured",
+        "human.outcome.retention.minimal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.outcome.protocol.predeclared": [
+          "TEST leaf module binds a two-condition claim, balanced trials, success thresholds, retention and authority before responses exist.",
+          "The current participant packet omits condition roles and expected decisions."
+        ],
+        "human.outcome.consent.bound": [
+          "Completed sessions require voluntary opt-in and completion confirmation.",
+          "Withdrawal omits participant reference, observations and participant judgment."
+        ],
+        "human.outcome.observation.structured": [
+          "Responses are decision, confidence, confusion, elapsed time, effect and burden only.",
+          "The module cannot authenticate that a declared LIVE response was entered by a human."
+        ],
+        "human.outcome.retention.minimal": [
+          "Raw identity, free text, audio, video, screen recording and network transport are refused.",
+          "The module returns values in memory or stdout and performs no session writes."
+        ]
+      }
+    },
+    {
+      "id": "reconstructable-human-benefit-decision",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.outcome.evaluation.deterministic",
+        "human.outcome.judgment.explicit",
+        "human.outcome.synthetic.separated",
+        "human.outcome.digest.receipts"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.outcome.evaluation.deterministic": [
+          "Exact protocol and session ancestry deterministically derive bounded accuracy, unsupported-continuation, time, burden and participant-effect signals.",
+          "Numeric signals remain distinct from human judgment."
+        ],
+        "human.outcome.judgment.explicit": [
+          "A final receipt requires an explicit claim-scoped declared human attestation.",
+          "Source authentication and the actual governance decision remain external; no real human judgment has been run."
+        ],
+        "human.outcome.synthetic.separated": [
+          "Synthetic sessions and judgments remain unusable as live human evidence and cannot take live source labels."
+        ],
+        "human.outcome.digest.receipts": [
+          "Protocol, session, evaluation and judgment receipts are SHA-256 bound and deterministically rebuildable.",
+          "This does not install, promote or update the current Grounded Growth outcome."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

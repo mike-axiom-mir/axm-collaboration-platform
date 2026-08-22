@@ -1,0 +1,554 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "durable-intent-record",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.durable-record"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.durable-record": [
+          "v5.1 returns the assertion and reason only in the immediate result"
+        ]
+      }
+    },
+    {
+      "id": "intent-before-mutation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.before-active-stage-unlink"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.before-active-stage-unlink": [
+          "no authorization artifact is written before archival mutation"
+        ]
+      }
+    },
+    {
+      "id": "exact-request-binding",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.exact-request-and-stage-binding"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.exact-request-and-stage-binding": [
+          "no persisted request digest or intent schema exists"
+        ]
+      }
+    },
+    {
+      "id": "append-only-intent",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.exclusive-no-overwrite"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.exclusive-no-overwrite": [
+          "no append-only intent target exists"
+        ]
+      }
+    },
+    {
+      "id": "intent-crash-convergence",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.process-crash-convergence"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.process-crash-convergence": [
+          "there is no intent publication checkpoint to recover or observe"
+        ]
+      }
+    },
+    {
+      "id": "intent-caller-convergence",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.concurrent-caller-convergence"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.concurrent-caller-convergence": [
+          "concurrent archive callers converge only at the archive link, not a durable intent"
+        ]
+      }
+    },
+    {
+      "id": "legacy-honesty",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.no-posthoc-legacy-fabrication"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.no-posthoc-legacy-fabrication": [
+          "legacy archives have no authorization classification"
+        ]
+      }
+    },
+    {
+      "id": "residual-intent-stage-status",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.bounded-residual-stage-status"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.bounded-residual-stage-status": [
+          "no intent publication staging directory or status exists"
+        ]
+      }
+    },
+    {
+      "id": "artifact-coverage",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.intent-decision-result-coverage"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.intent-decision-result-coverage": [
+          "no retirement artifact kind receives a persisted archival intent"
+        ]
+      }
+    },
+    {
+      "id": "host-local-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.host-local-no-api-browser-boundary"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.host-local-no-api-browser-boundary": [
+          "no durable intent surface exists to bound"
+        ]
+      }
+    },
+    {
+      "id": "authenticated-authorization",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.authenticated-actor-authorization"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.authenticated-actor-authorization": [
+          "the caller assertion is not authenticated"
+        ]
+      }
+    },
+    {
+      "id": "storage-space-reclamation",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.storage-space-reclamation"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.storage-space-reclamation": [
+          "lossless archive retains the bytes"
+        ]
+      }
+    },
+    {
+      "id": "live-publisher-safety",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.live-publisher-safety"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.live-publisher-safety": [
+          "publisher liveness is not inferred or authenticated"
+        ]
+      }
+    },
+    {
+      "id": "hard-link-free-archival",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.lossless-archive-without-hard-links"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.lossless-archive-without-hard-links": [
+          "same-filesystem hard-link support is required"
+        ]
+      }
+    },
+    {
+      "id": "power-loss-durability",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "storage.power-loss-durability.proven"
+      ],
+      "declaredConstraints": {
+        "storage.power-loss-durability.proven": [
+          "no power interruption or directory-entry durability test"
+        ]
+      }
+    },
+    {
+      "id": "cross-file-atomicity",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "storage.cross-file.atomicity"
+      ],
+      "declaredConstraints": {
+        "storage.cross-file.atomicity": [
+          "intent and archival would remain distinct filesystem checkpoints"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "review.retirement.publication-stage.archival-intent.authenticated-actor-authorization",
+    "review.retirement.publication-stage.archival-intent.before-active-stage-unlink",
+    "review.retirement.publication-stage.archival-intent.bounded-residual-stage-status",
+    "review.retirement.publication-stage.archival-intent.concurrent-caller-convergence",
+    "review.retirement.publication-stage.archival-intent.durable-record",
+    "review.retirement.publication-stage.archival-intent.exact-request-and-stage-binding",
+    "review.retirement.publication-stage.archival-intent.exclusive-no-overwrite",
+    "review.retirement.publication-stage.archival-intent.host-local-no-api-browser-boundary",
+    "review.retirement.publication-stage.archival-intent.intent-decision-result-coverage",
+    "review.retirement.publication-stage.archival-intent.no-posthoc-legacy-fabrication",
+    "review.retirement.publication-stage.archival-intent.process-crash-convergence",
+    "review.retirement.publication-stage.live-publisher-safety",
+    "review.retirement.publication-stage.lossless-archive-without-hard-links",
+    "review.retirement.publication-stage.storage-space-reclamation",
+    "storage.cross-file.atomicity",
+    "storage.power-loss-durability.proven"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.authenticated-actor-authorization",
+      "requiredBy": [
+        "authenticated-authorization"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.before-active-stage-unlink",
+      "requiredBy": [
+        "intent-before-mutation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.bounded-residual-stage-status",
+      "requiredBy": [
+        "residual-intent-stage-status"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.concurrent-caller-convergence",
+      "requiredBy": [
+        "intent-caller-convergence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.durable-record",
+      "requiredBy": [
+        "durable-intent-record"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.exact-request-and-stage-binding",
+      "requiredBy": [
+        "exact-request-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.exclusive-no-overwrite",
+      "requiredBy": [
+        "append-only-intent"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.host-local-no-api-browser-boundary",
+      "requiredBy": [
+        "host-local-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.intent-decision-result-coverage",
+      "requiredBy": [
+        "artifact-coverage"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.no-posthoc-legacy-fabrication",
+      "requiredBy": [
+        "legacy-honesty"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.process-crash-convergence",
+      "requiredBy": [
+        "intent-crash-convergence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.live-publisher-safety",
+      "requiredBy": [
+        "live-publisher-safety"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.lossless-archive-without-hard-links",
+      "requiredBy": [
+        "hard-link-free-archival"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.storage-space-reclamation",
+      "requiredBy": [
+        "storage-space-reclamation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "storage.cross-file.atomicity",
+      "requiredBy": [
+        "cross-file-atomicity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "storage.power-loss-durability.proven",
+      "requiredBy": [
+        "power-loss-durability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

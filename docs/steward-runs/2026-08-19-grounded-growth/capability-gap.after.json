@@ -1,0 +1,73 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "knowledge-to-beneficiary-outcome",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.need-gap-cycle.bind",
+        "growth.outcome.evidence-route",
+        "growth.outcome.human.verify",
+        "growth.outcome.ai-workflow.verify",
+        "growth.outcome.refresh"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.need-gap-cycle.bind": [
+          "TEST connector in shared/verified-capability-loop",
+          "links receipts but performs no lifecycle stage"
+        ],
+        "growth.outcome.evidence-route": [
+          "Grounded Growth Outcomes admits PASS or FAIL only through the native proof surface declared for the claim kind",
+          "it validates supplied receipts and does not perform the native observation"
+        ],
+        "growth.outcome.human.verify": [
+          "human benefit requires a representative human journey, human observation, review, or judgment as appropriate",
+          "the adapter does not manufacture or impersonate the human evidence"
+        ],
+        "growth.outcome.ai-workflow.verify": [
+          "AI-workflow benefit requires a held-out or representative workflow evaluation",
+          "component tests and model participation do not satisfy the beneficiary claim"
+        ],
+        "growth.outcome.refresh": [
+          "changed capability evidence reopens the linked beneficiary outcome",
+          "NO_NEW_INFORMATION requires explicit ancestry and produces no new growth claim"
+        ]
+      }
+    },
+    {
+      "id": "reconstructable-non-authoritative-growth",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "growth.outcome.digest-receipt",
+        "growth.authority.human"
+      ],
+      "degraded": [
+        "growth.evidence.closure"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.outcome.digest-receipt": [
+          "outcomes bind exact cycle, baseline, result, evidence closure, and beneficiary references",
+          "portfolios refuse skipped or mismatched same-capability ancestry"
+        ],
+        "growth.authority.human": [
+          "Review Inbox and Verified Capability Loop preserve exact-digest human decisions",
+          "Grounded Growth Outcomes has no apply or promotion authority"
+        ],
+        "growth.evidence.closure": [
+          "focused source-closure repair passes current tests",
+          "candidate remains AWAITING_STEWARD and is not installed or promoted"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

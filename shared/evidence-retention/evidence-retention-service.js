@@ -144,7 +144,7 @@ function create(options) {
   const stateRoot = path.resolve(options.stateRoot), workshopRoot = path.dirname(stateRoot), root = path.join(stateRoot, 'evidence-retention');
   const openDir = path.join(root, 'sessions', 'open'), sealedDir = path.join(root, 'sessions', 'sealed'), quarantineDir = path.join(root, 'sessions', 'quarantine'), supersededDir = path.join(root, 'sessions', 'superseded');
   const telemetryFile = path.join(root, 'telemetry-rollups.json'), legacyFile = path.join(root, 'legacy-sources.json'), recentFile = path.join(root, 'recent-derived-view.json'), policyFile = path.join(root, 'POLICY.json');
-  const limits = Object.assign({ maxEvents: 5000, maxBytes: 10 * 1024 * 1024, maxAgeMs: 24 * 60 * 60 * 1000, recentPerSource: 120, repeatExactRefreshMs: 24 * 60 * 60 * 1000 }, options.limits || {});
+  const limits = Object.assign({ maxEvents: 5000, maxBytes: 10 * 1024 * 1024, maxAgeMs: 24 * 60 * 60 * 1000, recentPerSource: 120, repeatExactRefreshMs: 24 * 60 * 60 * 1000, maxSourceClosureItems: 200 }, options.limits || {});
   let telemetry = loadJson(telemetryFile, { schema: SCHEMA, kind: 'telemetry-rollups', updatedAt: null, buckets: {}, repeatBuckets: {} });
   telemetry.buckets = telemetry.buckets || {}; telemetry.repeatBuckets = telemetry.repeatBuckets || {};
   let legacy = loadJson(legacyFile, { schema: SCHEMA, kind: 'legacy-source-index', updatedAt: null, sources: {} });
@@ -179,6 +179,32 @@ function create(options) {
     const exists = fs.existsSync(file), stat = exists ? fs.statSync(file) : null;
     legacy.sources[id] = { source: id, registeredAt: now(), sealedLegacy: exists && stat.size > 0, bytes: stat ? stat.size : 0, lines: stat ? lineCount(file) : 0, sha256: stat && stat.size ? fileSha256(file) : null, originalPreserved: true };
     legacy.updatedAt = now(); if (persist !== false) atomicJson(legacyFile, legacy); return id;
+  }
+  function verifySource(file) {
+    const id = sourceId(file), expected = legacy.sources[id] || null, checkedAt = now();
+    const receipt = { schema: SCHEMA, kind: 'registered-source-closure', checkedAt, source: id, state: 'UNKNOWN_SOURCE', hold: true, expected: null, observed: null, automaticAuthority: false };
+    if (!expected) return receipt;
+    receipt.expected = { bytes: Number(expected.bytes || 0), lines: Number(expected.lines || 0), sha256: expected.sha256 || null };
+    if (!expected.sha256) { receipt.state = 'UNBOUND'; return receipt; }
+    const absolute = path.resolve(workshopRoot, id);
+    try {
+      if (!fs.existsSync(absolute)) { receipt.state = 'MISSING'; return receipt; }
+      const stat = fs.statSync(absolute);
+      if (!stat.isFile()) { receipt.state = 'WRONG_TYPE'; receipt.observed = { bytes: stat.size }; return receipt; }
+      const observed = { bytes: stat.size, lines: lineCount(absolute), sha256: fileSha256(absolute) };
+      receipt.observed = observed;
+      if (observed.sha256 !== expected.sha256 || observed.bytes !== Number(expected.bytes || 0)) { receipt.state = 'CHANGED'; return receipt; }
+      receipt.state = 'CURRENT'; receipt.hold = false; return receipt;
+    } catch (error) {
+      receipt.state = 'UNREADABLE'; receipt.error = String(error && error.message || error || 'source verification failed').slice(0, 500); return receipt;
+    }
+  }
+  function verifySources(files) {
+    if (!Array.isArray(files) || !files.length) throw new Error('registered source closure requires a non-empty file array');
+    if (files.length > limits.maxSourceClosureItems) throw new Error('registered source closure item budget exceeded');
+    const results = files.map(verifySource), counts = {};
+    for (const result of results) counts[result.state] = (counts[result.state] || 0) + 1;
+    return { schema: SCHEMA, kind: 'registered-source-closure-set', checkedAt: now(), state: results.every(result => result.state === 'CURRENT') ? 'CURRENT' : 'HELD', hold: results.some(result => result.hold), total: results.length, counts, results, automaticAuthority: false };
   }
   function adoptExistingLegacy() {
     let changed = false, visited = 0;
@@ -337,7 +363,7 @@ function create(options) {
     const joined = parts.join(''); return Buffer.from(joined).subarray(Math.max(0, Buffer.byteLength(joined) - limit)).toString('utf8');
   }
   recoverOpen(); adoptExistingLegacy();
-  return { record, seal, status, tailForSource, classify, policyFile, root, stateRoot, packageRetentionPlan: () => packageRetentionPlan(workshopRoot) };
+  return { record, seal, status, tailForSource, verifySource, verifySources, classify, policyFile, root, stateRoot, packageRetentionPlan: () => packageRetentionPlan(workshopRoot) };
 }
 
 function forStateRoot(stateRoot, options) {

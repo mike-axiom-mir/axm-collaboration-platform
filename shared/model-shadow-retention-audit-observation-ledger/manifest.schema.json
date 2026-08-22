@@ -1,0 +1,31 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-observation-ledger-manifest/v1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema","version","status","auditLogId","createdAt","mode","storageMode","truth","manifestDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-observation-ledger-manifest/v1"},
+    "version":{"const":"2.8.0"},
+    "status":{"const":"TEST"},
+    "auditLogId":{"type":"string","minLength":1,"maxLength":180},
+    "createdAt":{"$ref":"#/$defs/time"},
+    "mode":{"const":"CALLER_OWNED_DISTINCT_LOCAL_RETENTION_AUDIT_OBSERVATION_UNAUTHENTICATED"},
+    "storageMode":{"const":"CANONICAL_JSON_EXCLUSIVE_CREATE_FILE_FSYNC_APPEND_ONLY"},
+    "truth":{
+      "type":"object","additionalProperties":false,
+      "required":["callerOwnedLocalObservationRoot","manifestExclusiveCreateAndFileFsyncCompleted","appendOnlyObservationIntent","directoryEntryOrHardwareDurabilityProven","externalRetentionProven","protectedMonotonicStateProven","hostAuthorizationAuthenticated","actorRealWorldIdentityProven","actualHumanParticipationProven","timeExternallyTrusted","executionAuthorized","adoptionAuthorized","automaticPromotion","automaticMerge","automaticCanon","foundationMutation"],
+      "properties":{
+        "callerOwnedLocalObservationRoot":{"const":true},"manifestExclusiveCreateAndFileFsyncCompleted":{"const":true},"appendOnlyObservationIntent":{"const":true},
+        "directoryEntryOrHardwareDurabilityProven":{"const":false},"externalRetentionProven":{"const":false},"protectedMonotonicStateProven":{"const":false},
+        "hostAuthorizationAuthenticated":{"const":false},"actorRealWorldIdentityProven":{"const":false},"actualHumanParticipationProven":{"const":false},"timeExternallyTrusted":{"const":false},
+        "executionAuthorized":{"const":false},"adoptionAuthorized":{"const":false},"automaticPromotion":{"const":false},"automaticMerge":{"const":false},"automaticCanon":{"const":false},"foundationMutation":{"const":false}
+      }
+    },
+    "manifestDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "time":{"type":"string","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"}
+  }
+}

@@ -1,0 +1,496 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "upstream-separated-chain-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-separated-witness-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separated-witness-exact-rebuild": [
+          "The stacked v0.6 leaf exactly rebuilds one separated witness/anchor/checkpoint chain and rejects observable signer overlap without comparing it to another valid chain."
+        ]
+      }
+    },
+    {
+      "id": "pairwise-exact-replay-classification",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-pairwise-exact-replay-classification"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "pairwise-forward-extension-classification",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-pairwise-forward-extension-classification"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "pairwise-anchor-identity-drift-detection",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-pairwise-anchor-identity-drift-detection"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "pairwise-anchor-epoch-rollback-detection",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-pairwise-anchor-epoch-rollback-detection"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "pairwise-same-epoch-anchor-equivocation-detection",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-pairwise-same-epoch-anchor-equivocation-detection"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "pairwise-checkpoint-equivocation-detection",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-pairwise-checkpoint-equivocation-detection"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "pairwise-entry-fork-detection",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-pairwise-entry-fork-detection"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "withheld-fork-counterexample",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-withheld-fork-nonexclusion-proof"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "pairwise-transition-receipt-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-pairwise-transition-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "fresh-process-transition-reload",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-pairwise-transition-fresh-process"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "transition-authority-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-transition-authority-none"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authenticated-host-anchor-pin",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-anchor-host-pin.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-host-pin.actual": [
+          "No Mike- or host-authenticated checkpoint-witness anchor digest was supplied."
+        ]
+      }
+    },
+    {
+      "id": "globally-consistent-external-transition-log",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-log-global-consistency.actual",
+        "model.shadow.review.challenge-transition-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-log-global-consistency.actual": [
+          "No globally consistent append-only transition log or consensus surface was supplied."
+        ],
+        "model.shadow.review.challenge-transition-external-retention.actual": [
+          "No independently operated transition receiver and retention receipt were supplied."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-monotonic-state.actual": [
+          "No host-protected monotonic transition head or rollback-resistant store exists in scope."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-time.external": [
+          "No external trusted timestamp source or receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "independent-real-world-controllers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual": [
+          "No independently authenticated real-world controller identities were supplied."
+        ]
+      }
+    },
+    {
+      "id": "global-single-use",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-global-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-global-single-use.actual": [
+          "No global challenge authority or consistent protected store was supplied."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "No real person reviewed a current transition or challenger plan in this run."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "model.shadow.review.challenge-pairwise-anchor-epoch-rollback-detection",
+    "model.shadow.review.challenge-pairwise-anchor-identity-drift-detection",
+    "model.shadow.review.challenge-pairwise-checkpoint-equivocation-detection",
+    "model.shadow.review.challenge-pairwise-entry-fork-detection",
+    "model.shadow.review.challenge-pairwise-exact-replay-classification",
+    "model.shadow.review.challenge-pairwise-forward-extension-classification",
+    "model.shadow.review.challenge-pairwise-same-epoch-anchor-equivocation-detection",
+    "model.shadow.review.challenge-pairwise-transition-exact-rebuild",
+    "model.shadow.review.challenge-pairwise-transition-fresh-process",
+    "model.shadow.review.challenge-transition-authority-none",
+    "model.shadow.review.challenge-withheld-fork-nonexclusion-proof"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "model.shadow.review.challenge-pairwise-anchor-epoch-rollback-detection",
+      "requiredBy": [
+        "pairwise-anchor-epoch-rollback-detection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-pairwise-anchor-identity-drift-detection",
+      "requiredBy": [
+        "pairwise-anchor-identity-drift-detection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-pairwise-checkpoint-equivocation-detection",
+      "requiredBy": [
+        "pairwise-checkpoint-equivocation-detection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-pairwise-entry-fork-detection",
+      "requiredBy": [
+        "pairwise-entry-fork-detection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-pairwise-exact-replay-classification",
+      "requiredBy": [
+        "pairwise-exact-replay-classification"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-pairwise-forward-extension-classification",
+      "requiredBy": [
+        "pairwise-forward-extension-classification"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-pairwise-same-epoch-anchor-equivocation-detection",
+      "requiredBy": [
+        "pairwise-same-epoch-anchor-equivocation-detection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-pairwise-transition-exact-rebuild",
+      "requiredBy": [
+        "pairwise-transition-receipt-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-pairwise-transition-fresh-process",
+      "requiredBy": [
+        "fresh-process-transition-reload"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-transition-authority-none",
+      "requiredBy": [
+        "transition-authority-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-withheld-fork-nonexclusion-proof",
+      "requiredBy": [
+        "withheld-fork-counterexample"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

@@ -12,6 +12,7 @@ const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'u
 const contract = JSON.parse(fs.readFileSync(path.join(root, 'module.contract.json'), 'utf8'));
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const source = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+const operationsApi = fs.readFileSync(path.join(root, '../../shared/operations/operations-api.js'), 'utf8');
 
 let assertions = 0;
 function check(message, test) {
@@ -38,12 +39,20 @@ async function main() {
     assert.deepEqual(contract.handoffs.emits, manifest.produces);
   });
   check('contract keeps the safety refusals explicit', () => {
-    for (const refusal of ['arbitrary-url-testing', 'silent-hardware-access', 'whole-network-scan', 'unbounded-load-test']) {
+    for (const refusal of ['arbitrary-url-testing', 'silent-hardware-access', 'whole-network-scan', 'unbounded-load-test', 'self-attested-physical-proof', 'manifest-warning-mutation', 'automatic-human-participation', 'raw-phone-note-retention', 'non-human-review-as-campaign-input', 'review-decision-as-physical-proof', 'review-decision-as-human-usefulness', 'review-note-export']) {
       assert(contract.boundaries.refuses.includes(refusal), `missing refusal: ${refusal}`);
     }
   });
+  check('device and phone candidate handoffs are declared without proof authority', () => {
+    assert(manifest.actions.includes('record physical-phone observation candidates'));
+    assert(manifest.produces.includes('axm.device-qa-evidence/v1'));
+    assert(manifest.produces.includes('axm.review-item/v1'));
+    assert(manifest.produces.includes('axm.qa-phone-review-handoff/v1'));
+    assert(contract.provides.includes('physical-phone-observation-candidates'));
+    assert(contract.provides.includes('exact-phone-candidate-review-handoff'));
+  });
   check('browser surface contains the declared controls and local scripts', () => {
-    for (const id of ['notice', 'profile', 'run', 'capture', 'refresh', 'facts', 'out']) {
+    for (const id of ['notice', 'profile', 'run', 'capture', 'phoneGame', 'phonePresent', 'controllerJoined', 'seatMatched', 'actionObserved', 'disconnectObserved', 'recoveredObserved', 'phoneVoluntary', 'capturePhone', 'openPhoneReview', 'reviewInbox', 'refresh', 'facts', 'out']) {
       assert(html.includes(`id="${id}"`), `missing browser control: ${id}`);
     }
     assert(html.includes('../../shared/operations/operations-client.js'));
@@ -53,30 +62,41 @@ async function main() {
   check('client source is valid JavaScript', () => new vm.Script(source, { filename: 'app.js' }));
   check('client source uses only the fixed QA and loopback health routes', () => {
     const routes = Array.from(source.matchAll(/(?:get|post|fetch)\('([^']+)'/g), match => match[1]);
-    assert.deepEqual(Array.from(new Set(routes)).sort(), ['/api/health', '/api/qa-lab', '/api/qa-lab/evidence', '/api/qa-lab/run']);
+    assert.deepEqual(Array.from(new Set(routes)).sort(), ['/api/health', '/api/qa-lab', '/api/qa-lab/evidence', '/api/qa-lab/phone-review/open', '/api/qa-lab/run']);
     assert(!/https?:\/\//i.test(source), 'client must not contain an arbitrary remote URL');
+  });
+  check('operations API injects the shared inbox and keeps open/read routes distinct', () => {
+    assert(operationsApi.includes("QaLabService.create(Object.assign({}, options, { reviewService: review }))"));
+    assert(operationsApi.includes("url === '/api/qa-lab/phone-review/open' && req.method === 'POST'"));
+    assert(operationsApi.includes("explicit(req, 'x-axm-qa', 'explicit-phone-review-open')"));
+    assert(operationsApi.includes("parsed.confirmation !== 'OPEN EXACT PHONE CANDIDATE REVIEW'"));
+    assert(operationsApi.includes("url === '/api/qa-lab/phone-review' && req.method === 'GET'"));
   });
 
   const elements = Object.fromEntries(
-    ['notice', 'profile', 'run', 'capture', 'refresh', 'facts', 'out'].map(id => [id, {
+    ['notice', 'profile', 'run', 'capture', 'phoneGame', 'phonePresent', 'controllerJoined', 'seatMatched', 'actionObserved', 'disconnectObserved', 'recoveredObserved', 'phoneVoluntary', 'capturePhone', 'openPhoneReview', 'reviewInbox', 'refresh', 'facts', 'out'].map(id => [id, {
       id,
-      value: id === 'profile' ? 'hub-smoke' : '',
+      value: id === 'profile' ? 'hub-smoke' : id === 'phoneGame' ? '002-robo-pong' : '',
+      checked: false,
       innerHTML: '',
       textContent: '',
-      onclick: null
+      onclick: null,
+      disabled: id === 'openPhoneReview',
+      hidden: id === 'reviewInbox'
     }])
   );
   const requests = [];
   const healthFetches = [];
   const notices = [];
-  const latencyTicks = [1, 3, 10, 14, 20, 25];
+  const latencyTicks = [1, 3, 10, 14, 20, 25, 30, 33, 40, 44, 50, 55];
   const state = {
     profiles: ['hub-smoke', 'operations-smoke'],
     journeys: [{ id: 'journey-1' }],
     deviceEvidence: [],
     arbitraryUrlTesting: 'refused',
     latestJourney: { id: 'journey-1', pass: true },
-    latestDeviceEvidence: null
+    latestDeviceEvidence: null,
+    latestPhoneReviewHandoff: null
   };
   const AXMOps = {
     get(route) {
@@ -85,7 +105,33 @@ async function main() {
     },
     post(route, body, headers) {
       requests.push({ method: 'POST', route, body, headers });
-      return Promise.resolve(route === '/api/qa-lab/run' ? { pass: true } : { ok: true });
+      if (route === '/api/qa-lab/run') return Promise.resolve({ pass: true });
+      if (route === '/api/qa-lab/phone-review/open') {
+        const handoff = {
+          schema: 'axm.qa-phone-review-handoff/v1',
+          state: 'PENDING_HUMAN_REVIEW',
+          reviewItem: { id: 'review-phone-1', artifactDigest: 'sha256:' + 'a'.repeat(64) },
+          candidateReview: null,
+          truth: { warningCleared: false }
+        };
+        state.latestPhoneReviewHandoff = handoff;
+        return Promise.resolve(handoff);
+      }
+      if (body.phoneObservation) {
+        const receipt = {
+          id: 'device-qa-phone-1',
+          digest: 'a'.repeat(64),
+          phoneObservation: {
+            gameId: body.phoneObservation.gameId,
+            complete: Object.values(body.phoneObservation.observations).every(Boolean),
+            reviewState: 'CANDIDATE_REQUIRES_HUMAN_REVIEW'
+          }
+        };
+        state.deviceEvidence.unshift(receipt);
+        state.latestDeviceEvidence = receipt;
+        return Promise.resolve(receipt);
+      }
+      return Promise.resolve({ ok: true });
     },
     pretty(value) { return JSON.stringify(value, null, 2); },
     notice(element, message, tone) { notices.push({ element: element.id, message, tone }); }
@@ -124,9 +170,11 @@ async function main() {
     assert(elements.facts.innerHTML.includes('arbitrary URL refused'));
     assert(elements.out.textContent.includes('journey-1'));
   });
-  check('all three explicit controls are wired', () => {
+  check('all five explicit controls are wired', () => {
     assert.equal(typeof elements.run.onclick, 'function');
     assert.equal(typeof elements.capture.onclick, 'function');
+    assert.equal(typeof elements.capturePhone.onclick, 'function');
+    assert.equal(typeof elements.openPhoneReview.onclick, 'function');
     assert.equal(typeof elements.refresh.onclick, 'function');
   });
 
@@ -171,6 +219,55 @@ async function main() {
     assert.equal(evidence.method, 'POST');
     assert.equal(evidence.headers['x-axm-qa'], 'device-evidence');
     assert(notices.some(item => item.message === 'Device evidence captured.' && item.tone === 'ok'));
+  });
+
+  const phonePostsBeforeConsent = requests.filter(request => request.route === '/api/qa-lab/evidence').length;
+  await elements.capturePhone.onclick();
+  await settle();
+  check('phone candidate capture requires explicit voluntary confirmation', () => {
+    assert.equal(requests.filter(request => request.route === '/api/qa-lab/evidence').length, phonePostsBeforeConsent);
+    assert(notices.some(item => /voluntary/i.test(item.message) && item.tone === 'bad'));
+  });
+
+  elements.phoneVoluntary.checked = true;
+  for (const id of ['phonePresent', 'controllerJoined', 'seatMatched', 'actionObserved', 'disconnectObserved', 'recoveredObserved']) elements[id].checked = true;
+  await elements.capturePhone.onclick();
+  await settle();
+  const evidencePosts = requests.filter(request => request.route === '/api/qa-lab/evidence');
+  const phoneEvidence = evidencePosts.at(-1);
+  check('phone candidate binds one game and all six structured observations', () => {
+    assert.equal(phoneEvidence.body.phoneObservation.gameId, '002-robo-pong');
+    assert.equal(phoneEvidence.body.phoneObservation.slot, '002');
+    assert.equal(phoneEvidence.body.phoneObservation.voluntaryHumanObservation, true);
+    assert.deepEqual(Object.keys(phoneEvidence.body.phoneObservation.observations).sort(), [
+      'actionObservedOnSharedScreen', 'controllerJoined', 'disconnectObserved', 'physicalPhonePresent', 'recoveredAfterDisconnect', 'seatIdentityMatched'
+    ]);
+    assert(Object.values(phoneEvidence.body.phoneObservation.observations).every(value => value === true));
+  });
+  check('phone candidate capture remains the bounded device-evidence handoff', () => {
+    assert.equal(phoneEvidence.headers['x-axm-qa'], 'device-evidence');
+    assert.equal(healthFetches.length, 6);
+    assert(notices.some(item => item.message === 'Phone observation candidate captured for separate review.' && item.tone === 'ok'));
+    assert.equal(elements.openPhoneReview.disabled, false);
+  });
+
+  await elements.openPhoneReview.onclick();
+  await settle();
+  const reviewOpen = requests.find(request => request.route === '/api/qa-lab/phone-review/open');
+  check('review opening binds the latest evidence id and exact explicit authority', () => {
+    assert.deepEqual(reviewOpen, {
+      method: 'POST',
+      route: '/api/qa-lab/phone-review/open',
+      body: { evidenceId: 'device-qa-phone-1', confirmation: 'OPEN EXACT PHONE CANDIDATE REVIEW' },
+      headers: { 'x-axm-qa': 'explicit-phone-review-open' }
+    });
+    assert.equal(elements.reviewInbox.hidden, false);
+    assert(notices.some(item => item.message === 'Exact candidate sent to the Review Inbox. No warning was cleared.' && item.tone === 'ok'));
+  });
+  check('QA status renders only the note-free review handoff', () => {
+    assert(elements.out.textContent.includes('review-phone-1'));
+    assert(elements.out.textContent.includes('warningCleared'));
+    assert(!elements.out.textContent.includes('review note'));
   });
 
   const readsBeforeRefresh = requests.filter(request => request.method === 'GET').length;

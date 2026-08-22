@@ -1,0 +1,96 @@
+{
+  "schema": "axm.grounded-growth-current-state-portability-cases/v1",
+  "version": "0.1.0",
+  "status": "TEST",
+  "sourceReceipt": "docs/steward-runs/2026-08-19-grounded-growth-current-convergence/CURRENT_STATE_RECEIPT.json",
+  "cases": [
+    {
+      "id": "valid-recorded-copy",
+      "mutation": "none",
+      "expectedPortablePass": true,
+      "expectedDecision": "HOLD_SOURCE_TRUTH_UNKNOWN",
+      "expectedIssueCode": null,
+      "semanticSourceSubstitution": false
+    },
+    {
+      "id": "raw-human-pass-tamper",
+      "mutation": "raw-human-pass",
+      "expectedPortablePass": false,
+      "expectedDecision": "REJECT_PORTABLE_INTEGRITY",
+      "expectedIssueCode": "RECEIPT_DIGEST_MISMATCH",
+      "semanticSourceSubstitution": false
+    },
+    {
+      "id": "recomputed-human-pass-count-inflation",
+      "mutation": "human-pass-count",
+      "expectedPortablePass": false,
+      "expectedDecision": "REJECT_PORTABLE_INTEGRITY",
+      "expectedIssueCode": "HUMAN_PASS_COUNT_MISMATCH",
+      "semanticSourceSubstitution": false
+    },
+    {
+      "id": "recomputed-human-evidence-presence-inflation",
+      "mutation": "human-evidence-presence",
+      "expectedPortablePass": false,
+      "expectedDecision": "REJECT_PORTABLE_INTEGRITY",
+      "expectedIssueCode": "PARTICIPATION_HUMAN_EVIDENCE_MISMATCH",
+      "semanticSourceSubstitution": false
+    },
+    {
+      "id": "recomputed-autonomous-action",
+      "mutation": "autonomous-action",
+      "expectedPortablePass": false,
+      "expectedDecision": "REJECT_PORTABLE_INTEGRITY",
+      "expectedIssueCode": "AUTONOMOUS_ACTION_REFUSED",
+      "semanticSourceSubstitution": false
+    },
+    {
+      "id": "recomputed-automatic-canon",
+      "mutation": "automatic-canon",
+      "expectedPortablePass": false,
+      "expectedDecision": "REJECT_PORTABLE_INTEGRITY",
+      "expectedIssueCode": "BOUNDARY_MUST_REMAIN_FALSE",
+      "semanticSourceSubstitution": false
+    },
+    {
+      "id": "recomputed-rebind-without-affected-capability",
+      "mutation": "rebind-without-affected",
+      "expectedPortablePass": false,
+      "expectedDecision": "REJECT_PORTABLE_INTEGRITY",
+      "expectedIssueCode": "REBIND_REQUIRES_AFFECTED_CAPABILITY",
+      "semanticSourceSubstitution": false
+    },
+    {
+      "id": "recomputed-outcome-count-mismatch",
+      "mutation": "outcome-count",
+      "expectedPortablePass": false,
+      "expectedDecision": "REJECT_PORTABLE_INTEGRITY",
+      "expectedIssueCode": "OUTCOME_COUNT_MISMATCH",
+      "semanticSourceSubstitution": false
+    },
+    {
+      "id": "recomputed-uncontracted-nested-field",
+      "mutation": "unknown-nested-field",
+      "expectedPortablePass": false,
+      "expectedDecision": "REJECT_PORTABLE_INTEGRITY",
+      "expectedIssueCode": "EXACT_FIELDS_REQUIRED",
+      "semanticSourceSubstitution": false
+    },
+    {
+      "id": "recomputed-forged-source-references",
+      "mutation": "forged-source-references",
+      "expectedPortablePass": true,
+      "expectedDecision": "HOLD_SOURCE_TRUTH_UNKNOWN",
+      "expectedIssueCode": null,
+      "semanticSourceSubstitution": true
+    },
+    {
+      "id": "recomputed-coherent-human-benefit-substitution",
+      "mutation": "coherent-human-benefit-substitution",
+      "expectedPortablePass": true,
+      "expectedDecision": "HOLD_SOURCE_TRUTH_UNKNOWN",
+      "expectedIssueCode": null,
+      "semanticSourceSubstitution": true
+    }
+  ]
+}

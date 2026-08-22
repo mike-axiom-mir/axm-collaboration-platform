@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-authentication-ledger/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "operations", "updatedAt"],
+  "properties": {
+    "schema": { "const": "axm.review-authentication-ledger/v2" },
+    "version": { "const": 2 },
+    "operations": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["envelope", "candidate", "reviewId", "recordedAt", "supersededBy"],
+        "properties": {
+          "envelope": { "$ref": "authenticated-review-envelope.schema.json" },
+          "candidate": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind", "title", "sourceRef", "artifactDigest", "summary", "requiredSeats", "action", "expiresAt"],
+                "properties": {
+                  "kind": { "type": "string", "maxLength": 80 },
+                  "title": { "type": "string", "maxLength": 180 },
+                  "sourceRef": { "type": "string", "maxLength": 300 },
+                  "artifactDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                  "summary": { "type": "string", "maxLength": 2000 },
+                  "requiredSeats": { "type": "integer", "minimum": 1, "maximum": 10 },
+                  "action": { "type": ["object", "null"] },
+                  "expiresAt": { "type": ["string", "null"] }
+                }
+              }
+            ]
+          },
+          "reviewId": { "type": ["string", "null"], "maxLength": 180 },
+          "recordedAt": { "$ref": "#/$defs/time" },
+          "supersededBy": { "type": ["string", "null"], "maxLength": 180 }
+        }
+      }
+    },
+    "updatedAt": { "$ref": "#/$defs/time" }
+  },
+  "$defs": {
+    "time": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" }
+  }
+}

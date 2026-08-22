@@ -70,12 +70,26 @@ try {
   assert.equal(current.tools[0].selftest.result.verdict, 'PASS');
   assert.deepEqual(Readiness.validateIndex(current), { pass: true, errors: [] });
 
+  const fixtureCredential = ['axm', 'fixture', 'credential'].join('-');
   const failed = Readiness.buildIndex(fixtureRoot, {
     now: '2026-07-28T12:00:00.000Z',
-    verificationResults: { schema: 'axm.tool-selftest-results/v1', results: [{ id: 'working-tool', selftestSha256: missingResultTool.selftest.sha256, verdict: 'FAIL' }] }
+    verificationResults: { schema: 'axm.tool-selftest-results/v1', results: [{
+      id: 'working-tool', selftestSha256: missingResultTool.selftest.sha256, verdict: 'FAIL',
+      failureTail:'Authorization: Bearer ' + fixtureCredential + '\nError at ' + path.join(fixtureRoot, 'tools', 'working-tool', 'selftest.js') + ':7:1'
+    }] }
   });
   assert.equal(failed.tools[0].promotion.state, 'CLAIM_NEEDS_REVERIFICATION');
   assert.ok(failed.tools[0].promotion.blockers.includes('current selftest did not pass'));
+  assert.ok(failed.tools[0].selftest.result.failureTail.includes('<WORKSPACE>'), 'derived index retains a portable diagnostic suffix');
+  assert.ok(!failed.tools[0].selftest.result.failureTail.includes(fixtureRoot), 'derived index removes its absolute fixture root');
+  assert.ok(failed.tools[0].selftest.result.failureTail.includes('<REDACTED_CREDENTIAL>'), 'derived index retains an explicit credential-redaction marker');
+  assert.ok(!failed.tools[0].selftest.result.failureTail.includes(fixtureCredential), 'derived index removes recognized credential evidence');
+  assert.equal(failed.truth.failureDiagnosticsMachinePathRedacted, true, 'index truth declares diagnostic path redaction');
+  assert.equal(failed.truth.failureDiagnosticsRecognizedCredentialEvidenceRedacted, true, 'index truth declares recognized diagnostic credential redaction');
+
+  const missingCredentialTruth = JSON.parse(JSON.stringify(failed));
+  delete missingCredentialTruth.truth.failureDiagnosticsRecognizedCredentialEvidenceRedacted;
+  assert.ok(Readiness.validateIndex(missingCredentialTruth).errors.includes('failure diagnostics must declare recognized credential-evidence redaction'));
 
   const stale = Readiness.buildIndex(fixtureRoot, {
     now: '2026-07-28T12:00:00.000Z',

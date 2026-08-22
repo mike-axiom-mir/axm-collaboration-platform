@@ -1,0 +1,105 @@
+{
+  "schema": "axm.human-benefit-participant-packet/v1",
+  "version": "0.1.0",
+  "packetId": "source-closure-local-steward-participant-packet-20260819",
+  "generatedAt": "2026-08-19T05:20:00.000Z",
+  "protocolRef": {
+    "id": "evidence-source-closure-local-steward-20260819",
+    "schema": "axm.human-benefit-protocol/v1",
+    "sha256": "sha256:2f121d55aa981eee64430f8791b52f83119cde6e4cb12d2eaf5b004570fc4447"
+  },
+  "status": "READY_FOR_VOLUNTARY_HUMAN_SESSION",
+  "notices": [
+    "Participation is optional. Stopping or withdrawing does not count as failure.",
+    "The packet records only structured choices, confidence, confusion, elapsed milliseconds, effect and burden.",
+    "Do not enter a name, email address, free-text comment, audio, video or screen recording.",
+    "This one-person result can describe only the participating local steward.",
+    "The condition roles and expected decisions are intentionally absent from this participant packet."
+  ],
+  "trials": [
+    {
+      "trialId": "review-1",
+      "order": 1,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: a source digest was recorded yesterday. No later existence, type, or byte check is shown. A decision today requires the source bytes to still be current. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": ["CONTINUE", "HOLD", "UNSURE"],
+        "confidence": "integer 1 to 5",
+        "confusion": ["NONE", "SOME", "BLOCKED"],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-2",
+      "order": 2,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: the registered digest and a fresh exact check match; closure state is CURRENT. The decision requires current source bytes. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": ["CONTINUE", "HOLD", "UNSURE"],
+        "confidence": "integer 1 to 5",
+        "confusion": ["NONE", "SOME", "BLOCKED"],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-3",
+      "order": 3,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: a fresh exact check differs from the registered digest; closure state is CHANGED. The decision requires the registered source bytes. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": ["CONTINUE", "HOLD", "UNSURE"],
+        "confidence": "integer 1 to 5",
+        "confusion": ["NONE", "SOME", "BLOCKED"],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-4",
+      "order": 4,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: a report says the source was registered successfully. It gives no later closure state. A downstream acceptance relies on the source still existing unchanged. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": ["CONTINUE", "HOLD", "UNSURE"],
+        "confidence": "integer 1 to 5",
+        "confusion": ["NONE", "SOME", "BLOCKED"],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-5",
+      "order": 5,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: the original registration timestamp and digest are visible, but current file type and bytes are not checked. A decision requires current exact bytes. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": ["CONTINUE", "HOLD", "UNSURE"],
+        "confidence": "integer 1 to 5",
+        "confusion": ["NONE", "SOME", "BLOCKED"],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-6",
+      "order": 6,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: a fresh closure check cannot find the registered source; closure state is MISSING. A decision relies on that source. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": ["CONTINUE", "HOLD", "UNSURE"],
+        "confidence": "integer 1 to 5",
+        "confusion": ["NONE", "SOME", "BLOCKED"],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    }
+  ],
+  "completionFields": {
+    "effect": ["HELPED", "HARMED", "NO_MEANINGFUL_DIFFERENCE", "UNSURE"],
+    "burden": ["LOW", "ACCEPTABLE", "HIGH"],
+    "confidence": "integer 1 to 5"
+  },
+  "outputBoundary": {
+    "writesAutomatically": false,
+    "sendsToNetwork": false,
+    "authenticatesHuman": false,
+    "createsHumanBenefitVerdict": false
+  },
+  "packetDigest": "sha256:49daf924d92b7b62ce85a29f6a6cf946d361ce1a87de8f4117ae7aeaa2663618"
+}

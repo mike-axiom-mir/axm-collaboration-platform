@@ -1,0 +1,91 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-receiver-ack",
+  "version": "v1.1",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition-receiver-assessment-exact-rebuild",
+    "model.shadow.review.challenge-transition-receiver-policy-exact-rebuild",
+    "model.shadow.review.challenge-transition-receiver-policy-assessment-bind",
+    "model.shadow.review.challenge-transition-receiver-detached-ed25519-verify",
+    "model.shadow.review.challenge-transition-receiver-distinct-label-and-key-verify",
+    "model.shadow.review.challenge-transition-receiver-threshold-classification",
+    "model.shadow.review.challenge-transition-receiver-incomplete-threshold-hold",
+    "model.shadow.review.challenge-transition-receiver-same-controller-multikey-nonindependence-proof",
+    "model.shadow.review.challenge-transition-receiver-receipt-data-minimization",
+    "model.shadow.review.challenge-transition-receiver-resource-bounds",
+    "model.shadow.review.challenge-transition-receiver-witness-exact-rebuild",
+    "model.shadow.review.challenge-transition-receiver-witness-fresh-process",
+    "model.shadow.review.challenge-transition-receiver-no-runtime-io",
+    "model.shadow.review.challenge-transition-receiver-authority-none",
+    "axm.model-shadow-review-challenge-transition-receiver-policy/v1",
+    "axm.model-shadow-review-challenge-transition-receiver-acknowledgement/v1",
+    "axm.model-shadow-review-challenge-transition-receiver-acknowledgement-witness/v1"
+  ],
+  "consumes": [
+    "one exact v1.0 declared-disclosure assessment package as data",
+    "one caller-supplied two-to-ten receiver Ed25519 public-key policy as data",
+    "zero or one detached acknowledgement per enabled declared receiver label",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-receiver-acknowledgement-witness/v1"
+    ],
+    "accepts": [
+      "axm.model-shadow-review-challenge-transition-declared-disclosure/v1 with complete exact-rebuild input",
+      "caller receiver policy containing transient raw public keys",
+      "detached signed acknowledgement packages containing transient raw signatures"
+    ]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "policy-with-fewer-than-two-or-more-than-ten-receivers",
+      "policy-with-fewer-than-two-enabled-receivers",
+      "threshold-below-two-or-above-enabled-receiver-count",
+      "duplicate-receiver-label",
+      "duplicate-public-key-as-independent-receiver",
+      "invalid-or-non-ed25519-public-key-or-signature",
+      "unknown-or-disabled-receiver-acknowledgement",
+      "duplicate-acknowledgement-for-one-receiver",
+      "acknowledgement-without-exact-policy-assessment-roster-scope-and-retention-claim-binding",
+      "policy-over-256-KiB-canonical-UTF-8",
+      "witness-over-48-MiB-canonical-UTF-8",
+      "policy-acknowledgement-or-verification-time-outside-declared-order-and-expiry-window",
+      "caller-receiver-policy-as-authenticated-host-or-root-registry",
+      "distinct-receiver-labels-as-distinct-real-world-receivers",
+      "distinct-signing-keys-as-independent-operators",
+      "signature-threshold-as-actual-network-delivery",
+      "signature-as-proof-receiver-read-or-applied-assessment",
+      "signature-as-durable-storage-or-retention-duration-proof",
+      "threshold-receipt-as-independent-external-retention",
+      "threshold-receipt-as-deletion-or-rollback-prevention",
+      "caller-time-as-externally-trusted-time",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "receipt-as-branch-adoption-or-execution-authority",
+      "raw-receiver-label-retention",
+      "raw-public-key-or-signature-embedding",
+      "private-key-ingestion",
+      "raw-model-output-or-private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains assessment package, receiver policy, signed acknowledgements, and witness receipt",
+    "reload": "exact-rebuild assessment, policy, acknowledgements, and witness receipt in a fresh process",
+    "disconnect": "not-applicable; no transport is opened",
+    "cleanup": "caller-owned transient public keys and signatures; receipt retains digests only",
+    "installed": false,
+    "promoted": false
+  }
+}

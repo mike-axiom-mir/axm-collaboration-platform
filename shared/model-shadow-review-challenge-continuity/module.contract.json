@@ -1,0 +1,82 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-continuity",
+  "version": "v0.3",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-ledger-read-only-snapshot",
+    "model.shadow.review.challenge-ledger-strict-entry-validation",
+    "model.shadow.review.challenge-ledger-snapshot-exact-rebuild",
+    "model.shadow.review.challenge-caller-checkpoint",
+    "model.shadow.review.challenge-checkpoint-exact-rebuild",
+    "model.shadow.review.challenge-fresh-process-continuity-compare",
+    "model.shadow.review.challenge-rollback-detect-relative-to-presented-checkpoint",
+    "model.shadow.review.challenge-replacement-detect-relative-to-presented-checkpoint",
+    "model.shadow.review.challenge-ledger-identity-drift-hold",
+    "model.shadow.review.challenge-continuity-exact-rebuild",
+    "model.shadow.review.challenge-continuity-authority-none",
+    "axm.model-shadow-review-challenge-ledger-snapshot/v1",
+    "axm.model-shadow-review-challenge-checkpoint/v1",
+    "axm.model-shadow-review-challenge-continuity/v1"
+  ],
+  "consumes": [
+    "axm.model-shadow-review-challenge-ledger-manifest/v1 as data",
+    "axm.model-shadow-review-challenge-consumption/v1 entries as data",
+    "caller-owned existing state root",
+    "caller-presented prior checkpoint as data",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-ledger-snapshot/v1",
+      "axm.model-shadow-review-challenge-checkpoint/v1",
+      "axm.model-shadow-review-challenge-continuity/v1"
+    ],
+    "accepts": [
+      "one caller-owned challenge-ledger state root",
+      "one caller-retained checkpoint for comparison"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "<caller-state-root>/model-shadow-review-challenge-ledger/ledger.json",
+      "<caller-state-root>/model-shadow-review-challenge-ledger/entries/*.json"
+    ],
+    "writes": [],
+    "refuses": [
+      "invalid-ledger-state-as-unused-ledger",
+      "missing-current-state-as-never-existing-ledger",
+      "unexpected-entry-file-as-valid-state",
+      "symlinked-ledger-state-as-valid-state",
+      "caller-checkpoint-as-proven-external-retention",
+      "caller-checkpoint-as-authenticated-authority",
+      "self-digest-as-authenticated-integrity",
+      "self-digested-snapshot-as-authenticated-observer-origin",
+      "caller-time-as-trusted-time",
+      "relative-rollback-detection-as-rollback-prevention",
+      "relative-rollback-detection-as-global-single-use",
+      "checkpoint-as-pre-checkpoint-history-proof",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "test-leaf-as-installed-or-promoted",
+      "continuity-observation-as-human-participation",
+      "continuity-observation-as-execution-authority",
+      "continuity-observation-as-adoption-authority",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller; this leaf is read-only",
+    "reload": "recapture current state and compare with a caller-presented checkpoint",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned",
+    "installed": false,
+    "promoted": false
+  }
+}

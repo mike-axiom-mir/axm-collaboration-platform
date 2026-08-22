@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-witness-attestation/v1",
+  "title": "Model Shadow review challenge checkpoint witness attestation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "attestationId", "keyId", "actorDigest", "actorKind", "verdict",
+    "scope", "policyDigest", "checkpointDigest", "ledgerManifestDigest",
+    "entriesDigest", "issuedAt", "expiresAt", "signatureAlgorithm", "signature"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-witness-attestation/v1"},
+    "attestationId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "keyId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "actorDigest": {"$ref": "#/$defs/digest"},
+    "actorKind": {"enum": ["human", "machine", "unknown"]},
+    "verdict": {"const": "WITNESS"},
+    "scope": {"const": "WITNESS_EXACT_MODEL_SHADOW_REVIEW_CHALLENGE_CHECKPOINT"},
+    "policyDigest": {"$ref": "#/$defs/digest"},
+    "checkpointDigest": {"$ref": "#/$defs/digest"},
+    "ledgerManifestDigest": {"$ref": "#/$defs/digest"},
+    "entriesDigest": {"$ref": "#/$defs/digest"},
+    "issuedAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "signatureAlgorithm": {"const": "Ed25519"},
+    "signature": {"type": "string", "minLength": 88, "maxLength": 88}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-history-checkpoint/v1",
+  "title": "AXM two-phase settlement portable history checkpoint v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "checkpointId", "checkpointedAt", "mode", "logIdDigest", "manifestRef", "genesisSeparatedWitnessRef", "receiverIdDigest", "challengerIdDigest", "receiverPolicyRef", "snapshotBinding", "state", "history", "truth", "checkpointDigest"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-history-checkpoint/v1" },
+    "version": { "const": "2.1.0" },
+    "status": { "const": "TEST" },
+    "checkpointId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "checkpointedAt": { "type": "string", "format": "date-time" },
+    "mode": { "const": "CALLER_PORTABLE_UNAUTHENTICATED_CHECKPOINT" },
+    "logIdDigest": { "$ref": "#/$defs/digest" },
+    "manifestRef": { "$ref": "#/$defs/reference" },
+    "genesisSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "receiverIdDigest": { "$ref": "#/$defs/digest" },
+    "challengerIdDigest": { "$ref": "#/$defs/digest" },
+    "receiverPolicyRef": { "$ref": "#/$defs/reference" },
+    "snapshotBinding": { "$ref": "#/$defs/snapshotBinding" },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposalCount", "settlementCount", "heldSettlementCount", "currentSettledHeadSeparatedWitnessRef", "pendingProposalRef", "lastProposalRef", "lastSettlementRef"],
+      "properties": {
+        "proposalCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "settlementCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "heldSettlementCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "currentSettledHeadSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+        "pendingProposalRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] },
+        "lastProposalRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] },
+        "lastSettlementRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] }
+      }
+    },
+    "history": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposalRefs", "settlementRefs", "historyDigest"],
+      "properties": {
+        "proposalRefs": { "type": "array", "maxItems": 10000, "items": { "$ref": "#/$defs/reference" } },
+        "settlementRefs": { "type": "array", "maxItems": 10000, "items": { "$ref": "#/$defs/reference" } },
+        "historyDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "truth": { "type": "object" },
+    "checkpointDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "snapshotBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "sha256"],
+      "properties": {
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

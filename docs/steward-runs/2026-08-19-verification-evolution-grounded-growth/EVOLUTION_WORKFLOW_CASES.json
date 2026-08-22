@@ -1,0 +1,161 @@
+{
+  "schema": "axm.steward-workflow-case-set/v1",
+  "version": "0.1.0",
+  "caseSetId": "verification-evolution-steward-cases-20260819",
+  "status": "TEST",
+  "workflow": "Decide whether changing verification evidence should be preserved, routed, held, or refused without rewriting history or inferring correctness.",
+  "fixturePolicy": "Eight representative cases are frozen separately from both policies. Five bind recorded current evolution states; three are adversarial boundary cases. They are not a statistically sampled or independently blinded benchmark.",
+  "cases": [
+    {
+      "id": "mutable-derived-view-drift",
+      "sourcePath": "docs/steward-runs/2026-08-19-verification-snapshot-continuity/CURRENT_CONTINUITY_PORTFOLIO.json",
+      "expectedDecision": "PRESERVE_DERIVED_VIEW_DRIFT",
+      "expectedRule": "MUTABLE_DERIVED_VIEW_IS_NOT_SOURCE_FAILURE",
+      "facts": {
+        "currentDigestMismatch": true,
+        "mutableDerivedViewOnly": true,
+        "laterReceiptAttestation": false,
+        "candidateSelfDigestValid": null,
+        "candidateCurrentTrackedSources": null,
+        "candidateEvolutionFullyRouted": false,
+        "knownGeneratedView": false,
+        "semanticSnapshotMatch": false,
+        "missingHistoricalSelfDigest": false,
+        "attemptCorrectnessInference": false
+      }
+    },
+    {
+      "id": "direct-later-current-route",
+      "sourcePath": "docs/steward-runs/2026-08-19-verification-source-evolution-review/CURRENT_EVOLUTION_REVIEW_PORTFOLIO.json",
+      "expectedDecision": "ROUTE_CURRENT_BYTES_DIRECT",
+      "expectedRule": "EXACT_ATTESTATION_PLUS_CURRENT_CANDIDATE_SCOPE",
+      "facts": {
+        "currentDigestMismatch": true,
+        "mutableDerivedViewOnly": false,
+        "laterReceiptAttestation": true,
+        "candidateSelfDigestValid": true,
+        "candidateCurrentTrackedSources": true,
+        "candidateEvolutionFullyRouted": false,
+        "knownGeneratedView": false,
+        "semanticSnapshotMatch": false,
+        "missingHistoricalSelfDigest": false,
+        "attemptCorrectnessInference": false
+      }
+    },
+    {
+      "id": "transitive-candidate-scope-route",
+      "sourcePath": "docs/steward-runs/2026-08-19-verification-source-evolution-review/CURRENT_EVOLUTION_REVIEW_PORTFOLIO.json",
+      "expectedDecision": "ROUTE_CURRENT_BYTES_TRANSITIVELY",
+      "expectedRule": "EXACT_ATTESTATION_PLUS_FULL_CANDIDATE_EVOLUTION_ROUTE",
+      "facts": {
+        "currentDigestMismatch": true,
+        "mutableDerivedViewOnly": false,
+        "laterReceiptAttestation": true,
+        "candidateSelfDigestValid": true,
+        "candidateCurrentTrackedSources": false,
+        "candidateEvolutionFullyRouted": true,
+        "knownGeneratedView": false,
+        "semanticSnapshotMatch": false,
+        "missingHistoricalSelfDigest": false,
+        "attemptCorrectnessInference": false
+      }
+    },
+    {
+      "id": "candidate-currentness-unresolved",
+      "sourcePath": "docs/steward-runs/2026-08-19-verification-source-evolution-review/CURRENT_EVOLUTION_REVIEW_PORTFOLIO.json",
+      "expectedDecision": "HOLD_CANDIDATE_CURRENTNESS",
+      "expectedRule": "ATTESTATION_WITHOUT_CURRENT_OR_EVOLUTION_SCOPE_HOLDS",
+      "facts": {
+        "currentDigestMismatch": true,
+        "mutableDerivedViewOnly": false,
+        "laterReceiptAttestation": true,
+        "candidateSelfDigestValid": true,
+        "candidateCurrentTrackedSources": false,
+        "candidateEvolutionFullyRouted": false,
+        "knownGeneratedView": false,
+        "semanticSnapshotMatch": false,
+        "missingHistoricalSelfDigest": false,
+        "attemptCorrectnessInference": false
+      }
+    },
+    {
+      "id": "known-generated-view-semantic-route",
+      "sourcePath": "docs/steward-runs/2026-08-19-verification-source-evolution-review/CURRENT_EVOLUTION_REVIEW_PORTFOLIO.json",
+      "expectedDecision": "ROUTE_GENERATED_VIEW_SEMANTICS_ONLY",
+      "expectedRule": "KNOWN_GENERATOR_BOUNDED_SEMANTIC_ROUTE",
+      "facts": {
+        "currentDigestMismatch": true,
+        "mutableDerivedViewOnly": false,
+        "laterReceiptAttestation": false,
+        "candidateSelfDigestValid": null,
+        "candidateCurrentTrackedSources": null,
+        "candidateEvolutionFullyRouted": false,
+        "knownGeneratedView": true,
+        "semanticSnapshotMatch": true,
+        "missingHistoricalSelfDigest": false,
+        "attemptCorrectnessInference": false
+      }
+    },
+    {
+      "id": "legacy-no-self-digest",
+      "sourcePath": "docs/steward-runs/2026-08-19-verification-source-evolution-review/CURRENT_EVOLUTION_REVIEW_PORTFOLIO.json",
+      "expectedDecision": "ANCHOR_FORWARD_HOLD_PREANCHOR",
+      "expectedRule": "EXTERNAL_ANCHOR_CANNOT_REPAIR_PRIOR_INTEGRITY",
+      "facts": {
+        "currentDigestMismatch": false,
+        "mutableDerivedViewOnly": false,
+        "laterReceiptAttestation": false,
+        "candidateSelfDigestValid": null,
+        "candidateCurrentTrackedSources": null,
+        "candidateEvolutionFullyRouted": false,
+        "knownGeneratedView": false,
+        "semanticSnapshotMatch": false,
+        "missingHistoricalSelfDigest": true,
+        "attemptCorrectnessInference": false
+      }
+    },
+    {
+      "id": "invalid-later-attestation",
+      "sourcePath": "shared/verification-source-evolution-review/verification-source-evolution-review.js",
+      "expectedDecision": "HOLD_INVALID_ATTESTATION",
+      "expectedRule": "LATER_RECEIPT_REQUIRES_VALID_SELF_DIGEST",
+      "facts": {
+        "currentDigestMismatch": false,
+        "mutableDerivedViewOnly": false,
+        "laterReceiptAttestation": true,
+        "candidateSelfDigestValid": false,
+        "candidateCurrentTrackedSources": false,
+        "candidateEvolutionFullyRouted": false,
+        "knownGeneratedView": false,
+        "semanticSnapshotMatch": false,
+        "missingHistoricalSelfDigest": false,
+        "attemptCorrectnessInference": false
+      }
+    },
+    {
+      "id": "attestation-correctness-overclaim",
+      "sourcePath": "shared/verification-source-evolution-review/module.contract.json",
+      "expectedDecision": "REFUSE_CORRECTNESS_INFERENCE",
+      "expectedRule": "BYTE_LINEAGE_IS_NOT_CORRECTNESS",
+      "facts": {
+        "currentDigestMismatch": false,
+        "mutableDerivedViewOnly": false,
+        "laterReceiptAttestation": true,
+        "candidateSelfDigestValid": true,
+        "candidateCurrentTrackedSources": true,
+        "candidateEvolutionFullyRouted": false,
+        "knownGeneratedView": false,
+        "semanticSnapshotMatch": false,
+        "missingHistoricalSelfDigest": false,
+        "attemptCorrectnessInference": true
+      }
+    }
+  ],
+  "truth": {
+    "modelInvoked": false,
+    "humanParticipant": false,
+    "baselineDescribesNamedModel": false,
+    "historicalReceiptRewritten": false,
+    "humanBenefitClaimed": false
+  }
+}

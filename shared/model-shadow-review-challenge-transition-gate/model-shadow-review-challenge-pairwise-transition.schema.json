@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-pairwise-transition/v1",
+  "title": "Model Shadow review challenge pairwise transition receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "transitionId", "comparedAt", "status",
+    "previousSeparatedWitnessRef", "candidateSeparatedWitnessRef",
+    "anchorTransition", "ledgerRef", "previousCheckpointRef",
+    "candidateCheckpointRef", "comparison", "decision", "state",
+    "nextGate", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-pairwise-transition/v1"},
+    "version": {"const": "0.7.0"},
+    "transitionId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "comparedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "previousSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "candidateSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "anchorTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchorId", "previousAnchorDigest", "candidateAnchorDigest",
+        "previousSelfDeclaredEpoch", "candidateSelfDeclaredEpoch", "relation"
+      ],
+      "properties": {
+        "anchorId": {"type": "string", "minLength": 1, "maxLength": 180},
+        "previousAnchorDigest": {"$ref": "#/$defs/digest"},
+        "candidateAnchorDigest": {"$ref": "#/$defs/digest"},
+        "previousSelfDeclaredEpoch": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "candidateSelfDeclaredEpoch": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "relation": {"enum": ["ROLLBACK_SELF_DECLARED", "SAME_SELF_DECLARED_EPOCH", "ADVANCED_SELF_DECLARED"]}
+      }
+    },
+    "ledgerRef": {"$ref": "#/$defs/reference"},
+    "previousCheckpointRef": {"$ref": "#/$defs/reference"},
+    "candidateCheckpointRef": {"$ref": "#/$defs/reference"},
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchorIdentityMatches", "ledgerIdentityMatches",
+        "candidateVerificationTimePrecedesPrevious",
+        "candidateCheckpointTimePrecedesPrevious", "sameAnchorDigest",
+        "sameCheckpointDigest", "sameSeparatedReceiptDigest",
+        "missingPreviousChallenges", "replacedPreviousEntries",
+        "addedCandidateChallenges"
+      ],
+      "properties": {
+        "anchorIdentityMatches": {"type": "boolean"},
+        "ledgerIdentityMatches": {"type": "boolean"},
+        "candidateVerificationTimePrecedesPrevious": {"type": "boolean"},
+        "candidateCheckpointTimePrecedesPrevious": {"type": "boolean"},
+        "sameAnchorDigest": {"type": "boolean"},
+        "sameCheckpointDigest": {"type": "boolean"},
+        "sameSeparatedReceiptDigest": {"type": "boolean"},
+        "missingPreviousChallenges": {"type": "array", "items": {"$ref": "#/$defs/digest"}},
+        "replacedPreviousEntries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "challengeDigest", "previousConsumptionReceiptDigest",
+              "candidateConsumptionReceiptDigest", "previousConsumedAt",
+              "candidateConsumedAt"
+            ],
+            "properties": {
+              "challengeDigest": {"$ref": "#/$defs/digest"},
+              "previousConsumptionReceiptDigest": {"$ref": "#/$defs/digest"},
+              "candidateConsumptionReceiptDigest": {"$ref": "#/$defs/digest"},
+              "previousConsumedAt": {"type": "string", "format": "date-time"},
+              "candidateConsumedAt": {"type": "string", "format": "date-time"}
+            }
+          }
+        },
+        "addedCandidateChallenges": {"type": "array", "items": {"$ref": "#/$defs/digest"}}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification", "pairwiseConsistency", "forwardTransitionAdmissible",
+        "reviewRequired", "bestAction", "autonomousActionCount"
+      ],
+      "properties": {
+        "classification": {"enum": [
+          "PRESENTED_CHAIN_EXACT_REPLAY",
+          "CANDIDATE_EXTENDS_PRESENTED_CHAIN",
+          "HOLD_ANCHOR_IDENTITY_DRIFT",
+          "HOLD_LEDGER_IDENTITY_DRIFT",
+          "HOLD_PRESENTED_TIME_ROLLBACK",
+          "HOLD_SELF_DECLARED_ANCHOR_EPOCH_ROLLBACK",
+          "HOLD_ANCHOR_EQUIVOCATION_AT_SELF_DECLARED_EPOCH",
+          "HOLD_CHECKPOINT_ID_EQUIVOCATION",
+          "HOLD_ALTERNATE_SEPARATED_CHAIN_FOR_SAME_CHECKPOINT",
+          "HOLD_CHECKPOINT_TIME_COLLISION",
+          "HOLD_CANDIDATE_REMOVES_OR_REPLACES_PRIOR_ENTRIES",
+          "HOLD_CHECKPOINT_CHANGED_WITHOUT_LEDGER_EXTENSION"
+        ]},
+        "pairwiseConsistency": {"enum": ["CONSISTENT_REPLAY", "CONSISTENT_EXTENSION", "CONTRADICTION"]},
+        "forwardTransitionAdmissible": {"type": "boolean"},
+        "reviewRequired": {"type": "boolean"},
+        "bestAction": {"type": "string", "minLength": 1, "maxLength": 180},
+        "autonomousActionCount": {"const": 0}
+      }
+    },
+    "state": {"const": "PAIRWISE_SEPARATED_CHAIN_TRANSITION_COMPARED_GLOBAL_FORK_ABSENCE_NOT_PROVEN"},
+    "nextGate": {"const": "HOST_AUTHENTICATED_EXTERNALLY_RETAINED_GLOBALLY_CONSISTENT_TRANSITION_LOG_OR_PROTECTED_MONOTONIC_STORE"},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "previousSeparatedChainVerifiedByExactRebuild",
+        "candidateSeparatedChainVerifiedByExactRebuild", "pairwiseComparisonOnly",
+        "pairwiseLedgerIdentityMatches", "pairwiseAnchorIdentityMatches",
+        "exactPresentedReplayObserved", "forwardExtensionObserved",
+        "pairwiseConflictOrContradictionDetected",
+        "priorEntryRemovalOrReplacementDetected", "anchorEpochSelfDeclared",
+        "anchorEpochRollbackObserved", "sameEpochAnchorEquivocationObserved",
+        "checkpointIdEquivocationObserved", "anchorEpochMonotonicityProven",
+        "withheldForksExcluded", "unpresentedBranchesExcluded",
+        "globalTransitionUniquenessProven", "globallyConsistentTransitionLogProven",
+        "externalTransitionRetentionProven", "protectedMonotonicStateProven",
+        "realWorldControllerIndependenceProven", "crossLayerCollusionExcluded",
+        "anchorPolicyAuthorityAuthenticated", "expectedAnchorDigestAuthorityAuthenticated",
+        "actualHumanParticipationProven", "comparisonTimeExternallyTrusted",
+        "deletionOrRollbackPrevented", "hostAuthorizationAuthenticated",
+        "experimentExecuted", "evaluationPerformed", "executionAuthorized",
+        "adoptionAuthorized", "humanBenefitProven", "broadLearningClaimed",
+        "automaticWrite", "automaticPermissionGrant", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "previousSeparatedChainVerifiedByExactRebuild": {"const": true},
+        "candidateSeparatedChainVerifiedByExactRebuild": {"const": true},
+        "pairwiseComparisonOnly": {"const": true},
+        "pairwiseLedgerIdentityMatches": {"type": "boolean"},
+        "pairwiseAnchorIdentityMatches": {"type": "boolean"},
+        "exactPresentedReplayObserved": {"type": "boolean"},
+        "forwardExtensionObserved": {"type": "boolean"},
+        "pairwiseConflictOrContradictionDetected": {"type": "boolean"},
+        "priorEntryRemovalOrReplacementDetected": {"type": "boolean"},
+        "anchorEpochSelfDeclared": {"const": true},
+        "anchorEpochRollbackObserved": {"type": "boolean"},
+        "sameEpochAnchorEquivocationObserved": {"type": "boolean"},
+        "checkpointIdEquivocationObserved": {"type": "boolean"},
+        "anchorEpochMonotonicityProven": {"const": false},
+        "withheldForksExcluded": {"const": false},
+        "unpresentedBranchesExcluded": {"const": false},
+        "globalTransitionUniquenessProven": {"const": false},
+        "globallyConsistentTransitionLogProven": {"const": false},
+        "externalTransitionRetentionProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "realWorldControllerIndependenceProven": {"const": false},
+        "crossLayerCollusionExcluded": {"const": false},
+        "anchorPolicyAuthorityAuthenticated": {"const": false},
+        "expectedAnchorDigestAuthorityAuthenticated": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "comparisonTimeExternallyTrusted": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

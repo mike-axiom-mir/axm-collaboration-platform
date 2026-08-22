@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-ledger-presentation/v1",
+  "title": "Model Shadow review challenge transition ledger presentation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "presentationId", "presentedAt", "status",
+    "manifestRef", "logId", "genesisSeparatedWitnessRef", "entries",
+    "entryCount", "headSeparatedWitnessRef", "truth", "presentationDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-ledger-presentation/v1"},
+    "version": {"const": "0.9.0"},
+    "presentationId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "presentedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "manifestRef": {"$ref": "#/$defs/reference"},
+    "logId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "genesisSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "entries": {
+      "type": "array", "maxItems": 4096,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["sequence", "entryRef", "previousEntryRef", "transitionReceiptRef", "previousSeparatedWitnessRef", "candidateSeparatedWitnessRef"],
+        "properties": {
+          "sequence": {"type": "integer", "minimum": 1},
+          "entryRef": {"$ref": "#/$defs/reference"},
+          "previousEntryRef": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+          "transitionReceiptRef": {"$ref": "#/$defs/reference"},
+          "previousSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+          "candidateSeparatedWitnessRef": {"$ref": "#/$defs/reference"}
+        }
+      }
+    },
+    "entryCount": {"type": "integer", "minimum": 0, "maximum": 4096},
+    "headSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "manifestVerifiedByExactRebuild", "everyEntryVerifiedByExactRebuild",
+        "everyUpstreamTransitionPackageVerifiedByExactRebuild", "contiguousPresentedSequenceVerified",
+        "presentedDigestChainVerified", "presentedHeadDerivedFromExactEntries",
+        "callerPackagesProcessedTransiently", "callerPackagesEmbeddedInPresentationReceipt",
+        "callerStateRootRead", "externalRetentionProven", "protectedMonotonicStateProven",
+        "hostAuthorizationAuthenticated", "rawPublicKeyEmbedded", "rawSignatureEmbedded",
+        "privateKeyIngested", "rawModelOutputEmbedded", "privateContextEmbedded",
+        "executionAuthorized", "adoptionAuthorized", "automaticWrite",
+        "automaticPromotion", "automaticCanon"
+      ],
+      "properties": {
+        "manifestVerifiedByExactRebuild": {"const": true},
+        "everyEntryVerifiedByExactRebuild": {"const": true},
+        "everyUpstreamTransitionPackageVerifiedByExactRebuild": {"const": true},
+        "contiguousPresentedSequenceVerified": {"const": true},
+        "presentedDigestChainVerified": {"const": true},
+        "presentedHeadDerivedFromExactEntries": {"const": true},
+        "callerPackagesProcessedTransiently": {"const": true},
+        "callerPackagesEmbeddedInPresentationReceipt": {"const": false},
+        "callerStateRootRead": {"const": false},
+        "externalRetentionProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "privateKeyIngested": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticCanon": {"const": false}
+      }
+    },
+    "presentationDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

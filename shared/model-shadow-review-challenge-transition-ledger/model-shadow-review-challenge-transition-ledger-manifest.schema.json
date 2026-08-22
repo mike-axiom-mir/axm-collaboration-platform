@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-ledger-manifest/v1",
+  "title": "Model Shadow review challenge transition ledger manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "logId", "genesisSeparatedWitnessRef",
+    "authorityOrigin", "storageMode", "manifestDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-ledger-manifest/v1"},
+    "version": {"const": "0.8.0"},
+    "status": {"const": "TEST"},
+    "logId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "genesisSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "authorityOrigin": {"const": "CALLER_STATE_ROOT_UNAUTHENTICATED"},
+    "storageMode": {"const": "SEQUENCE_ENTRY_EXCLUSIVE_CREATE_LOCAL_HEAD_DERIVED_FROM_VALIDATED_CHAIN"},
+    "manifestDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
+

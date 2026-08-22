@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-two-phase-history-checkpoint-pin-settlement-ledger-snapshot/v1",
+  "title":"AXM local pin settlement ledger snapshot",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","logId","manifestRef","genesisPinRef","currentSettledPinRef","proposalCount","settlementCount","pendingProposalRef","lastProposalRef","lastSettlementRef","state","truth","snapshotDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-two-phase-history-checkpoint-pin-settlement-ledger-snapshot/v1"},"version":{"const":"2.5.0"},"status":{"const":"TEST"},"logId":{"type":"string","minLength":1,"maxLength":180},
+    "manifestRef":{"$ref":"#/$defs/reference"},"genesisPinRef":{"$ref":"#/$defs/reference"},"currentSettledPinRef":{"$ref":"#/$defs/reference"},"proposalCount":{"type":"integer","minimum":0,"maximum":10000},"settlementCount":{"type":"integer","minimum":0,"maximum":10000},
+    "pendingProposalRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},"lastProposalRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},"lastSettlementRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "state":{"enum":["LOCAL_PIN_LEDGER_RELOADED_ONE_PROPOSAL_PENDING_SETTLEMENT","LOCAL_PIN_LEDGER_RELOADED_NO_PENDING_PROPOSAL"]},"truth":{"$ref":"#/$defs/truth"},"snapshotDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "reference":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}},
+    "truth":{"type":"object","additionalProperties":false,"required":["manifestValidated","contiguousProposalAndSettlementSequencesValidated","storedReceiptDigestChainsValidated","currentPinHeadDerivedOnlyFromSettlements","atMostOneTrailingPendingProposal","localFilesReloaded","callerPackagesRequiredForUpstreamExactReverification","localFilePersistenceObserved","directoryEntryOrHardwareDurabilityProven","externalRetentionProven","protectedMonotonicStateProven","deletionOrRollbackPrevented","independentRootsExcluded","globallyConsistentLogProven","hostAuthorizationAuthenticated","authenticatedHumanReviewProven","providerInvoked","humanBenefitProven","broadLearningClaimed","automaticPromotion","automaticMerge","automaticCanon","foundationMutation"],"properties":{"manifestValidated":{"const":true},"contiguousProposalAndSettlementSequencesValidated":{"const":true},"storedReceiptDigestChainsValidated":{"const":true},"currentPinHeadDerivedOnlyFromSettlements":{"const":true},"atMostOneTrailingPendingProposal":{"const":true},"localFilesReloaded":{"const":true},"callerPackagesRequiredForUpstreamExactReverification":{"const":true},"localFilePersistenceObserved":{"const":true},"directoryEntryOrHardwareDurabilityProven":{"const":false},"externalRetentionProven":{"const":false},"protectedMonotonicStateProven":{"const":false},"deletionOrRollbackPrevented":{"const":false},"independentRootsExcluded":{"const":false},"globallyConsistentLogProven":{"const":false},"hostAuthorizationAuthenticated":{"const":false},"authenticatedHumanReviewProven":{"const":false},"providerInvoked":{"const":false},"humanBenefitProven":{"const":false},"broadLearningClaimed":{"const":false},"automaticPromotion":{"const":false},"automaticMerge":{"const":false},"automaticCanon":{"const":false},"foundationMutation":{"const":false}}}
+  }
+}

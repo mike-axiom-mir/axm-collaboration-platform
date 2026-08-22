@@ -1,0 +1,536 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-v1.0-assessment-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-disclosure-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-disclosure-exact-rebuild": [
+          "v1.2 reuses v1.0 complete assessment exact rebuild before sender or receiver write."
+        ]
+      }
+    },
+    {
+      "id": "upstream-v1.1-receiver-witness-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-witness-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-witness-exact-rebuild": [
+          "v1.2 composes receiver-generated acknowledgements through the unchanged v1.1 exact witness route."
+        ]
+      }
+    },
+    {
+      "id": "local-receiver-envelope-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-envelope-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-envelope-exact-rebuild": [
+          "A bounded envelope exact-rebuilds delivery identity, receiver, time, v1.0 package, v1.1 policy, references and digests."
+        ]
+      }
+    },
+    {
+      "id": "local-sender-exclusive-fsync",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-sender-exclusive-fsync"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-sender-exclusive-fsync": [
+          "Exact confirmation permits one immutable delivery-identity-digest outbox file; success follows exclusive create and file fsync."
+        ]
+      }
+    },
+    {
+      "id": "local-receiver-read",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-receiver-read"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-receiver-read": [
+          "A receiver process reads one fixed canonical outbox file and refuses traversal, noncanonical JSON and altered sender receipts."
+        ]
+      }
+    },
+    {
+      "id": "assessment-exact-rebuild-before-write",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-assessment-exact-rebuild-before-write"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-assessment-exact-rebuild-before-write": [
+          "The receiver exact-rebuilds the full transient v1.0 package and v1.1 policy before custody persistence."
+        ]
+      }
+    },
+    {
+      "id": "data-minimized-custody-fsync",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-data-minimized-custody-fsync"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-data-minimized-custody-fsync": [
+          "Custody persists the v1.0 data-minimized assessment receipt, not the full assessment input, using exclusive create and file fsync."
+        ]
+      }
+    },
+    {
+      "id": "signed-custody-record",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-signed-custody-record"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-signed-custody-record": [
+          "The declared receiver Ed25519 key signs a deterministic custody record and v1.1 acknowledgement; the private key is transient and not persisted."
+        ]
+      }
+    },
+    {
+      "id": "sender-receiver-receipt-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-sender-receiver-receipt-binding"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-sender-receiver-receipt-binding": [
+          "Public sender and receiver receipts bind exact envelope, payload, policy, assessment, custody and acknowledgement digests."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-custody-reload",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-fresh-process-reload"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-fresh-process-reload": [
+          "New Node processes reload each record and verify record/ack signatures and stored assessment-receipt digests."
+        ]
+      }
+    },
+    {
+      "id": "v1.1-acknowledgement-compose",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-v1.1-acknowledgement-compose"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-v1.1-acknowledgement-compose": [
+          "Two receiver child processes emit valid acknowledgements that meet the unchanged v1.1 threshold."
+        ]
+      }
+    },
+    {
+      "id": "same-controller-process-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-same-controller-process-counterexample"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-same-controller-process-counterexample": [
+          "Distinct child PIDs and roots remain one self-test controller and explicitly do not prove independent operation or external retention."
+        ]
+      }
+    },
+    {
+      "id": "public-receipt-data-minimization",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-public-receipt-data-minimization"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-public-receipt-data-minimization": [
+          "Public receipts retain digests and truth flags, not raw labels, keys, signatures, assessment receipts, private keys or machine paths."
+        ]
+      }
+    },
+    {
+      "id": "local-receiver-resource-bounds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-resource-bounds"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-resource-bounds": [
+          "Envelope and custody record canonical UTF-8 inputs are each bounded to 48 MiB; roots and fixed filenames are bounded and traversal is refused."
+        ]
+      }
+    },
+    {
+      "id": "local-receiver-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-receiver-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-receiver-authority-none": [
+          "Explicit confirmations authenticate no host or identity and grant no human, provider, execution, adoption, promotion, merge or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "independently-operated-receivers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-receiver-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-independence.actual": [
+          "All child processes and keys remain controlled by one synthetic self-test."
+        ]
+      }
+    },
+    {
+      "id": "actual-network-transport",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-receiver-network-transport.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-network-transport.actual": [
+          "The adapter opens no socket and proves only local-file handoff."
+        ]
+      }
+    },
+    {
+      "id": "other-host-delivery",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-receiver-other-host-delivery.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-other-host-delivery.actual": [
+          "Sender and receiver roots are separate but remain on one host."
+        ]
+      }
+    },
+    {
+      "id": "independent-external-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-external-retention.actual": [
+          "Caller-owned local roots are not independently controlled external retention."
+        ]
+      }
+    },
+    {
+      "id": "external-retention-duration",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-external-retention-duration.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-external-retention-duration.actual": [
+          "No independently enforced retention interval exists."
+        ]
+      }
+    },
+    {
+      "id": "durability-beyond-file-fsync",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-storage-durability-beyond-file-fsync.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-storage-durability-beyond-file-fsync.actual": [
+          "No physical media, directory-fsync, power-loss or device recovery evidence was gathered."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-monotonic-state.actual": [
+          "Exclusive immutable files are not protected monotonic state."
+        ]
+      }
+    },
+    {
+      "id": "deletion-or-rollback-resistance",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-rollback-resistance.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-rollback-resistance.actual": [
+          "Caller-owned files can be deleted, copied or rolled back."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-host-authorization.actual": [
+          "Exact confirmation phrases are not host authentication."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-receiver-identity",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-receiver-identity.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-identity.actual": [
+          "Caller labels and keys authenticate no legal or organizational identity."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-time.external": [
+          "Ordering checks use caller timestamps without trusted-time evidence."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only synthetic fixtures were used."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or experiment was invoked."
+        ]
+      }
+    },
+    {
+      "id": "held-out-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.evaluation.actual": [
+          "No baseline or challenger evaluation was executed."
+        ]
+      }
+    },
+    {
+      "id": "branch-adoption",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.adoption.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.adoption.actual": [
+          "Local custody receipts grant no branch adoption authority."
+        ]
+      }
+    },
+    {
+      "id": "held-out-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    },
+    {
+      "id": "held-out-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.learning.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.learning.held-out": [
+          "No held-out learning evaluation was run."
+        ]
+      }
+    },
+    {
+      "id": "promotion-merge-canon",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "axm.workshop.canon-decision.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "axm.workshop.canon-decision.actual": [
+          "Mike Tobi remains the merge and CANON gate; no decision was supplied."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

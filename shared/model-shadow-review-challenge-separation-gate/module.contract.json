@@ -1,0 +1,81 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-separation-gate",
+  "version": "v0.6",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-anchored-witness-exact-rebuild",
+    "model.shadow.review.challenge-cross-layer-key-fingerprint-overlap-refusal",
+    "model.shadow.review.challenge-cross-layer-declared-principal-overlap-refusal",
+    "model.shadow.review.challenge-cross-layer-observable-separation-exact-rebuild",
+    "model.shadow.review.challenge-separated-continuity-exact-rebuild",
+    "model.shadow.review.challenge-distinct-keys-same-controller-nonindependence-proof",
+    "model.shadow.review.challenge-separation-authority-none",
+    "axm.model-shadow-review-challenge-separated-witness/v1",
+    "axm.model-shadow-review-challenge-separated-continuity/v1"
+  ],
+  "consumes": [
+    "axm.model-shadow-review-challenge-anchored-witness/v1 as data",
+    "exact anchored-witness rebuild inputs",
+    "verified witness key fingerprints and declared actor digests",
+    "verified anchor key fingerprints and declared steward digests",
+    "axm.model-shadow-review-challenge-ledger-snapshot/v1 as data",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-separated-witness/v1",
+      "axm.model-shadow-review-challenge-separated-continuity/v1"
+    ],
+    "accepts": [
+      "one exact-rebuild v0.5 anchored witness chain",
+      "one current exact-rebuild challenge-ledger snapshot"
+    ]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "invalid-anchored-witness-or-snapshot",
+      "shared-public-key-fingerprint-across-witness-and-anchor-layers",
+      "shared-declared-principal-digest-across-witness-and-anchor-layers",
+      "distinct-key-fingerprints-as-independent-key-custody-proof",
+      "distinct-declared-principal-digests-as-different-real-world-people",
+      "observable-nonoverlap-as-independent-controller-proof",
+      "observable-nonoverlap-as-collusion-exclusion",
+      "caller-presented-anchor-as-authenticated-host-trust-root",
+      "caller-presented-anchor-digest-as-authenticated-pin",
+      "separation-receipt-as-proven-external-retention",
+      "separation-receipt-as-deletion-or-rollback-prevention",
+      "separated-comparison-as-global-single-use",
+      "caller-time-as-trusted-time",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "test-leaf-as-installed-or-promoted",
+      "separation-receipt-as-execution-authority",
+      "separation-receipt-as-adoption-authority",
+      "raw-principal-identity-retention",
+      "raw-public-key-retention",
+      "raw-signature-retention",
+      "private-key-ingestion",
+      "raw-model-output-ingestion",
+      "private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains the anchored package, separation receipt and current snapshot",
+    "reload": "exact-rebuild the anchored witness and separation receipt before fresh-process comparison",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned",
+    "installed": false,
+    "promoted": false
+  }
+}

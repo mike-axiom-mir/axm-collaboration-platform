@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-two-phase-history-checkpoint-anchored-pairwise-transition/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "transitionId", "comparedAt", "previousAnchoredCheckpointRef", "candidateAnchoredCheckpointRef", "previousCheckpointRef", "candidateCheckpointRef", "anchorContinuity", "witnessContinuity", "classification", "comparison", "decision", "state", "truth", "transitionDigest"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-two-phase-history-checkpoint-anchored-pairwise-transition/v1" },
+    "version": { "const": "2.3.0" },
+    "status": { "const": "TEST" },
+    "transitionId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "comparedAt": { "type": "string", "format": "date-time" },
+    "previousAnchoredCheckpointRef": { "$ref": "#/$defs/ref" },
+    "candidateAnchoredCheckpointRef": { "$ref": "#/$defs/ref" },
+    "previousCheckpointRef": { "$ref": "#/$defs/ref" },
+    "candidateCheckpointRef": { "$ref": "#/$defs/ref" },
+    "anchorContinuity": { "$ref": "#/$defs/continuity" },
+    "witnessContinuity": { "$ref": "#/$defs/continuity" },
+    "classification": { "enum": [
+      "PRESENTED_ANCHORED_PACKAGE_EXACT_REPLAY",
+      "PRESENTED_HISTORY_EXACT_RECHECKPOINT",
+      "CANDIDATE_EXTENDS_PRESENTED_ANCHORED_HISTORY",
+      "HOLD_ANCHOR_IDENTITY_DRIFT",
+      "HOLD_ANCHOR_POLICY_PROFILE_DRIFT",
+      "HOLD_WITNESS_POLICY_IDENTITY_DRIFT",
+      "HOLD_WITNESS_POLICY_PROFILE_DRIFT",
+      "HOLD_LEDGER_IDENTITY_DRIFT",
+      "HOLD_PRESENTED_TIME_ROLLBACK",
+      "HOLD_PRESENTED_TIME_COLLISION",
+      "HOLD_CHECKPOINT_ID_EQUIVOCATION",
+      "HOLD_ALTERNATE_ANCHORED_PACKAGE_FOR_SAME_CHECKPOINT",
+      "HOLD_SNAPSHOT_CHANGED_WITHOUT_HISTORY_EXTENSION",
+      "HOLD_STRICT_HISTORY_ROLLBACK",
+      "HOLD_HISTORY_REPLACEMENT_OR_FORK"
+    ] },
+    "comparison": { "type": "object", "additionalProperties": false, "required": ["anchorIdentityMatches", "anchorContinuityProfileMatches", "witnessPolicyIdentityMatches", "witnessPolicyContinuityProfileMatches", "ledgerIdentityMatches", "ledgerIdentityDimensions", "ledgerIdentityDriftDimensions", "candidateVerificationTimePrecedesPrevious", "candidateVerificationTimeEqualsPrevious", "candidateCheckpointTimePrecedesPrevious", "candidateCheckpointTimeEqualsPrevious", "sameCheckpointId", "sameCheckpointDigest", "sameAnchoredReceiptDigest", "sameSnapshotBinding", "sameHistory", "previousHistoryPrefixesCandidate", "candidateHistoryPrefixesPrevious", "previousProposalCount", "candidateProposalCount", "previousSettlementCount", "candidateSettlementCount", "commonProposalPrefixCount", "commonSettlementPrefixCount"], "properties": {
+      "anchorIdentityMatches": { "type": "boolean" }, "anchorContinuityProfileMatches": { "type": "boolean" }, "witnessPolicyIdentityMatches": { "type": "boolean" }, "witnessPolicyContinuityProfileMatches": { "type": "boolean" }, "ledgerIdentityMatches": { "type": "boolean" }, "ledgerIdentityDimensions": { "type": "object" }, "ledgerIdentityDriftDimensions": { "type": "array", "items": { "type": "string" } }, "candidateVerificationTimePrecedesPrevious": { "type": "boolean" }, "candidateVerificationTimeEqualsPrevious": { "type": "boolean" }, "candidateCheckpointTimePrecedesPrevious": { "type": "boolean" }, "candidateCheckpointTimeEqualsPrevious": { "type": "boolean" }, "sameCheckpointId": { "type": "boolean" }, "sameCheckpointDigest": { "type": "boolean" }, "sameAnchoredReceiptDigest": { "type": "boolean" }, "sameSnapshotBinding": { "type": "boolean" }, "sameHistory": { "type": "boolean" }, "previousHistoryPrefixesCandidate": { "type": "boolean" }, "candidateHistoryPrefixesPrevious": { "type": "boolean" }, "previousProposalCount": { "type": "integer", "minimum": 0 }, "candidateProposalCount": { "type": "integer", "minimum": 0 }, "previousSettlementCount": { "type": "integer", "minimum": 0 }, "candidateSettlementCount": { "type": "integer", "minimum": 0 }, "commonProposalPrefixCount": { "type": "integer", "minimum": 0 }, "commonSettlementPrefixCount": { "type": "integer", "minimum": 0 }
+    } },
+    "decision": { "type": "object", "additionalProperties": false, "required": ["reviewRequired", "holdRequired", "forwardHistoryCandidate", "bestAction", "autonomousActionCount"], "properties": { "reviewRequired": { "const": true }, "holdRequired": { "type": "boolean" }, "forwardHistoryCandidate": { "type": "boolean" }, "bestAction": { "type": "string" }, "autonomousActionCount": { "const": 0 } } },
+    "state": { "type": "string" },
+    "truth": { "type": "object" },
+    "transitionDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "ref": { "type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": { "id": { "type": "string" }, "schema": { "type": "string" }, "sha256": { "$ref": "#/$defs/digest" } } },
+    "continuity": { "type": "object", "additionalProperties": false, "required": ["previousPolicyRef", "candidatePolicyRef", "previousProfileDigest", "candidateProfileDigest"], "properties": { "previousPolicyRef": { "$ref": "#/$defs/ref" }, "candidatePolicyRef": { "$ref": "#/$defs/ref" }, "previousProfileDigest": { "$ref": "#/$defs/digest" }, "candidateProfileDigest": { "$ref": "#/$defs/digest" } } }
+  }
+}

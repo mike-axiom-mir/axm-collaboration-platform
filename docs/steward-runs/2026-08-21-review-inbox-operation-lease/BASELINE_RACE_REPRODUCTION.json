@@ -1,0 +1,39 @@
+{
+  "schema": "axm.review-operation-baseline-race-reproduction/v1",
+  "status": "REPRODUCED",
+  "baselineCommit": "275bb342ff1fb9e5423d8e09409d0a10d7b9c68b",
+  "source": {
+    "reviewServiceSha256": "sha256:9c3b99ec9cd3df5aadede976532d6baffea43ef0547aa64ba9fd66744e5f6c52",
+    "operationsUtilsNormalizedSha256": "sha256:232a15238f508454d63ccd14e1046ad567d37942d3c7aa714bd31d36ee055035",
+    "lineEndingNormalizedForComparison": true,
+    "loaderSubstitutionOnly": true
+  },
+  "interleaving": {
+    "processes": 8,
+    "barrier": "all processes reached atomicJson after their independent read and before any write",
+    "injectedDelayMs": 40
+  },
+  "result": {
+    "expectedItems": 8,
+    "actualItems": 1,
+    "lostItems": 7,
+    "failedChildren": 4,
+    "stateReadable": true,
+    "childExitCodes": [
+      0,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  "boundary": {
+    "productionFrequencyProven": false,
+    "naturalUnsynchronizedAttemptConclusive": false,
+    "baselineSourceExecutedWithIdenticalOperationsUtils": true,
+    "specialistPackagesInspected": false
+  }
+}

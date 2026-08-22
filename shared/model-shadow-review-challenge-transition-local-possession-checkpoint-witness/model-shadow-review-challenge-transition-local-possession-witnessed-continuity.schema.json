@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-witnessed-continuity/v1",
+  "title": "Model Shadow local possession witnessed continuity audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "auditId", "checkedAt", "status", "witnessRef",
+    "checkpointRef", "keyPolicyRef", "continuityAuditRef", "currentSnapshot",
+    "comparison", "decision", "state", "nextGate", "truth", "auditDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-witnessed-continuity/v1" },
+    "version": { "const": "1.5.0" },
+    "auditId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "checkedAt": { "$ref": "#/$defs/timestamp" },
+    "status": { "const": "TEST" },
+    "witnessRef": { "$ref": "#/$defs/reference" },
+    "checkpointRef": { "$ref": "#/$defs/reference" },
+    "keyPolicyRef": { "$ref": "#/$defs/reference" },
+    "continuityAuditRef": { "$ref": "#/$defs/reference" },
+    "currentSnapshot": { "$ref": "#/$defs/snapshotSummary" },
+    "comparison": { "$ref": "#/$defs/comparison" },
+    "decision": { "$ref": "#/$defs/decision" },
+    "state": { "const": "SIGNED_CHECKPOINT_VERIFIED_AGAINST_CALLER_POLICY_AND_COMPARED_AUTHORITY_NOT_AUTHENTICATED" },
+    "nextGate": { "const": "HOST_TRUSTED_WITNESS_POLICY_AND_EXTERNALLY_RETAINED_WITNESS_OR_PROTECTED_MONOTONIC_STORE" },
+    "truth": { "$ref": "#/$defs/truth" },
+    "auditDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "snapshotSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "schema", "sha256", "availability", "receiverIdDigest",
+        "challengerIdDigest", "receiverPolicyRef", "entryCount",
+        "entriesDigest", "errors"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1" },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "availability": { "enum": ["AVAILABLE", "ABSENT", "INVALID"] },
+        "receiverIdDigest": { "$ref": "#/$defs/digest" },
+        "challengerIdDigest": { "$ref": "#/$defs/digest" },
+        "receiverPolicyRef": { "$ref": "#/$defs/reference" },
+        "entryCount": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "entriesDigest": { "$ref": "#/$defs/digest" },
+        "errors": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 120 } }
+      }
+    },
+    "replacement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["challengeDigest", "checkpointResponseDigest", "currentResponseDigest"],
+      "properties": {
+        "challengeDigest": { "$ref": "#/$defs/digest" },
+        "checkpointResponseDigest": { "$ref": "#/$defs/digest" },
+        "currentResponseDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identityMatches", "missingCheckpointChallenges", "replacedCheckpointEntries", "addedCurrentChallenges"],
+      "properties": {
+        "identityMatches": { "type": "boolean" },
+        "missingCheckpointChallenges": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/digest" } },
+        "replacedCheckpointEntries": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/replacement" } },
+        "addedCurrentChallenges": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/digest" } }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "bestAction", "reviewRequired", "autonomousActionCount"],
+      "properties": {
+        "classification": { "enum": [
+          "HOLD_LOCAL_POSSESSION_STATE_ABSENT_AGAINST_PRESENTED_CHECKPOINT",
+          "HOLD_CURRENT_LOCAL_POSSESSION_STATE_INVALID",
+          "HOLD_LOCAL_POSSESSION_IDENTITY_CHANGED",
+          "ROLLBACK_OR_REPLACEMENT_DETECTED_AGAINST_PRESENTED_CHECKPOINT",
+          "CURRENT_RESPONSE_SET_EXTENDS_PRESENTED_CHECKPOINT",
+          "CURRENT_RESPONSE_SET_MATCHES_PRESENTED_CHECKPOINT"
+        ] },
+        "bestAction": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "reviewRequired": { "type": "boolean" },
+        "autonomousActionCount": { "const": 0 }
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointWitnessVerifiedByExactRebuild",
+        "checkpointBytesBoundByVerifiedSignatures",
+        "checkpointDetachedSignaturesCryptographicallyValid",
+        "checkpointSigningKeyPossessionVerified",
+        "checkpointKeysAllowedByExactCallerPolicy",
+        "checkpointPolicyAuthorityAuthenticated", "callerPolicyReplacementPrevented",
+        "checkpointSignerRealWorldIdentityProven", "actualHumanParticipationProven",
+        "checkpointExternalRetentionProven", "witnessExternalRetentionProven",
+        "checkpointOriginAuthenticatedByHost", "witnessedAuditTimeExternallyTrusted",
+        "bareContinuityAuditVerifiedByExactRebuild",
+        "comparisonBoundToExactConfiguredIdentity",
+        "responseFilenameIdentityVerifiedWhenAvailable",
+        "rollbackOrReplacementDetectedAgainstWitnessedCheckpoint",
+        "currentAbsenceDetectedAgainstWitnessedCheckpoint", "currentInvalidityDetected",
+        "preCheckpointHistoryProven", "checkpointDeletionOrRollbackPrevented",
+        "currentResponseStateDeletionOrRollbackPrevented", "globalSingleUseProven",
+        "hostAuthorizationAuthenticated", "experimentExecuted", "evaluationPerformed",
+        "executionAuthorized", "adoptionAuthorized", "humanBenefitProven",
+        "broadLearningClaimed", "automaticWrite", "automaticPermissionGrant",
+        "automaticPromotion", "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "checkpointWitnessVerifiedByExactRebuild": { "const": true },
+        "checkpointBytesBoundByVerifiedSignatures": { "const": true },
+        "checkpointDetachedSignaturesCryptographicallyValid": { "const": true },
+        "checkpointSigningKeyPossessionVerified": { "const": true },
+        "checkpointKeysAllowedByExactCallerPolicy": { "const": true },
+        "checkpointPolicyAuthorityAuthenticated": { "const": false },
+        "callerPolicyReplacementPrevented": { "const": false },
+        "checkpointSignerRealWorldIdentityProven": { "const": false },
+        "actualHumanParticipationProven": { "const": false },
+        "checkpointExternalRetentionProven": { "const": false },
+        "witnessExternalRetentionProven": { "const": false },
+        "checkpointOriginAuthenticatedByHost": { "const": false },
+        "witnessedAuditTimeExternallyTrusted": { "const": false },
+        "bareContinuityAuditVerifiedByExactRebuild": { "const": true },
+        "comparisonBoundToExactConfiguredIdentity": { "type": "boolean" },
+        "responseFilenameIdentityVerifiedWhenAvailable": { "type": "boolean" },
+        "rollbackOrReplacementDetectedAgainstWitnessedCheckpoint": { "type": "boolean" },
+        "currentAbsenceDetectedAgainstWitnessedCheckpoint": { "type": "boolean" },
+        "currentInvalidityDetected": { "type": "boolean" },
+        "preCheckpointHistoryProven": { "const": false },
+        "checkpointDeletionOrRollbackPrevented": { "const": false },
+        "currentResponseStateDeletionOrRollbackPrevented": { "const": false },
+        "globalSingleUseProven": { "const": false },
+        "hostAuthorizationAuthenticated": { "const": false },
+        "experimentExecuted": { "const": false },
+        "evaluationPerformed": { "const": false },
+        "executionAuthorized": { "const": false },
+        "adoptionAuthorized": { "const": false },
+        "humanBenefitProven": { "const": false },
+        "broadLearningClaimed": { "const": false },
+        "automaticWrite": { "const": false },
+        "automaticPermissionGrant": { "const": false },
+        "automaticPromotion": { "const": false },
+        "automaticMerge": { "const": false },
+        "automaticCanon": { "const": false },
+        "foundationMutation": { "const": false }
+      }
+    }
+  }
+}

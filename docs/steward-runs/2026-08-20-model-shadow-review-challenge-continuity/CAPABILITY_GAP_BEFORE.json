@@ -1,0 +1,454 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "upstream-ledger-replay-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-replay-refusal-while-state-preserved"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-replay-refusal-while-state-preserved": [
+          "The stacked v0.2 ledger refuses same-root replay while its caller-owned namespace remains present and valid."
+        ]
+      }
+    },
+    {
+      "id": "read-only-strict-ledger-snapshot",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-ledger-read-only-snapshot",
+        "model.shadow.review.challenge-ledger-strict-entry-validation"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "snapshot-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-ledger-snapshot-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "caller-checkpoint-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-caller-checkpoint",
+        "model.shadow.review.challenge-checkpoint-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "fresh-process-comparison",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-fresh-process-continuity-compare"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "relative-rollback-detection",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-rollback-detect-relative-to-presented-checkpoint"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "relative-replacement-detection",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-replacement-detect-relative-to-presented-checkpoint"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "invalid-and-identity-holds",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-ledger-identity-drift-hold"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "continuity-authority-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-continuity-authority-none"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "continuity-audit-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-continuity-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "actual-external-checkpoint-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-checkpoint-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-external-retention.actual": [
+          "No independently operated checkpoint store or retention receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-checkpoint-authority",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-checkpoint-authority.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-authority.actual": [
+          "No host-authenticated checkpoint signer or protected anchor was supplied."
+        ]
+      }
+    },
+    {
+      "id": "protected-ledger-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual": [
+          "Caller-owned files can be deleted or rolled back; no protected monotonic store exists in scope."
+        ]
+      }
+    },
+    {
+      "id": "global-single-use",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-global-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-global-single-use.actual": [
+          "No global challenge authority or consistent shared store was supplied."
+        ]
+      }
+    },
+    {
+      "id": "host-trust-anchor",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.host-trust-anchor.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.host-trust-anchor.actual": [
+          "No Mike- or host-provisioned reviewer trust root or independently authenticated identity boundary was supplied."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "No real person reviewed or signed a current challenger plan in this run."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "model.shadow.review.challenge-caller-checkpoint",
+    "model.shadow.review.challenge-checkpoint-exact-rebuild",
+    "model.shadow.review.challenge-continuity-authority-none",
+    "model.shadow.review.challenge-continuity-exact-rebuild",
+    "model.shadow.review.challenge-fresh-process-continuity-compare",
+    "model.shadow.review.challenge-ledger-identity-drift-hold",
+    "model.shadow.review.challenge-ledger-read-only-snapshot",
+    "model.shadow.review.challenge-ledger-snapshot-exact-rebuild",
+    "model.shadow.review.challenge-ledger-strict-entry-validation",
+    "model.shadow.review.challenge-replacement-detect-relative-to-presented-checkpoint",
+    "model.shadow.review.challenge-rollback-detect-relative-to-presented-checkpoint"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "model.shadow.review.challenge-caller-checkpoint",
+      "requiredBy": [
+        "caller-checkpoint-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-checkpoint-exact-rebuild",
+      "requiredBy": [
+        "caller-checkpoint-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-continuity-authority-none",
+      "requiredBy": [
+        "continuity-authority-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-continuity-exact-rebuild",
+      "requiredBy": [
+        "continuity-audit-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-fresh-process-continuity-compare",
+      "requiredBy": [
+        "fresh-process-comparison"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-ledger-identity-drift-hold",
+      "requiredBy": [
+        "invalid-and-identity-holds"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-ledger-read-only-snapshot",
+      "requiredBy": [
+        "read-only-strict-ledger-snapshot"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-ledger-snapshot-exact-rebuild",
+      "requiredBy": [
+        "snapshot-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-ledger-strict-entry-validation",
+      "requiredBy": [
+        "read-only-strict-ledger-snapshot"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-replacement-detect-relative-to-presented-checkpoint",
+      "requiredBy": [
+        "relative-replacement-detection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-rollback-detect-relative-to-presented-checkpoint",
+      "requiredBy": [
+        "relative-rollback-detection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

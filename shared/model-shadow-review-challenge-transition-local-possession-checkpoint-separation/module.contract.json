@@ -1,0 +1,90 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-local-possession-checkpoint-separation",
+  "version": "v1.7",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.cross-layer-key-fingerprint-overlap-refusal",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.cross-layer-declared-principal-overlap-refusal",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.domain-separated-set-digests",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.observable-nonoverlap-exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.separated-continuity-exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.fresh-process-continuity",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.distinct-keys-same-controller-nonindependence-proof",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.public-artifact-data-minimization",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.resource-bounds",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.authority-none",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-separated-witness/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-separated-continuity/v1"
+  ],
+  "consumes": [
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-anchored-witness/v1 as data",
+    "exact v1.6 anchored-witness rebuild inputs",
+    "verified v1.5 witness key fingerprints and declared actor digests",
+    "verified v1.6 anchor key fingerprints and declared steward digests",
+    "axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1 as data",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-separated-witness/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-separated-continuity/v1"
+    ],
+    "accepts": [
+      "one exact-rebuild v1.6 local-possession anchored witness chain",
+      "one current exact-rebuild local-possession snapshot"
+    ]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "invalid-v1.6-anchored-witness-or-current-snapshot",
+      "shared-public-key-fingerprint-across-witness-and-anchor-layers",
+      "shared-declared-principal-digest-across-witness-and-anchor-layers",
+      "distinct-key-fingerprints-as-independent-key-custody-proof",
+      "distinct-declared-principal-digests-as-different-real-world-people",
+      "observable-nonoverlap-as-independent-controller-proof",
+      "observable-nonoverlap-as-collusion-exclusion",
+      "observable-nonoverlap-as-witness-policy-replacement-prevention",
+      "caller-presented-anchor-as-authenticated-host-trust-root",
+      "caller-presented-anchor-digest-as-authenticated-pin",
+      "separation-receipt-as-proven-external-retention",
+      "separation-receipt-as-deletion-or-rollback-prevention",
+      "separated-comparison-as-global-single-use",
+      "caller-time-as-trusted-time",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "test-leaf-as-installed-or-promoted",
+      "separation-receipt-as-execution-authority",
+      "separation-receipt-as-adoption-authority",
+      "raw-principal-identity-retention",
+      "raw-public-key-retention",
+      "raw-signature-retention",
+      "raw-configured-party-label-retention",
+      "state-root-path-retention",
+      "raw-custody-record-retention",
+      "raw-assessment-receipt-retention",
+      "private-key-ingestion",
+      "raw-model-output-ingestion",
+      "private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains the anchored package, separation receipt and current snapshot",
+    "reload": "exact-rebuild the v1.6 anchored witness and separation receipt before fresh-process comparison",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned",
+    "installed": false,
+    "promoted": false
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "axm.session-curation-receipt/v1",
+  "session_id": "verification-snapshot-continuity:2026-08-19",
+  "status": "TEST",
+  "sealed_segment": "SESSION_SEGMENT.jsonl",
+  "seal": "SESSION_SEAL.json",
+  "seal_digest": "sha256:bd25a16010dd0151f64dbba8d4d31ce3279be8bddb4f22ba5b42c6d5e58aee76",
+  "durable_events_preserved": 12,
+  "telemetry_aggregation": {
+    "raw_terminal_logs_retained": false,
+    "healthy_check_output_retained_as": "command verdicts, assertion counts, warning/failure counts, and stable receipt digests",
+    "exceptions": [
+      "The historical knowledge-audit failure is retained semantically in the session segment and verification receipt."
+    ]
+  },
+  "temporary_material_deleted": [],
+  "explicit_retention_exceptions": [
+    {
+      "path": "SESSION_SEAL_PRECHECK.json",
+      "class": "DERIVED_VIEW",
+      "status": "SUPERSEDED_PRECHECK",
+      "reason": "Retained with the curation.repair event so the failed first seal attempt remains inspectable."
+    },
+    {
+      "path": "SESSION_SEAL_CHECKPOINT.json",
+      "class": "DERIVED_VIEW",
+      "status": "SUPERSEDED_CHECKPOINT",
+      "reason": "Retained with the curation.closeout event because the valid eleven-event checkpoint preceded final assertion accounting."
+    }
+  ],
+  "derived_views_updated": [
+    "CURRENT_CONTINUITY_PORTFOLIO.json",
+    "CURRENT_SUMMARY.json",
+    "SESSION_SUMMARY.md"
+  ],
+  "unclassified_items": [],
+  "review_deadline": null,
+  "authority_used": "Task-scoped local Workshop stewardship authorized by Mike; no promotion, merge, Foundation, deletion, or CANON authority used.",
+  "truth": {
+    "canonicalStateDeleted": false,
+    "userSourceDeleted": false,
+    "historicalReceiptRewritten": false,
+    "rawSecretsRetained": false,
+    "machinePathsRetained": false
+  }
+}

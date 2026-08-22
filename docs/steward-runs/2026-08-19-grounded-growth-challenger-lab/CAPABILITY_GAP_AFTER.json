@@ -1,0 +1,116 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "direction-and-artifact-identity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.challenger.direction-native-verify",
+        "growth.challenger.baseline-challenger-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.challenger.direction-native-verify": [
+          "The lab refuses a direction handoff that fails its native verifier and refuses WAIT_FOR_EVIDENCE directions."
+        ],
+        "growth.challenger.baseline-challenger-bind": [
+          "Plan and Shadow receipt bind distinct exact baseline and challenger digests."
+        ]
+      }
+    },
+    {
+      "id": "bounded-challenger-evidence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.challenger.held-out-separation",
+        "growth.challenger.shadow-receipt-verify",
+        "growth.challenger.diagnostic-receipt-verify",
+        "growth.challenger.regression-hold",
+        "growth.challenger.no-gain-hold"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.challenger.held-out-separation": [
+          "Every plan requires declared held-out AI-workflow and regression cases; the declaration is not authenticated."
+        ],
+        "growth.challenger.shadow-receipt-verify": [
+          "The lab recomputes the Shadow receipt digest, state digest, artifact ancestry and no-canonical-mutation boundary."
+        ],
+        "growth.challenger.diagnostic-receipt-verify": [
+          "Every paired Diagnostic receipt is hash-verified, shadow-only, observation-only and bound to the exact case and artifact."
+        ],
+        "growth.challenger.regression-hold": [
+          "A technical or regression failure derives CHALLENGER_REJECT_CANDIDATE."
+        ],
+        "growth.challenger.no-gain-hold": [
+          "No held-out AI improvement derives NO_MEASURED_GAIN rather than an improvement claim."
+        ]
+      }
+    },
+    {
+      "id": "authority-and-beneficiary-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.challenger.adoption.none",
+        "growth.challenger.human-substitution.refuse"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.challenger.adoption.none": [
+          "The strongest result is a review candidate with adoptionState NOT_AUTHORIZED."
+        ],
+        "growth.challenger.human-substitution.refuse": [
+          "Held-out AI evidence never becomes human benefit or shared growth."
+        ]
+      }
+    },
+    {
+      "id": "current-frontier-restraint",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.challenger.current-wait-block",
+        "growth.challenger.current-zero-plan"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.challenger.current-wait-block": [
+          "All four exact current WAIT_FOR_EVIDENCE directions are refused as challenger-plan inputs."
+        ],
+        "growth.challenger.current-zero-plan": [
+          "Current readiness contains zero challenger plans and zero evaluations."
+        ]
+      }
+    },
+    {
+      "id": "live-human-beneficiary-outcome",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.human-evidence.live"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.live": [
+          "No person opted in and no LIVE human-benefit outcome exists."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "grounded-growth-human-bridge-v2",
+  "version": "v0.3",
+  "status": "TEST",
+  "provides": [
+    "growth.human-evidence.native-verify",
+    "growth.human-evidence.live-only",
+    "growth.human-evidence.scope-bind",
+    "growth.human-evidence.closure-bind",
+    "growth.human-evidence.candidate-ancestry",
+    "growth.human-evidence.reuse-existing-ancestry",
+    "growth.human-evidence.intervention-link-native-verify",
+    "growth.human-evidence.synthetic-hold",
+    "growth.human-evidence.grounded-map",
+    "growth.human-evidence.authority.none",
+    "axm.capability-intervention-link/v2",
+    "axm.grounded-growth-human-bridge-receipt/v2",
+    "axm.grounded-growth-human-bridge-bundle/v2"
+  ],
+  "consumes": [
+    "axm.verified-capability-cycle-receipt/v1",
+    "axm.human-benefit-protocol/v1",
+    "axm.human-benefit-evaluation-receipt/v1",
+    "axm.human-benefit-judgment-receipt/v1",
+    "axm.grounded-growth-human-closure-receipt/v1",
+    "claim-scoped external source-trust reference",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.capability-intervention-link/v2",
+      "axm.grounded-growth-human-bridge-receipt/v2",
+      "axm.grounded-growth-human-bridge-bundle/v2",
+      "axm.grounded-growth-outcome-receipt/v1"
+    ],
+    "accepts": [
+      "exact native cycle, protocol, evaluation and judgment receipts with one derived ancestry mode, scope-matched source trust and current closure"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "synthetic-fixture-as-human-benefit",
+      "invalid-native-receipt-as-human-benefit",
+      "ambiguous-capability-ancestry",
+      "invented-candidate-for-reuse-existing",
+      "claim-capability-binding-mismatch",
+      "capability-surface-link-mismatch",
+      "scope-expansion",
+      "source-authentication-claim",
+      "missing-or-held-evidence-closure",
+      "automatic-execution",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-canon",
+      "root-mutation",
+      "model-weight-training-claim",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

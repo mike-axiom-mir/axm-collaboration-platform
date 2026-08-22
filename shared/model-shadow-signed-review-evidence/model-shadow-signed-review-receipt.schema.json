@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-signed-review-receipt/v1",
+  "title": "Model Shadow signed review evidence receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "receiptId", "verifiedAt", "status",
+    "reviewedHandoffRef", "proposalRef", "planRef", "reviewEvidenceRef",
+    "keyPolicyRef", "challengeRef", "state", "signatureEvidence", "nextGate",
+    "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-signed-review-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "receiptId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "verifiedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "reviewedHandoffRef": {"$ref": "#/$defs/reference"},
+    "proposalRef": {"$ref": "#/$defs/reference"},
+    "planRef": {"$ref": "#/$defs/reference"},
+    "reviewEvidenceRef": {"$ref": "#/$defs/reference"},
+    "keyPolicyRef": {"$ref": "#/$defs/reference"},
+    "challengeRef": {"$ref": "#/$defs/reference"},
+    "state": {"const": "DETACHED_SIGNATURES_VERIFIED_AGAINST_CALLER_KEY_POLICY_EXECUTION_NOT_AUTHORIZED"},
+    "signatureEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm", "requiredSignatures", "verifiedSignatures",
+        "requiredDeclaredHumanSignatures", "verifiedDeclaredHumanSignatures",
+        "policyAuthorityOrigin", "attestations"
+      ],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "requiredSignatures": {"type": "integer", "minimum": 1, "maximum": 10},
+        "verifiedSignatures": {"type": "integer", "minimum": 1, "maximum": 10},
+        "requiredDeclaredHumanSignatures": {"type": "integer", "minimum": 1, "maximum": 10},
+        "verifiedDeclaredHumanSignatures": {"type": "integer", "minimum": 1, "maximum": 10},
+        "policyAuthorityOrigin": {"const": "CALLER_SUPPLIED_UNAUTHENTICATED"},
+        "attestations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "attestationId", "attestationDigest", "keyIdDigest", "keyFingerprint",
+              "actorDigest", "actorKind", "reviewApprovalAt", "issuedAt", "expiresAt"
+            ],
+            "properties": {
+              "attestationId": {"type": "string", "minLength": 1, "maxLength": 180},
+              "attestationDigest": {"$ref": "#/$defs/digest"},
+              "keyIdDigest": {"$ref": "#/$defs/digest"},
+              "keyFingerprint": {"$ref": "#/$defs/digest"},
+              "actorDigest": {"$ref": "#/$defs/digest"},
+              "actorKind": {"enum": ["human", "machine", "unknown"]},
+              "reviewApprovalAt": {"type": "string", "format": "date-time"},
+              "issuedAt": {"type": "string", "format": "date-time"},
+              "expiresAt": {"type": "string", "format": "date-time"}
+            }
+          }
+        }
+      }
+    },
+    "nextGate": {"const": "HOST_TRUST_ANCHOR_AND_SINGLE_USE_CHALLENGE_LEDGER_THEN_SEPARATE_EXECUTION_DECISION"},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewedHandoffVerifiedByExactRebuild", "exactProposalPlanAndReviewEvidenceBound",
+        "detachedSignaturesCryptographicallyValid", "signingKeyPossessionVerified",
+        "keysAllowedByExactCallerPolicy", "callerPolicyAuthorityAuthenticated",
+        "actorRealWorldIdentityProven", "declaredHumanKeyIsAuthenticatedHuman",
+        "actualHumanParticipationProven", "challengeSingleUseProven",
+        "verificationTimeExternallyTrusted", "rawActorIdentityEmbedded",
+        "reviewDiscussionIngested", "voteNotesIngested", "privateKeyIngested",
+        "rawModelOutputEmbedded", "privateContextEmbedded", "experimentExecuted",
+        "evaluationPerformed", "executionAuthorized", "adoptionAuthorized",
+        "humanBenefitProven", "sharedGrowthClaimed", "broadLearningClaimed",
+        "automaticExecution", "automaticWrite", "automaticInstall",
+        "automaticPermissionGrant", "automaticPromotion", "automaticMerge",
+        "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "reviewedHandoffVerifiedByExactRebuild": {"const": true},
+        "exactProposalPlanAndReviewEvidenceBound": {"const": true},
+        "detachedSignaturesCryptographicallyValid": {"const": true},
+        "signingKeyPossessionVerified": {"const": true},
+        "keysAllowedByExactCallerPolicy": {"const": true},
+        "callerPolicyAuthorityAuthenticated": {"const": false},
+        "actorRealWorldIdentityProven": {"const": false},
+        "declaredHumanKeyIsAuthenticatedHuman": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "challengeSingleUseProven": {"const": false},
+        "verificationTimeExternallyTrusted": {"const": false},
+        "rawActorIdentityEmbedded": {"const": false},
+        "reviewDiscussionIngested": {"const": false},
+        "voteNotesIngested": {"const": false},
+        "privateKeyIngested": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "sharedGrowthClaimed": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticExecution": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const ContractVerifier = require('../../hub/module-contract-verifier');
+const DiagnosticRedaction = require('./diagnostic-redaction');
 
 const INDEX_SCHEMA = 'axm.tools-index/v1';
 const MANIFEST_SCHEMA = 'axm.tool-manifest/v1';
@@ -92,9 +93,12 @@ function validateTargetManifest(manifest, folder) {
   return errors;
 }
 
-function normalizeVerificationResults(input) {
+function normalizeVerificationResults(input, root) {
   const rows = input && Array.isArray(input.results) ? input.results : [];
-  return new Map(rows.map(row => [row.id, row]));
+  return new Map(rows.map(row => {
+    const sanitized = DiagnosticRedaction.sanitizeVerificationResult(row, { workspaceRoot:root });
+    return [sanitized.id, sanitized];
+  }));
 }
 
 function isVerificationTarget(tool) {
@@ -106,7 +110,7 @@ function buildIndex(root, options) {
   root = path.resolve(root);
   const now = new Date(options.now || Date.now());
   const ladder = readJson(path.join(__dirname, 'promotion-ladder.json'), { freshnessDays: 30 });
-  const resultById = normalizeVerificationResults(options.verificationResults);
+  const resultById = normalizeVerificationResults(options.verificationResults, root);
   const toolsRoot = path.join(root, 'tools');
   const sourceHash = crypto.createHash('sha256');
   const tools = [];
@@ -232,6 +236,8 @@ function buildIndex(root, options) {
       automaticPromotion: false,
       structuralEligibilityIsRuntimeProof: false,
       selftestPassIsHumanApproval: false,
+      failureDiagnosticsMachinePathRedacted: true,
+      failureDiagnosticsRecognizedCredentialEvidenceRedacted: true,
       capabilityCatalogGrantsAuthority: false,
       missingValuesRemainVisible: true
     }
@@ -247,6 +253,8 @@ function validateIndex(index) {
   if (!Array.isArray(index.capabilities)) errors.push('capabilities must be an array');
   if (!index.promotionQueue || typeof index.promotionQueue !== 'object') errors.push('promotionQueue is required');
   if (!index.truth || index.truth.automaticPromotion !== false) errors.push('automaticPromotion must remain false');
+  if (!index.truth || index.truth.failureDiagnosticsMachinePathRedacted !== true) errors.push('failure diagnostics must declare machine-path redaction');
+  if (!index.truth || index.truth.failureDiagnosticsRecognizedCredentialEvidenceRedacted !== true) errors.push('failure diagnostics must declare recognized credential-evidence redaction');
   if (Array.isArray(index.tools)) {
     index.tools.forEach(tool => {
       if (!tool || !['WORKING', 'CANON'].includes(tool.status) || !tool.promotion || tool.promotion.state !== 'CURRENT') return;

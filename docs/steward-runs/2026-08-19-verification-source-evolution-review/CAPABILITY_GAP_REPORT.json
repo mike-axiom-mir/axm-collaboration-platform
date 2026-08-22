@@ -1,0 +1,53 @@
+{
+  "schema": "axm.capability-gap-transition/v1",
+  "comparator": "detect-capability-gaps/scripts/compare_capabilities.py",
+  "requirementsRef": "CAPABILITY_REQUIREMENTS.json",
+  "before": {
+    "overall": "BLOCKED",
+    "requiredRequirementStates": {
+      "later-receipt-attestation": "BLOCKED",
+      "candidate-currentness": "BLOCKED",
+      "legacy-forward-continuity": "BLOCKED",
+      "known-generated-view-route": "BLOCKED",
+      "non-overclaiming-review": "BLOCKED",
+      "bounded-authority": "BLOCKED"
+    },
+    "missingCapabilities": [
+      "verification.evolution.authority.none",
+      "verification.evolution.candidate-currentness-cross-bind",
+      "verification.evolution.generated-view-semantic-bridge",
+      "verification.evolution.history-no-rewrite",
+      "verification.evolution.intent-correctness-non-inference",
+      "verification.evolution.later-receipt-digest-attestation",
+      "verification.evolution.legacy-current-external-anchor",
+      "verification.evolution.transitive-candidate-scope-route",
+      "verification.evolution.unattested-drift-visible"
+    ]
+  },
+  "after": {
+    "overall": "READY",
+    "requiredRequirementStates": {
+      "later-receipt-attestation": "READY",
+      "candidate-currentness": "READY",
+      "legacy-forward-continuity": "READY",
+      "known-generated-view-route": "READY",
+      "non-overclaiming-review": "READY",
+      "bounded-authority": "READY"
+    },
+    "missingCapabilities": [],
+    "optionalEvidence": {
+      "historical-pre-anchor-integrity": "DEGRADED"
+    }
+  },
+  "route": "REUSE_CONTINUITY_DIGESTS_RECEIPT_SELF_DIGESTS_GENERIC_LINEAGE_AND_HISTORY_REFUSALS_THEN_ADD_ONE_PURE_RECEIPT_EVOLUTION_ADAPTER",
+  "truth": {
+    "continuityDriftRowsReused": true,
+    "moduleLineageComparisonBoundaryReused": true,
+    "immutableHistoryRefusalReused": true,
+    "exactLaterReceiptCurrentnessCrossBindPreviouslyAvailable": false,
+    "transitiveCandidateScopeRoutePreviouslyAvailable": false,
+    "preAnchorIntegrityInvented": false,
+    "intentOrCorrectnessInferred": false,
+    "newAuthorityCreated": false
+  }
+}

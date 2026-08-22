@@ -1,0 +1,15 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "claimId": "tool-forge-package-proof-workspace-local",
+  "claim": "Running the required Tool Forge package proof from the D-drive Workshop creates no new proof ZIP in Windows OS temp, verifies the package on D, cleans its transient output, and does not install it.",
+  "kind": "deterministic-behavior",
+  "risk": "MEDIUM",
+  "passCondition": "A before/after execution observes an unchanged OS-temp proof-file set, an exact byte readback under Workshop state, no remaining run directory, exit zero, and installed false.",
+  "primarySurface": "focused-execution",
+  "counterevidence": "Any new matching OS-temp ZIP, output outside Workshop state, missing byte equality, surviving run directory, nonzero exit, or installed true refutes the claim.",
+  "secondarySurface": "source-and-diff-inspection",
+  "observedEvidence": "The focused verifier passed 21 checks, including a launch from C-temp with TEMP and TMP pointed at C. Both focused and repository-gate observations recorded zero new OS-temp proof ZIPs and zero remaining D scratch run directories.",
+  "status": "PASS",
+  "namedSeam": "The post-reproduction OS-temp baseline contains 174 matching ZIPs. One is the hash-identified diagnostic reproduction retained after deletion was refused; historical cleanup remains a separate review decision."
+}
+

@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-separated-continuity/v1",
+  "title": "Model Shadow review challenge separated continuity audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "auditId", "checkedAt", "status",
+    "separatedWitnessRef", "anchoredWitnessRef", "anchorRef", "witnessRef",
+    "checkpointRef", "anchoredContinuityAuditRef", "currentSnapshot",
+    "comparison", "decision", "state", "nextGate", "truth", "auditDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-separated-continuity/v1"},
+    "version": {"const": "0.6.0"},
+    "auditId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "checkedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "separatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "anchoredWitnessRef": {"$ref": "#/$defs/reference"},
+    "anchorRef": {"$ref": "#/$defs/reference"},
+    "witnessRef": {"$ref": "#/$defs/reference"},
+    "checkpointRef": {"$ref": "#/$defs/reference"},
+    "anchoredContinuityAuditRef": {"$ref": "#/$defs/reference"},
+    "currentSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256", "availability", "ledgerRef", "entryCount", "entriesDigest", "errors"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"const": "axm.model-shadow-review-challenge-ledger-snapshot/v1"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "availability": {"enum": ["AVAILABLE", "ABSENT", "INVALID"]},
+        "ledgerRef": {"oneOf": [{"$ref": "#/$defs/reference"}, {"type": "null"}]},
+        "entryCount": {"type": "integer", "minimum": 0},
+        "entriesDigest": {"$ref": "#/$defs/digest"},
+        "errors": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 120}}
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledgerIdentityMatches", "missingCheckpointChallenges", "replacedCheckpointEntries", "addedCurrentChallenges"],
+      "properties": {
+        "ledgerIdentityMatches": {"type": "boolean"},
+        "missingCheckpointChallenges": {"type": "array", "items": {"$ref": "#/$defs/digest"}},
+        "replacedCheckpointEntries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["challengeDigest", "checkpointReceiptDigest", "currentReceiptDigest"],
+            "properties": {
+              "challengeDigest": {"$ref": "#/$defs/digest"},
+              "checkpointReceiptDigest": {"$ref": "#/$defs/digest"},
+              "currentReceiptDigest": {"$ref": "#/$defs/digest"}
+            }
+          }
+        },
+        "addedCurrentChallenges": {"type": "array", "items": {"$ref": "#/$defs/digest"}}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "bestAction", "reviewRequired", "autonomousActionCount"],
+      "properties": {
+        "classification": {"enum": [
+          "HOLD_LEDGER_STATE_ABSENT_AGAINST_PRESENTED_CHECKPOINT",
+          "HOLD_CURRENT_LEDGER_STATE_INVALID",
+          "HOLD_LEDGER_IDENTITY_CHANGED",
+          "ROLLBACK_OR_REPLACEMENT_DETECTED_AGAINST_PRESENTED_CHECKPOINT",
+          "CURRENT_LEDGER_EXTENDS_PRESENTED_CHECKPOINT",
+          "CURRENT_LEDGER_MATCHES_PRESENTED_CHECKPOINT"
+        ]},
+        "bestAction": {"type": "string", "minLength": 1, "maxLength": 180},
+        "reviewRequired": {"type": "boolean"},
+        "autonomousActionCount": {"const": 0}
+      }
+    },
+    "state": {"const": "SEPARATED_WITNESS_CHAIN_VERIFIED_AND_COMPARED_CONTROLLER_INDEPENDENCE_NOT_PROVEN"},
+    "nextGate": {"const": "HOST_AUTHENTICATED_ANCHOR_PIN_INDEPENDENT_IDENTITY_ATTESTATION_AND_EXTERNALLY_RETAINED_OR_PROTECTED_STATE"},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "separatedWitnessVerifiedByExactRebuild", "anchoredWitnessVerifiedByExactRebuild",
+        "anchoredContinuityAuditVerifiedByExactRebuild",
+        "noSharedPublicKeyFingerprintObserved", "noSharedDeclaredPrincipalDigestObserved",
+        "observableCrossLayerSeparationVerified", "keyCustodyIndependenceProven",
+        "realWorldControllerIndependenceProven", "declaredPrincipalDigestsAuthenticated",
+        "sameControllerWithDistinctKeysStillPossible",
+        "sameControllerWithDistinctPrincipalDigestsStillPossible",
+        "crossLayerCollusionExcluded", "comparisonBoundToExactLedgerIdentity",
+        "rollbackOrReplacementDetectedAgainstSeparatedCheckpoint",
+        "currentAbsenceDetectedAgainstSeparatedCheckpoint", "currentInvalidityDetected",
+        "anchorPolicyAuthorityAuthenticated", "expectedAnchorDigestAuthorityAuthenticated",
+        "anchorOriginAuthenticatedByHost", "actualHumanParticipationProven",
+        "separatedAuditTimeExternallyTrusted", "separationReceiptExternallyRetained",
+        "protectedMonotonicStateProven", "deletionOrRollbackPrevented",
+        "globalSingleUseProven", "hostAuthorizationAuthenticated",
+        "experimentExecuted", "evaluationPerformed", "executionAuthorized",
+        "adoptionAuthorized", "humanBenefitProven", "broadLearningClaimed",
+        "automaticWrite", "automaticPermissionGrant", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "separatedWitnessVerifiedByExactRebuild": {"const": true},
+        "anchoredWitnessVerifiedByExactRebuild": {"const": true},
+        "anchoredContinuityAuditVerifiedByExactRebuild": {"const": true},
+        "noSharedPublicKeyFingerprintObserved": {"const": true},
+        "noSharedDeclaredPrincipalDigestObserved": {"const": true},
+        "observableCrossLayerSeparationVerified": {"const": true},
+        "keyCustodyIndependenceProven": {"const": false},
+        "realWorldControllerIndependenceProven": {"const": false},
+        "declaredPrincipalDigestsAuthenticated": {"const": false},
+        "sameControllerWithDistinctKeysStillPossible": {"const": true},
+        "sameControllerWithDistinctPrincipalDigestsStillPossible": {"const": true},
+        "crossLayerCollusionExcluded": {"const": false},
+        "comparisonBoundToExactLedgerIdentity": {"type": "boolean"},
+        "rollbackOrReplacementDetectedAgainstSeparatedCheckpoint": {"type": "boolean"},
+        "currentAbsenceDetectedAgainstSeparatedCheckpoint": {"type": "boolean"},
+        "currentInvalidityDetected": {"type": "boolean"},
+        "anchorPolicyAuthorityAuthenticated": {"const": false},
+        "expectedAnchorDigestAuthorityAuthenticated": {"const": false},
+        "anchorOriginAuthenticatedByHost": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "separatedAuditTimeExternallyTrusted": {"const": false},
+        "separationReceiptExternallyRetained": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "globalSingleUseProven": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "auditDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

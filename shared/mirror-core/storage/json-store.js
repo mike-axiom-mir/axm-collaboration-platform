@@ -50,7 +50,7 @@ class JsonStore {
     next.updated_at = now();
     atomicWriteJson(this.file, next);
     this.state = next;
-    return clone(result);
+    return result === undefined ? undefined : clone(result);
   }
 
   reset(seed) {

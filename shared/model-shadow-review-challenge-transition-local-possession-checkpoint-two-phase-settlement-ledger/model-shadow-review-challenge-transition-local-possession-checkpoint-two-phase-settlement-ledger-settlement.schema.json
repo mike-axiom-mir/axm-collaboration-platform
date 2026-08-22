@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-settlement/v1",
+  "title": "AXM local-possession two-phase settlement v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "settlementId", "settledAt", "status", "log", "manifestRef", "proposalRef", "postwriteCurrentnessAuditReceipt", "postwriteSnapshotRef", "previousSettledWitnessRef", "candidateSeparatedWitnessRef", "decision", "state", "nextGate", "truth", "settlementDigest"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-settlement/v1" },
+    "version": { "const": "2.0.0" },
+    "settlementId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "settledAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "log": { "type": "object", "additionalProperties": false, "required": ["logId", "authorityOrigin", "storageMode", "sequence"], "properties": { "logId": { "type": "string" }, "authorityOrigin": { "const": "CALLER_STATE_ROOT_AND_CONFIRMATIONS_UNAUTHENTICATED" }, "storageMode": { "const": "PREWRITE_MATCHED_PROPOSAL_THEN_POSTWRITE_RECAPTURED_EXCLUSIVE_SETTLEMENT" }, "sequence": { "type": "integer", "minimum": 1 } } },
+    "manifestRef": { "$ref": "#/$defs/reference" },
+    "proposalRef": { "$ref": "#/$defs/reference" },
+    "postwriteCurrentnessAuditReceipt": { "type": "object" },
+    "postwriteSnapshotRef": { "$ref": "#/$defs/reference" },
+    "previousSettledWitnessRef": { "$ref": "#/$defs/reference" },
+    "candidateSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "decision": { "type": "object", "additionalProperties": false, "required": ["classification", "upstreamCurrentnessClassification", "settledHeadAdvanced", "reviewRequired", "bestAction", "autonomousActionCount"], "properties": { "classification": { "enum": ["SETTLED_POSTWRITE_SOURCE_MATCH", "HELD_POSTWRITE_SOURCE_EXTENDED_CANDIDATE", "HELD_POSTWRITE_SOURCE_ROLLBACK_OR_REPLACEMENT", "HELD_POSTWRITE_SOURCE_ABSENT", "HELD_POSTWRITE_SOURCE_INVALID", "HELD_POSTWRITE_SOURCE_IDENTITY_CHANGED"] }, "upstreamCurrentnessClassification": { "enum": ["CURRENT_RESPONSE_SET_MATCHES_PRESENTED_CHECKPOINT", "CURRENT_RESPONSE_SET_EXTENDS_PRESENTED_CHECKPOINT", "ROLLBACK_OR_REPLACEMENT_DETECTED_AGAINST_PRESENTED_CHECKPOINT", "HOLD_LOCAL_POSSESSION_STATE_ABSENT_AGAINST_PRESENTED_CHECKPOINT", "HOLD_CURRENT_LOCAL_POSSESSION_STATE_INVALID", "HOLD_LOCAL_POSSESSION_IDENTITY_CHANGED"] }, "settledHeadAdvanced": { "type": "boolean" }, "reviewRequired": { "type": "boolean" }, "bestAction": { "enum": ["ADVANCE_ONLY_THIS_CALLER_OWNED_SETTLED_HEAD", "PRESERVE_HELD_SETTLEMENT_AND_KEEP_PREVIOUS_SETTLED_HEAD"] }, "autonomousActionCount": { "const": 0 } } },
+    "state": { "enum": ["POSTWRITE_SOURCE_MATCH_SETTLED_LOCAL_HEAD_ADVANCED_NO_LATER_OR_GLOBAL_CURRENTNESS", "POSTWRITE_SOURCE_DRIFT_HELD_PREVIOUS_LOCAL_SETTLED_HEAD_PRESERVED"] },
+    "nextGate": { "const": "HOST_AUTHENTICATED_EXTERNALLY_RETAINED_GLOBALLY_CONSISTENT_LOG_OR_PROTECTED_MONOTONIC_TRANSACTION_SPANNING_SOURCE_AND_SETTLEMENT" },
+    "truth": { "type": "object" },
+    "settlementDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reference": { "type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": { "id": { "type": "string", "minLength": 1, "maxLength": 180 }, "schema": { "type": "string", "minLength": 1, "maxLength": 180 }, "sha256": { "$ref": "#/$defs/digest" } } }
+  }
+}

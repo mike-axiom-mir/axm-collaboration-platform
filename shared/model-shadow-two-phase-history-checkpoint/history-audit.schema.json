@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-history-audit/v1",
+  "title": "AXM two-phase settlement portable history audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "auditId", "auditedAt", "mode", "checkpointRef", "classification", "current", "comparison", "decision", "truth", "auditDigest"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-history-audit/v1" },
+    "version": { "const": "2.1.0" },
+    "status": { "const": "TEST" },
+    "auditId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "auditedAt": { "type": "string", "format": "date-time" },
+    "mode": { "const": "CALLER_PORTABLE_UNAUTHENTICATED_CHECKPOINT" },
+    "checkpointRef": { "$ref": "#/$defs/reference" },
+    "classification": {
+      "enum": [
+        "EXACT_HISTORY_MATCH",
+        "FORWARD_HISTORY_EXTENSION",
+        "OBSERVED_STRICT_HISTORY_ROLLBACK_RELATIVE_TO_PRESENTED_CHECKPOINT",
+        "OBSERVED_HISTORY_REPLACEMENT_OR_FORK_RELATIVE_TO_PRESENTED_CHECKPOINT",
+        "OBSERVED_LEDGER_IDENTITY_DRIFT",
+        "OBSERVED_LEDGER_ABSENT",
+        "OBSERVED_LEDGER_OR_CONFIGURATION_INVALID"
+      ]
+    },
+    "current": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotBinding", "historyDigest", "proposalCount", "settlementCount", "heldSettlementCount", "currentSettledHeadSeparatedWitnessRef", "errorCode"],
+      "properties": {
+        "snapshotBinding": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/snapshotBinding" }] },
+        "historyDigest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] },
+        "proposalCount": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 0, "maximum": 10000 }] },
+        "settlementCount": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 0, "maximum": 10000 }] },
+        "heldSettlementCount": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 0, "maximum": 10000 }] },
+        "currentSettledHeadSeparatedWitnessRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] },
+        "errorCode": { "oneOf": [{ "type": "null" }, { "type": "string", "minLength": 1, "maxLength": 180 }] }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkpointProposalCount", "checkpointSettlementCount", "commonProposalPrefixCount", "commonSettlementPrefixCount", "exactHistoryMatch", "forwardHistoryExtension", "strictHistoryRollback", "historyReplacementOrFork", "ledgerIdentityDrift"],
+      "properties": {
+        "checkpointProposalCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "checkpointSettlementCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "commonProposalPrefixCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "commonSettlementPrefixCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "exactHistoryMatch": { "type": "boolean" },
+        "forwardHistoryExtension": { "type": "boolean" },
+        "strictHistoryRollback": { "type": "boolean" },
+        "historyReplacementOrFork": { "type": "boolean" },
+        "ledgerIdentityDrift": { "type": "boolean" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewRequired", "holdRequired", "bestAction", "autonomousActionCount"],
+      "properties": {
+        "reviewRequired": { "const": true },
+        "holdRequired": { "type": "boolean" },
+        "bestAction": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "autonomousActionCount": { "const": 0 }
+      }
+    },
+    "truth": { "type": "object" },
+    "auditDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "snapshotBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "sha256"],
+      "properties": {
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

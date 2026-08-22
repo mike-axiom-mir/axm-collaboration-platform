@@ -1,0 +1,22 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-snapshot/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","settlementLogId","manifestRef","sourceLogId","sourceManifestRef","genesisSettledHead","currentSettledHead","proposalCount","settlementCount","heldSettlementCount","lastProposalRef","lastSettlementRef","pendingProposalRef","truth","snapshotDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-snapshot/v1"},"version":{"const":"3.7.0"},"status":{"const":"TEST"},
+    "settlementLogId":{"$ref":"#/$defs/text"},"manifestRef":{"$ref":"#/$defs/ref"},"sourceLogId":{"$ref":"#/$defs/text"},"sourceManifestRef":{"$ref":"#/$defs/ref"},
+    "genesisSettledHead":{"$ref":"#/$defs/head"},"currentSettledHead":{"$ref":"#/$defs/head"},
+    "proposalCount":{"type":"integer","minimum":0,"maximum":10000},"settlementCount":{"type":"integer","minimum":0,"maximum":10000},"heldSettlementCount":{"type":"integer","minimum":0,"maximum":10000},
+    "lastProposalRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/ref"}]},"lastSettlementRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/ref"}]},"pendingProposalRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/ref"}]},
+    "truth":{"$ref":"#/$defs/truth"},"snapshotDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "text":{"type":"string","minLength":1,"maxLength":180},"digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "ref":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"$ref":"#/$defs/text"},"schema":{"$ref":"#/$defs/text"},"sha256":{"$ref":"#/$defs/digest"}}},
+    "head":{"type":"object","additionalProperties":false,"required":["anchoredCheckpointRef","checkpointRef","anchorEpoch"],"properties":{"anchoredCheckpointRef":{"$ref":"#/$defs/ref"},"checkpointRef":{"$ref":"#/$defs/ref"},"anchorEpoch":{"type":"integer","minimum":1}}},
+    "truth":{"type":"object","additionalProperties":false,"required":["manifestVerified","contiguousProposalAndSettlementSequencesValidated","localProposalDigestChainAndSettlementBindingsValidated","atMostOneTrailingPendingProposalValidated","settledHeadDerivedOnlyFromExactSettlements","heldSettlementsPreservePriorSettledHead","liveSourceRecapturedByInspect","upstreamPackagesReverifiedWithoutCallerInput","independentRootsExcluded","globalTransitionUniquenessProven","globallyConsistentLogProven","externalRetentionProven","protectedMonotonicStateProven","deletionOrRollbackPrevented","hostAuthorizationAuthenticated","executionAuthorized","adoptionAuthorized","automaticPromotion","automaticCanon"],
+      "properties":{"manifestVerified":{"const":true},"contiguousProposalAndSettlementSequencesValidated":{"const":true},"localProposalDigestChainAndSettlementBindingsValidated":{"const":true},"atMostOneTrailingPendingProposalValidated":{"const":true},"settledHeadDerivedOnlyFromExactSettlements":{"const":true},"heldSettlementsPreservePriorSettledHead":{"const":true},"liveSourceRecapturedByInspect":{"const":false},"upstreamPackagesReverifiedWithoutCallerInput":{"const":false},"independentRootsExcluded":{"const":false},"globalTransitionUniquenessProven":{"const":false},"globallyConsistentLogProven":{"const":false},"externalRetentionProven":{"const":false},"protectedMonotonicStateProven":{"const":false},"deletionOrRollbackPrevented":{"const":false},"hostAuthorizationAuthenticated":{"const":false},"executionAuthorized":{"const":false},"adoptionAuthorized":{"const":false},"automaticPromotion":{"const":false},"automaticCanon":{"const":false}}
+    }
+  }
+}

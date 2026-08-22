@@ -1,0 +1,152 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "staged-human-handoff-completeness",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "human.handoff.session-evaluation",
+        "human.handoff.explicit-judgment"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "human.handoff.local-source-declaration",
+        "human.handoff.v2-bridge-compose"
+      ],
+      "declaredConstraints": {
+        "human.handoff.session-evaluation": [
+          "Native Human Benefit Evidence builds and verifies a deterministic evaluation from exact session receipts."
+        ],
+        "human.handoff.explicit-judgment": [
+          "The numeric signal remains NOT_RUN until a separate explicit claim-scoped judgment is entered."
+        ],
+        "human.handoff.local-source-declaration": [],
+        "human.handoff.v2-bridge-compose": []
+      }
+    },
+    {
+      "id": "exact-current-route-coverage",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "human.handoff.candidate-ancestry",
+        "human.handoff.reuse-existing-ancestry"
+      ],
+      "degraded": [
+        "human.handoff.every-current-chain"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.handoff.every-current-chain": [
+          "Four session routes existed, but no complete post-session handoff route existed."
+        ],
+        "human.handoff.candidate-ancestry": [
+          "Two current routes retain exact CANDIDATE ancestry."
+        ],
+        "human.handoff.reuse-existing-ancestry": [
+          "Two current routes retain exact REUSE_EXISTING ancestry without a fabricated candidate."
+        ]
+      }
+    },
+    {
+      "id": "voluntary-input-and-retention-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.handoff.tty-only",
+        "human.handoff.external-session-input",
+        "human.handoff.no-write",
+        "human.handoff.no-auto-participation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.handoff.tty-only": [
+          "The interactive handoff refuses piped or automated input before reading session evidence."
+        ],
+        "human.handoff.external-session-input": [
+          "Session inputs inside the Workshop repository are refused."
+        ],
+        "human.handoff.no-write": [
+          "The core performs no I/O and the interactive driver emits to stdout only."
+        ],
+        "human.handoff.no-auto-participation": [
+          "No session starts and no judgment is created automatically."
+        ]
+      }
+    },
+    {
+      "id": "source-and-evidence-truth-boundary",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "human.handoff.synthetic-hold",
+        "human.handoff.current-closure-bind"
+      ],
+      "degraded": [
+        "human.handoff.declaration-not-authentication"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.handoff.declaration-not-authentication": [
+          "The v2 bridge accepted an external trust reference but no native declaration receipt preserved its limits."
+        ],
+        "human.handoff.synthetic-hold": [
+          "Synthetic positive signals and fixture judgments remain SYNTHETIC_HOLD and map to UNKNOWN."
+        ],
+        "human.handoff.current-closure-bind": [
+          "Closure covers cycle, protocol, evaluation, judgment, intervention link, comparison surfaces, baseline, exact capability surface and source declaration."
+        ]
+      }
+    },
+    {
+      "id": "authority-preservation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "authority.human-steward.preserve"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "authority.human-steward.preserve": [
+          "No participation request, verdict, install, permission, promotion, merge, CANON or Foundation authority."
+        ]
+      }
+    },
+    {
+      "id": "live-human-beneficiary-outcome",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.human-evidence.live"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.live": [
+          "No person opted in; no LIVE session, judgment, admitted bridge package or grounded human outcome exists."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "human.handoff.local-source-declaration",
+    "human.handoff.v2-bridge-compose"
+  ],
+  "proposedHands": [
+    {
+      "id": "grounded-growth-human-handoff",
+      "status": "PROPOSED_NOT_BUILT",
+      "purpose": "Compose exact sessions, explicit judgment, a native local declaration and v2 ancestry without writes, authentication claims or automatic benefit."
+    }
+  ]
+}

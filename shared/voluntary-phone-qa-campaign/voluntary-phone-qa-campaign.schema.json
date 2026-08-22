@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.voluntary-phone-qa-campaign/v1",
+  "title": "AXM voluntary physical-phone QA campaign",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "campaignId", "generatedAt", "status", "sourceRefs",
+    "policy", "checklist", "games", "sessions", "summary", "nextAction", "truth",
+    "campaignDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.voluntary-phone-qa-campaign/v1"},
+    "version": {"const": "0.1.0"},
+    "campaignId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "generatedAt": {"type": "string", "minLength": 1, "maxLength": 80},
+    "status": {"const": "TEST"},
+    "sourceRefs": {"type": "object"},
+    "policy": {"type": "object"},
+    "checklist": {"type": "array", "minItems": 6, "maxItems": 6},
+    "games": {"type": "array"},
+    "sessions": {"type": "array"},
+    "summary": {"type": "object"},
+    "nextAction": {"type": "object"},
+    "truth": {"type": "object"},
+    "campaignDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}
+

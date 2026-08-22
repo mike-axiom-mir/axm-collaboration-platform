@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-status/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "state", "reasonCode", "acquiredAt", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-status/v1" },
+    "state": { "enum": ["FREE", "HELD"] },
+    "reasonCode": { "enum": ["NO_REVIEW_OPERATION_LEASE", "REVIEW_OPERATION_LEASE_PRESENT", "LEASE_EVIDENCE_INVALID", "LEASE_EVIDENCE_UNREADABLE"] },
+    "acquiredAt": { "type": ["string", "null"], "format": "date-time" },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ownerEvidenceValid", "heldByThisServiceInstance", "cooperatingSingleHostReviewMutationsSerialized", "nonCooperatingExternalWritersExcluded", "crossFileAtomicityProven", "multiHostOrNetworkFilesystemSafetyProven", "staleOwnerOrProcessDeathProven", "automaticStaleLeaseTheft", "browserRecoveryRoute", "protectedStorageOrRollbackPreventionProven", "executionAuthorized", "adoptionAuthorized", "promotionAuthorized", "mergeAuthorized", "canonAuthorized"],
+      "properties": {
+        "ownerEvidenceValid": { "type": "boolean" },
+        "heldByThisServiceInstance": { "type": "boolean" },
+        "cooperatingSingleHostReviewMutationsSerialized": { "const": true },
+        "nonCooperatingExternalWritersExcluded": { "const": false },
+        "crossFileAtomicityProven": { "const": false },
+        "multiHostOrNetworkFilesystemSafetyProven": { "const": false },
+        "staleOwnerOrProcessDeathProven": { "const": false },
+        "automaticStaleLeaseTheft": { "const": false },
+        "browserRecoveryRoute": { "const": false },
+        "protectedStorageOrRollbackPreventionProven": { "const": false },
+        "executionAuthorized": { "const": false },
+        "adoptionAuthorized": { "const": false },
+        "promotionAuthorized": { "const": false },
+        "mergeAuthorized": { "const": false },
+        "canonAuthorized": { "const": false }
+      }
+    }
+  }
+}

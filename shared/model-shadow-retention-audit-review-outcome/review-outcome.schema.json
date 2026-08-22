@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-retention-audit-review-outcome/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "outcomeId", "observedAt", "mode",
+    "pendingHandoffRef", "reviewRequestRef", "observationRef",
+    "reviewArtifactRef", "reviewItemRef", "reviewContext", "reviewOutcome",
+    "state", "nextGate", "truth", "outcomeDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-retention-audit-review-outcome/v1"},
+    "version": {"const": "3.1.0"},
+    "status": {"const": "TEST"},
+    "outcomeId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "observedAt": {"$ref": "#/$defs/time"},
+    "mode": {"const": "DATA_ONLY_CALLER_PRESENTED_REVIEW_OUTCOME_UNAUTHENTICATED"},
+    "pendingHandoffRef": {"$ref": "#/$defs/reference"},
+    "reviewRequestRef": {"$ref": "#/$defs/reference"},
+    "observationRef": {"$ref": "#/$defs/reference"},
+    "reviewArtifactRef": {"$ref": "#/$defs/reference"},
+    "reviewItemRef": {"$ref": "#/$defs/reference"},
+    "reviewContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v27Classification", "bestAction", "v27AuditRef", "retentionCheckpointRef"],
+      "properties": {
+        "v27Classification": {
+          "enum": [
+            "OBSERVED_STRICT_HISTORY_ROLLBACK_RELATIVE_TO_PRESENTED_CHECKPOINT",
+            "OBSERVED_HISTORY_REPLACEMENT_OR_FORK_RELATIVE_TO_PRESENTED_CHECKPOINT",
+            "OBSERVED_LEDGER_IDENTITY_DRIFT",
+            "OBSERVED_LEDGER_ABSENT",
+            "OBSERVED_LEDGER_OR_CONFIGURATION_INVALID"
+          ]
+        },
+        "bestAction": {"type": "string", "minLength": 1, "maxLength": 180},
+        "v27AuditRef": {"$ref": "#/$defs/reference"},
+        "retentionCheckpointRef": {"$ref": "#/$defs/reference"}
+      }
+    },
+    "reviewOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state", "requiredSeats", "voteCount", "approvalCount", "holdCount",
+        "rejectionCount", "declaredHumanVoteCount",
+        "declaredHumanApprovalCount", "votes"
+      ],
+      "properties": {
+        "state": {"enum": ["APPROVED", "HOLD", "REJECTED"]},
+        "requiredSeats": {"type": "integer", "minimum": 1, "maximum": 10},
+        "voteCount": {"type": "integer", "minimum": 1, "maximum": 10},
+        "approvalCount": {"type": "integer", "minimum": 0, "maximum": 10},
+        "holdCount": {"type": "integer", "minimum": 0, "maximum": 10},
+        "rejectionCount": {"type": "integer", "minimum": 0, "maximum": 10},
+        "declaredHumanVoteCount": {"type": "integer", "minimum": 0, "maximum": 10},
+        "declaredHumanApprovalCount": {"type": "integer", "minimum": 0, "maximum": 10},
+        "votes": {"type": "array", "minItems": 1, "maxItems": 10, "items": {"$ref": "#/$defs/vote"}}
+      }
+    },
+    "state": {
+      "enum": [
+        "EXACT_ARTIFACT_APPROVAL_OBSERVED_RETENTION_HOLD_UNRESOLVED",
+        "EXACT_ARTIFACT_HOLD_OBSERVED_RETENTION_HOLD_UNRESOLVED",
+        "EXACT_ARTIFACT_REJECTION_OBSERVED_RETENTION_HOLD_UNRESOLVED"
+      ]
+    },
+    "nextGate": {"const": "SEPARATE_AUTHENTICATED_STEWARD_REMEDIATION_DECISION_OR_REPAIR_RETENTION_HOLD_REMAINS"},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestAndPendingHandoffExactRebuilt", "immutableReviewItemTransitionBound",
+        "reviewItemExactArtifactDigestMatch", "reviewVotesExactArtifactDigestMatch",
+        "callerPresentedReviewOutcomeObserved", "approvalStateObserved",
+        "holdStateObserved", "rejectionStateObserved", "declaredHumanVotePresent",
+        "declaredHumanApprovalPresent", "liveHostOutcomeObserved",
+        "hostMutationAuthorizationProven", "reviewActorAuthenticated",
+        "actualHumanReviewProven", "authenticatedStewardRemediationDecisionProven",
+        "holdResolved", "reviewOutcomeGrantsRemediationAuthority",
+        "rawActorIdentityEmbedded", "voteNotesRetained", "reviewDiscussionIngested",
+        "standaloneActorDigestProvenanceProven",
+        "completeReviewItemEmbedded", "completeReviewRequestEmbedded",
+        "completePendingHandoffEmbedded", "sourceOrReceiverPathEmbedded",
+        "transientV28OperationLockMayBeWritten", "durableSourceStateChangedByModule",
+        "durableReviewInboxStateChangedByModule", "receiverStateFileFsyncProven",
+        "independentReceiverProcessProven", "networkInvoked", "providerInvoked",
+        "evaluationPerformed", "executionAuthorized", "adoptionAuthorized",
+        "humanBenefitProven", "broadLearningClaimed", "autonomousActionCount",
+        "automaticPermissionGrant", "automaticInstall", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "requestAndPendingHandoffExactRebuilt": {"const": true},
+        "immutableReviewItemTransitionBound": {"const": true},
+        "reviewItemExactArtifactDigestMatch": {"const": true},
+        "reviewVotesExactArtifactDigestMatch": {"const": true},
+        "callerPresentedReviewOutcomeObserved": {"const": true},
+        "approvalStateObserved": {"type": "boolean"},
+        "holdStateObserved": {"type": "boolean"},
+        "rejectionStateObserved": {"type": "boolean"},
+        "declaredHumanVotePresent": {"type": "boolean"},
+        "declaredHumanApprovalPresent": {"type": "boolean"},
+        "liveHostOutcomeObserved": {"const": false},
+        "hostMutationAuthorizationProven": {"const": false},
+        "reviewActorAuthenticated": {"const": false},
+        "actualHumanReviewProven": {"const": false},
+        "authenticatedStewardRemediationDecisionProven": {"const": false},
+        "holdResolved": {"const": false},
+        "reviewOutcomeGrantsRemediationAuthority": {"const": false},
+        "rawActorIdentityEmbedded": {"const": false},
+        "voteNotesRetained": {"const": false},
+        "reviewDiscussionIngested": {"const": false},
+        "standaloneActorDigestProvenanceProven": {"const": false},
+        "completeReviewItemEmbedded": {"const": false},
+        "completeReviewRequestEmbedded": {"const": false},
+        "completePendingHandoffEmbedded": {"const": false},
+        "sourceOrReceiverPathEmbedded": {"const": false},
+        "transientV28OperationLockMayBeWritten": {"const": true},
+        "durableSourceStateChangedByModule": {"const": false},
+        "durableReviewInboxStateChangedByModule": {"const": false},
+        "receiverStateFileFsyncProven": {"const": false},
+        "independentReceiverProcessProven": {"const": false},
+        "networkInvoked": {"const": false},
+        "providerInvoked": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "autonomousActionCount": {"const": 0},
+        "automaticPermissionGrant": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "outcomeDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "rawDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "time": {"type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "vote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actorDigest", "actorKind", "verdict", "artifactDigest", "at"],
+      "properties": {
+        "actorDigest": {"$ref": "#/$defs/digest"},
+        "actorKind": {"enum": ["human", "machine", "collective", "unknown"]},
+        "verdict": {"enum": ["APPROVE", "HOLD", "REJECT"]},
+        "artifactDigest": {"$ref": "#/$defs/rawDigest"},
+        "at": {"$ref": "#/$defs/time"}
+      }
+    }
+  }
+}

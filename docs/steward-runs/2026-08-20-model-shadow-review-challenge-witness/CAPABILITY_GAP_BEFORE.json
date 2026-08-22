@@ -1,0 +1,522 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "upstream-checkpoint-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-checkpoint-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-exact-rebuild": [
+          "The stacked v0.3 observer validates exact checkpoint structure, truth boundary, canonical ordering, and self-digest without authenticating origin."
+        ]
+      }
+    },
+    {
+      "id": "checkpoint-specific-signature-verification",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-checkpoint-detached-ed25519-verify"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "checkpoint-signature-threshold",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-checkpoint-threshold-signature-verify"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "checkpoint-policy-exact-binding",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-checkpoint-exact-policy-bind"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "public-key-only-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-checkpoint-private-key-refusal"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "signing-key-possession-evidence",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-checkpoint-signing-key-possession-evidence"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "privacy-bounded-witness-receipt",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-checkpoint-witness-privacy-boundary"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "witness-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-checkpoint-witness-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "witnessed-continuity-composition",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-witnessed-continuity-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "fresh-process-witnessed-comparison",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-witnessed-continuity-fresh-process"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "relative-rollback-detection-from-witness",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-witnessed-rollback-detect-relative-to-signed-checkpoint"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "policy-swap-counterexample",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-witness-policy-swap-nontrust-proof"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "witness-authority-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-witness-authority-none"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authenticated-host-witness-policy",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-witness-host-trust-root.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-host-trust-root.actual": [
+          "The Workshop release-key registry is intentionally empty and no checkpoint-specific Mike- or host-promoted trust root was supplied."
+        ]
+      }
+    },
+    {
+      "id": "actual-external-witness-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-witness-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-external-retention.actual": [
+          "No independently operated witness or checkpoint retention service and receiver receipt were supplied."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-ledger-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual": [
+          "Caller-owned ledger files and witness packages remain deletable or replaceable; no protected monotonic store exists in scope."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-real-world-signer",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-witness-signer-identity.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-signer-identity.actual": [
+          "No independent real-world identity binding for a checkpoint witness key was supplied."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-witness-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-time.external": [
+          "No external trusted timestamp source or receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "global-single-use",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-global-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-global-single-use.actual": [
+          "No global challenge authority or consistent shared store was supplied."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "No real person reviewed or signed a current checkpoint or challenger plan in this run."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "model.shadow.review.challenge-checkpoint-detached-ed25519-verify",
+    "model.shadow.review.challenge-checkpoint-exact-policy-bind",
+    "model.shadow.review.challenge-checkpoint-private-key-refusal",
+    "model.shadow.review.challenge-checkpoint-signing-key-possession-evidence",
+    "model.shadow.review.challenge-checkpoint-threshold-signature-verify",
+    "model.shadow.review.challenge-checkpoint-witness-exact-rebuild",
+    "model.shadow.review.challenge-checkpoint-witness-privacy-boundary",
+    "model.shadow.review.challenge-witness-authority-none",
+    "model.shadow.review.challenge-witness-policy-swap-nontrust-proof",
+    "model.shadow.review.challenge-witnessed-continuity-exact-rebuild",
+    "model.shadow.review.challenge-witnessed-continuity-fresh-process",
+    "model.shadow.review.challenge-witnessed-rollback-detect-relative-to-signed-checkpoint"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "model.shadow.review.challenge-checkpoint-detached-ed25519-verify",
+      "requiredBy": [
+        "checkpoint-specific-signature-verification"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-checkpoint-exact-policy-bind",
+      "requiredBy": [
+        "checkpoint-policy-exact-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-checkpoint-private-key-refusal",
+      "requiredBy": [
+        "public-key-only-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-checkpoint-signing-key-possession-evidence",
+      "requiredBy": [
+        "signing-key-possession-evidence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-checkpoint-threshold-signature-verify",
+      "requiredBy": [
+        "checkpoint-signature-threshold"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-checkpoint-witness-exact-rebuild",
+      "requiredBy": [
+        "witness-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-checkpoint-witness-privacy-boundary",
+      "requiredBy": [
+        "privacy-bounded-witness-receipt"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-witness-authority-none",
+      "requiredBy": [
+        "witness-authority-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-witness-policy-swap-nontrust-proof",
+      "requiredBy": [
+        "policy-swap-counterexample"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-witnessed-continuity-exact-rebuild",
+      "requiredBy": [
+        "witnessed-continuity-composition"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-witnessed-continuity-fresh-process",
+      "requiredBy": [
+        "fresh-process-witnessed-comparison"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-witnessed-rollback-detect-relative-to-signed-checkpoint",
+      "requiredBy": [
+        "relative-rollback-detection-from-witness"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

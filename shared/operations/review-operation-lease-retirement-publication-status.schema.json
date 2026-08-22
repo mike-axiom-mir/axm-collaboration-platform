@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-publication-status/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "state", "reasonCode", "stagedCandidates", "invalidEntries", "records", "recordsTruncated", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-publication-status/v1" },
+    "status": { "const": "TEST" },
+    "state": { "enum": ["CURRENT", "STAGED", "HELD"] },
+    "reasonCode": { "type": "string", "minLength": 1 },
+    "stagedCandidates": { "type": "integer", "minimum": 0, "maximum": 200 },
+    "invalidEntries": { "type": "integer", "minimum": 0, "maximum": 201 },
+    "records": {
+      "type": "array",
+      "maxItems": 200,
+      "items": { "$ref": "#/$defs/record" }
+    },
+    "recordsTruncated": { "type": "boolean" },
+    "truth": { "$ref": "#/$defs/truth" }
+  },
+  "$defs": {
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "state", "targetFile"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "state": { "enum": ["STAGED_NON_AUTHORITATIVE", "INVALID_STAGING_ENTRY"] },
+        "targetFile": { "type": ["string", "null"] }
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cooperatingSingleHostHardLinkAtomicVisibility", "completeBytesFsyncedBeforeHardLink", "hardLinkPublicationNoOverwrite", "authoritativePathNeverOpenedForWriteByPublisher", "sameFilesystemHardLinkRequired", "processCrashBeforeLinkLeavesAuthoritativePathAbsent", "processCrashAfterLinkLeavesCompleteAuthoritativeBytes", "stagingBytesAuthoritative", "nonAuthoritativeStagingVisibleViaHostLocalStatus", "staleStageReclamationProvided", "hardLinkFreeAtomicFallbackProvided", "powerLossDurabilityProven", "crossFileAtomicityProven", "nonCooperatingExternalWritersExcluded", "browserRoute", "apiRoute", "executionAuthorized", "adoptionAuthorized", "promotionAuthorized", "mergeAuthorized", "canonAuthorized"],
+      "properties": {
+        "cooperatingSingleHostHardLinkAtomicVisibility": { "const": true },
+        "completeBytesFsyncedBeforeHardLink": { "const": true },
+        "hardLinkPublicationNoOverwrite": { "const": true },
+        "authoritativePathNeverOpenedForWriteByPublisher": { "const": true },
+        "sameFilesystemHardLinkRequired": { "const": true },
+        "processCrashBeforeLinkLeavesAuthoritativePathAbsent": { "const": true },
+        "processCrashAfterLinkLeavesCompleteAuthoritativeBytes": { "const": true },
+        "stagingBytesAuthoritative": { "const": false },
+        "nonAuthoritativeStagingVisibleViaHostLocalStatus": { "const": true },
+        "staleStageReclamationProvided": { "const": false },
+        "hardLinkFreeAtomicFallbackProvided": { "const": false },
+        "powerLossDurabilityProven": { "const": false },
+        "crossFileAtomicityProven": { "const": false },
+        "nonCooperatingExternalWritersExcluded": { "const": false },
+        "browserRoute": { "const": false },
+        "apiRoute": { "const": false },
+        "executionAuthorized": { "const": false },
+        "adoptionAuthorized": { "const": false },
+        "promotionAuthorized": { "const": false },
+        "mergeAuthorized": { "const": false },
+        "canonAuthorized": { "const": false }
+      }
+    }
+  }
+}

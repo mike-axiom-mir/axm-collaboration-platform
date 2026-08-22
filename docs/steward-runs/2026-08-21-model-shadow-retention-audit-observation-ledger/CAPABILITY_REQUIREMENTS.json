@@ -1,0 +1,32 @@
+{
+  "schema": "axm.capability-requirements/v1",
+  "objective": "Persist an exact v2.7 retention audit observation in a third local root without inventing external durability or authority.",
+  "requirements": [
+    {"id":"exact-v27-audit-before-write","capabilities":["model.shadow.retention-audit.exact-rebuild"],"required":true},
+    {"id":"explicit-write-boundary","capabilities":["model.shadow.retention-audit.explicit-unauthenticated-confirmation"],"required":true},
+    {"id":"three-root-separation","capabilities":["model.shadow.retention-audit.three-root-distinct-nonnested"],"required":true},
+    {"id":"durable-full-observation","capabilities":["model.shadow.retention-audit.full-observation-exclusive-create-file-fsync"],"required":true},
+    {"id":"append-only-chain","capabilities":["model.shadow.retention-audit.contiguous-digest-chain"],"required":true},
+    {"id":"fresh-process-reload","capabilities":["model.shadow.retention-audit.fresh-process-origin-independent-reload"],"required":true},
+    {"id":"hold-preservation","capabilities":["model.shadow.retention-audit.hold-observation-preserved"],"required":true},
+    {"id":"nonhold-preservation","capabilities":["model.shadow.retention-audit.nonhold-observation-preserved"],"required":true},
+    {"id":"time-ordering","capabilities":["model.shadow.retention-audit.caller-time-ordering"],"required":true},
+    {"id":"single-stream-identity","capabilities":["model.shadow.retention-audit.single-retention-manifest-binding"],"required":true},
+    {"id":"corruption-refusal","capabilities":["model.shadow.retention-audit.corruption-gap-unexpected-state-fail-closed"],"required":true},
+    {"id":"concurrency-refusal","capabilities":["model.shadow.retention-audit.concurrent-writer-exclusion"],"required":true},
+    {"id":"resource-bounds","capabilities":["model.shadow.retention-audit.aggregate-and-input-resource-bounds"],"required":true},
+    {"id":"data-minimization","capabilities":["model.shadow.retention-audit.public-artifact-data-minimization"],"required":true},
+    {"id":"upstream-nonmutation","capabilities":["model.shadow.retention-audit.no-durable-upstream-change"],"required":true},
+    {"id":"bounded-survival","capabilities":["model.shadow.retention-audit.reload-after-source-and-retention-loss"],"required":true},
+    {"id":"joint-loss-counterexample","capabilities":["model.shadow.retention-audit.joint-three-root-loss-counterexample"],"required":true},
+    {"id":"authority-none","capabilities":["model.shadow.retention-audit.authority-none"],"required":true},
+    {"id":"closed-contract","capabilities":["model.shadow.retention-audit.closed-artifact-schemas"],"required":true},
+    {"id":"external-retention","capabilities":["model.shadow.retention-audit.independently-operated-external-retention"],"required":false},
+    {"id":"protected-monotonicity","capabilities":["model.shadow.retention-audit.protected-monotonic-storage"],"required":false},
+    {"id":"authenticated-identity","capabilities":["model.shadow.retention-audit.authenticated-host-actor-human"],"required":false},
+    {"id":"trusted-time","capabilities":["model.shadow.retention-audit.externally-trusted-time"],"required":false},
+    {"id":"provider-evaluation","capabilities":["model.shadow.retention-audit.provider-execution-or-evaluation"],"required":false},
+    {"id":"benefit-learning","capabilities":["model.shadow.retention-audit.human-benefit-or-learning-proof"],"required":false},
+    {"id":"promotion-authority","capabilities":["model.shadow.retention-audit.adoption-promotion-merge-canon-authority"],"required":false}
+  ]
+}

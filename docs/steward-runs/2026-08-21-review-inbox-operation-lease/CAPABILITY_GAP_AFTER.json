@@ -1,0 +1,307 @@
+{
+  "schema": "capability-gap-report/v1",
+  "stage": "after",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "baseline-lost-update-reproduction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.baseline-lost-update-reproduced"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.baseline-lost-update-reproduced": [
+          "deterministic barrier reproduction executes exact v4.2 ReviewService source with loader substitution only; production frequency remains unproven"
+        ]
+      }
+    },
+    {
+      "id": "single-host-review-mutation-serialization",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.cooperating-single-host-review-mutation-serialization"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.cooperating-single-host-review-mutation-serialization": [
+          "fixed local filesystem lock; cooperating callers on one host only"
+        ]
+      }
+    },
+    {
+      "id": "all-review-mutation-paths-share-lease",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.all-review-mutation-paths-share-one-lease"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.all-review-mutation-paths-share-one-lease": [
+          "ordinary and signed Review Inbox service paths only"
+        ]
+      }
+    },
+    {
+      "id": "active-contention-fails-closed",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.active-contention-typed-busy-without-mutation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.active-contention-typed-busy-without-mutation": [
+          "bounded wait using a monotonic process clock; no fairness guarantee"
+        ]
+      }
+    },
+    {
+      "id": "crash-or-invalid-evidence-stays-held",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.crash-invalid-or-altered-evidence-held-without-theft"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.crash-invalid-or-altered-evidence-held-without-theft": [
+          "no process-liveness inference and no automatic stale-owner theft"
+        ]
+      }
+    },
+    {
+      "id": "authority-operation-scope",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.authority-envelope-intent-and-projection-share-one-lease"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.authority-envelope-intent-and-projection-share-one-lease": [
+          "single-host serialization is not cross-file atomicity"
+        ]
+      }
+    },
+    {
+      "id": "read-only-status-no-browser-unlock",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.read-only-status-and-no-browser-unlock"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.read-only-status-and-no-browser-unlock": [
+          "GET observation and UI evidence; operator repair remains outside this browser surface"
+        ]
+      }
+    },
+    {
+      "id": "bounded-runtime-and-schema-contracts",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.bounded-runtime-and-closed-schema-contracts"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.bounded-runtime-and-closed-schema-contracts": [
+          "runtime exact-key tests plus JSON schemas; no independent metaschema-validator claim"
+        ]
+      }
+    },
+    {
+      "id": "concurrency-and-crash-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.eight-process-concurrency-and-crash-verification"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.eight-process-concurrency-and-crash-verification": [
+          "eight synchronized child processes plus bounded active-holder and crash-residue fixtures"
+        ]
+      }
+    },
+    {
+      "id": "clean-slice-inherited-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.clean-product-slice-inherited-review-continuity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.clean-product-slice-inherited-review-continuity": [
+          "nine selected review commands in a 583-file archive slice; not a full-repository archive replay"
+        ]
+      }
+    },
+    {
+      "id": "zero-consequential-authority",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.zero-execution-adoption-promotion-merge-foundation-or-canon-authority"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.zero-execution-adoption-promotion-merge-foundation-or-canon-authority": [
+          "Mike Tobi / AXM remains merge and CANON gate"
+        ]
+      }
+    },
+    {
+      "id": "specialist-package-lane-excluded",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.operation-lease.specialist-package-lane-not-inspected"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.operation-lease.specialist-package-lane-not-inspected": [
+          "incoming AXM_MIRROR_SHADOW_SPECIALIST ZIP packages excluded by scope"
+        ]
+      }
+    },
+    {
+      "id": "cross-file-acid",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.operation-lease.cross-file-acid"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "multi-host-network-filesystem",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.operation-lease.multi-host-or-network-filesystem-safety"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "external-writer-exclusion",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.operation-lease.noncooperating-external-writer-exclusion"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "safe-stale-owner-recovery",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.operation-lease.automatic-safe-stale-owner-recovery"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "rollback-resistant-storage",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.operation-lease.protected-monotonic-storage-and-rollback-prevention"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "identity-human-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.operation-lease.real-world-identity-human-participation-and-trusted-time"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "live-host-policy-and-signed-review",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.operation-lease.actual-live-host-policy-and-signed-review"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "human-benefit-learning-accessibility",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.operation-lease.assistive-technology-human-benefit-or-learning-proof"
+      ],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "review.operation-lease.actual-live-host-policy-and-signed-review",
+    "review.operation-lease.assistive-technology-human-benefit-or-learning-proof",
+    "review.operation-lease.automatic-safe-stale-owner-recovery",
+    "review.operation-lease.cross-file-acid",
+    "review.operation-lease.multi-host-or-network-filesystem-safety",
+    "review.operation-lease.noncooperating-external-writer-exclusion",
+    "review.operation-lease.protected-monotonic-storage-and-rollback-prevention",
+    "review.operation-lease.real-world-identity-human-participation-and-trusted-time"
+  ],
+  "proposedHands": [],
+  "proposedHandsBoundary": "No hand was built or proposed in this bounded milestone; optional gaps require separate contracts and authority."
+}

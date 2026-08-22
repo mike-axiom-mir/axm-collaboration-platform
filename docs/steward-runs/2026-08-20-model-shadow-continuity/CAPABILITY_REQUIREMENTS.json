@@ -1,0 +1,57 @@
+{
+  "schema": "axm.capability-requirements/v1",
+  "status": "TEST",
+  "objective": "Observe bounded structured model-output continuity and drift without invoking models, retaining raw chats, or gaining action authority.",
+  "requirements": [
+    {
+      "id": "exact-snapshot-identity",
+      "capabilities": ["model.shadow.snapshot.exact-digest", "model.shadow.snapshot.strict-json"],
+      "required": true
+    },
+    {
+      "id": "comparison-validity",
+      "capabilities": ["model.shadow.task-context.exact-bind", "model.shadow.seat-identity.exact-bind", "model.shadow.forward-sequence.require"],
+      "required": true
+    },
+    {
+      "id": "structured-drift",
+      "capabilities": ["model.shadow.commitment.drift-detect", "model.shadow.capability.drift-detect", "model.shadow.source-lineage.drift-visible"],
+      "required": true
+    },
+    {
+      "id": "authority-drift",
+      "capabilities": ["model.shadow.permission-expansion.critical", "model.shadow.authority-request-expansion.critical", "model.shadow.boundary-loss.critical"],
+      "required": true
+    },
+    {
+      "id": "privacy-boundary",
+      "capabilities": ["model.shadow.raw-output.not-embedded", "model.shadow.private-context.not-embedded"],
+      "required": true
+    },
+    {
+      "id": "simulation-handoff",
+      "capabilities": ["model.shadow.baseline-planning-projection", "model.shadow.review-projection.note-free"],
+      "required": true
+    },
+    {
+      "id": "rebuild-and-tamper",
+      "capabilities": ["model.shadow.receipt.exact-rebuild", "model.shadow.receipt.tamper-detect"],
+      "required": true
+    },
+    {
+      "id": "bounded-authority",
+      "capabilities": ["model.shadow.model-invocation.none", "model.shadow.training.none", "model.shadow.automatic-action.none", "model.shadow.canon.none"],
+      "required": true
+    },
+    {
+      "id": "live-provider-shadowing",
+      "capabilities": ["model.shadow.provider.live-transport"],
+      "required": false
+    },
+    {
+      "id": "human-value-evidence",
+      "capabilities": ["model.shadow.human-review.actual", "model.shadow.human-benefit.held-out"],
+      "required": false
+    }
+  ]
+}

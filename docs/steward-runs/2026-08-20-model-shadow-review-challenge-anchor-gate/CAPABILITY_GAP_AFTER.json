@@ -1,0 +1,384 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-witness-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-witness-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-exact-rebuild": [
+          "The stacked v0.4 witness must rebuild exactly before the v0.5 anchor gate evaluates it."
+        ]
+      }
+    },
+    {
+      "id": "anchor-policy-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-policy-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-policy-exact-rebuild": [
+          "The v0.5 leaf strictly validates and self-digests one caller-presented anchor policy, without authenticating its origin."
+        ]
+      }
+    },
+    {
+      "id": "expected-anchor-digest-match",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-expected-digest-match"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-expected-digest-match": [
+          "The caller-presented expected digest must exactly equal the validated anchor policy digest."
+        ]
+      }
+    },
+    {
+      "id": "anchor-specific-signature-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-detached-ed25519-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-detached-ed25519-verify": [
+          "The v0.5 leaf verifies canonical 64-byte detached Ed25519 signatures over anchor-specific authorization payloads."
+        ]
+      }
+    },
+    {
+      "id": "anchor-signature-threshold",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-threshold-signature-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-threshold-signature-verify": [
+          "All presented authorizations must verify and satisfy a one-through-ten threshold with distinct key fingerprints and steward digests."
+        ]
+      }
+    },
+    {
+      "id": "anchor-signing-key-possession-evidence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-signing-key-possession-evidence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-signing-key-possession-evidence": [
+          "Valid signatures prove possession of keys allowed by the exact anchor policy, not host authority, human participation, or real-world identity."
+        ]
+      }
+    },
+    {
+      "id": "anchor-exact-witness-policy-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-exact-witness-policy-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-exact-witness-policy-bind": [
+          "Each authorization binds the exact anchor and expected digest, v0.4 witness, witness policy, checkpoint, ledger manifest, and entries digest."
+        ]
+      }
+    },
+    {
+      "id": "privacy-bounded-anchor-receipt",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-receipt-privacy-boundary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-receipt-privacy-boundary": [
+          "Receipts retain digested authorization/key identifiers, key fingerprints, and steward digests; they omit raw keys, signatures, state paths, identity strings, private context, and model output."
+        ]
+      }
+    },
+    {
+      "id": "anchored-witness-chain-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-witness-chain-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-witness-chain-exact-rebuild": [
+          "The full anchor-policy, authorization, witness-policy, checkpoint, and witness chain rebuilds exactly before use."
+        ]
+      }
+    },
+    {
+      "id": "anchored-continuity-composition",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchored-continuity-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchored-continuity-exact-rebuild": [
+          "An anchored witness receipt must rebuild before its exact v0.4 witness can drive the stacked continuity comparison."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-anchored-comparison",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchored-continuity-fresh-process"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchored-continuity-fresh-process": [
+          "Fresh Node processes verify the serialized anchored package and audit exact, extended, missing, invalid, absent, and identity-drift synthetic ledger states without writing the ledger."
+        ]
+      }
+    },
+    {
+      "id": "relative-rollback-detection-from-anchored-witness",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchored-rollback-detect-relative-to-witness"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchored-rollback-detect-relative-to-witness": [
+          "A missing challenge is detected relative to the exact anchored checkpoint; detection remains distinct from prevention or restoration."
+        ]
+      }
+    },
+    {
+      "id": "fixed-pin-witness-policy-substitution-refusal",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-fixed-pin-policy-substitution-refusal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-fixed-pin-policy-substitution-refusal": [
+          "A valid replacement v0.4 witness policy and witness cannot reuse the original anchor authorizations while the expected anchor digest remains fixed."
+        ]
+      }
+    },
+    {
+      "id": "joint-anchor-pin-substitution-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-joint-substitution-nontrust-proof"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-joint-substitution-nontrust-proof": [
+          "A counterexample proves that replacing both caller-presented anchor and expected digest with new valid signatures creates a distinct valid chain, so host trust remains false."
+        ]
+      }
+    },
+    {
+      "id": "anchor-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchor-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-authority-none": [
+          "Receipts grant no host, identity, human, provider, execution, evaluation, adoption, installation, promotion, merge, Foundation, or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-anchor-pin",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-anchor-host-pin.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-host-pin.actual": [
+          "Both anchor and expected digest are explicitly caller-presented and unauthenticated; no Mike- or host-promoted pin was supplied."
+        ]
+      }
+    },
+    {
+      "id": "actual-external-anchor-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-anchor-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-external-retention.actual": [
+          "The selftest serializes a synthetic package outside the ledger namespace, but no independent store, receiver, or retention authority is proven."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-anchor-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-anchor-monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-monotonic-state.actual": [
+          "The anchor epoch is self-declared and caller-owned; signatures do not prevent withholding, deletion, rollback, or joint replacement."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-real-world-anchor-steward",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-anchor-steward-identity.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-steward-identity.actual": [
+          "Synthetic key possession does not authenticate the steward digest, declared human kind, real person, or host identity."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-anchor-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-time.external": [
+          "Validity-window checks use caller timestamps; no external trusted time receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "global-single-use",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-global-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-global-single-use.actual": [
+          "Comparison remains bound to one presented chain and ledger identity and does not establish global challenge uniqueness."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only synthetic keys and generated fixtures were used; no real person reviewed a current anchor, checkpoint, or plan."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

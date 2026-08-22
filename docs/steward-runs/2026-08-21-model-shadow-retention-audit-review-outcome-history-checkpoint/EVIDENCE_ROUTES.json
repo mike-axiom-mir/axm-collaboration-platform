@@ -1,0 +1,71 @@
+{
+  "schema":"axm.evidence-routes/v1",
+  "status":"TEST_DESIGN_FREEZE",
+  "routes":[
+    {
+      "claimId":"checkpoint-exact-origin",
+      "claim":"The checkpoint exactly commits one unchanged complete v3.2 history at creation.",
+      "kind":"deterministic-behavior",
+      "risk":"high",
+      "passCondition":"Every v3.2 record is loaded in one validated chain read, equal snapshots bracket the read, and exact rebuild equals the presented checkpoint.",
+      "primarySurface":"focused execution against synthetic v3.2 ledgers",
+      "counterevidence":"missing record, changed bracket snapshot, altered checkpoint, or origin rebuild mismatch",
+      "secondarySurfaceIfNeeded":"fresh-process exact rebuild and source/contract inspection",
+      "observedEvidence":"Focused v3.3 execution exact-rebuilt checkpoints from one v3.2 readAll call bracketed by equal snapshots; a changed final bracket failed with LEDGER_MOVED_DURING_PRESENTATION.",
+      "verdict":"PASS",
+      "namedSeam":"v3.2 local filesystem and non-atomic bracketing"
+    },
+    {
+      "claimId":"checkpoint-portable-validation",
+      "claim":"A fresh process can self-validate the minimized checkpoint after the origin ledger is absent.",
+      "kind":"persistence",
+      "risk":"medium",
+      "passCondition":"After bounded removal of the synthetic origin root, a new process validates the exact checkpoint while origin re-verification fails.",
+      "primarySurface":"fresh-process reload after verified synthetic-root removal",
+      "counterevidence":"validator reads the ledger path, embeds the root, or accepts a drifted digest",
+      "secondarySurfaceIfNeeded":"static minimization scan",
+      "observedEvidence":"After bounded removal of the synthetic v3.2 namespace, a fresh process validated the exact checkpoint and audit while checkpoint origin verification failed.",
+      "verdict":"PASS",
+      "namedSeam":"caller must retain checkpoint data"
+    },
+    {
+      "claimId":"relative-history-classification",
+      "claim":"A presented checkpoint classifies later v3.2 histories exactly and fails closed on abnormal continuity.",
+      "kind":"deterministic-behavior",
+      "risk":"high",
+      "passCondition":"Held-out exact, forward, rollback, fork, identity, absent, and corrupt cases produce only their specified typed classifications and zero actions.",
+      "primarySurface":"focused classification matrix",
+      "counterevidence":"misclassification, ignored extra state, authority-bearing output, or accepted corruption",
+      "secondarySurfaceIfNeeded":"fresh-process audit rebuild and schema closure",
+      "observedEvidence":"Held-out exact forward rollback fork identity absent corrupt-ledger and invalid-configuration cases produced only their specified classifications and zero actions.",
+      "verdict":"PASS",
+      "namedSeam":"classification is relative to the caller-presented checkpoint"
+    },
+    {
+      "claimId":"rewrite-boundary",
+      "claim":"A retained original checkpoint detects a whole-ledger replacement, but joint checkpoint-ledger replacement remains possible.",
+      "kind":"persistence",
+      "risk":"high",
+      "passCondition":"The original checkpoint holds a self-consistent rewritten ledger while a checkpoint regenerated from that replacement audits it as exact.",
+      "primarySurface":"explicit full-rewrite and joint-replacement counterexamples",
+      "counterevidence":"original checkpoint accepts rewritten history as exact or module claims original-history proof",
+      "secondarySurfaceIfNeeded":"truth-boundary and README/contract scans",
+      "observedEvidence":"The original checkpoint held a same-manifest whole-ledger replacement; a checkpoint regenerated from the replacement audited that replacement as exact and still refused original-history proof.",
+      "verdict":"PASS",
+      "namedSeam":"checkpoint retention and origin are unauthenticated"
+    },
+    {
+      "claimId":"minimization-authority",
+      "claim":"Public artifacts retain only minimized references/timeline and grant no consequential authority.",
+      "kind":"static-structure",
+      "risk":"high",
+      "passCondition":"Closed schemas, runtime outputs, and contract omit raw review material and fix review-only, hold-unresolved, zero-action truth fields.",
+      "primarySurface":"artifact scans plus runtime assertions",
+      "counterevidence":"raw actors, notes, paths, complete outcomes, execution authority, benefit, learning, promotion, or CANON claims",
+      "secondarySurfaceIfNeeded":"module-contract verifier and source import scan",
+      "observedEvidence":"Runtime key scans closed schemas contract validation and source inspection showed reference-only public history with fixed hold-unresolved zero-action no-authority fields.",
+      "verdict":"PASS",
+      "namedSeam":"pseudonymous references are not authenticated identities"
+    }
+  ]
+}

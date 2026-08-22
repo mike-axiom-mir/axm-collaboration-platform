@@ -161,7 +161,11 @@ check('a valid checked-in index can seed digest-bound fallback evidence', () => 
     promotionQueue: {},
     capabilities: [],
     tools: [{ id: 'alpha', status: 'TEST', selftest: { result }, promotion: { state: 'BLOCKED' } }],
-    truth: { automaticPromotion: false }
+    truth: {
+      automaticPromotion: false,
+      failureDiagnosticsMachinePathRedacted: true,
+      failureDiagnosticsRecognizedCredentialEvidenceRedacted: true
+    }
   });
   assert.equal(receipt.schema, Generator.RECEIPT_SCHEMA);
   assert.deepEqual(receipt.results, [result]);

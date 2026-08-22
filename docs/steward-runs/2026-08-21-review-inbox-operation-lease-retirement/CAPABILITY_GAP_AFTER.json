@@ -1,0 +1,614 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "baseline-crash-residue-reproduction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.baseline-crash-residue-reproduced"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.baseline-crash-residue-reproduced": [
+          "exact v4.3 lease Git blob executed from a temporary module copy; production crash frequency remains unproven"
+        ]
+      }
+    },
+    {
+      "id": "existing-lease-serialization-preserved",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.existing-single-host-serialization-preserved"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.existing-single-host-serialization-preserved": [
+          "fixed local filesystem lease among cooperating ReviewService callers on one host only"
+        ]
+      }
+    },
+    {
+      "id": "read-only-exact-owner-plan",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.read-only-exact-owner-digest-plan"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.read-only-exact-owner-digest-plan": [
+          "plan observes current raw lock bytes and emits a SHA-256 challenge; it does not establish whether the holder is alive"
+        ]
+      }
+    },
+    {
+      "id": "closed-explicit-request",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.closed-explicit-operator-request"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.closed-explicit-operator-request": [
+          "runtime exact-key validation and JSON Schema declaration; no independent metaschema-validator claim"
+        ]
+      }
+    },
+    {
+      "id": "assertion-and-confirmation-challenge",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.assertion-digest-and-confirmation-bound"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.assertion-digest-and-confirmation-bound": [
+          "operator assertion is accepted as an assertion, not authenticated fact"
+        ]
+      }
+    },
+    {
+      "id": "current-process-owner-refusal",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.current-process-owner-refused"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.current-process-owner-refused": [
+          "refuses actual process.pid or an owner held by the same lease instance; no general process-liveness probe"
+        ]
+      }
+    },
+    {
+      "id": "intent-before-retirement",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.intent-written-before-owner-move"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.intent-written-before-owner-move": [
+          "exclusive local evidence file; not an ACID transaction with lock rename and result"
+        ]
+      }
+    },
+    {
+      "id": "exact-owner-recheck",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.exact-owner-digest-rechecked-before-move"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.exact-owner-digest-rechecked-before-move": [
+          "same-host path and bytes only; a malicious or noncooperating writer remains outside the contract"
+        ]
+      }
+    },
+    {
+      "id": "raw-owner-evidence-quarantine",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.raw-owner-bytes-quarantined-with-digest-verification"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.raw-owner-bytes-quarantined-with-digest-verification": [
+          "local evidence directory is not protected or rollback resistant"
+        ]
+      }
+    },
+    {
+      "id": "typed-result",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.typed-result-written-after-evidence-verification"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.typed-result-written-after-evidence-verification": [
+          "result records local mechanism evidence, not safety or holder-death proof"
+        ]
+      }
+    },
+    {
+      "id": "restart-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.new-service-mutation-after-explicit-retirement"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.new-service-mutation-after-explicit-retirement": [
+          "synthetic restart fixture after an asserted crash; no live production recovery claim"
+        ]
+      }
+    },
+    {
+      "id": "evidence-collision-preservation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.preexisting-evidence-never-unlinked-on-exclusive-create-failure"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.preexisting-evidence-never-unlinked-on-exclusive-create-failure": [
+          "deterministic UUID-collision regression fixture"
+        ]
+      }
+    },
+    {
+      "id": "bounded-transient-windows-contention",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.transient-eperm-retried-within-bounded-contention"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.transient-eperm-retried-within-bounded-contention": [
+          "deterministic injected EPERM sequence on Windows semantics; no fairness guarantee"
+        ]
+      }
+    },
+    {
+      "id": "unreadable-evidence-fails-held",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.persistent-unreadable-evidence-typed-held-without-mutation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.persistent-unreadable-evidence-typed-held-without-mutation": [
+          "persistent EPERM is conservatively classified as unreadable held evidence"
+        ]
+      }
+    },
+    {
+      "id": "local-explicit-cli",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.explicit-local-cli-with-exact-state-root"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.explicit-local-cli-with-exact-state-root": [
+          "local command line only; exact state root is required and filesystem roots are refused"
+        ]
+      }
+    },
+    {
+      "id": "no-api-or-browser-route",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.no-api-or-browser-retirement-route"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.no-api-or-browser-retirement-route": [
+          "static source and route assertions; no new rendered surface exists"
+        ]
+      }
+    },
+    {
+      "id": "clean-product-slice-replay",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.clean-product-slice-replay"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.clean-product-slice-replay": [
+          "ten selected commands over 590 tracked files; not a full-repository clean archive replay"
+        ]
+      }
+    },
+    {
+      "id": "zero-consequential-authority",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.zero-execution-adoption-promotion-merge-foundation-or-canon-authority"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.zero-execution-adoption-promotion-merge-foundation-or-canon-authority": [
+          "Mike Tobi / AXM remains merge and CANON gate"
+        ]
+      }
+    },
+    {
+      "id": "specialist-package-lane-excluded",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.lease-retirement.specialist-package-lane-not-inspected"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.lease-retirement.specialist-package-lane-not-inspected": [
+          "incoming AXM_MIRROR_SHADOW_SPECIALIST packages excluded by task scope"
+        ]
+      }
+    },
+    {
+      "id": "safe-automatic-stale-recovery",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.safe-automatic-stale-owner-recovery"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "holder-termination-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.holder-termination-or-abandonment-proof"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "retirement-safety-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.retirement-safety-proof"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "cross-file-acid",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.cross-file-acid"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "multi-host-network-filesystem",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.multi-host-or-network-filesystem-safety"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "external-writer-exclusion",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.noncooperating-external-writer-exclusion"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "protected-rollback-resistant-evidence",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.protected-monotonic-storage-and-rollback-prevention"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "identity-human-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.real-world-identity-human-participation-and-trusted-time"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "live-host-policy-and-signed-review",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.actual-live-host-policy-and-signed-review"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "human-benefit-learning-accessibility",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease-retirement.assistive-technology-human-benefit-or-learning-proof"
+      ],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "review.lease-retirement.actual-live-host-policy-and-signed-review",
+    "review.lease-retirement.assistive-technology-human-benefit-or-learning-proof",
+    "review.lease-retirement.cross-file-acid",
+    "review.lease-retirement.holder-termination-or-abandonment-proof",
+    "review.lease-retirement.multi-host-or-network-filesystem-safety",
+    "review.lease-retirement.noncooperating-external-writer-exclusion",
+    "review.lease-retirement.protected-monotonic-storage-and-rollback-prevention",
+    "review.lease-retirement.real-world-identity-human-participation-and-trusted-time",
+    "review.lease-retirement.retirement-safety-proof",
+    "review.lease-retirement.safe-automatic-stale-owner-recovery"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "review.lease-retirement.actual-live-host-policy-and-signed-review",
+      "requiredBy": [
+        "live-host-policy-and-signed-review"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.lease-retirement.assistive-technology-human-benefit-or-learning-proof",
+      "requiredBy": [
+        "human-benefit-learning-accessibility"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.lease-retirement.cross-file-acid",
+      "requiredBy": [
+        "cross-file-acid"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.lease-retirement.holder-termination-or-abandonment-proof",
+      "requiredBy": [
+        "holder-termination-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.lease-retirement.multi-host-or-network-filesystem-safety",
+      "requiredBy": [
+        "multi-host-network-filesystem"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.lease-retirement.noncooperating-external-writer-exclusion",
+      "requiredBy": [
+        "external-writer-exclusion"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.lease-retirement.protected-monotonic-storage-and-rollback-prevention",
+      "requiredBy": [
+        "protected-rollback-resistant-evidence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.lease-retirement.real-world-identity-human-participation-and-trusted-time",
+      "requiredBy": [
+        "identity-human-trusted-time"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.lease-retirement.retirement-safety-proof",
+      "requiredBy": [
+        "retirement-safety-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.lease-retirement.safe-automatic-stale-owner-recovery",
+      "requiredBy": [
+        "safe-automatic-stale-recovery"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "axm.live-browser-visual-receipt/v1",
+  "status": "PASS",
+  "timeAuthority": "SESSION_ORDER_ONLY_NOT_EXTERNALLY_TRUSTED",
+  "backend": "BROWSER_PRIMARY",
+  "surface": "/tools/review-inbox/index.html",
+  "harness": {
+    "kind": "bounded-read-only-local-http",
+    "items": ["exact-v2.9-held-audit", "digest-mismatched-claimed-held-audit", "generic-exact-digest-review"],
+    "getOnly": true,
+    "postRoutes": "405-read-only",
+    "temporaryReviewStateRemoved": true,
+    "browserTabClosed": true,
+    "viewportOverrideReset": true
+  },
+  "desktop": {
+    "viewport": {"width": 1440, "height": 1000},
+    "baseline": {
+      "queueCards": 3,
+      "typedTextEmpty": true,
+      "voteDisabled": true,
+      "pageScrollWidth": 1440,
+      "screenshotSha256": "f10a6bb14ef4b96d31a9345540aab050b7ff9b803318aa6787cfe15f87d5819e",
+      "captureBoundary": "full-page capture duplicated sticky visual regions while DOM proved one vote panel and three cards; this frame is not used for settled-layout acceptance"
+    },
+    "exactSelection": {
+      "integrityState": "VERIFIED",
+      "voteDisabled": false,
+      "fullDigestCharacters": 64,
+      "rawEvidencePreserved": true,
+      "authorityBoundaryVisible": true,
+      "horizontalPageOverflow": false,
+      "screenshotSha256": "bd9a5fdbd2166f1d0b30c87b04be6d894437cc6ccdf6296c7ea923838c9bbd68"
+    },
+    "mismatchSelection": {
+      "integrityState": "HOLD",
+      "reason": "ITEM_ARTIFACT_DIGEST_MISMATCH",
+      "voteDisabled": true,
+      "rawEvidencePreserved": true,
+      "horizontalPageOverflow": false,
+      "screenshotSha256": "834da120a6809295a08128528c982f0db39a34ccaa0c693625a93bd986d17fad"
+    },
+    "genericSelection": {
+      "typedPanelAbsent": true,
+      "voteDisabled": false,
+      "rawEvidencePreserved": true
+    },
+    "rapidSelection": {
+      "cycles": 5,
+      "finalSelection": "digest-mismatched-held-audit",
+      "finalIntegrityState": "HOLD",
+      "verifiedPanels": 0,
+      "holdPanels": 1,
+      "voteDisabled": true
+    }
+  },
+  "narrow": {
+    "viewport": {"width": 390, "height": 844},
+    "documentClientWidth": 375,
+    "documentScrollWidth": 375,
+    "horizontalPageOverflow": false,
+    "integrityState": "VERIFIED",
+    "factColumns": 1,
+    "votePanelPosition": "static",
+    "fullDigestCharacters": 64,
+    "fullDigestWrappedHeightPixels": 64.2,
+    "holdUnresolvedVisible": true,
+    "canonBoundaryVisible": true,
+    "topScreenshotSha256": "31761148025e54874df89ebacaff33f53b6a8f8b321b426e969ad31e2f4a0189",
+    "authorityScreenshotSha256": "6a6b07d053f844d60c1a88053d382f00b0cab4da609c63a7e8a3184a56ead2d4"
+  },
+  "retention": {
+    "screenshotsClass": "TEMPORARY_CAPTURE",
+    "screenshotsRetained": false,
+    "semanticMeasurementsAndDigestsRetained": true,
+    "rawBrowserTelemetryRetained": false
+  },
+  "counterevidence": [
+    "The harness is synthetic and read-only; it proves no live submission, vote, review decision, identity, or human participation.",
+    "Repeated static frames prove the selected states and layouts, not motion, assistive-technology compatibility, or usability benefit.",
+    "The desktop full-page baseline showed sticky-region stitching from the capture method; DOM cardinality and ordinary viewport frames were used for acceptance."
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-portable-history-checkpoint-pairwise-transition",
+  "version": "v2.3",
+  "status": "TEST",
+  "merge_gate": "Mike Tobi / AXM",
+  "provides": [
+    "model.shadow.portable-history-checkpoint-pairwise.previous-candidate-v2.2-exact-rebuild",
+    "model.shadow.portable-history-checkpoint-pairwise.anchor-identity-comparison",
+    "model.shadow.portable-history-checkpoint-pairwise.anchor-continuity-profile-comparison",
+    "model.shadow.portable-history-checkpoint-pairwise.witness-policy-identity-comparison",
+    "model.shadow.portable-history-checkpoint-pairwise.witness-policy-continuity-profile-comparison",
+    "model.shadow.portable-history-checkpoint-pairwise.ledger-identity-dimension-comparison",
+    "model.shadow.portable-history-checkpoint-pairwise.candidate-time-ordering",
+    "model.shadow.portable-history-checkpoint-pairwise.exact-anchored-package-replay",
+    "model.shadow.portable-history-checkpoint-pairwise.exact-history-recheckpoint",
+    "model.shadow.portable-history-checkpoint-pairwise.forward-full-history-prefix",
+    "model.shadow.portable-history-checkpoint-pairwise.strict-history-rollback",
+    "model.shadow.portable-history-checkpoint-pairwise.history-replacement-or-fork",
+    "model.shadow.portable-history-checkpoint-pairwise.checkpoint-id-equivocation",
+    "model.shadow.portable-history-checkpoint-pairwise.snapshot-drift-without-history-extension",
+    "model.shadow.portable-history-checkpoint-pairwise.closed-classification-and-decision",
+    "model.shadow.portable-history-checkpoint-pairwise.fresh-process-exact-rebuild",
+    "model.shadow.portable-history-checkpoint-pairwise.independently-valid-fork-counterexample",
+    "model.shadow.portable-history-checkpoint-pairwise.withheld-branch-nonexclusion",
+    "model.shadow.portable-history-checkpoint-pairwise.joint-pair-replacement-counterexample",
+    "model.shadow.portable-history-checkpoint-pairwise.data-minimization-resource-authority-boundary",
+    "axm.model-shadow-two-phase-history-checkpoint-anchored-pairwise-transition/v1"
+  ],
+  "consumes": [
+    "two exact caller-presented v2.2 anchored checkpoint rebuild packages",
+    "the two self-validating v2.1 portable checkpoints nested inside those packages",
+    "one caller-supplied transition id and untrusted UTC comparison time"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.model-shadow-two-phase-history-checkpoint-anchored-pairwise-transition/v1"],
+    "accepts": ["one exact previous v2.2 anchored checkpoint package", "one exact candidate v2.2 anchored checkpoint package"]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "invalid-previous-or-candidate-v2.2-anchored-checkpoint-package",
+      "comparison-time-before-either-anchored-checkpoint-verification",
+      "anchor-identity-profile-witness-profile-or-ledger-identity-drift-as-forward-continuity",
+      "same-checkpoint-id-with-different-digest-as-valid-recheckpoint",
+      "same-history-with-different-snapshot-binding-as-exact-recheckpoint",
+      "candidate-history-that-removes-replaces-or-diverges-from-any-prior-proposal-or-settlement-reference-as-forward-extension",
+      "caller-presented-checkpoint-or-anchor-as-authenticated-origin-or-pin",
+      "normalized-policy-profile-match-as-authenticated-policy-rotation-or-policy-authority",
+      "pairwise-forward-classification-as-execution-adoption-or-retention-authority",
+      "pairwise-comparison-as-global-fork-or-withheld-branch-exclusion",
+      "pairwise-comparison-as-global-transition-uniqueness-or-globally-consistent-log",
+      "pairwise-hold-as-deletion-or-rollback-prevention",
+      "joint-replacement-of-both-presented-pairs-as-original-continuity",
+      "observable-key-and-digest-separation-as-controller-independence-or-collusion-exclusion",
+      "declared-actor-kind-as-authenticated-human-participation",
+      "caller-time-as-externally-trusted-time",
+      "raw-public-key-signature-private-key-model-output-private-context-or-ledger-path-persistence",
+      "provider-invocation-experiment-evaluation-learning-or-human-benefit",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "state_owner_detail": "caller retains both v2.2 packages and the pairwise receipt",
+    "reload": "not-applicable",
+    "reload_detail": "exact-rebuild both v2.2 packages and the v2.3 receipt in a fresh process",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable",
+    "cleanup_detail": "caller owns all inputs and outputs; this module stores nothing",
+    "installed": false,
+    "promoted": false
+  }
+}

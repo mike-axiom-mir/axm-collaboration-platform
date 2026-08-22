@@ -1,0 +1,130 @@
+{
+  "schema": "axm.human-benefit-readiness-verification-receipt/v1",
+  "version": "0.1.0",
+  "verifiedAt": "2026-08-19T05:23:35.8961686Z",
+  "status": "TEST",
+  "result": "VERIFIED_WITH_LIMITS",
+  "persistentStewardshipGoal": "ACTIVE",
+  "subject": "Consent-bound human-benefit evidence readiness",
+  "workspace": {
+    "branch": "local-visual-fabric-20260728",
+    "head": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "directGitStatusEntriesObserved": 3975,
+    "expandedSnapshotStatusEntriesObserved": 12239,
+    "snapshotTruncated": true,
+    "sharedWorkspace": true,
+    "stableWholeWorkspaceClaimed": false,
+    "lane": [
+      "shared/human-benefit-evidence",
+      "docs/steward-runs/2026-08-19-human-benefit-readiness"
+    ],
+    "existingSharedSeamsTouched": [],
+    "newLeafSeamsAdded": [
+      "human-benefit protocol, session, evaluation and judgment schemas",
+      "human-benefit TEST module contract"
+    ],
+    "foreignChangesModified": false
+  },
+  "outcome": {
+    "capabilityGapBefore": "BLOCKED",
+    "capabilityGapAfter": "READY",
+    "readinessOnly": true,
+    "currentReadinessState": "READY_FOR_VOLUNTARY_HUMAN_SESSION",
+    "currentGroundedGrowthState": "CANDIDATE_ONLY",
+    "humanSession": "NOT_RUN",
+    "explicitHumanJudgment": "NOT_RUN",
+    "humanBenefit": "NOT_PROVEN",
+    "groundedOutcomeUpdated": false
+  },
+  "focusedVerification": [
+    {
+      "command": "node shared/human-benefit-evidence/selftest.js",
+      "result": "PASS",
+      "detail": "46 checks covering protocol, consent, withdrawal, minimal retention, chronology, synthetic/live separation, deterministic aggregation, tamper refusal and judgment boundaries."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-human-benefit-readiness/runner-selftest.js",
+      "result": "PASS",
+      "detail": "5 checks; repository-local private input and forbidden identity fields refused; withdrawal retains no participant evidence."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-human-benefit-readiness/current-protocol.js --exact",
+      "result": "PASS",
+      "detail": "Live protocol and answer-free participant packet match exact source artifacts."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-human-benefit-readiness/current-readiness.js --exact",
+      "result": "PASS",
+      "detail": "Readiness receipt matches exact sources with real human session NOT_RUN."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-human-benefit-readiness/run-current-human-session-interactive.js with non-TTY input",
+      "result": "EXPECTED_REFUSAL",
+      "detail": "Piped or automated human input is refused before a session is created."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-grounded-growth/current-outcome.js --exact",
+      "result": "PASS",
+      "detail": "Prior grounded outcome remains CANDIDATE_ONLY; human claim remains NOT_RUN."
+    }
+  ],
+  "requiredWorkshopChecks": [
+    { "command": "node verify.js", "result": "PASS", "detail": "0 FAIL; 17 warnings" },
+    { "command": "node hub/hub-selftest.js", "result": "PASS", "detail": "0 FAIL" },
+    { "command": "node hub/route-selftest.js", "result": "PASS", "detail": "0 FAIL" },
+    { "command": "node hub/graft-selftest.js", "result": "PASS", "detail": "0 FAIL" },
+    { "command": "node hub/skin-selftest.js", "result": "PASS", "detail": "0 FAIL" },
+    { "command": "node hub/verify-plus.js", "result": "VERIFIED_WITH_LIMITS", "detail": "6 receipts; 9 atomic claims; 0 FAIL; 17 warnings" },
+    { "command": "node tests/html-script-syntax-test.js", "result": "PASS", "detail": "55 PASS; 0 FAIL" },
+    { "command": "node tests/tool-forge-package-test.js", "result": "PASS", "detail": "installed false" },
+    { "command": "node tools/agent-tool-forge/selftest.js", "result": "PASS", "detail": "17 PASS; 0 FAIL" },
+    { "command": "node tools/evidence-desk/selftest.js", "result": "PASS", "detail": "36 PASS; 0 FAIL" }
+  ],
+  "adjacentChecks": [
+    { "command": "node shared/evidence-retention/selftest.js", "result": "PASS", "detail": "27 checks" },
+    { "command": "node shared/verified-capability-loop/selftest.js", "result": "PASS", "detail": "21 checks" },
+    { "command": "node shared/grounded-growth-outcomes/selftest.js", "result": "PASS", "detail": "31 checks" },
+    { "command": "all scoped JSON parse", "result": "PASS" },
+    { "command": "node --check for all scoped JavaScript", "result": "PASS" },
+    { "command": "readiness source SHA-256 closure", "result": "PASS" },
+    { "command": "absolute Windows path and credential-like literal scans", "result": "PASS" },
+    { "command": "scoped trailing-whitespace scan", "result": "PASS" }
+  ],
+  "subjectRefs": [
+    { "path": "shared/human-benefit-evidence/human-benefit-evidence.js", "sha256": "sha256:e965aa7ac0f4a88738a8d3457c33a0f18759d55257eaf43d1de409cf032dee93" },
+    { "path": "shared/human-benefit-evidence/module.contract.json", "sha256": "sha256:41589282d9b1437de9a9af7f7b53cd759ecaa140ba61e17ad80872f92846e7e5" },
+    { "path": "shared/human-benefit-evidence/README.md", "sha256": "sha256:d1bb5cd799f729aa6b8816cdad85010e268680b6b8d4e8e8903cb2515d907893" },
+    { "path": "shared/human-benefit-evidence/selftest.js", "sha256": "sha256:1d1073d23a0a100bcbfc848500227bf88a1f0127e8b8fe42c89c93d4935fd42b" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/capability-gap.before.json", "sha256": "sha256:8d2bad49d503cb4e5b5e27f7c507dc24c684066256f0cd805dfe8619ed19c5c6" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/capability-gap.after.json", "sha256": "sha256:b0cd6c03229709ae5a576038fd71e8ae55481a38d11b9c0f20fd1116cca72500" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/current-protocol.js", "sha256": "sha256:32203a24e68fdc18dd114083cfbe0c2a80c223d67257d435d03442d68ecfaf7b" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/current-protocol.json", "sha256": "sha256:65df18500d9b23bd8a1218ef146a5ef2654fc34145fc3a3d3269b9802ac5c381" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/current-participant-packet.json", "sha256": "sha256:c9315e8155da4f5ac9412e1effb0ad4dbb45ac81d8b387473cfac90f18ac7d8c" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/run-current-human-session.js", "sha256": "sha256:5f9a3862768a1b8407727658e29c5aee3fae8dd55a38dfb34701178303766538" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/run-current-human-session-interactive.js", "sha256": "sha256:1c7c666f3350e9b9d961ceaee9a3c92b9ef40dc18a3981585771a3b7c72f3d3d" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/current-readiness.js", "sha256": "sha256:a5ee9e01b904634cbc55d05aa51bab48728b23501ad298354fe3368ec5c7e74c" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/current-readiness-receipt.json", "sha256": "sha256:c2b260b48289e486a17c63c51475f404d33f75e3dba6aa208e45b8c6fc122dbd" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/EVIDENCE_ROUTES.md", "sha256": "sha256:c23d8a068ccd22cd0ae2b7bac9d5d80ddf013a2260dd09fd6519258af97dbedd" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/README.md", "sha256": "sha256:76735a9835f2fa6cae6f1fc9ac6eaf00ae0f047410d5ca095c9b4cbd0513bb0a" },
+    { "path": "docs/steward-runs/2026-08-19-human-benefit-readiness/CURATION_RECEIPT.md", "sha256": "sha256:c0b34b678100e3648e01c396f50b5473784625e04cc03a970c5bb52d6f902e31" }
+  ],
+  "proofNotRun": [
+    "No person completed the interactive journey.",
+    "No explicit human-benefit judgment was recorded.",
+    "No human-source authentication was attempted or claimed.",
+    "No browser render/click test was run because no browser-facing UI changed.",
+    "No cohort, general-human, accessibility, demographic, cultural, device or long-session claim was tested."
+  ],
+  "authority": {
+    "automaticExecution": false,
+    "installed": false,
+    "registered": false,
+    "promoted": false,
+    "published": false,
+    "pushed": false,
+    "committed": false,
+    "canon": false,
+    "foundationMutation": false,
+    "humanMergeGatePreserved": true
+  }
+}

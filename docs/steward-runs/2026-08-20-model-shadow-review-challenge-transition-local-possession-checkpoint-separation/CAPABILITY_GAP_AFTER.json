@@ -1,0 +1,600 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-v1.6-anchored-witness",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.exact-rebuild": [
+          "v1.7 composes the unchanged v1.6 anchored-witness verifier."
+        ]
+      }
+    },
+    {
+      "id": "existing-v0.6-separation-pattern",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-separation.pattern.reference"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separation.pattern.reference": [
+          "v1.7 adapts the v0.6 pure non-overlap pattern without modifying that sealed leaf."
+        ]
+      }
+    },
+    {
+      "id": "cross-layer-key-overlap-refusal",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.cross-layer-key-fingerprint-overlap-refusal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.cross-layer-key-fingerprint-overlap-refusal": [
+          "An identical verified public-key fingerprint in the witness and anchor layers is refused."
+        ]
+      }
+    },
+    {
+      "id": "cross-layer-principal-overlap-refusal",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.cross-layer-declared-principal-overlap-refusal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.cross-layer-declared-principal-overlap-refusal": [
+          "An identical declared actor/steward digest in the witness and anchor layers is refused."
+        ]
+      }
+    },
+    {
+      "id": "domain-separated-set-digests",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.domain-separated-set-digests"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.domain-separated-set-digests": [
+          "Sorted witness/anchor key and declared-principal sets produce four domain-separated exact digests without exposing the sets."
+        ]
+      }
+    },
+    {
+      "id": "observable-nonoverlap-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.observable-nonoverlap-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.observable-nonoverlap-exact-rebuild": [
+          "Exact v1.6 and v1.5 rebuilds drive a self-digested TEST receipt with zero observed overlap."
+        ]
+      }
+    },
+    {
+      "id": "separated-continuity-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.separated-continuity-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.separated-continuity-exact-rebuild": [
+          "The exact separation receipt must drive the unchanged v1.6 exact, extension, absence, invalidity, identity-drift or rollback/replacement comparison."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.fresh-process-continuity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.fresh-process-continuity": [
+          "A fresh child process recaptures local state and exact-rebuilds the separated audit."
+        ]
+      }
+    },
+    {
+      "id": "same-controller-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.distinct-keys-same-controller-nonindependence-proof"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.distinct-keys-same-controller-nonindependence-proof": [
+          "One synthetic controller creates distinct keys and principal digests for both layers and still passes non-overlap, proving independence is not established."
+        ]
+      }
+    },
+    {
+      "id": "public-artifact-data-minimization",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.public-artifact-data-minimization"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.public-artifact-data-minimization": [
+          "Public outputs retain set digests and counts while omitting raw principals, keys, signatures, configured party labels, state paths, custody records, assessment receipts, private keys, private context and model output."
+        ]
+      }
+    },
+    {
+      "id": "resource-bounds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.resource-bounds"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.resource-bounds": [
+          "Upstream seats remain bounded to ten per layer and separation inputs/outputs remain within 512 KiB canonical artifacts."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.authority-none": [
+          "The pure adapter authenticates no custody, controller, principal, human, anchor, pin, host or time and grants no execution, adoption, promotion, merge or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "independent-key-custody",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.key-custody-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.key-custody-independence.actual": [
+          "Different observed key fingerprints do not prove independent custody."
+        ]
+      }
+    },
+    {
+      "id": "independent-real-world-controllers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.controller-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.controller-independence.actual": [
+          "The same synthetic controller creates all witness and anchor keys."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-principal-mapping",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.principal-identity.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.principal-identity.actual": [
+          "Different caller-declared digests do not prove different real-world principals."
+        ]
+      }
+    },
+    {
+      "id": "cross-layer-collusion-exclusion",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.collusion-exclusion.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.collusion-exclusion.actual": [
+          "Observable non-overlap cannot exclude collusion."
+        ]
+      }
+    },
+    {
+      "id": "host-authenticated-anchor-pin",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.pin-authority.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.pin-authority.actual": [
+          "The expected anchor digest remains caller presented and unauthenticated."
+        ]
+      }
+    },
+    {
+      "id": "anchor-policy-authority",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.policy-authority.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.policy-authority.actual": [
+          "The anchor policy remains caller presented and unauthenticated."
+        ]
+      }
+    },
+    {
+      "id": "witness-policy-authority",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.policy-authority.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.policy-authority.actual": [
+          "The witness policy remains caller supplied and unauthenticated."
+        ]
+      }
+    },
+    {
+      "id": "witness-policy-replacement-prevention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.policy-replacement-prevention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.policy-replacement-prevention.actual": [
+          "Observable separation neither prevents original-anchor reauthorization nor joint anchor/pin/policy replacement."
+        ]
+      }
+    },
+    {
+      "id": "independently-operated-anchor-signers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.signer-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.signer-independence.actual": [
+          "One synthetic controller generates and controls all signer seats."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-human-anchor",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.human-signer.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.human-signer.actual": [
+          "A declared human kind is not an authenticated human or participation receipt."
+        ]
+      }
+    },
+    {
+      "id": "independently-retained-anchor",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-anchor.external-retention.actual": [
+          "The pure module stores no anchor and the fixture remains caller controlled."
+        ]
+      }
+    },
+    {
+      "id": "independently-retained-separation-receipt",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separated-witness.external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separated-witness.external-retention.actual": [
+          "The pure module stores no separation receipt and the fixture remains caller controlled."
+        ]
+      }
+    },
+    {
+      "id": "independently-retained-checkpoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.checkpoint-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.checkpoint-external-retention.actual": [
+          "The pure module stores no checkpoint and the fixture remains caller controlled."
+        ]
+      }
+    },
+    {
+      "id": "actual-network-transport",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.network-transport.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.network-transport.actual": [
+          "The runtime opens no socket."
+        ]
+      }
+    },
+    {
+      "id": "other-host-delivery",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.other-host-delivery.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.other-host-delivery.actual": [
+          "All fixtures remain on one host."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.time.external": [
+          "Verification and audit times are caller supplied."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.monotonic-state.actual": [
+          "No protected monotonic state exists."
+        ]
+      }
+    },
+    {
+      "id": "rollback-prevention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.rollback-prevention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.rollback-prevention.actual": [
+          "Detection remains relative and the pure adapter prevents no state replacement."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.host-authorization.actual": [
+          "A library call is not host authorization."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or experiment was invoked."
+        ]
+      }
+    },
+    {
+      "id": "held-out-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.evaluation.actual": [
+          "No baseline or challenger evaluation was run."
+        ]
+      }
+    },
+    {
+      "id": "branch-adoption",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.adoption.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.adoption.actual": [
+          "Separation grants no branch-adoption authority."
+        ]
+      }
+    },
+    {
+      "id": "held-out-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    },
+    {
+      "id": "held-out-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.learning.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.learning.held-out": [
+          "No held-out learning evaluation was run."
+        ]
+      }
+    },
+    {
+      "id": "promotion-merge-canon",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "axm.workshop.canon-decision.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "axm.workshop.canon-decision.actual": [
+          "Mike Tobi remains the merge and CANON gate; no decision was supplied."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

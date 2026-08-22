@@ -1,0 +1,19 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-two-phase-history-checkpoint-pin-settlement-ledger-proposal/v1",
+  "title":"AXM local pin settlement proposal",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","proposalId","proposedAt","log","manifestRef","previousProposalRef","previousSettledPinRef","transitionRef","successorPinRef","decision","state","truth","proposalDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-two-phase-history-checkpoint-pin-settlement-ledger-proposal/v1"},"version":{"const":"2.5.0"},"status":{"const":"TEST"},"proposalId":{"type":"string","minLength":1,"maxLength":180},"proposedAt":{"type":"string","format":"date-time"},
+    "log":{"$ref":"#/$defs/log"},"manifestRef":{"$ref":"#/$defs/reference"},"previousProposalRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},"previousSettledPinRef":{"$ref":"#/$defs/reference"},"transitionRef":{"$ref":"#/$defs/reference"},"successorPinRef":{"$ref":"#/$defs/reference"},
+    "decision":{"type":"object","additionalProperties":false,"required":["reviewRequired","pendingSettlement","settledHeadAdvanced","autonomousActionCount"],"properties":{"reviewRequired":{"const":true},"pendingSettlement":{"const":true},"settledHeadAdvanced":{"const":false},"autonomousActionCount":{"const":0}}},
+    "state":{"const":"ELIGIBLE_SUCCESSOR_PIN_PROPOSED_TO_LOCAL_LEDGER_SETTLED_HEAD_UNCHANGED"},"truth":{"$ref":"#/$defs/truth"},"proposalDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "reference":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}},
+    "log":{"type":"object","additionalProperties":false,"required":["logId","authorityOrigin","storageMode","sequence"],"properties":{"logId":{"type":"string","minLength":1,"maxLength":180},"authorityOrigin":{"const":"CALLER_CONFIGURED_LOCAL_PIN_SETTLEMENT_LEDGER_UNAUTHENTICATED"},"storageMode":{"const":"LOCAL_EXCLUSIVE_CREATE_FILE_FSYNC_SETTLED_ONLY_HEAD"},"sequence":{"type":"integer","minimum":1,"maximum":10000}}},
+    "truth":{"type":"object","additionalProperties":false,"required":["eligibleV24TransitionVerifiedByExactRebuild","successorPinValidated","proposalConfirmationObserved","proposalIsPendingOnly","localSettledHeadAdvanced","declaredConfirmationAuthenticatesHost","authenticatedHumanReviewProven","executionAuthorized","adoptionAuthorized","providerInvoked","evaluationPerformed","humanBenefitProven","broadLearningClaimed","rawPublicKeyEmbedded","rawSignatureEmbedded","privateKeyIngested","sourceOrLedgerPathEmbedded","rawModelOutputEmbedded","privateContextEmbedded","automaticPromotion","automaticMerge","automaticCanon","foundationMutation"],"properties":{"eligibleV24TransitionVerifiedByExactRebuild":{"const":true},"successorPinValidated":{"const":true},"proposalConfirmationObserved":{"const":true},"proposalIsPendingOnly":{"const":true},"localSettledHeadAdvanced":{"const":false},"declaredConfirmationAuthenticatesHost":{"const":false},"authenticatedHumanReviewProven":{"const":false},"executionAuthorized":{"const":false},"adoptionAuthorized":{"const":false},"providerInvoked":{"const":false},"evaluationPerformed":{"const":false},"humanBenefitProven":{"const":false},"broadLearningClaimed":{"const":false},"rawPublicKeyEmbedded":{"const":false},"rawSignatureEmbedded":{"const":false},"privateKeyIngested":{"const":false},"sourceOrLedgerPathEmbedded":{"const":false},"rawModelOutputEmbedded":{"const":false},"privateContextEmbedded":{"const":false},"automaticPromotion":{"const":false},"automaticMerge":{"const":false},"automaticCanon":{"const":false},"foundationMutation":{"const":false}}}
+  }
+}

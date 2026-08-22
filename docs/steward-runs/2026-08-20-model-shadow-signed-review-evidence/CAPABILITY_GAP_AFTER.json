@@ -1,0 +1,168 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "exact-upstream-reviewed-handoff",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.receipt-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.receipt-exact-rebuild": [
+          "The v1.0 proposal and declared-review handoff rebuild from exact caller inputs; actor authentication remains absent."
+        ]
+      }
+    },
+    {
+      "id": "detached-signature-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.detached-ed25519-verify",
+        "model.shadow.review.exact-artifact-bind",
+        "model.shadow.review.retained-approval-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.detached-ed25519-verify": [
+          "Verifies detached Ed25519 signatures under an exact caller-supplied policy; no private key is ingested."
+        ],
+        "model.shadow.review.exact-artifact-bind": [
+          "Each signed payload binds the exact reviewed handoff, proposal, Challenger Lab plan, Review Inbox evidence, and caller challenge digests."
+        ],
+        "model.shadow.review.retained-approval-bind": [
+          "Each signer actor digest, actor-kind label, and approval timestamp must match an approval retained by the exact rebuilt handoff."
+        ]
+      }
+    },
+    {
+      "id": "caller-policy-authority-admission",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.caller-policy-authority-admission"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.caller-policy-authority-admission": [
+          "The policy origin must be CALLER_SUPPLIED_UNAUTHENTICATED; a caller cannot self-declare a host-trusted root."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.execution-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.execution-authority-none": [
+          "Valid signatures create evidence of policy-listed key possession only and grant no execution, evaluation, adoption, promotion, merge, or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "receipt-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.receipt-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.receipt-exact-rebuild": [
+          "Receipt content and digest rebuild from the exact handoff input, handoff, key policy, challenge, signatures, and caller time."
+        ]
+      }
+    },
+    {
+      "id": "host-trust-anchor",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.host-trust-anchor.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.host-trust-anchor.actual": [
+          "No Mike- or host-provisioned reviewer public-key trust root was supplied or inspected."
+        ]
+      }
+    },
+    {
+      "id": "single-use-challenge-ledger",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-single-use.actual": [
+          "No persistent nonce or challenge-consumption ledger exists in this pure leaf."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only generated Ed25519 selftest keys and synthetic approvals were used; no real person reviewed a current plan."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

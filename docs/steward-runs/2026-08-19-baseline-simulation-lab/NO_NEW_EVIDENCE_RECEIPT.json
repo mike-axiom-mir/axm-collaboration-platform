@@ -1,0 +1,71 @@
+{
+  "generated": "2026-08-19T08:01:00.000Z",
+  "integrity": {
+    "state": "SEALED",
+    "algorithm": "sha256",
+    "scope": "canonical-receipt-content-without-generated-or-integrity",
+    "digest": "sha256:6c68be980d74c00756fdd531170b9997f869604042a5f1447244e64a5e3aae53"
+  },
+  "schema": "axm.evidence-receipt/v2",
+  "format": "axm-evidence-receipt",
+  "v": 2,
+  "title": "Live no-new-information baseline comparison",
+  "goal": "Show that the exact prior and current portable baseline are unchanged and justify a bounded stop.",
+  "actor": {
+    "id": "keel-codex-technical-steward",
+    "type": "TOOL"
+  },
+  "source_checkpoint": "audit:baseline-comparison-observation",
+  "status": "OBSERVED_WITH_RECORDED_SCOPE",
+  "counts": {
+    "claims": 1,
+    "claims_passed": 1,
+    "claims_failed": 0,
+    "claims_unknown": 0,
+    "actions_executed": 0,
+    "checks_passed": 0,
+    "checks_failed": 0,
+    "checks_not_run": 0,
+    "changes": 0
+  },
+  "truth": {
+    "claimed_done": false,
+    "execution_is_verification": false,
+    "receipt_generation_is_independent_verification": false,
+    "all_claims_resolved": true,
+    "all_checks_evidenced": false,
+    "fully_verified": true,
+    "receiver_acceptance_proven": false,
+    "canon_assigned": false
+  },
+  "observations": [
+    {
+      "id": "claim-live-no-new-information",
+      "claim": "The exact prior and current portable baseline capsule are unchanged.",
+      "kind": "deterministic-behavior",
+      "risk": "MEDIUM",
+      "verdict": "PASS",
+      "pass_condition": "Deterministic capsule comparison returns NO_NEW_INFORMATION with matching exact references.",
+      "primary_surface": "focused-execution",
+      "required_surface": "focused-execution",
+      "route_guidance": "Run known inputs and assert the exact outputs.",
+      "observed_evidence": "The stored comparison receipt returns NO_NEW_INFORMATION, refreshRequired false, and automaticAction false.",
+      "counterevidence": "A content, configuration, subject, information-reference, or freshness difference would refute the claim.",
+      "source_kind": "focused-execution-receipt",
+      "source": "audit:baseline-comparison-observation",
+      "named_seam": "",
+      "route_issues": [],
+      "evidence_state": "COMPLETE",
+      "effective_verdict": "PASS"
+    }
+  ],
+  "actions": [],
+  "checks": [],
+  "changes": [],
+  "limitations": [
+    "This proves only the previously scoped portable-baseline-capsule leaf is unchanged; it does not claim the whole shared Workshop is unchanged."
+  ],
+  "next_actions": [],
+  "warnings": [],
+  "validation_errors": []
+}

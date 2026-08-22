@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-receiver-reload-receipt/v1",
+  "title": "Model Shadow local receiver custody reload receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "reloadReceiptId", "loadedAt", "status",
+    "custodyRecordRef", "assessmentRef", "rosterRef", "receiverPolicyRef",
+    "receiverIdDigest", "storedAssessmentReceiptDigest",
+    "acknowledgementPackageDigest", "recordFileName", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-local-receiver-reload-receipt/v1"},
+    "version": {"const": "1.2.0"},
+    "reloadReceiptId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "loadedAt": {"type": "string", "format": "date-time", "maxLength": 64},
+    "status": {"const": "TEST"},
+    "custodyRecordRef": {"$ref": "#/$defs/reference"},
+    "assessmentRef": {"$ref": "#/$defs/reference"},
+    "rosterRef": {"$ref": "#/$defs/reference"},
+    "receiverPolicyRef": {"$ref": "#/$defs/reference"},
+    "receiverIdDigest": {"$ref": "#/$defs/digest"},
+    "storedAssessmentReceiptDigest": {"$ref": "#/$defs/digest"},
+    "acknowledgementPackageDigest": {"$ref": "#/$defs/digest"},
+    "recordFileName": {"type": "string", "pattern": "^[a-f0-9]{64}\\.json$"},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "custodyRecordReloadedFromLocalFilesystem", "custodyRecordDigestVerified",
+        "custodyRecordSignatureVerified", "receiverAcknowledgementSignatureVerified",
+        "storedAssessmentReceiptSelfDigestVerified", "storedAssessmentReceiptPackageDigestVerified",
+        "assessmentUpstreamExactReverifiedWithoutInput", "freshProcessProvenByReceipt",
+        "custodyRecordFileFsyncWasReportedAtWrite", "durabilityBeyondReportedFileFsyncProven",
+        "independentlyOperatedReceiverProven", "independentExternalRetentionProven",
+        "retentionDurationProven", "protectedMonotonicStateProven", "deletionOrRollbackPrevented",
+        "rawReceiverLabelEmbedded", "rawPublicKeyEmbedded", "rawSignatureEmbedded",
+        "fullAssessmentReceiptEmbedded", "machinePathEmbedded", "executionAuthorized",
+        "adoptionAuthorized", "automaticCanon"
+      ],
+      "properties": {
+        "custodyRecordReloadedFromLocalFilesystem": {"const": true},
+        "custodyRecordDigestVerified": {"const": true},
+        "custodyRecordSignatureVerified": {"const": true},
+        "receiverAcknowledgementSignatureVerified": {"const": true},
+        "storedAssessmentReceiptSelfDigestVerified": {"const": true},
+        "storedAssessmentReceiptPackageDigestVerified": {"const": true},
+        "assessmentUpstreamExactReverifiedWithoutInput": {"const": false},
+        "freshProcessProvenByReceipt": {"const": false},
+        "custodyRecordFileFsyncWasReportedAtWrite": {"const": true},
+        "durabilityBeyondReportedFileFsyncProven": {"const": false},
+        "independentlyOperatedReceiverProven": {"const": false},
+        "independentExternalRetentionProven": {"const": false},
+        "retentionDurationProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "rawReceiverLabelEmbedded": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "fullAssessmentReceiptEmbedded": {"const": false},
+        "machinePathEmbedded": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "automaticCanon": {"const": false}
+      }
+    },
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

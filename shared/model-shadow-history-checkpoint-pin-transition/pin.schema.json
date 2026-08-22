@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-two-phase-history-checkpoint-portable-pin/v1",
+  "title": "AXM portable anchored-history checkpoint pin",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "pinId", "pinnedAt", "pinKind", "pinGeneration", "previousPinRef", "binding", "state", "truth", "pinDigest"],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-two-phase-history-checkpoint-portable-pin/v1"},
+    "version": {"const": "2.4.0"},
+    "status": {"const": "TEST"},
+    "pinId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "pinnedAt": {"type": "string", "format": "date-time"},
+    "pinKind": {"enum": ["GENESIS", "SUCCESSOR"]},
+    "pinGeneration": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "previousPinRef": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+    "binding": {"$ref": "#/$defs/binding"},
+    "state": {"const": "PORTABLE_CALLER_RETAINED_PIN_DERIVED_FROM_EXACT_ANCHORED_PACKAGE_ORIGIN_RETENTION_AND_AUTHORITY_NOT_PROVEN"},
+    "truth": {"$ref": "#/$defs/truth"},
+    "pinDigest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"pinKind": {"const": "GENESIS"}}, "required": ["pinKind"]},
+      "then": {"properties": {"pinGeneration": {"const": 0}, "previousPinRef": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"pinKind": {"const": "SUCCESSOR"}}, "required": ["pinKind"]},
+      "then": {"properties": {"pinGeneration": {"type": "integer", "minimum": 1}, "previousPinRef": {"$ref": "#/$defs/reference"}}}
+    }
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "snapshotBinding": {
+      "type": "object", "additionalProperties": false, "required": ["schema", "sha256"],
+      "properties": {"schema": {"type": "string", "minLength": 1, "maxLength": 180}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["anchoredCheckpointRef", "checkpointRef", "anchorRef", "anchorPolicyRef", "anchorProfileDigest", "witnessPolicyRef", "witnessProfileDigest", "ledgerIdentityDigest", "snapshotBinding", "proposalHistoryDigest", "settlementHistoryDigest", "proposalCount", "settlementCount"],
+      "properties": {
+        "anchoredCheckpointRef": {"$ref": "#/$defs/reference"},
+        "checkpointRef": {"$ref": "#/$defs/reference"},
+        "anchorRef": {"$ref": "#/$defs/reference"},
+        "anchorPolicyRef": {"$ref": "#/$defs/reference"},
+        "anchorProfileDigest": {"$ref": "#/$defs/digest"},
+        "witnessPolicyRef": {"$ref": "#/$defs/reference"},
+        "witnessProfileDigest": {"$ref": "#/$defs/digest"},
+        "ledgerIdentityDigest": {"$ref": "#/$defs/digest"},
+        "snapshotBinding": {"$ref": "#/$defs/snapshotBinding"},
+        "proposalHistoryDigest": {"$ref": "#/$defs/digest"},
+        "settlementHistoryDigest": {"$ref": "#/$defs/digest"},
+        "proposalCount": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "settlementCount": {"type": "integer", "minimum": 0, "maximum": 10000}
+      }
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["anchoredCheckpointVerifiedByExactRebuildWhenDerived", "completeCheckpointHistoryBound", "normalizedPolicyProfilesBound", "pinSelfDigestValidWhenDerived", "pinOriginAuthenticated", "pinAuthorityAuthenticated", "pinExternallyRetainedByModule", "protectedMonotonicStateProven", "deletionOrRollbackPrevented", "globalCurrentnessProven", "hostAuthorizationAuthenticated", "callerTimeExternallyTrusted", "providerInvoked", "evaluationPerformed", "humanBenefitProven", "broadLearningClaimed", "automaticWrite", "automaticAdoption", "automaticPromotion", "automaticMerge", "automaticCanon", "foundationMutation"],
+      "properties": {
+        "anchoredCheckpointVerifiedByExactRebuildWhenDerived": {"const": true},
+        "completeCheckpointHistoryBound": {"const": true},
+        "normalizedPolicyProfilesBound": {"const": true},
+        "pinSelfDigestValidWhenDerived": {"const": true},
+        "pinOriginAuthenticated": {"const": false},
+        "pinAuthorityAuthenticated": {"const": false},
+        "pinExternallyRetainedByModule": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "globalCurrentnessProven": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "callerTimeExternallyTrusted": {"const": false},
+        "providerInvoked": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticAdoption": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    }
+  }
+}

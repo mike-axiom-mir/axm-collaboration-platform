@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-ledger-manifest/v1",
+  "title": "Model Shadow review challenge ledger manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "ledgerId", "authorityOrigin",
+    "storageMode", "manifestDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-ledger-manifest/v1"},
+    "version": {"const": "0.2.0"},
+    "status": {"const": "TEST"},
+    "ledgerId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "authorityOrigin": {"const": "CALLER_STATE_ROOT_UNAUTHENTICATED"},
+    "storageMode": {"const": "APPEND_ONLY_EXCLUSIVE_CREATE"},
+    "manifestDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

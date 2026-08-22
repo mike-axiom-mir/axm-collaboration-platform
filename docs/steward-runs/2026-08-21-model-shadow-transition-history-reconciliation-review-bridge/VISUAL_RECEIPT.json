@@ -1,0 +1,54 @@
+{
+  "schema":"axm.live-browser-visual-receipt/v1",
+  "status":"PASS",
+  "timeAuthority":"SESSION_ORDER_ONLY_NOT_EXTERNALLY_TRUSTED",
+  "backend":"BROWSER_PRIMARY",
+  "surface":"/tools/review-inbox/index.html",
+  "harness":{
+    "kind":"bounded-read-only-local-http",
+    "items":["exact-v4.0-transition-history-divergence","digest-mismatched-v4.0-transition-history-divergence","exact-existing-v2.9-held-audit","generic-exact-digest-review"],
+    "getOnly":true,
+    "postRoutes":"405-read-only",
+    "temporaryReviewStateRemoved":true,
+    "browserTabClosed":true,
+    "viewportOverrideReset":true,
+    "consoleWarningsOrErrors":0
+  },
+  "desktop":{
+    "viewport":{"width":1280,"height":720},
+    "baseline":{"queueCards":4,"typedTextEmpty":true,"voteDisabled":true,"horizontalPageOverflow":false,"screenshotSha256":"d1d2433dedd5b3dc55427aaecc8b8c0b31ef6205b2f9d9fc725c68477122c7a2"},
+    "exactSelection":{"integrityState":"VERIFIED","heading":"Transition-history divergence context","voteDisabled":false,"leftHistoryCommitmentVisible":true,"rightHistoryCommitmentVisible":true,"firstDivergence":"event 1","fullDigestCharacters":64,"rawEvidencePreserved":true,"unresolvedBoundaryVisible":true,"approvalNotReconciliationVisible":true,"authorityBoundaryVisible":true,"horizontalPageOverflow":false,"screenshotSha256":"6234b4918c02e2d2f515ce63fb7bec6d860dc0e1f0755390f4ba823bb7978e21"},
+    "mismatchSelection":{"integrityState":"HOLD","heading":"Do not vote on this claimed divergence","reason":"ITEM_ARTIFACT_DIGEST_MISMATCH","voteDisabled":true,"rawEvidencePreserved":true,"verifiedPanels":0,"holdPanels":1,"horizontalPageOverflow":false,"screenshotSha256":"aea237ecc0882644ff0d6f2fb33c5c4bd2cb66a2fde1723f018ac776f5490519"},
+    "existingV29Regression":{"integrityState":"VERIFIED","heading":"Held retention-audit decision context","voteDisabled":false},
+    "genericSelection":{"typedPanelAbsent":true,"voteDisabled":false,"rawEvidencePreserved":true},
+    "rapidSelection":{"cycles":5,"finalSelection":"digest-mismatched-transition-history-divergence","finalIntegrityState":"HOLD","verifiedPanels":0,"holdPanels":1,"voteDisabled":true}
+  },
+  "narrow":{
+    "viewport":{"width":390,"height":844},
+    "documentClientWidth":375,
+    "documentScrollWidth":375,
+    "horizontalPageOverflow":false,
+    "integrityState":"VERIFIED",
+    "factColumns":1,
+    "votePanelPosition":"static",
+    "fullDigestCharacters":64,
+    "fullDigestWrappedHeightPixels":64.2,
+    "unresolvedBoundaryVisible":true,
+    "approvalNotReconciliationVisible":true,
+    "canonBoundaryVisible":true,
+    "typedScreenshotSha256":"e6fea23d1b8ea524e261190d9ddf833cede6a79d7fd53d1fbc0308cd8aa5c883",
+    "authorityScreenshotSha256":"053652197c72f598914a164eb1d29fb5f55a9a30a51728077fa6b4539ac2fdcc"
+  },
+  "retention":{
+    "screenshotsClass":"TEMPORARY_CAPTURE",
+    "screenshotsRetained":false,
+    "inMemoryFrameVariablesCleared":true,
+    "semanticMeasurementsAndDigestsRetained":true,
+    "rawBrowserTelemetryRetained":false
+  },
+  "counterevidence":[
+    "The harness is synthetic and read-only; it proves no live submission, vote, review decision, authenticated identity, actual human participation, or reconciliation.",
+    "Repeated static frames prove selected states and responsive layout, not motion, assistive-technology compatibility, usability benefit, provider execution, learning, or a globally consistent history.",
+    "The enabled vote control proves only that the exact embedded artifact matched the item digest; the harness deliberately returned 405 for every write route and no vote was attempted."
+  ]
+}

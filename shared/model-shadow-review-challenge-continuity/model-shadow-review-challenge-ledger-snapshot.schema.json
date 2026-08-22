@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-ledger-snapshot/v1",
+  "title": "Model Shadow review challenge ledger snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "observationId", "observedAt", "status", "ledgerId",
+    "availability", "manifestRef", "entryCount", "entriesDigest", "entries",
+    "errors", "truth", "snapshotDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-ledger-snapshot/v1"},
+    "version": {"const": "0.3.0"},
+    "observationId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "observedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "ledgerId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "availability": {"enum": ["AVAILABLE", "ABSENT", "INVALID"]},
+    "manifestRef": {"oneOf": [{"$ref": "#/$defs/reference"}, {"type": "null"}]},
+    "entryCount": {"type": "integer", "minimum": 0},
+    "entriesDigest": {"$ref": "#/$defs/digest"},
+    "entries": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/entry"}
+    },
+    "errors": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 120}
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "readOnlyObservation", "currentLedgerFilesValidated",
+        "callerOwnedFilesystemObserved", "snapshotOriginAuthenticated",
+        "observationTimeExternallyTrusted", "stateRootPathEmbedded",
+        "absenceClaimedAsNeverExisted", "invalidStateClaimedAsUnusedLedger",
+        "checkpointAuthorityAuthenticated", "hostAuthorizationAuthenticated",
+        "executionAuthorized", "automaticWrite", "automaticPromotion",
+        "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "readOnlyObservation": {"const": true},
+        "currentLedgerFilesValidated": {"type": "boolean"},
+        "callerOwnedFilesystemObserved": {"const": true},
+        "snapshotOriginAuthenticated": {"const": false},
+        "observationTimeExternallyTrusted": {"const": false},
+        "stateRootPathEmbedded": {"const": false},
+        "absenceClaimedAsNeverExisted": {"const": false},
+        "invalidStateClaimedAsUnusedLedger": {"const": false},
+        "checkpointAuthorityAuthenticated": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "executionAuthorized": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "snapshotDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["challengeDigest", "consumptionReceiptDigest", "consumedAt"],
+      "properties": {
+        "challengeDigest": {"$ref": "#/$defs/digest"},
+        "consumptionReceiptDigest": {"$ref": "#/$defs/digest"},
+        "consumedAt": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

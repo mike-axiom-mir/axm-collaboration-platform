@@ -1,0 +1,224 @@
+{
+  "schema": "axm.ai-workflow-evaluation/v1",
+  "version": "0.1.0",
+  "evaluationId": "workspace-local-package-ai-workflow-20260819",
+  "generatedAt": "2026-08-19T10:20:01.000Z",
+  "beneficiary": "AI_WORKFLOW",
+  "workflow": "Decide where a technical package proof belongs and whether its lifecycle may be called complete.",
+  "proofSurface": "AI_WORKFLOW_EVALUATION",
+  "fixturePolicy": "Representative routing and completion cases are frozen as data outside both comparison policies. They test the repository proof workflow only, not browser or application download settings.",
+  "inputRefs": [
+    {
+      "id": "workspace-local-package-proof-workflow-cases-20260819",
+      "schema": "axm.steward-workflow-case-set/v1",
+      "sha256": "sha256:171557ef7f861ed920aaa51df0387e9479b4c5c40784980926a9b209de809d8e"
+    },
+    {
+      "id": "ai-workflow-coverage-evaluator",
+      "schema": "text/javascript",
+      "sha256": "sha256:1a9fadd5d6f14f9fe06e55dba665ee652a96f02bb90b13ff220d644242062716"
+    },
+    {
+      "id": "workspace-local-package-proof-implementation",
+      "schema": "text/javascript",
+      "sha256": "sha256:250046ca9c8fdf0b094a13929b40b29019581020e747383bce5fb75b0df6b6bb"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-readme-md",
+      "schema": "text/markdown",
+      "sha256": "sha256:e552f93146de0a14d84497a106466b78a01db31dbe2e632e7c30f566953bff40"
+    },
+    {
+      "id": "case-source:tests-tool-forge-package-test-js",
+      "schema": "text/javascript",
+      "sha256": "sha256:250046ca9c8fdf0b094a13929b40b29019581020e747383bce5fb75b0df6b6bb"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-selftest-js",
+      "schema": "text/javascript",
+      "sha256": "sha256:96f023011f12ab1c3419d3971714fe5e65788efc22ac44de87c1d05256f38e35"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-verification-receipt-json",
+      "schema": "application/json",
+      "sha256": "sha256:cab8bc4ace75df5f70463534f037b6381f01dd707aba50ad86108d4f19d963db"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-evidence-route-json",
+      "schema": "application/json",
+      "sha256": "sha256:b241a2b01f9684003523d050a6217f5ebf64bd6aaa224c483f0160da45d88a13"
+    }
+  ],
+  "baseline": {
+    "policyId": "HOST_TEMP_AND_EXIT_ZERO_SHORTCUTS",
+    "description": "A declared comparison policy routes transient proof through host temp and treats exit zero as completion without workspace, readback, cleanup, or path checks.",
+    "correctDecisions": 3,
+    "totalDecisions": 8,
+    "unsupportedUnsafeOrWastefulDecisions": 5
+  },
+  "outcome": {
+    "policyId": "WORKSPACE_LOCAL_VERIFIED_LIFECYCLE_WORKFLOW",
+    "description": "The guard separates user outputs from transient proof, follows the workspace, and requires verified clean uninstalled state before completion.",
+    "correctDecisions": 8,
+    "totalDecisions": 8,
+    "unsupportedUnsafeOrWastefulDecisions": 0,
+    "newlyCorrectedDecisions": 5
+  },
+  "cases": [
+    {
+      "id": "d-workspace-with-c-host-temp",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-readme-md",
+        "schema": "text/markdown",
+        "sha256": "sha256:e552f93146de0a14d84497a106466b78a01db31dbe2e632e7c30f566953bff40"
+      },
+      "phase": "ROUTE",
+      "expectedDecision": "ROUTE_WORKSPACE_SCRATCH",
+      "expectedRule": "TRANSIENT_PROOF_FOLLOWS_WORKSPACE",
+      "baselineDecision": "ROUTE_HOST_TEMP",
+      "baselineRule": "HOST_TEMP_DEFAULT",
+      "candidateDecision": "ROUTE_WORKSPACE_SCRATCH",
+      "candidateRule": "TRANSIENT_PROOF_FOLLOWS_WORKSPACE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "c-workspace-with-c-host-temp",
+      "sourceRef": {
+        "id": "case-source:tests-tool-forge-package-test-js",
+        "schema": "text/javascript",
+        "sha256": "sha256:250046ca9c8fdf0b094a13929b40b29019581020e747383bce5fb75b0df6b6bb"
+      },
+      "phase": "ROUTE",
+      "expectedDecision": "ROUTE_WORKSPACE_SCRATCH",
+      "expectedRule": "TRANSIENT_PROOF_FOLLOWS_WORKSPACE",
+      "baselineDecision": "ROUTE_HOST_TEMP",
+      "baselineRule": "HOST_TEMP_DEFAULT",
+      "candidateDecision": "ROUTE_WORKSPACE_SCRATCH",
+      "candidateRule": "TRANSIENT_PROOF_FOLLOWS_WORKSPACE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "hostile-cwd-temp-and-tmp",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-selftest-js",
+        "schema": "text/javascript",
+        "sha256": "sha256:96f023011f12ab1c3419d3971714fe5e65788efc22ac44de87c1d05256f38e35"
+      },
+      "phase": "ROUTE",
+      "expectedDecision": "ROUTE_WORKSPACE_SCRATCH",
+      "expectedRule": "TRANSIENT_PROOF_IGNORES_HOST_TEMP_REDIRECTION",
+      "baselineDecision": "ROUTE_HOST_TEMP",
+      "baselineRule": "HOST_TEMP_DEFAULT",
+      "candidateDecision": "ROUTE_WORKSPACE_SCRATCH",
+      "candidateRule": "TRANSIENT_PROOF_IGNORES_HOST_TEMP_REDIRECTION",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "user-requested-persistent-download",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-readme-md",
+        "schema": "text/markdown",
+        "sha256": "sha256:e552f93146de0a14d84497a106466b78a01db31dbe2e632e7c30f566953bff40"
+      },
+      "phase": "ROUTE",
+      "expectedDecision": "USE_USER_SELECTED_DESTINATION",
+      "expectedRule": "USER_OUTPUT_REMAINS_USER_ROUTED",
+      "baselineDecision": "USE_USER_SELECTED_DESTINATION",
+      "baselineRule": "USER_OUTPUT_REMAINS_USER_ROUTED",
+      "candidateDecision": "USE_USER_SELECTED_DESTINATION",
+      "candidateRule": "USER_OUTPUT_REMAINS_USER_ROUTED",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    },
+    {
+      "id": "verified-cleaned-uninstalled-proof",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-verification-receipt-json",
+        "schema": "application/json",
+        "sha256": "sha256:cab8bc4ace75df5f70463534f037b6381f01dd707aba50ad86108d4f19d963db"
+      },
+      "phase": "COMPLETE",
+      "expectedDecision": "COMPLETE_VERIFIED_UNINSTALLED",
+      "expectedRule": "COMPLETE_REQUIRES_VERIFIED_CLEAN_STATE",
+      "baselineDecision": "COMPLETE_VERIFIED_UNINSTALLED",
+      "baselineRule": "EXIT_ZERO_EQUALS_COMPLETE",
+      "candidateDecision": "COMPLETE_VERIFIED_UNINSTALLED",
+      "candidateRule": "COMPLETE_REQUIRES_VERIFIED_CLEAN_STATE",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    },
+    {
+      "id": "leftover-workspace-proof-directory",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-evidence-route-json",
+        "schema": "application/json",
+        "sha256": "sha256:b241a2b01f9684003523d050a6217f5ebf64bd6aaa224c483f0160da45d88a13"
+      },
+      "phase": "COMPLETE",
+      "expectedDecision": "HOLD_FOR_CLEANUP",
+      "expectedRule": "LEFTOVER_TRANSIENT_STATE_BLOCKS_COMPLETION",
+      "baselineDecision": "COMPLETE_VERIFIED_UNINSTALLED",
+      "baselineRule": "EXIT_ZERO_EQUALS_COMPLETE",
+      "candidateDecision": "HOLD_FOR_CLEANUP",
+      "candidateRule": "LEFTOVER_TRANSIENT_STATE_BLOCKS_COMPLETION",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "proof-path-escapes-workspace",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-evidence-route-json",
+        "schema": "application/json",
+        "sha256": "sha256:b241a2b01f9684003523d050a6217f5ebf64bd6aaa224c483f0160da45d88a13"
+      },
+      "phase": "COMPLETE",
+      "expectedDecision": "HOLD_FOR_PATH_ESCAPE",
+      "expectedRule": "WORKSPACE_ESCAPE_BLOCKS_COMPLETION",
+      "baselineDecision": "COMPLETE_VERIFIED_UNINSTALLED",
+      "baselineRule": "EXIT_ZERO_EQUALS_COMPLETE",
+      "candidateDecision": "HOLD_FOR_PATH_ESCAPE",
+      "candidateRule": "WORKSPACE_ESCAPE_BLOCKS_COMPLETION",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "package-proof-process-fails",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-workspace-local-package-proof-selftest-js",
+        "schema": "text/javascript",
+        "sha256": "sha256:96f023011f12ab1c3419d3971714fe5e65788efc22ac44de87c1d05256f38e35"
+      },
+      "phase": "COMPLETE",
+      "expectedDecision": "HOLD_FOR_FAILED_PROOF",
+      "expectedRule": "FAILED_PROOF_BLOCKS_COMPLETION",
+      "baselineDecision": "HOLD_FOR_FAILED_PROOF",
+      "baselineRule": "FAILED_PROCESS_HOLD",
+      "candidateDecision": "HOLD_FOR_FAILED_PROOF",
+      "candidateRule": "FAILED_PROOF_BLOCKS_COMPLETION",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    }
+  ],
+  "verdict": "PASS",
+  "limitations": [
+    "No language model was invoked; this proves a deterministic package-proof routing workflow, not model learning, intelligence, provider behavior, or broad generalization.",
+    "The eight cases cover the repository-required Node proof only; browser, application, and user-selected download behavior remains outside the transient route.",
+    "The host-temp baseline is a declared comparison policy, not a claim about any named model or the current AXM steward.",
+    "Historical C-temp residue remains a separate retention decision and this result does not establish human benefit, availability, promotion, merge, or CANON."
+  ],
+  "truth": {
+    "modelInvoked": false,
+    "modelWeightsChanged": false,
+    "modelGeneralizationClaimed": false,
+    "humanParticipant": false,
+    "humanBenefitClaimed": false,
+    "automaticExecution": false,
+    "automaticInstall": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "receiptDigest": "sha256:0b9dcb255d200c2b368b0d30a980c9948cb34228f8e68bc6d08fbc34695d7365"
+}

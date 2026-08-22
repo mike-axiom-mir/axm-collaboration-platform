@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-receiver-receipt/v1",
+  "title": "Model Shadow local sender-receiver receipt binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "receiverReceiptId", "receivedAt", "status",
+    "senderReceiptRef", "custodyRecordRef", "assessmentRef", "rosterRef",
+    "receiverPolicyRef", "receiverIdDigest", "envelopeDigest", "payloadDigest",
+    "storedAssessmentReceiptDigest", "acknowledgementPackageDigest",
+    "acknowledgementSignedPayloadDigest", "recordFileName", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-local-receiver-receipt/v1"},
+    "version": {"const": "1.2.0"},
+    "receiverReceiptId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "receivedAt": {"type": "string", "format": "date-time", "maxLength": 64},
+    "status": {"const": "TEST"},
+    "senderReceiptRef": {"$ref": "#/$defs/reference"},
+    "custodyRecordRef": {"$ref": "#/$defs/reference"},
+    "assessmentRef": {"$ref": "#/$defs/reference"},
+    "rosterRef": {"$ref": "#/$defs/reference"},
+    "receiverPolicyRef": {"$ref": "#/$defs/reference"},
+    "receiverIdDigest": {"$ref": "#/$defs/digest"},
+    "envelopeDigest": {"$ref": "#/$defs/digest"},
+    "payloadDigest": {"$ref": "#/$defs/digest"},
+    "storedAssessmentReceiptDigest": {"$ref": "#/$defs/digest"},
+    "acknowledgementPackageDigest": {"$ref": "#/$defs/digest"},
+    "acknowledgementSignedPayloadDigest": {"$ref": "#/$defs/digest"},
+    "recordFileName": {"type": "string", "pattern": "^[a-f0-9]{64}\\.json$"},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "senderAndReceiverReceiptsBoundToExactEnvelopeDigest", "senderOutboxFileFsyncReported",
+        "receiverReadExactCanonicalEnvelope", "assessmentVerifiedByExactRebuildBeforeCustodyWrite",
+        "receiverPolicyVerifiedByExactRebuild", "receiverAcknowledgementSignatureVerified",
+        "receiverCustodyRecordSignatureVerified", "dataMinimizedAssessmentReceiptPersisted",
+        "receiverCustodyRecordFileFsyncCompleted", "actualLocalFileHandoffObserved",
+        "separateProcessProvenByReceipt", "actualNetworkTransportProven", "otherHostDeliveryProven",
+        "independentlyOperatedReceiverProven", "independentExternalRetentionProven",
+        "retentionDurationProven", "protectedMonotonicStateProven", "deletionOrRollbackPrevented",
+        "rawReceiverLabelEmbedded", "rawPublicKeyEmbedded", "rawSignatureEmbedded",
+        "privateKeyEmbedded", "fullAssessmentReceiptEmbedded", "machinePathEmbedded",
+        "executionAuthorized", "adoptionAuthorized", "automaticCanon"
+      ],
+      "properties": {
+        "senderAndReceiverReceiptsBoundToExactEnvelopeDigest": {"const": true},
+        "senderOutboxFileFsyncReported": {"const": true},
+        "receiverReadExactCanonicalEnvelope": {"const": true},
+        "assessmentVerifiedByExactRebuildBeforeCustodyWrite": {"const": true},
+        "receiverPolicyVerifiedByExactRebuild": {"const": true},
+        "receiverAcknowledgementSignatureVerified": {"const": true},
+        "receiverCustodyRecordSignatureVerified": {"const": true},
+        "dataMinimizedAssessmentReceiptPersisted": {"const": true},
+        "receiverCustodyRecordFileFsyncCompleted": {"const": true},
+        "actualLocalFileHandoffObserved": {"const": true},
+        "separateProcessProvenByReceipt": {"const": false},
+        "actualNetworkTransportProven": {"const": false},
+        "otherHostDeliveryProven": {"const": false},
+        "independentlyOperatedReceiverProven": {"const": false},
+        "independentExternalRetentionProven": {"const": false},
+        "retentionDurationProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "rawReceiverLabelEmbedded": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "privateKeyEmbedded": {"const": false},
+        "fullAssessmentReceiptEmbedded": {"const": false},
+        "machinePathEmbedded": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "automaticCanon": {"const": false}
+      }
+    },
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.baseline-simulation-lab-run/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "runId", "generatedAt", "state", "baseline",
+    "previousCycleRef", "need", "newInformationRefs", "seats", "adapters",
+    "budget", "outputClosures", "closureAssessment", "artifactAncestry",
+    "ideaEvidenceAncestry", "ancestryAssessment", "evidence", "signals",
+    "transportChecks", "transportAssessment", "permissionChecks",
+    "permissionAssessment", "handoffs", "handoffAssessment", "humanReview",
+    "humanReviewAssessment", "authorityAttempts", "authorityAssessment",
+    "cycleInput", "cycleReceipt", "analysis", "holds",
+    "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.baseline-simulation-lab-run/v1"},
+    "version": {"const": "0.1.0"},
+    "runId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "state": {
+      "enum": [
+        "NO_NEW_INFORMATION", "GAP_EVIDENCE_NEEDED", "EXISTING_CAPABILITY_RECORDED",
+        "GAP_RECORDED", "CANDIDATE_RECORDED", "REPAIR_OR_REJECT", "EVIDENCE_HOLD",
+        "AWAITING_HUMAN_REVIEW", "HUMAN_HOLD", "REJECTED",
+        "READY_FOR_GOVERNED_INTAKE", "AVAILABLE_FOR_REUSE", "REFRESH_DUE",
+        "AUTHORITY_HOLD", "CONTRACT_HOLD", "BASELINE_HOLD", "ANCESTRY_HOLD",
+        "OUTPUT_HOLD", "BUDGET_HOLD", "TRANSPORT_HOLD", "PERMISSION_HOLD",
+        "HANDOFF_HOLD", "HUMAN_REVIEW_HOLD", "CYCLE_HOLD"
+      ]
+    },
+    "baseline": {"type": "object"},
+    "previousCycleRef": {"oneOf": [{"$ref": "#/$defs/reference"}, {"type": "null"}]},
+    "need": {"type": "object"},
+    "newInformationRefs": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
+    "seats": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "object"}},
+    "adapters": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"type": "object"}},
+    "budget": {"type": "object"},
+    "outputClosures": {"type": "array", "maxItems": 256, "items": {"type": "object"}},
+    "closureAssessment": {"type": "object"},
+    "artifactAncestry": {"type": "object"},
+    "ideaEvidenceAncestry": {"type": "object"},
+    "ancestryAssessment": {"type": "object"},
+    "evidence": {"type": "object"},
+    "signals": {"type": "array", "maxItems": 128, "items": {"type": "object"}},
+    "transportChecks": {"type": "array", "maxItems": 128, "items": {"type": "object"}},
+    "transportAssessment": {"type": "object"},
+    "permissionChecks": {"type": "array", "maxItems": 128, "items": {"type": "object"}},
+    "permissionAssessment": {"type": "object"},
+    "handoffs": {"type": "array", "maxItems": 128, "items": {"type": "object"}},
+    "handoffAssessment": {"type": "object"},
+    "humanReview": {"type": "object"},
+    "humanReviewAssessment": {"type": "object"},
+    "authorityAttempts": {"type": "array", "maxItems": 128, "items": {"type": "object"}},
+    "authorityAssessment": {"type": "object"},
+    "cycleInput": {"oneOf": [{"type": "object"}, {"type": "null"}]},
+    "cycleReceipt": {"oneOf": [{"type": "object"}, {"type": "null"}]},
+    "analysis": {"type": "object"},
+    "holds": {"type": "array", "items": {"type": "object"}},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority", "sourceExecutedByLab", "modelInvokedByLab",
+        "automaticNextGeneration", "automaticBuild", "automaticWrite",
+        "automaticInstall", "automaticPermissionGrant", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation",
+        "modelWeightTrainingClaimed", "publication", "push", "humanMergeGateRequired"
+      ],
+      "properties": {
+        "authority": {"const": "EVIDENCE_GAP_CANDIDATE_AND_REVIEW_PACKET_ONLY"},
+        "sourceExecutedByLab": {"const": false},
+        "modelInvokedByLab": {"const": false},
+        "automaticNextGeneration": {"const": false},
+        "automaticBuild": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false},
+        "modelWeightTrainingClaimed": {"const": false},
+        "publication": {"const": false},
+        "push": {"const": false},
+        "humanMergeGateRequired": {"const": true}
+      }
+    },
+    "receiptDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    }
+  }
+}

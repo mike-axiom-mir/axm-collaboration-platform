@@ -1,0 +1,27 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-review-request/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","requestId","generatedAt","mode","observationRef","reviewArtifact","reviewCandidate","submission","state","nextGate","truth","requestDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-review-request/v1"},"version":{"const":"4.0.0"},"status":{"const":"TEST"},
+    "requestId":{"type":"string","minLength":1,"maxLength":180},"generatedAt":{"$ref":"#/$defs/time"},"mode":{"const":"DATA_ONLY_COMPLETE_HISTORY_DIVERGENCE_RECONCILIATION_REVIEW_REQUEST_UNAUTHENTICATED"},
+    "observationRef":{"$ref":"#/$defs/reference"},"reviewArtifact":{"$ref":"review-artifact.schema.json"},
+    "reviewCandidate":{
+      "type":"object","additionalProperties":false,"required":["kind","title","sourceRef","artifactDigest","summary","requiredSeats","action"],
+      "properties":{
+        "kind":{"const":"model-shadow-transition-settlement-history-reconciliation"},"title":{"const":"Model Shadow transition-history divergence"},"sourceRef":{"type":"string","minLength":1,"maxLength":300},"artifactDigest":{"$ref":"#/$defs/rawDigest"},"summary":{"type":"string","minLength":1,"maxLength":2000},"requiredSeats":{"type":"integer","minimum":1,"maximum":10},
+        "action":{"type":"object","additionalProperties":false,"required":["schema","type","artifact","automaticApply","reconciliationOnApproval","executionOnApproval","adoptionOnApproval","promotionAuthority","mergeAuthority","canonAuthority"],"properties":{"schema":{"const":"axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-review-action/v1"},"type":{"const":"inspect-transition-settlement-history-divergence"},"artifact":{"$ref":"review-artifact.schema.json"},"automaticApply":{"const":false},"reconciliationOnApproval":{"const":false},"executionOnApproval":{"const":false},"adoptionOnApproval":{"const":false},"promotionAuthority":{"const":false},"mergeAuthority":{"const":false},"canonAuthority":{"const":false}}}
+      }
+    },
+    "submission":{"type":"object","additionalProperties":false,"required":["method","route","requiredHeader","bodyRef","explicitHostMutationRequired"],"properties":{"method":{"const":"POST"},"route":{"const":"/api/reviews"},"requiredHeader":{"type":"object","additionalProperties":false,"required":["name","value"],"properties":{"name":{"const":"x-axm-review"},"value":{"const":"explicit-submit"}}},"bodyRef":{"$ref":"#/$defs/reference"},"explicitHostMutationRequired":{"const":true}}},
+    "state":{"const":"READY_FOR_EXPLICIT_HOST_AUTHORIZED_RECONCILIATION_REVIEW_SUBMISSION"},"nextGate":{"const":"AUTHENTICATED_STEWARD_REVIEW_THEN_SEPARATELY_AUTHORIZED_RECONCILIATION"},
+    "truth":{
+      "type":"object","additionalProperties":false,
+      "required":["v39ObservationExactRebuilt","completeHistoryDivergenceRequired","reviewArtifactSelfDigestBound","reviewCandidateExactArtifactDigestMatch","explicitHostRouteDeclared","reviewSubmittedByModule","reviewItemObserved","hostMutationAuthorizationProven","actualHumanReviewProven","reviewActorAuthenticated","reviewVoteRecorded","reviewApprovalRecorded","reviewApprovalWouldReconcileDivergence","reconciliationPerformed","divergenceResolved","networkInvoked","providerInvoked","evaluationPerformed","executionAuthorized","adoptionAuthorized","humanBenefitProven","broadLearningClaimed","autonomousActionCount","automaticPermissionGrant","automaticInstall","automaticPromotion","automaticMerge","automaticCanon","foundationMutation"],
+      "properties":{"v39ObservationExactRebuilt":{"const":true},"completeHistoryDivergenceRequired":{"const":true},"reviewArtifactSelfDigestBound":{"const":true},"reviewCandidateExactArtifactDigestMatch":{"const":true},"explicitHostRouteDeclared":{"const":true},"reviewSubmittedByModule":{"const":false},"reviewItemObserved":{"const":false},"hostMutationAuthorizationProven":{"const":false},"actualHumanReviewProven":{"const":false},"reviewActorAuthenticated":{"const":false},"reviewVoteRecorded":{"const":false},"reviewApprovalRecorded":{"const":false},"reviewApprovalWouldReconcileDivergence":{"const":false},"reconciliationPerformed":{"const":false},"divergenceResolved":{"const":false},"networkInvoked":{"const":false},"providerInvoked":{"const":false},"evaluationPerformed":{"const":false},"executionAuthorized":{"const":false},"adoptionAuthorized":{"const":false},"humanBenefitProven":{"const":false},"broadLearningClaimed":{"const":false},"autonomousActionCount":{"const":0},"automaticPermissionGrant":{"const":false},"automaticInstall":{"const":false},"automaticPromotion":{"const":false},"automaticMerge":{"const":false},"automaticCanon":{"const":false},"foundationMutation":{"const":false}}
+    },
+    "requestDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{"digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},"rawDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},"time":{"type":"string","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"},"reference":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}}}
+}

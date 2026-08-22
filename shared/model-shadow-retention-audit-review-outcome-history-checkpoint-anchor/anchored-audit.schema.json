@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored-audit/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","auditId","auditedAt","anchoredCheckpointRef","checkpointRef","upstreamAuditRef","classification","current","comparison","decision","state","truth","auditDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored-audit/v1"},"version":{"const":"3.4.0"},"status":{"const":"TEST"},
+    "auditId":{"type":"string","minLength":1,"maxLength":180},"auditedAt":{"$ref":"#/$defs/time"},
+    "anchoredCheckpointRef":{"$ref":"#/$defs/ref"},"checkpointRef":{"$ref":"#/$defs/ref"},"upstreamAuditRef":{"$ref":"#/$defs/ref"},
+    "classification":{"enum":["EXACT_HISTORY_MATCH","FORWARD_HISTORY_EXTENSION","OBSERVED_STRICT_HISTORY_ROLLBACK_RELATIVE_TO_PRESENTED_CHECKPOINT","OBSERVED_HISTORY_REPLACEMENT_OR_FORK_RELATIVE_TO_PRESENTED_CHECKPOINT","OBSERVED_LEDGER_IDENTITY_DRIFT","OBSERVED_LEDGER_ABSENT","OBSERVED_LEDGER_OR_CONFIGURATION_INVALID"]},
+    "current":{"type":"object"},"comparison":{"type":"object"},"decision":{"type":"object"},
+    "state":{"const":"ANCHORED_CHECKPOINT_EXACT_REBUILT_AND_COMPARED_READ_ONLY_AUTHORITY_RETENTION_AND_HOLD_RESOLUTION_NOT_PROVEN"},
+    "truth":{"type":"object"},"auditDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{"digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},"time":{"type":"string","format":"date-time","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"},"ref":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}}}
+}

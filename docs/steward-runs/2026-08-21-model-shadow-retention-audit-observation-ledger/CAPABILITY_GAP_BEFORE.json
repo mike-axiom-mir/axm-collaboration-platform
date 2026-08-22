@@ -1,0 +1,670 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "exact-v27-audit-before-write",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.retention-audit.exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.retention-audit.exact-rebuild": [
+          "v2.7 verifyAudit requires the live retention and source package"
+        ]
+      }
+    },
+    {
+      "id": "explicit-write-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.explicit-unauthenticated-confirmation"
+      ],
+      "declaredConstraints": {
+        "model.shadow.retention-audit.explicit-unauthenticated-confirmation": [
+          "no v2.7 audit persistence write exists"
+        ]
+      }
+    },
+    {
+      "id": "three-root-separation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.three-root-distinct-nonnested"
+      ],
+      "declaredConstraints": {
+        "model.shadow.retention-audit.three-root-distinct-nonnested": [
+          "v2.7 constrains only source and retention roots"
+        ]
+      }
+    },
+    {
+      "id": "durable-full-observation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.full-observation-exclusive-create-file-fsync"
+      ],
+      "declaredConstraints": {
+        "model.shadow.retention-audit.full-observation-exclusive-create-file-fsync": [
+          "v2.7 declares auditReceiptPersistedByModule false"
+        ]
+      }
+    },
+    {
+      "id": "append-only-chain",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.contiguous-digest-chain"
+      ],
+      "declaredConstraints": {
+        "model.shadow.retention-audit.contiguous-digest-chain": [
+          "no exact v2.7 audit observation chain exists"
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-reload",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.fresh-process-origin-independent-reload"
+      ],
+      "declaredConstraints": {
+        "model.shadow.retention-audit.fresh-process-origin-independent-reload": [
+          "v2.7 fresh audit reload still requires the current source presentation"
+        ]
+      }
+    },
+    {
+      "id": "hold-preservation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.hold-observation-preserved"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "nonhold-preservation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.nonhold-observation-preserved"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "time-ordering",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.caller-time-ordering"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "single-stream-identity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.single-retention-manifest-binding"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "corruption-refusal",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.corruption-gap-unexpected-state-fail-closed"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "concurrency-refusal",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.concurrent-writer-exclusion"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "resource-bounds",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.aggregate-and-input-resource-bounds"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "data-minimization",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.public-artifact-data-minimization"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "upstream-nonmutation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.no-durable-upstream-change"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "bounded-survival",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.reload-after-source-and-retention-loss"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "joint-loss-counterexample",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.joint-three-root-loss-counterexample"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authority-none",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.authority-none"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "closed-contract",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit.closed-artifact-schemas"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "external-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit.independently-operated-external-retention"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "protected-monotonicity",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit.protected-monotonic-storage"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authenticated-identity",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit.authenticated-host-actor-human"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit.externally-trusted-time"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "provider-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit.provider-execution-or-evaluation"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "benefit-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit.human-benefit-or-learning-proof"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "promotion-authority",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit.adoption-promotion-merge-canon-authority"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "model.shadow.retention-audit.aggregate-and-input-resource-bounds",
+    "model.shadow.retention-audit.authority-none",
+    "model.shadow.retention-audit.caller-time-ordering",
+    "model.shadow.retention-audit.closed-artifact-schemas",
+    "model.shadow.retention-audit.concurrent-writer-exclusion",
+    "model.shadow.retention-audit.contiguous-digest-chain",
+    "model.shadow.retention-audit.corruption-gap-unexpected-state-fail-closed",
+    "model.shadow.retention-audit.explicit-unauthenticated-confirmation",
+    "model.shadow.retention-audit.fresh-process-origin-independent-reload",
+    "model.shadow.retention-audit.full-observation-exclusive-create-file-fsync",
+    "model.shadow.retention-audit.hold-observation-preserved",
+    "model.shadow.retention-audit.joint-three-root-loss-counterexample",
+    "model.shadow.retention-audit.no-durable-upstream-change",
+    "model.shadow.retention-audit.nonhold-observation-preserved",
+    "model.shadow.retention-audit.public-artifact-data-minimization",
+    "model.shadow.retention-audit.reload-after-source-and-retention-loss",
+    "model.shadow.retention-audit.single-retention-manifest-binding",
+    "model.shadow.retention-audit.three-root-distinct-nonnested"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "model.shadow.retention-audit.aggregate-and-input-resource-bounds",
+      "requiredBy": [
+        "resource-bounds"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.authority-none",
+      "requiredBy": [
+        "authority-none"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.caller-time-ordering",
+      "requiredBy": [
+        "time-ordering"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.closed-artifact-schemas",
+      "requiredBy": [
+        "closed-contract"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.concurrent-writer-exclusion",
+      "requiredBy": [
+        "concurrency-refusal"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.contiguous-digest-chain",
+      "requiredBy": [
+        "append-only-chain"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.corruption-gap-unexpected-state-fail-closed",
+      "requiredBy": [
+        "corruption-refusal"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.explicit-unauthenticated-confirmation",
+      "requiredBy": [
+        "explicit-write-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.fresh-process-origin-independent-reload",
+      "requiredBy": [
+        "fresh-process-reload"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.full-observation-exclusive-create-file-fsync",
+      "requiredBy": [
+        "durable-full-observation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.hold-observation-preserved",
+      "requiredBy": [
+        "hold-preservation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.joint-three-root-loss-counterexample",
+      "requiredBy": [
+        "joint-loss-counterexample"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.no-durable-upstream-change",
+      "requiredBy": [
+        "upstream-nonmutation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.nonhold-observation-preserved",
+      "requiredBy": [
+        "nonhold-preservation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.public-artifact-data-minimization",
+      "requiredBy": [
+        "data-minimization"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.reload-after-source-and-retention-loss",
+      "requiredBy": [
+        "bounded-survival"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.single-retention-manifest-binding",
+      "requiredBy": [
+        "single-stream-identity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit.three-root-distinct-nonnested",
+      "requiredBy": [
+        "three-root-separation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

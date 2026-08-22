@@ -1,0 +1,520 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-v1.0-assessment-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-disclosure-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-disclosure-exact-rebuild": [
+          "v1.1 reuses v1.0 exact assessment rebuild before accepting any policy or acknowledgement."
+        ]
+      }
+    },
+    {
+      "id": "receiver-policy-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-policy-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-policy-exact-rebuild": [
+          "A bounded caller policy exact-rebuilds two to ten Ed25519 receiver entries and a threshold of at least two."
+        ]
+      }
+    },
+    {
+      "id": "policy-assessment-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-policy-assessment-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-policy-assessment-bind": [
+          "The policy digest binds the exact v1.0 assessment reference, issue/expiry times, threshold, enabled flags, labels and public keys."
+        ]
+      }
+    },
+    {
+      "id": "ed25519-acknowledgement-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-detached-ed25519-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-detached-ed25519-verify": [
+          "Each presented acknowledgement must verify under its declared canonical Ed25519 public key and exact signing payload."
+        ]
+      }
+    },
+    {
+      "id": "declared-label-and-key-distinctness",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-distinct-label-and-key-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-distinct-label-and-key-verify": [
+          "Policy receiver labels and Ed25519 key fingerprints are unique, but this is declared-set distinctness only."
+        ]
+      }
+    },
+    {
+      "id": "declared-threshold-classification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-threshold-classification"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-threshold-classification": [
+          "Zero or one valid acknowledgement per enabled receiver is counted against the caller-declared threshold."
+        ]
+      }
+    },
+    {
+      "id": "incomplete-threshold-hold",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-incomplete-threshold-hold"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-incomplete-threshold-hold": [
+          "A below-threshold set produces HOLD_DECLARED_RECEIVER_ACKNOWLEDGEMENT_THRESHOLD_INCOMPLETE."
+        ]
+      }
+    },
+    {
+      "id": "same-controller-multikey-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-same-controller-multikey-nonindependence-proof"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-same-controller-multikey-nonindependence-proof": [
+          "Two distinct keys generated in one process meet threshold while real-world receiver independence stays false."
+        ]
+      }
+    },
+    {
+      "id": "receiver-ack-data-minimization",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-receipt-data-minimization"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-receipt-data-minimization": [
+          "Witnesses retain digests, counts, times and truth flags, not raw receiver labels, public keys, signatures, private keys or transient assessment packages."
+        ]
+      }
+    },
+    {
+      "id": "receiver-ack-resource-bounds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-resource-bounds"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-resource-bounds": [
+          "Policies permit at most ten receivers and 256 KiB; witnesses permit at most ten acknowledgements and 48 MiB canonical UTF-8 input."
+        ]
+      }
+    },
+    {
+      "id": "receiver-witness-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-witness-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-witness-exact-rebuild": [
+          "Assessment, policy, acknowledgement verification, classification, truth boundaries and receipt digest rebuild deterministically."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-receiver-witness",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-witness-fresh-process"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-witness-fresh-process": [
+          "A fresh Node process exact-rebuilds and verifies the serialized caller witness with identical digest, classification and count."
+        ]
+      }
+    },
+    {
+      "id": "receiver-ack-no-runtime-io",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-no-runtime-io"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-no-runtime-io": [
+          "The runtime imports crypto and the v1.0 leaf only; it has no filesystem, process, network or state-write route."
+        ]
+      }
+    },
+    {
+      "id": "receiver-ack-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-receiver-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-authority-none": [
+          "The caller policy and signatures authenticate no host, receiver identity, independent operator, delivery, retention, adoption, execution, promotion, merge or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "actual-transport-delivery",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-receiver-transport.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-transport.actual": [
+          "Signed fixture objects were passed in one process; no transport was invoked or observed."
+        ]
+      }
+    },
+    {
+      "id": "actual-receiver-read-or-application",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-receiver-read.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-read.actual": [
+          "A valid signature is not evidence that an independent receiver read or applied the assessment."
+        ]
+      }
+    },
+    {
+      "id": "actual-receiver-persisted-bytes",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-receiver-persistence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-persistence.actual": [
+          "No receiver-owned persisted assessment bytes were inspected."
+        ]
+      }
+    },
+    {
+      "id": "independently-operated-receivers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-receiver-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-receiver-independence.actual": [
+          "The same-process two-key fixture disproves any inference from key distinctness to independent operation."
+        ]
+      }
+    },
+    {
+      "id": "independent-external-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-external-retention.actual": [
+          "Every acknowledgement declares NO_DURABLE_RETENTION_CLAIM; no external retention receipt exists."
+        ]
+      }
+    },
+    {
+      "id": "external-retention-duration",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-external-retention-duration.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-external-retention-duration.actual": [
+          "No independently enforced retention duration exists."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-monotonic-state.actual": [
+          "The permissionless read-only leaf creates no protected monotonic state."
+        ]
+      }
+    },
+    {
+      "id": "deletion-or-rollback-resistance",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-rollback-resistance.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-rollback-resistance.actual": [
+          "No external substrate prevents caller package deletion or rollback."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-host-authorization.actual": [
+          "Library calls authenticate no host entrypoint."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-root-registry",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-root-registry.authenticated-append-only"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-root-registry.authenticated-append-only": [
+          "The receiver policy is caller-supplied and unauthenticated."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-time.external": [
+          "Ordering checks use caller timestamps without a trusted-time receipt."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only synthetic fixtures were used."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or experiment was invoked."
+        ]
+      }
+    },
+    {
+      "id": "held-out-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline or challenger evaluation was executed."
+        ]
+      }
+    },
+    {
+      "id": "branch-adoption",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.adoption.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.adoption.actual": [
+          "A declared acknowledgement threshold grants no branch adoption authority."
+        ]
+      }
+    },
+    {
+      "id": "held-out-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    },
+    {
+      "id": "held-out-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.learning.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.learning.held-out": [
+          "No held-out learning evaluation was run."
+        ]
+      }
+    },
+    {
+      "id": "promotion-merge-canon",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "axm.workshop.canon-decision.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "axm.workshop.canon-decision.actual": [
+          "Mike Tobi remains the merge and CANON gate; no decision was supplied."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

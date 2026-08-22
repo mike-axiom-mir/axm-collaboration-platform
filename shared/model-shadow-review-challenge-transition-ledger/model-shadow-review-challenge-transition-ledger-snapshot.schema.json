@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-ledger-snapshot/v1",
+  "title": "Model Shadow review challenge transition ledger snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "status", "logId", "manifestRef",
+    "genesisSeparatedWitnessRef", "currentHeadSeparatedWitnessRef",
+    "entryCount", "lastEntryRef", "truth", "snapshotDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-ledger-snapshot/v1"},
+    "version": {"const": "0.8.0"},
+    "status": {"const": "TEST"},
+    "logId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "manifestRef": {"$ref": "#/$defs/reference"},
+    "genesisSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "currentHeadSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "entryCount": {"type": "integer", "minimum": 0},
+    "lastEntryRef": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifestVerified", "localEntrySequenceValidated", "localDigestChainValidated",
+        "localHeadDerivedFromValidatedEntries", "upstreamTransitionsReverifiedWithoutCallerPackages",
+        "independentStateRootsExcluded", "globallyConsistentTransitionLogProven",
+        "externalTransitionRetentionProven", "protectedMonotonicStateProven",
+        "deletionOrRollbackPrevented", "hostAuthorizationAuthenticated",
+        "executionAuthorized", "adoptionAuthorized", "automaticPromotion", "automaticCanon"
+      ],
+      "properties": {
+        "manifestVerified": {"const": true},
+        "localEntrySequenceValidated": {"const": true},
+        "localDigestChainValidated": {"const": true},
+        "localHeadDerivedFromValidatedEntries": {"const": true},
+        "upstreamTransitionsReverifiedWithoutCallerPackages": {"const": false},
+        "independentStateRootsExcluded": {"const": false},
+        "globallyConsistentTransitionLogProven": {"const": false},
+        "externalTransitionRetentionProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticCanon": {"const": false}
+      }
+    },
+    "snapshotDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

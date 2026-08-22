@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.human-benefit-protocol/v1",
+  "title": "AXM Human Benefit Protocol",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "protocolId",
+    "generatedAt",
+    "fixtureMode",
+    "claim",
+    "conditions",
+    "trials",
+    "fairness",
+    "successRule",
+    "consent",
+    "retention",
+    "authority",
+    "protocolDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.human-benefit-protocol/v1" },
+    "version": { "const": "0.1.0" },
+    "protocolId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "fixtureMode": { "enum": ["LIVE", "SYNTHETIC"] },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "beneficiary", "targetScope", "scopeStatement"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "statement": { "type": "string", "minLength": 1, "maxLength": 1200 },
+        "beneficiary": { "const": "HUMAN" },
+        "targetScope": { "enum": ["NAMED_LOCAL_STEWARD", "DECLARED_COHORT"] },
+        "scopeStatement": { "type": "string", "minLength": 1, "maxLength": 800 }
+      }
+    },
+    "conditions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "$ref": "#/$defs/condition" }
+    },
+    "trials": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/trial" }
+    },
+    "fairness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["orderPolicy", "conditionLabels", "learningEffectRisk", "maximumSameConditionRun"],
+      "properties": {
+        "orderPolicy": { "const": "BALANCED_WITHIN_SESSION" },
+        "conditionLabels": { "const": "BLINDED_A_B" },
+        "learningEffectRisk": { "const": "DECLARED" },
+        "maximumSameConditionRun": { "type": "integer", "minimum": 1, "maximum": 4 }
+      }
+    },
+    "successRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimumCompletedSessions",
+        "minimumCandidateAccuracyGain",
+        "maximumCandidateUnsupportedContinueRate",
+        "maximumCandidateMeanTimeRatio",
+        "minimumHelpedFraction",
+        "requireNoHighBurden"
+      ],
+      "properties": {
+        "minimumCompletedSessions": { "type": "integer", "minimum": 1, "maximum": 64 },
+        "minimumCandidateAccuracyGain": { "type": "number", "minimum": -1, "maximum": 1 },
+        "maximumCandidateUnsupportedContinueRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "maximumCandidateMeanTimeRatio": { "type": "number", "minimum": 0, "maximum": 10 },
+        "minimumHelpedFraction": { "type": "number", "minimum": 0, "maximum": 1 },
+        "requireNoHighBurden": { "type": "boolean" }
+      }
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "withdrawalAllowed", "completionConfirmationRequired", "useScope"],
+      "properties": {
+        "mode": { "const": "VOLUNTARY_OPT_IN" },
+        "withdrawalAllowed": { "const": true },
+        "completionConfirmationRequired": { "const": true },
+        "useScope": { "const": "LOCAL_BENEFIT_EVALUATION_ONLY" }
+      }
+    },
+    "retention": { "$ref": "#/$defs/retention" },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "automaticHumanVerdict",
+        "finalHumanJudgmentRequired",
+        "sourceAuthenticationExternal",
+        "automaticExecution",
+        "automaticPromotion",
+        "automaticCanon"
+      ],
+      "properties": {
+        "automaticHumanVerdict": { "const": false },
+        "finalHumanJudgmentRequired": { "const": true },
+        "sourceAuthenticationExternal": { "const": true },
+        "automaticExecution": { "const": false },
+        "automaticPromotion": { "const": false },
+        "automaticCanon": { "const": false }
+      }
+    },
+    "protocolDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role", "label", "artifactRef"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "role": { "enum": ["BASELINE", "CANDIDATE"] },
+        "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "artifactRef": { "$ref": "#/$defs/reference" }
+      }
+    },
+    "trial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "caseId", "conditionId", "order", "prompt", "expectedDecision"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "caseId": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "conditionId": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "order": { "type": "integer", "minimum": 1, "maximum": 128 },
+        "prompt": { "type": "string", "minLength": 1, "maxLength": 1200 },
+        "expectedDecision": { "enum": ["CONTINUE", "HOLD"] }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "rawIdentity", "freeText", "rawRecording", "network", "withdrawalBehavior"],
+      "properties": {
+        "mode": { "const": "STRUCTURED_NO_FREE_TEXT" },
+        "rawIdentity": { "const": "FORBIDDEN" },
+        "freeText": { "const": "FORBIDDEN" },
+        "rawRecording": { "const": "FORBIDDEN" },
+        "network": { "const": "DENY" },
+        "withdrawalBehavior": { "const": "OMIT_PARTICIPANT_AND_OBSERVATIONS" }
+      }
+    }
+  }
+}

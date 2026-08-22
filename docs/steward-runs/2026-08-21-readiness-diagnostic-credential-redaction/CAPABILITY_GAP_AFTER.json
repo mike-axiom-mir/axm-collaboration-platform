@@ -1,0 +1,526 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "exact-baseline",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.exact-parent-reproduction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.exact-parent-reproduction": [
+          "five synthetic recognized surfaces pass unchanged through the exact parent blob"
+        ]
+      }
+    },
+    {
+      "id": "header-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.header-value-redaction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.header-value-redaction": [
+          "authorization proxy authorization API key auth token cookie and set-cookie header values become an explicit marker"
+        ]
+      }
+    },
+    {
+      "id": "named-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.named-assignment-redaction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.named-assignment-redaction": [
+          "recognized environment JSON config and npm-style named values are redacted"
+        ]
+      }
+    },
+    {
+      "id": "cli-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.cli-flag-redaction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.cli-flag-redaction": [
+          "recognized credential flags redact quoted or unquoted values"
+        ]
+      }
+    },
+    {
+      "id": "uri-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.uri-userinfo-query-redaction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.uri-userinfo-query-redaction": [
+          "scheme URI user-info and recognized query/fragment assignments are redacted"
+        ]
+      }
+    },
+    {
+      "id": "private-key-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.private-key-block-redaction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.private-key-block-redaction": [
+          "bounded PEM private-key blocks become one marker"
+        ]
+      }
+    },
+    {
+      "id": "fingerprint-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.recognized-fingerprint-redaction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.recognized-fingerprint-redaction": [
+          "selected OpenAI GitHub Slack Google AWS Stripe and JWT-like fingerprints are redacted"
+        ]
+      }
+    },
+    {
+      "id": "explicit-marker",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.explicit-redaction-marker"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.explicit-redaction-marker": [
+          "retained diagnostics expose REDACTED_CREDENTIAL rather than silently deleting context"
+        ]
+      }
+    },
+    {
+      "id": "ordinary-context",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.ordinary-context-preservation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.ordinary-context-preservation": [
+          "v4.6 preserved relative paths web URLs and diagnostic messages"
+        ]
+      }
+    },
+    {
+      "id": "path-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.machine-path-redaction-continuity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.machine-path-redaction-continuity": [
+          "v4.6 redacts known and residual absolute paths"
+        ]
+      }
+    },
+    {
+      "id": "bounded-tail",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.bounded-tail-continuity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.bounded-tail-continuity": [
+          "failure tails remain bounded after redaction"
+        ]
+      }
+    },
+    {
+      "id": "digest-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.raw-output-digest-continuity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.raw-output-digest-continuity": [
+          "raw output SHA-256 is stored separately from failureTail"
+        ]
+      }
+    },
+    {
+      "id": "receipt-immutability",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.source-receipt-immutability"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.source-receipt-immutability": [
+          "v4.6 sanitizes into a shallow copy"
+        ]
+      }
+    },
+    {
+      "id": "writer-boundaries",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.generator-daily-writer-boundary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.generator-daily-writer-boundary": [
+          "both production failureTail writers use the shared sanitizer"
+        ]
+      }
+    },
+    {
+      "id": "ingestion-defense",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.readiness-ingestion-defense"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.readiness-ingestion-defense": [
+          "supplied legacy results are sanitized at index ingestion"
+        ]
+      }
+    },
+    {
+      "id": "qualified-truth",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.qualified-truth-and-validation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.qualified-truth-and-validation": [
+          "index truth names recognized evidence only and validation rejects omission"
+        ]
+      }
+    },
+    {
+      "id": "current-index-scan",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.current-index-idempotent-scan"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.current-index-idempotent-scan": [
+          "all current retained failure tails are idempotently sanitized"
+        ]
+      }
+    },
+    {
+      "id": "required-checks",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.required-checks"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.required-checks": [
+          "all ten AGENTS commands pass"
+        ]
+      }
+    },
+    {
+      "id": "clean-replay",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.clean-product-replay"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.clean-product-replay": [
+          "archived product slice passes commands and synthetic ingestion without tracked mutation"
+        ]
+      }
+    },
+    {
+      "id": "zero-authority",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.zero-promotion-merge-canon-authority"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.zero-promotion-merge-canon-authority": [
+          "readiness diagnostics grant no authority"
+        ]
+      }
+    },
+    {
+      "id": "specialist-exclusion",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-credential.specialist-package-lane-excluded"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-credential.specialist-package-lane-excluded": [
+          "task scope excludes specialist package intake"
+        ]
+      }
+    },
+    {
+      "id": "arbitrary-secret-detection",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-credential.arbitrary-secret-detection"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "encoded-split-secret-detection",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-credential.encoded-or-split-secret-detection"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "arbitrary-field-sanitization",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-credential.arbitrary-diagnostic-field-sanitization"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "retroactive-history",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-credential.retroactive-external-history-sanitization"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "historical-rewrite",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-credential.historical-git-rewrite"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "full-privacy-audit",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-credential.full-repository-privacy-audit"
+      ],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "readiness.diagnostic-credential.arbitrary-diagnostic-field-sanitization",
+    "readiness.diagnostic-credential.arbitrary-secret-detection",
+    "readiness.diagnostic-credential.encoded-or-split-secret-detection",
+    "readiness.diagnostic-credential.full-repository-privacy-audit",
+    "readiness.diagnostic-credential.historical-git-rewrite",
+    "readiness.diagnostic-credential.retroactive-external-history-sanitization"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "readiness.diagnostic-credential.arbitrary-diagnostic-field-sanitization",
+      "requiredBy": [
+        "arbitrary-field-sanitization"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "readiness.diagnostic-credential.arbitrary-secret-detection",
+      "requiredBy": [
+        "arbitrary-secret-detection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "readiness.diagnostic-credential.encoded-or-split-secret-detection",
+      "requiredBy": [
+        "encoded-split-secret-detection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "readiness.diagnostic-credential.full-repository-privacy-audit",
+      "requiredBy": [
+        "full-privacy-audit"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "readiness.diagnostic-credential.historical-git-rewrite",
+      "requiredBy": [
+        "historical-rewrite"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "readiness.diagnostic-credential.retroactive-external-history-sanitization",
+      "requiredBy": [
+        "retroactive-history"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

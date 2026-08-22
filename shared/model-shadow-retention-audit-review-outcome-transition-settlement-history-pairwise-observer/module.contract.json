@@ -1,0 +1,83 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observer",
+  "version":"v3.9",
+  "status":"TEST",
+  "provides":[
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.two-v37-complete-local-history-double-capture",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.three-v37-full-chain-inspections-per-side",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.canonical-artifact-self-digest-recheck",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.stable-complete-history-commitment",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.normalized-proposal-settlement-event-projection",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.intermediate-held-outcome-coverage",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.exact-complete-artifact-history-replay",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.matching-complete-normalized-history",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.right-complete-history-prefix-extension",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.left-complete-history-prefix-extension",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.earliest-normalized-event-divergence",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.source-identity-mismatch-hold",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.typed-history-observation-hold",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.fresh-process-exact-rebuild",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.read-only-source-and-settlement-roots",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.same-head-hidden-held-history-counterexample",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.transient-mutation-reversion-nonexclusion",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.joint-pair-replacement-counterexample",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.data-minimization-resource-boundary",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.closed-receipt-schema",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-history-pairwise-observer.authority-none",
+    "axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-commitment/v1",
+    "axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observation/v1"
+  ],
+  "consumes":[
+    "two explicit v3.7 service configurations for existing caller-owned settlement roots",
+    "the fixed canonical manifest proposal and settlement records already stored beneath each explicit root",
+    "one caller-supplied observation id and untrusted UTC observation time"
+  ],
+  "permissions":[
+    "read two explicit v3.7 roots through unchanged inspect APIs",
+    "read only the fixed v3.7 manifest proposals settlements and transient lock paths beneath each explicit settlement root"
+  ],
+  "handoffs":{
+    "emits":["axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-pairwise-observation/v1"],
+    "accepts":["two explicit caller-owned v3.7 settlement roots and their exact service identities"]
+  },
+  "boundaries":{
+    "reads":[
+      "two explicit caller-owned v3.7 roots through unchanged public validation APIs",
+      "only fixed canonical v3.7 history files beneath each explicit settlement root"
+    ],
+    "writes":[],
+    "refuses":[
+      "invalid-extra-missing-or-oversized-input-or-receipt",
+      "absent-invalid-changing-capture-invalid-or-snapshot-mismatched-side-as-admitted-history",
+      "noncanonical-extra-gapped-oversized-or-self-digest-invalid-record-as-history-evidence",
+      "source-log-manifest-or-genesis-mismatch-as-relative-history-continuity",
+      "complete-history-double-capture-as-atomic-filesystem-snapshot-or-transient-mutation-exclusion",
+      "final-history-observation-as-proof-of-later-currentness",
+      "stored-artifact-validation-as-caller-package-rebuild-or-live-v36-source-recapture",
+      "matching-complete-local-history-as-global-uniqueness-or-withheld-history-exclusion",
+      "one-complete-local-prefix-as-global-history-order",
+      "caller-owned-roots-as-authenticated-independent-controllers-external-retention-or-custody",
+      "caller-owned-files-as-protected-monotonic-state-deletion-prevention-or-rollback-prevention",
+      "joint-replacement-of-both-presented-root-pairs-as-original-continuity",
+      "caller-time-as-externally-trusted-time",
+      "root-or-file-possession-as-host-actor-human-policy-or-origin-authentication",
+      "raw-stored-artifact-source-path-settlement-path-caller-package-key-signature-review-material-model-output-or-private-context-persistence",
+      "provider-invocation-experiment-evaluation-learning-human-benefit-reconciliation-execution-or-adoption",
+      "automatic-write","automatic-permission-grant","automatic-install","automatic-promotion","automatic-merge","automatic-canon","foundation-mutation"
+    ]
+  },
+  "lifecycle":{
+    "state_owner":"none",
+    "state_owner_detail":"caller retains both v3.7 roots and any pairwise receipt; the observer retains no raw artifacts or packages",
+    "reload":"not-applicable",
+    "reload_detail":"a fresh process rereads and validates both explicit complete local histories and exact-rebuilds the minimized observation receipt",
+    "disconnect":"not-applicable",
+    "disconnect_detail":"no network provider custody service clock trust root or review service is opened",
+    "cleanup":"not-applicable",
+    "cleanup_detail":"the observer writes nothing and owns no caller root history or receipt",
+    "installed":false,
+    "promoted":false
+  },
+  "merge_gate":"Mike Tobi / AXM"
+}

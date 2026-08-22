@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.simulation-lab-host-profile/v1",
+  "title": "AXM simulation lab host profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "profileId", "generatedAt", "roots",
+    "subjectKinds", "invariantTruthRules", "authority", "profileDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.simulation-lab-host-profile/v1"},
+    "version": {"const": "0.1.0"},
+    "profileId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,99}$"},
+    "generatedAt": {"type": "string", "minLength": 1, "maxLength": 80},
+    "roots": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "moduleId", "version", "status", "contractDigest", "contract"],
+        "properties": {
+          "role": {"type": "string"},
+          "moduleId": {"type": "string"},
+          "version": {"type": "string"},
+          "status": {"const": "TEST"},
+          "contractDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+          "contract": {"type": "object"}
+        }
+      }
+    },
+    "subjectKinds": {
+      "type": "array",
+      "const": ["SOFTWARE_REPOSITORY", "MIRROR_STATE", "SPECIALIST_MASK"]
+    },
+    "invariantTruthRules": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"type": "string"}},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "permissions", "executionAuthorized", "installAuthorized",
+        "promotionAuthorized", "mergeAuthorized", "canonAuthorized",
+        "foundationMutationAuthorized", "modelWeightTrainingClaimed"
+      ],
+      "properties": {
+        "permissions": {"type": "array", "maxItems": 0},
+        "executionAuthorized": {"const": false},
+        "installAuthorized": {"const": false},
+        "promotionAuthorized": {"const": false},
+        "mergeAuthorized": {"const": false},
+        "canonAuthorized": {"const": false},
+        "foundationMutationAuthorized": {"const": false},
+        "modelWeightTrainingClaimed": {"const": false}
+      }
+    },
+    "profileDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}

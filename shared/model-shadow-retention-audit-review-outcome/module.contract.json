@@ -1,0 +1,107 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-retention-audit-review-outcome",
+  "version": "v3.1",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.retention-audit-review-outcome.strict-v29-route-binding",
+    "model.shadow.retention-audit-review-outcome.supported-post-pending-states",
+    "model.shadow.retention-audit-review-outcome.immutable-review-item-transition-binding",
+    "model.shadow.retention-audit-review-outcome.exact-vote-artifact-binding",
+    "model.shadow.retention-audit-review-outcome.case-insensitive-distinct-actors",
+    "model.shadow.retention-audit-review-outcome.declared-human-approval-required",
+    "model.shadow.retention-audit-review-outcome.state-vote-consistency",
+    "model.shadow.retention-audit-review-outcome.conflicting-approved-vote-refusal",
+    "model.shadow.retention-audit-review-outcome.minimized-pseudonymous-vote-evidence",
+    "model.shadow.retention-audit-review-outcome.raw-identity-note-discussion-path-omission",
+    "model.shadow.retention-audit-review-outcome.review-context-minimization",
+    "model.shadow.retention-audit-review-outcome.outcome-self-digest",
+    "model.shadow.retention-audit-review-outcome.exact-rebuild-verifier",
+    "model.shadow.retention-audit-review-outcome.caller-time-ordering",
+    "model.shadow.retention-audit-review-outcome.fresh-process-rebuild",
+    "model.shadow.retention-audit-review-outcome.resource-bounds",
+    "model.shadow.retention-audit-review-outcome.no-durable-source-or-receiver-change",
+    "model.shadow.retention-audit-review-outcome.data-only-no-service-network-process",
+    "model.shadow.retention-audit-review-outcome.unresolved-hold-zero-authority",
+    "model.shadow.retention-audit-review-outcome.closed-output-schema",
+    "model.shadow.retention-audit-review-outcome.focused-contract-and-corruption-tests",
+    "axm.model-shadow-retention-audit-review-outcome/v1"
+  ],
+  "consumes": [
+    "axm.model-shadow-retention-audit-review-request/v1",
+    "axm.model-shadow-retention-audit-pending-review-handoff/v1",
+    "axm.model-shadow-retention-audit-review-artifact/v1",
+    "axm.review-item/v1",
+    "caller-presented persisted Review Inbox item with one to ten exact-digest votes",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [
+    "read one caller-owned v2.8 observation root through the unchanged v2.9 exact-rebuild path",
+    "allow unchanged v2.8 reads to exclusive-create file-fsync and remove their fixed transient operation lock",
+    "no Review Inbox mutation network provider process or execution permission"
+  ],
+  "handoffs": {
+    "emits": ["axm.model-shadow-retention-audit-review-outcome/v1"],
+    "accepts": [
+      "one exact-rebuild v2.9 pending review handoff and its complete caller input",
+      "one later persisted APPROVED HOLD or REJECTED Review Inbox item for the same exact artifact"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "one exact caller-owned v2.9 request and pending handoff package",
+      "one caller-presented persisted Review Inbox item as data only",
+      "one fixed v2.8 observation namespace through the inherited public verifier"
+    ],
+    "writes": [
+      "the inherited v2.8 verifier may exclusive-create file-sync and remove its fixed transient operation lock; this leaf owns no durable state"
+    ],
+    "refuses": [
+      "pending-repair-cancelled-expired-or-superseded-item-as-outcome",
+      "review-item-route-artifact-action-seat-or-creation-drift",
+      "vote-without-exact-artifact-digest",
+      "case-variant-actor-as-independent-seat",
+      "more-than-ten-votes",
+      "approved-state-with-hold-or-reject-vote",
+      "approved-state-without-required-distinct-approvals",
+      "approved-state-without-declared-human-seat",
+      "held-state-without-hold-vote",
+      "rejected-state-without-reject-vote",
+      "review-discussion-retention",
+      "vote-note-retention",
+      "raw-actor-identity-retention",
+      "standalone-outcome-as-actor-digest-provenance-proof",
+      "caller-presented-item-as-live-host-observation",
+      "declared-human-seat-as-authenticated-human",
+      "review-outcome-as-actual-human-participation",
+      "artifact-approval-as-retention-hold-resolution",
+      "review-outcome-as-remediation-execution-or-adoption-authority",
+      "fresh-process-rebuild-as-independent-custody-or-durability-proof",
+      "provider-invocation",
+      "evaluation-or-benefit-claim",
+      "automatic-execution",
+      "automatic-write",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "state_owner_detail": "outcomes rebuild from exact caller packages; Review Inbox state remains owned by its host-authorized service",
+    "reload": "not-applicable",
+    "reload_detail": "the leaf owns no state; each outcome rebuilds from exact caller request handoff and persisted item data",
+    "disconnect": "not-applicable",
+    "disconnect_detail": "the runtime opens no socket network API or provider",
+    "cleanup": "not-applicable",
+    "cleanup_detail": "the runtime owns no cleanup target; synthetic ReviewService state is created and removed only by focused tests",
+    "installed": false,
+    "promoted": false
+  },
+  "merge_gate": "Mike Tobi / AXM"
+}

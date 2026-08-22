@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-evidence-frontier-receipt/v1",
+  "title": "AXM Grounded Growth evidence frontier receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "evidenceFrontierId", "generatedAt", "status",
+    "scope", "sourceRefs", "counts", "lanes", "decision", "truth",
+    "evidenceFrontierDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.grounded-growth-evidence-frontier-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "evidenceFrontierId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "generatedAt": {"type": "string", "minLength": 1, "maxLength": 80},
+    "status": {"const": "TEST"},
+    "scope": {"const": "CURRENT_GROUNDED_GROWTH_FRONTIER_PLUS_ONE_SUPPLEMENTAL_PHONE_EVIDENCE_ROUTE"},
+    "sourceRefs": {"type": "object"},
+    "counts": {"type": "object"},
+    "lanes": {"type": "array", "minItems": 4, "maxItems": 4},
+    "decision": {"type": "object"},
+    "truth": {"type": "object"},
+    "evidenceFrontierDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}

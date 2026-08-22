@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-snapshot/v1",
+  "title": "AXM local-possession two-phase settlement ledger snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "logId", "manifestRef", "genesisSeparatedWitnessRef", "currentSettledHeadSeparatedWitnessRef", "receiverIdDigest", "challengerIdDigest", "receiverPolicyRef", "proposalCount", "settlementCount", "heldSettlementCount", "pendingProposalRef", "lastProposalRef", "lastSettlementRef", "truth", "snapshotDigest"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-snapshot/v1" },
+    "version": { "const": "2.0.0" },
+    "status": { "const": "TEST" },
+    "logId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "manifestRef": { "$ref": "#/$defs/reference" },
+    "genesisSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "currentSettledHeadSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "receiverIdDigest": { "$ref": "#/$defs/digest" },
+    "challengerIdDigest": { "$ref": "#/$defs/digest" },
+    "receiverPolicyRef": { "$ref": "#/$defs/reference" },
+    "proposalCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "settlementCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "heldSettlementCount": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "pendingProposalRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] },
+    "lastProposalRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] },
+    "lastSettlementRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] },
+    "truth": { "type": "object" },
+    "snapshotDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reference": { "type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": { "id": { "type": "string", "minLength": 1, "maxLength": 180 }, "schema": { "type": "string", "minLength": 1, "maxLength": 180 }, "sha256": { "$ref": "#/$defs/digest" } } }
+  }
+}

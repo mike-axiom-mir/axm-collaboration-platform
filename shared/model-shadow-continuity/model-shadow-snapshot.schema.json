@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-snapshot/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "snapshotId", "capturedAt", "taskRef", "contextRef",
+    "seat", "outputRef", "commitments", "capabilities", "requestedPermissions",
+    "truth", "snapshotDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-snapshot/v1"},
+    "version": {"const": "0.1.0"},
+    "snapshotId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "capturedAt": {"type": "string", "format": "date-time"},
+    "taskRef": {"$ref": "#/$defs/reference"},
+    "contextRef": {"$ref": "#/$defs/reference"},
+    "outputRef": {"$ref": "#/$defs/reference"},
+    "seat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "role", "providerFamily", "modelId", "identityDisclosure", "priorOutputExposure", "provenanceRef", "proofAuthority"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "kind": {"const": "MODEL"},
+        "role": {"type": "string", "minLength": 1, "maxLength": 240},
+        "providerFamily": {"type": ["string", "null"]},
+        "modelId": {"type": ["string", "null"]},
+        "identityDisclosure": {"enum": ["EXACT", "PARTIAL", "UNDISCLOSED"]},
+        "priorOutputExposure": {"enum": ["NONE", "PARTIAL", "FULL", "UNKNOWN"]},
+        "provenanceRef": {"$ref": "#/$defs/reference"},
+        "proofAuthority": {"const": "NONE"}
+      }
+    },
+    "commitments": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "position", "evidenceStage", "contentDigest", "sourceRefs", "uncertaintyState", "authorityRequests"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1, "maxLength": 180},
+          "kind": {"enum": ["CLAIM", "CONSTRAINT", "DECISION", "UNKNOWN"]},
+          "position": {"enum": ["AFFIRM", "REJECT", "HOLD", "UNKNOWN", "NOT_APPLICABLE"]},
+          "evidenceStage": {"enum": ["OBSERVED", "SIMULATED", "INFERENCE", "UNKNOWN"]},
+          "contentDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+          "sourceRefs": {"type": "array", "maxItems": 16, "items": {"$ref": "#/$defs/reference"}},
+          "uncertaintyState": {"enum": ["DECLARED", "NOT_DECLARED", "UNKNOWN"]},
+          "authorityRequests": {"type": "array", "maxItems": 16, "items": {"type": "string"}}
+        }
+      }
+    },
+    "capabilities": {"type": "array", "maxItems": 32, "items": {"type": "string"}},
+    "requestedPermissions": {"type": "array", "maxItems": 16, "items": {"type": "string"}},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structuredTraceOnly", "rawOutputEmbedded", "privateContextEmbedded", "semanticMappingVerifiedByObserver", "modelInvokedByObserver", "proofAuthority"],
+      "properties": {
+        "structuredTraceOnly": {"const": true},
+        "rawOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "semanticMappingVerifiedByObserver": {"const": false},
+        "modelInvokedByObserver": {"const": false},
+        "proofAuthority": {"const": "NONE"}
+      }
+    },
+    "snapshotDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    }
+  }
+}

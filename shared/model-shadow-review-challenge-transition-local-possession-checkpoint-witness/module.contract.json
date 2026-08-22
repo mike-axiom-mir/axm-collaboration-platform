@@ -1,0 +1,91 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-local-possession-checkpoint-witness",
+  "version": "v1.5",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.v1.4-checkpoint-exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.detached-ed25519-verify",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.threshold-signature-verify",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.signing-key-possession-evidence",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.caller-policy-admission",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.checkpoint-identity-binding",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.witnessed-v1.4-continuity",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.relative-rollback-detect",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.public-artifact-data-minimization",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.resource-bounds",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-witness.authority-none",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-witness-policy/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-witness-attestation/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-witness/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-witnessed-continuity/v1"
+  ],
+  "consumes": [
+    "one exact axm.model-shadow-review-challenge-transition-local-possession-checkpoint/v1 as data",
+    "one caller-supplied checkpoint-specific Ed25519 public key policy as data",
+    "one through ten detached checkpoint witness attestations as data",
+    "one exact axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1 as data",
+    "the unchanged v1.4 checkpoint, snapshot and continuity validators",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-witness/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-witnessed-continuity/v1"
+    ],
+    "accepts": [
+      "one exact v1.4 local possession checkpoint",
+      "one exact-checkpoint caller key policy",
+      "one or more detached witness attestations covering the caller threshold",
+      "one exact current v1.4 local possession snapshot"
+    ]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "checkpoint-without-exact-v1.4-rebuild",
+      "snapshot-without-exact-v1.4-rebuild",
+      "invalid-or-non-ed25519-signature",
+      "unlisted-disabled-or-duplicate-witness-seat",
+      "duplicate-key-as-independent-seat",
+      "duplicate-actor-as-independent-seat",
+      "expired-policy-or-attestation",
+      "signature-without-exact-policy-checkpoint-snapshot-identity-policy-and-entries-binding",
+      "caller-witness-policy-as-authenticated-host-trust-root",
+      "replacement-caller-policy-with-valid-signatures-as-original-policy-continuity",
+      "signing-key-possession-as-real-world-identity",
+      "declared-human-key-as-authenticated-human",
+      "signature-as-actual-human-participation",
+      "signed-checkpoint-as-proven-external-retention",
+      "witness-as-proven-external-retention",
+      "signed-checkpoint-as-deletion-or-rollback-prevention",
+      "witnessed-comparison-as-global-single-use",
+      "caller-time-as-trusted-time",
+      "library-call-as-host-authorized-trusted-entrypoint",
+      "signature-as-execution-or-adoption-authority",
+      "raw-actor-identity-public-key-signature-configured-label-state-path-custody-record-or-assessment-receipt-retention",
+      "private-key-ingestion",
+      "raw-model-output-ingestion",
+      "private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains checkpoint, policy, attestations and witness receipt",
+    "reload": "exact-rebuild witness inputs and receipt, then compose unchanged v1.4 continuity in a fresh caller process",
+    "disconnect": "not-applicable; no network route is opened",
+    "cleanup": "caller-owned",
+    "installed": false,
+    "promoted": false
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-two-phase-history-checkpoint-portable-pin-transition/v1",
+  "title": "AXM portable anchored-history checkpoint pin transition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "transitionId", "comparedAt", "expectedPreviousPinRef", "previousAnchoredCheckpointRef", "candidateAnchoredCheckpointRef", "pairwiseTransitionRef", "pairwiseClassification", "pinComparison", "classification", "successorPinProposal", "decision", "state", "truth", "transitionDigest"],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-two-phase-history-checkpoint-portable-pin-transition/v1"},
+    "version": {"const": "2.4.0"},
+    "status": {"const": "TEST"},
+    "transitionId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "comparedAt": {"type": "string", "format": "date-time"},
+    "expectedPreviousPinRef": {"$ref": "#/$defs/reference"},
+    "previousAnchoredCheckpointRef": {"$ref": "#/$defs/reference"},
+    "candidateAnchoredCheckpointRef": {"$ref": "#/$defs/reference"},
+    "pairwiseTransitionRef": {"$ref": "#/$defs/reference"},
+    "pairwiseClassification": {"enum": ["PRESENTED_ANCHORED_PACKAGE_EXACT_REPLAY", "PRESENTED_HISTORY_EXACT_RECHECKPOINT", "CANDIDATE_EXTENDS_PRESENTED_ANCHORED_HISTORY", "HOLD_ANCHOR_IDENTITY_DRIFT", "HOLD_ANCHOR_POLICY_PROFILE_DRIFT", "HOLD_WITNESS_POLICY_IDENTITY_DRIFT", "HOLD_WITNESS_POLICY_PROFILE_DRIFT", "HOLD_LEDGER_IDENTITY_DRIFT", "HOLD_PRESENTED_TIME_ROLLBACK", "HOLD_PRESENTED_TIME_COLLISION", "HOLD_CHECKPOINT_ID_EQUIVOCATION", "HOLD_ALTERNATE_ANCHORED_PACKAGE_FOR_SAME_CHECKPOINT", "HOLD_SNAPSHOT_CHANGED_WITHOUT_HISTORY_EXTENSION", "HOLD_STRICT_HISTORY_ROLLBACK", "HOLD_HISTORY_REPLACEMENT_OR_FORK"]},
+    "pinComparison": {"$ref": "#/$defs/pinComparison"},
+    "classification": {"enum": ["HOLD_PREVIOUS_PACKAGE_DOES_NOT_MATCH_PRESENTED_PIN", "PIN_MATCH_PRESENTED_ANCHORED_PACKAGE_EXACT_REPLAY", "PIN_MATCH_PRESENTED_HISTORY_EXACT_RECHECKPOINT", "PIN_MATCH_CANDIDATE_EXTENDS_PRESENTED_ANCHORED_HISTORY", "PIN_MATCH_UPSTREAM_PAIRWISE_HOLD"]},
+    "successorPinProposal": {"oneOf": [{"type": "null"}, {"$ref": "pin.schema.json"}]},
+    "decision": {"$ref": "#/$defs/decision"},
+    "state": {"const": "PRESENTED_PIN_AND_PAIRWISE_HISTORY_CLASSIFIED_SUCCESSOR_IS_PROPOSAL_ONLY_AUTHORITY_AND_RETENTION_NOT_PROVEN"},
+    "truth": {"$ref": "#/$defs/truth"},
+    "transitionDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"],
+      "properties": {"id": {"type": "string", "minLength": 1, "maxLength": 180}, "schema": {"type": "string", "minLength": 1, "maxLength": 180}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "pinComparison": {
+      "type": "object", "additionalProperties": false, "required": ["matches", "dimensions", "driftDimensions"],
+      "properties": {
+        "matches": {"type": "boolean"},
+        "dimensions": {
+          "type": "object", "additionalProperties": false,
+          "required": ["anchoredCheckpointRef", "checkpointRef", "anchorRef", "anchorPolicyRef", "anchorProfileDigest", "witnessPolicyRef", "witnessProfileDigest", "ledgerIdentityDigest", "snapshotBinding", "proposalHistoryDigest", "settlementHistoryDigest", "proposalCount", "settlementCount", "pinnedAtNotBeforeAnchoredVerification"],
+          "properties": {
+            "anchoredCheckpointRef": {"type": "boolean"}, "checkpointRef": {"type": "boolean"}, "anchorRef": {"type": "boolean"}, "anchorPolicyRef": {"type": "boolean"}, "anchorProfileDigest": {"type": "boolean"}, "witnessPolicyRef": {"type": "boolean"}, "witnessProfileDigest": {"type": "boolean"}, "ledgerIdentityDigest": {"type": "boolean"}, "snapshotBinding": {"type": "boolean"}, "proposalHistoryDigest": {"type": "boolean"}, "settlementHistoryDigest": {"type": "boolean"}, "proposalCount": {"type": "boolean"}, "settlementCount": {"type": "boolean"}, "pinnedAtNotBeforeAnchoredVerification": {"type": "boolean"}
+          }
+        },
+        "driftDimensions": {"type": "array", "uniqueItems": true, "items": {"enum": ["anchoredCheckpointRef", "checkpointRef", "anchorRef", "anchorPolicyRef", "anchorProfileDigest", "witnessPolicyRef", "witnessProfileDigest", "ledgerIdentityDigest", "snapshotBinding", "proposalHistoryDigest", "settlementHistoryDigest", "proposalCount", "settlementCount", "pinnedAtNotBeforeAnchoredVerification"]}}
+      }
+    },
+    "decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reviewRequired", "holdRequired", "successorPinProposed", "successorPinAdoptionAuthorized", "autonomousActionCount", "bestAction"],
+      "properties": {
+        "reviewRequired": {"const": true},
+        "holdRequired": {"type": "boolean"},
+        "successorPinProposed": {"type": "boolean"},
+        "successorPinAdoptionAuthorized": {"const": false},
+        "autonomousActionCount": {"const": 0},
+        "bestAction": {"enum": ["PRESERVE_PIN_AND_BOTH_PACKAGES_AND_REQUEST_STEWARD_RECONCILIATION", "RETAIN_NO_NEW_PIN_STATE", "REVIEW_SUCCESSOR_PIN_PROPOSAL_WITHOUT_TREATING_IT_AS_HISTORY_EXTENSION", "REVIEW_SUCCESSOR_PIN_PROPOSAL_WITHOUT_AUTOMATIC_ADOPTION", "PRESERVE_PIN_AND_BOTH_PACKAGES_AND_HOLD_FOR_STEWARD_REVIEW"]}
+      }
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["presentedPinSelfDigestValidated", "previousAnchoredCheckpointVerifiedByExactRebuild", "candidateAnchoredCheckpointVerifiedByExactRebuild", "v23PairwiseTransitionComposedUnchanged", "presentedPinBindingComparedToPreviousPackage", "presentedPinMatchesPreviousPackage", "completeCheckpointHistoryBindingsCompared", "normalizedPolicyProfileBindingsCompared", "continuityRelativeToPresentedPinOnly", "retainedOriginalPinCanExposeJointPairReplacement", "pinOriginAuthenticated", "pinAuthorityAuthenticated", "pinRetentionPerformedByModule", "externalRetentionProven", "protectedMonotonicStateProven", "deletionOrRollbackPrevented", "jointPairAndPinReplacementStillPossible", "originalPinContinuityProven", "withheldBranchesExcluded", "globalTransitionUniquenessProven", "globallyConsistentLogProven", "policyRotationAuthenticated", "realWorldControllerIndependenceProven", "crossLayerCollusionExcluded", "actualHumanParticipationProven", "hostAuthorizationAuthenticated", "comparisonTimeExternallyTrusted", "rawPublicKeyEmbedded", "rawSignatureEmbedded", "privateKeyIngested", "sourceOrLedgerPathEmbedded", "rawModelOutputEmbedded", "privateContextEmbedded", "providerInvoked", "experimentExecuted", "evaluationPerformed", "executionAuthorized", "adoptionAuthorized", "humanBenefitProven", "broadLearningClaimed", "automaticWrite", "automaticPermissionGrant", "automaticInstall", "automaticPromotion", "automaticMerge", "automaticCanon", "foundationMutation"],
+      "properties": {
+        "presentedPinSelfDigestValidated": {"const": true},
+        "previousAnchoredCheckpointVerifiedByExactRebuild": {"const": true},
+        "candidateAnchoredCheckpointVerifiedByExactRebuild": {"const": true},
+        "v23PairwiseTransitionComposedUnchanged": {"const": true},
+        "presentedPinBindingComparedToPreviousPackage": {"const": true},
+        "presentedPinMatchesPreviousPackage": {"type": "boolean"},
+        "completeCheckpointHistoryBindingsCompared": {"const": true},
+        "normalizedPolicyProfileBindingsCompared": {"const": true},
+        "continuityRelativeToPresentedPinOnly": {"const": true},
+        "retainedOriginalPinCanExposeJointPairReplacement": {"const": true},
+        "pinOriginAuthenticated": {"const": false},
+        "pinAuthorityAuthenticated": {"const": false},
+        "pinRetentionPerformedByModule": {"const": false},
+        "externalRetentionProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "jointPairAndPinReplacementStillPossible": {"const": true},
+        "originalPinContinuityProven": {"const": false},
+        "withheldBranchesExcluded": {"const": false},
+        "globalTransitionUniquenessProven": {"const": false},
+        "globallyConsistentLogProven": {"const": false},
+        "policyRotationAuthenticated": {"const": false},
+        "realWorldControllerIndependenceProven": {"const": false},
+        "crossLayerCollusionExcluded": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "comparisonTimeExternallyTrusted": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "privateKeyIngested": {"const": false},
+        "sourceOrLedgerPathEmbedded": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "providerInvoked": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    }
+  }
+}

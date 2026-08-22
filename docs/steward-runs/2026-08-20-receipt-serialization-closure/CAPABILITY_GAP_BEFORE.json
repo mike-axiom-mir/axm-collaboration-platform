@@ -1,0 +1,145 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "UNKNOWN",
+  "requirements": [
+    {
+      "id": "observed-failure-provenance",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "serialization.failure.observed-event-bound"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.failure.observed-event-bound": [
+          "The prior failure was recorded but not linked to a reusable closure capability."
+        ]
+      }
+    },
+    {
+      "id": "strict-json-representation-closure",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "serialization.canonical-json.strict"
+      ],
+      "degraded": [
+        "serialization.roundtrip.exact",
+        "serialization.unsafe.refuse"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.canonical-json.strict": [
+          "The previously published deterministic-json-core is present byte-for-byte and self-tests, but was not bound to the observed Grounded Growth receipt failure."
+        ],
+        "serialization.roundtrip.exact": [
+          "Design examples existed; no held-out evaluation was bound to the current failure and consumer set."
+        ],
+        "serialization.unsafe.refuse": [
+          "The core declares refusal behavior, while current Grounded Growth consumers still emit invalid text or silently lose fields."
+        ]
+      }
+    },
+    {
+      "id": "current-consumer-exposure-inventory",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "serialization.consumer-exposure.exact"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.consumer-exposure.exact": [
+          "No exact current consumer inventory was present."
+        ]
+      }
+    },
+    {
+      "id": "held-out-evaluation",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "serialization.held-out-evaluation"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.held-out-evaluation": [
+          "No held-out closure evaluation was present."
+        ]
+      }
+    },
+    {
+      "id": "migration-authority-boundary",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "serialization.migration.authority.none"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.migration.authority.none": [
+          "No path-scoped migration boundary had been recorded."
+        ]
+      }
+    },
+    {
+      "id": "live-consumer-migration",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "serialization.consumer-migration.live"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.consumer-migration.live": [
+          "No current consumer migration has been authorized or run."
+        ]
+      }
+    },
+    {
+      "id": "cross-runtime-live-parity",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "serialization.cross-runtime.live-parity"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.cross-runtime.live-parity": [
+          "This lane has not run the core in multiple live JavaScript runtimes."
+        ]
+      }
+    },
+    {
+      "id": "human-comprehension-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "serialization.human-review.live"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.human-review.live": [
+          "No human comprehension review has occurred."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

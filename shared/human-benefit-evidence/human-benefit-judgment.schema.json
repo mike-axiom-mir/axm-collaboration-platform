@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.human-benefit-judgment-receipt/v1",
+  "title": "AXM Human Benefit Judgment Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "judgmentId",
+    "recordedAt",
+    "evaluationRef",
+    "fixtureMode",
+    "sourceMode",
+    "judgeRef",
+    "attestation",
+    "decision",
+    "rationaleCodes",
+    "targetScope",
+    "scopeStatement",
+    "usableAsHumanEvidence",
+    "truth",
+    "judgmentDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.human-benefit-judgment-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "judgmentId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "evaluationRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string" },
+        "schema": { "const": "axm.human-benefit-evaluation-receipt/v1" },
+        "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "fixtureMode": { "enum": ["LIVE", "SYNTHETIC"] },
+    "sourceMode": { "enum": ["HUMAN_ENTERED", "SYNTHETIC_FIXTURE"] },
+    "judgeRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "attestation": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "decision": { "enum": ["PASS", "FAIL", "UNKNOWN"] },
+    "rationaleCodes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "OBJECTIVE_AND_EXPERIENTIAL_BENEFIT",
+          "BENEFIT_NOT_ESTABLISHED",
+          "HARM_OR_BURDEN",
+          "INSUFFICIENT_OR_MIXED",
+          "SCOPE_LIMITED"
+        ]
+      }
+    },
+    "targetScope": { "enum": ["NAMED_LOCAL_STEWARD", "DECLARED_COHORT"] },
+    "scopeStatement": { "type": "string" },
+    "usableAsHumanEvidence": { "type": "boolean" },
+    "truth": { "type": "object" },
+    "judgmentDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

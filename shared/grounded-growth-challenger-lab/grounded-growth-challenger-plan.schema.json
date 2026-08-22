@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-challenger-plan/v1",
+  "title": "AXM Grounded Growth Challenger Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "planId", "generatedAt", "status", "directionHandoff", "directionRef", "needRef", "actionType", "baselineRef", "challengerRef", "caseManifest", "budget", "state", "truth", "planDigest"],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-challenger-plan/v1" },
+    "version": { "const": "0.1.0" },
+    "planId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "directionHandoff": { "type": "object" },
+    "directionRef": { "$ref": "#/$defs/ref" },
+    "needRef": { "$ref": "#/$defs/ref" },
+    "actionType": { "type": "string" },
+    "baselineRef": { "$ref": "#/$defs/ref" },
+    "challengerRef": { "$ref": "#/$defs/ref" },
+    "caseManifest": { "type": "object" },
+    "budget": { "type": "object" },
+    "state": { "const": "READY_FOR_EXPLICIT_SHADOW_EXECUTION" },
+    "truth": { "type": "object" },
+    "planDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "schema": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}
+

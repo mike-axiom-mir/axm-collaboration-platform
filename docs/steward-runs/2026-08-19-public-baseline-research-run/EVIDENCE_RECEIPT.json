@@ -1,0 +1,111 @@
+{
+  "generated": "2026-08-19T08:40:00.000Z",
+  "integrity": {
+    "state": "SEALED",
+    "algorithm": "sha256",
+    "scope": "canonical-receipt-content-without-generated-or-integrity",
+    "digest": "sha256:2e1623dc590c8c5b3c6a929b83ad7ecb90c20298c71fdcacc9d5cc8baabf8e02"
+  },
+  "schema": "axm.evidence-receipt/v2",
+  "format": "axm-evidence-receipt",
+  "v": 2,
+  "title": "Historical public-baseline research replay evidence",
+  "goal": "Bind exact Git and inert research inputs to claim-native proof before building the bounded research run.",
+  "actor": {
+    "id": "keel-codex-technical-steward",
+    "type": "TOOL"
+  },
+  "source_checkpoint": "public-baseline-research-run:2026-08-19",
+  "status": "OBSERVED_WITH_RECORDED_SCOPE",
+  "counts": {
+    "claims": 3,
+    "claims_passed": 3,
+    "claims_failed": 0,
+    "claims_unknown": 0,
+    "actions_executed": 0,
+    "checks_passed": 0,
+    "checks_failed": 0,
+    "checks_not_run": 0,
+    "changes": 0
+  },
+  "truth": {
+    "claimed_done": false,
+    "execution_is_verification": false,
+    "receipt_generation_is_independent_verification": false,
+    "all_claims_resolved": true,
+    "all_checks_evidenced": false,
+    "fully_verified": true,
+    "receiver_acceptance_proven": false,
+    "canon_assigned": false
+  },
+  "observations": [
+    {
+      "id": "claim-public-baseline-identity",
+      "claim": "The historical public baseline commit, tree, parents, tree listing, and AGENTS content are available as the recorded Git objects.",
+      "kind": "deterministic-behavior",
+      "risk": "MEDIUM",
+      "verdict": "PASS",
+      "pass_condition": "Fresh Git object reads reproduce every stored commit/tree/config digest and tree-entry count.",
+      "primary_surface": "focused-execution",
+      "required_surface": "focused-execution",
+      "route_guidance": "Run known inputs and assert the exact outputs.",
+      "observed_evidence": "Read-only Git commands reproduced commit 7147b97, tree af6dc132, 13,502 tree entries, and stored SHA-256 observations.",
+      "counterevidence": "A missing object, different tree or parents, entry-count change, or digest mismatch refutes the claim.",
+      "source_kind": "git-observation-receipt",
+      "source": "public-baseline:git-observation",
+      "named_seam": "",
+      "route_issues": [],
+      "evidence_state": "COMPLETE",
+      "effective_verdict": "PASS"
+    },
+    {
+      "id": "claim-research-input-identities",
+      "claim": "The seven supplied research artifacts match the byte lengths and SHA-256 identities in the inert input manifest.",
+      "kind": "deterministic-behavior",
+      "risk": "MEDIUM",
+      "verdict": "PASS",
+      "pass_condition": "Fresh byte reads of all seven inputs reproduce every manifest length and digest without executing package code.",
+      "primary_surface": "focused-execution",
+      "required_surface": "focused-execution",
+      "route_guidance": "Run known inputs and assert the exact outputs.",
+      "observed_evidence": "Read-only hashing reproduced all seven recorded lengths and SHA-256 values.",
+      "counterevidence": "Any absent input, length change, or digest mismatch refutes the claim.",
+      "source_kind": "inert-input-manifest",
+      "source": "research:5yff-input-manifest",
+      "named_seam": "",
+      "route_issues": [],
+      "evidence_state": "COMPLETE",
+      "effective_verdict": "PASS"
+    },
+    {
+      "id": "claim-grounded-disposition-quality",
+      "claim": "The technical disposition preserves useful research signals while refusing redundant or authority-expanding proposals and keeping unknown human benefit visible.",
+      "kind": "quality",
+      "risk": "MEDIUM",
+      "verdict": "PASS",
+      "pass_condition": "The disposition maps every retained signal to evidence/current capability, preserves rejected/deferred proposals, and grants no automatic action or truth authority.",
+      "primary_surface": "acceptance-review",
+      "required_surface": "acceptance-review",
+      "route_guidance": "Inspect the artifact against declared acceptance criteria.",
+      "observed_evidence": "The current-reality audit records repaired/reused organs, open human evidence, rejected recursive/global authorities, and unchanged CANON.",
+      "counterevidence": "A silently dropped dissent, unsupported PASS, auto-action grant, or hidden UNKNOWN refutes the claim.",
+      "source_kind": "technical-steward-audit",
+      "source": "audit:5yff-current-reality",
+      "named_seam": "",
+      "route_issues": [],
+      "evidence_state": "COMPLETE",
+      "effective_verdict": "PASS"
+    }
+  ],
+  "actions": [],
+  "checks": [],
+  "changes": [],
+  "limitations": [
+    "Git object availability is local evidence and does not prove the remote branch is currently unchanged.",
+    "Artifact-to-model mapping and cross-model independence remain user-reported or unknown.",
+    "Technical disposition does not substitute for Mike's merge/CANON decision or voluntary human-benefit evidence."
+  ],
+  "next_actions": [],
+  "warnings": [],
+  "validation_errors": []
+}

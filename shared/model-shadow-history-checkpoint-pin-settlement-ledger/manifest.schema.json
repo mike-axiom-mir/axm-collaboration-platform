@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-two-phase-history-checkpoint-pin-settlement-ledger-manifest/v1",
+  "title":"AXM local pin settlement ledger manifest",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","logId","createdAt","genesisPinRef","genesisPackageDigest","authorityOrigin","storageMode","maxRecords","state","truth","manifestDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-two-phase-history-checkpoint-pin-settlement-ledger-manifest/v1"},"version":{"const":"2.5.0"},"status":{"const":"TEST"},
+    "logId":{"type":"string","minLength":1,"maxLength":180},"createdAt":{"type":"string","format":"date-time"},"genesisPinRef":{"$ref":"#/$defs/reference"},"genesisPackageDigest":{"$ref":"#/$defs/digest"},
+    "authorityOrigin":{"const":"CALLER_CONFIGURED_LOCAL_PIN_SETTLEMENT_LEDGER_UNAUTHENTICATED"},"storageMode":{"const":"LOCAL_EXCLUSIVE_CREATE_FILE_FSYNC_SETTLED_ONLY_HEAD"},"maxRecords":{"const":10000},
+    "state":{"const":"CALLER_CONFIGURED_LOCAL_PIN_SETTLEMENT_LEDGER_AUTHORITY_PROTECTION_AND_EXTERNAL_RETENTION_NOT_PROVEN"},"truth":{"$ref":"#/$defs/truth"},"manifestDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "reference":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}},
+    "truth":{"type":"object","additionalProperties":false,"required":["genesisPinExactRebuiltFromCallerPackageAtServiceOpen","manifestCanonicalAndSelfDigested","localExclusiveCreateIntended","localFileFsyncIntended","directoryEntryOrHardwareDurabilityProven","pinOriginAuthenticated","hostAuthorizationAuthenticated","authenticatedHumanReviewProven","externalRetentionProven","protectedMonotonicStateProven","deletionOrRollbackPrevented","globallyConsistentLogProven","automaticPromotion","automaticMerge","automaticCanon","foundationMutation"],"properties":{"genesisPinExactRebuiltFromCallerPackageAtServiceOpen":{"const":true},"manifestCanonicalAndSelfDigested":{"const":true},"localExclusiveCreateIntended":{"const":true},"localFileFsyncIntended":{"const":true},"directoryEntryOrHardwareDurabilityProven":{"const":false},"pinOriginAuthenticated":{"const":false},"hostAuthorizationAuthenticated":{"const":false},"authenticatedHumanReviewProven":{"const":false},"externalRetentionProven":{"const":false},"protectedMonotonicStateProven":{"const":false},"deletionOrRollbackPrevented":{"const":false},"globallyConsistentLogProven":{"const":false},"automaticPromotion":{"const":false},"automaticMerge":{"const":false},"automaticCanon":{"const":false},"foundationMutation":{"const":false}}}
+  }
+}

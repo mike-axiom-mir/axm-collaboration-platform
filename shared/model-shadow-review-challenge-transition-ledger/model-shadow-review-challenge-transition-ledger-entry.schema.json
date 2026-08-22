@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-ledger-entry/v1",
+  "title": "Model Shadow review challenge transition ledger entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "entryId", "recordedAt", "status", "log",
+    "manifestRef", "previousEntryRef", "transitionReceipt",
+    "previousSeparatedWitnessRef", "candidateSeparatedWitnessRef", "state",
+    "nextGate", "truth", "entryDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-ledger-entry/v1"},
+    "version": {"const": "0.8.0"},
+    "entryId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "recordedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "log": {
+      "type": "object", "additionalProperties": false,
+      "required": ["logId", "authorityOrigin", "storageMode", "sequence"],
+      "properties": {
+        "logId": {"type": "string", "minLength": 1, "maxLength": 180},
+        "authorityOrigin": {"const": "CALLER_STATE_ROOT_UNAUTHENTICATED"},
+        "storageMode": {"const": "SEQUENCE_ENTRY_EXCLUSIVE_CREATE_LOCAL_HEAD_DERIVED_FROM_VALIDATED_CHAIN"},
+        "sequence": {"type": "integer", "minimum": 1}
+      }
+    },
+    "manifestRef": {"$ref": "#/$defs/reference"},
+    "previousEntryRef": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+    "transitionReceipt": {"type": "object"},
+    "previousSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "candidateSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+    "state": {"const": "LOCAL_CALLER_OWNED_TRANSITION_HEAD_ADVANCED_WHILE_STATE_IS_PRESERVED_NO_GLOBAL_CONSISTENCY_OR_EXECUTION_AUTHORITY"},
+    "nextGate": {"const": "HOST_AUTHENTICATED_EXTERNALLY_RETAINED_GLOBALLY_CONSISTENT_TRANSITION_LOG_OR_PROTECTED_MONOTONIC_STORE"},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "transitionReceiptVerifiedByExactRebuildBeforeWrite", "forwardPairwiseExtensionRequired",
+        "manifestVerified", "exactLocalHeadMatchedBeforeWrite", "stateWritePerformed",
+        "writeRequiredExplicitConfirmation", "exclusiveSequenceEntryCreateWon",
+        "entryFileFsyncCompleted", "localHeadAdvancedWhileCallerStateIsPreserved",
+        "persistedUpstreamTransitionInput", "upstreamTransitionReverifiedAfterReloadWithoutCallerPackage",
+        "callerPresentedPackageRequiredForPersistedExactRebuild", "independentStateRootsExcluded",
+        "withheldForksExcluded", "unpresentedBranchesExcluded", "globalTransitionUniquenessProven",
+        "globallyConsistentTransitionLogProven", "externalTransitionRetentionProven",
+        "protectedMonotonicStateProven", "deletionOrRollbackPrevented",
+        "ledgerAuthorityAuthenticated", "hostAuthorizationAuthenticated",
+        "actorRealWorldIdentityProven", "actualHumanParticipationProven",
+        "comparisonTimeExternallyTrusted", "recordingTimeExternallyTrusted",
+        "durabilityBeyondReportedFileFsyncProven", "rawPublicKeyEmbedded",
+        "rawSignatureEmbedded", "privateKeyIngested", "rawModelOutputEmbedded",
+        "privateContextEmbedded", "experimentExecuted", "evaluationPerformed",
+        "executionAuthorized", "adoptionAuthorized", "humanBenefitProven",
+        "broadLearningClaimed", "automaticWrite", "automaticPermissionGrant",
+        "automaticInstall", "automaticPromotion", "automaticMerge", "automaticCanon",
+        "foundationMutation"
+      ],
+      "properties": {
+        "transitionReceiptVerifiedByExactRebuildBeforeWrite": {"const": true},
+        "forwardPairwiseExtensionRequired": {"const": true},
+        "manifestVerified": {"const": true},
+        "exactLocalHeadMatchedBeforeWrite": {"const": true},
+        "stateWritePerformed": {"const": true},
+        "writeRequiredExplicitConfirmation": {"const": true},
+        "exclusiveSequenceEntryCreateWon": {"const": true},
+        "entryFileFsyncCompleted": {"const": true},
+        "localHeadAdvancedWhileCallerStateIsPreserved": {"const": true},
+        "persistedUpstreamTransitionInput": {"const": false},
+        "upstreamTransitionReverifiedAfterReloadWithoutCallerPackage": {"const": false},
+        "callerPresentedPackageRequiredForPersistedExactRebuild": {"const": true},
+        "independentStateRootsExcluded": {"const": false},
+        "withheldForksExcluded": {"const": false},
+        "unpresentedBranchesExcluded": {"const": false},
+        "globalTransitionUniquenessProven": {"const": false},
+        "globallyConsistentTransitionLogProven": {"const": false},
+        "externalTransitionRetentionProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "ledgerAuthorityAuthenticated": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "actorRealWorldIdentityProven": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "comparisonTimeExternallyTrusted": {"const": false},
+        "recordingTimeExternallyTrusted": {"const": false},
+        "durabilityBeyondReportedFileFsyncProven": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "privateKeyIngested": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "entryDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

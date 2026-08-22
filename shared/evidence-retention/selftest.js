@@ -30,6 +30,22 @@ function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: 
     check(sealed.sealed && /^[a-f0-9]{64}$/.test(sealed.manifest.segmentSha256) && sealed.manifest.lastEventHash, 'session close produces a hash-chained sealed segment and manifest');
     check(manager.status().sealedSessions === 1 && manager.status().currentSession === null, 'sealed sessions remain discoverable without keeping an open writer');
 
+    const closureStateRoot = path.join(workshop, 'closure-state'), closureDirectory = path.join(closureStateRoot, 'simulated-run');
+    const closureFiles = ['current', 'removed', 'corrupted', 'summary-replaced'].map(name => path.join(closureDirectory, name + '.jsonl'));
+    fs.mkdirSync(closureDirectory, { recursive:true });
+    for (const file of closureFiles) fs.writeFileSync(file, JSON.stringify({ type:'raw-output', id:path.basename(file), payload:'full evidence' }) + '\n', 'utf8');
+    const closureManager = Retention.create({ stateRoot:closureStateRoot, limits:{ maxSourceClosureItems:10 } });
+    const closureBefore = closureManager.verifySources(closureFiles);
+    check(closureBefore.state === 'CURRENT' && closureBefore.counts.CURRENT === 4, 'registered raw outputs verify against their original byte identities before mutation');
+    fs.unlinkSync(closureFiles[1]);
+    fs.writeFileSync(closureFiles[2], '{"type":"raw-output","payload":', 'utf8');
+    fs.writeFileSync(closureFiles[3], JSON.stringify({ type:'summary', count:1 }) + '\n', 'utf8');
+    const closureAfter = closureManager.verifySources(closureFiles), closureStates = Object.fromEntries(closureAfter.results.map(result => [path.basename(result.source), result.state]));
+    check(closureAfter.state === 'HELD' && closureAfter.hold === true, 'registered-source closure holds when any raw output is no longer exact');
+    check(closureStates['removed.jsonl'] === 'MISSING' && closureStates['corrupted.jsonl'] === 'CHANGED' && closureStates['summary-replaced.jsonl'] === 'CHANGED', 'removed, corrupted, and summary-replaced raw outputs remain distinct from current evidence');
+    check(closureManager.verifySource(path.join(closureDirectory, 'never-registered.jsonl')).state === 'UNKNOWN_SOURCE', 'an undeclared output cannot inherit registered-source identity');
+    check(closureManager.verifySource(closureFiles[0]).state === 'CURRENT', 'an unchanged raw output remains current after sibling failures');
+
     const repeatStateRoot = path.join(workshop, 'repeat-state'), repeatSource = path.join(repeatStateRoot, 'runtime', 'events.jsonl'), repeatManager = Retention.create({ stateRoot:repeatStateRoot, limits:{ maxEvents:100, maxBytes:1024 * 1024 } });
     const firstFailure = repeatManager.record(repeatSource, { type:'workshop-error', at:'2026-01-02T00:00:00.000Z', message:'renderer timeout at stable boundary' });
     let repeatedFailure = null;
