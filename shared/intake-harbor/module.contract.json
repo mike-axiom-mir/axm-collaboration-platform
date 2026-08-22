@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "intake-harbor",
+  "version": "v0.1",
+  "provides": ["city.intake.quarantine-record", "city.intake.fifteen-step-route", "city.intake.receipt-chain", "city.intake.promotion-boundary"],
+  "consumes": ["axm.artifact-ref/v1", "axm.intake-step-receipt/v1"],
+  "permissions": [],
+  "handoffs": { "emits": ["axm.intake-state/v1"], "accepts": ["axm.artifact-ref/v1", "axm.intake-step-receipt/v1"] },
+  "lifecycle": { "state_owner": "caller", "reload": "verify-state-digest", "disconnect": "retain-quarantine", "cleanup": "external-explicit-rollback-only" },
+  "boundaries": {
+    "writes": [],
+    "refuses": ["uploaded-code-execution", "automatic-unpack", "automatic-install", "automatic-test-run", "secret-retention", "promotion-application", "self-promotion", "rollback-execution", "network-write", "merge", "canon-change", "root-change"]
+  }
+}

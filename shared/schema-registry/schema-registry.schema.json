@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.schema-registry/v1",
+  "type": "object",
+  "required": ["schema", "graphDigest", "registryDigest", "entries", "adapters", "unresolvedSockets", "truth"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.schema-registry/v1" },
+    "graphDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "registryDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "entries": { "type": "array" },
+    "adapters": { "type": "array" },
+    "unresolvedSockets": { "type": "array" },
+    "truth": { "type": "object" }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.authority-policy/v1",
+  "type": "object",
+  "required": ["schema", "id", "version", "decisionMakers", "rules", "defaultDecision", "policyDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.authority-policy/v1" },
+    "id": { "type": "string" },
+    "version": { "type": "string" },
+    "decisionMakers": { "type": "array", "items": { "type": "string" } },
+    "rules": { "type": "array" },
+    "defaultDecision": { "enum": ["DENY", "HOLD"] },
+    "policyDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

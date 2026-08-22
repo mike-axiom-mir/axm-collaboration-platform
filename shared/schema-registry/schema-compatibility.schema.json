@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.schema-compatibility/v1",
+  "type": "object",
+  "required": ["schema", "source", "target", "state", "basis", "losses", "adapter"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.schema-compatibility/v1" },
+    "source": { "type": "string" },
+    "target": { "type": "string" },
+    "state": { "enum": ["EXACT", "STRUCTURALLY_EQUIVALENT", "ADAPTER_REQUIRED", "INCOMPATIBLE", "UNKNOWN"] },
+    "basis": { "type": "array", "items": { "type": "string" } },
+    "losses": { "type": "array", "items": { "type": "string" } },
+    "adapter": { "type": ["string", "null"] }
+  }
+}

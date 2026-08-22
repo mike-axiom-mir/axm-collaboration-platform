@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.merge-rule/v1",
+  "type": "object",
+  "required": ["schema", "id", "namespace", "semantics", "strategy", "owner", "ruleDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.merge-rule/v1" },
+    "id": { "type": "string" },
+    "namespace": { "type": "string" },
+    "semantics": { "enum": ["CRDT_MERGEABLE", "APPEND_ONLY", "LAST_WRITER_NOT_ALLOWED", "HUMAN_RECONCILIATION_REQUIRED", "SINGLE_AUTHORITY", "IMMUTABLE"] },
+    "strategy": { "type": ["string", "null"] },
+    "owner": { "type": "string" },
+    "ruleDigest": { "type": "string" }
+  }
+}

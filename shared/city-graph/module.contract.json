@@ -1,0 +1,57 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "city-graph",
+  "version": "v0.1",
+  "provides": [
+    "city.live-filesystem-discovery",
+    "city.deterministic-graph-compile",
+    "city.generated-view-render",
+    "city.omission-gate",
+    "city.graph-drift-receipt"
+  ],
+  "consumes": [
+    "filesystem:explicit-workshop-root",
+    "git:local-source-commit",
+    "axm.tool-manifest/v1",
+    "axm.module-contract/v1",
+    "json-schema:draft-2020-12"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.city-graph/v1",
+      "axm.block-view/v1",
+      "axm.city-graph-receipt/v1",
+      "axm.city-infrastructure/v1"
+    ],
+    "accepts": [
+      "filesystem/explicit-workshop-root",
+      "axm.city-roots/v1"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "recompile-from-named-source-snapshot",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "explicit-generated-city-views-under-registry/generated",
+      "explicit-generated-human-map-under-docs/generated"
+    ],
+    "refuses": [
+      "module-installation",
+      "module-execution",
+      "network-read",
+      "network-write",
+      "runtime-permission-grant",
+      "promotion",
+      "merge",
+      "canon-change",
+      "root-change",
+      "safety-claim-from-absence",
+      "automatic-deletion-of-stale-generated-files"
+    ]
+  }
+}

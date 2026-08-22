@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.journal-record/v1",
+  "type": "object",
+  "required": ["schema", "sequence", "previousHash", "event", "recordHash"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.journal-record/v1" },
+    "sequence": { "type": "integer", "minimum": 0 },
+    "previousHash": { "type": ["string", "null"] },
+    "event": { "$ref": "axm.event/v1" },
+    "recordHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

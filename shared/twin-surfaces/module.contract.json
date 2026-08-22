@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "twin-surfaces",
+  "version": "v0.1",
+  "provides": ["city.twin.machine-packets", "city.twin.beginner-labels", "city.twin.effect-packet-binding", "city.twin.drift-check"],
+  "consumes": ["axm.city-graph/v1", "axm.schema-registry/v1"],
+  "permissions": [],
+  "handoffs": { "emits": ["axm.twin-surface/v1"], "accepts": ["axm.city-graph/v1", "axm.schema-registry/v1"] },
+  "lifecycle": { "state_owner": "none", "reload": "recompile-from-current-graph", "disconnect": "not-applicable", "cleanup": "explicit" },
+  "boundaries": {
+    "writes": ["explicit-generated-twin-view-under-registry/generated", "explicit-generated-beginner-map-under-docs/generated"],
+    "refuses": ["independent-human-truth", "hidden-effect", "safe-label-from-absence", "effect-without-machine-packet", "authority-grant", "promotion", "merge", "canon-change", "root-change"]
+  }
+}

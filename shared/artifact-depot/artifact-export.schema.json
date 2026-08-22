@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.artifact-export/v1",
+  "type": "object",
+  "required": ["schema", "artifacts", "executionAuthority", "promotionAuthority", "manifestDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.artifact-export/v1" },
+    "artifacts": { "type": "array" },
+    "executionAuthority": { "const": false },
+    "promotionAuthority": { "const": false },
+    "manifestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}
