@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/intake-transaction-receipt/v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "transaction_id",
+    "mode",
+    "baseline",
+    "artifacts",
+    "preflight",
+    "compatibility_matrix_hash",
+    "status",
+    "rehearsal_passed",
+    "commit_eligible",
+    "staged_actions",
+    "rollback",
+    "truth_boundary",
+    "receipt_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.intake.transaction-receipt/v1"
+    },
+    "transaction_id": {
+      "type": "string"
+    },
+    "mode": {
+      "const": "REHEARSAL_ONLY"
+    },
+    "baseline": {
+      "type": "object"
+    },
+    "artifacts": {
+      "type": "array"
+    },
+    "preflight": {
+      "type": "object"
+    },
+    "compatibility_matrix_hash": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "REHEARSAL_PASS",
+        "MERGE_HOLD",
+        "ACTIVE_MERGE_REJECTED"
+      ]
+    },
+    "rehearsal_passed": {
+      "type": "boolean"
+    },
+    "commit_eligible": {
+      "const": false
+    },
+    "staged_actions": {
+      "type": "array"
+    },
+    "rollback": {
+      "type": "object"
+    },
+    "truth_boundary": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "receipt_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-intake-audit-0.2.0.schema.json",
+  "title": "AXM HII Intake Audit Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "audit_version",
+    "audit_id",
+    "module_id",
+    "module_version",
+    "generated_at",
+    "handoff_shape_errors",
+    "context_assessments",
+    "paired_boundary",
+    "cross_module_gate",
+    "decision_receipts",
+    "recommendation_assurance",
+    "health_report",
+    "evolution_observations"
+  ],
+  "properties": {
+    "audit_version": {
+      "const": "0.2.0"
+    },
+    "audit_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "module_id": {
+      "const": "axm.human-interface-intelligence"
+    },
+    "module_version": {
+      "const": "0.6.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "handoff_shape_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "context_assessments": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "paired_boundary": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "cross_module_gate": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "decision_receipts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "health_report": {
+      "type": "object"
+    },
+    "evolution_observations": {
+      "type": "object"
+    },
+    "recommendation_assurance": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "schema": "axm.visual-treatment-recipe/v1",
+  "version": "1.0.0",
+  "id": "ferris-aetherglass-neon-visual-treatment",
+  "request_id": "ferris-aetherglass-neon",
+  "identity_id": "axm.park.ferris-wheel",
+  "profile_id": "pixel-16bit-3d",
+  "catalog_digest": "413853e116023c991509d97f22e1f29f56e9537ca88286c9f38517755b79a121",
+  "style_layers": [
+    {
+      "id": "aetherglass-cinematic",
+      "name": "Aetherglass Cinematic",
+      "source": "style-fabric:treatment-mold",
+      "palette": {
+        "accent": "#ff43c8",
+        "background": "#050812",
+        "highlight": "#dffcff",
+        "mutedText": "#aebbd2",
+        "primary": "#38e8ff",
+        "secondary": "#7c5cff",
+        "shadow": "#02040a",
+        "surface": "#10192a",
+        "text": "#f6fbff"
+      },
+      "material": {
+        "clearcoat": 0.74,
+        "colors": {
+          "accentColor": "accent",
+          "baseColor": "surface",
+          "emissiveColor": "secondary",
+          "secondaryColor": "primary"
+        },
+        "emissiveStrength": 1.28,
+        "gloss": 0.86,
+        "glowIntensity": 0.72,
+        "glowRadius": 34,
+        "grain": 0.04,
+        "iridescence": 0.24,
+        "metallic": 0.28,
+        "opacity": 0.78,
+        "outlineWidth": 1.4,
+        "pattern": {
+          "kind": "holo-grid",
+          "scale": 1.4,
+          "strength": 0.18
+        },
+        "patternScale": 1,
+        "pulseSpeed": 0,
+        "roughness": 0.18,
+        "sheen": 0.34,
+        "shimmerSpeed": 0.44,
+        "specular": 0.78,
+        "translucency": 0.62,
+        "weathering": 0
+      },
+      "pattern": {
+        "kind": "holo-grid",
+        "scale": 1.4,
+        "strength": 0.18
+      },
+      "accessibility": {
+        "minimumTextContrast": 4.5,
+        "reducedMotion": false
+      },
+      "effect_stack": {
+        "layers": [
+          {
+            "blendMode": "normal",
+            "colorRole": "surface",
+            "id": "glass-fill",
+            "intensity": 0.72,
+            "kind": "fill",
+            "mask": "inside",
+            "opacity": 0.78
+          },
+          {
+            "blendMode": "screen",
+            "colorRole": "highlight",
+            "id": "inner-highlight",
+            "intensity": 0.38,
+            "kind": "inner-glow",
+            "mask": "inside",
+            "opacity": 0.34,
+            "radius": 9,
+            "softness": 0.76
+          },
+          {
+            "blendMode": "screen",
+            "colorRole": "primary",
+            "id": "cyan-rim",
+            "intensity": 0.72,
+            "kind": "rim-light",
+            "mask": "edge",
+            "motion": {
+              "amount": 0.16,
+              "kind": "shimmer",
+              "speed": 0.44
+            },
+            "opacity": 0.82,
+            "radius": 12,
+            "softness": 0.52
+          },
+          {
+            "blendMode": "screen",
+            "colorRole": "secondary",
+            "id": "violet-aura",
+            "intensity": 0.48,
+            "kind": "outer-glow",
+            "mask": "outside",
+            "opacity": 0.46,
+            "radius": 24,
+            "softness": 0.82,
+            "spread": 5
+          },
+          {
+            "blendMode": "add",
+            "colorRole": "accent",
+            "id": "accent-bloom",
+            "intensity": 0.28,
+            "kind": "bloom",
+            "mask": "edge",
+            "opacity": 0.3,
+            "radius": 32,
+            "softness": 0.9,
+            "threshold": 0.72
+          },
+          {
+            "blendMode": "screen",
+            "colorRole": "primary",
+            "id": "depth-haze",
+            "intensity": 0.12,
+            "kind": "haze",
+            "mask": "radial",
+            "opacity": 0.14,
+            "radius": 44,
+            "softness": 0.96
+          }
+        ],
+        "version": "1.0"
+      },
+      "lighting_rig": {
+        "ambient": {
+          "colorRole": "background",
+          "intensity": 0.28,
+          "softness": 1
+        },
+        "bloom": {
+          "intensity": 0.28,
+          "radius": 32,
+          "threshold": 0.72
+        },
+        "contrast": 1.08,
+        "exposure": 1.04,
+        "fill": {
+          "colorRole": "secondary",
+          "directionDegrees": 45,
+          "intensity": 0.34,
+          "softness": 0.82
+        },
+        "haze": {
+          "colorRole": "primary",
+          "density": 0.12
+        },
+        "key": {
+          "colorRole": "primary",
+          "directionDegrees": 315,
+          "intensity": 0.84,
+          "softness": 0.55
+        },
+        "rim": {
+          "colorRole": "accent",
+          "directionDegrees": 150,
+          "intensity": 0.68,
+          "softness": 0.48
+        },
+        "shadows": {
+          "softness": 0.7,
+          "strength": 0.62
+        },
+        "version": "1.0"
+      },
+      "weight": 1
+    }
+  ],
+  "effect_plan": [
+    {
+      "requested_id": "material.aetherglass",
+      "module_id": "material.aetherglass",
+      "name": "Aetherglass Panel",
+      "kind": "organ",
+      "category": "Materials",
+      "renderer": {
+        "className": "fx-material-aetherglass",
+        "scope": "surface",
+        "type": "class"
+      },
+      "params": {
+        "opacity": 0.76,
+        "blur": 18,
+        "edge": 0.62,
+        "roughness": 0.18
+      },
+      "css_variables": {
+        "--fx-glass-opacity": 0.76,
+        "--fx-glass-blur": 18,
+        "--fx-edge-energy": 0.62,
+        "--fx-surface-roughness": 0.18
+      },
+      "route": "APPLIED_3D_AND_PORTABLE_WEB",
+      "fallback_used": false
+    },
+    {
+      "requested_id": "light.neon-edge-glow",
+      "module_id": "light.neon-edge-glow",
+      "name": "Neon Edge Glow",
+      "kind": "effect",
+      "category": "Light",
+      "renderer": {
+        "className": "fx-neon-edge",
+        "scope": "surface",
+        "type": "class"
+      },
+      "params": {
+        "intensity": 0.72,
+        "width": 2,
+        "spread": 16
+      },
+      "css_variables": {
+        "--fx-edge-energy": 0.72,
+        "--fx-edge-width": 2,
+        "--fx-glow-spread": 16
+      },
+      "route": "APPLIED_3D_AND_PORTABLE_WEB",
+      "fallback_used": false
+    },
+    {
+      "requested_id": "motion.idle-pulse",
+      "module_id": "motion.idle-pulse",
+      "name": "Idle Pulse",
+      "kind": "effect",
+      "category": "Motion",
+      "renderer": {
+        "className": "fx-idle-pulse",
+        "scope": "active",
+        "type": "class"
+      },
+      "params": {
+        "speed": 4.8,
+        "scale": 1.014,
+        "intensity": 0.34
+      },
+      "css_variables": {
+        "--fx-pulse-speed": 4.8,
+        "--fx-pulse-scale": 1.014,
+        "--fx-pulse-intensity": 0.34
+      },
+      "route": "APPLIED_3D_AND_PORTABLE_WEB",
+      "fallback_used": false
+    }
+  ],
+  "material_family": "glass",
+  "accessibility": {
+    "reduced_motion": false,
+    "high_contrast": false,
+    "effect_scale": 1
+  },
+  "story": {
+    "title": "SAME RIDE / NEW LIGHT",
+    "nodes": [
+      {
+        "id": "truth",
+        "caption": "THE WHEEL STAYS THE WHEEL.",
+        "duration_s": 2,
+        "focus_component": "wheel-axis"
+      },
+      {
+        "id": "choice",
+        "caption": "THE TREATMENT BECOMES A CHOICE.",
+        "duration_s": 2,
+        "focus_component": "visual-fx-halo"
+      }
+    ]
+  },
+  "scene_recipe_digest": "axm-stable:9ea81018c9678645",
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

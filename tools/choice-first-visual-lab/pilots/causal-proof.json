@@ -1,0 +1,386 @@
+{
+  "schema": "axm.causal-proof/v1",
+  "status": "PASS",
+  "initial": {
+    "schema": "axm.causal-asset-simulation/v1",
+    "version": "1.0.0",
+    "status": "EXPERIMENTAL",
+    "id": "causal-proof",
+    "identity_id": "axm.park.ferris-wheel",
+    "state": {
+      "operating_state": "idle",
+      "condition": 100,
+      "cleanliness": 100,
+      "cycle_count": 0,
+      "load": 0,
+      "simulated_time_ms": 0,
+      "faults": [],
+      "upgrades": [],
+      "animation_state": "idle"
+    },
+    "processed_event_ids": [],
+    "history": [],
+    "invariants": [
+      "elapsed-time-alone-does-not-change-condition",
+      "every-condition-change-names-a-causal-event",
+      "events-are-applied-exactly-once"
+    ],
+    "provenance": {
+      "reducer": "AXMChoiceFirstCore.applySimulationEvent",
+      "version": "1.0.0"
+    },
+    "authority": {
+      "candidate_only": true,
+      "installed": false,
+      "promoted": false,
+      "canonical": false,
+      "human_review_required": true
+    }
+  },
+  "events": [
+    {
+      "id": "idle-ten-years",
+      "type": "time_elapsed",
+      "duration_ms": 315576000000
+    },
+    {
+      "id": "loaded",
+      "type": "load_changed",
+      "load": 1.4
+    },
+    {
+      "id": "cycles",
+      "type": "use_cycle",
+      "cycles": 40,
+      "load_factor": 1.4
+    },
+    {
+      "id": "imbalance",
+      "type": "imbalance",
+      "severity": 0.8
+    },
+    {
+      "id": "inspection",
+      "type": "inspection"
+    },
+    {
+      "id": "repair",
+      "type": "repair",
+      "condition_points": 12,
+      "clear_faults": true
+    }
+  ],
+  "final": {
+    "schema": "axm.causal-asset-simulation/v1",
+    "version": "1.0.0",
+    "status": "EXPERIMENTAL",
+    "id": "causal-proof",
+    "identity_id": "axm.park.ferris-wheel",
+    "state": {
+      "operating_state": "repair",
+      "condition": 100,
+      "cleanliness": 99.6,
+      "cycle_count": 40,
+      "load": 1.4,
+      "simulated_time_ms": 315576000000,
+      "faults": [],
+      "upgrades": [],
+      "animation_state": "repair"
+    },
+    "processed_event_ids": [
+      "idle-ten-years",
+      "loaded",
+      "cycles",
+      "imbalance",
+      "inspection",
+      "repair"
+    ],
+    "history": [
+      {
+        "event": {
+          "id": "idle-ten-years",
+          "type": "time_elapsed",
+          "duration_ms": 315576000000
+        },
+        "receipt": {
+          "schema": "axm.causal-event-receipt/v1",
+          "status": "APPLIED",
+          "event_id": "idle-ten-years",
+          "event_type": "time_elapsed",
+          "causal_inputs": [
+            "duration_ms"
+          ],
+          "before_digest": "7ab4f4d917e1f59c",
+          "after_digest": "c9c948fe88e12d3d",
+          "condition_delta": 0,
+          "cleanliness_delta": 0,
+          "time_only_no_decay": true,
+          "fallback_used": false
+        }
+      },
+      {
+        "event": {
+          "id": "loaded",
+          "type": "load_changed",
+          "load": 1.4
+        },
+        "receipt": {
+          "schema": "axm.causal-event-receipt/v1",
+          "status": "APPLIED",
+          "event_id": "loaded",
+          "event_type": "load_changed",
+          "causal_inputs": [
+            "load"
+          ],
+          "before_digest": "c9c948fe88e12d3d",
+          "after_digest": "da3dcdfd4f7b74fd",
+          "condition_delta": 0,
+          "cleanliness_delta": 0,
+          "time_only_no_decay": true,
+          "fallback_used": false
+        }
+      },
+      {
+        "event": {
+          "id": "cycles",
+          "type": "use_cycle",
+          "cycles": 40,
+          "load_factor": 1.4
+        },
+        "receipt": {
+          "schema": "axm.causal-event-receipt/v1",
+          "status": "APPLIED",
+          "event_id": "cycles",
+          "event_type": "use_cycle",
+          "causal_inputs": [
+            "cycles",
+            "load_factor"
+          ],
+          "before_digest": "da3dcdfd4f7b74fd",
+          "after_digest": "dd37bfd6202498de",
+          "condition_delta": -1.12,
+          "cleanliness_delta": -0.4,
+          "time_only_no_decay": true,
+          "fallback_used": false
+        }
+      },
+      {
+        "event": {
+          "id": "imbalance",
+          "type": "imbalance",
+          "severity": 0.8
+        },
+        "receipt": {
+          "schema": "axm.causal-event-receipt/v1",
+          "status": "APPLIED",
+          "event_id": "imbalance",
+          "event_type": "imbalance",
+          "causal_inputs": [
+            "severity"
+          ],
+          "before_digest": "dd37bfd6202498de",
+          "after_digest": "5eddd2c6cb3c41ac",
+          "condition_delta": -0.6,
+          "cleanliness_delta": 0,
+          "time_only_no_decay": true,
+          "fallback_used": false
+        }
+      },
+      {
+        "event": {
+          "id": "inspection",
+          "type": "inspection"
+        },
+        "receipt": {
+          "schema": "axm.causal-event-receipt/v1",
+          "status": "APPLIED",
+          "event_id": "inspection",
+          "event_type": "inspection",
+          "causal_inputs": [
+            "inspection-action"
+          ],
+          "before_digest": "5eddd2c6cb3c41ac",
+          "after_digest": "e09d1dc24f5b66b5",
+          "condition_delta": 0,
+          "cleanliness_delta": 0,
+          "time_only_no_decay": true,
+          "fallback_used": false
+        }
+      },
+      {
+        "event": {
+          "id": "repair",
+          "type": "repair",
+          "condition_points": 12,
+          "clear_faults": true
+        },
+        "receipt": {
+          "schema": "axm.causal-event-receipt/v1",
+          "status": "APPLIED",
+          "event_id": "repair",
+          "event_type": "repair",
+          "causal_inputs": [
+            "condition_points",
+            "repair-action"
+          ],
+          "before_digest": "e09d1dc24f5b66b5",
+          "after_digest": "48a9fd9c3b5d9daf",
+          "condition_delta": 1.72,
+          "cleanliness_delta": 0,
+          "time_only_no_decay": true,
+          "fallback_used": false
+        }
+      }
+    ],
+    "invariants": [
+      "elapsed-time-alone-does-not-change-condition",
+      "every-condition-change-names-a-causal-event",
+      "events-are-applied-exactly-once"
+    ],
+    "provenance": {
+      "reducer": "AXMChoiceFirstCore.applySimulationEvent",
+      "version": "1.0.0"
+    },
+    "authority": {
+      "candidate_only": true,
+      "installed": false,
+      "promoted": false,
+      "canonical": false,
+      "human_review_required": true
+    }
+  },
+  "receipts": [
+    {
+      "schema": "axm.causal-event-receipt/v1",
+      "status": "APPLIED",
+      "event_id": "idle-ten-years",
+      "event_type": "time_elapsed",
+      "causal_inputs": [
+        "duration_ms"
+      ],
+      "before_digest": "7ab4f4d917e1f59c",
+      "after_digest": "c9c948fe88e12d3d",
+      "condition_delta": 0,
+      "cleanliness_delta": 0,
+      "time_only_no_decay": true,
+      "fallback_used": false
+    },
+    {
+      "schema": "axm.causal-event-receipt/v1",
+      "status": "APPLIED",
+      "event_id": "loaded",
+      "event_type": "load_changed",
+      "causal_inputs": [
+        "load"
+      ],
+      "before_digest": "c9c948fe88e12d3d",
+      "after_digest": "da3dcdfd4f7b74fd",
+      "condition_delta": 0,
+      "cleanliness_delta": 0,
+      "time_only_no_decay": true,
+      "fallback_used": false
+    },
+    {
+      "schema": "axm.causal-event-receipt/v1",
+      "status": "APPLIED",
+      "event_id": "cycles",
+      "event_type": "use_cycle",
+      "causal_inputs": [
+        "cycles",
+        "load_factor"
+      ],
+      "before_digest": "da3dcdfd4f7b74fd",
+      "after_digest": "dd37bfd6202498de",
+      "condition_delta": -1.12,
+      "cleanliness_delta": -0.4,
+      "time_only_no_decay": true,
+      "fallback_used": false
+    },
+    {
+      "schema": "axm.causal-event-receipt/v1",
+      "status": "APPLIED",
+      "event_id": "imbalance",
+      "event_type": "imbalance",
+      "causal_inputs": [
+        "severity"
+      ],
+      "before_digest": "dd37bfd6202498de",
+      "after_digest": "5eddd2c6cb3c41ac",
+      "condition_delta": -0.6,
+      "cleanliness_delta": 0,
+      "time_only_no_decay": true,
+      "fallback_used": false
+    },
+    {
+      "schema": "axm.causal-event-receipt/v1",
+      "status": "APPLIED",
+      "event_id": "inspection",
+      "event_type": "inspection",
+      "causal_inputs": [
+        "inspection-action"
+      ],
+      "before_digest": "5eddd2c6cb3c41ac",
+      "after_digest": "e09d1dc24f5b66b5",
+      "condition_delta": 0,
+      "cleanliness_delta": 0,
+      "time_only_no_decay": true,
+      "fallback_used": false
+    },
+    {
+      "schema": "axm.causal-event-receipt/v1",
+      "status": "APPLIED",
+      "event_id": "repair",
+      "event_type": "repair",
+      "causal_inputs": [
+        "condition_points",
+        "repair-action"
+      ],
+      "before_digest": "e09d1dc24f5b66b5",
+      "after_digest": "48a9fd9c3b5d9daf",
+      "condition_delta": 1.72,
+      "cleanliness_delta": 0,
+      "time_only_no_decay": true,
+      "fallback_used": false
+    }
+  ],
+  "duplicate_receipt": {
+    "schema": "axm.causal-event-receipt/v1",
+    "status": "DUPLICATE_IGNORED",
+    "event_id": "cycles",
+    "fallback_used": false,
+    "state_digest": "48a9fd9c3b5d9daf"
+  },
+  "checks": [
+    {
+      "id": "idle-no-decay",
+      "pass": true
+    },
+    {
+      "id": "use-is-causal",
+      "pass": true
+    },
+    {
+      "id": "imbalance-can-fault",
+      "pass": true
+    },
+    {
+      "id": "repair-is-explicit",
+      "pass": true
+    },
+    {
+      "id": "exactly-once",
+      "pass": true
+    },
+    {
+      "id": "deterministic-replay",
+      "pass": true
+    }
+  ],
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

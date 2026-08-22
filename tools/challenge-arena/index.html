@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AXM Challenge Arena</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #eef4ff;
+      --muted: #aab6ca;
+      --night: #070b13;
+      --panel: #101827;
+      --edge: #2a3850;
+      --cyan: #67e8f9;
+      --gold: #f8cf6a;
+      --rose: #fb7185;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--night); color: var(--ink); font: 16px/1.55 system-ui, sans-serif; }
+    body { background-image: radial-gradient(circle at 15% 10%, rgba(103,232,249,.1), transparent 34rem), radial-gradient(circle at 90% 20%, rgba(248,207,106,.08), transparent 28rem); }
+    main { width: min(1040px, calc(100% - 32px)); margin: 0 auto; padding: 42px 0 64px; }
+    .eyebrow { color: var(--cyan); font-size: .78rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { max-width: 760px; margin: 8px 0 12px; font-size: clamp(2rem, 6vw, 4.8rem); line-height: .98; letter-spacing: -.045em; }
+    .lede { max-width: 760px; color: var(--muted); font-size: 1.08rem; }
+    .states, .grid { display: grid; gap: 14px; }
+    .states { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin: 28px 0; }
+    .state, article { border: 1px solid var(--edge); border-radius: 16px; background: rgba(16,24,39,.9); }
+    .state { padding: 13px 16px; color: var(--muted); }
+    .state > strong, .state-label { display: block; color: var(--ink); font-size: 1.05rem; font-weight: 800; }
+    .state.test > strong { color: var(--gold); }
+    .state.safe > strong, .state.safe .state-label { color: var(--cyan); }
+    .grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    article { padding: 20px; }
+    article h2 { margin: 0 0 8px; font-size: 1rem; }
+    article p, li { color: var(--muted); }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    .wide { grid-column: 1 / -1; }
+    pre { overflow: auto; padding: 16px; border: 1px solid var(--edge); border-radius: 12px; background: #060912; color: var(--cyan); }
+    button { min-height: 44px; margin-top: 12px; padding: 8px 16px; border: 1px solid #3b8b9a; border-radius: 10px; background: rgba(103,232,249,.08); color: var(--cyan); cursor: pointer; }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+    .boundary { border-color: rgba(251,113,133,.55); }
+    .boundary h2 { color: var(--rose); }
+    .foot { margin-top: 24px; color: var(--muted); font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Mike-directed platform intake · v0.6.0</p>
+    <h1>Challenge without flattening the challengers.</h1>
+    <p class="lede">Lock one brief, preserve independent attempts, test what can be tested, assign blind review, show dissent, and stop before human authority.</p>
+
+    <section class="states" aria-label="Module status">
+      <div class="state test"><strong>TEST</strong>Workshop integration</div>
+      <div class="state"><strong>Not installed</strong>installed: false</div>
+      <div class="state"><strong>Not promoted</strong>promoted: false</div>
+      <div class="state safe"><span class="state-label">Candidate execution <strong>off</strong></span>default boundary</div>
+      <div class="state safe"><strong>Human decision required</strong>no automatic canon</div>
+    </section>
+
+    <section class="grid" aria-label="Challenge Arena capabilities">
+      <article>
+        <h2>Independent build seats</h2>
+        <p>Every participant receives the same locked challenge before cross-review. Revisions and losing paths remain preserved.</p>
+      </article>
+      <article>
+        <h2>Evidence before opinion</h2>
+        <p>Thirty contracts, twenty-eight deterministic validator kinds, reproducible evidence bundles, and integrity verification support—but do not replace—judgment.</p>
+      </article>
+      <article>
+        <h2>Assigned blind review</h2>
+        <p>No self-voting or unassigned review. Scores bind to evidence or become explicit abstentions; ties and dissent remain visible.</p>
+      </article>
+      <article class="boundary">
+        <h2>Authority boundary</h2>
+        <p>Results and merge maps are proposals. Only Mike can accept, merge, branch, rerun, reject, hold, install, promote, or canonize them.</p>
+      </article>
+      <article class="wide">
+        <h2>Run the local observer</h2>
+        <p>This page is an inert Workshop front door. Starting the Python observer is an explicit local action:</p>
+        <pre>.\tools\challenge-arena\run-observer.ps1
+# then open http://127.0.0.1:8765</pre>
+        <button id="logBtn" type="button">Log review request</button>
+      </article>
+    </section>
+    <p class="foot">Source reports are retained under <code>upstream/</code> as reference material. They do not direct Workshop actions.</p>
+  </main>
+  <script src="/hub/axm-hub-module.js"></script>
+  <script>
+    (function () {
+      var passport = {
+        id: 'challenge-arena',
+        name: 'AXM Challenge Arena',
+        version: '0.6.0-workshop.1',
+        hubApiVersion: '1.0',
+        icon: null,
+        permissions: [],
+        savesState: false,
+        handlesShutdown: false
+      };
+      var button = document.getElementById('logBtn');
+      button.addEventListener('click', function () {
+        if (window.AXMHub) {
+          window.AXMHub.log('Challenge Arena review requested; no runtime action was started.');
+          button.textContent = 'Review request logged';
+        } else {
+          button.textContent = 'Open through the Workshop Hub to log';
+        }
+      });
+      if (window.AXMHub) window.AXMHub.ready(passport);
+    }());
+  </script>
+</body>
+</html>

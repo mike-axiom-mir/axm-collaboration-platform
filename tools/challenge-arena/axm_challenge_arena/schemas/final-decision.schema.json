@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-final-decision/0.2",
+  "title": "AXM Human Challenge Decision",
+  "type": "object",
+  "required": [
+    "action"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-final-decision/0.2"
+    },
+    "action": {
+      "enum": [
+        "ACCEPT",
+        "MERGE",
+        "BRANCH",
+        "RERUN",
+        "REJECT",
+        "HOLD"
+      ]
+    },
+    "selected_blind_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "approved_merge_components": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,117 @@
+{
+  "schema": "axm.asset-identity/v1",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "id": "axm.park.ticket-gate",
+  "asset_type": "park-access-control",
+  "components": [
+    {
+      "id": "entrance-post",
+      "role": "entrance-post",
+      "persistent": true
+    },
+    {
+      "id": "exit-post",
+      "role": "exit-post",
+      "persistent": true
+    },
+    {
+      "id": "scanner",
+      "role": "scanner",
+      "persistent": true
+    },
+    {
+      "id": "barrier",
+      "role": "barrier",
+      "persistent": true
+    },
+    {
+      "id": "status-light",
+      "role": "status-light",
+      "persistent": true
+    }
+  ],
+  "footprint": {
+    "width": 1.6,
+    "depth": 1,
+    "height": 1.4,
+    "unit": "world-unit",
+    "origin": [
+      0.5,
+      0.5,
+      0
+    ]
+  },
+  "pivots": [
+    {
+      "id": "world-origin",
+      "position": [
+        0.5,
+        0.5,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "placement"
+    },
+    {
+      "id": "barrier-hinge",
+      "position": [
+        0.18,
+        0.5,
+        0.68
+      ],
+      "unit": "normalized-footprint",
+      "role": "rotation"
+    }
+  ],
+  "sockets": [
+    {
+      "id": "queue-in",
+      "position": [
+        0.5,
+        1,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "guest-entry"
+    },
+    {
+      "id": "park-out",
+      "position": [
+        0.5,
+        0,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "guest-exit"
+    }
+  ],
+  "semantic_actions": [
+    "idle",
+    "open",
+    "closed",
+    "denied",
+    "fault",
+    "inspection",
+    "repair",
+    "upgrade"
+  ],
+  "invariants": [
+    "identity-persists-across-representations",
+    "footprint-pivots-and-sockets-are-representation-independent",
+    "simulation-state-is-not-owned-by-visual-fidelity"
+  ],
+  "provenance": {
+    "author": "AXM deterministic pilot",
+    "influence_boundary": "Classic management readability and walkable-park adventure feeling; no copied sprite, map, name, audio, or layout.",
+    "generated_by": "AXMChoiceFirstCore",
+    "version": "1.0.0"
+  },
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

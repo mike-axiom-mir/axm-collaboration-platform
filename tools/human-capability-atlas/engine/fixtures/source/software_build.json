@@ -1,0 +1,155 @@
+{
+  "revision": "1.0.0",
+  "category": [
+    "software"
+  ],
+  "tags": [
+    "code",
+    "build"
+  ],
+  "supported_task_types": [
+    "software_generation",
+    "software_modification"
+  ],
+  "typical_goals": [
+    "Implement a software feature"
+  ],
+  "required_human_actions": [
+    "Provide requirements",
+    "Review changed files and test evidence"
+  ],
+  "required_machine_actions": [
+    "Plan changes",
+    "Write code",
+    "Run available tests",
+    "Report gaps"
+  ],
+  "collaboration_modes": [
+    "human_ai_shared"
+  ],
+  "inputs": {
+    "input_types": [
+      "text",
+      "source_tree"
+    ],
+    "required_inputs": [
+      "Requirements",
+      "Project files"
+    ],
+    "optional_inputs": [
+      "Reference tests"
+    ],
+    "input_constraints": [
+      "Requirements must identify the intended behavior"
+    ]
+  },
+  "outputs": {
+    "output_types": [
+      "source_tree",
+      "test_report"
+    ],
+    "expected_outputs": [
+      "Changed project files",
+      "Test report",
+      "Action report"
+    ],
+    "output_constraints": [
+      "A visual preview alone is not proof of implementation"
+    ],
+    "preview_available": "KNOWN"
+  },
+  "cost_profile": {
+    "compute_cost": "high",
+    "time_cost": "long",
+    "attention_cost": "high",
+    "skill_cost": "advanced",
+    "setup_cost": "medium",
+    "error_recovery_cost": "high"
+  },
+  "risk_profile": {
+    "risk_level": "moderate",
+    "reversibility": "partly_reversible",
+    "privacy_sensitivity": "low",
+    "failure_modes": [
+      "Generated code may not meet requirements",
+      "Tests may be unavailable"
+    ],
+    "human_confirmation_required": true,
+    "safe_preview_recommended": true
+  },
+  "maturity_profile": {
+    "availability": "available",
+    "maturity": "working",
+    "proof_status": "demonstrated",
+    "known_limitations": [
+      "Correctness depends on tests and project context"
+    ]
+  },
+  "learning_profile": {
+    "minimum_skill_level": "intermediate",
+    "prerequisite_capability_ids": [],
+    "recommended_learning_steps": [],
+    "beginner_safe_operations": [
+      "Generate a proposal and inspect the diff without applying it"
+    ],
+    "advanced_operations": [
+      "Apply and refactor project-wide changes"
+    ],
+    "common_mistakes": [
+      "Treating generated UI screenshots as proof that backend logic exists"
+    ]
+  },
+  "interaction_profile": {
+    "interaction_complexity": "high",
+    "interaction_frequency": "iterative",
+    "precision_requirement": "exact",
+    "feedback_requirement": "continuous",
+    "preferred_input_methods": [
+      "structured brief",
+      "source browser",
+      "code editor"
+    ],
+    "preferred_output_methods": [
+      "diff",
+      "test report",
+      "file tree"
+    ],
+    "accessibility_considerations": []
+  },
+  "interface_requirements": {
+    "required_interface_features": [
+      "file tree",
+      "diff viewer",
+      "test results",
+      "explicit apply step"
+    ],
+    "optional_interface_features": [],
+    "unsafe_interface_patterns": [
+      "single success image without code or tests"
+    ],
+    "beginner_layer_constraints": [
+      "Default to proposal and review mode"
+    ],
+    "advanced_layer_requirements": [
+      "Code editor",
+      "test runner"
+    ]
+  },
+  "relationships": {
+    "dependency_capability_ids": [],
+    "related_capability_ids": [],
+    "alternative_capability_ids": [],
+    "commonly_combined_capability_ids": []
+  },
+  "source_reference": {
+    "source_type": "manifest",
+    "confidence": 0.95
+  },
+  "capability_id": "axm.software.build",
+  "machine_name": "software_build",
+  "description": "Creates or modifies software project files from a defined specification and reports the resulting changes and tests.",
+  "why_it_matters": "Turns a software goal into inspectable implementation files while preserving a record of what changed.",
+  "examples": [
+    "Add a validated import command to a local application."
+  ]
+}

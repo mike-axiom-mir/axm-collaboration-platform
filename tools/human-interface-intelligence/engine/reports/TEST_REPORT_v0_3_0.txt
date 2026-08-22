@@ -1,0 +1,156 @@
+AXM HUMAN INTERFACE INTELLIGENCE v0.3.0 — TEST REPORT
+Generated for the 2026-08-05 stable-anchor intake increment.
+
+SUMMARY
+- Automated Python tests: 66 passed, 0 failed.
+- Module Two standalone strict verified gate: PASS.
+- Module Two tampered-source strict gate: BLOCKED as expected.
+- Uploaded Module One anchor independent gate: CONFLICTED / strict merge BLOCKED as expected.
+- Anchor-aware paired gate: BLOCKED before record consumption; recommendation execution NOT_RUN as expected.
+- Module capability declaration schema validation: PASS.
+- New report JSON Schema validations: 4 passed, 0 failed.
+- Real AXM registry intake: NOT_RUN.
+- Full Atlas Capability Record intake: NOT_RUN; the stable anchor contains hashes and policies, not full records.
+
+1. AUTOMATED TEST SUITE
+Command:
+  python -m pytest -o addopts='' -q
+
+Result:
+  66 passed in 1.53s
+
+Coverage added in v0.3.0:
+- AXM-CJ-1 key ordering, decimals, NFC normalization, hashing, and collision rejection.
+- Safe stable-anchor ZIP reading, including path traversal and symbolic-link rejection.
+- Passing synthetic compatible anchor.
+- Shared-schema fingerprint mismatch blocking.
+- Evidence-state serialization conflict blocking.
+- Strict evidence-policy partial failure hold.
+- Unrepresentable private metadata blocking.
+- Paired gate refusing to consume records when the anchor is blocked.
+- Actual generated anchor report validation against its JSON Schema.
+
+Prior v0.1.0/v0.2.0 coverage remains included:
+- Capability and recommendation schema validation.
+- Malformed and incomplete examples.
+- Ten shared fixtures.
+- Deterministic interface scoring and explanations.
+- Beginner and advanced layer planning.
+- Accessibility, tool availability, compute, risk, recovery, device, and collaboration effects.
+- Immutable source identity checks.
+- Strict provenance verification.
+- Tampered source blocking.
+- Missing expectation NOT_RUN behavior.
+- Migration refusal and compatibility checks.
+
+2. MODULE ONE ANCHOR PRODUCER VALIDATOR
+Command run against the extracted uploaded anchor:
+  python validate_anchor.py
+
+Producer validator result:
+  PASS — 137 checks
+
+Producer note retained:
+  This validates the standalone anchor package. It does not rerun the Atlas or Module Two.
+
+This producer result was not treated as sufficient by itself. Module Two also performed an independent consumer-side check without importing or executing anchor code.
+
+3. INDEPENDENT MODULE TWO ANCHOR GATE
+Command:
+  python -m axm_hii.cli anchor-gate \
+    /mnt/data/AXM_HUMAN_CAPABILITY_ATLAS_STABLE_HANDOFF_ANCHOR_v0_1_0.zip \
+    --generated-at 2026-08-05T17:40:00Z \
+    --output integration/anchor/MODULE_ONE_ANCHOR_COMPATIBILITY_REPORT.json
+
+Exit code:
+  1 — expected because strict merge is blocked.
+
+Result:
+- Overall: CONFLICTED
+- Strict merge: BLOCKED
+- Recommendation execution: NOT_RUN
+- Anchor ZIP SHA-256: cd220d9cbadaa286e1b14102a6ecf33dfb1300c6ce85e015219373003b936239
+
+Passing findings:
+- Inventory-declared file bytes and hashes.
+- Stable package/module/contract identifiers.
+- Authority vocabulary.
+- Export guarantees.
+- Four AXM-CJ-1 vectors reproduced independently.
+- Ten fixture identities and ten Atlas run-evidence entries.
+- Producer current-schema failures: 0.
+- Stable fixture invariant failures: 0.
+
+Blocking findings:
+- Capability Record schema hash mismatch.
+- Interface recommendation schema hash mismatch.
+- Lowercase Atlas evidence tokens conflict with uppercase standalone contract tokens.
+- Anchor claims shared-contract-owned `knowledge`, absent from standalone v0.1.0.
+- Anchor requires inference metadata not directly representable by the accepted evidence schema.
+- Producer strict evidence policy: 4 PASS, 6 FAIL.
+
+4. ANCHOR-AWARE PAIRED GATE
+Command:
+  python -m axm_hii.cli paired-gate \
+    integration/examples/shared_fixture_handoff_batch.json \
+    --anchor /mnt/data/AXM_HUMAN_CAPABILITY_ATLAS_STABLE_HANDOFF_ANCHOR_v0_1_0.zip \
+    --generated-at 2026-08-05T17:40:00Z \
+    --output integration/anchor/PAIRED_GATE_WITH_UPLOADED_ANCHOR.json
+
+Exit code:
+  1 — expected blocked result.
+
+Result:
+- Overall: BLOCKED
+- Recommendation execution: NOT_RUN
+- Cross-module Capability Record report: null
+
+This proves the gate stops before consuming records rather than generating recommendations under a conflicted contract identity.
+
+5. STANDALONE MODULE TWO REGRESSION CHECKS
+Strict verified source command:
+  python -m axm_hii.cli gate integration/examples/strict_verified_handoff.json \
+    --strict-provenance \
+    --generated-at 2026-08-05T17:40:00Z \
+    --output reports/STRICT_VERIFIED_GATE_REPORT_v0_3_0.json
+
+Exit code: 0
+Result: PASS
+
+Tampered source command:
+  python -m axm_hii.cli gate integration/examples/tampered_source_handoff.json \
+    --strict-provenance \
+    --generated-at 2026-08-05T17:40:00Z \
+    --output reports/TAMPERED_SOURCE_GATE_REPORT_v0_3_0.json
+
+Exit code: 1 — expected blocked result.
+Result: BLOCKED
+
+6. OUTPUT SCHEMA VALIDATION
+Validated with JSON Schema Draft 2020-12:
+- integration/anchor/MODULE_ONE_ANCHOR_COMPATIBILITY_REPORT.json — PASS
+- integration/anchor/PAIRED_GATE_WITH_UPLOADED_ANCHOR.json — PASS
+- reports/STRICT_VERIFIED_GATE_REPORT_v0_3_0.json — PASS
+- reports/TAMPERED_SOURCE_GATE_REPORT_v0_3_0.json — PASS
+
+Totals: 4 passed, 0 failed.
+
+7. MODULE CAPABILITY DECLARATION
+Command:
+  python -m axm_hii.cli validate module_capability_declaration.json --kind capability
+
+Result: PASS
+
+8. EXPECTED NON-PASS RESULTS
+The following are correct protective results, not test failures:
+- Uploaded anchor: CONFLICTED / BLOCKED.
+- Paired gate with uploaded anchor: BLOCKED / recommendation NOT_RUN.
+- Tampered source: BLOCKED.
+
+9. NOT TESTED OR NOT AVAILABLE
+- Full generated Atlas Capability Records were not included in the stable anchor.
+- The real approximately 1,800-capability registry was not run.
+- No local AXM runtime or registry was modified.
+- No UI was rendered.
+- No genuine desktop work screenshot facility was available.
+- The exact Atlas-local schemas were not included, so semantic schema diffing beyond hashes was impossible.

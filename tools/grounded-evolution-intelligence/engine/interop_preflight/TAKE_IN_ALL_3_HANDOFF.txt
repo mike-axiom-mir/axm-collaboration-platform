@@ -1,0 +1,38 @@
+TAKE IN ALL 3 — HANDOFF FOR THE NEXT SESSION
+
+Required real artifacts:
+1. AXM Human Capability Atlas package
+2. AXM Human Interface Intelligence package
+3. AXM Grounded Evolution Intelligence v0.4.0 or newer package
+
+For each package preserve before intake:
+- exact file/package name
+- SHA-256 package digest
+- module_id
+- package version
+- shared contract version
+- exported capability IDs
+- exported interface IDs
+- evidence IDs
+- referenced module/capability/interface IDs
+- inventory of record IDs + record kind + record SHA-256
+
+Preflight command shape:
+python interop_preflight/preflight_three_module_intake.py MODULE1.json MODULE2.json MODULE3.json --out PREVIEW.json
+
+Hard stop conditions:
+- wrong or duplicate module identity
+- source_kind REFERENCE_ONLY
+- unsupported shared contract without migration
+- Module 2 capability reference missing from Module 1 export
+- same record ID with a different kind or digest
+- any requested execution / CANON / silent overwrite authority
+
+After PASS:
+- do not assume PASS means runtime proof
+- inspect warnings
+- inspect every IDENTICAL_SHARED record
+- inspect all ADD actions
+- preserve the preflight report hash
+- only then perform the actual import
+- rebuild graph + diagnosis immediately after import

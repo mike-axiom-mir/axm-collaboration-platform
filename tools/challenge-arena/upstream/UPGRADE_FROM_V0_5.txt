@@ -1,0 +1,39 @@
+AXM CHALLENGE ARENA — v0.5 -> v0.6 UPGRADE / ROLLBACK
+=====================================================
+
+WHAT CHANGED
+------------
+v0.6 repairs the standalone bundle verifier's dependence on incidental ZIP
+member order and closes identity/detail side channels in observer progress,
+integrity, lineage, and HTTP error responses.
+
+WHAT DID NOT CHANGE
+-------------------
+- New challenge packets remain axm.challenge-arena/0.5.
+- v0.5 opaque blind aliases remain the current blind algorithm.
+- Existing rubric/vote semantics remain unchanged.
+- Existing task/review/submission contracts keep their established versions.
+- No automatic merge, final decision, or canon authority was added.
+
+SAFE INTAKE
+-----------
+1. Preserve the exact v0.5 release and a matching workspace snapshot.
+2. Install/unpack v0.6 beside v0.5 first.
+3. Run both test commands plus schema and runtime-contract checks.
+4. Verify an existing exported evidence bundle with v0.6.
+5. Optionally repack that bundle and verify it again; harmless member ordering
+   should no longer change validity.
+6. Point observer/runtime integration at v0.6 only after those checks pass.
+
+ROLLBACK
+--------
+Rollback means restoring preserved v0.5 code plus its matching pre-v0.6
+workspace snapshot. Do not open a workspace after new v0.6 evidence writes and
+then pretend v0.5 interpreted those writes identically.
+
+OBSERVER NOTE
+-------------
+Detailed progress(), verify_integrity(), and lineage_view() remain available to
+trusted local code. The HTTP observer deliberately receives count-only/sanitized
+variants. If local tooling depended on the observer leaking seat identities,
+move that tooling to the trusted local API instead of weakening the observer.

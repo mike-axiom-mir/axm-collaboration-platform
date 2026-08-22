@@ -1,0 +1,568 @@
+{
+  "schema": "axm.pixel-3d-scene-recipe/v1",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "id": "park-carousel-horse-pixel-16bit-3d-scene",
+  "identity_id": "axm.park.carousel-horse",
+  "representation_profile_id": "pixel-16bit-3d",
+  "animation_state": "running",
+  "footprint": {
+    "width": 1.2,
+    "depth": 0.55,
+    "height": 2.2,
+    "unit": "world-unit",
+    "origin": [
+      0.5,
+      0.5,
+      0
+    ]
+  },
+  "pivots": [
+    {
+      "id": "world-origin",
+      "position": [
+        0.5,
+        0.5,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "placement"
+    },
+    {
+      "id": "vertical-travel",
+      "position": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "unit": "normalized-footprint",
+      "role": "animation"
+    }
+  ],
+  "sockets": [
+    {
+      "id": "carousel-base",
+      "position": [
+        0.5,
+        0.5,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "ride-connection"
+    }
+  ],
+  "materials": [
+    {
+      "id": "horse-cream",
+      "role": "horse-cream",
+      "colour": "#F8E3C5",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "mane",
+      "role": "mane",
+      "colour": "#7A4E32",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "saddle",
+      "role": "saddle",
+      "colour": "#E76F51",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "pole",
+      "role": "pole",
+      "colour": "#F9C74F",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0.2,
+      "double_sided": false
+    },
+    {
+      "id": "hoof",
+      "role": "hoof",
+      "colour": "#283845",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "accent",
+      "role": "accent",
+      "colour": "#90BE6D",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    }
+  ],
+  "nodes": [
+    {
+      "id": "horse-root",
+      "component_id": "base-connector",
+      "parent_id": null,
+      "primitive": null,
+      "material_id": null,
+      "translation": [
+        0,
+        0.12,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "pole",
+      "component_id": "pole",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cylinder",
+        "detail": 16
+      },
+      "material_id": "pole",
+      "translation": [
+        0,
+        1.05,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.055,
+        1.05,
+        0.055
+      ]
+    },
+    {
+      "id": "body",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "sphere",
+        "detail": 16
+      },
+      "material_id": "horse-cream",
+      "translation": [
+        0,
+        1.03,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.707107,
+        0.707107
+      ],
+      "scale": [
+        0.48,
+        0.82,
+        0.34
+      ]
+    },
+    {
+      "id": "neck",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "horse-cream",
+      "translation": [
+        0.54,
+        1.36,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.20846,
+        0.978031
+      ],
+      "scale": [
+        0.18,
+        0.48,
+        0.22
+      ]
+    },
+    {
+      "id": "head",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "sphere",
+        "detail": 16
+      },
+      "material_id": "horse-cream",
+      "translation": [
+        0.78,
+        1.63,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.707107,
+        0.707107
+      ],
+      "scale": [
+        0.25,
+        0.38,
+        0.23
+      ]
+    },
+    {
+      "id": "muzzle",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "horse-cream",
+      "translation": [
+        1.02,
+        1.55,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.24,
+        0.14,
+        0.18
+      ]
+    },
+    {
+      "id": "mane",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "mane",
+      "translation": [
+        0.49,
+        1.56,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.20846,
+        0.978031
+      ],
+      "scale": [
+        0.08,
+        0.38,
+        0.25
+      ]
+    },
+    {
+      "id": "saddle",
+      "component_id": "saddle",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "saddle",
+      "translation": [
+        -0.08,
+        1.35,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.33,
+        0.11,
+        0.39
+      ]
+    },
+    {
+      "id": "leg-front",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "horse-cream",
+      "translation": [
+        0.38,
+        0.62,
+        0.16
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.109778,
+        0.993956
+      ],
+      "scale": [
+        0.12,
+        0.48,
+        0.12
+      ]
+    },
+    {
+      "id": "leg-back",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "horse-cream",
+      "translation": [
+        -0.38,
+        0.62,
+        -0.16
+      ],
+      "rotation": [
+        0,
+        0,
+        0.109778,
+        0.993956
+      ],
+      "scale": [
+        0.12,
+        0.48,
+        0.12
+      ]
+    },
+    {
+      "id": "hoof-front",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "hoof",
+      "translation": [
+        0.48,
+        0.18,
+        0.16
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.17,
+        0.1,
+        0.14
+      ]
+    },
+    {
+      "id": "hoof-back",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "hoof",
+      "translation": [
+        -0.48,
+        0.18,
+        -0.16
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.17,
+        0.1,
+        0.14
+      ]
+    },
+    {
+      "id": "tail",
+      "component_id": "mount",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cone",
+        "detail": 16
+      },
+      "material_id": "mane",
+      "translation": [
+        -0.74,
+        1.1,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.707107,
+        0.707107
+      ],
+      "scale": [
+        0.12,
+        0.42,
+        0.12
+      ]
+    },
+    {
+      "id": "saddle-trim",
+      "component_id": "saddle",
+      "parent_id": "horse-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "accent",
+      "translation": [
+        -0.08,
+        1.42,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.24,
+        0.035,
+        0.41
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "id": "horse-bob",
+      "name": "running",
+      "duration_seconds": 2,
+      "loop": true,
+      "channels": [
+        {
+          "node_id": "horse-root",
+          "path": "translation",
+          "interpolation": "LINEAR",
+          "keys": [
+            {
+              "time": 0,
+              "value": [
+                0,
+                0.12,
+                0
+              ]
+            },
+            {
+              "time": 0.5,
+              "value": [
+                0,
+                0.33,
+                0
+              ]
+            },
+            {
+              "time": 1,
+              "value": [
+                0,
+                0.12,
+                0
+              ]
+            },
+            {
+              "time": 1.5,
+              "value": [
+                0,
+                -0.09,
+                0
+              ]
+            },
+            {
+              "time": 2,
+              "value": [
+                0,
+                0.12,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "budgets": {
+    "max_triangles": 6000,
+    "max_nodes": 96,
+    "max_materials": 64,
+    "max_glb_bytes": 1048576
+  },
+  "game_adapter": {
+    "format": "glTF.2.0/GLB",
+    "coordinate_system": "right-handed-y-up",
+    "unit": "world-unit",
+    "animation_clips": [
+      "running"
+    ],
+    "identity_extras": true,
+    "integration_boundary": "Engine-neutral candidate GLB; collision, physics and gameplay adapters remain caller-owned."
+  },
+  "invariants": [
+    "identity-persists-across-representations",
+    "footprint-pivots-and-sockets-are-representation-independent",
+    "simulation-state-is-not-owned-by-visual-fidelity",
+    "8-bit-and-16-bit-are-art-directions-not-hardware-bit-depth",
+    "animation-is-driven-by-semantic-state-not-visual-profile",
+    "profile-resolution-never-falls-back-silently"
+  ],
+  "provenance": {
+    "generated_by": "AXMPixel3DCore",
+    "version": "1.0.0",
+    "identity_digest": "d52d1c3a35c50d95",
+    "profile_digest": "977646ae21dda4ef",
+    "originality_boundary": "Original deterministic primitive construction; no copied mesh, texture, map, sound, or layout."
+  },
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

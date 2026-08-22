@@ -1,0 +1,78 @@
+{
+  "change_request_id": "axm.capability-interface-contract.CCR-0001",
+  "status": "OPEN_BLOCKING_REVIEW",
+  "created_by_module": "axm.human-interface-intelligence",
+  "created_by_module_version": "0.3.0",
+  "affected_contract": {
+    "identifier": "axm.capability-interface-contract",
+    "claimed_version": "0.1.0"
+  },
+  "trigger": {
+    "module_one_anchor_package": "AXM_HUMAN_CAPABILITY_ATLAS_STABLE_HANDOFF_ANCHOR_v0_1_0",
+    "module_one_anchor_zip_sha256": "cd220d9cbadaa286e1b14102a6ecf33dfb1300c6ce85e015219373003b936239",
+    "module_two_anchor_report": "integration/anchor/MODULE_ONE_ANCHOR_COMPATIBILITY_REPORT.json"
+  },
+  "conflicts": [
+    {
+      "id": "capability_schema_byte_identity",
+      "module_one_sha256": "c63d2c5d4b0ae7aeb8754a5a006a1efd2364c330ad18b74064d74ec7428a71b3",
+      "standalone_contract_sha256": "cf5b3d94f6dafcd9b1f2d93e7af9219db5c85f57931ecae7481f27924929a644",
+      "impact": "The same contract version resolves to different schema bytes."
+    },
+    {
+      "id": "recommendation_schema_byte_identity",
+      "module_one_sha256": "b85e9916f599d2c469b00ea91b12bc3de1e7cd3cceedcd226340fad6dd636e4f",
+      "standalone_contract_sha256": "90ca0bb938fba5595ef29e8fab8ca18a7c91e1b46b14000456525230a40f4062",
+      "impact": "Module boundaries cannot rely on one canonical recommendation schema."
+    },
+    {
+      "id": "evidence_state_serialization",
+      "module_one_tokens": ["known", "inferred", "unknown", "conflicted", "not_applicable"],
+      "standalone_contract_tokens": ["KNOWN", "INFERRED", "UNKNOWN", "CONFLICTED", "NOT_APPLICABLE"],
+      "impact": "Records cannot validate against both representations without translation or schema change."
+    },
+    {
+      "id": "knowledge_field",
+      "module_one_claim": "knowledge is SHARED_CONTRACT_OWNED",
+      "standalone_contract_state": "No top-level knowledge field exists in v0.1.0.",
+      "impact": "The anchor treats a non-contract field as stable shared structure."
+    },
+    {
+      "id": "inference_metadata_growth",
+      "module_one_required_concepts": ["evidence reference", "producer/build identity"],
+      "standalone_contract_evidence_fields": ["path", "state", "reasoning", "source_basis", "confidence"],
+      "impact": "Current additionalProperties=false prevents representing the new requirements."
+    }
+  ],
+  "non_negotiable_constraints": [
+    "Do not silently rewrite Module One output.",
+    "Do not privately extend Module Two's contract copy.",
+    "Do not keep two byte-different schemas under version 0.1.0.",
+    "Preserve source capability identity and provenance.",
+    "Keep mutable Atlas explanations and teaching logic unfrozen."
+  ],
+  "preferred_resolution": {
+    "path": "ALIGN_MODULE_ONE_TO_EXISTING_STANDALONE_0_1_0",
+    "steps": [
+      "Module One imports the exact standalone shared-contract v0.1.0 schema files rather than a recreated copy.",
+      "Module One emits the exact evidence-state tokens accepted by those files.",
+      "Module One removes knowledge from the v0.1.0 stable field-authority claim unless that field is already in the canonical contract.",
+      "Evidence-reference and producer/build metadata remain proposed until accepted in a new contract version.",
+      "Module One reruns all ten fixtures and produces a new anchor version with exact schema hashes."
+    ],
+    "reason": "This preserves the already established independent contract and minimizes moving parts."
+  },
+  "alternative_resolution": {
+    "path": "VERSIONED_SHARED_CONTRACT_REVISION",
+    "rule": "Only use this path if both modules deliberately accept the changed schema and migration behavior.",
+    "required_outputs": [
+      "new standalone contract version",
+      "migration utility",
+      "backward-compatibility decision",
+      "updated fixtures",
+      "updated schema fingerprints",
+      "paired test results"
+    ]
+  },
+  "merge_gate_effect": "BLOCKED_UNTIL_RESOLVED"
+}

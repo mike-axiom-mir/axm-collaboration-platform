@@ -1,0 +1,63 @@
+{
+  "schema": "axm.workshop-directed-intake/v1",
+  "date": "2026-08-16",
+  "directed_by": "Mike Tobi",
+  "status": "TEST",
+  "installed": false,
+  "promoted": false,
+  "canonical": false,
+  "source": {
+    "clean_intake_version": "0.6.0",
+    "outer_intake_sha256": "b458ec4cfd905353ae170ef155f158f47133f8f9db246063a73e6f0629d6f499",
+    "release_zip_sha256": "b2c03d5c15ac1709e66cb6393c40de98401514bbf4f4387a5b4c3cd16e0a5a23",
+    "wheel_sha256": "0c747cba21e06fc16de9ac4dbff15db20eddd405ff2c80d6beb51628ceb1796d",
+    "release_internal_checksum_entries": 219,
+    "release_internal_checksum_failures": 0
+  },
+  "curation": {
+    "copied": [
+      "axm_challenge_arena",
+      "schemas",
+      "tests",
+      "tools",
+      "examples",
+      "docs",
+      "bridge",
+      "LICENSE.txt",
+      "pyproject.toml",
+      "selected upstream source reports and guides",
+      "path-free summary of the upstream module-manifest discrepancy"
+    ],
+    "excluded_from_active_tree": [
+      "sealed demo workspace",
+      "built wheel",
+      "release CHECKSUMS.sha256 whose file set describes the full sealed release"
+    ],
+    "local_repairs": [
+      {
+        "path": "axm_challenge_arena/static/styles.css",
+        "reason": "Restore the HTML hidden-state contract so the observer does not render the empty panel and selected challenge simultaneously.",
+        "evidence": "In-app browser click/render test reproduced the overlap; [hidden] now wins over component display rules."
+      },
+      {
+        "path": "axm_challenge_arena/static/app.js",
+        "reason": "Keep long opaque blind labels inside decorative arena nodes and place those nodes without CSP-blocked HTML style attributes, while preserving full labels in evidence and accessibility metadata.",
+        "evidence": "In-app browser render showed full opaque ids overflowing 48px nodes and all nodes overlapping because strict style-src rejected HTML style attributes; labels are compact and placement now occurs through local app.js."
+      }
+    ],
+    "shared_registry_rewritten": false,
+    "hub_activation_performed": false
+  },
+  "verification": {
+    "unittest": "PASS: 164 tests, 3 skipped",
+    "pytest": "PASS: 161 passed, 3 skipped, 10 subtests",
+    "schema_sync": "PASS: 30/30",
+    "runtime_contracts": "PASS: 30/30",
+    "bundle_portability": "PASS: 20/20 randomized repacks",
+    "post_repair_impacted_tests": "PASS: unittest 45 with 2 skipped; pytest 43 passed with 2 skipped",
+    "browser_render_click": "PASS: select and refresh controls, synthesized content, three distinct candidate nodes, full accessible labels, no console warnings/errors",
+    "required_workshop_checks": "PASS: all 10 AGENTS.md commands exited 0; verify.js reported 0 failures and 42 warnings"
+  },
+  "known_gap": "The inspected upstream AXM_MODULE_MANIFEST.json contains v0.5-era verification values under a v0.6.0 version label; its path-bearing original remains in the sealed release and a path-free gap summary is retained here. Workshop claims use the independent local results above instead. The Workshop copy also carries the two recorded observer repairs and is therefore not byte-identical to the sealed release at those files.",
+  "authority": "Package documents are reference material. No Arena output gains install, promotion, merge, final-decision, or CANON authority."
+}

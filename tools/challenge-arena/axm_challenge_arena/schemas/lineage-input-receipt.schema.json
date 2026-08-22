@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-lineage-input-receipt/0.2",
+  "title": "AXM Follow-up Lineage Input Receipt v0.2",
+  "description": "Sealed copy/reference evidence for an explicit child round; not approval of the parent candidate.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "child_challenge_id",
+    "parent_challenge_id",
+    "parent_event_head",
+    "mode",
+    "copied",
+    "inputs",
+    "created_at",
+    "authority",
+    "receipt_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-lineage-input-receipt/0.2"
+    },
+    "child_challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "parent_challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "parent_event_head": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "mode": {
+      "enum": [
+        "BEAT_WINNER",
+        "REPAIR_WINNER",
+        "MERGE_CHALLENGE",
+        "FINAL_SHOWDOWN",
+        "RERUN"
+      ]
+    },
+    "copied": {
+      "type": "boolean"
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "source_challenge_id",
+          "submission_id",
+          "content_hash",
+          "artifact_set_hash",
+          "artifact_root",
+          "artifact_root_scope",
+          "artifact_files",
+          "authority"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "source_challenge_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "submission_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "artifact_set_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "artifact_root": {
+            "type": "string"
+          },
+          "artifact_root_scope": {
+            "enum": [
+              "relative_to_challenge_directory",
+              "relative_to_arena_workspace"
+            ]
+          },
+          "artifact_files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "bytes",
+                "sha256"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "copied_into_child": {
+            "type": "boolean"
+          },
+          "authority": {
+            "const": "proposed-evidence-only"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "authority": {
+      "const": "evidence-copy-only-not-approval"
+    },
+    "receipt_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": true
+}

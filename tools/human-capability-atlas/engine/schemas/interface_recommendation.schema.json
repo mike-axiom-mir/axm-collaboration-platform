@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/interface-recommendation.schema.json",
+  "title": "AXM Interface Recommendation",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "recommendation_id",
+    "capability_id",
+    "generated_at",
+    "context",
+    "recommended_interface",
+    "beginner_layer",
+    "advanced_layer",
+    "cost_comparison",
+    "evidence"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "recommendation_id": {
+      "type": "string"
+    },
+    "capability_id": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "context": {
+      "type": "object"
+    },
+    "recommended_interface": {
+      "type": "object",
+      "required": [
+        "recommendation_status"
+      ],
+      "properties": {
+        "recommendation_status": {
+          "enum": [
+            "recommended",
+            "conditional",
+            "insufficient_information",
+            "no_safe_match"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "beginner_layer": {
+      "type": "object"
+    },
+    "advanced_layer": {
+      "type": "object"
+    },
+    "cost_comparison": {
+      "type": "object"
+    },
+    "evidence": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

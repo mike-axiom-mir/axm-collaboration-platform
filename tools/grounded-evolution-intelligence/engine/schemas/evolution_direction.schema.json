@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/v0.1.0/evolution_direction.schema.json",
+  "title": "Evolution Direction",
+  "type": "object",
+  "properties": {
+    "direction_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "BUILD",
+        "REPAIR",
+        "RESEARCH",
+        "TEST",
+        "INTEGRATE",
+        "DOCUMENT",
+        "SIMPLIFY",
+        "DEPRECATE",
+        "REUSE",
+        "WAIT_FOR_EVIDENCE"
+      ]
+    },
+    "target_scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "problem_statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "affected_modules": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "expected_value": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "expected_reuse": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "unblock_value": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "estimated_cost": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "regression_risk": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "required_tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "required_knowledge": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "verification_plan": {
+      "type": "string",
+      "minLength": 1
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "truth_state": {
+      "type": "string",
+      "enum": [
+        "OBSERVED",
+        "DECLARED",
+        "TESTED",
+        "REPRODUCED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "CONFLICTED",
+        "OBSOLETE",
+        "UNKNOWN"
+      ]
+    },
+    "priority_components": {
+      "type": "object",
+      "properties": {
+        "problem_severity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ecosystem_reach": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "evidence_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "expected_usefulness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "unblock_value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reuse_potential": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "strategic_alignment": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "proof_maturity_gain": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "estimated_cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "regression_risk": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "dependency_risk": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "uncertainty_penalty": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "advisory_score": {
+          "type": "number",
+          "minimum": 0
+        },
+        "formula_version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "problem_severity",
+        "ecosystem_reach",
+        "evidence_confidence",
+        "expected_usefulness",
+        "unblock_value",
+        "reuse_potential",
+        "strategic_alignment",
+        "proof_maturity_gain",
+        "estimated_cost",
+        "regression_risk",
+        "dependency_risk",
+        "uncertainty_penalty",
+        "advisory_score",
+        "formula_version"
+      ],
+      "additionalProperties": false
+    },
+    "steward_status": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "ACCEPTED",
+        "REJECTED",
+        "MODIFIED",
+        "DEFERRED",
+        "EVIDENCE_REQUESTED"
+      ]
+    },
+    "execution_status": {
+      "type": "string",
+      "enum": [
+        "NOT_STARTED",
+        "READY",
+        "IN_PROGRESS",
+        "BLOCKED",
+        "COMPLETED_UNVERIFIED",
+        "VERIFIED_SUCCESS",
+        "VERIFIED_PARTIAL",
+        "VERIFIED_FAILURE",
+        "CANCELLED"
+      ]
+    }
+  },
+  "required": [
+    "direction_id",
+    "contract_version",
+    "action_type",
+    "target_scope",
+    "problem_statement",
+    "evidence",
+    "rationale",
+    "affected_modules",
+    "expected_value",
+    "expected_reuse",
+    "unblock_value",
+    "estimated_cost",
+    "regression_risk",
+    "required_tools",
+    "required_knowledge",
+    "verification_plan",
+    "confidence",
+    "truth_state",
+    "priority_components",
+    "steward_status",
+    "execution_status"
+  ],
+  "additionalProperties": false
+}

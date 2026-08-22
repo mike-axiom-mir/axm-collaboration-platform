@@ -1,0 +1,86 @@
+{
+  "schema": "axm.causal-asset-simulation/v1",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "id": "home-starter-sofa-portable-pilot.simulation",
+  "identity_id": "axm.home.starter-sofa",
+  "state": {
+    "operating_state": "idle",
+    "condition": 99.808,
+    "cleanliness": 99.92,
+    "cycle_count": 8,
+    "load": 0,
+    "simulated_time_ms": 31557600000,
+    "faults": [],
+    "upgrades": [],
+    "animation_state": "idle"
+  },
+  "processed_event_ids": [
+    "axm-home-starter-sofa-idle-proof",
+    "axm-home-starter-sofa-use"
+  ],
+  "history": [
+    {
+      "event": {
+        "id": "axm-home-starter-sofa-idle-proof",
+        "type": "time_elapsed",
+        "duration_ms": 31557600000
+      },
+      "receipt": {
+        "schema": "axm.causal-event-receipt/v1",
+        "status": "APPLIED",
+        "event_id": "axm-home-starter-sofa-idle-proof",
+        "event_type": "time_elapsed",
+        "causal_inputs": [
+          "duration_ms"
+        ],
+        "before_digest": "7ab4f4d917e1f59c",
+        "after_digest": "4082801ed4c350e6",
+        "condition_delta": 0,
+        "cleanliness_delta": 0,
+        "time_only_no_decay": true,
+        "fallback_used": false
+      }
+    },
+    {
+      "event": {
+        "id": "axm-home-starter-sofa-use",
+        "type": "use_cycle",
+        "cycles": 8,
+        "load_factor": 1.2
+      },
+      "receipt": {
+        "schema": "axm.causal-event-receipt/v1",
+        "status": "APPLIED",
+        "event_id": "axm-home-starter-sofa-use",
+        "event_type": "use_cycle",
+        "causal_inputs": [
+          "cycles",
+          "load_factor"
+        ],
+        "before_digest": "4082801ed4c350e6",
+        "after_digest": "5326379574bf3672",
+        "condition_delta": -0.192,
+        "cleanliness_delta": -0.08,
+        "time_only_no_decay": true,
+        "fallback_used": false
+      }
+    }
+  ],
+  "invariants": [
+    "elapsed-time-alone-does-not-change-condition",
+    "every-condition-change-names-a-causal-event",
+    "events-are-applied-exactly-once"
+  ],
+  "provenance": {
+    "reducer": "AXMChoiceFirstCore.applySimulationEvent",
+    "version": "1.0.0"
+  },
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

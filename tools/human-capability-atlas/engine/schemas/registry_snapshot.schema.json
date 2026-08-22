@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/registry-snapshot.schema.json",
+  "title": "AXM Capability Registry Snapshot",
+  "type": "object",
+  "required": ["module", "module_version", "shared_contract_version", "operation", "generated_at", "snapshot_hash", "summary", "capabilities", "integrity_notes"],
+  "properties": {
+    "module": {"const": "AXM Human Capability Atlas"},
+    "module_version": {"type": "string"},
+    "shared_contract_version": {"const": "0.1.0"},
+    "operation": {"const": "capability_registry_snapshot"},
+    "generated_at": {"type": "string"},
+    "snapshot_hash": {"type": "string", "minLength": 1},
+    "summary": {"type": "object"},
+    "capabilities": {"type": "object"},
+    "integrity_notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

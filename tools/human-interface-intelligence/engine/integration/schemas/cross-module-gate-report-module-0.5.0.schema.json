@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/cross-module-gate-report-module-0.5.0.schema.json",
+  "title": "AXM Human Interface Intelligence Cross-Module Gate Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "report_version",
+    "gate_id",
+    "module_id",
+    "module_version",
+    "contract_id",
+    "contract_version",
+    "generated_at",
+    "external_atlas_execution_state",
+    "strict_provenance",
+    "registry_fingerprint",
+    "overall_status",
+    "handoff_errors",
+    "summary",
+    "records"
+  ],
+  "properties": {
+    "report_version": {
+      "const": "0.3.0"
+    },
+    "gate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "module_id": {
+      "const": "axm.human-interface-intelligence"
+    },
+    "module_version": {
+      "const": "0.5.0"
+    },
+    "contract_id": {
+      "type": "string"
+    },
+    "contract_version": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "external_atlas_execution_state": {
+      "enum": [
+        "RUN",
+        "NOT_RUN",
+        "UNVERIFIED"
+      ]
+    },
+    "strict_provenance": {
+      "type": "boolean"
+    },
+    "registry_fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "overall_status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "NOT_RUN"
+      ]
+    },
+    "handoff_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "NOT_RUN"
+      ],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "PASS": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "FAIL": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "BLOCKED": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "NOT_RUN": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "item_id",
+          "capability_id",
+          "gate_status",
+          "reasons",
+          "capability_validation",
+          "recommendation_validation",
+          "provenance",
+          "immutable_source",
+          "expectation_differences",
+          "recommendation",
+          "score_trace"
+        ],
+        "properties": {
+          "item_id": {
+            "type": "string"
+          },
+          "capability_id": {
+            "type": "string"
+          },
+          "gate_status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED",
+              "NOT_RUN"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "capability_validation": {
+            "type": "object"
+          },
+          "recommendation_validation": {
+            "type": "object"
+          },
+          "provenance": {
+            "type": "object"
+          },
+          "immutable_source": {
+            "type": "object"
+          },
+          "expectation_differences": {
+            "type": "array"
+          },
+          "recommendation": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "score_trace": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

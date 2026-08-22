@@ -1,0 +1,130 @@
+{
+  "schema": "axm.causal-asset-simulation/v1",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "id": "park-ferris-wheel-portable-pilot.simulation",
+  "identity_id": "axm.park.ferris-wheel",
+  "state": {
+    "operating_state": "running",
+    "condition": 99.8,
+    "cleanliness": 99.9,
+    "cycle_count": 10,
+    "load": 0,
+    "simulated_time_ms": 31557600000,
+    "faults": [],
+    "upgrades": [],
+    "animation_state": "running"
+  },
+  "processed_event_ids": [
+    "axm-park-ferris-wheel-idle-proof",
+    "axm-park-ferris-wheel-start",
+    "axm-park-ferris-wheel-run",
+    "axm-park-ferris-wheel-cycles"
+  ],
+  "history": [
+    {
+      "event": {
+        "id": "axm-park-ferris-wheel-idle-proof",
+        "type": "time_elapsed",
+        "duration_ms": 31557600000
+      },
+      "receipt": {
+        "schema": "axm.causal-event-receipt/v1",
+        "status": "APPLIED",
+        "event_id": "axm-park-ferris-wheel-idle-proof",
+        "event_type": "time_elapsed",
+        "causal_inputs": [
+          "duration_ms"
+        ],
+        "before_digest": "7ab4f4d917e1f59c",
+        "after_digest": "4082801ed4c350e6",
+        "condition_delta": 0,
+        "cleanliness_delta": 0,
+        "time_only_no_decay": true,
+        "fallback_used": false
+      }
+    },
+    {
+      "event": {
+        "id": "axm-park-ferris-wheel-start",
+        "type": "start"
+      },
+      "receipt": {
+        "schema": "axm.causal-event-receipt/v1",
+        "status": "APPLIED",
+        "event_id": "axm-park-ferris-wheel-start",
+        "event_type": "start",
+        "causal_inputs": [
+          "operator-command"
+        ],
+        "before_digest": "4082801ed4c350e6",
+        "after_digest": "0572746af9ff7bbe",
+        "condition_delta": 0,
+        "cleanliness_delta": 0,
+        "time_only_no_decay": true,
+        "fallback_used": false
+      }
+    },
+    {
+      "event": {
+        "id": "axm-park-ferris-wheel-run",
+        "type": "run"
+      },
+      "receipt": {
+        "schema": "axm.causal-event-receipt/v1",
+        "status": "APPLIED",
+        "event_id": "axm-park-ferris-wheel-run",
+        "event_type": "run",
+        "causal_inputs": [
+          "operator-command"
+        ],
+        "before_digest": "0572746af9ff7bbe",
+        "after_digest": "2b92c144af0f0035",
+        "condition_delta": 0,
+        "cleanliness_delta": 0,
+        "time_only_no_decay": true,
+        "fallback_used": false
+      }
+    },
+    {
+      "event": {
+        "id": "axm-park-ferris-wheel-cycles",
+        "type": "use_cycle",
+        "cycles": 10,
+        "load_factor": 0.8
+      },
+      "receipt": {
+        "schema": "axm.causal-event-receipt/v1",
+        "status": "APPLIED",
+        "event_id": "axm-park-ferris-wheel-cycles",
+        "event_type": "use_cycle",
+        "causal_inputs": [
+          "cycles",
+          "load_factor"
+        ],
+        "before_digest": "2b92c144af0f0035",
+        "after_digest": "5e3ced66c610b255",
+        "condition_delta": -0.2,
+        "cleanliness_delta": -0.1,
+        "time_only_no_decay": true,
+        "fallback_used": false
+      }
+    }
+  ],
+  "invariants": [
+    "elapsed-time-alone-does-not-change-condition",
+    "every-condition-change-names-a-causal-event",
+    "events-are-applied-exactly-once"
+  ],
+  "provenance": {
+    "reducer": "AXMChoiceFirstCore.applySimulationEvent",
+    "version": "1.0.0"
+  },
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

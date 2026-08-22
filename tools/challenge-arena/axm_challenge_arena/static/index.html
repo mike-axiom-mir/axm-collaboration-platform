@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AXM Challenge Arena</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span>A</span><span>M</span></div>
+      <div>
+        <p class="eyebrow">Axiom–Mir module</p>
+        <h1>Challenge Arena</h1>
+      </div>
+    </div>
+    <div class="top-status"><span id="healthDot" class="status-dot"></span><span id="healthText">Connecting locally</span></div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar glass">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Local workspace</p>
+          <h2>Challenges</h2>
+        </div>
+        <button id="refreshButton" class="icon-button" title="Refresh">↻</button>
+      </div>
+      <div id="challengeList" class="challenge-list"></div>
+      <div class="root-note">
+        <span class="lock-icon">◇</span>
+        <div><strong>Human authority</strong><br><small>Scores recommend. They never silently merge.</small></div>
+      </div>
+    </aside>
+
+    <main id="main" class="main-content">
+      <section id="emptyState" class="empty glass">
+        <div class="empty-orbit"><span></span></div>
+        <p class="eyebrow">Arena idle</p>
+        <h2>No challenge selected</h2>
+        <p>Run the included demo or create a challenge packet, then select it here.</p>
+      </section>
+
+      <div id="challengeView" hidden>
+        <section class="hero glass">
+          <div class="hero-copy">
+            <div class="hero-meta"><span id="categoryPill" class="pill"></span><span id="sourceModule" class="muted"></span></div>
+            <p class="eyebrow" id="challengeId"></p>
+            <h2 id="challengeTitle"></h2>
+            <p id="challengeGoal" class="goal"></p>
+            <div id="phaseTrack" class="phase-track"></div>
+          </div>
+          <div id="arenaStage" class="arena-stage" aria-label="Candidate arena visualization">
+            <div class="stage-rings"></div>
+            <div class="stage-core"><span>AXM</span><small id="stageState">DRAFT</small></div>
+            <div id="candidateNodes"></div>
+          </div>
+        </section>
+
+        <section id="metrics" class="metric-grid"></section>
+
+        <section class="two-column">
+          <article class="glass panel">
+            <div class="section-head">
+              <div><p class="eyebrow">Evidence-weighted</p><h3>Candidate field</h3></div>
+              <span id="confidencePill" class="pill subtle"></span>
+            </div>
+            <div id="candidateTable" class="candidate-table"></div>
+          </article>
+
+          <article class="glass panel">
+            <div class="section-head">
+              <div><p class="eyebrow">Locked before reveal</p><h3>Criterion awards</h3></div>
+            </div>
+            <div id="awards" class="stack"></div>
+          </article>
+        </section>
+
+        <section class="two-column">
+          <article class="glass panel">
+            <div class="section-head">
+              <div><p class="eyebrow">No-loss synthesis</p><h3>Merge map</h3></div>
+              <span class="pill warning">Proposed only</span>
+            </div>
+            <div id="mergeMap" class="stack"></div>
+          </article>
+
+          <article class="glass panel">
+            <div class="section-head">
+              <div><p class="eyebrow">Minority signal</p><h3>Dissent & risks</h3></div>
+            </div>
+            <div id="dissent" class="stack"></div>
+          </article>
+        </section>
+
+        <section class="glass decision-panel">
+          <div>
+            <p class="eyebrow">Decision boundary</p>
+            <h3 id="decisionTitle">Human decision still required</h3>
+            <p id="decisionText">The provisional winner is evidence, not authority. Accept, merge, branch, rerun, hold, or reject.</p>
+          </div>
+          <div id="integrityBadge" class="integrity-badge"><span>◈</span><div><strong>Integrity unchecked</strong><small>Packet, artifacts, and event chain</small></div></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <footer><span>Local-first observer</span><span>Blind authorship • append-only evidence • no self-voting</span></footer>
+  <script src="/app.js"></script>
+</body>
+</html>

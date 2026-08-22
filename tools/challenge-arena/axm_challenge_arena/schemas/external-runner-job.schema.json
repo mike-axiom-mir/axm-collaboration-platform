@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.external-runner-job/0.2",
+  "title": "AXM External Runner Job v0.2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "submission_id",
+    "packet_hash",
+    "rubric_hash",
+    "submission_content_hash",
+    "artifact_set_hash",
+    "artifact_root",
+    "artifact_root_scope",
+    "manifest",
+    "requested_results",
+    "receipt_schema_version",
+    "authority_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.external-runner-job/0.2"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "submission_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "packet_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rubric_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "submission_content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "artifact_set_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "artifact_root": {
+      "type": "string"
+    },
+    "artifact_root_scope": {
+      "const": "relative_to_challenge_directory"
+    },
+    "manifest": {
+      "type": "object"
+    },
+    "requested_results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "receipt_schema_version": {
+      "const": "axm.deterministic-receipt/0.2"
+    },
+    "authority_boundary": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": true
+}

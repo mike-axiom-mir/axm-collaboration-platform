@@ -1,0 +1,1590 @@
+{
+  "schema": "axm.game-visual-choice-proof/v1",
+  "version": "1.0.0",
+  "status": "PASS",
+  "game_contract": {
+    "schema": "axm.game-visual-contract/v1",
+    "version": "1.0.0",
+    "status": "EXPERIMENTAL",
+    "id": "axm.game.theme-park-foundation",
+    "title": "AXM Theme Park Foundation",
+    "simulation_contract": {
+      "schema": "axm.causal-asset-simulation/v1",
+      "digest": "09a01429d65f38e9"
+    },
+    "gameplay_proxy_contract": {
+      "schema": "axm.gameplay-proxy-contract/v1",
+      "digest": "1e27bdd65d607038"
+    },
+    "save_contract": {
+      "schema": "axm.theme-park-save/v1",
+      "digest": "4b1e40fb2693341e"
+    },
+    "required_visual_slots": [
+      "terrain",
+      "paths",
+      "attractions",
+      "buildings",
+      "guests",
+      "staff",
+      "signage",
+      "effects",
+      "interface"
+    ],
+    "baseline_policy": {
+      "pack_id": "axm.visual-pack.theme-park.pixel-8",
+      "must_be_bundled": true,
+      "must_be_installed": true,
+      "minimum_hardware_profile_id": "axm.hardware.museum-pc",
+      "silent_fallback_forbidden": true
+    },
+    "invariants": [
+      "visual-pack-selection-never-mutates-simulation",
+      "visual-pack-selection-never-mutates-save-truth",
+      "gameplay-proxies-remain-stable-across-packs",
+      "recommendation-never-activates-without-player-choice",
+      "unavailable-or-incompatible-packs-never-silently-fallback"
+    ],
+    "provenance": {
+      "source": "AXM choice-first pilot",
+      "created": "2026-08-12",
+      "originality_review": "required"
+    },
+    "authority": {
+      "candidate_only": true,
+      "installed": false,
+      "promoted": false,
+      "canonical": false,
+      "human_review_required": true
+    }
+  },
+  "packs": [
+    {
+      "schema": "axm.game-visual-pack/v1",
+      "version": "1.0.0",
+      "status": "EXPERIMENTAL",
+      "id": "axm.visual-pack.theme-park.pixel-8",
+      "title": "Park Foundation / Pixel 8",
+      "game_contract_id": "axm.game.theme-park-foundation",
+      "game_contract_digest": "470bd8f3b129342e",
+      "art_direction": {
+        "medium": "pixel-raster",
+        "projection": "management-isometric",
+        "detail_language": "compact-8-bit",
+        "intent": "Readable baseline for old and constrained machines."
+      },
+      "semantic_bindings": {
+        "terrain": {
+          "representation_profile_id": "pixel-8bit",
+          "notes": "Compact management-view baseline with stable semantic anchors."
+        },
+        "paths": {
+          "representation_profile_id": "pixel-8bit",
+          "notes": "Compact management-view baseline with stable semantic anchors."
+        },
+        "attractions": {
+          "representation_profile_id": "pixel-8bit",
+          "notes": "Compact management-view baseline with stable semantic anchors."
+        },
+        "buildings": {
+          "representation_profile_id": "pixel-8bit",
+          "notes": "Compact management-view baseline with stable semantic anchors."
+        },
+        "guests": {
+          "representation_profile_id": "pixel-8bit",
+          "notes": "Compact management-view baseline with stable semantic anchors."
+        },
+        "staff": {
+          "representation_profile_id": "pixel-8bit",
+          "notes": "Compact management-view baseline with stable semantic anchors."
+        },
+        "signage": {
+          "representation_profile_id": "pixel-8bit",
+          "notes": "Compact management-view baseline with stable semantic anchors."
+        },
+        "effects": {
+          "representation_profile_id": "pixel-8bit",
+          "notes": "Compact management-view baseline with stable semantic anchors."
+        },
+        "interface": {
+          "representation_profile_id": "pixel-8bit",
+          "notes": "Compact management-view baseline with stable semantic anchors."
+        }
+      },
+      "representation_profiles": [
+        "pixel-8bit"
+      ],
+      "performance_profiles": [
+        "legacy",
+        "balanced",
+        "reduced-motion"
+      ],
+      "requirements": {
+        "memory_mb": 512,
+        "video_memory_mb": 64,
+        "max_texture_dimension": 1024,
+        "runtime_features": [
+          "canvas-2d",
+          "rgba8"
+        ]
+      },
+      "package": {
+        "bytes": 8388608,
+        "format": "axm-game-visual-pack-directory/v1"
+      },
+      "recommendation_rank": 10,
+      "provenance": {
+        "source": "AXM deterministic pilot",
+        "created": "2026-08-12",
+        "originality_review": "required"
+      },
+      "authority": {
+        "candidate_only": true,
+        "installed": false,
+        "promoted": false,
+        "canonical": false,
+        "human_review_required": true
+      },
+      "content_digest": "75222a4a986a55e8"
+    },
+    {
+      "schema": "axm.game-visual-pack/v1",
+      "version": "1.0.0",
+      "status": "EXPERIMENTAL",
+      "id": "axm.visual-pack.theme-park.festival-16",
+      "title": "Festival Park / Pixel 16",
+      "game_contract_id": "axm.game.theme-park-foundation",
+      "game_contract_digest": "470bd8f3b129342e",
+      "art_direction": {
+        "medium": "pixel-raster",
+        "projection": "management-isometric",
+        "detail_language": "layered-16-bit",
+        "intent": "More colour, animation, and environmental detail without changing game truth."
+      },
+      "semantic_bindings": {
+        "terrain": {
+          "representation_profile_id": "pixel-16bit",
+          "notes": "A complete richer pixel-art layer over the same semantic game slots."
+        },
+        "paths": {
+          "representation_profile_id": "pixel-16bit",
+          "notes": "A complete richer pixel-art layer over the same semantic game slots."
+        },
+        "attractions": {
+          "representation_profile_id": "pixel-16bit",
+          "notes": "A complete richer pixel-art layer over the same semantic game slots."
+        },
+        "buildings": {
+          "representation_profile_id": "pixel-16bit",
+          "notes": "A complete richer pixel-art layer over the same semantic game slots."
+        },
+        "guests": {
+          "representation_profile_id": "pixel-16bit",
+          "notes": "A complete richer pixel-art layer over the same semantic game slots."
+        },
+        "staff": {
+          "representation_profile_id": "pixel-16bit",
+          "notes": "A complete richer pixel-art layer over the same semantic game slots."
+        },
+        "signage": {
+          "representation_profile_id": "pixel-16bit",
+          "notes": "A complete richer pixel-art layer over the same semantic game slots."
+        },
+        "effects": {
+          "representation_profile_id": "pixel-16bit",
+          "notes": "A complete richer pixel-art layer over the same semantic game slots."
+        },
+        "interface": {
+          "representation_profile_id": "pixel-16bit",
+          "notes": "A complete richer pixel-art layer over the same semantic game slots."
+        }
+      },
+      "representation_profiles": [
+        "pixel-16bit"
+      ],
+      "performance_profiles": [
+        "balanced",
+        "showcase",
+        "reduced-motion"
+      ],
+      "requirements": {
+        "memory_mb": 2048,
+        "video_memory_mb": 512,
+        "max_texture_dimension": 4096,
+        "runtime_features": [
+          "canvas-2d",
+          "rgba8",
+          "apng"
+        ]
+      },
+      "package": {
+        "bytes": 100663296,
+        "format": "axm-game-visual-pack-directory/v1"
+      },
+      "recommendation_rank": 20,
+      "provenance": {
+        "source": "AXM deterministic pilot",
+        "created": "2026-08-12",
+        "originality_review": "required"
+      },
+      "authority": {
+        "candidate_only": true,
+        "installed": false,
+        "promoted": false,
+        "canonical": false,
+        "human_review_required": true
+      },
+      "content_digest": "adc95459210ffc23"
+    },
+    {
+      "schema": "axm.game-visual-pack/v1",
+      "version": "1.0.0",
+      "status": "EXPERIMENTAL",
+      "id": "axm.visual-pack.theme-park.walkable-3d",
+      "title": "Walkable Park / Realtime 3D",
+      "game_contract_id": "axm.game.theme-park-foundation",
+      "game_contract_digest": "470bd8f3b129342e",
+      "art_direction": {
+        "medium": "realtime-3d",
+        "projection": "player-and-management",
+        "detail_language": "walkable-stylized",
+        "intent": "Future adventurous walkable park representation using the same world anchors."
+      },
+      "semantic_bindings": {
+        "terrain": {
+          "representation_profile_id": "realtime-3d",
+          "notes": "Advertised future layer; no representation package is installed."
+        },
+        "paths": {
+          "representation_profile_id": "realtime-3d",
+          "notes": "Advertised future layer; no representation package is installed."
+        },
+        "attractions": {
+          "representation_profile_id": "realtime-3d",
+          "notes": "Advertised future layer; no representation package is installed."
+        },
+        "buildings": {
+          "representation_profile_id": "realtime-3d",
+          "notes": "Advertised future layer; no representation package is installed."
+        },
+        "guests": {
+          "representation_profile_id": "realtime-3d",
+          "notes": "Advertised future layer; no representation package is installed."
+        },
+        "staff": {
+          "representation_profile_id": "realtime-3d",
+          "notes": "Advertised future layer; no representation package is installed."
+        },
+        "signage": {
+          "representation_profile_id": "realtime-3d",
+          "notes": "Advertised future layer; no representation package is installed."
+        },
+        "effects": {
+          "representation_profile_id": "realtime-3d",
+          "notes": "Advertised future layer; no representation package is installed."
+        },
+        "interface": {
+          "representation_profile_id": "realtime-3d",
+          "notes": "Advertised future layer; no representation package is installed."
+        }
+      },
+      "representation_profiles": [
+        "realtime-3d"
+      ],
+      "performance_profiles": [
+        "balanced",
+        "showcase",
+        "reduced-motion"
+      ],
+      "requirements": {
+        "memory_mb": 8192,
+        "video_memory_mb": 4096,
+        "max_texture_dimension": 8192,
+        "runtime_features": [
+          "webgl2",
+          "pbr",
+          "realtime-lighting"
+        ]
+      },
+      "package": {
+        "bytes": 4294967296,
+        "format": "axm-game-visual-pack-directory/v1"
+      },
+      "recommendation_rank": 30,
+      "provenance": {
+        "source": "AXM deterministic pilot",
+        "created": "2026-08-12",
+        "originality_review": "required"
+      },
+      "authority": {
+        "candidate_only": true,
+        "installed": false,
+        "promoted": false,
+        "canonical": false,
+        "human_review_required": true
+      },
+      "content_digest": "2612583007e7231a"
+    },
+    {
+      "schema": "axm.game-visual-pack/v1",
+      "version": "1.0.0",
+      "status": "EXPERIMENTAL",
+      "id": "axm.visual-pack.theme-park.cinematic",
+      "title": "Living Park / Cinematic",
+      "game_contract_id": "axm.game.theme-park-foundation",
+      "game_contract_digest": "470bd8f3b129342e",
+      "art_direction": {
+        "medium": "cinematic-realtime",
+        "projection": "directable-camera",
+        "detail_language": "high-fidelity-cinematic",
+        "intent": "Future high-end layer without replacing simulation or saves."
+      },
+      "semantic_bindings": {
+        "terrain": {
+          "representation_profile_id": "cinematic",
+          "notes": "Advertised future capability; intentionally unavailable until honestly implemented."
+        },
+        "paths": {
+          "representation_profile_id": "cinematic",
+          "notes": "Advertised future capability; intentionally unavailable until honestly implemented."
+        },
+        "attractions": {
+          "representation_profile_id": "cinematic",
+          "notes": "Advertised future capability; intentionally unavailable until honestly implemented."
+        },
+        "buildings": {
+          "representation_profile_id": "cinematic",
+          "notes": "Advertised future capability; intentionally unavailable until honestly implemented."
+        },
+        "guests": {
+          "representation_profile_id": "cinematic",
+          "notes": "Advertised future capability; intentionally unavailable until honestly implemented."
+        },
+        "staff": {
+          "representation_profile_id": "cinematic",
+          "notes": "Advertised future capability; intentionally unavailable until honestly implemented."
+        },
+        "signage": {
+          "representation_profile_id": "cinematic",
+          "notes": "Advertised future capability; intentionally unavailable until honestly implemented."
+        },
+        "effects": {
+          "representation_profile_id": "cinematic",
+          "notes": "Advertised future capability; intentionally unavailable until honestly implemented."
+        },
+        "interface": {
+          "representation_profile_id": "cinematic",
+          "notes": "Advertised future capability; intentionally unavailable until honestly implemented."
+        }
+      },
+      "representation_profiles": [
+        "cinematic"
+      ],
+      "performance_profiles": [
+        "showcase"
+      ],
+      "requirements": {
+        "memory_mb": 16384,
+        "video_memory_mb": 8192,
+        "max_texture_dimension": 8192,
+        "runtime_features": [
+          "webgpu",
+          "pbr",
+          "realtime-lighting",
+          "volumetrics"
+        ]
+      },
+      "package": {
+        "bytes": 12884901888,
+        "format": "axm-game-visual-pack-directory/v1"
+      },
+      "recommendation_rank": 40,
+      "provenance": {
+        "source": "AXM deterministic pilot",
+        "created": "2026-08-12",
+        "originality_review": "required"
+      },
+      "authority": {
+        "candidate_only": true,
+        "installed": false,
+        "promoted": false,
+        "canonical": false,
+        "human_review_required": true
+      },
+      "content_digest": "6790bd1a917fcfd2"
+    }
+  ],
+  "hardware_profiles": [
+    {
+      "schema": "axm.hardware-capability-profile/v1",
+      "version": "1.0.0",
+      "status": "EXPERIMENTAL",
+      "id": "axm.hardware.museum-pc",
+      "label": "Museum PC (declared fixture)",
+      "source": "declared-fixture",
+      "capabilities": {
+        "memory_mb": 1024,
+        "video_memory_mb": 128,
+        "max_texture_dimension": 2048,
+        "runtime_features": [
+          "canvas-2d",
+          "rgba8"
+        ],
+        "storage_free_bytes": 536870912
+      },
+      "confidence": "fixture",
+      "provenance": {
+        "source": "deterministic compatibility test fixture",
+        "auto_detected": false,
+        "created": "2026-08-12"
+      },
+      "authority": {
+        "candidate_only": true,
+        "installed": false,
+        "promoted": false,
+        "canonical": false,
+        "human_review_required": true
+      }
+    },
+    {
+      "schema": "axm.hardware-capability-profile/v1",
+      "version": "1.0.0",
+      "status": "EXPERIMENTAL",
+      "id": "axm.hardware.family-laptop",
+      "label": "Family laptop (declared fixture)",
+      "source": "declared-fixture",
+      "capabilities": {
+        "memory_mb": 8192,
+        "video_memory_mb": 2048,
+        "max_texture_dimension": 8192,
+        "runtime_features": [
+          "canvas-2d",
+          "rgba8",
+          "apng",
+          "webgl2"
+        ],
+        "storage_free_bytes": 10737418240
+      },
+      "confidence": "fixture",
+      "provenance": {
+        "source": "deterministic compatibility test fixture",
+        "auto_detected": false,
+        "created": "2026-08-12"
+      },
+      "authority": {
+        "candidate_only": true,
+        "installed": false,
+        "promoted": false,
+        "canonical": false,
+        "human_review_required": true
+      }
+    },
+    {
+      "schema": "axm.hardware-capability-profile/v1",
+      "version": "1.0.0",
+      "status": "EXPERIMENTAL",
+      "id": "axm.hardware.creator-desktop",
+      "label": "Creator desktop (declared fixture)",
+      "source": "declared-fixture",
+      "capabilities": {
+        "memory_mb": 32768,
+        "video_memory_mb": 16384,
+        "max_texture_dimension": 16384,
+        "runtime_features": [
+          "canvas-2d",
+          "rgba8",
+          "apng",
+          "webgl2",
+          "webgpu",
+          "pbr",
+          "realtime-lighting",
+          "volumetrics"
+        ],
+        "storage_free_bytes": 107374182400
+      },
+      "confidence": "fixture",
+      "provenance": {
+        "source": "deterministic compatibility test fixture",
+        "auto_detected": false,
+        "created": "2026-08-12"
+      },
+      "authority": {
+        "candidate_only": true,
+        "installed": false,
+        "promoted": false,
+        "canonical": false,
+        "human_review_required": true
+      }
+    }
+  ],
+  "inventory": {
+    "schema": "axm.game-visual-pack-inventory/v1",
+    "version": "1.0.0",
+    "status": "EXPERIMENTAL",
+    "game_contract_id": "axm.game.theme-park-foundation",
+    "baseline_pack_id": "axm.visual-pack.theme-park.pixel-8",
+    "entries": [
+      {
+        "pack_id": "axm.visual-pack.theme-park.pixel-8",
+        "pack_digest": "75222a4a986a55e8",
+        "state": "INSTALLED",
+        "bundled": true,
+        "package_bytes": 8388608
+      },
+      {
+        "pack_id": "axm.visual-pack.theme-park.festival-16",
+        "pack_digest": "adc95459210ffc23",
+        "state": "INSTALLED",
+        "bundled": false,
+        "package_bytes": 100663296
+      },
+      {
+        "pack_id": "axm.visual-pack.theme-park.walkable-3d",
+        "pack_digest": "2612583007e7231a",
+        "state": "UNAVAILABLE",
+        "bundled": false,
+        "package_bytes": 4294967296
+      },
+      {
+        "pack_id": "axm.visual-pack.theme-park.cinematic",
+        "pack_digest": "6790bd1a917fcfd2",
+        "state": "UNAVAILABLE",
+        "bundled": false,
+        "package_bytes": 12884901888
+      }
+    ],
+    "provenance": {
+      "source": "AXM deterministic pilot inventory",
+      "created": "2026-08-12"
+    },
+    "authority": {
+      "candidate_only": true,
+      "installed": false,
+      "promoted": false,
+      "canonical": false,
+      "human_review_required": true
+    }
+  },
+  "baseline_receipt": {
+    "schema": "axm.game-visual-baseline-receipt/v1",
+    "version": "1.0.0",
+    "status": "PASS",
+    "game_contract_id": "axm.game.theme-park-foundation",
+    "baseline_pack_id": "axm.visual-pack.theme-park.pixel-8",
+    "minimum_hardware_profile_id": "axm.hardware.museum-pc",
+    "checks": [
+      {
+        "id": "baseline-pack-contract",
+        "pass": true,
+        "detail": "axm.visual-pack.theme-park.pixel-8"
+      },
+      {
+        "id": "baseline-inventory-entry",
+        "pass": true,
+        "detail": "INSTALLED"
+      },
+      {
+        "id": "baseline-bundled",
+        "pass": true,
+        "detail": true
+      },
+      {
+        "id": "baseline-installed",
+        "pass": true,
+        "detail": "INSTALLED"
+      },
+      {
+        "id": "baseline-digest-bound",
+        "pass": true,
+        "detail": {
+          "expected": "75222a4a986a55e8",
+          "actual": "75222a4a986a55e8"
+        }
+      },
+      {
+        "id": "minimum-hardware-profile",
+        "pass": true,
+        "detail": "axm.hardware.museum-pc"
+      },
+      {
+        "id": "minimum-hardware-compatible",
+        "pass": true,
+        "detail": "COMPATIBLE"
+      },
+      {
+        "id": "silent-fallback-forbidden",
+        "pass": true,
+        "detail": true
+      },
+      {
+        "id": "pack-content-integrity",
+        "pass": true,
+        "detail": {
+          "expected": "75222a4a986a55e8",
+          "actual": "75222a4a986a55e8"
+        }
+      },
+      {
+        "id": "game-contract-id",
+        "pass": true,
+        "detail": {
+          "expected": "axm.game.theme-park-foundation",
+          "actual": "axm.game.theme-park-foundation"
+        }
+      },
+      {
+        "id": "game-contract-digest",
+        "pass": true,
+        "detail": {
+          "expected": "470bd8f3b129342e",
+          "actual": "470bd8f3b129342e"
+        }
+      },
+      {
+        "id": "pack-contract-shape",
+        "pass": true,
+        "detail": "required pack sections present"
+      },
+      {
+        "id": "semantic-slot-coverage",
+        "pass": true,
+        "detail": {
+          "missing": []
+        }
+      },
+      {
+        "id": "representation-profile-bindings",
+        "pass": true,
+        "detail": {
+          "declared_profiles": [
+            "pixel-8bit"
+          ]
+        }
+      },
+      {
+        "id": "inventory-entry",
+        "pass": true,
+        "detail": "INSTALLED"
+      },
+      {
+        "id": "installed",
+        "pass": true,
+        "detail": "INSTALLED"
+      },
+      {
+        "id": "package-digest",
+        "pass": true,
+        "detail": {
+          "expected": "75222a4a986a55e8",
+          "actual": "75222a4a986a55e8"
+        }
+      },
+      {
+        "id": "memory",
+        "pass": true,
+        "detail": {
+          "required_mb": 512,
+          "available_mb": 1024
+        }
+      },
+      {
+        "id": "video-memory",
+        "pass": true,
+        "detail": {
+          "required_mb": 64,
+          "available_mb": 128
+        }
+      },
+      {
+        "id": "texture-dimension",
+        "pass": true,
+        "detail": {
+          "required": 1024,
+          "available": 2048
+        }
+      },
+      {
+        "id": "runtime-features",
+        "pass": true,
+        "detail": {
+          "missing": []
+        }
+      }
+    ],
+    "authority": {
+      "candidate_only": true,
+      "installed": false,
+      "promoted": false,
+      "canonical": false,
+      "human_review_required": true
+    }
+  },
+  "scenarios": [
+    {
+      "id": "museum-recommendation-only",
+      "request_digest": "950972c765afdd8b",
+      "result": {
+        "schema": "axm.game-visual-selection-result/v1",
+        "version": "1.0.0",
+        "status": "READY_FOR_CHOICE",
+        "request_id": "museum-recommendation-only",
+        "game_contract_id": "axm.game.theme-park-foundation",
+        "hardware_profile_id": "axm.hardware.museum-pc",
+        "recommendation": {
+          "pack_id": "axm.visual-pack.theme-park.pixel-8",
+          "pack_digest": "75222a4a986a55e8",
+          "title": "Park Foundation / Pixel 8",
+          "reason": "Highest-ranked installed pack compatible with this declared hardware profile.",
+          "activated": false
+        },
+        "selection": null,
+        "checks": [
+          {
+            "id": "pack-content-integrity",
+            "pass": true,
+            "detail": {
+              "expected": "75222a4a986a55e8",
+              "actual": "75222a4a986a55e8"
+            }
+          },
+          {
+            "id": "game-contract-id",
+            "pass": true,
+            "detail": {
+              "expected": "axm.game.theme-park-foundation",
+              "actual": "axm.game.theme-park-foundation"
+            }
+          },
+          {
+            "id": "game-contract-digest",
+            "pass": true,
+            "detail": {
+              "expected": "470bd8f3b129342e",
+              "actual": "470bd8f3b129342e"
+            }
+          },
+          {
+            "id": "pack-contract-shape",
+            "pass": true,
+            "detail": "required pack sections present"
+          },
+          {
+            "id": "semantic-slot-coverage",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          },
+          {
+            "id": "representation-profile-bindings",
+            "pass": true,
+            "detail": {
+              "declared_profiles": [
+                "pixel-8bit"
+              ]
+            }
+          },
+          {
+            "id": "inventory-entry",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "installed",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "package-digest",
+            "pass": true,
+            "detail": {
+              "expected": "75222a4a986a55e8",
+              "actual": "75222a4a986a55e8"
+            }
+          },
+          {
+            "id": "memory",
+            "pass": true,
+            "detail": {
+              "required_mb": 512,
+              "available_mb": 1024
+            }
+          },
+          {
+            "id": "video-memory",
+            "pass": true,
+            "detail": {
+              "required_mb": 64,
+              "available_mb": 128
+            }
+          },
+          {
+            "id": "texture-dimension",
+            "pass": true,
+            "detail": {
+              "required": 1024,
+              "available": 2048
+            }
+          },
+          {
+            "id": "runtime-features",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          }
+        ],
+        "fallback_used": false,
+        "active_pack_changed": false,
+        "save_digest_before": "283b46b5951e1312",
+        "save_digest_after": "283b46b5951e1312",
+        "game_truth_digest": "bf6a38376a12901d",
+        "message": "A compatible pack is recommended, but the player must choose it.",
+        "authority": {
+          "recommendation_only": true,
+          "player_choice_required": true,
+          "silent_fallback_forbidden": true,
+          "simulation_mutation_forbidden": true,
+          "save_mutation_forbidden": true
+        }
+      },
+      "deterministic_replay": true,
+      "save_unchanged": true,
+      "no_fallback": true
+    },
+    {
+      "id": "museum-refuses-16bit",
+      "request_digest": "9617737d919bbbef",
+      "result": {
+        "schema": "axm.game-visual-selection-result/v1",
+        "version": "1.0.0",
+        "status": "INCOMPATIBLE_VISUAL_PACK",
+        "request_id": "museum-refuses-16bit",
+        "game_contract_id": "axm.game.theme-park-foundation",
+        "hardware_profile_id": "axm.hardware.museum-pc",
+        "recommendation": {
+          "pack_id": "axm.visual-pack.theme-park.pixel-8",
+          "pack_digest": "75222a4a986a55e8",
+          "title": "Park Foundation / Pixel 8",
+          "reason": "Highest-ranked installed pack compatible with this declared hardware profile.",
+          "activated": false
+        },
+        "selection": null,
+        "checks": [
+          {
+            "id": "pack-content-integrity",
+            "pass": true,
+            "detail": {
+              "expected": "adc95459210ffc23",
+              "actual": "adc95459210ffc23"
+            }
+          },
+          {
+            "id": "game-contract-id",
+            "pass": true,
+            "detail": {
+              "expected": "axm.game.theme-park-foundation",
+              "actual": "axm.game.theme-park-foundation"
+            }
+          },
+          {
+            "id": "game-contract-digest",
+            "pass": true,
+            "detail": {
+              "expected": "470bd8f3b129342e",
+              "actual": "470bd8f3b129342e"
+            }
+          },
+          {
+            "id": "pack-contract-shape",
+            "pass": true,
+            "detail": "required pack sections present"
+          },
+          {
+            "id": "semantic-slot-coverage",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          },
+          {
+            "id": "representation-profile-bindings",
+            "pass": true,
+            "detail": {
+              "declared_profiles": [
+                "pixel-16bit"
+              ]
+            }
+          },
+          {
+            "id": "inventory-entry",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "installed",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "package-digest",
+            "pass": true,
+            "detail": {
+              "expected": "adc95459210ffc23",
+              "actual": "adc95459210ffc23"
+            }
+          },
+          {
+            "id": "memory",
+            "pass": false,
+            "detail": {
+              "required_mb": 2048,
+              "available_mb": 1024
+            }
+          },
+          {
+            "id": "video-memory",
+            "pass": false,
+            "detail": {
+              "required_mb": 512,
+              "available_mb": 128
+            }
+          },
+          {
+            "id": "texture-dimension",
+            "pass": false,
+            "detail": {
+              "required": 4096,
+              "available": 2048
+            }
+          },
+          {
+            "id": "runtime-features",
+            "pass": false,
+            "detail": {
+              "missing": [
+                "apng"
+              ]
+            }
+          }
+        ],
+        "fallback_used": false,
+        "active_pack_changed": false,
+        "save_digest_before": "283b46b5951e1312",
+        "save_digest_after": "283b46b5951e1312",
+        "game_truth_digest": "bf6a38376a12901d",
+        "message": "The requested visual pack was not activated. No fallback was applied.",
+        "authority": {
+          "recommendation_only": true,
+          "player_choice_required": true,
+          "silent_fallback_forbidden": true,
+          "simulation_mutation_forbidden": true,
+          "save_mutation_forbidden": true
+        }
+      },
+      "deterministic_replay": true,
+      "save_unchanged": true,
+      "no_fallback": true
+    },
+    {
+      "id": "family-recommends-16bit-without-activation",
+      "request_digest": "8cf06844dd9cbff3",
+      "result": {
+        "schema": "axm.game-visual-selection-result/v1",
+        "version": "1.0.0",
+        "status": "READY_FOR_CHOICE",
+        "request_id": "family-recommends-16bit-without-activation",
+        "game_contract_id": "axm.game.theme-park-foundation",
+        "hardware_profile_id": "axm.hardware.family-laptop",
+        "recommendation": {
+          "pack_id": "axm.visual-pack.theme-park.festival-16",
+          "pack_digest": "adc95459210ffc23",
+          "title": "Festival Park / Pixel 16",
+          "reason": "Highest-ranked installed pack compatible with this declared hardware profile.",
+          "activated": false
+        },
+        "selection": null,
+        "checks": [
+          {
+            "id": "pack-content-integrity",
+            "pass": true,
+            "detail": {
+              "expected": "adc95459210ffc23",
+              "actual": "adc95459210ffc23"
+            }
+          },
+          {
+            "id": "game-contract-id",
+            "pass": true,
+            "detail": {
+              "expected": "axm.game.theme-park-foundation",
+              "actual": "axm.game.theme-park-foundation"
+            }
+          },
+          {
+            "id": "game-contract-digest",
+            "pass": true,
+            "detail": {
+              "expected": "470bd8f3b129342e",
+              "actual": "470bd8f3b129342e"
+            }
+          },
+          {
+            "id": "pack-contract-shape",
+            "pass": true,
+            "detail": "required pack sections present"
+          },
+          {
+            "id": "semantic-slot-coverage",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          },
+          {
+            "id": "representation-profile-bindings",
+            "pass": true,
+            "detail": {
+              "declared_profiles": [
+                "pixel-16bit"
+              ]
+            }
+          },
+          {
+            "id": "inventory-entry",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "installed",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "package-digest",
+            "pass": true,
+            "detail": {
+              "expected": "adc95459210ffc23",
+              "actual": "adc95459210ffc23"
+            }
+          },
+          {
+            "id": "memory",
+            "pass": true,
+            "detail": {
+              "required_mb": 2048,
+              "available_mb": 8192
+            }
+          },
+          {
+            "id": "video-memory",
+            "pass": true,
+            "detail": {
+              "required_mb": 512,
+              "available_mb": 2048
+            }
+          },
+          {
+            "id": "texture-dimension",
+            "pass": true,
+            "detail": {
+              "required": 4096,
+              "available": 8192
+            }
+          },
+          {
+            "id": "runtime-features",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          }
+        ],
+        "fallback_used": false,
+        "active_pack_changed": false,
+        "save_digest_before": "283b46b5951e1312",
+        "save_digest_after": "283b46b5951e1312",
+        "game_truth_digest": "bf6a38376a12901d",
+        "message": "A compatible pack is recommended, but the player must choose it.",
+        "authority": {
+          "recommendation_only": true,
+          "player_choice_required": true,
+          "silent_fallback_forbidden": true,
+          "simulation_mutation_forbidden": true,
+          "save_mutation_forbidden": true
+        }
+      },
+      "deterministic_replay": true,
+      "save_unchanged": true,
+      "no_fallback": true
+    },
+    {
+      "id": "family-player-overrides-to-baseline",
+      "request_digest": "49829eb23adb3099",
+      "result": {
+        "schema": "axm.game-visual-selection-result/v1",
+        "version": "1.0.0",
+        "status": "SELECTED",
+        "request_id": "family-player-overrides-to-baseline",
+        "game_contract_id": "axm.game.theme-park-foundation",
+        "hardware_profile_id": "axm.hardware.family-laptop",
+        "recommendation": {
+          "pack_id": "axm.visual-pack.theme-park.festival-16",
+          "pack_digest": "adc95459210ffc23",
+          "title": "Festival Park / Pixel 16",
+          "reason": "Highest-ranked installed pack compatible with this declared hardware profile.",
+          "activated": false
+        },
+        "selection": {
+          "pack_id": "axm.visual-pack.theme-park.pixel-8",
+          "pack_digest": "75222a4a986a55e8",
+          "title": "Park Foundation / Pixel 8",
+          "representation_profiles": [
+            "pixel-8bit"
+          ],
+          "performance_profile": "legacy",
+          "activated_by": "explicit-player-choice"
+        },
+        "checks": [
+          {
+            "id": "pack-content-integrity",
+            "pass": true,
+            "detail": {
+              "expected": "75222a4a986a55e8",
+              "actual": "75222a4a986a55e8"
+            }
+          },
+          {
+            "id": "game-contract-id",
+            "pass": true,
+            "detail": {
+              "expected": "axm.game.theme-park-foundation",
+              "actual": "axm.game.theme-park-foundation"
+            }
+          },
+          {
+            "id": "game-contract-digest",
+            "pass": true,
+            "detail": {
+              "expected": "470bd8f3b129342e",
+              "actual": "470bd8f3b129342e"
+            }
+          },
+          {
+            "id": "pack-contract-shape",
+            "pass": true,
+            "detail": "required pack sections present"
+          },
+          {
+            "id": "semantic-slot-coverage",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          },
+          {
+            "id": "representation-profile-bindings",
+            "pass": true,
+            "detail": {
+              "declared_profiles": [
+                "pixel-8bit"
+              ]
+            }
+          },
+          {
+            "id": "inventory-entry",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "installed",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "package-digest",
+            "pass": true,
+            "detail": {
+              "expected": "75222a4a986a55e8",
+              "actual": "75222a4a986a55e8"
+            }
+          },
+          {
+            "id": "memory",
+            "pass": true,
+            "detail": {
+              "required_mb": 512,
+              "available_mb": 8192
+            }
+          },
+          {
+            "id": "video-memory",
+            "pass": true,
+            "detail": {
+              "required_mb": 64,
+              "available_mb": 2048
+            }
+          },
+          {
+            "id": "texture-dimension",
+            "pass": true,
+            "detail": {
+              "required": 1024,
+              "available": 8192
+            }
+          },
+          {
+            "id": "runtime-features",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          }
+        ],
+        "fallback_used": false,
+        "active_pack_changed": false,
+        "save_digest_before": "283b46b5951e1312",
+        "save_digest_after": "283b46b5951e1312",
+        "game_truth_digest": "bf6a38376a12901d",
+        "message": "The requested visual pack is ready to activate as presentation only; save and simulation truth are unchanged.",
+        "authority": {
+          "recommendation_only": false,
+          "player_choice_required": true,
+          "silent_fallback_forbidden": true,
+          "simulation_mutation_forbidden": true,
+          "save_mutation_forbidden": true
+        }
+      },
+      "deterministic_replay": true,
+      "save_unchanged": true,
+      "no_fallback": true
+    },
+    {
+      "id": "creator-accepts-recommendation",
+      "request_digest": "47f4213cd9be46dd",
+      "result": {
+        "schema": "axm.game-visual-selection-result/v1",
+        "version": "1.0.0",
+        "status": "SELECTED",
+        "request_id": "creator-accepts-recommendation",
+        "game_contract_id": "axm.game.theme-park-foundation",
+        "hardware_profile_id": "axm.hardware.creator-desktop",
+        "recommendation": {
+          "pack_id": "axm.visual-pack.theme-park.festival-16",
+          "pack_digest": "adc95459210ffc23",
+          "title": "Festival Park / Pixel 16",
+          "reason": "Highest-ranked installed pack compatible with this declared hardware profile.",
+          "activated": false
+        },
+        "selection": {
+          "pack_id": "axm.visual-pack.theme-park.festival-16",
+          "pack_digest": "adc95459210ffc23",
+          "title": "Festival Park / Pixel 16",
+          "representation_profiles": [
+            "pixel-16bit"
+          ],
+          "performance_profile": "balanced",
+          "activated_by": "accepted-recommendation"
+        },
+        "checks": [
+          {
+            "id": "pack-content-integrity",
+            "pass": true,
+            "detail": {
+              "expected": "adc95459210ffc23",
+              "actual": "adc95459210ffc23"
+            }
+          },
+          {
+            "id": "game-contract-id",
+            "pass": true,
+            "detail": {
+              "expected": "axm.game.theme-park-foundation",
+              "actual": "axm.game.theme-park-foundation"
+            }
+          },
+          {
+            "id": "game-contract-digest",
+            "pass": true,
+            "detail": {
+              "expected": "470bd8f3b129342e",
+              "actual": "470bd8f3b129342e"
+            }
+          },
+          {
+            "id": "pack-contract-shape",
+            "pass": true,
+            "detail": "required pack sections present"
+          },
+          {
+            "id": "semantic-slot-coverage",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          },
+          {
+            "id": "representation-profile-bindings",
+            "pass": true,
+            "detail": {
+              "declared_profiles": [
+                "pixel-16bit"
+              ]
+            }
+          },
+          {
+            "id": "inventory-entry",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "installed",
+            "pass": true,
+            "detail": "INSTALLED"
+          },
+          {
+            "id": "package-digest",
+            "pass": true,
+            "detail": {
+              "expected": "adc95459210ffc23",
+              "actual": "adc95459210ffc23"
+            }
+          },
+          {
+            "id": "memory",
+            "pass": true,
+            "detail": {
+              "required_mb": 2048,
+              "available_mb": 32768
+            }
+          },
+          {
+            "id": "video-memory",
+            "pass": true,
+            "detail": {
+              "required_mb": 512,
+              "available_mb": 16384
+            }
+          },
+          {
+            "id": "texture-dimension",
+            "pass": true,
+            "detail": {
+              "required": 4096,
+              "available": 16384
+            }
+          },
+          {
+            "id": "runtime-features",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          }
+        ],
+        "fallback_used": false,
+        "active_pack_changed": true,
+        "save_digest_before": "283b46b5951e1312",
+        "save_digest_after": "283b46b5951e1312",
+        "game_truth_digest": "bf6a38376a12901d",
+        "message": "The requested visual pack is ready to activate as presentation only; save and simulation truth are unchanged.",
+        "authority": {
+          "recommendation_only": false,
+          "player_choice_required": true,
+          "silent_fallback_forbidden": true,
+          "simulation_mutation_forbidden": true,
+          "save_mutation_forbidden": true
+        }
+      },
+      "deterministic_replay": true,
+      "save_unchanged": true,
+      "no_fallback": true
+    },
+    {
+      "id": "cinematic-is-honestly-missing",
+      "request_digest": "95efe213f962313e",
+      "result": {
+        "schema": "axm.game-visual-selection-result/v1",
+        "version": "1.0.0",
+        "status": "MISSING_VISUAL_PACK",
+        "request_id": "cinematic-is-honestly-missing",
+        "game_contract_id": "axm.game.theme-park-foundation",
+        "hardware_profile_id": "axm.hardware.creator-desktop",
+        "recommendation": {
+          "pack_id": "axm.visual-pack.theme-park.festival-16",
+          "pack_digest": "adc95459210ffc23",
+          "title": "Festival Park / Pixel 16",
+          "reason": "Highest-ranked installed pack compatible with this declared hardware profile.",
+          "activated": false
+        },
+        "selection": null,
+        "checks": [
+          {
+            "id": "pack-content-integrity",
+            "pass": true,
+            "detail": {
+              "expected": "6790bd1a917fcfd2",
+              "actual": "6790bd1a917fcfd2"
+            }
+          },
+          {
+            "id": "game-contract-id",
+            "pass": true,
+            "detail": {
+              "expected": "axm.game.theme-park-foundation",
+              "actual": "axm.game.theme-park-foundation"
+            }
+          },
+          {
+            "id": "game-contract-digest",
+            "pass": true,
+            "detail": {
+              "expected": "470bd8f3b129342e",
+              "actual": "470bd8f3b129342e"
+            }
+          },
+          {
+            "id": "pack-contract-shape",
+            "pass": true,
+            "detail": "required pack sections present"
+          },
+          {
+            "id": "semantic-slot-coverage",
+            "pass": true,
+            "detail": {
+              "missing": []
+            }
+          },
+          {
+            "id": "representation-profile-bindings",
+            "pass": true,
+            "detail": {
+              "declared_profiles": [
+                "cinematic"
+              ]
+            }
+          },
+          {
+            "id": "inventory-entry",
+            "pass": true,
+            "detail": "UNAVAILABLE"
+          },
+          {
+            "id": "installed",
+            "pass": false,
+            "detail": "UNAVAILABLE"
+          },
+          {
+            "id": "package-digest",
+            "pass": true,
+            "detail": {
+              "expected": "6790bd1a917fcfd2",
+              "actual": "6790bd1a917fcfd2"
+            }
+          }
+        ],
+        "fallback_used": false,
+        "active_pack_changed": false,
+        "save_digest_before": "283b46b5951e1312",
+        "save_digest_after": "283b46b5951e1312",
+        "game_truth_digest": "bf6a38376a12901d",
+        "message": "The requested visual pack was not activated. No fallback was applied.",
+        "authority": {
+          "recommendation_only": true,
+          "player_choice_required": true,
+          "silent_fallback_forbidden": true,
+          "simulation_mutation_forbidden": true,
+          "save_mutation_forbidden": true
+        }
+      },
+      "deterministic_replay": true,
+      "save_unchanged": true,
+      "no_fallback": true
+    },
+    {
+      "id": "contract-mismatch-refused",
+      "request_digest": "b39d38faed3f08a2",
+      "result": {
+        "schema": "axm.game-visual-selection-result/v1",
+        "version": "1.0.0",
+        "status": "PACK_CONTRACT_MISMATCH",
+        "request_id": "contract-mismatch-refused",
+        "game_contract_id": "axm.game.theme-park-foundation",
+        "hardware_profile_id": "axm.hardware.creator-desktop",
+        "recommendation": {
+          "pack_id": "axm.visual-pack.theme-park.pixel-8",
+          "pack_digest": "75222a4a986a55e8",
+          "title": "Park Foundation / Pixel 8",
+          "reason": "Highest-ranked installed pack compatible with this declared hardware profile.",
+          "activated": false
+        },
+        "selection": null,
+        "checks": [
+          {
+            "id": "pack-content-integrity",
+            "pass": true,
+            "detail": {
+              "expected": "b085fe27d2764ddf",
+              "actual": "b085fe27d2764ddf"
+            }
+          },
+          {
+            "id": "game-contract-id",
+            "pass": true,
+            "detail": {
+              "expected": "axm.game.theme-park-foundation",
+              "actual": "axm.game.theme-park-foundation"
+            }
+          },
+          {
+            "id": "game-contract-digest",
+            "pass": false,
+            "detail": {
+              "expected": "470bd8f3b129342e",
+              "actual": "0000000000000000"
+            }
+          }
+        ],
+        "fallback_used": false,
+        "active_pack_changed": false,
+        "save_digest_before": "283b46b5951e1312",
+        "save_digest_after": "283b46b5951e1312",
+        "game_truth_digest": "bf6a38376a12901d",
+        "message": "The requested visual pack was not activated. No fallback was applied.",
+        "authority": {
+          "recommendation_only": true,
+          "player_choice_required": true,
+          "silent_fallback_forbidden": true,
+          "simulation_mutation_forbidden": true,
+          "save_mutation_forbidden": true
+        }
+      },
+      "deterministic_replay": true,
+      "save_unchanged": true,
+      "no_fallback": true
+    }
+  ],
+  "assertions": {
+    "baseline_continuity": true,
+    "deterministic_replay": true,
+    "save_independence": true,
+    "no_silent_fallback": true,
+    "recommendation_requires_choice": true,
+    "incompatible_refused": true,
+    "capable_machine_can_choose_baseline": true,
+    "missing_future_refused": true,
+    "contract_mismatch_refused": true
+  },
+  "limitations": [
+    "Hardware profiles are deterministic declarations, not automatic device detection.",
+    "Only pixel-8bit and pixel-16bit packs are installed in this pilot.",
+    "Human originality, readability, and fun review remains required."
+  ],
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

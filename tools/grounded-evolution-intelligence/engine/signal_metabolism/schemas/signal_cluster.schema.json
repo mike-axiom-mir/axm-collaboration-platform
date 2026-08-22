@@ -1,0 +1,53 @@
+{
+  "$id": "https://axm.local/schemas/gei/signal-cluster/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "assessment_states": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "cluster_id": {
+      "pattern": "^axm:signal-cluster:[a-f0-9]{24}$",
+      "type": "string"
+    },
+    "normalized_statement": {
+      "type": "string"
+    },
+    "occurrence_count": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "schema": {
+      "const": "axm.gei.signal-cluster/v1"
+    },
+    "signal_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "truth_states": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema",
+    "cluster_id",
+    "normalized_statement",
+    "signal_ids",
+    "occurrence_count",
+    "truth_states",
+    "assessment_states"
+  ],
+  "title": "AXM Signal Cluster",
+  "type": "object"
+}

@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-arena-capabilities/0.5",
+  "title": "AXM Challenge Arena Capabilities v0.5",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "arena_version",
+    "artifact_presets",
+    "deterministic_validators",
+    "challenge_states",
+    "features",
+    "authority_boundaries",
+    "runtime"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-arena-capabilities/0.5"
+    },
+    "arena_version": {
+      "type": "string"
+    },
+    "artifact_presets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "deterministic_validators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "challenge_states": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "authority_boundaries": {
+      "type": "object",
+      "required": [
+        "automatic_merge",
+        "automatic_human_decision",
+        "candidate_execution_default",
+        "execution_flag_is_a_security_sandbox",
+        "blind_review_guarantees_perfect_anonymity",
+        "hmac_receipt_proves_measurement_truth",
+        "sealed_input_proves_semantic_correctness",
+        "candidate_content_is_reviewer_instruction",
+        "review_safety_signal_is_automatic_penalty",
+        "bounded_execution_is_a_security_sandbox"
+      ],
+      "properties": {
+        "automatic_merge": {
+          "const": false
+        },
+        "automatic_human_decision": {
+          "const": false
+        },
+        "candidate_execution_default": {
+          "const": false
+        },
+        "execution_flag_is_a_security_sandbox": {
+          "const": false
+        },
+        "blind_review_guarantees_perfect_anonymity": {
+          "const": false
+        },
+        "hmac_receipt_proves_measurement_truth": {
+          "const": false
+        },
+        "sealed_input_proves_semantic_correctness": {
+          "const": false
+        },
+        "candidate_content_is_reviewer_instruction": {
+          "const": false
+        },
+        "review_safety_signal_is_automatic_penalty": {
+          "const": false
+        },
+        "bounded_execution_is_a_security_sandbox": {
+          "const": false
+        },
+        "seat_failure_is_automatic_candidate_penalty": {
+          "const": false
+        },
+        "budget_overrun_is_automatic_candidate_penalty": {
+          "const": false
+        }
+      },
+      "additionalProperties": true
+    },
+    "runtime": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

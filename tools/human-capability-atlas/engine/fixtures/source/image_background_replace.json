@@ -1,0 +1,141 @@
+{
+  "revision": "1.0.0",
+  "category": [
+    "visual"
+  ],
+  "tags": [
+    "image",
+    "editing"
+  ],
+  "supported_task_types": [
+    "image_editing"
+  ],
+  "typical_goals": [
+    "Change an image background"
+  ],
+  "required_human_actions": [
+    "Choose an image",
+    "Describe or select the replacement background",
+    "Review the preview"
+  ],
+  "required_machine_actions": [
+    "Segment the foreground",
+    "Generate or insert the new background",
+    "Composite the result"
+  ],
+  "collaboration_modes": [
+    "human_ai_shared"
+  ],
+  "inputs": {
+    "input_types": [
+      "image",
+      "text_or_image"
+    ],
+    "required_inputs": [
+      "Source image",
+      "Replacement background instruction"
+    ],
+    "optional_inputs": [
+      "Mask corrections"
+    ],
+    "input_constraints": [
+      "Foreground must be distinguishable enough to segment"
+    ]
+  },
+  "outputs": {
+    "output_types": [
+      "image"
+    ],
+    "expected_outputs": [
+      "Edited image with replaced background"
+    ],
+    "output_constraints": [
+      "Foreground identity should be preserved"
+    ],
+    "preview_available": "KNOWN"
+  },
+  "cost_profile": {
+    "compute_cost": "medium",
+    "time_cost": "short",
+    "attention_cost": "medium",
+    "skill_cost": "beginner",
+    "setup_cost": "none",
+    "error_recovery_cost": "low"
+  },
+  "risk_profile": {
+    "risk_level": "low",
+    "reversibility": "fully_reversible",
+    "privacy_sensitivity": "low",
+    "failure_modes": [
+      "Foreground edges may be cut incorrectly"
+    ],
+    "human_confirmation_required": false,
+    "safe_preview_recommended": true
+  },
+  "maturity_profile": {
+    "availability": "available",
+    "maturity": "tested",
+    "proof_status": "tested",
+    "known_limitations": []
+  },
+  "learning_profile": {
+    "minimum_skill_level": "beginner",
+    "prerequisite_capability_ids": [],
+    "recommended_learning_steps": [],
+    "beginner_safe_operations": [
+      "Use automatic subject selection and review preview"
+    ],
+    "advanced_operations": [
+      "Edit the mask manually"
+    ],
+    "common_mistakes": [
+      "Accepting a preview without checking edges"
+    ]
+  },
+  "interaction_profile": {
+    "interaction_complexity": "low",
+    "interaction_frequency": "iterative",
+    "precision_requirement": "medium",
+    "feedback_requirement": "live_preview",
+    "preferred_input_methods": [
+      "file upload",
+      "text",
+      "mask brush"
+    ],
+    "preferred_output_methods": [
+      "before_after_preview"
+    ],
+    "accessibility_considerations": []
+  },
+  "interface_requirements": {
+    "required_interface_features": [
+      "before-and-after preview",
+      "confirm or undo"
+    ],
+    "optional_interface_features": [
+      "mask editor"
+    ],
+    "unsafe_interface_patterns": [],
+    "beginner_layer_constraints": [
+      "Hide detailed mask tools until requested"
+    ],
+    "advanced_layer_requirements": []
+  },
+  "relationships": {
+    "dependency_capability_ids": [],
+    "related_capability_ids": [],
+    "alternative_capability_ids": [],
+    "commonly_combined_capability_ids": []
+  },
+  "source_reference": {
+    "source_type": "manifest",
+    "confidence": 0.95
+  },
+  "capability_id": "axm.image.background.replace",
+  "machine_name": "image_background_replace",
+  "description": "Replaces the background area of an image while retaining the selected foreground subject.",
+  "why_it_matters": "Lets people adapt an image to a different setting without recreating the subject.",
+  "examples": [
+    "Replace a plain wall behind a product with a studio background."
+  ]
+}

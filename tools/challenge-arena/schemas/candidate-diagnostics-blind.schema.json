@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-candidate-diagnostics-blind/0.4",
+  "title": "AXM Blind Candidate Diagnostics v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy",
+    "scan_complete",
+    "scan_error_count",
+    "artifact_binding_hash",
+    "exact_duplicate_groups",
+    "pairwise_overlap",
+    "source_diagnostics_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-candidate-diagnostics-blind/0.4"
+    },
+    "policy": {
+      "type": "object"
+    },
+    "scan_complete": {
+      "type": "boolean"
+    },
+    "scan_error_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "artifact_binding_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "exact_duplicate_groups": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "pairwise_overlap": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "source_diagnostics_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": true
+}

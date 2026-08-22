@@ -1,0 +1,65 @@
+{
+  "$id": "https://axm.local/schemas/gei/signal-event/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "event_hash": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "event_id": {
+      "pattern": "^axm:signal-event:[a-f0-9]{24}$",
+      "type": "string"
+    },
+    "event_type": {
+      "enum": [
+        "SIGNAL_CAPTURED",
+        "ASSESSMENT_APPENDED",
+        "DERIVATIVE_PROPOSED",
+        "SIGNAL_ARCHIVED"
+      ]
+    },
+    "occurred_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "previous_event_hash": {
+      "oneOf": [
+        {
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schema": {
+      "const": "axm.gei.signal-event/v1"
+    },
+    "sequence": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "signal_id": {
+      "pattern": "^axm:signal:[a-f0-9]{24}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema",
+    "event_id",
+    "sequence",
+    "occurred_at",
+    "event_type",
+    "signal_id",
+    "payload",
+    "previous_event_hash",
+    "event_hash"
+  ],
+  "title": "AXM Signal Event",
+  "type": "object"
+}

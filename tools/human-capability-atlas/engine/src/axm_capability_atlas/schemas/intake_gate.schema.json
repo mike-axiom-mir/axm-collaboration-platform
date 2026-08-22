@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/intake-gate.schema.json",
+  "title": "AXM Capability Atlas Intake Gate Report",
+  "type": "object",
+  "required": [
+    "report_version",
+    "status",
+    "merge_claim",
+    "blockers",
+    "warnings",
+    "receipt_verification",
+    "source_summary",
+    "identity_summary",
+    "graph_summary",
+    "quality_summary",
+    "integrity_notes"
+  ],
+  "properties": {
+    "report_version": {
+      "const": "0.1.0"
+    },
+    "status": {
+      "enum": [
+        "READY_FOR_MERGE_REVIEW",
+        "TEST_HOLD_REVIEW",
+        "INGEST_FAILED"
+      ]
+    },
+    "merge_claim": {
+      "const": false
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "receipt_verification": {
+      "type": "object"
+    },
+    "source_summary": {
+      "type": "object"
+    },
+    "identity_summary": {
+      "type": "object"
+    },
+    "graph_summary": {
+      "type": "object"
+    },
+    "quality_summary": {
+      "type": "object"
+    },
+    "integrity_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/v0.1.0/research_need.schema.json",
+  "title": "Research Need",
+  "type": "object",
+  "properties": {
+    "research_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "triggering_gap": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "known_facts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "research_question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "allowed_source_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "expected_decision_unlocked": {
+      "type": "string",
+      "minLength": 1
+    },
+    "affected_modules": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "evidence_quality_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "result_summary": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "result_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "unresolved_conflicts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "truth_state": {
+      "type": "string",
+      "enum": [
+        "OBSERVED",
+        "DECLARED",
+        "TESTED",
+        "REPRODUCED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "CONFLICTED",
+        "OBSOLETE",
+        "UNKNOWN"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "OPEN",
+        "APPROVED",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "INSUFFICIENT",
+        "CANCELLED",
+        "OBSOLETE"
+      ]
+    }
+  },
+  "required": [
+    "research_id",
+    "contract_version",
+    "triggering_gap",
+    "known_facts",
+    "unknowns",
+    "research_question",
+    "allowed_source_types",
+    "expected_decision_unlocked",
+    "affected_modules",
+    "evidence_quality_requirements",
+    "result_summary",
+    "result_evidence",
+    "unresolved_conflicts",
+    "truth_state",
+    "status"
+  ],
+  "additionalProperties": false
+}

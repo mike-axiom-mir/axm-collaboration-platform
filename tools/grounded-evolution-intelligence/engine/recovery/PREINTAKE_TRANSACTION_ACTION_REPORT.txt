@@ -1,0 +1,41 @@
+AXM GROUNDED EVOLUTION INTELLIGENCE
+PRE-INTAKE TRANSACTIONAL HARDENING — ACTION REPORT
+
+Package: 0.6.0
+Date: 2026-08-08
+
+ADDED
+- Actual incoming package-byte SHA-256 verification.
+- ZIP central-directory probe before extraction.
+- Absolute/traversal path, normalized duplicate, case-fold collision, symlink, encrypted-entry and suspicious-compression checks.
+- Deterministic three-module compatibility matrix.
+- Read-only transaction receipt with before/after canonical fingerprints.
+- Staged ADD / IDENTICAL_SHARED / CONFLICT_HOLD merge plan.
+- Tamper, unsafe-archive and record-collision fixtures.
+- Atomicity contract: rehearsal cannot partially mutate the active body.
+
+VERIFICATION
+- Existing v0.5 tests plus new transaction tests: 30/30 PASS.
+- Compatible fixture: REHEARSAL_PASS.
+- Tampered package fixture: ACTIVE_MERGE_REJECTED.
+- Traversal archive fixture: ACTIVE_MERGE_REJECTED.
+- Record collision fixture: MERGE_HOLD.
+- Canonical registry byte-identical to v0.5: True.
+- Phase 3 event history byte-identical to v0.5: True.
+- Phase 3 graph byte-identical to v0.5: True.
+
+HONEST BOUNDARY
+- Real Module 1 and Module 2 package payloads are not present in this checkpoint.
+- No real three-module merge has happened.
+- commit_eligible remains FALSE deliberately.
+- A rehearsal PASS proves only byte integrity, archive-probe acceptance, structural compatibility, cross-module reference compatibility, and an unchanged baseline.
+- Held/rejected packages may still feed Signal Metabolism without receiving truth, execution, overwrite, promotion or CANON authority.
+
+NEXT INTAKE FLOW
+1. Preserve incoming ZIPs as immutable artifacts.
+2. Hash and probe each archive.
+3. Generate/read its intake manifest.
+4. Run v2 preflight and Signal Metabolism sidecar.
+5. Run the v0.6 transaction rehearsal.
+6. Inspect matrix, staged diff, warnings and conflicts.
+7. Only after real payload records are available should a payload-aware commit candidate be built.

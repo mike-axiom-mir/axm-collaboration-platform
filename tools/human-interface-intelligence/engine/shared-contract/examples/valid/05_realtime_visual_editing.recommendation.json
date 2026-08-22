@@ -1,0 +1,185 @@
+{
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "record_kind": "interface_recommendation",
+  "recommendation_id": "axm.hii.recommendation.e37a43b61a603fea",
+  "capability_id": "axm.visual.realtime_edit",
+  "generated_at": "2026-08-03T03:56:47Z",
+  "context": {
+    "user_skill_level": "beginner",
+    "user_goal": "Tune a visual effect interactively",
+    "task_type": "real_time_visual_editing",
+    "device_types": [
+      "desktop"
+    ],
+    "available_tools": [
+      "renderer"
+    ],
+    "accessibility_needs": [],
+    "privacy_mode": "local_preferred",
+    "offline_required": true,
+    "resource_budget": {
+      "compute": "medium",
+      "time": "short",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "collaboration_mode": "human_ai_shared"
+  },
+  "recommended_interface": {
+    "interface_pattern_id": "live_preview_controls",
+    "interface_name": "Live preview with controls",
+    "interface_family": "previewed_manipulation",
+    "confidence": 0.978,
+    "recommendation_status": "recommended",
+    "why_this_interface": [
+      "Pattern explicitly supports task type 'real_time_visual_editing'.",
+      "Input fit: image, parameters, pointer.",
+      "Output fit: visual_preview.",
+      "Pattern is suitable for beginners.",
+      "Pattern fits an available device.",
+      "Live feedback requirement is matched by live preview.",
+      "Pattern is suited to continuous interaction or observation.",
+      "A required supporting tool is available.",
+      "Interface overhead stays within the compute budget.",
+      "Required feature fit: undo."
+    ],
+    "why_not_other_interfaces": [
+      "Guided form: Pattern offers preview, but not continuous live feedback.",
+      "Before-and-after comparison: Pattern offers preview, but not continuous live feedback.",
+      "File browser: Pattern offers preview, but not continuous live feedback."
+    ],
+    "required_controls": [
+      "live_preview",
+      "undo",
+      "reset",
+      "preview",
+      "controls",
+      "before_after",
+      "apply"
+    ],
+    "optional_controls": [
+      "help",
+      "undo"
+    ],
+    "hidden_advanced_controls": [
+      "custom shader parameters"
+    ],
+    "progressive_disclosure_plan": [
+      "Start with the declared beginner-safe operation and necessary controls only.",
+      "Show a plain-language summary of hidden advanced controls.",
+      "Reveal optional controls when the user asks or the task requires them.",
+      "Require explicit user choice before entering advanced mode."
+    ],
+    "preview_and_confirmation_flow": [
+      "Generate a non-destructive preview or consequence summary.",
+      "Show applied result and proof/status after execution."
+    ],
+    "error_recovery_flow": [
+      "Validate inputs before execution.",
+      "Keep cancel available until the commit point.",
+      "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+      "Record failure details without claiming success."
+    ]
+  },
+  "beginner_layer": {
+    "enabled": true,
+    "operation_class": "simplified_control",
+    "allowed_operations": [
+      "Edit visuals in real time"
+    ],
+    "restricted_operations": [
+      "custom shader parameters"
+    ],
+    "default_values": {
+      "preview_before_apply": true,
+      "confirmation_required": false,
+      "retain_recovery_point": true,
+      "show_hidden_control_summary": true
+    },
+    "guided_steps": [
+      "State the intended goal in plain language.",
+      "Provide only the inputs required for the selected safe operation.",
+      "Review a preview or consequence summary before applying the operation.",
+      "Run the operation.",
+      "Show the result, proof/status, and the available recovery action.",
+      "Offer advanced mode as an explicit user choice; do not switch silently."
+    ],
+    "explanation_depth": "practical",
+    "estimated_capability_cost": {
+      "compute": "medium",
+      "attention": "medium",
+      "complexity": "low"
+    },
+    "reasons_for_restrictions": []
+  },
+  "advanced_layer": {
+    "available": true,
+    "unlock_method": "manual_choice",
+    "additional_controls": [
+      "custom shader parameters"
+    ],
+    "additional_risks": [],
+    "required_knowledge": [
+      "review inputs",
+      "run safe example",
+      "inspect output"
+    ]
+  },
+  "cost_comparison": {
+    "selected_interface_cost": {
+      "attention": "medium",
+      "interaction": "medium",
+      "minimum_skill": "basic",
+      "deterministic_score": 92.0,
+      "compute_overhead": "medium",
+      "required_tool_any": [
+        "renderer",
+        "image_renderer"
+      ]
+    },
+    "alternative_interfaces": [
+      {
+        "interface_pattern_id": "guided_form",
+        "interface_name": "Guided form",
+        "score": 54.0,
+        "tradeoff": "Pattern offers preview, but not continuous live feedback."
+      },
+      {
+        "interface_pattern_id": "before_after_comparison",
+        "interface_name": "Before-and-after comparison",
+        "score": 41.0,
+        "tradeoff": "Pattern offers preview, but not continuous live feedback."
+      },
+      {
+        "interface_pattern_id": "file_browser",
+        "interface_name": "File browser",
+        "score": 41.0,
+        "tradeoff": "Pattern offers preview, but not continuous live feedback."
+      }
+    ],
+    "unnecessary_costs_avoided": []
+  },
+  "evidence": {
+    "facts_used": [
+      "Declared task types: real_time_visual_editing.",
+      "Declared input types: image, pointer, parameters.",
+      "Declared output types: visual_preview, image.",
+      "Risk level: low.",
+      "Reversibility: fully_reversible.",
+      "Proof status: tested."
+    ],
+    "inferences_used": [],
+    "unknowns": [],
+    "conflicts": [],
+    "source_references": [
+      {
+        "source_type": "manifest",
+        "source_location": "fixtures/axm.visual.realtime_edit.source.json",
+        "source_hash": "sha256:fixture-axm.visual.realtime_edit",
+        "last_verified_at": "2026-08-03T03:56:47Z",
+        "confidence": 0.95
+      }
+    ]
+  }
+}

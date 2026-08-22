@@ -1,0 +1,191 @@
+{
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "record_kind": "interface_recommendation",
+  "recommendation_id": "axm.hii.recommendation.d41f61d340f799b6",
+  "capability_id": "axm.file.delete",
+  "generated_at": "2026-08-03T03:56:47Z",
+  "context": {
+    "user_skill_level": "beginner",
+    "user_goal": "Remove selected obsolete files",
+    "task_type": "destructive_file_deletion",
+    "device_types": [
+      "desktop"
+    ],
+    "available_tools": [
+      "trash",
+      "audit_log"
+    ],
+    "accessibility_needs": [],
+    "privacy_mode": "local_preferred",
+    "offline_required": true,
+    "resource_budget": {
+      "compute": "low",
+      "time": "short",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "collaboration_mode": "supervised_automation"
+  },
+  "recommended_interface": {
+    "interface_pattern_id": "approval_confirmation",
+    "interface_name": "Approval and confirmation interface",
+    "interface_family": "safety_gate",
+    "confidence": 0.978,
+    "recommendation_status": "conditional",
+    "why_this_interface": [
+      "Pattern explicitly supports task type 'destructive_file_deletion'.",
+      "Output fit: audit_record.",
+      "User skill meets the pattern's minimum.",
+      "Pattern is suitable for beginners.",
+      "Pattern fits an available device.",
+      "Preview support lowers avoidable error cost.",
+      "Pattern supports exact review or parameter entry.",
+      "Pattern supports supervised automation with human oversight.",
+      "Explicit approval matches the declared consequence and confirmation requirements.",
+      "Pattern reduces the declared high recovery cost."
+    ],
+    "why_not_other_interfaces": [
+      "Guided form: High-consequence action lacks a strong explicit approval gate.",
+      "Wizard / step-by-step flow: Pattern exceeds the stated attention budget.",
+      "File browser: High-consequence action lacks a strong explicit approval gate."
+    ],
+    "required_controls": [
+      "target_summary",
+      "explicit_confirmation",
+      "audit_log",
+      "summary",
+      "consequences",
+      "preview",
+      "approve",
+      "cancel"
+    ],
+    "optional_controls": [
+      "help",
+      "undo"
+    ],
+    "hidden_advanced_controls": [
+      "permanent recursive deletion"
+    ],
+    "progressive_disclosure_plan": [
+      "Start with the declared beginner-safe operation and necessary controls only.",
+      "Show a plain-language summary of hidden advanced controls.",
+      "Reveal optional controls when the user asks or the task requires them.",
+      "Require explicit user choice before entering advanced mode."
+    ],
+    "preview_and_confirmation_flow": [
+      "Generate a non-destructive preview or consequence summary.",
+      "Require explicit confirmation after preview and before execution.",
+      "Show applied result and proof/status after execution."
+    ],
+    "error_recovery_flow": [
+      "Validate inputs before execution.",
+      "Keep cancel available until the commit point.",
+      "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+      "Record failure details without claiming success."
+    ]
+  },
+  "beginner_layer": {
+    "enabled": true,
+    "operation_class": "restricted_safe_operation",
+    "allowed_operations": [
+      "move one file to recoverable trash"
+    ],
+    "restricted_operations": [
+      "permanent recursive deletion"
+    ],
+    "default_values": {
+      "preview_before_apply": true,
+      "confirmation_required": true,
+      "retain_recovery_point": false,
+      "show_hidden_control_summary": true
+    },
+    "guided_steps": [
+      "State the intended goal in plain language.",
+      "Provide only the inputs required for the selected safe operation.",
+      "Review a preview or consequence summary before applying the operation.",
+      "Give explicit confirmation after reviewing the target and consequences.",
+      "Run the operation.",
+      "Show the result, proof/status, and the available recovery action.",
+      "Offer advanced mode as an explicit user choice; do not switch silently."
+    ],
+    "explanation_depth": "practical",
+    "estimated_capability_cost": {
+      "compute": "low",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "reasons_for_restrictions": [
+      "Irreversible variants remain restricted from the beginner layer.",
+      "Risk level requires staged review and explicit consequence explanation."
+    ]
+  },
+  "advanced_layer": {
+    "available": true,
+    "unlock_method": "demonstrated_skill",
+    "additional_controls": [
+      "permanent recursive deletion"
+    ],
+    "additional_risks": [
+      "unintended data loss"
+    ],
+    "required_knowledge": [
+      "review inputs",
+      "run safe example",
+      "inspect output"
+    ]
+  },
+  "cost_comparison": {
+    "selected_interface_cost": {
+      "attention": "low",
+      "interaction": "low",
+      "minimum_skill": "beginner",
+      "deterministic_score": 154.0,
+      "compute_overhead": "very_low",
+      "required_tool_any": []
+    },
+    "alternative_interfaces": [
+      {
+        "interface_pattern_id": "guided_form",
+        "interface_name": "Guided form",
+        "score": 62.0,
+        "tradeoff": "High-consequence action lacks a strong explicit approval gate."
+      },
+      {
+        "interface_pattern_id": "wizard",
+        "interface_name": "Wizard / step-by-step flow",
+        "score": 53.0,
+        "tradeoff": "Pattern exceeds the stated attention budget."
+      },
+      {
+        "interface_pattern_id": "file_browser",
+        "interface_name": "File browser",
+        "score": 49.0,
+        "tradeoff": "High-consequence action lacks a strong explicit approval gate."
+      }
+    ],
+    "unnecessary_costs_avoided": []
+  },
+  "evidence": {
+    "facts_used": [
+      "Declared task types: destructive_file_deletion.",
+      "Declared input types: file, folder.",
+      "Declared output types: status, audit_record.",
+      "Risk level: high.",
+      "Reversibility: irreversible.",
+      "Proof status: tested."
+    ],
+    "inferences_used": [],
+    "unknowns": [],
+    "conflicts": [],
+    "source_references": [
+      {
+        "source_type": "manifest",
+        "source_location": "fixtures/axm.file.delete.source.json",
+        "source_hash": "sha256:fixture-axm.file.delete",
+        "last_verified_at": "2026-08-03T03:56:47Z",
+        "confidence": 0.95
+      }
+    ]
+  }
+}

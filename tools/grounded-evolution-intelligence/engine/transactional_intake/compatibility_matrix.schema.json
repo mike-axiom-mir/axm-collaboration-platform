@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/intake-compatibility-matrix/v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "modules",
+    "checks",
+    "errors",
+    "warnings",
+    "compatible",
+    "matrix_hash"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.intake.compatibility-matrix/v1"
+    },
+    "modules": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "check_id",
+          "status",
+          "subject",
+          "details"
+        ],
+        "properties": {
+          "check_id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "WARN",
+              "FAIL"
+            ]
+          },
+          "subject": {
+            "type": "string"
+          },
+          "details": {}
+        },
+        "additionalProperties": false
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "compatible": {
+      "type": "boolean"
+    },
+    "matrix_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

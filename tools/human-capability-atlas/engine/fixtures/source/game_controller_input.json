@@ -1,0 +1,129 @@
+{
+  "revision": "1.0.0",
+  "category": [
+    "input"
+  ],
+  "tags": [
+    "controller",
+    "game"
+  ],
+  "supported_task_types": [
+    "continuous_control"
+  ],
+  "typical_goals": [
+    "Control an interactive simulation"
+  ],
+  "required_human_actions": [
+    "Connect or select a controller",
+    "Calibrate or remap controls if needed"
+  ],
+  "required_machine_actions": [
+    "Read input events",
+    "Apply mappings",
+    "Report connection state"
+  ],
+  "collaboration_modes": [
+    "human_ai_shared"
+  ],
+  "inputs": {
+    "input_types": [
+      "controller_events"
+    ],
+    "required_inputs": [
+      "Connected controller"
+    ],
+    "optional_inputs": [
+      "Custom mappings"
+    ],
+    "input_constraints": [
+      "Controller must be supported by the runtime"
+    ]
+  },
+  "outputs": {
+    "output_types": [
+      "control_commands"
+    ],
+    "expected_outputs": [
+      "Mapped real-time commands"
+    ],
+    "output_constraints": [
+      "Latency must remain within the interactive threshold"
+    ],
+    "preview_available": "NOT_APPLICABLE"
+  },
+  "cost_profile": {
+    "compute_cost": "very_low",
+    "time_cost": "variable",
+    "attention_cost": "low",
+    "skill_cost": "beginner",
+    "setup_cost": "none",
+    "error_recovery_cost": "low"
+  },
+  "risk_profile": {
+    "risk_level": "low",
+    "reversibility": "fully_reversible",
+    "privacy_sensitivity": "low",
+    "failure_modes": [
+      "Incorrect mapping may cause unintended actions"
+    ],
+    "human_confirmation_required": false,
+    "safe_preview_recommended": false
+  },
+  "maturity_profile": {
+    "availability": "available",
+    "maturity": "tested",
+    "proof_status": "tested",
+    "known_limitations": []
+  },
+  "learning_profile": {
+    "minimum_skill_level": "beginner",
+    "prerequisite_capability_ids": [],
+    "recommended_learning_steps": [],
+    "beginner_safe_operations": [],
+    "advanced_operations": [],
+    "common_mistakes": []
+  },
+  "interaction_profile": {
+    "interaction_complexity": "low",
+    "interaction_frequency": "continuous",
+    "precision_requirement": "high",
+    "feedback_requirement": "continuous",
+    "preferred_input_methods": [
+      "game controller"
+    ],
+    "preferred_output_methods": [
+      "calibration status"
+    ],
+    "accessibility_considerations": []
+  },
+  "interface_requirements": {
+    "required_interface_features": [
+      "controller status",
+      "mapping screen",
+      "calibration"
+    ],
+    "optional_interface_features": [
+      "keyboard accessibility alternative"
+    ],
+    "unsafe_interface_patterns": [],
+    "beginner_layer_constraints": [],
+    "advanced_layer_requirements": []
+  },
+  "relationships": {
+    "dependency_capability_ids": [],
+    "related_capability_ids": [],
+    "alternative_capability_ids": [],
+    "commonly_combined_capability_ids": []
+  },
+  "source_reference": {
+    "source_type": "manifest",
+    "confidence": 0.95
+  },
+  "capability_id": "axm.input.game_controller",
+  "machine_name": "game_controller_input",
+  "description": "Reads continuous controller actions and maps them to game or simulation commands.",
+  "why_it_matters": "Provides low-latency physical control for interactive experiences.",
+  "examples": [
+    "Move a character with a joystick and trigger an action with a button."
+  ]
+}

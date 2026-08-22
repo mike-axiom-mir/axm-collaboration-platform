@@ -1,0 +1,193 @@
+{
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "record_kind": "interface_recommendation",
+  "recommendation_id": "axm.hii.recommendation.6267d4da9ecde1c8",
+  "capability_id": "axm.data.analyze",
+  "generated_at": "2026-08-03T03:56:47Z",
+  "context": {
+    "user_skill_level": "basic",
+    "user_goal": "Find trends in a CSV",
+    "task_type": "data_analysis",
+    "device_types": [
+      "desktop"
+    ],
+    "available_tools": [
+      "table_engine"
+    ],
+    "accessibility_needs": [],
+    "privacy_mode": "local_preferred",
+    "offline_required": true,
+    "resource_budget": {
+      "compute": "medium",
+      "time": "short",
+      "attention": "medium",
+      "complexity": "low"
+    },
+    "collaboration_mode": "human_ai_shared"
+  },
+  "recommended_interface": {
+    "interface_pattern_id": "table_spreadsheet",
+    "interface_name": "Table / spreadsheet",
+    "interface_family": "tabular_work",
+    "confidence": 0.978,
+    "recommendation_status": "conditional",
+    "why_this_interface": [
+      "Pattern explicitly supports task type 'data_analysis'.",
+      "Input fit: columns, csv, numbers, rows.",
+      "Output fit: analysis, chart, table.",
+      "User skill meets the pattern's minimum.",
+      "Pattern is suitable for beginners.",
+      "Pattern fits an available device.",
+      "Preview support lowers avoidable error cost.",
+      "A required supporting tool is available.",
+      "Interface overhead stays within the compute budget.",
+      "Pattern stays within the attention budget."
+    ],
+    "why_not_other_interfaces": [
+      "Guided form: Lower deterministic fit score.",
+      "Conversational interface: Lower deterministic fit score.",
+      "Property inspector: Lower deterministic fit score."
+    ],
+    "required_controls": [
+      "filter",
+      "sort",
+      "provenance",
+      "export",
+      "table",
+      "formula",
+      "undo"
+    ],
+    "optional_controls": [
+      "help",
+      "undo"
+    ],
+    "hidden_advanced_controls": [
+      "custom formulas",
+      "statistical model configuration"
+    ],
+    "progressive_disclosure_plan": [
+      "Start with the declared beginner-safe operation and necessary controls only.",
+      "Show a plain-language summary of hidden advanced controls.",
+      "Reveal optional controls when the user asks or the task requires them.",
+      "Require explicit user choice before entering advanced mode."
+    ],
+    "preview_and_confirmation_flow": [
+      "Generate a non-destructive preview or consequence summary.",
+      "Show applied result and proof/status after execution."
+    ],
+    "error_recovery_flow": [
+      "Validate inputs before execution.",
+      "Keep cancel available until the commit point.",
+      "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+      "Record failure details without claiming success."
+    ]
+  },
+  "beginner_layer": {
+    "enabled": true,
+    "operation_class": "simplified_control",
+    "allowed_operations": [
+      "Analyze structured data"
+    ],
+    "restricted_operations": [
+      "custom formulas",
+      "statistical model configuration"
+    ],
+    "default_values": {
+      "preview_before_apply": true,
+      "confirmation_required": false,
+      "retain_recovery_point": true,
+      "show_hidden_control_summary": true
+    },
+    "guided_steps": [
+      "State the intended goal in plain language.",
+      "Provide only the inputs required for the selected safe operation.",
+      "Review a preview or consequence summary before applying the operation.",
+      "Run the operation.",
+      "Show the result, proof/status, and the available recovery action.",
+      "Offer advanced mode as an explicit user choice; do not switch silently."
+    ],
+    "explanation_depth": "practical",
+    "estimated_capability_cost": {
+      "compute": "medium",
+      "attention": "medium",
+      "complexity": "low"
+    },
+    "reasons_for_restrictions": [
+      "Risk level requires staged review and explicit consequence explanation."
+    ]
+  },
+  "advanced_layer": {
+    "available": true,
+    "unlock_method": "demonstrated_skill",
+    "additional_controls": [
+      "custom formulas",
+      "statistical model configuration"
+    ],
+    "additional_risks": [
+      "misinterpretation",
+      "incorrect column typing"
+    ],
+    "required_knowledge": [
+      "review inputs",
+      "run safe example",
+      "inspect output"
+    ]
+  },
+  "cost_comparison": {
+    "selected_interface_cost": {
+      "attention": "medium",
+      "interaction": "medium",
+      "minimum_skill": "basic",
+      "deterministic_score": 126.0,
+      "compute_overhead": "low",
+      "required_tool_any": [
+        "table_engine",
+        "spreadsheet"
+      ]
+    },
+    "alternative_interfaces": [
+      {
+        "interface_pattern_id": "guided_form",
+        "interface_name": "Guided form",
+        "score": 56.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      },
+      {
+        "interface_pattern_id": "conversational_interface",
+        "interface_name": "Conversational interface",
+        "score": 53.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      },
+      {
+        "interface_pattern_id": "property_inspector",
+        "interface_name": "Property inspector",
+        "score": 53.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      }
+    ],
+    "unnecessary_costs_avoided": []
+  },
+  "evidence": {
+    "facts_used": [
+      "Declared task types: data_analysis.",
+      "Declared input types: csv, rows, columns, numbers.",
+      "Declared output types: table, chart, analysis.",
+      "Risk level: moderate.",
+      "Reversibility: fully_reversible.",
+      "Proof status: tested."
+    ],
+    "inferences_used": [],
+    "unknowns": [],
+    "conflicts": [],
+    "source_references": [
+      {
+        "source_type": "manifest",
+        "source_location": "fixtures/axm.data.analyze.source.json",
+        "source_hash": "sha256:fixture-axm.data.analyze",
+        "last_verified_at": "2026-08-03T03:56:47Z",
+        "confidence": 0.95
+      }
+    ]
+  }
+}

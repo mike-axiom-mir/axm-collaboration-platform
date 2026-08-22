@@ -1,0 +1,57 @@
+AXM HUMAN INTERFACE INTELLIGENCE v0.6.0
+FINAL TEST REPORT
+Generated: 2026-08-09T00:20:00Z
+
+AUTOMATED TESTS
+- Collected: 108
+- Passed: 108
+- Failed: 0
+- Errors: 0
+
+TEST GROUPS
+- shared-contract compatibility: 2
+- shared-contract migrations: 2
+- shared recommendation schema fixtures: 10
+- shared schema validation: 17
+- anchor and paired-boundary tests: 10
+- cross-module gate tests: 9
+- deterministic engine tests: 16
+- intake readiness/receipts/health tests: 10
+- v0.6 reasoning hardening tests: 21
+- signal-first/shadow/ledger tests: 11
+
+ADDITIONAL CHECKS
+- Python compileall: PASS
+- Dependency lock: 5 PASS / 0 mismatch
+- Interface-pattern registry: valid / 27 unique patterns
+- Ten-fixture gate: 10 PASS / 0 FAIL / 0 BLOCKED / 0 NOT_RUN
+- Current report-schema validation: PASS
+- Random valid-context regression: 500 completed / 0 exceptions / 0 schema failures
+- Historic Module 1 anchor: correctly BLOCKED before record consumption
+- Reduced-cognitive-load cross-fixture regression: PASS
+- Explicit unsafe-pattern hard block: PASS
+- Required-offline hard block: PASS
+- Registry mutation/fingerprint protection: PASS
+- Receipt input binding: PASS
+- Duplicate JSON key rejection: PASS
+- Non-finite JSON number rejection (NaN and ±Infinity): PASS
+- Anchor ZIP path and resource-limit enforcement: PASS
+
+COVERAGE
+- Whole axm_hii package: 79%
+- Deterministic selection engine: 97%
+- CLI dispatch module: not unit-covered; direct CLI smoke checks for registry-check and assurance passed
+
+COMMANDS EXECUTED
+python -m pytest --collect-only -q
+python -m pytest -q
+python -m compileall -q axm_hii shared-contract/validators shared-contract/migrations
+python -m axm_hii.cli verify-lock
+python -m axm_hii.cli registry-check
+python -m pytest --cov=axm_hii --cov-report=term-missing:skip-covered -q
+
+HONEST LIMITS
+- No local AXM runtime integration was run.
+- No current Module 1 release beyond the historic blocked anchor was available.
+- Randomized testing is bounded evidence, not exhaustive proof.
+- No real work-environment screenshot was available.

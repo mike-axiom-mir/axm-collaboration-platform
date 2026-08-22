@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-seat-task-plan/0.4",
+  "title": "AXM Challenge Seat Task Plan v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "phase",
+    "packet_hash",
+    "rubric_hash",
+    "participant_roster_hash",
+    "assignment_hash",
+    "task_ids",
+    "task_core_hashes",
+    "budget_hashes",
+    "task_count",
+    "required_task_count",
+    "authority_boundary",
+    "task_plan_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-seat-task-plan/0.4"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "phase": {
+      "enum": [
+        "BUILD",
+        "REVIEW"
+      ]
+    },
+    "packet_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rubric_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "participant_roster_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "assignment_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "task_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+      },
+      "uniqueItems": true
+    },
+    "task_core_hashes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "budget_hashes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "task_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "required_task_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "authority_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_plan_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

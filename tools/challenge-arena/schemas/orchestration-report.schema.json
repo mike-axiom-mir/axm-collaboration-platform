@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-orchestration-report/0.4",
+  "title": "AXM Challenge Orchestration Report v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "phase_scope",
+    "task_count",
+    "required_task_count",
+    "completed_task_count",
+    "completion_ratio",
+    "status_counts",
+    "required_incomplete_task_ids",
+    "budget_signal_task_ids",
+    "operational_failures",
+    "task_plan_hashes",
+    "automatic_score_effect",
+    "authority_boundary",
+    "report_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-orchestration-report/0.4"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "phase_scope": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "BUILD",
+          "REVIEW"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "task_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "required_task_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "completed_task_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "completion_ratio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "status_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "required_incomplete_task_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+      },
+      "uniqueItems": true
+    },
+    "budget_signal_task_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+      },
+      "uniqueItems": true
+    },
+    "operational_failures": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "task_plan_hashes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "automatic_score_effect": {
+      "const": false
+    },
+    "authority_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "report_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

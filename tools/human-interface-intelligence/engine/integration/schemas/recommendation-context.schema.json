@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-recommendation-context-0.1.0.schema.json",
+  "title": "AXM HII Recommendation Context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "user_skill_level",
+    "user_goal",
+    "task_type",
+    "collaboration_mode",
+    "device_types",
+    "available_tools",
+    "accessibility_needs",
+    "privacy_mode",
+    "offline_required",
+    "resource_budget"
+  ],
+  "properties": {
+    "user_skill_level": {
+      "enum": ["beginner", "basic", "intermediate", "advanced", "specialist", "unknown"]
+    },
+    "user_goal": {"type": "string"},
+    "task_type": {"type": "string"},
+    "collaboration_mode": {
+      "enum": ["human_only", "ai_only", "human_ai_shared", "supervised_automation"]
+    },
+    "device_types": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "available_tools": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "accessibility_needs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "privacy_mode": {"type": "string"},
+    "offline_required": {"type": "boolean"},
+    "resource_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compute", "time", "attention", "complexity"],
+      "properties": {
+        "compute": {
+          "enum": ["none", "very_low", "low", "medium", "high", "very_high", "unknown"]
+        },
+        "time": {
+          "enum": ["instant", "short", "medium", "long", "variable", "unknown"]
+        },
+        "attention": {
+          "enum": ["none", "very_low", "low", "medium", "high", "very_high", "unknown"]
+        },
+        "complexity": {
+          "enum": ["none", "very_low", "low", "medium", "high", "very_high", "unknown"]
+        }
+      }
+    }
+  }
+}

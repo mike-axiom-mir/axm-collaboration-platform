@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-build-packet/0.4",
+  "title": "AXM Portable Builder Packet v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "packet",
+    "packet_hash",
+    "rubric_hash",
+    "participant_id",
+    "submission_destination",
+    "portable_inputs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-build-packet/0.4"
+    },
+    "packet": {
+      "type": "object"
+    },
+    "packet_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rubric_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "participant_roster_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "participant_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "submission_destination": {
+      "type": "string"
+    },
+    "path_scope": {
+      "type": "string"
+    },
+    "portable_inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "input_id",
+          "kind",
+          "bundle_root",
+          "bundle_root_scope",
+          "artifact_set_hash",
+          "artifact_files",
+          "source_scope",
+          "authority"
+        ],
+        "properties": {
+          "input_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "bundle_root": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bundle_root_scope": {
+            "const": "relative_to_build_bundle"
+          },
+          "artifact_set_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "artifact_files": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "bytes",
+                "sha256"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "source_scope": {
+            "enum": [
+              "relative_to_challenge_directory",
+              "relative_to_arena_workspace"
+            ]
+          },
+          "authority": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "input_warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "input_id",
+          "reason"
+        ],
+        "properties": {
+          "input_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "seat_task": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "seat_receipt_destination": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

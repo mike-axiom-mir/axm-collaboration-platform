@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/learning-path.schema.json",
+  "title": "AXM Ecosystem Learning Path",
+  "type": "object",
+  "required": ["module", "module_version", "shared_contract_version", "operation", "generated_at", "target_capability_id", "status", "summary", "steps", "missing_dependencies", "cycles", "integrity_notes"],
+  "properties": {
+    "module": {"const": "AXM Human Capability Atlas"},
+    "module_version": {"type": "string"},
+    "shared_contract_version": {"const": "0.1.0"},
+    "operation": {"const": "ecosystem_learning_path"},
+    "generated_at": {"type": "string"},
+    "target_capability_id": {"type": "string"},
+    "status": {"enum": ["ready", "incomplete_dependencies", "blocked_by_cycle"]},
+    "summary": {"type": "object"},
+    "steps": {"type": "array", "items": {"type": "object"}},
+    "missing_dependencies": {"type": "array", "items": {"type": "object"}},
+    "cycles": {"type": "array", "items": {"type": "array"}},
+    "integrity_notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

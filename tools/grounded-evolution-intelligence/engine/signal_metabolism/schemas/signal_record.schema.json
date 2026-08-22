@@ -1,0 +1,273 @@
+{
+  "$id": "https://axm.local/schemas/gei/signal-record/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "assessment": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "reason": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "UNASSESSED",
+            "CORROBORATED",
+            "DISCONFIRMED",
+            "CONFLICTED",
+            "INSUFFICIENT_DATA"
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "reason",
+        "evidence_refs"
+      ],
+      "type": "object"
+    },
+    "attention": {
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "type": "object"
+        },
+        "meaning": {
+          "const": "Attention only; never truth, proof, priority, authority, or CANON."
+        },
+        "score": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "tier": {
+          "enum": [
+            "HOT",
+            "WARM",
+            "COLD"
+          ]
+        }
+      },
+      "required": [
+        "components",
+        "score",
+        "tier",
+        "meaning"
+      ],
+      "type": "object"
+    },
+    "authority": {
+      "additionalProperties": false,
+      "properties": {
+        "canon_authority": {
+          "const": false
+        },
+        "direction_execution": {
+          "const": false
+        },
+        "evidence_promotion": {
+          "const": false
+        },
+        "need_creation": {
+          "const": false
+        },
+        "silent_overwrite": {
+          "const": false
+        }
+      },
+      "required": [
+        "evidence_promotion",
+        "need_creation",
+        "direction_execution",
+        "canon_authority",
+        "silent_overwrite"
+      ],
+      "type": "object"
+    },
+    "cluster_id": {
+      "pattern": "^axm:signal-cluster:[a-f0-9]{24}$",
+      "type": "string"
+    },
+    "derivative_candidates": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "POLICY_CANDIDATE",
+              "EVIDENCE_CANDIDATE",
+              "RESEARCH_CANDIDATE",
+              "NEED_CANDIDATE",
+              "DIRECTION_CANDIDATE",
+              "VALIDATOR_CANDIDATE",
+              "INVARIANT_REINFORCEMENT",
+              "MERGE_PREFLIGHT_REQUIREMENT",
+              "NO_ACTION"
+            ]
+          },
+          "reason": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "target_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "target_id",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "evidence_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "first_captured_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "type": "string"
+    },
+    "last_captured_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "type": "string"
+    },
+    "linked_scope": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "maturity_state": {
+      "enum": [
+        "RAW",
+        "NORMALIZED",
+        "LINKED",
+        "CORROBORATED",
+        "DISCONFIRMED",
+        "CONFLICTED",
+        "INSUFFICIENT_DATA",
+        "ARCHIVED"
+      ]
+    },
+    "occurrence_count": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "occurrence_ids": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "schema": {
+      "const": "axm.gei.signal-record/v1"
+    },
+    "signal_id": {
+      "pattern": "^axm:signal:[a-f0-9]{24}$",
+      "type": "string"
+    },
+    "signal_type": {
+      "enum": [
+        "CLAIM",
+        "OBSERVATION",
+        "SUGGESTION",
+        "ERROR",
+        "CONTRADICTION",
+        "GAP",
+        "RESULT",
+        "POLICY_INPUT",
+        "UNKNOWN"
+      ]
+    },
+    "source_digest": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "source_location": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_type": {
+      "enum": [
+        "STEWARD_INPUT",
+        "MODULE_TAKEIN",
+        "TEST_RESULT",
+        "BUILD_RESULT",
+        "USER_FEEDBACK",
+        "AI_PROPOSAL",
+        "RESEARCH_RESULT",
+        "ERROR",
+        "CONTRADICTION",
+        "UNKNOWN"
+      ]
+    },
+    "statement": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "statement_digest": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "truth_state": {
+      "enum": [
+        "OBSERVED",
+        "DECLARED",
+        "TESTED",
+        "REPRODUCED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "CONFLICTED",
+        "OBSOLETE",
+        "UNKNOWN"
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "signal_id",
+    "cluster_id",
+    "first_captured_at",
+    "last_captured_at",
+    "source_type",
+    "source_location",
+    "source_digest",
+    "statement",
+    "statement_digest",
+    "signal_type",
+    "truth_state",
+    "maturity_state",
+    "linked_scope",
+    "evidence_refs",
+    "occurrence_count",
+    "occurrence_ids",
+    "assessment",
+    "derivative_candidates",
+    "attention",
+    "authority"
+  ],
+  "title": "AXM Precanonical Signal Record",
+  "type": "object"
+}

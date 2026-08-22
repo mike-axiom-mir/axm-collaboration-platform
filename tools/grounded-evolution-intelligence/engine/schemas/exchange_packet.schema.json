@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/v0.1.0/exchange_packet.schema.json",
+  "title": "Three-Module Exchange Packet",
+  "type": "object",
+  "properties": {
+    "packet_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "sender_module_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "receiver_module_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "created_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "payload_type": {
+      "type": "string",
+      "enum": [
+        "CAPABILITY_RECORD",
+        "CAPABILITY_CARD_REFERENCE",
+        "INTERFACE_INTELLIGENCE_REFERENCE",
+        "IMPROVEMENT_NEED",
+        "RESEARCH_NEED",
+        "EVOLUTION_DIRECTION",
+        "EVIDENCE_RECORD",
+        "INTERVENTION_RECORD",
+        "STATE_DELTA"
+      ]
+    },
+    "payload_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "truth_state": {
+      "type": "string",
+      "enum": [
+        "OBSERVED",
+        "DECLARED",
+        "TESTED",
+        "REPRODUCED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "CONFLICTED",
+        "OBSOLETE",
+        "UNKNOWN"
+      ]
+    },
+    "source_snapshot_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "requires_acknowledgement": {
+      "type": "boolean"
+    },
+    "preserve_unknown_fields": {
+      "const": true
+    }
+  },
+  "required": [
+    "packet_id",
+    "contract_version",
+    "sender_module_id",
+    "receiver_module_ids",
+    "created_at",
+    "payload_type",
+    "payload_id",
+    "payload",
+    "evidence_refs",
+    "truth_state",
+    "source_snapshot_hash",
+    "requires_acknowledgement",
+    "preserve_unknown_fields"
+  ],
+  "additionalProperties": false
+}

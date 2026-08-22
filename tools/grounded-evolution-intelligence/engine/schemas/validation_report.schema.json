@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/v0.1.0/validation_report.schema.json",
+  "title": "Phase 0 Validation Report",
+  "type": "object",
+  "properties": {
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "schema_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "schema": {
+            "type": "string"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "schema",
+          "valid",
+          "error"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "example_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "example": {
+            "type": "string"
+          },
+          "schema": {
+            "type": "string"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "example",
+          "schema",
+          "valid",
+          "error"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "event_chain_valid": {
+      "type": "boolean"
+    },
+    "rebuild_deterministic": {
+      "type": "boolean"
+    },
+    "rebuild_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "cross_module_references_valid": {
+      "type": "boolean"
+    },
+    "acceptance_passed": {
+      "type": "boolean"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "contract_version",
+    "generated_at",
+    "schema_results",
+    "example_results",
+    "event_chain_valid",
+    "rebuild_deterministic",
+    "rebuild_hash",
+    "cross_module_references_valid",
+    "acceptance_passed",
+    "limitations"
+  ],
+  "additionalProperties": false
+}

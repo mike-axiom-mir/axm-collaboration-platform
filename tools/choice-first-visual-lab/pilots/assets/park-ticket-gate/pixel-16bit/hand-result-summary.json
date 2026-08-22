@@ -1,0 +1,1638 @@
+{
+  "schema": "axm.choice-first-hand-summary/v1",
+  "status": "READY",
+  "hand": {
+    "schema": "axm.asset-hand/v2",
+    "legacy_schema": null,
+    "contract_version": "2.0",
+    "source_contract": "native-v2",
+    "id": "choice-first-visual-simulation",
+    "title": "Choice-First Visual & Simulation Hand",
+    "version": "1.0.0",
+    "category": "visual-simulation",
+    "summary": "Resolves exact visual profiles and binds deterministic pixel representations to persistent identities and causal state without fallback.",
+    "purpose": "Let human, AI and deterministic-program callers change visual direction without making the representation own simulation truth.",
+    "lifecycle_status": "experimental",
+    "operation_modes": [
+      "create",
+      "workflow"
+    ],
+    "canvas_models": [
+      "raster-frame",
+      "host-neutral"
+    ],
+    "entry_surfaces": [
+      "command",
+      "asset-fabric",
+      "export-recipe"
+    ],
+    "mutability": "generate",
+    "kinds": [
+      "sprite",
+      "character",
+      "prop",
+      "animation",
+      "sequence",
+      "inspection"
+    ],
+    "wildcard_kind_policy": "fallback",
+    "accepts": [
+      "axm.asset-brief/v1",
+      "axm.asset-source-artifact/v1",
+      "axm.choice-first-request/v1"
+    ],
+    "produces": [
+      "axm.asset-hand-result/v1",
+      "image/png",
+      "image/apng",
+      "axm.asset-identity/v1",
+      "axm.visual-representation-profile/v1",
+      "axm.asset-representation-set/v1",
+      "axm.causal-asset-simulation/v1",
+      "axm.upgradeable-object/v1",
+      "axm.missing-representation/v1",
+      "axm.pixel-animation-recipe/v1",
+      "axm.object-upgrade-sequence/v1"
+    ],
+    "output_types": [
+      {
+        "mime": "image/png",
+        "format": "PNG",
+        "schema": "",
+        "role": "identity-bound-source-sheet",
+        "editable": false,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "image/apng",
+        "format": "APNG",
+        "schema": "",
+        "role": "identity-bound-animation-preview",
+        "editable": false,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.asset-identity/v1",
+        "role": "persistent-asset-identity",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.visual-representation-profile/v1",
+        "role": "resolved-visual-profile",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.causal-asset-simulation/v1",
+        "role": "causal-simulation-state",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.asset-representation-set/v1",
+        "role": "asset-representation-set",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.upgradeable-object/v1",
+        "role": "upgradeable-object-state",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.pixel-animation-recipe/v1",
+        "role": "editable-pixel-animation-recipe",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.object-upgrade-sequence/v1",
+        "role": "object-upgrade-receipts",
+        "editable": false,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      }
+    ],
+    "input_types": [
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.choice-first-request/v1",
+        "roles": [],
+        "required_for": [
+          "create",
+          "workflow"
+        ],
+        "mutable": false,
+        "max_bytes": 200000
+      }
+    ],
+    "canvas_types": [
+      {
+        "medium": "game-world",
+        "units": [
+          "px"
+        ],
+        "colour_spaces": [
+          "srgb"
+        ],
+        "transparency_modes": [
+          "required",
+          "allowed"
+        ],
+        "material_behaviours": [],
+        "behaviours": [
+          "animated"
+        ],
+        "intended_uses": [
+          "sprite",
+          "character",
+          "prop",
+          "animation",
+          "sequence",
+          "inspection"
+        ],
+        "locale_patterns": [],
+        "up_axes": [],
+        "handedness": []
+      }
+    ],
+    "canvas_limits": {
+      "min_width": 48,
+      "min_height": 48,
+      "max_width": 96,
+      "max_height": 96,
+      "max_pixels": 9216,
+      "texture_bytes_per_pixel": 4,
+      "max_bleed": null,
+      "min_stroke": null,
+      "max_stroke": null,
+      "max_tool_width": null,
+      "max_depth": null,
+      "min_animation_frames": 2,
+      "max_animation_frames": 12,
+      "min_fps": null,
+      "max_fps": null,
+      "min_polygon_count": null,
+      "min_vertices": null
+    },
+    "constraints_honoured": [
+      "dimensions",
+      "dimensions.unit",
+      "colour.space",
+      "colour.transparency",
+      "behaviour.animated",
+      "performance.max-animation-frames"
+    ],
+    "editable_recipe_formats": [
+      "axm.choice-first-request/v1",
+      "axm.pixel-animation-recipe/v1"
+    ],
+    "operations": {
+      "preview": true,
+      "validate": true,
+      "edit": false
+    },
+    "emits_editable_source": true,
+    "supports_edit_operation": false,
+    "requires": [],
+    "required_permissions": {
+      "local_file_system": "none",
+      "clipboard": false,
+      "network_domains": [],
+      "device_access": [],
+      "plugin_data": false
+    },
+    "network_policy": {
+      "mode": "none",
+      "domains": [],
+      "rationale": "Profile resolution, simulation, raster drawing and PNG/APNG encoding are deterministic and local."
+    },
+    "host_compatibility": {
+      "hosts": [
+        "asset-fabric",
+        "studio",
+        "mirror",
+        "standalone"
+      ],
+      "minimum_versions": {},
+      "dependencies": [
+        {
+          "name": "AXM Choice First Core",
+          "version": "1.0.0",
+          "bundled": true
+        },
+        {
+          "name": "AXM Choice First Pilot Core",
+          "version": "1.0.0",
+          "bundled": true
+        }
+      ]
+    },
+    "engine": {
+      "name": "AXM choice-first deterministic pilot",
+      "version": "1.0.0",
+      "execution": "local-async-bounded"
+    },
+    "editable": true,
+    "deterministic": true,
+    "authority": "candidate-only",
+    "implementation_status": "executable",
+    "safety_tier": "safe-local",
+    "portability": {
+      "interchange_formats": [
+        "image/png",
+        "image/apng",
+        "axm.asset-identity/v1",
+        "axm.visual-representation-profile/v1",
+        "axm.asset-representation-set/v1",
+        "axm.causal-asset-simulation/v1",
+        "axm.upgradeable-object/v1"
+      ],
+      "known_losses": [
+        "8-bit and 16-bit are art-direction presets over RGBA8 sRGB, not console emulatio"
+      ],
+      "unsupported_features": [
+        "realtime 3D",
+        "cinematic render",
+        "automatic taste approval"
+      ],
+      "fallbacks": []
+    },
+    "validation": {
+      "checks": [
+        "exact profile with no fallback",
+        "persistent identity binding",
+        "no time-only decay",
+        "palette boundary",
+        "PNG/APNG structure",
+        "candidate-only authority"
+      ]
+    },
+    "rollback": {
+      "strategy": "discard-candidate-artifacts-and-retain-request"
+    },
+    "observability": {
+      "logs": true,
+      "duration": true,
+      "warnings": true
+    },
+    "evidence": [
+      {
+        "claim": "One causal identity and state can drive both installed pixel profiles without silent substitution.",
+        "source_url": "local:shared/asset-hands/choice-first-core.js",
+        "specification_version": "1.0.0",
+        "retrieved_at": "2026-08-12"
+      }
+    ],
+    "tests": [
+      "choice-first-selftest",
+      "asset-hands-selftest",
+      "schema-contract-selftest",
+      "html-script-syntax-test"
+    ],
+    "implementation_priority": "",
+    "limits": {
+      "installedProfiles": [
+        "pixel-8bit",
+        "pixel-16bit",
+        "pixel-custom"
+      ],
+      "automaticApproval": false,
+      "automaticPromotion": false,
+      "fallback": false
+    }
+  },
+  "measures": {
+    "identityId": "axm.park.ticket-gate",
+    "representationProfileId": "pixel-16bit",
+    "width": 96,
+    "height": 96,
+    "frames": 12,
+    "paletteColours": 11,
+    "simulationEvents": 3,
+    "sofaUpgrades": 0,
+    "fallbackUsed": false
+  },
+  "validation": {
+    "schema": "axm.asset-validation-receipt/v1",
+    "status": "PASS",
+    "validator": {
+      "id": "choice-first-visual-simulation",
+      "version": "1.0.0",
+      "capability": true
+    },
+    "target_canvas_digest": "fe27b57c",
+    "artifact_digests": [
+      {
+        "id": "source-sheet",
+        "digest": "b58250ba",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-preview",
+        "digest": "3361e985",
+        "mime": "image/apng"
+      },
+      {
+        "id": "asset-identity",
+        "digest": "642c1a93",
+        "mime": "application/json"
+      },
+      {
+        "id": "visual-profile",
+        "digest": "264fd8c0",
+        "mime": "application/json"
+      },
+      {
+        "id": "causal-simulation",
+        "digest": "83c0f55f",
+        "mime": "application/json"
+      },
+      {
+        "id": "pixel-animation-recipe",
+        "digest": "8f026e62",
+        "mime": "application/json"
+      },
+      {
+        "id": "representation-set",
+        "digest": "6c8c9312",
+        "mime": "application/json"
+      }
+    ],
+    "checks": [
+      {
+        "name": "core-artifact-envelope",
+        "pass": true,
+        "errors": []
+      },
+      {
+        "name": "exact-profile-no-fallback",
+        "pass": true
+      },
+      {
+        "name": "identity-bound",
+        "pass": true
+      },
+      {
+        "name": "representation-profile-bound",
+        "pass": true
+      },
+      {
+        "name": "idle-time-no-decay",
+        "pass": true
+      },
+      {
+        "name": "palette-limit",
+        "pass": true,
+        "details": {
+          "actual": 11,
+          "maximum": 64
+        }
+      },
+      {
+        "name": "png-structure",
+        "pass": true
+      },
+      {
+        "name": "apng-structure",
+        "pass": true
+      },
+      {
+        "name": "candidate-only",
+        "pass": true
+      },
+      {
+        "name": "target-canvas-effective-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "target-canvas-original-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-output:image/png",
+        "pass": true,
+        "details": {
+          "required": "image/png"
+        }
+      },
+      {
+        "name": "required-output:image/apng",
+        "pass": true,
+        "details": {
+          "required": "image/apng"
+        }
+      },
+      {
+        "name": "required-output:axm.asset-identity/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.asset-identity/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.visual-representation-profile/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.visual-representation-profile/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.asset-representation-set/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.asset-representation-set/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.causal-asset-simulation/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.causal-asset-simulation/v1"
+        }
+      },
+      {
+        "name": "editable-recipe:axm.choice-first-request/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.choice-first-request/v1",
+          "actual": "axm.choice-first-request/v1"
+        }
+      },
+      {
+        "name": "declared-artifact-types",
+        "pass": true,
+        "details": {
+          "undeclared": []
+        }
+      },
+      {
+        "name": "editable-source-emitted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-preview-emitted",
+        "pass": true,
+        "details": null
+      }
+    ],
+    "createdAt": "2026-08-12T00:00:00.000Z"
+  },
+  "technical": {
+    "pass": true,
+    "errors": [],
+    "validationReceipt": "axm.asset-validation-receipt/v1"
+  },
+  "artifact_records": [
+    {
+      "id": "source-sheet",
+      "role": "identity-bound-source-sheet",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-sheet.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/ticket-gate-pixel-16bit-sheet.png",
+      "bytes": 442767,
+      "sha256": "e2f1ff647ac23d6a65bfdb5d3633254b5f9cd9654ee07e3584b8ef9ddfc8b8ef"
+    },
+    {
+      "id": "animation-preview",
+      "role": "identity-bound-animation-preview",
+      "mime": "image/apng",
+      "filename": "ticket-gate-pixel-16bit-preview.apng",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/ticket-gate-pixel-16bit-preview.apng",
+      "bytes": 444374,
+      "sha256": "28bc1b56975781dc481ba6cfb8fd08788a081b2b7ceffd4ab767720c2b2a6ae9"
+    },
+    {
+      "id": "asset-identity",
+      "role": "persistent-asset-identity",
+      "mime": "application/json",
+      "filename": "ticket-gate-pixel-16bit-identity.json",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/ticket-gate-pixel-16bit-identity.json",
+      "bytes": 2264,
+      "sha256": "378d3d121cd3f6ed643031573f5a4511140608376313a70e7b0b1f611e4484cf"
+    },
+    {
+      "id": "visual-profile",
+      "role": "resolved-visual-profile",
+      "mime": "application/json",
+      "filename": "ticket-gate-pixel-16bit-profile.json",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/ticket-gate-pixel-16bit-profile.json",
+      "bytes": 1764,
+      "sha256": "a0efd5e71147fd8464a4312261759d2033ec2e3d009593547d709f2f6ba04ac9"
+    },
+    {
+      "id": "causal-simulation",
+      "role": "causal-simulation-state",
+      "mime": "application/json",
+      "filename": "ticket-gate-pixel-16bit-simulation.json",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/ticket-gate-pixel-16bit-simulation.json",
+      "bytes": 2878,
+      "sha256": "521ee13b1e4ab537061b252492bf17b3004ec038c659e4a72cef8a3014c44047"
+    },
+    {
+      "id": "pixel-animation-recipe",
+      "role": "editable-pixel-animation-recipe",
+      "mime": "application/json",
+      "filename": "ticket-gate-pixel-16bit-animation-recipe.json",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/ticket-gate-pixel-16bit-animation-recipe.json",
+      "bytes": 11073,
+      "sha256": "b4669e80542a761da673e1de09c5845f714d79db1ac89781ce7b2a038e8a2333"
+    },
+    {
+      "id": "representation-set",
+      "role": "asset-representation-set",
+      "mime": "application/json",
+      "filename": "ticket-gate-pixel-16bit-representations.json",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/ticket-gate-pixel-16bit-representations.json",
+      "bytes": 1258,
+      "sha256": "dc2a597ea1f8cd5ca2e48dd8198bf09c159f124ce4ec6a5f093ecdab52141c95"
+    }
+  ],
+  "animation_status": "READY",
+  "animation_measures": {
+    "sourceWidth": 384,
+    "sourceHeight": 288,
+    "frameWidth": 96,
+    "frameHeight": 96,
+    "frames": 12,
+    "clips": 1,
+    "profile": "pixel-16bit",
+    "paletteColours": 12,
+    "duplicateFramePairs": 8,
+    "previewScale": 2,
+    "videoSequences": 1,
+    "sourceSha256": "e2f1ff647ac23d6a65bfdb5d3633254b5f9cd9654ee07e3584b8ef9ddfc8b8ef",
+    "recipeSha256": "b4669e80542a761da673e1de09c5845f714d79db1ac89781ce7b2a038e8a2333",
+    "aiUsed": false,
+    "originalPreserved": true
+  },
+  "animation_validation": {
+    "schema": "axm.asset-validation-receipt/v1",
+    "status": "PASS",
+    "validator": {
+      "id": "pixel-animation-workshop",
+      "version": "0.1.0",
+      "capability": true
+    },
+    "target_canvas_digest": "d3d78205",
+    "artifact_digests": [
+      {
+        "id": "immutable-animation-sheet",
+        "digest": "b58250ba",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-0",
+        "digest": "33271fc5",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-1",
+        "digest": "6694a6d7",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-2",
+        "digest": "33271fc5",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-3",
+        "digest": "6694a6d7",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-4",
+        "digest": "b57b4744",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-5",
+        "digest": "e25d9e52",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-6",
+        "digest": "05a3af8c",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-7",
+        "digest": "05a3af8c",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-8",
+        "digest": "05a3af8c",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-9",
+        "digest": "05a3af8c",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-10",
+        "digest": "2b583c14",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-11",
+        "digest": "43e3ca75",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-clip-default-motion",
+        "digest": "4f13a34d",
+        "mime": "image/apng"
+      },
+      {
+        "id": "animation-preview-default-motion",
+        "digest": "ace44d3a",
+        "mime": "image/apng"
+      },
+      {
+        "id": "pixel-animation-recipe",
+        "digest": "8f026e62",
+        "mime": "application/json"
+      },
+      {
+        "id": "sprite-animation-manifest",
+        "digest": "f4401142",
+        "mime": "application/json"
+      },
+      {
+        "id": "pixel-video-sequence",
+        "digest": "ac011eba",
+        "mime": "application/json"
+      },
+      {
+        "id": "pixel-animation-receipt",
+        "digest": "fbb623c8",
+        "mime": "application/json"
+      }
+    ],
+    "checks": [
+      {
+        "name": "core-artifact-envelope",
+        "pass": true,
+        "errors": []
+      },
+      {
+        "name": "source-png-decoded",
+        "pass": true
+      },
+      {
+        "name": "source-sha256-verified",
+        "pass": true
+      },
+      {
+        "name": "source-copy-byte-identical",
+        "pass": true
+      },
+      {
+        "name": "recipe-source-bound",
+        "pass": true
+      },
+      {
+        "name": "optional-identity-profile-binding",
+        "pass": true,
+        "details": {
+          "identityId": "axm.park.ticket-gate",
+          "representationProfileId": "pixel-16bit"
+        }
+      },
+      {
+        "name": "optional-parent-package-bound",
+        "pass": true,
+        "details": {
+          "present": false,
+          "id": null,
+          "digest_bound": false
+        }
+      },
+      {
+        "name": "workflow-profile-not-hardware-claim",
+        "pass": true
+      },
+      {
+        "name": "exact-grid-coverage",
+        "pass": true
+      },
+      {
+        "name": "repeat-extraction-pixel-equality",
+        "pass": true
+      },
+      {
+        "name": "target-frame-dimensions",
+        "pass": true,
+        "details": {
+          "target": [
+            96,
+            96
+          ],
+          "frame": [
+            96,
+            96
+          ]
+        }
+      },
+      {
+        "name": "palette-limit",
+        "pass": true,
+        "details": {
+          "maximum": 64,
+          "actual": 12
+        }
+      },
+      {
+        "name": "exact-palette",
+        "pass": true,
+        "details": {
+          "enforcement": "exact",
+          "offPalette": []
+        }
+      },
+      {
+        "name": "duplicate-frame-policy",
+        "pass": true,
+        "details": {
+          "reject": false,
+          "duplicates": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              6,
+              8
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              6,
+              9
+            ],
+            [
+              7,
+              9
+            ],
+            [
+              8,
+              9
+            ]
+          ]
+        }
+      },
+      {
+        "name": "game-animation-adapter",
+        "pass": true
+      },
+      {
+        "name": "video-sequence-timing-and-artifact-binding",
+        "pass": true
+      },
+      {
+        "name": "ai-and-author-provenance-visible",
+        "pass": true
+      },
+      {
+        "name": "frame-budget",
+        "pass": true
+      },
+      {
+        "name": "duration-budget",
+        "pass": true
+      },
+      {
+        "name": "texture-memory-budget",
+        "pass": true
+      },
+      {
+        "name": "candidate-only-authority",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-0",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-1",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-2",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-3",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-4",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-5",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-6",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-7",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-8",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-9",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-10",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-11",
+        "pass": true
+      },
+      {
+        "name": "apng-structure:animation-clip-default-motion",
+        "pass": true,
+        "details": {
+          "pass": true,
+          "errors": [],
+          "chunks": [
+            "IHDR",
+            "acTL",
+            "sRGB",
+            "fcTL",
+            "IDAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "IEND"
+          ],
+          "frames": 12,
+          "declaredFrames": 12,
+          "plays": 0,
+          "width": 96,
+          "height": 96,
+          "sequence": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ],
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ],
+          "durationMs": 996,
+          "decodedFrames": 12
+        }
+      },
+      {
+        "name": "apng-frame-timing:animation-clip-default-motion",
+        "pass": true,
+        "details": {
+          "expectedDurationMs": 996,
+          "actualDurationMs": 996,
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ]
+        }
+      },
+      {
+        "name": "apng-structure:animation-preview-default-motion",
+        "pass": true,
+        "details": {
+          "pass": true,
+          "errors": [],
+          "chunks": [
+            "IHDR",
+            "acTL",
+            "sRGB",
+            "fcTL",
+            "IDAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "IEND"
+          ],
+          "frames": 12,
+          "declaredFrames": 12,
+          "plays": 0,
+          "width": 192,
+          "height": 192,
+          "sequence": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ],
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ],
+          "durationMs": 996,
+          "decodedFrames": 12
+        }
+      },
+      {
+        "name": "apng-frame-timing:animation-preview-default-motion",
+        "pass": true,
+        "details": {
+          "expectedDurationMs": 996,
+          "actualDurationMs": 996,
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ]
+        }
+      },
+      {
+        "name": "declared-output-budget-before-receipt",
+        "pass": true,
+        "details": {
+          "bytes": 3152241,
+          "excludesReceipt": true
+        }
+      },
+      {
+        "name": "target-canvas-effective-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "target-canvas-original-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-output:image/png",
+        "pass": true,
+        "details": {
+          "required": "image/png"
+        }
+      },
+      {
+        "name": "required-output:image/apng",
+        "pass": true,
+        "details": {
+          "required": "image/apng"
+        }
+      },
+      {
+        "name": "required-output:axm.pixel-animation-recipe/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-animation-recipe/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.sprite-animation/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.sprite-animation/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.pixel-video-sequence/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-video-sequence/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.pixel-animation-receipt/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-animation-receipt/v1"
+        }
+      },
+      {
+        "name": "editable-recipe:axm.pixel-animation-recipe/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-animation-recipe/v1",
+          "actual": "axm.pixel-animation-recipe/v1"
+        }
+      },
+      {
+        "name": "declared-artifact-types",
+        "pass": true,
+        "details": {
+          "undeclared": []
+        }
+      },
+      {
+        "name": "editable-source-emitted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-preview-emitted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "core-file-budget",
+        "pass": true,
+        "details": {
+          "actual": 3174315,
+          "maximum": 30000000
+        }
+      }
+    ],
+    "createdAt": "2026-08-12T00:00:00.000Z"
+  },
+  "animation_artifact_records": [
+    {
+      "id": "immutable-animation-sheet",
+      "role": "immutable-animation-sheet",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-source-sheet.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-source-sheet.png",
+      "bytes": 442767,
+      "sha256": "e2f1ff647ac23d6a65bfdb5d3633254b5f9cd9654ee07e3584b8ef9ddfc8b8ef"
+    },
+    {
+      "id": "animation-frame-motion-frame-0",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-0.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-0.png",
+      "bytes": 37041,
+      "sha256": "f73fc9d996c5ba6753037d0f9dbbac09b081fa32622578264751f4beb89eb972"
+    },
+    {
+      "id": "animation-frame-motion-frame-1",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-1.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-1.png",
+      "bytes": 37041,
+      "sha256": "070a0f4c9f429946bd3e85648297338735546901990320deab3728ac0650df5a"
+    },
+    {
+      "id": "animation-frame-motion-frame-2",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-2.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-2.png",
+      "bytes": 37041,
+      "sha256": "f73fc9d996c5ba6753037d0f9dbbac09b081fa32622578264751f4beb89eb972"
+    },
+    {
+      "id": "animation-frame-motion-frame-3",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-3.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-3.png",
+      "bytes": 37041,
+      "sha256": "070a0f4c9f429946bd3e85648297338735546901990320deab3728ac0650df5a"
+    },
+    {
+      "id": "animation-frame-motion-frame-4",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-4.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-4.png",
+      "bytes": 37041,
+      "sha256": "d40a4f3ce2f617cc78473097293f7b9aa0e0dd5ca8c0abea86a574a24cc95ab2"
+    },
+    {
+      "id": "animation-frame-motion-frame-5",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-5.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-5.png",
+      "bytes": 37041,
+      "sha256": "cff886277a1cb6b425c3b1e6a4d66319b5fcb38025b639e9b77ec46d6ba7bf42"
+    },
+    {
+      "id": "animation-frame-motion-frame-6",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-6.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-6.png",
+      "bytes": 37041,
+      "sha256": "4d0fb8cc3104b353d22ec5cbd9ff6afd63a342fc6fd742e7331b67c8bfeec6e1"
+    },
+    {
+      "id": "animation-frame-motion-frame-7",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-7.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-7.png",
+      "bytes": 37041,
+      "sha256": "4d0fb8cc3104b353d22ec5cbd9ff6afd63a342fc6fd742e7331b67c8bfeec6e1"
+    },
+    {
+      "id": "animation-frame-motion-frame-8",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-8.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-8.png",
+      "bytes": 37041,
+      "sha256": "4d0fb8cc3104b353d22ec5cbd9ff6afd63a342fc6fd742e7331b67c8bfeec6e1"
+    },
+    {
+      "id": "animation-frame-motion-frame-9",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-9.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-9.png",
+      "bytes": 37041,
+      "sha256": "4d0fb8cc3104b353d22ec5cbd9ff6afd63a342fc6fd742e7331b67c8bfeec6e1"
+    },
+    {
+      "id": "animation-frame-motion-frame-10",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-10.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-10.png",
+      "bytes": 37041,
+      "sha256": "747577d7963801ee4b5e0417094d69cd48c7855707feeaa117e45ab54a6a4a34"
+    },
+    {
+      "id": "animation-frame-motion-frame-11",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ticket-gate-pixel-16bit-animation-package-motion-frame-11.png",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-motion-frame-11.png",
+      "bytes": 37041,
+      "sha256": "a16b0f4e141efd4db6c6afd9590283ce71bd372274759694da349cf34e5ccb97"
+    },
+    {
+      "id": "animation-clip-default-motion",
+      "role": "pixel-animation-clip",
+      "mime": "image/apng",
+      "filename": "ticket-gate-pixel-16bit-animation-package-default-motion.apng",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-default-motion.apng",
+      "bytes": 444374,
+      "sha256": "91837d888a24447797dd4e43d3f968425619783b85714ab4673b001dd9f3819b"
+    },
+    {
+      "id": "animation-preview-default-motion",
+      "role": "integer-scale-animation-preview",
+      "mime": "image/apng",
+      "filename": "ticket-gate-pixel-16bit-animation-package-default-motion-preview-2x.apng",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-default-motion-preview-2x.apng",
+      "bytes": 1772750,
+      "sha256": "35c41e7049f7dad924e8dec99f0f850d75ca1e6d25b566cab80035919dbc9c0a"
+    },
+    {
+      "id": "pixel-animation-recipe",
+      "role": "editable-pixel-animation-recipe",
+      "mime": "application/json",
+      "filename": "ticket-gate-pixel-16bit-animation-package-animation-recipe.json",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-animation-recipe.json",
+      "bytes": 11073,
+      "sha256": "b4669e80542a761da673e1de09c5845f714d79db1ac89781ce7b2a038e8a2333"
+    },
+    {
+      "id": "sprite-animation-manifest",
+      "role": "engine-neutral-sprite-animation",
+      "mime": "application/json",
+      "filename": "ticket-gate-pixel-16bit-animation-package-sprite-animation.json",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-sprite-animation.json",
+      "bytes": 22046,
+      "sha256": "85a2362e38822a9a34d22d404003fa92126042876e4b62f54ea0584541dcf5ae"
+    },
+    {
+      "id": "pixel-video-sequence",
+      "role": "codec-neutral-video-frame-sequence",
+      "mime": "application/json",
+      "filename": "ticket-gate-pixel-16bit-animation-package-video-sequence.json",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-video-sequence.json",
+      "bytes": 14739,
+      "sha256": "c0e3b8ea304b84ab4739e65f47ad00dc76fd18753cadde7d70115b796b249057"
+    },
+    {
+      "id": "pixel-animation-receipt",
+      "role": "pixel-animation-receipt",
+      "mime": "application/json",
+      "filename": "ticket-gate-pixel-16bit-animation-package-animation-receipt.json",
+      "path": "pilots/assets/park-ticket-gate/pixel-16bit/animation-package/ticket-gate-pixel-16bit-animation-package-animation-receipt.json",
+      "bytes": 22072,
+      "sha256": "a37f0d24c36170a2fc0c5b4b66b8da4d6fd2632ab803375ad934e6a8235c9e16"
+    }
+  ],
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-recommendation-assurance-0.1.0.schema.json",
+  "title": "AXM HII Recommendation Assurance Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assurance_version",
+    "assurance_id",
+    "capability_id",
+    "recommendation_id",
+    "selected_interface_pattern_id",
+    "recommendation_status",
+    "overall_status",
+    "registry_fingerprint",
+    "check_counts",
+    "checks",
+    "governance"
+  ],
+  "properties": {
+    "assurance_version": {"const": "0.1.0"},
+    "assurance_id": {"type": "string", "minLength": 1},
+    "capability_id": {"type": "string"},
+    "recommendation_id": {"type": "string"},
+    "selected_interface_pattern_id": {"type": "string"},
+    "recommendation_status": {
+      "enum": ["recommended", "conditional", "insufficient_information", "no_safe_match"]
+    },
+    "overall_status": {"enum": ["PASS", "REVIEW", "BLOCKED", "NOT_APPLICABLE"]},
+    "registry_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "check_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["PASS", "REVIEW", "BLOCKED", "NOT_APPLICABLE"],
+      "properties": {
+        "PASS": {"type": "integer", "minimum": 0},
+        "REVIEW": {"type": "integer", "minimum": 0},
+        "BLOCKED": {"type": "integer", "minimum": 0},
+        "NOT_APPLICABLE": {"type": "integer", "minimum": 0}
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "status", "facts", "required_actions"],
+        "properties": {
+          "check_id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["PASS", "REVIEW", "BLOCKED", "NOT_APPLICABLE"]},
+          "facts": {"type": "array", "items": {"type": "string"}},
+          "required_actions": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "advisory_cross_check",
+        "changes_authoritative_recommendation",
+        "grants_execution_authority",
+        "automatic_canon"
+      ],
+      "properties": {
+        "advisory_cross_check": {"const": true},
+        "changes_authoritative_recommendation": {"const": false},
+        "grants_execution_authority": {"const": false},
+        "automatic_canon": {"const": false}
+      }
+    }
+  }
+}

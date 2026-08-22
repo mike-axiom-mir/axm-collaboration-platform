@@ -1,0 +1,98 @@
+{
+  "module": "AXM Human Capability Atlas",
+  "module_version": "0.5.0",
+  "shared_contract_version": "0.1.0",
+  "operation": "capability_registry_diff",
+  "generated_at": "2026-08-05T00:18:11.480729+00:00",
+  "before_snapshot_hash": "b6a0b5c9827c2bac182e3e2bc9098e3263adc9a04a9db7de54d625b1acc0314b",
+  "after_snapshot_hash": "a6a4830aafb37d7470141ff477102f174756e5a4ab99408f83dc6416bac97b18",
+  "summary": {
+    "before_capability_count": 3,
+    "after_capability_count": 3,
+    "added_count": 1,
+    "removed_count": 1,
+    "changed_count": 1,
+    "unchanged_count": 1,
+    "source_only_change_count": 0,
+    "id_reuse_risk_count": 1,
+    "affected_dependent_count": 1
+  },
+  "category_counts": {
+    "human_content_changed": 1,
+    "semantic_changed": 1,
+    "source_set_changed": 1
+  },
+  "added": [
+    "axm.example.added"
+  ],
+  "removed": [
+    "axm.example.removed"
+  ],
+  "changed": [
+    {
+      "capability_id": "axm.example.base",
+      "categories": [
+        "semantic_changed",
+        "human_content_changed",
+        "source_set_changed"
+      ],
+      "before_revision": "1.0.0",
+      "after_revision": "1.0.0",
+      "before_quality_status": "unknown",
+      "after_quality_status": "unknown",
+      "id_reuse_risk": true
+    }
+  ],
+  "unchanged": [
+    "axm.example.child"
+  ],
+  "source_only_changes": [],
+  "id_reuse_risks": [
+    {
+      "capability_id": "axm.example.base",
+      "revision": "1.0.0",
+      "reason": "Semantic content changed while the declared revision remained the same."
+    }
+  ],
+  "impact": {
+    "affected_dependents": [
+      "axm.example.child"
+    ],
+    "affected_from_changed_or_added": [
+      "axm.example.child"
+    ],
+    "affected_from_removed": []
+  },
+  "rebuild_plan": {
+    "rebuild_capability_cards": [
+      "axm.example.added",
+      "axm.example.base"
+    ],
+    "rebuild_learning_outputs": [
+      "axm.example.added",
+      "axm.example.base",
+      "axm.example.child"
+    ],
+    "rerun_human_interface_intelligence": [
+      "axm.example.added",
+      "axm.example.base",
+      "axm.example.child",
+      "axm.example.removed"
+    ],
+    "remove_generated_outputs": [
+      "axm.example.removed"
+    ],
+    "rerun_identity_analysis": true,
+    "rerun_relationship_graph": true,
+    "manual_id_reuse_review": [
+      "axm.example.base"
+    ],
+    "no_rebuild_needed_for_source_only_changes": []
+  },
+  "integrity_notes": [
+    "The diff produces a plan only and performs no file deletion, merge, or local mutation.",
+    "Semantic changes under an unchanged revision are flagged as possible stable-ID reuse or missing version updates.",
+    "Dependent capabilities are included so downstream courses and interface recommendations can be rechecked.",
+    "Provenance-only changes are separated from capability meaning changes."
+  ]
+}

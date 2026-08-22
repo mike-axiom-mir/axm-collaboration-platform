@@ -1,0 +1,139 @@
+{
+  "revision": "1.0.0",
+  "category": [
+    "file_management"
+  ],
+  "tags": [
+    "destructive"
+  ],
+  "supported_task_types": [
+    "file_deletion"
+  ],
+  "typical_goals": [
+    "Remove unwanted files"
+  ],
+  "required_human_actions": [
+    "Select files",
+    "Review selection",
+    "Confirm deletion"
+  ],
+  "required_machine_actions": [
+    "Display affected files",
+    "Use trash or backup when available",
+    "Delete only confirmed items"
+  ],
+  "collaboration_modes": [
+    "human_ai_shared"
+  ],
+  "inputs": {
+    "input_types": [
+      "file_reference_list"
+    ],
+    "required_inputs": [
+      "Selected files"
+    ],
+    "optional_inputs": [
+      "Deletion mode"
+    ],
+    "input_constraints": [
+      "Selection must be explicit"
+    ]
+  },
+  "outputs": {
+    "output_types": [
+      "deletion_report"
+    ],
+    "expected_outputs": [
+      "Deletion or trash-move report"
+    ],
+    "output_constraints": [
+      "No unselected file may be removed"
+    ],
+    "preview_available": "KNOWN"
+  },
+  "cost_profile": {
+    "compute_cost": "very_low",
+    "time_cost": "instant",
+    "attention_cost": "low",
+    "skill_cost": "beginner",
+    "setup_cost": "none",
+    "error_recovery_cost": "low"
+  },
+  "risk_profile": {
+    "risk_level": "high",
+    "reversibility": "partly_reversible",
+    "privacy_sensitivity": "medium",
+    "failure_modes": [
+      "Wrong files may be selected",
+      "Permanent deletion may be unrecoverable"
+    ],
+    "human_confirmation_required": true,
+    "safe_preview_recommended": true
+  },
+  "maturity_profile": {
+    "availability": "available",
+    "maturity": "tested",
+    "proof_status": "tested",
+    "known_limitations": []
+  },
+  "learning_profile": {
+    "minimum_skill_level": "beginner",
+    "prerequisite_capability_ids": [],
+    "recommended_learning_steps": [],
+    "beginner_safe_operations": [
+      "Move reviewed files to trash"
+    ],
+    "advanced_operations": [
+      "Permanent deletion after typed confirmation"
+    ],
+    "common_mistakes": [
+      "Confirming without reviewing the full selection"
+    ]
+  },
+  "interaction_profile": {
+    "interaction_complexity": "low",
+    "interaction_frequency": "one_shot",
+    "precision_requirement": "medium",
+    "feedback_requirement": "status",
+    "preferred_input_methods": [],
+    "preferred_output_methods": [],
+    "accessibility_considerations": []
+  },
+  "interface_requirements": {
+    "required_interface_features": [
+      "selection review",
+      "confirmation",
+      "recovery status"
+    ],
+    "optional_interface_features": [],
+    "unsafe_interface_patterns": [
+      "silent bulk delete",
+      "default permanent delete"
+    ],
+    "beginner_layer_constraints": [
+      "Trash only",
+      "Show filenames and counts before confirmation"
+    ],
+    "advanced_layer_requirements": [
+      "Explicit permanent-delete choice"
+    ]
+  },
+  "relationships": {
+    "dependency_capability_ids": [],
+    "related_capability_ids": [],
+    "alternative_capability_ids": [],
+    "commonly_combined_capability_ids": []
+  },
+  "source_reference": {
+    "source_type": "manifest",
+    "confidence": 0.95
+  },
+  "capability_id": "axm.file.delete",
+  "machine_name": "destructive_file_delete",
+  "human_name": "Delete Files",
+  "description": "Removes selected files from their current storage location.",
+  "why_it_matters": "Allows deliberate removal of unwanted data when retention is no longer needed.",
+  "examples": [
+    "Move selected temporary files to a recoverable trash folder."
+  ]
+}

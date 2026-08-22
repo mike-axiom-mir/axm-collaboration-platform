@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/course-plan.schema.json",
+  "title": "AXM Capability Course Plan",
+  "type": "object",
+  "required": [
+    "course_id",
+    "capability_id",
+    "learner_type",
+    "skill_level",
+    "goal",
+    "steps",
+    "unknowns"
+  ],
+  "properties": {
+    "course_id": {
+      "type": "string"
+    },
+    "capability_id": {
+      "type": "string"
+    },
+    "learner_type": {
+      "enum": [
+        "human",
+        "ai",
+        "human_ai_shared"
+      ]
+    },
+    "skill_level": {
+      "enum": [
+        "beginner",
+        "basic",
+        "intermediate",
+        "advanced",
+        "specialist",
+        "unknown"
+      ]
+    },
+    "goal": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

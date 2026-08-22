@@ -1,0 +1,108 @@
+{
+  "schema": "axm.causal-asset-simulation/v1",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "id": "park-ticket-gate-portable-pilot.simulation",
+  "identity_id": "axm.park.ticket-gate",
+  "state": {
+    "operating_state": "open",
+    "condition": 99.76,
+    "cleanliness": 99.88,
+    "cycle_count": 12,
+    "load": 0,
+    "simulated_time_ms": 31557600000,
+    "faults": [],
+    "upgrades": [],
+    "animation_state": "open"
+  },
+  "processed_event_ids": [
+    "axm-park-ticket-gate-idle-proof",
+    "axm-park-ticket-gate-open",
+    "axm-park-ticket-gate-cycles"
+  ],
+  "history": [
+    {
+      "event": {
+        "id": "axm-park-ticket-gate-idle-proof",
+        "type": "time_elapsed",
+        "duration_ms": 31557600000
+      },
+      "receipt": {
+        "schema": "axm.causal-event-receipt/v1",
+        "status": "APPLIED",
+        "event_id": "axm-park-ticket-gate-idle-proof",
+        "event_type": "time_elapsed",
+        "causal_inputs": [
+          "duration_ms"
+        ],
+        "before_digest": "7ab4f4d917e1f59c",
+        "after_digest": "4082801ed4c350e6",
+        "condition_delta": 0,
+        "cleanliness_delta": 0,
+        "time_only_no_decay": true,
+        "fallback_used": false
+      }
+    },
+    {
+      "event": {
+        "id": "axm-park-ticket-gate-open",
+        "type": "open"
+      },
+      "receipt": {
+        "schema": "axm.causal-event-receipt/v1",
+        "status": "APPLIED",
+        "event_id": "axm-park-ticket-gate-open",
+        "event_type": "open",
+        "causal_inputs": [
+          "access-event"
+        ],
+        "before_digest": "4082801ed4c350e6",
+        "after_digest": "b51ce2b2298c43e6",
+        "condition_delta": 0,
+        "cleanliness_delta": 0,
+        "time_only_no_decay": true,
+        "fallback_used": false
+      }
+    },
+    {
+      "event": {
+        "id": "axm-park-ticket-gate-cycles",
+        "type": "use_cycle",
+        "cycles": 12,
+        "load_factor": 1
+      },
+      "receipt": {
+        "schema": "axm.causal-event-receipt/v1",
+        "status": "APPLIED",
+        "event_id": "axm-park-ticket-gate-cycles",
+        "event_type": "use_cycle",
+        "causal_inputs": [
+          "cycles",
+          "load_factor"
+        ],
+        "before_digest": "b51ce2b2298c43e6",
+        "after_digest": "7a2c6a92dafc87e3",
+        "condition_delta": -0.24,
+        "cleanliness_delta": -0.12,
+        "time_only_no_decay": true,
+        "fallback_used": false
+      }
+    }
+  ],
+  "invariants": [
+    "elapsed-time-alone-does-not-change-condition",
+    "every-condition-change-names-a-causal-event",
+    "events-are-applied-exactly-once"
+  ],
+  "provenance": {
+    "reducer": "AXMChoiceFirstCore.applySimulationEvent",
+    "version": "1.0.0"
+  },
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

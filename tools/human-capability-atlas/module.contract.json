@@ -1,0 +1,18 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "human-capability-atlas",
+  "version": "0.11.0",
+  "provides": ["capability.source.detect/v1", "capability.record.normalize/module1-v0.11", "capability.card.build/v1", "capability.search.explain/v1", "capability.learning.plan/v1", "capability.production-chain.verify/v0.2"],
+  "consumes": ["provider:capability-declaration", "registry:tools-index", "contract:axm.capability-interface-contract/0.1.0-conflicted"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.module1-capability-record/v0.11", "axm.capability-producer-receipt/v0.2", "axm.capability-registry-diff/v1"],
+    "accepts": ["json capability declaration", "json registry", "jsonl registry", "manifest directory"]
+  },
+  "boundaries": {
+    "writes": ["explicit-cli-output-only"],
+    "refuses": ["source-rewrite", "silent-duplicate-merge", "unknown-to-known-promotion", "dependency-reference-as-provided-capability", "runtime-proof-from-declaration", "automatic-merge", "automatic-canon"]
+  },
+  "lifecycle": {"state_owner": "filesystem", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+}
+

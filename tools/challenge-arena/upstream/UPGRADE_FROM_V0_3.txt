@@ -1,0 +1,190 @@
+AXM CHALLENGE ARENA — v0.3.0 TO v0.4.0 UPGRADE
+==============================================
+
+ROOT RULE
+---------
+Do not overwrite v0.3 in place.
+
+1. Preserve the v0.3 source ZIP, wheel, checksums, and production workspace snapshot.
+2. Unpack v0.4 beside v0.3.
+3. Run v0.4 against a copied workspace first.
+4. Verify the copied workspace before mutation.
+5. Preserve the pre-upgrade copy for rollback.
+
+WHY THIS UPGRADE IS MATERIAL
+----------------------------
+v0.4 repairs a real v0.3 evidence defect. Candidate-similarity diagnostics called
+an undefined JSON reader. A broad exception converted that failure into empty scan
+evidence, which could still self-hash correctly because the hash proved only
+internal consistency—not agreement with sealed artifacts.
+
+v0.4 reads verified manifests and candidate bytes directly and recomputes
+candidate diagnostics and candidate-content safety evidence during integrity
+verification. Rehashing a false report no longer makes it valid.
+
+v0.4 also adds two operational foundations that did not exist in v0.3:
+
+- durable BUILD/REVIEW seat tasks for coordinating available AI or human workers;
+- standalone no-extraction verification for evidence ZIPs received on another machine.
+
+NEW OR CHANGED v0.4 CONTRACTS
+-----------------------------
+- axm.challenge-arena/0.4
+- axm.challenge-build-packet/0.4
+- axm.challenge-review-protocol/0.4
+- axm.challenge-review-content-safety/0.4
+- axm.challenge-review-packet/0.4
+- axm.challenge-review/0.4
+- axm.challenge-candidate-diagnostics/0.4
+- axm.challenge-candidate-diagnostics-blind/0.4
+- axm.challenge-blind-seed-reveal/0.4
+- axm.challenge-arena-capabilities/0.4
+- axm.challenge-arena-return/0.4
+- axm.challenge-bundle/0.4
+- axm.challenge-bundle-verification/0.4
+- axm.challenge-arena-checkpoint/0.4
+- axm.challenge-legacy-event-migration/0.4
+- axm.challenge-seat-task/0.4
+- axm.challenge-seat-task-plan/0.4
+- axm.challenge-seat-task-receipt/0.4
+- axm.challenge-seat-task-list/0.4
+- axm.challenge-seat-lease/0.4
+- axm.challenge-orchestration-report/0.4
+- axm.challenge-orchestration-public-report/0.4
+
+UNCHANGED CONTRACTS
+-------------------
+- axm.module-job/0.1
+- axm.challenge-input-receipt/0.2
+- axm.challenge-submission/0.2
+- axm.external-runner-job/0.2
+- axm.deterministic-receipt/0.2
+- axm.challenge-final-decision/0.2
+- axm.challenge-lineage-input-receipt/0.2
+- axm.challenge-review-assignment/0.3
+
+A package version does not force every stable leaf contract to change.
+
+REVIEW MIGRATION
+----------------
+New v0.4 reviewer packets include review_packet_hash. A new v0.4 review must echo:
+
+  rubric_hash
+  assignment_hash
+  review_packet_hash
+
+Each numeric peer score must carry the locked minimum number of evidence_refs.
+Allowed reference kinds are:
+
+  artifact
+  deterministic_check
+  manifest
+  observation
+
+When evidence is absent, use an abstention instead of manufacturing a score.
+Ranking tiers preserve justified ties. A ballot that compares only one candidate
+creates no first-choice, rank-point, or pairwise preference signal.
+
+A v0.3 review file is not automatically a valid v0.4 review file. Complete an
+already-running v0.3 round under its historical contract, or create an explicit
+v0.4 child/rerun. Do not silently change the wire contract mid-round.
+
+BLIND ORDER MIGRATION
+---------------------
+New v0.4 rounds create a blind-order seed commitment at lock. The seed remains
+private during review and is revealed after voting in:
+
+  reports/blind-seed-reveal.json
+
+Integrity verification reproduces the blind map from the committed seed and
+sealed submissions. Existing v0.3 rounds do not gain a retroactive commitment.
+Do not fabricate one.
+
+DIAGNOSTIC MIGRATION
+--------------------
+Do not treat a v0.3 candidate-diagnostics report as proof that artifact similarity
+was actually scanned. Preserve it as historical evidence. Start a new v0.4 round
+or controlled v0.4 verification path when current grounded diagnostics matter.
+
+SEAT RELAY MIGRATION
+--------------------
+New v0.4 packets may lock an orchestration policy. When enabled, Arena creates
+one immutable BUILD task per eligible submitting seat and one REVIEW task per
+eligible reviewer after assignments are locked.
+
+Leases are optional. When required:
+
+  tasks -> claim-task -> heartbeat-task -> complete/fail/reap/cancel
+
+A claim returns a plaintext bearer token once; generated tokens begin with
+lease_ so they are safe to pass as CLI arguments, while persistent state stores
+only the contextual hash. Do not publish or commit tokens. Missing, expired, failed,
+cancelled, or over-budget tasks remain operational evidence. They do not silently
+become candidate-score penalties. A locked minimum completion threshold may
+withhold the overall recommendation due to insufficient participation.
+
+Legacy v0.3 packets do not silently gain orchestration tasks.
+
+BRIDGE MIGRATION
+----------------
+v0.4 exports canonical reviewer-specific review-packet.json bytes and preserves
+the exact review_packet_hash through transport. Do not rewrite paths or any other
+packet field after hashing.
+
+Build and review folders may now include seat-task.json and a
+seat-receipt.template.json. A returned seat-receipt.json must bind to the exact
+participant, phase, and locked task; FileBridge rejects cross-task receipts.
+
+EVIDENCE BUNDLE MIGRATION
+-------------------------
+v0.4 evidence ZIPs include stronger manifest, tree, semantic-state, event-chain,
+JSONL projection, and originating-integrity bindings. Verify a received ZIP
+without extraction:
+
+  python -m axm_challenge_arena verify-bundle <bundle.zip>
+
+The command exits 0 only for a valid bundle and 1 for an invalid bundle. Internal
+validity is not external sender authenticity; compare the ZIP SHA-256 through a
+separately trusted channel when identity matters.
+
+CHECKPOINT AND LEGACY EVENT MIGRATION
+-------------------------------------
+v0.4 integrity verifies event-bound checkpoints semantically. Legacy JSONL-only
+event stores can be migrated into canonical event files through a resumable,
+exact marker. Recovery resumes recorded work rather than inventing replacement
+events. Preserve the original workspace snapshot until intake is accepted.
+
+WORKSPACE PROCEDURE
+-------------------
+1. Copy the v0.3 workspace.
+2. Install or run v0.4 beside v0.3.
+3. Run:
+
+   python -m axm_challenge_arena --root <copy> verify <challenge-id>
+
+4. Inspect warnings and errors.
+5. Run the source tests and contract audit.
+6. For unfinished v0.3 rounds, complete with v0.3 or start an explicit v0.4 child/rerun.
+7. For synthesized/finalized parents, create a v0.4 follow-up when stronger evidence is needed.
+8. Keep the untouched v0.3 snapshot until v0.4 intake is accepted.
+
+ROLLBACK
+--------
+Rollback means restoring the preserved v0.3 source and matching pre-v0.4
+workspace snapshot.
+
+Do not open a v0.4-mutated production workspace with v0.3 and assume equivalent
+interpretation. v0.4 can add task plans, receipts, reports, event payloads,
+reviewer hashes, evidence references, abstentions, checkpoints, and blind-seed
+reveal evidence unknown to v0.3.
+
+HONEST LIMITS
+-------------
+- v0.4 cannot retroactively prove that an old v0.3 empty diagnostic report represented a real scan.
+- Evidence references do not prove that a reviewer interpreted evidence correctly.
+- Commit–reveal makes ordering auditable but does not guarantee perfect anonymity.
+- Seat leases coordinate work; they are not a model host, distributed scheduler, or security sandbox.
+- Self-reported usage may be inaccurate.
+- Bundle internal consistency is not external sender authenticity.
+- Candidate execution remains outside the security boundary unless separately sandboxed.
+- The private current Asset Factory, Workshop, Game Builder, courier, and platform trees are not physically patched by this standalone package; local intake must connect the supplied seam to the exact current implementations.

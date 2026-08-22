@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/atlas-handoff-batch-0.2.0.schema.json",
+  "title": "AXM Atlas to Human Interface Intelligence Handoff Batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "handoff_id",
+    "handoff_version",
+    "contract_id",
+    "contract_version",
+    "producer",
+    "generated_at",
+    "records"
+  ],
+  "properties": {
+    "handoff_id": {"type": "string", "minLength": 1},
+    "handoff_version": {"const": "0.2.0"},
+    "contract_id": {"const": "axm.capability-interface-contract"},
+    "contract_version": {"const": "0.1.0"},
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module_id", "module_version", "execution_state"],
+      "properties": {
+        "module_id": {"type": "string", "minLength": 1},
+        "module_version": {"type": "string", "minLength": 1},
+        "execution_state": {"enum": ["RUN", "NOT_RUN", "UNVERIFIED"]}
+      }
+    },
+    "generated_at": {"type": "string", "minLength": 1},
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_id", "capability", "context"],
+        "properties": {
+          "item_id": {"type": "string", "minLength": 1},
+          "capability": {"type": "object"},
+          "context": {"type": "object"},
+          "expected": {"type": "object"},
+          "immutable_source": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "capability_id": {"type": "string"},
+              "capability_revision": {"type": "string"},
+              "source_location": {"type": "string"},
+              "source_hash": {"type": "string"}
+            }
+          },
+          "source_payload": {},
+          "notes": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

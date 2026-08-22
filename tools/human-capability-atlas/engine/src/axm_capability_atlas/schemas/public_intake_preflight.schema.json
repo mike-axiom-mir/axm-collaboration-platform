@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/public-intake-preflight.schema.json",
+  "title": "AXM Public Intake Preflight",
+  "type": "object",
+  "required": [
+    "preflight_version",
+    "operation",
+    "module_id",
+    "module_version",
+    "implementation_fingerprint",
+    "shared_contract_version",
+    "capability_record_export_format_version",
+    "repository_root_at_generation",
+    "output_root_at_generation",
+    "generated_at",
+    "status",
+    "allow_dirty_repository",
+    "repository_snapshot",
+    "artifact_bindings",
+    "counts",
+    "role_partition",
+    "discovery_bundle_hash",
+    "source_seal_hash",
+    "normalized_inventory_hash",
+    "normalized_inventory_semantic_hash",
+    "enrichment_catalog_hash",
+    "enrichment_source_seal_hash",
+    "blockers",
+    "warnings",
+    "merge_claim",
+    "preflight_semantic_hash",
+    "preflight_hash"
+  ],
+  "properties": {
+    "preflight_version": {
+      "const": "0.1.0"
+    },
+    "operation": {
+      "const": "axm_public_intake_preflight"
+    },
+    "module_id": {
+      "const": "axm.module.human_capability_atlas"
+    },
+    "module_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "implementation_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "shared_contract_version": {
+      "const": "0.1.0"
+    },
+    "capability_record_export_format_version": {
+      "const": "0.1.0"
+    },
+    "repository_root_at_generation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_root_at_generation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "READY",
+        "TEST_HOLD_REVIEW"
+      ]
+    },
+    "allow_dirty_repository": {
+      "type": "boolean"
+    },
+    "repository_snapshot": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://axm.local/schemas/repository-snapshot.schema.json",
+      "title": "AXM Repository Snapshot",
+      "type": "object",
+      "required": [
+        "snapshot_version",
+        "repository_root_at_generation",
+        "generated_at",
+        "git",
+        "snapshot_hash"
+      ],
+      "properties": {
+        "snapshot_version": {
+          "const": "0.1.0"
+        },
+        "repository_root_at_generation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generated_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "git": {
+          "type": "object",
+          "required": [
+            "state",
+            "commit",
+            "branch",
+            "dirty",
+            "status_entry_count",
+            "status_hash"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "NO_GIT_METADATA",
+                "GIT_SNAPSHOT",
+                "GIT_METADATA_PARTIAL"
+              ]
+            },
+            "commit": {
+              "type": "string"
+            },
+            "branch": {
+              "type": "string"
+            },
+            "dirty": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "status_entry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "status_hash": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "snapshot_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact_bindings": {
+      "type": "array",
+      "minItems": 16,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": [
+          "relative_path",
+          "artifact_type",
+          "bytes",
+          "sha256"
+        ],
+        "properties": {
+          "relative_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "artifact_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "counts": {
+      "type": "object"
+    },
+    "role_partition": {
+      "type": "object"
+    },
+    "discovery_bundle_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_seal_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "enrichment_catalog_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "enrichment_source_seal_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "merge_claim": {
+      "const": false
+    },
+    "preflight_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "preflight_semantic_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "normalized_inventory_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "normalized_inventory_semantic_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

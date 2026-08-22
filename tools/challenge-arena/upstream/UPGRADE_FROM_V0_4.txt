@@ -1,0 +1,53 @@
+AXM CHALLENGE ARENA — UPGRADE FROM v0.4 TO v0.5
+==================================================
+
+DO NOT OVERWRITE v0.4 FIRST
+---------------------------
+Preserve:
+- the v0.4 source/release ZIP and wheel;
+- a matching pre-upgrade workspace snapshot;
+- any bridge/courier state that belongs to that snapshot.
+
+WHY
+---
+v0.5 intentionally changes live behavior for *new v0.5 challenge packets*:
+opaque blind aliases, hidden reviewer-own aliases/live label sets, exact revision
+preconditions, task semantic cross-binding, and optional reviewer-independence
+coverage.
+
+Older evidence must not be silently reinterpreted as if those events occurred.
+
+COMPATIBILITY
+-------------
+The runtime explicitly preserves the v0.4 sequential blind-label algorithm for
+v0.4 packets. A v0.4 replay may therefore still show Candidate-01 style labels
+and reviewer-own-label information that a new v0.5 round would withhold.
+
+NEW PRODUCER EXPECTATIONS
+-------------------------
+1. Do not parse blind labels as sequential numbers.
+2. Treat blind labels as opaque identifiers.
+3. For explicit replacement, carry the active submission/review ID and send it
+   as the expected previous revision.
+4. Treat a corrupt bridge import receipt as a stop condition requiring repair,
+   not permission to re-import blindly.
+5. If using independence groups, declare them at participant registration and
+   decide the minimum group threshold before the challenge is locked.
+
+SAFE UPGRADE
+------------
+1. Unpack v0.5 beside v0.4.
+2. Run both test runners and contract verification.
+3. Copy, do not move, a representative workspace.
+4. Verify existing v0.4 rounds without rewriting them.
+5. Create a new disposable v0.5 round and exercise build + review + synthesis.
+6. Exercise FileBridge import twice to verify idempotency.
+7. Exercise a deliberate replacement and stale-revision rejection.
+8. Check the public observer while review is open; it should not expose the
+   complete blind-label set for a v0.5 round.
+9. Only then switch producer routing.
+
+ROLLBACK
+--------
+Restore both v0.4 code and its matching workspace snapshot. Do not delete v0.5
+evidence in place to make a mutated workspace appear old.

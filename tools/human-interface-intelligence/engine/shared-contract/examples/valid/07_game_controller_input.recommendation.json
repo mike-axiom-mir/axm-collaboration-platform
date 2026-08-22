@@ -1,0 +1,183 @@
+{
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "record_kind": "interface_recommendation",
+  "recommendation_id": "axm.hii.recommendation.4dbc9582ff443e61",
+  "capability_id": "axm.input.game_controller",
+  "generated_at": "2026-08-03T03:56:47Z",
+  "context": {
+    "user_skill_level": "beginner",
+    "user_goal": "Control a simulated character",
+    "task_type": "game_controller_input",
+    "device_types": [
+      "controller",
+      "desktop"
+    ],
+    "available_tools": [
+      "controller_driver"
+    ],
+    "accessibility_needs": [],
+    "privacy_mode": "local_preferred",
+    "offline_required": true,
+    "resource_budget": {
+      "compute": "very_low",
+      "time": "short",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "collaboration_mode": "human_only"
+  },
+  "recommended_interface": {
+    "interface_pattern_id": "controller_game_style",
+    "interface_name": "Controller / game-style interface",
+    "interface_family": "continuous_control",
+    "confidence": 0.978,
+    "recommendation_status": "recommended",
+    "why_this_interface": [
+      "Pattern explicitly supports task type 'game_controller_input'.",
+      "Input fit: controller.",
+      "Output fit: movement, simulation_state.",
+      "Pattern is suitable for beginners.",
+      "Pattern fits an available device.",
+      "Live feedback requirement is matched by live preview.",
+      "Pattern is suited to continuous interaction or observation.",
+      "A required supporting tool is available.",
+      "Interface overhead stays within the compute budget.",
+      "Required feature fit: deadzone, pause."
+    ],
+    "why_not_other_interfaces": [
+      "Guided form: Pattern offers preview, but not continuous live feedback.",
+      "File browser: Pattern offers preview, but not continuous live feedback.",
+      "Approval and confirmation interface: Pattern offers preview, but not continuous live feedback."
+    ],
+    "required_controls": [
+      "input_mapping",
+      "pause",
+      "deadzone",
+      "input_map",
+      "feedback"
+    ],
+    "optional_controls": [
+      "help",
+      "undo"
+    ],
+    "hidden_advanced_controls": [
+      "custom input curves"
+    ],
+    "progressive_disclosure_plan": [
+      "Start with the declared beginner-safe operation and necessary controls only.",
+      "Show a plain-language summary of hidden advanced controls.",
+      "Reveal optional controls when the user asks or the task requires them.",
+      "Require explicit user choice before entering advanced mode."
+    ],
+    "preview_and_confirmation_flow": [
+      "Generate a non-destructive preview or consequence summary.",
+      "Show applied result and proof/status after execution."
+    ],
+    "error_recovery_flow": [
+      "Validate inputs before execution.",
+      "Keep cancel available until the commit point.",
+      "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+      "Record failure details without claiming success."
+    ]
+  },
+  "beginner_layer": {
+    "enabled": true,
+    "operation_class": "simplified_control",
+    "allowed_operations": [
+      "Receive game controller input"
+    ],
+    "restricted_operations": [
+      "custom input curves"
+    ],
+    "default_values": {
+      "preview_before_apply": true,
+      "confirmation_required": false,
+      "retain_recovery_point": true,
+      "show_hidden_control_summary": true
+    },
+    "guided_steps": [
+      "State the intended goal in plain language.",
+      "Provide only the inputs required for the selected safe operation.",
+      "Review a preview or consequence summary before applying the operation.",
+      "Run the operation.",
+      "Show the result, proof/status, and the available recovery action.",
+      "Offer advanced mode as an explicit user choice; do not switch silently."
+    ],
+    "explanation_depth": "practical",
+    "estimated_capability_cost": {
+      "compute": "very_low",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "reasons_for_restrictions": []
+  },
+  "advanced_layer": {
+    "available": true,
+    "unlock_method": "manual_choice",
+    "additional_controls": [
+      "custom input curves"
+    ],
+    "additional_risks": [],
+    "required_knowledge": [
+      "review inputs",
+      "run safe example",
+      "inspect output"
+    ]
+  },
+  "cost_comparison": {
+    "selected_interface_cost": {
+      "attention": "medium",
+      "interaction": "low",
+      "minimum_skill": "basic",
+      "deterministic_score": 91.0,
+      "compute_overhead": "very_low",
+      "required_tool_any": [
+        "controller_driver"
+      ]
+    },
+    "alternative_interfaces": [
+      {
+        "interface_pattern_id": "guided_form",
+        "interface_name": "Guided form",
+        "score": 49.0,
+        "tradeoff": "Pattern offers preview, but not continuous live feedback."
+      },
+      {
+        "interface_pattern_id": "file_browser",
+        "interface_name": "File browser",
+        "score": 41.0,
+        "tradeoff": "Pattern offers preview, but not continuous live feedback."
+      },
+      {
+        "interface_pattern_id": "approval_confirmation",
+        "interface_name": "Approval and confirmation interface",
+        "score": 33.0,
+        "tradeoff": "Pattern offers preview, but not continuous live feedback."
+      }
+    ],
+    "unnecessary_costs_avoided": []
+  },
+  "evidence": {
+    "facts_used": [
+      "Declared task types: game_controller_input.",
+      "Declared input types: controller, buttons, axes.",
+      "Declared output types: movement, simulation_state.",
+      "Risk level: minimal.",
+      "Reversibility: fully_reversible.",
+      "Proof status: tested."
+    ],
+    "inferences_used": [],
+    "unknowns": [],
+    "conflicts": [],
+    "source_references": [
+      {
+        "source_type": "manifest",
+        "source_location": "fixtures/axm.input.game_controller.source.json",
+        "source_hash": "sha256:fixture-axm.input.game_controller",
+        "last_verified_at": "2026-08-03T03:56:47Z",
+        "confidence": 0.95
+      }
+    ]
+  }
+}

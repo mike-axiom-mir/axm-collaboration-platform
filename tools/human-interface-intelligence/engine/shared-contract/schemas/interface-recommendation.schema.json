@@ -1,0 +1,435 @@
+{
+  "$id": "https://axm.local/schemas/interface-recommendation-0.1.0.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AXM Human Interface Recommendation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "contract_version",
+    "record_kind",
+    "recommendation_id",
+    "capability_id",
+    "generated_at",
+    "context",
+    "recommended_interface",
+    "beginner_layer",
+    "advanced_layer",
+    "cost_comparison",
+    "evidence"
+  ],
+  "properties": {
+    "contract_id": {
+      "const": "axm.capability-interface-contract"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "interface_recommendation"
+    },
+    "recommendation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "user_skill_level",
+        "user_goal",
+        "task_type",
+        "collaboration_mode",
+        "device_types",
+        "available_tools",
+        "accessibility_needs",
+        "privacy_mode",
+        "offline_required",
+        "resource_budget"
+      ],
+      "properties": {
+        "user_skill_level": {
+          "enum": [
+            "beginner",
+            "basic",
+            "intermediate",
+            "advanced",
+            "specialist",
+            "unknown"
+          ]
+        },
+        "user_goal": {
+          "type": "string"
+        },
+        "task_type": {
+          "type": "string"
+        },
+        "device_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "available_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessibility_needs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "privacy_mode": {
+          "type": "string"
+        },
+        "offline_required": {
+          "type": "boolean"
+        },
+        "resource_budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "compute",
+            "time",
+            "attention",
+            "complexity"
+          ],
+          "properties": {
+            "compute": {
+              "type": "string"
+            },
+            "time": {
+              "type": "string"
+            },
+            "attention": {
+              "type": "string"
+            },
+            "complexity": {
+              "type": "string"
+            }
+          }
+        },
+        "collaboration_mode": {
+          "enum": [
+            "human_only",
+            "ai_only",
+            "human_ai_shared",
+            "supervised_automation"
+          ]
+        }
+      }
+    },
+    "recommended_interface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interface_pattern_id",
+        "interface_name",
+        "interface_family",
+        "confidence",
+        "recommendation_status",
+        "why_this_interface",
+        "why_not_other_interfaces",
+        "required_controls",
+        "optional_controls",
+        "hidden_advanced_controls",
+        "progressive_disclosure_plan",
+        "preview_and_confirmation_flow",
+        "error_recovery_flow"
+      ],
+      "properties": {
+        "interface_pattern_id": {
+          "type": "string"
+        },
+        "interface_name": {
+          "type": "string"
+        },
+        "interface_family": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "recommendation_status": {
+          "enum": [
+            "recommended",
+            "conditional",
+            "insufficient_information",
+            "no_safe_match"
+          ]
+        },
+        "why_this_interface": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "why_not_other_interfaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_controls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "optional_controls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hidden_advanced_controls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "progressive_disclosure_plan": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preview_and_confirmation_flow": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "error_recovery_flow": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "beginner_layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "operation_class",
+        "allowed_operations",
+        "restricted_operations",
+        "default_values",
+        "guided_steps",
+        "explanation_depth",
+        "estimated_capability_cost",
+        "reasons_for_restrictions"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "operation_class": {
+          "enum": [
+            "simplified_control",
+            "restricted_safe_operation",
+            "guided_advanced_operation",
+            "full_expert_control"
+          ]
+        },
+        "allowed_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "restricted_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "default_values": {
+          "type": "object"
+        },
+        "guided_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "explanation_depth": {
+          "enum": [
+            "quick",
+            "practical",
+            "deep"
+          ]
+        },
+        "estimated_capability_cost": {
+          "type": "object"
+        },
+        "reasons_for_restrictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "advanced_layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "available",
+        "unlock_method",
+        "additional_controls",
+        "additional_risks",
+        "required_knowledge"
+      ],
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "unlock_method": {
+          "enum": [
+            "manual_choice",
+            "demonstrated_skill",
+            "contextual",
+            "always_visible",
+            "not_available"
+          ]
+        },
+        "additional_controls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "additional_risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_knowledge": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cost_comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selected_interface_cost",
+        "alternative_interfaces",
+        "unnecessary_costs_avoided"
+      ],
+      "properties": {
+        "selected_interface_cost": {
+          "type": "object"
+        },
+        "alternative_interfaces": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "unnecessary_costs_avoided": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "facts_used",
+        "inferences_used",
+        "unknowns",
+        "conflicts",
+        "source_references"
+      ],
+      "properties": {
+        "facts_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inferences_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source_type",
+              "source_location",
+              "source_hash",
+              "last_verified_at",
+              "confidence"
+            ],
+            "properties": {
+              "source_type": {
+                "enum": [
+                  "manifest",
+                  "registry",
+                  "code",
+                  "test",
+                  "human_note",
+                  "generated"
+                ]
+              },
+              "source_location": {
+                "type": "string"
+              },
+              "source_hash": {
+                "type": "string"
+              },
+              "last_verified_at": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

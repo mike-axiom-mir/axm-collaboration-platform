@@ -1,0 +1,78 @@
+{
+  "$id": "https://axm.local/schemas/gei/derived/graph-snapshot-v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "built_at": {
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "edges": {
+      "items": {
+        "required": [
+          "id",
+          "source",
+          "target",
+          "relationship",
+          "truth_state",
+          "evidence",
+          "source_record",
+          "attributes"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "graph_hash": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "honesty_boundary": {
+      "type": "object"
+    },
+    "nodes": {
+      "items": {
+        "required": [
+          "id",
+          "type",
+          "label",
+          "truth_state",
+          "freshness_status",
+          "local_or_external",
+          "source_record",
+          "attributes"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "package_version": {
+      "const": "0.3.0"
+    },
+    "schema": {
+      "const": "axm.gei.graph-snapshot/v1"
+    },
+    "source_state_hash": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "statistics": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema",
+    "package_version",
+    "contract_version",
+    "built_at",
+    "source_state_hash",
+    "honesty_boundary",
+    "nodes",
+    "edges",
+    "statistics",
+    "graph_hash"
+  ],
+  "type": "object"
+}

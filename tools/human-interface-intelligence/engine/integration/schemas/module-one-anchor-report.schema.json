@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/module-one-anchor-report-0.4.0.schema.json",
+  "title": "AXM Module One Stable Anchor Compatibility Report",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "report_version",
+    "report_id",
+    "generated_at",
+    "overall_status",
+    "strict_merge_status",
+    "recommendation_execution_state",
+    "findings"
+  ],
+  "properties": {
+    "report_version": {
+      "const": "0.4.0"
+    },
+    "report_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "overall_status": {
+      "enum": [
+        "PASS",
+        "TEST-HOLD-REVIEW",
+        "CONFLICTED",
+        "FAIL"
+      ]
+    },
+    "strict_merge_status": {
+      "enum": [
+        "PASS",
+        "BLOCKED"
+      ]
+    },
+    "safe_record_analysis_status": {
+      "enum": [
+        "PASS",
+        "CONDITIONAL",
+        "BLOCKED",
+        "NOT_RUN"
+      ]
+    },
+    "recommendation_execution_state": {
+      "enum": [
+        "RUN",
+        "NOT_RUN"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "severity",
+          "summary"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "WARN",
+              "PARTIAL",
+              "CONFLICTED",
+              "FAIL"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "info",
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

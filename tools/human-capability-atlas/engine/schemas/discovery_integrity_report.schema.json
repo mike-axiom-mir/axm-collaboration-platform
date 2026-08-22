@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/discovery-integrity-report.schema.json",
+  "title": "AXM Public Discovery Integrity Report",
+  "type": "object",
+  "required": [
+    "report_version",
+    "operation",
+    "valid",
+    "discovery_bundle_hash",
+    "tools_index",
+    "exact_checks",
+    "role_counts",
+    "proof_ceiling",
+    "source_files",
+    "issues",
+    "warnings",
+    "summary",
+    "integrity_notes"
+  ],
+  "properties": {
+    "report_version": {
+      "const": "0.1.0"
+    },
+    "operation": {
+      "const": "axm_public_discovery_integrity"
+    },
+    "valid": {
+      "type": "boolean"
+    },
+    "discovery_bundle_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "tools_index": {
+      "type": "object"
+    },
+    "exact_checks": {
+      "type": "object"
+    },
+    "role_counts": {
+      "type": "object"
+    },
+    "proof_ceiling": {
+      "type": "object"
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "missing_proof_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "object"
+    },
+    "integrity_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missing_module_source_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missing_module_test_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missing_required_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "module_test_hash_mismatches": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "upstream_tools_index_scope": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

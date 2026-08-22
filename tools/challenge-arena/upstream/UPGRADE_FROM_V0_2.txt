@@ -1,0 +1,91 @@
+AXM CHALLENGE ARENA — v0.2.0 TO v0.3.0 UPGRADE
+===============================================
+
+ROLLBACK FIRST
+--------------
+- Preserve the v0.2 source folder and AXM_CHALLENGE_ARENA_v0_2_0.zip unchanged.
+- Record or retain the v0.2 SHA-256 sidecar.
+- Unpack v0.3 beside v0.2; do not overwrite in place.
+- Test against a copied workspace before using a production workspace.
+
+WHAT REMAINS COMPATIBLE
+-----------------------
+- The neutral producer seam remains axm.module-job/0.1.
+- Submission, build packet, input receipt, deterministic receipt, external job,
+  final decision, bundle manifest, and lineage receipt contracts remain /0.2.
+- review_assignment_mode defaults to all, preserving v0.2 review behavior.
+- Existing v0.1/v0.2 intake remains supported where code explicitly declares it.
+- Human authority, no automatic merge, no self-vote, evidence preservation,
+  FileBridge, follow-up lineage, and reproducible bundles remain intact.
+
+NEW v0.3 OUTPUTS
+----------------
+- New challenge packets: axm.challenge-arena/0.3
+- New review assignments: axm.challenge-review-assignment/0.3
+- New review protocol: axm.challenge-review-protocol/0.3
+- New review safety evidence: axm.challenge-review-content-safety/0.3
+- New review packets: axm.challenge-review-packet/0.3
+- New reviews: axm.challenge-review/0.3
+- New capabilities: axm.challenge-arena-capabilities/0.3
+- New integration returns: axm.challenge-arena-return/0.3
+
+MATERIAL BEHAVIOR CHANGES
+-------------------------
+1. JSON intake is strict. Duplicate keys and NaN/Infinity now fail.
+2. IDs and paths are checked for cross-platform ambiguity. Files tolerated by a
+   permissive host can now fail when names collide by case or Unicode form.
+3. v0.3 reviews must echo assignment_hash from the review packet.
+4. Review packets contain only the candidates assigned to that reviewer.
+5. Candidate artifacts are explicitly untrusted evidence, not instructions.
+6. Content-safety signals are advisory and non-punitive.
+7. Command output is retained through bounded pipes rather than unbounded
+   temporary files; observed output can exceed retained output and triggers a
+   controlled failure at the configured limit.
+8. More evidence files are crash-consistent with the event that references them.
+
+SAFE UPGRADE PROCEDURE
+----------------------
+1. Unpack v0.3 beside v0.2.
+2. Run:
+     python -m unittest discover -s tests -v
+     python -m pytest -q
+     python tools/sync_contract_resources.py --check
+     python tools/audit_review_assignment.py --cases 20000 --seed 20260815
+3. Run the demo and integrity check in a fresh v0.3 workspace.
+4. Copy one non-production v0.2 workspace snapshot.
+5. Open the copy with v0.3 and run verify before any mutation.
+6. Exercise one all-to-all pilot first.
+7. Update reviewer adapters/templates to echo assignment_hash.
+8. Pilot balanced review only after all-to-all works.
+9. Keep the original v0.2 workspace snapshot for rollback.
+
+REVIEW ADAPTER CHANGE
+---------------------
+A v0.3 reviewer should read:
+  assignment_hash
+  candidate_labels
+  review_protocol
+  review_protocol_hash
+  content_safety_signals
+
+The returned review must include:
+  "schema_version": "axm.challenge-review/0.3"
+  "rubric_hash": "<from packet>"
+  "assignment_hash": "<from packet>"
+
+It must evaluate and rank only candidate_labels contained in that packet.
+
+ROLLBACK LIMIT
+--------------
+Do not open a v0.3-mutated production workspace with v0.2 and assume identical
+interpretation. v0.3 can add state, events, sidecars, and stricter evidence that
+v0.2 does not understand. Roll back by restoring the preserved pre-upgrade
+workspace snapshot with the v0.2 software, not by mixing versions in one live
+workspace.
+
+KNOWN NON-MIGRATIONS
+--------------------
+- No private AXM module source tree is silently patched.
+- No vendor credentials are migrated or created.
+- No candidate result is imported or approved automatically.
+- No all-to-all round is silently converted to balanced review.

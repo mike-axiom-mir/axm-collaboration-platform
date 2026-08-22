@@ -1,0 +1,60 @@
+{
+  "$id": "https://axm.local/schemas/gei/signal-outcome/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "evidence_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "linked_artifact_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "measured_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$",
+      "type": "string"
+    },
+    "outcome_id": {
+      "pattern": "^axm:signal-outcome:[a-f0-9]{24}$",
+      "type": "string"
+    },
+    "outcome_state": {
+      "enum": [
+        "HELPED",
+        "NO_EFFECT",
+        "HARMED",
+        "UNKNOWN"
+      ]
+    },
+    "reason": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema": {
+      "const": "axm.gei.signal-outcome/v1"
+    },
+    "signal_id": {
+      "pattern": "^axm:signal:[a-f0-9]{24}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema",
+    "outcome_id",
+    "signal_id",
+    "linked_artifact_ids",
+    "outcome_state",
+    "reason",
+    "evidence_refs",
+    "measured_at"
+  ],
+  "title": "AXM Signal Yield Outcome",
+  "type": "object"
+}

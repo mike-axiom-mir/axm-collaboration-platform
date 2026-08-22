@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-input-receipt/0.2",
+  "title": "AXM Challenge-Owned Input Receipt v0.2",
+  "description": "Hash-bound evidence that a declared draft input was copied into the challenge before lock. It proves byte identity and binding, not semantic correctness or output approval.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "input_id",
+    "artifact_root",
+    "artifact_root_scope",
+    "artifact_files",
+    "artifact_set_hash",
+    "sealed_at",
+    "authority",
+    "receipt_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-input-receipt/0.2"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "input_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "artifact_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_root_scope": {
+      "const": "relative_to_challenge_directory"
+    },
+    "artifact_files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "artifact_set_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sealed_at": {
+      "type": "string"
+    },
+    "authority": {
+      "const": "locked-source-evidence-not-output-approval"
+    },
+    "receipt_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": true
+}

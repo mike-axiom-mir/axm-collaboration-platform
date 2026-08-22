@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/enrichment-report.schema.json",
+  "title": "AXM Human Capability Atlas Enrichment Report",
+  "type": "object",
+  "required": [
+    "report_version",
+    "engine",
+    "catalog_hash",
+    "source_seal_hash",
+    "global_truth",
+    "catalog_summary",
+    "summary",
+    "records",
+    "integrity_notes"
+  ],
+  "properties": {
+    "report_version": {
+      "const": "0.1.0"
+    },
+    "engine": {
+      "const": "axm-public-module-contract-enrichment-v2"
+    },
+    "catalog_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_seal_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "catalog_summary": {
+      "type": "object"
+    },
+    "pre_verification": {
+      "type": "object"
+    },
+    "post_verification": {
+      "type": "object"
+    },
+    "summary": {
+      "type": "object"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "integrity_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "global_truth": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

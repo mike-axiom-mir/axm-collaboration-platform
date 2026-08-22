@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/paired-gate-report-0.3.0.schema.json",
+  "title": "AXM Anchor-Aware Paired Gate Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "paired_gate_version",
+    "paired_gate_id",
+    "generated_at",
+    "overall_status",
+    "recommendation_execution_state",
+    "reason",
+    "anchor_report",
+    "cross_module_report"
+  ],
+  "properties": {
+    "paired_gate_version": {"const": "0.3.0"},
+    "paired_gate_id": {"type": "string", "minLength": 1},
+    "generated_at": {"type": "string", "minLength": 1},
+    "overall_status": {"enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"]},
+    "recommendation_execution_state": {"enum": ["RUN", "NOT_RUN"]},
+    "reason": {"type": "string", "minLength": 1},
+    "anchor_report": {"type": "object"},
+    "cross_module_report": {"type": ["object", "null"]}
+  }
+}

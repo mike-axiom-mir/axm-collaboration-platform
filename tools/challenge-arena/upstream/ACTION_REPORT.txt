@@ -1,0 +1,115 @@
+AXM CHALLENGE ARENA v0.6.0 — ACTION REPORT
+============================================
+Date: 2026-08-16
+Rollback root: v0.5 remains unchanged and should be retained with its matching release archive.
+
+WHY THIS ROUND WAS WORTH DOING
+------------------------------
+The v0.6 failure-first audit found two material classes of defect in v0.5:
+
+1. Evidence-bundle portability false negative.
+   The standalone verifier parsed canonical event files in sorted filename order,
+   but later compared expected event filenames against the ZIP archive's original
+   member order. The same valid evidence bytes could therefore verify or fail only
+   because a ZIP writer stored members in a different order.
+
+2. Observer confidentiality was route-local rather than observer-wide.
+   The main challenge view protected blind identities, but /api/progress could
+   expose real submitter/reviewer IDs; detailed integrity or lineage material
+   could also carry identity-bearing forensic data; and an HTTP exception could
+   echo raw internal exception text.
+
+These are exactly the kinds of defects a local interchange module should repair:
+one concerns transport representation being mistaken for evidence semantics; the
+other concerns privacy holding on the normal screen but leaking through side
+routes or failure paths.
+
+WHAT CHANGED
+------------
+- Canonical event verification is independent of ZIP member ordering.
+- A deterministic bundle-portability audit tool can repack identical evidence in
+  randomized member orders and verify every repack.
+- /api/progress now returns aggregate/count-only public progress.
+- /api/integrity now returns a public-safe integrity summary; forensic errors stay
+  available through the local Python/CLI interface.
+- /api/lineage now exposes public topology/counts without copied participant IDs,
+  operator IDs, selected blind labels, or detailed lineage input paths.
+- Observer HTTP failures return a generic public-safe error instead of raw
+  exception text.
+- Observer responses add Cross-Origin-Resource-Policy, Cross-Origin-Opener-Policy,
+  and X-Permitted-Cross-Domain-Policies hardening.
+- v0.5 challenge wire semantics are preserved. v0.6 does not fabricate a new
+  challenge contract simply for release branding.
+- v0.5 remains a separate rollback release; it was not overwritten.
+
+FINAL SOURCE VERIFICATION
+-------------------------
+- unittest: 164 tests passed.
+- pytest: 164 tests passed; 10 pytest subtests also passed.
+- Schema source/package sync: 30 byte-identical schemas, PASS.
+- Runtime contract audit: 30 Draft 2020-12 meta-schema checks + 30 runtime-object
+  validations, PASS.
+- Balanced review assignment: 20,000 cases against an independent Edmonds-Karp
+  max-flow oracle, PASS.
+- Evidence-bundle portability: 100 randomized ZIP member-order repacks, PASS.
+- Deterministic validator kinds: 28.
+- Candidate execution default: disabled.
+
+V0.6 COVERAGE NOTE
+------------------
+A new branch-aware coverage seal was attempted, but the instrumentation wrapper
+failed to complete reliably in this environment. The normal unittest and pytest
+suites completed cleanly and are the release gate reported above. The v0.5
+coverage percentages are historical v0.5 measurements and are deliberately not
+relabelled as v0.6 coverage.
+
+SOURCE DEMO
+-----------
+- state: SYNTHESIZED
+- recommendation: READY_FOR_HUMAN_DECISION
+- underlying provisional participant: mir-ai
+- human decision: absent by design
+- canonical events: 16
+- integrity: PASS
+- evidence bundle entries: 60
+- standalone bundle verification: PASS
+
+INSTALLABLE WHEEL
+-----------------
+- version: 0.6.0
+- bytes: 200853
+- entries: 71
+- schemas: 30
+- runtime dependencies: none
+- two independent wheel builds: byte-for-byte identical
+- SHA-256: 0c747cba21e06fc16de9ac4dbff15db20eddd405ff2c80d6beb51628ceb1796d
+
+CLEAN RECIPIENT RECONSTRUCTION
+------------------------------
+A fresh virtual environment outside the source tree installed only the sealed
+wheel using --no-index --no-deps and then successfully:
+- imported version 0.6.0 from site-packages;
+- loaded all 30 schemas and 28 validators;
+- confirmed candidate execution remains disabled;
+- completed a fresh tournament to SYNTHESIZED;
+- produced READY_FOR_HUMAN_DECISION with no human decision inserted;
+- verified a 16-event evidence chain;
+- exported two byte-identical evidence bundles;
+- verified the evidence bundle standalone;
+- served all 10 observer/static routes with HTTP 200;
+- passed the complete observer security-header check;
+- kept real participant names out of the public progress/integrity/lineage routes.
+
+AUTHORITY BOUNDARY
+------------------
+No AI vote, deterministic score, task receipt, review majority, provisional
+winner, or proposed merge can become AXM canon automatically. Final authority
+remains an explicit human ACCEPT / MERGE / BRANCH / RERUN / REJECT / HOLD.
+
+INTEGRATION BOUNDARY
+--------------------
+The private current Asset Factory, Workshop, Game Builder, courier, and broader
+AXM source trees were not present in this environment. They were not falsely
+claimed as patched. v0.6 ships the neutral schemas, adapters, FileBridge/task
+relay, deterministic evidence layer, examples, and intake guidance for deliberate
+local integration.

@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-review/0.4",
+  "title": "AXM Evidence-Grounded Blind Peer Review v0.4",
+  "description": "Reviewer-specific, exact-packet-bound review. Runtime validation binds labels, criteria, artifacts, checks, and policy.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "rubric_hash",
+    "assignment_hash",
+    "review_packet_hash",
+    "evaluations",
+    "ranking_tiers"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-review/0.4"
+    },
+    "intake_schema_version": {
+      "type": "string"
+    },
+    "reviewer_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "rubric_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "assignment_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_packet_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_packet_acknowledged": {
+      "type": "boolean"
+    },
+    "evaluations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "scores",
+          "abstentions",
+          "evidence_refs"
+        ],
+        "properties": {
+          "scores": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "abstentions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "reason",
+                "missing_capability"
+              ],
+              "properties": {
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "missing_capability": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "evidence_refs": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "artifact",
+                      "deterministic_check",
+                      "manifest",
+                      "observation"
+                    ]
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "locator": {
+                    "type": "string"
+                  },
+                  "check_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "field": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "note": {
+                    "type": "string"
+                  }
+                },
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "kind": {
+                          "const": "artifact"
+                        }
+                      },
+                      "required": [
+                        "kind"
+                      ]
+                    },
+                    "then": {
+                      "required": [
+                        "path"
+                      ]
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "kind": {
+                          "const": "deterministic_check"
+                        }
+                      },
+                      "required": [
+                        "kind"
+                      ]
+                    },
+                    "then": {
+                      "required": [
+                        "check_id"
+                      ]
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "kind": {
+                          "const": "manifest"
+                        }
+                      },
+                      "required": [
+                        "kind"
+                      ]
+                    },
+                    "then": {
+                      "required": [
+                        "field"
+                      ]
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "kind": {
+                          "const": "observation"
+                        }
+                      },
+                      "required": [
+                        "kind"
+                      ]
+                    },
+                    "then": {
+                      "required": [
+                        "note"
+                      ]
+                    }
+                  }
+                ],
+                "additionalProperties": true
+              }
+            }
+          },
+          "strengths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "weaknesses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "risks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "merge_worthy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "ranking_tiers": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "ranking": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "overall_reason": {
+      "type": "string"
+    },
+    "submitted_at": {
+      "type": "string"
+    },
+    "review_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "review_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "type": "string"
+    },
+    "supersedes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "superseded_by": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

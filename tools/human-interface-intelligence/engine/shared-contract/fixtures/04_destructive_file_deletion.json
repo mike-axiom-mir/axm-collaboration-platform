@@ -1,0 +1,210 @@
+{
+  "fixture_id": "04_destructive_file_deletion",
+  "contract_version": "0.1.0",
+  "source_capability_declaration": {
+    "capability_id": "axm.file.delete",
+    "declared_revision": "1.0.0",
+    "declared_task_types": [
+      "destructive_file_deletion"
+    ],
+    "declared_inputs": [
+      "file",
+      "folder"
+    ],
+    "declared_outputs": [
+      "status",
+      "audit_record"
+    ],
+    "note": "Minimal source declaration retained separately from explanatory fields."
+  },
+  "shared_capability_record": {
+    "contract_id": "axm.capability-interface-contract",
+    "contract_version": "0.1.0",
+    "record_kind": "capability_record",
+    "capability_id": "axm.file.delete",
+    "capability_revision": "1.0.0",
+    "source_reference": {
+      "source_type": "manifest",
+      "source_location": "fixtures/axm.file.delete.source.json",
+      "source_hash": "sha256:fixture-axm.file.delete",
+      "last_verified_at": "2026-08-03T03:56:47Z",
+      "confidence": 0.95
+    },
+    "identity": {
+      "machine_name": "axm_file_delete",
+      "human_name": "Delete files",
+      "category": [
+        "destructive_file_deletion"
+      ],
+      "tags": [
+        "destructive_file_deletion",
+        "fixture"
+      ]
+    },
+    "purpose": {
+      "plain_explanation": "Performs delete files.",
+      "why_it_matters": "Exposes a declared capability through a suitable human workflow.",
+      "example_uses": [
+        "Delete files"
+      ]
+    },
+    "task_profile": {
+      "supported_task_types": [
+        "destructive_file_deletion"
+      ],
+      "typical_goals": [
+        "Delete files"
+      ],
+      "required_human_actions": [
+        "provide intent",
+        "review result"
+      ],
+      "required_machine_actions": [
+        "validate inputs",
+        "perform declared operation"
+      ],
+      "collaboration_modes": [
+        "human_ai_shared",
+        "supervised_automation"
+      ]
+    },
+    "input_profile": {
+      "input_types": [
+        "file",
+        "folder"
+      ],
+      "required_inputs": [
+        "file",
+        "folder"
+      ],
+      "optional_inputs": [],
+      "input_constraints": []
+    },
+    "output_profile": {
+      "output_types": [
+        "status",
+        "audit_record"
+      ],
+      "expected_outputs": [
+        "status",
+        "audit_record"
+      ],
+      "output_constraints": [],
+      "preview_available": "KNOWN"
+    },
+    "cost_profile": {
+      "compute_cost": "low",
+      "time_cost": "short",
+      "attention_cost": "low",
+      "skill_cost": "beginner",
+      "setup_cost": "low",
+      "error_recovery_cost": "high"
+    },
+    "risk_profile": {
+      "risk_level": "high",
+      "reversibility": "irreversible",
+      "privacy_sensitivity": "low",
+      "failure_modes": [
+        "unintended data loss"
+      ],
+      "human_confirmation_required": true,
+      "safe_preview_recommended": true
+    },
+    "maturity_profile": {
+      "availability": "available",
+      "maturity": "tested",
+      "proof_status": "tested",
+      "known_limitations": []
+    },
+    "learning_profile": {
+      "minimum_skill_level": "beginner",
+      "prerequisite_capability_ids": [],
+      "recommended_learning_steps": [
+        "review inputs",
+        "run safe example",
+        "inspect output"
+      ],
+      "beginner_safe_operations": [
+        "move one file to recoverable trash"
+      ],
+      "advanced_operations": [
+        "permanent recursive deletion"
+      ],
+      "common_mistakes": []
+    },
+    "interaction_profile": {
+      "interaction_complexity": "low",
+      "interaction_frequency": "one_shot",
+      "precision_requirement": "exact",
+      "feedback_requirement": "preview",
+      "preferred_input_methods": [
+        "file",
+        "folder"
+      ],
+      "preferred_output_methods": [
+        "status",
+        "audit_record"
+      ],
+      "accessibility_considerations": []
+    },
+    "interface_requirements": {
+      "required_interface_features": [
+        "target_summary",
+        "explicit_confirmation",
+        "audit_log"
+      ],
+      "optional_interface_features": [
+        "help",
+        "undo"
+      ],
+      "unsafe_interface_patterns": [],
+      "beginner_layer_constraints": [],
+      "advanced_layer_requirements": []
+    },
+    "relationships": {
+      "dependency_capability_ids": [],
+      "related_capability_ids": [],
+      "alternative_capability_ids": [],
+      "commonly_combined_capability_ids": []
+    },
+    "evidence_annotations": []
+  },
+  "recommendation_context": {
+    "user_skill_level": "beginner",
+    "user_goal": "Remove selected obsolete files",
+    "task_type": "destructive_file_deletion",
+    "device_types": [
+      "desktop"
+    ],
+    "available_tools": [
+      "trash",
+      "audit_log"
+    ],
+    "accessibility_needs": [],
+    "privacy_mode": "local_preferred",
+    "offline_required": true,
+    "resource_budget": {
+      "compute": "low",
+      "time": "short",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "collaboration_mode": "supervised_automation"
+  },
+  "expected": {
+    "interface_pattern_id": "approval_confirmation",
+    "recommendation_status": "conditional",
+    "beginner_allowed_contains": [
+      "move one file to recoverable trash"
+    ],
+    "beginner_restricted_contains": [
+      "permanent recursive deletion"
+    ],
+    "expected_unknowns": [],
+    "reason_fragments": [
+      "exact review",
+      "supervised automation"
+    ],
+    "validation_result": "valid"
+  }
+}

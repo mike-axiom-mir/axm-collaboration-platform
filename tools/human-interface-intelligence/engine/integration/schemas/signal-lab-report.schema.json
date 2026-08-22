@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-signal-lab-report-0.2.0.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "signal_lab_version",
+    "signal_lab_id",
+    "mode",
+    "authoritative_audit",
+    "quarantine_signal_packet",
+    "shadow_signal_packet",
+    "signal_ledger_preview",
+    "robustness_reports",
+    "pattern_coverage",
+    "governance"
+  ],
+  "properties": {
+    "signal_lab_version": {
+      "const": "0.2.0"
+    },
+    "signal_lab_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "const": "shadow_advisory_only"
+    },
+    "authoritative_audit": {
+      "type": "object"
+    },
+    "quarantine_signal_packet": {
+      "type": "object"
+    },
+    "shadow_signal_packet": {
+      "type": "object"
+    },
+    "signal_ledger_preview": {
+      "type": "object"
+    },
+    "robustness_reports": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "pattern_coverage": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "governance": {
+      "type": "object"
+    }
+  }
+}

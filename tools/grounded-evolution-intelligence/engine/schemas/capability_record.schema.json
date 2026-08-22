@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/v0.1.0/capability_record.schema.json",
+  "title": "Capability Record",
+  "type": "object",
+  "properties": {
+    "capability_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plain_language_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider_modules": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "consumer_modules": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "declared_status": {
+      "type": "string",
+      "enum": [
+        "OBSERVED",
+        "DECLARED",
+        "TESTED",
+        "REPRODUCED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "CONFLICTED",
+        "OBSOLETE",
+        "UNKNOWN"
+      ]
+    },
+    "proof_status": {
+      "type": "string",
+      "enum": [
+        "OBSERVED",
+        "DECLARED",
+        "TESTED",
+        "REPRODUCED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "CONFLICTED",
+        "OBSOLETE",
+        "UNKNOWN"
+      ]
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "interfaces": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "known_failure_modes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "costs": {
+      "type": "object",
+      "properties": {
+        "skill": {
+          "type": "string"
+        },
+        "attention": {
+          "type": "string"
+        },
+        "compute": {
+          "type": "string"
+        },
+        "complexity": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "skill",
+        "attention",
+        "compute",
+        "complexity"
+      ],
+      "additionalProperties": false
+    },
+    "improvement_needs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "source_capability_card": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "source_module_id": {
+          "type": "string",
+          "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+        },
+        "card_id": {
+          "type": "string",
+          "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+        },
+        "card_version": {
+          "type": "string"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "source_module_id",
+        "card_id",
+        "card_version",
+        "evidence_refs"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "capability_id",
+    "contract_version",
+    "name",
+    "plain_language_summary",
+    "provider_modules",
+    "consumer_modules",
+    "declared_status",
+    "proof_status",
+    "inputs",
+    "outputs",
+    "constraints",
+    "interfaces",
+    "evidence",
+    "known_failure_modes",
+    "costs",
+    "improvement_needs",
+    "source_capability_card"
+  ],
+  "additionalProperties": false
+}

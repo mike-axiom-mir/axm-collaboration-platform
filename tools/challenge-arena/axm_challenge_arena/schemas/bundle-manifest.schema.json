@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-bundle/0.4",
+  "title": "AXM Reproducible Challenge Evidence Bundle Manifest v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "arena_version",
+    "challenge_id",
+    "challenge_state",
+    "packet_hash",
+    "rubric_hash",
+    "event_head",
+    "event_sequence",
+    "integrity_valid",
+    "files",
+    "bundle_manifest_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-bundle/0.4"
+    },
+    "arena_version": {
+      "type": "string"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "challenge_state": {
+      "type": "string"
+    },
+    "snapshot_updated_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "packet_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rubric_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "event_head": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "event_sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "integrity_valid": {
+      "type": "boolean"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "generated_metadata_policy": {
+      "type": "string"
+    },
+    "bundle_manifest_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": true
+}

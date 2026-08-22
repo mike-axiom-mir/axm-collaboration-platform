@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "axm-human-interface-intelligence"
+version = "0.6.0"
+description = "Deterministic, explainable capability-to-interface recommendation engine for AXM."
+requires-python = ">=3.10"
+dependencies = ["jsonschema>=4.18", "referencing>=0.30"]
+
+[project.scripts]
+axm-hii = "axm_hii.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "shared-contract/tests"]
+pythonpath = ["."]
+addopts = "-q"

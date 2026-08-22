@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/producer-receipt.schema.json",
+  "title": "AXM Human Capability Atlas Producer Receipt",
+  "type": "object",
+  "required": [
+    "receipt_version",
+    "producer_execution_state",
+    "producer",
+    "run",
+    "source",
+    "output",
+    "validation",
+    "complete",
+    "producer_receipt_hash"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.2.0"
+    },
+    "producer_execution_state": {
+      "const": "RUN"
+    },
+    "producer": {
+      "type": "object",
+      "required": [
+        "module_id",
+        "module_version",
+        "implementation_fingerprint",
+        "shared_contract_version",
+        "capability_record_export_format_version"
+      ],
+      "properties": {
+        "module_id": {
+          "const": "axm.module.human_capability_atlas"
+        },
+        "module_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "implementation_fingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "shared_contract_version": {
+          "const": "0.1.0"
+        },
+        "capability_record_export_format_version": {
+          "const": "0.1.0"
+        }
+      },
+      "additionalProperties": false
+    },
+    "run": {
+      "type": "object",
+      "required": [
+        "run_id",
+        "completed_at"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+        },
+        "completed_at": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "capability_id",
+        "capability_revision",
+        "source_location",
+        "source_hash",
+        "source_pointer",
+        "normalized_source_sha256",
+        "normalized_source_canonical_sha256",
+        "normalized_source_semantic_sha256"
+      ],
+      "properties": {
+        "capability_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capability_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_pointer": {
+          "type": "string"
+        },
+        "normalized_source_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "normalized_source_canonical_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "normalized_source_semantic_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "output": {
+      "type": "object",
+      "required": [
+        "capability_card_file",
+        "canonicalization_profile",
+        "canonicalization_profile_version",
+        "capability_card_canonical_sha256",
+        "artifact_inventory",
+        "artifact_set_hash"
+      ],
+      "properties": {
+        "capability_card_file": {
+          "const": "capability_card.json"
+        },
+        "canonicalization_profile": {
+          "const": "AXM-CJ-1"
+        },
+        "canonicalization_profile_version": {
+          "const": "1.0.0"
+        },
+        "capability_card_canonical_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "artifact_inventory": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "required": [
+              "relative_path",
+              "artifact_type",
+              "bytes",
+              "sha256"
+            ],
+            "properties": {
+              "relative_path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "artifact_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "artifact_set_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "validation": {
+      "type": "object",
+      "required": [
+        "valid",
+        "shared_schema",
+        "stable_evidence_policy",
+        "stable_provenance_policy"
+      ],
+      "properties": {
+        "valid": {
+          "type": "boolean"
+        },
+        "shared_schema": {
+          "type": "object",
+          "required": [
+            "status",
+            "issues"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "stable_evidence_policy": {
+          "type": "object",
+          "required": [
+            "status",
+            "issues"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "stable_provenance_policy": {
+          "type": "object",
+          "required": [
+            "status",
+            "issues"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "complete": {
+      "const": true
+    },
+    "producer_receipt_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

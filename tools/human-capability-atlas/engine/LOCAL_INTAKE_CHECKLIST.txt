@@ -1,0 +1,91 @@
+AXM HUMAN CAPABILITY ATLAS v0.11.0 — LOCAL INTAKE CHECKLIST
+
+PRESERVE
+[ ] Preserve v0.10 and earlier ZIPs/checksums as rollback evidence.
+[ ] Preserve the stable Module One <-> Module Two anchor unchanged.
+[ ] Extract v0.11 into a new staging location.
+[ ] Verify the final intake ZIP and nested Module One ZIP SHA-256 values.
+
+VERIFY MODULE
+[ ] Run verify_package.py.
+[ ] Run all 135 tests.
+[ ] Run implementation-info and record the implementation fingerprint.
+[ ] contract-check 0.1.0 must pass.
+[ ] An unvalidated shared-contract version must fail.
+
+SOURCE
+[ ] Use a read-only current repository COPY/clone.
+[ ] Keep all output outside the repository.
+[ ] Do not use a symlinked source boundary.
+
+DISCOVERY
+[ ] Run discovery-verify.
+[ ] Require valid=true.
+[ ] Review Git snapshot/commit/branch/dirty evidence.
+[ ] Dirty repository: clean it or use explicit --allow-dirty and preserve warning.
+[ ] Review module source/test/proof evidence failures.
+
+PUBLIC PREPARATION
+[ ] Run axm-public-intake into a fresh output directory.
+[ ] Require READY_FOR_BATCH_PRODUCTION.
+[ ] Confirm .public_intake_in_progress.json is absent after completion.
+[ ] Confirm .ingest_in_progress.json is absent after completion.
+[ ] Run preflight-verify.
+[ ] Review normalized_inventory.json exact + semantic hashes.
+[ ] Review human/dependency/review target partitions.
+[ ] Review discovery/enrichment/identity/graph/intake-gate reports.
+
+BATCH PLAN
+[ ] Run batch-plan-verify.
+[ ] Record plan_hash and plan_semantic_hash.
+[ ] Confirm implementation_fingerprint matches implementation-info.
+[ ] Confirm upstream preflight and normalized inventory hashes match.
+[ ] Do not manually reshuffle planned records.
+
+PRODUCTION
+[ ] Run only planned batches.
+[ ] Verify every batch receipt.
+[ ] Any .batch_in_progress.json -> hold/rebuild that batch.
+[ ] Any .build_in_progress.json -> hold/rebuild that record.
+[ ] Resume only when producer receipt and complete artifact set verify.
+
+FINALIZE
+[ ] Run transactional batch-finalize.
+[ ] Any <manifest>.in_progress.json -> finalization is incomplete.
+[ ] production-verify passes.
+[ ] production-chain-verify passes.
+[ ] Zero missing records.
+[ ] Zero extra records.
+[ ] Save final manifest, plan, source seal, preflight and receipts together.
+
+TRUTH BOUNDARY
+[ ] Declaration is not runtime proof.
+[ ] Schema/provenance PASS is not runtime proof.
+[ ] Producer RUN is not runtime proof.
+[ ] Batch PASS is not runtime proof.
+[ ] COMPLETE_VERIFIED is not runtime proof or Merge Gate acceptance.
+[ ] SHA-256/fingerprint evidence is integrity evidence, not actor authentication.
+
+PAIR MODULES
+[ ] Compare exact shared schema hashes with Module Two.
+[ ] Run Module One -> Module Two fixtures/real samples.
+[ ] Preserve UNKNOWN/INFERRED/CONFLICTED/proof ceilings/registry roles.
+[ ] Give Module Three receipts, preflight, snapshots/diffs, blockers and coverage.
+[ ] Module Three observations remain separate append-only evidence.
+[ ] Merge only through explicit AXM Merge Gate.
+
+STOP ON
+[ ] package or implementation-fingerprint mismatch;
+[ ] shared-contract/schema mismatch;
+[ ] source/discovery/preflight/inventory mismatch;
+[ ] interrupted-operation marker;
+[ ] identity/alias/lifecycle conflict;
+[ ] enrichment conflict or UNBOUND row;
+[ ] producer/batch/manifest/full-chain failure;
+[ ] missing or extra records;
+[ ] fake runtime-proof promotion;
+[ ] silent conflict resolution;
+[ ] Module Two/Three incompatibility;
+[ ] Merge Gate not explicitly passed.
+
+NO FAKE DONE.

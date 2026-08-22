@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/source-seal.schema.json",
+  "title": "AXM Source Seal",
+  "type": "object",
+  "required": [
+    "seal_version",
+    "recursive",
+    "supported_suffixes",
+    "files",
+    "source_root_at_generation",
+    "generated_at",
+    "summary",
+    "seal_hash"
+  ],
+  "properties": {
+    "seal_version": {
+      "const": "0.1.0"
+    },
+    "recursive": {
+      "type": "boolean"
+    },
+    "supported_suffixes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "relative_path",
+          "bytes",
+          "sha256"
+        ],
+        "properties": {
+          "relative_path": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "source_root_at_generation": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "object"
+    },
+    "seal_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

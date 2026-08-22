@@ -1,0 +1,137 @@
+{
+  "schema": "axm.asset-identity/v1",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "id": "axm.park.ferris-wheel",
+  "asset_type": "park-ride",
+  "components": [
+    {
+      "id": "base",
+      "role": "base",
+      "persistent": true
+    },
+    {
+      "id": "support-a",
+      "role": "support-a",
+      "persistent": true
+    },
+    {
+      "id": "support-b",
+      "role": "support-b",
+      "persistent": true
+    },
+    {
+      "id": "wheel",
+      "role": "wheel",
+      "persistent": true
+    },
+    {
+      "id": "gondolas",
+      "role": "gondolas",
+      "persistent": true
+    },
+    {
+      "id": "drive",
+      "role": "drive",
+      "persistent": true
+    },
+    {
+      "id": "control-box",
+      "role": "control-box",
+      "persistent": true
+    }
+  ],
+  "footprint": {
+    "width": 8,
+    "depth": 4,
+    "height": 9,
+    "unit": "world-unit",
+    "origin": [
+      0.5,
+      0.5,
+      0
+    ]
+  },
+  "pivots": [
+    {
+      "id": "world-origin",
+      "position": [
+        0.5,
+        0.5,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "placement"
+    },
+    {
+      "id": "wheel-axis",
+      "position": [
+        0.5,
+        0.5,
+        0.62
+      ],
+      "unit": "normalized-footprint",
+      "role": "rotation"
+    }
+  ],
+  "sockets": [
+    {
+      "id": "entry",
+      "position": [
+        0.15,
+        0.85,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "guest-entry"
+    },
+    {
+      "id": "exit",
+      "position": [
+        0.85,
+        0.85,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "guest-exit"
+    },
+    {
+      "id": "maintenance",
+      "position": [
+        0.5,
+        0.05,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "maintenance"
+    }
+  ],
+  "semantic_actions": [
+    "idle",
+    "start",
+    "run",
+    "stop",
+    "fault",
+    "inspection",
+    "repair",
+    "upgrade"
+  ],
+  "invariants": [
+    "identity-persists-across-representations",
+    "footprint-pivots-and-sockets-are-representation-independent",
+    "simulation-state-is-not-owned-by-visual-fidelity"
+  ],
+  "provenance": {
+    "author": "AXM deterministic pilot",
+    "influence_boundary": "Classic management readability and walkable-park adventure feeling; no copied sprite, map, name, audio, or layout.",
+    "generated_by": "AXMChoiceFirstCore",
+    "version": "1.0.0"
+  },
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

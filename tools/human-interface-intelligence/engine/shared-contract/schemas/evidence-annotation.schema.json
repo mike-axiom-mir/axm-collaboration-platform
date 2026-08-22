@@ -1,0 +1,77 @@
+{
+  "$id": "https://axm.local/schemas/evidence-annotation-0.1.0.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AXM Evidence Annotation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "path",
+    "state",
+    "reasoning",
+    "source_basis",
+    "confidence"
+  ],
+  "properties": {
+    "path": {
+      "type": "string",
+      "pattern": "^/"
+    },
+    "state": {
+      "enum": [
+        "KNOWN",
+        "INFERRED",
+        "UNKNOWN",
+        "CONFLICTED",
+        "NOT_APPLICABLE"
+      ]
+    },
+    "reasoning": {
+      "type": "string"
+    },
+    "source_basis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_type",
+          "source_location",
+          "source_hash",
+          "last_verified_at",
+          "confidence"
+        ],
+        "properties": {
+          "source_type": {
+            "enum": [
+              "manifest",
+              "registry",
+              "code",
+              "test",
+              "human_note",
+              "generated"
+            ]
+          },
+          "source_location": {
+            "type": "string"
+          },
+          "source_hash": {
+            "type": "string"
+          },
+          "last_verified_at": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

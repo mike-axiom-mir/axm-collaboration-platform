@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-arena-return/0.4",
+  "title": "AXM Challenge Arena Return Envelope v0.4",
+  "description": "Evidence/recommendation return. A provisional winner or merge map is never human approval.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "arena_version",
+    "challenge_id",
+    "state",
+    "packet_hash",
+    "rubric_hash",
+    "selected_candidates",
+    "result",
+    "merge_map",
+    "authority_note",
+    "blind_order_audit"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-arena-return/0.4"
+    },
+    "arena_version": {
+      "type": "string"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "source_module": {
+      "type": "string"
+    },
+    "source_job_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "type": "string"
+    },
+    "packet_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rubric_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "recommendation_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "provisional_winner": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "selected_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "result": {
+      "type": "object"
+    },
+    "merge_map": {
+      "type": "object"
+    },
+    "candidate_diagnostics": {
+      "type": "object"
+    },
+    "evidence_gaps": {
+      "type": "array"
+    },
+    "lineage": {
+      "type": "object"
+    },
+    "followups": {
+      "type": "array"
+    },
+    "final_decision": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "authority_note": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_assignment": {
+      "type": "object"
+    },
+    "review_content_safety": {
+      "type": "object"
+    },
+    "blind_order_audit": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "seed_commitment",
+        "seed_reveal_hash",
+        "seed_revealed_at",
+        "blind_map_hash"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "seed_commitment": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seed_reveal_hash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seed_revealed_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "blind_map_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

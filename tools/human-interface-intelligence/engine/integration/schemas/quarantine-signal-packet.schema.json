@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-quarantine-signal-packet-0.1.0.schema.json",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["signal_packet_version","signal_packet_id","source_audit_id","producer","disposition","governance","signal_count","signals"],
+  "properties":{
+    "signal_packet_version":{"const":"0.1.0"},
+    "signal_packet_id":{"type":"string","minLength":1},
+    "source_audit_id":{"type":"string"},
+    "producer":{"type":"object"},
+    "disposition":{"const":"retain_as_signal_even_when_execution_is_blocked"},
+    "governance":{"type":"object"},
+    "signal_count":{"type":"integer","minimum":0},
+    "signals":{"type":"array","items":{"type":"object"}}
+  }
+}

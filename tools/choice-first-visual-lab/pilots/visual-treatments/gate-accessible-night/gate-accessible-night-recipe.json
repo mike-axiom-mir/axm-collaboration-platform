@@ -1,0 +1,250 @@
+{
+  "schema": "axm.visual-treatment-recipe/v1",
+  "version": "1.0.0",
+  "id": "gate-accessible-night-visual-treatment",
+  "request_id": "gate-accessible-night",
+  "identity_id": "axm.park.ticket-gate",
+  "profile_id": "pixel-8bit-3d",
+  "catalog_digest": "413853e116023c991509d97f22e1f29f56e9537ca88286c9f38517755b79a121",
+  "style_layers": [
+    {
+      "id": "accessible-night-edge",
+      "name": "Accessible Night Edge",
+      "source": "style-fabric:treatment-mold",
+      "palette": {
+        "accent": "#ffd166",
+        "background": "#050609",
+        "highlight": "#ffffff",
+        "mutedText": "#d2d8e2",
+        "primary": "#65e8ff",
+        "secondary": "#a99aff",
+        "shadow": "#000000",
+        "surface": "#141821",
+        "text": "#ffffff"
+      },
+      "material": {
+        "clearcoat": 0,
+        "colors": {
+          "accentColor": "accent",
+          "baseColor": "surface",
+          "emissiveColor": "primary",
+          "secondaryColor": "text"
+        },
+        "emissiveStrength": 0.38,
+        "gloss": 0.18,
+        "glowIntensity": 0.18,
+        "glowRadius": 6,
+        "grain": 0,
+        "iridescence": 0,
+        "metallic": 0,
+        "opacity": 0.96,
+        "outlineWidth": 3.2,
+        "pattern": {
+          "kind": "none",
+          "scale": 1,
+          "strength": 0
+        },
+        "patternScale": 1,
+        "pulseSpeed": 0,
+        "roughness": 0.72,
+        "sheen": 0.08,
+        "shimmerSpeed": 0,
+        "specular": 0.3,
+        "translucency": 0.04,
+        "weathering": 0
+      },
+      "pattern": {
+        "kind": "none",
+        "scale": 1,
+        "strength": 0
+      },
+      "accessibility": {
+        "minimumTextContrast": 7,
+        "reducedMotion": false
+      },
+      "effect_stack": {
+        "layers": [
+          {
+            "blendMode": "normal",
+            "colorRole": "surface",
+            "id": "night-fill",
+            "intensity": 0.92,
+            "kind": "fill",
+            "mask": "inside",
+            "opacity": 0.96
+          },
+          {
+            "blendMode": "multiply",
+            "colorRole": "shadow",
+            "id": "crisp-shadow",
+            "intensity": 0.54,
+            "kind": "shadow",
+            "mask": "outside",
+            "opacity": 0.76,
+            "radius": 3,
+            "softness": 0.18,
+            "spread": 1
+          },
+          {
+            "blendMode": "screen",
+            "colorRole": "accent",
+            "id": "focus-edge",
+            "intensity": 0.44,
+            "kind": "rim-light",
+            "mask": "edge",
+            "motion": {
+              "amount": 0,
+              "kind": "none",
+              "speed": 0
+            },
+            "opacity": 0.88,
+            "radius": 3,
+            "softness": 0.12
+          }
+        ],
+        "version": "1.0"
+      },
+      "lighting_rig": {
+        "ambient": {
+          "colorRole": "background",
+          "intensity": 0.42,
+          "softness": 1
+        },
+        "bloom": {
+          "intensity": 0,
+          "radius": 0,
+          "threshold": 1
+        },
+        "contrast": 1.12,
+        "exposure": 1,
+        "fill": {
+          "colorRole": "primary",
+          "directionDegrees": 45,
+          "intensity": 0.16,
+          "softness": 0.72
+        },
+        "haze": {
+          "colorRole": "background",
+          "density": 0
+        },
+        "key": {
+          "colorRole": "text",
+          "directionDegrees": 315,
+          "intensity": 0.58,
+          "softness": 0.54
+        },
+        "rim": {
+          "colorRole": "accent",
+          "directionDegrees": 160,
+          "intensity": 0.34,
+          "softness": 0.16
+        },
+        "shadows": {
+          "softness": 0.22,
+          "strength": 0.74
+        },
+        "version": "1.0"
+      },
+      "weight": 1
+    }
+  ],
+  "effect_plan": [
+    {
+      "requested_id": "material.dark-shell",
+      "module_id": "material.dark-shell",
+      "name": "Dark Composite Shell",
+      "kind": "organ",
+      "category": "Materials",
+      "renderer": {
+        "className": "fx-material-dark-shell",
+        "scope": "surface",
+        "type": "class"
+      },
+      "params": {
+        "depth": 0.66,
+        "sheen": 0.16,
+        "edge": 0.32
+      },
+      "css_variables": {
+        "--fx-shell-depth": 0.66,
+        "--fx-shell-sheen": 0.16,
+        "--fx-edge-energy": 0.32
+      },
+      "route": "APPLIED_3D_AND_PORTABLE_WEB",
+      "fallback_used": false
+    },
+    {
+      "requested_id": "focus.halo",
+      "module_id": "focus.halo",
+      "name": "Focus Halo",
+      "kind": "effect",
+      "category": "Focus + Depth",
+      "renderer": {
+        "className": "fx-focus-halo",
+        "scope": "active",
+        "type": "class"
+      },
+      "params": {
+        "intensity": 0.58,
+        "spread": 10,
+        "softness": 0.62
+      },
+      "css_variables": {
+        "--fx-focus-intensity": 0.58,
+        "--fx-focus-spread": 10,
+        "--fx-focus-softness": 0.62
+      },
+      "route": "APPLIED_3D_AND_PORTABLE_WEB",
+      "fallback_used": false
+    },
+    {
+      "requested_id": "light.soft-bloom-halo",
+      "module_id": "light.soft-bloom-halo",
+      "name": "Soft Bloom Halo",
+      "kind": "effect",
+      "category": "Light",
+      "renderer": {
+        "className": "fx-overlay-bloom",
+        "scope": "light",
+        "type": "overlay"
+      },
+      "params": {
+        "intensity": 0.4,
+        "radius": 34,
+        "threshold": 0.58
+      },
+      "css_variables": {
+        "--fx-bloom-intensity": 0.4,
+        "--fx-bloom-radius": 34,
+        "--fx-bloom-threshold": 0.58
+      },
+      "route": "APPLIED_3D_AND_PORTABLE_WEB",
+      "fallback_used": false
+    }
+  ],
+  "material_family": "painted-metal",
+  "accessibility": {
+    "reduced_motion": false,
+    "high_contrast": false,
+    "effect_scale": 1
+  },
+  "story": {
+    "title": "READABLE AT NIGHT",
+    "nodes": [
+      {
+        "id": "gate",
+        "caption": "ACCESS STAYS LEGIBLE.",
+        "duration_s": 2,
+        "focus_component": "gate-arm"
+      }
+    ]
+  },
+  "scene_recipe_digest": "axm-stable:9192467353ec053e",
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

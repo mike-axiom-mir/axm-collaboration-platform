@@ -1,0 +1,641 @@
+{
+  "$id": "https://axm.local/schemas/capability-interface-contract-0.1.0.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AXM Capability Interface Shared Contract — Capability Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "contract_version",
+    "record_kind",
+    "capability_id",
+    "capability_revision",
+    "source_reference",
+    "identity",
+    "purpose",
+    "task_profile",
+    "input_profile",
+    "output_profile",
+    "cost_profile",
+    "risk_profile",
+    "maturity_profile",
+    "learning_profile",
+    "interaction_profile",
+    "interface_requirements",
+    "relationships",
+    "evidence_annotations"
+  ],
+  "properties": {
+    "contract_id": {
+      "const": "axm.capability-interface-contract"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "record_kind": {
+      "const": "capability_record"
+    },
+    "capability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_type",
+        "source_location",
+        "source_hash",
+        "last_verified_at",
+        "confidence"
+      ],
+      "properties": {
+        "source_type": {
+          "enum": [
+            "manifest",
+            "registry",
+            "code",
+            "test",
+            "human_note",
+            "generated"
+          ]
+        },
+        "source_location": {
+          "type": "string"
+        },
+        "source_hash": {
+          "type": "string"
+        },
+        "last_verified_at": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "machine_name",
+        "human_name",
+        "category",
+        "tags"
+      ],
+      "properties": {
+        "machine_name": {
+          "type": "string"
+        },
+        "human_name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plain_explanation",
+        "why_it_matters",
+        "example_uses"
+      ],
+      "properties": {
+        "plain_explanation": {
+          "type": "string"
+        },
+        "why_it_matters": {
+          "type": "string"
+        },
+        "example_uses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "task_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supported_task_types",
+        "typical_goals",
+        "required_human_actions",
+        "required_machine_actions",
+        "collaboration_modes"
+      ],
+      "properties": {
+        "supported_task_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "typical_goals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_human_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_machine_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collaboration_modes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "human_only",
+              "ai_only",
+              "human_ai_shared",
+              "supervised_automation"
+            ]
+          }
+        }
+      }
+    },
+    "input_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_types",
+        "required_inputs",
+        "optional_inputs",
+        "input_constraints"
+      ],
+      "properties": {
+        "input_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "optional_inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "input_constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "output_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "output_types",
+        "expected_outputs",
+        "output_constraints",
+        "preview_available"
+      ],
+      "properties": {
+        "output_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expected_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "output_constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preview_available": {
+          "enum": [
+            "KNOWN",
+            "INFERRED",
+            "UNKNOWN",
+            "CONFLICTED",
+            "NOT_APPLICABLE"
+          ]
+        }
+      }
+    },
+    "cost_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "compute_cost",
+        "time_cost",
+        "attention_cost",
+        "skill_cost",
+        "setup_cost",
+        "error_recovery_cost"
+      ],
+      "properties": {
+        "compute_cost": {
+          "enum": [
+            "none",
+            "very_low",
+            "low",
+            "medium",
+            "high",
+            "very_high",
+            "unknown"
+          ]
+        },
+        "time_cost": {
+          "enum": [
+            "instant",
+            "short",
+            "medium",
+            "long",
+            "variable",
+            "unknown"
+          ]
+        },
+        "attention_cost": {
+          "enum": [
+            "very_low",
+            "low",
+            "medium",
+            "high",
+            "very_high",
+            "unknown"
+          ]
+        },
+        "skill_cost": {
+          "enum": [
+            "beginner",
+            "basic",
+            "intermediate",
+            "advanced",
+            "specialist",
+            "unknown"
+          ]
+        },
+        "setup_cost": {
+          "enum": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ]
+        },
+        "error_recovery_cost": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "risk_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk_level",
+        "reversibility",
+        "privacy_sensitivity",
+        "failure_modes",
+        "human_confirmation_required",
+        "safe_preview_recommended"
+      ],
+      "properties": {
+        "risk_level": {
+          "enum": [
+            "minimal",
+            "low",
+            "moderate",
+            "high",
+            "critical",
+            "unknown"
+          ]
+        },
+        "reversibility": {
+          "enum": [
+            "fully_reversible",
+            "partly_reversible",
+            "irreversible",
+            "unknown"
+          ]
+        },
+        "privacy_sensitivity": {
+          "enum": [
+            "none",
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ]
+        },
+        "failure_modes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "human_confirmation_required": {
+          "type": "boolean"
+        },
+        "safe_preview_recommended": {
+          "type": "boolean"
+        }
+      }
+    },
+    "maturity_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "availability",
+        "maturity",
+        "proof_status",
+        "known_limitations"
+      ],
+      "properties": {
+        "availability": {
+          "enum": [
+            "available",
+            "limited",
+            "unavailable",
+            "unknown"
+          ]
+        },
+        "maturity": {
+          "enum": [
+            "experimental",
+            "working",
+            "tested",
+            "stable",
+            "deprecated",
+            "unknown"
+          ]
+        },
+        "proof_status": {
+          "enum": [
+            "unverified",
+            "declared",
+            "demonstrated",
+            "tested",
+            "independently_verified"
+          ]
+        },
+        "known_limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "learning_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_skill_level",
+        "prerequisite_capability_ids",
+        "recommended_learning_steps",
+        "beginner_safe_operations",
+        "advanced_operations",
+        "common_mistakes"
+      ],
+      "properties": {
+        "minimum_skill_level": {
+          "enum": [
+            "beginner",
+            "basic",
+            "intermediate",
+            "advanced",
+            "specialist",
+            "unknown"
+          ]
+        },
+        "prerequisite_capability_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recommended_learning_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "beginner_safe_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "advanced_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "common_mistakes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "interaction_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interaction_complexity",
+        "interaction_frequency",
+        "precision_requirement",
+        "feedback_requirement",
+        "preferred_input_methods",
+        "preferred_output_methods",
+        "accessibility_considerations"
+      ],
+      "properties": {
+        "interaction_complexity": {
+          "enum": [
+            "very_low",
+            "low",
+            "medium",
+            "high",
+            "very_high",
+            "unknown"
+          ]
+        },
+        "interaction_frequency": {
+          "enum": [
+            "one_shot",
+            "occasional",
+            "iterative",
+            "continuous",
+            "unknown"
+          ]
+        },
+        "precision_requirement": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "exact",
+            "unknown"
+          ]
+        },
+        "feedback_requirement": {
+          "enum": [
+            "none",
+            "status",
+            "preview",
+            "live_preview",
+            "continuous",
+            "unknown"
+          ]
+        },
+        "preferred_input_methods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preferred_output_methods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessibility_considerations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "interface_requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_interface_features",
+        "optional_interface_features",
+        "unsafe_interface_patterns",
+        "beginner_layer_constraints",
+        "advanced_layer_requirements"
+      ],
+      "properties": {
+        "required_interface_features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "optional_interface_features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unsafe_interface_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "beginner_layer_constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "advanced_layer_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dependency_capability_ids",
+        "related_capability_ids",
+        "alternative_capability_ids",
+        "commonly_combined_capability_ids"
+      ],
+      "properties": {
+        "dependency_capability_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "related_capability_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alternative_capability_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "commonly_combined_capability_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence_annotations": {
+      "type": "array",
+      "items": {
+        "$ref": "evidence-annotation.schema.json"
+      }
+    }
+  }
+}

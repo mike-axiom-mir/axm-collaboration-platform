@@ -1,0 +1,151 @@
+{
+  "schema": "axm.pbr-material-verification/v1",
+  "status": "pass",
+  "checks": [
+    {
+      "id": "map-albedo",
+      "label": "albedo map has exact dimensions",
+      "status": "pass",
+      "evidence": "65536 / 65536 channel bytes"
+    },
+    {
+      "id": "map-normal",
+      "label": "normal map has exact dimensions",
+      "status": "pass",
+      "evidence": "65536 / 65536 channel bytes"
+    },
+    {
+      "id": "map-orm",
+      "label": "orm map has exact dimensions",
+      "status": "pass",
+      "evidence": "65536 / 65536 channel bytes"
+    },
+    {
+      "id": "map-emissive",
+      "label": "emissive map has exact dimensions",
+      "status": "pass",
+      "evidence": "65536 / 65536 channel bytes"
+    },
+    {
+      "id": "map-height",
+      "label": "height map has exact dimensions",
+      "status": "pass",
+      "evidence": "65536 / 65536 channel bytes"
+    },
+    {
+      "id": "albedo-signal",
+      "label": "Albedo contains non-flat surface signal",
+      "status": "pass",
+      "evidence": "max channel σ 21.30"
+    },
+    {
+      "id": "height-signal",
+      "label": "Height contains non-flat relief signal",
+      "status": "pass",
+      "evidence": "σ 9.12, range 113–156"
+    },
+    {
+      "id": "normal-signal",
+      "label": "Normal contains derived directional signal",
+      "status": "pass",
+      "evidence": "X σ 16.36, Y σ 16.65, Z μ 252.85"
+    },
+    {
+      "id": "normal-unit",
+      "label": "Decoded normals remain unit length",
+      "status": "pass",
+      "evidence": "mean length 1.0004"
+    },
+    {
+      "id": "tangent-convention",
+      "label": "Tangent convention is explicit",
+      "status": "pass",
+      "evidence": "OpenGL tangent space; +Y green; texture V increases downward"
+    },
+    {
+      "id": "orm-signal",
+      "label": "Packed ORM contains independent channel meaning",
+      "status": "pass",
+      "evidence": "AO σ 2.83, roughness σ 5.44, metal σ 60.56"
+    },
+    {
+      "id": "orm-semantics",
+      "label": "Packed channel semantics are declared",
+      "status": "pass",
+      "evidence": "R=AO, G=roughness, B=metalness"
+    }
+  ],
+  "summary": {
+    "passed": 12,
+    "failed": 0
+  },
+  "statistics": {
+    "albedo": [
+      {
+        "minimum": 38,
+        "maximum": 118,
+        "mean": 51.71478271484375,
+        "stddev": 21.30409901842758
+      },
+      {
+        "minimum": 94,
+        "maximum": 124,
+        "mean": 104.89422607421875,
+        "stddev": 6.758502014076868
+      },
+      {
+        "minimum": 119,
+        "maximum": 133,
+        "mean": 125.17218017578125,
+        "stddev": 2.2967059850140132
+      }
+    ],
+    "height": {
+      "minimum": 113,
+      "maximum": 156,
+      "mean": 146.97747802734375,
+      "stddev": 9.121336116266296
+    },
+    "normal": [
+      {
+        "minimum": 79,
+        "maximum": 175,
+        "mean": 127.4996337890625,
+        "stddev": 16.357263171436703
+      },
+      {
+        "minimum": 81,
+        "maximum": 175,
+        "mean": 127.49609375,
+        "stddev": 16.65234283368517
+      },
+      {
+        "minimum": 240,
+        "maximum": 255,
+        "mean": 252.8494873046875,
+        "stddev": 3.2467760798867493
+      }
+    ],
+    "orm": [
+      {
+        "minimum": 221,
+        "maximum": 238,
+        "mean": 229.50433349609375,
+        "stddev": 2.826135482896495
+      },
+      {
+        "minimum": 81,
+        "maximum": 108,
+        "mean": 95.54034423828125,
+        "stddev": 5.441401104058587
+      },
+      {
+        "minimum": 46,
+        "maximum": 255,
+        "mean": 65.338623046875,
+        "stddev": 60.56228096305282
+      }
+    ],
+    "normalMeanLength": 1.0003572905492604
+  }
+}

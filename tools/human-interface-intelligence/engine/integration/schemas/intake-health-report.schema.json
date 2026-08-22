@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-intake-health-report-0.1.0.schema.json",
+  "title": "AXM HII Intake Health Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "health_report_version",
+    "source_gate_id",
+    "source_gate_status",
+    "total_records",
+    "gate_status_counts",
+    "recommendation_status_counts",
+    "pattern_usage",
+    "most_common_unknowns",
+    "most_common_conflicts",
+    "low_confidence_recommendations",
+    "intake_readiness"
+  ],
+  "properties": {
+    "health_report_version": {
+      "const": "0.1.0"
+    },
+    "source_gate_id": {
+      "type": "string"
+    },
+    "source_gate_status": {
+      "type": "string"
+    },
+    "total_records": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "gate_status_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "recommendation_status_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "pattern_usage": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "most_common_unknowns": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pathCount"
+      }
+    },
+    "most_common_conflicts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pathCount"
+      }
+    },
+    "low_confidence_recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "capability_id",
+          "confidence",
+          "pattern_id"
+        ],
+        "properties": {
+          "capability_id": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "pattern_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "intake_readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consistency_pass_count",
+        "direct_recommendation_count",
+        "conditional_recommendation_count",
+        "blocked_recommendation_count",
+        "unprocessed_or_failed_count",
+        "all_gate_consistency_checks_passed",
+        "all_records_directly_recommendable"
+      ],
+      "properties": {
+        "consistency_pass_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "direct_recommendation_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "conditional_recommendation_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blocked_recommendation_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unprocessed_or_failed_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "all_gate_consistency_checks_passed": {
+          "type": "boolean"
+        },
+        "all_records_directly_recommendable": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "pathCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "count"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

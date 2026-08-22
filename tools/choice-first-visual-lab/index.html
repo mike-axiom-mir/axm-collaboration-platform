@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Choice-First Visual & Simulation Lab</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="game-layer.css">
+  <link rel="stylesheet" href="pixel-3d.css">
+  <link rel="stylesheet" href="visual-treatment.css">
+  <style>.zoom-control{display:flex;gap:8px;align-items:center}.zoom-row button{width:28px;height:28px;padding:0;border:1px solid var(--line);background:#102337;color:var(--ink);cursor:pointer}</style>
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">AXM · EXPERIMENTAL · CANDIDATE ONLY</p>
+      <h1>Keep the game.<br><span>Change how truth looks.</span></h1>
+      <p class="lede">One identity and causal history. Freely selected visual representations. Missing capability stays visible instead of becoming a silent downgrade.</p>
+    </div>
+    <div class="truth-card" aria-label="Foundation promise">
+      <strong>Simulation owns truth</strong>
+      <span>Visuals own presentation</span>
+      <small>installed: false · promoted: false · canonical: false</small>
+    </div>
+  </header>
+
+  <main>
+    <section class="game-layer-panel" aria-labelledby="gameLayerTitle">
+      <div class="game-layer-heading">
+        <div>
+          <p class="eyebrow">WHOLE-GAME CHOICE LAYER</p>
+          <h2 id="gameLayerTitle">Keep the game. Replace the entire art direction.</h2>
+          <p>Hardware can recommend a compatible layer. Only the player can activate one. Saves, rules, collision, navigation, and simulation stay outside the visual pack.</p>
+        </div>
+        <label class="hardware-picker">Declared test machine
+          <select id="hardwareProfileSelect" aria-describedby="hardwareNotice"></select>
+          <small id="hardwareNotice">Test fixtures only; this lab does not auto-detect your device.</small>
+        </label>
+      </div>
+
+      <div class="game-truth-strip" aria-label="Stable game truth">
+        <span>Game truth <code id="gameTruthDigest"></code></span>
+        <span>Save <code id="saveDigest"></code></span>
+        <span>Fallback <strong>forbidden</strong></span>
+        <span>Current layer <strong id="activePackLabel"></strong></span>
+      </div>
+
+      <div class="game-layer-layout">
+        <div>
+          <div id="gameLayerStage" class="game-layer-stage" data-active-pack="pixel-8bit" aria-label="Whole-game visual layer preview">
+            <div class="park-sky"><i></i><i></i><i></i></div>
+            <div class="park-horizon"></div>
+            <div class="park-ground"></div>
+            <div class="park-wheel" aria-hidden="true"><div class="wheel-ring"><i></i><i></i><i></i><i></i></div><b></b></div>
+            <div class="park-booth" aria-hidden="true"><b>TIX</b><i></i></div>
+            <div class="park-guests" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <div class="park-path" aria-hidden="true"></div>
+            <div class="stage-copy"><span id="stagePackTitle">Park Foundation / Pixel 8</span><small>same park id / same world anchors / same causal state</small></div>
+          </div>
+          <div id="visualSlotList" class="visual-slot-list" aria-label="Complete semantic pack coverage"></div>
+        </div>
+
+        <aside class="pack-control-panel">
+          <div class="recommendation-card">
+            <span>Compatible recommendation</span>
+            <strong id="recommendedPackLabel">Checking...</strong>
+            <small>Recommendation is not activation.</small>
+            <button id="acceptRecommendation" type="button">Choose recommendation</button>
+          </div>
+          <div id="gamePackChoices" class="game-pack-choices" aria-label="Game visual pack choices"></div>
+          <div id="packSelectionStatus" class="pack-selection-status" role="status" aria-live="polite"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="lab-grid" aria-labelledby="labTitle">
+      <div class="stage-panel">
+        <div class="section-heading">
+          <div><p class="eyebrow">LIVE REPRESENTATION</p><h2 id="labTitle">Same asset, chosen direction</h2></div>
+          <label>Asset
+            <select id="assetSelect">
+              <option value="axm.park.ferris-wheel">Ferris wheel</option>
+              <option value="axm.park.carousel-horse">Carousel horse</option>
+              <option value="axm.park.ticket-gate">Ticket gate</option>
+              <option value="axm.home.starter-sofa">Upgradeable starter sofa</option>
+            </select>
+          </label>
+        </div>
+        <div id="profileChoices" class="profile-choices" aria-label="Visual representation choices"></div>
+        <div id="customAxes" class="custom-axes" hidden>
+          <label>Pixel grid <select id="customSize"><option>48</option><option selected>64</option><option>72</option><option>96</option><option>128</option></select></label>
+          <label>Palette budget <select id="customColours"><option>16</option><option selected>32</option><option>64</option></select></label>
+          <label>Motion fps <select id="customFps"><option>8</option><option selected>12</option><option>15</option><option>24</option></select></label>
+        </div>
+        <div class="canvas-shell">
+          <canvas id="assetCanvas" width="48" height="48" aria-label="Animated identity-bound asset preview"></canvas>
+          <div id="gapPanel" class="gap-panel" hidden></div>
+          <div class="stage-badge"><span id="profileBadge">pixel-8bit</span><span id="materialBadge">RGBA8 / sRGB</span></div>
+        </div>
+        <div class="zoom-row"><div class="zoom-control"><span id="zoomLabel">Integer zoom</span><button id="zoomMinus" type="button" aria-label="Decrease integer zoom">−</button><input id="zoom" type="range" min="2" max="6" step="1" value="5" aria-labelledby="zoomLabel"><button id="zoomPlus" type="button" aria-label="Increase integer zoom">+</button><output id="zoomValue">5×</output></div><span>No smoothing · no sub-pixel interpolation</span></div>
+      </div>
+
+      <aside class="state-panel">
+        <p class="eyebrow">SHARED BACKEND STATE</p>
+        <h2>Graphics do not own this</h2>
+        <dl class="metrics">
+          <div><dt>Condition</dt><dd id="condition">100</dd></div>
+          <div><dt>Cleanliness</dt><dd id="cleanliness">100</dd></div>
+          <div><dt>Use cycles</dt><dd id="cycles">0</dd></div>
+          <div><dt>State</dt><dd id="operating">idle</dd></div>
+        </dl>
+        <div class="action-grid">
+          <button data-event="time_elapsed">Idle one year</button>
+          <button data-event="use_cycle">Use cycles</button>
+          <button data-event="fault">Cause fault</button>
+          <button data-event="repair">Repair</button>
+        </div>
+        <div id="causalReceipt" class="receipt">No event yet. Time has no hidden condition tick.</div>
+        <details><summary>Resolved profile axes</summary><pre id="profileJson"></pre></details>
+      </aside>
+    </section>
+
+    <section class="pixel-3d-panel" aria-labelledby="pixel3dTitle">
+      <div class="pixel-3d-heading">
+        <div>
+          <p class="eyebrow">REAL GLB + NODE ANIMATION</p>
+          <h2 id="pixel3dTitle">Same identity, now walkable-world ready</h2>
+          <p>These are actual hierarchical 3D models, not sprite billboards. Choose the exact 8-bit or 16-bit 3D art direction; the asset identity, footprint, pivots, sockets, and semantic animation state remain shared.</p>
+        </div>
+        <div class="pixel-3d-boundary"><strong>Asset pilots: available</strong><span>Whole-game 3D pack: not yet available</span></div>
+      </div>
+      <div class="pixel-3d-layout">
+        <div>
+          <div class="pixel-3d-toolbar">
+            <label>3D asset
+              <select id="pixel3dAsset">
+                <option value="axm.park.ferris-wheel">Ferris wheel</option>
+                <option value="axm.park.carousel-horse">Carousel horse</option>
+                <option value="axm.park.ticket-gate">Ticket gate</option>
+                <option value="axm.home.starter-sofa">Starter sofa</option>
+              </select>
+            </label>
+            <div id="pixel3dProfiles" class="pixel-3d-profiles" aria-label="3D representation profile">
+              <button type="button" data-pixel3d-profile="pixel-8bit-3d" aria-pressed="true">8-bit 3D</button>
+              <button type="button" data-pixel3d-profile="pixel-16bit-3d" aria-pressed="false">16-bit 3D</button>
+            </div>
+            <a id="pixel3dDownload" class="pixel-3d-download" href="#" download>Download chosen GLB</a>
+          </div>
+          <div class="pixel-3d-stage" id="pixel3dStage">
+            <canvas id="pixel3dCanvas" width="320" height="180" aria-label="Interactive pixel-styled animated 3D asset"></canvas>
+            <div class="pixel-3d-overlay"><span id="pixel3dProfileBadge">pixel-8bit-3d</span><span id="pixel3dResolution">320 × 180 internal</span></div>
+            <div id="pixel3dError" class="pixel-3d-error" role="status" hidden></div>
+          </div>
+          <div class="pixel-3d-camera">
+            <button type="button" id="pixel3dLeft" aria-label="Orbit left">Orbit left</button>
+            <input id="pixel3dOrbit" type="range" min="-180" max="180" step="5" value="30" aria-label="Orbit angle">
+            <button type="button" id="pixel3dRight" aria-label="Orbit right">Orbit right</button>
+            <label>Zoom <input id="pixel3dZoom" type="range" min="70" max="150" step="5" value="100"></label>
+          </div>
+        </div>
+        <aside class="pixel-3d-readout">
+          <p class="eyebrow">LIVE RUNTIME EVIDENCE</p>
+          <dl>
+            <div><dt>Identity</dt><dd id="pixel3dIdentity">loading</dd></div>
+            <div><dt>GLB structure</dt><dd id="pixel3dStructure">loading</dd></div>
+            <div><dt>Frame draw</dt><dd id="pixel3dFrame">loading</dd></div>
+            <div><dt>Animation</dt><dd id="pixel3dAnimation">loading</dd></div>
+            <div><dt>Fallback</dt><dd>false</dd></div>
+          </dl>
+          <div class="pixel-3d-missing"><strong>Unavailable by design</strong><span>High-detail realtime 3D and cinematic render return <code>MISSING_REPRESENTATION</code>. No nearest substitute.</span></div>
+          <p class="pixel-3d-note">“8-bit” and “16-bit” name the art direction here—not literal GPU colour depth.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="treatment-panel" aria-labelledby="treatmentTitle">
+      <div class="treatment-heading">
+        <div>
+          <p class="eyebrow">STYLE FABRIC + AETHERFX + PBR + STORYCRAFT</p>
+          <h2 id="treatmentTitle">The asset factory now treats direction as data</h2>
+          <p>Compose an exact style, material family, effect stack, and supplied story layer onto the same identity-bound model. The live GLB changes; simulation, footprint, pivots, sockets, and history do not.</p>
+        </div>
+        <div class="treatment-counts" aria-label="Installed visual capability counts">
+          <span><strong id="treatmentStyleCount">28</strong> styles</span>
+          <span><strong id="treatmentEffectCount">64</strong> AetherFX</span>
+          <span><strong id="treatmentMaterialCount">6</strong> PBR families</span>
+          <span><strong id="treatmentAdapterCount">30</strong> adapters</span>
+        </div>
+      </div>
+      <div class="treatment-layout">
+        <div class="treatment-workbench">
+          <div class="treatment-controls">
+            <label>Identity<select id="treatmentAsset"><option value="axm.park.ferris-wheel">Ferris wheel</option><option value="axm.park.carousel-horse">Carousel horse</option><option value="axm.park.ticket-gate">Ticket gate</option><option value="axm.home.starter-sofa">Starter sofa</option></select></label>
+            <label>Representation<select id="treatmentProfile"><option value="pixel-16bit-3d">16-bit 3D</option><option value="pixel-8bit-3d">8-bit 3D</option></select></label>
+            <label>Direction preset<select id="treatmentPreset"><option value="aetherglass">Aetherglass neon</option><option value="comic">Comic neon paper</option><option value="night">Accessible night</option><option value="ocean">Oceanic glass</option><option value="manual">Manual exact choices</option></select></label>
+            <label>Style / treatment<select id="treatmentStyle"></select></label>
+            <label>PBR family<select id="treatmentMaterial"></select></label>
+            <label class="treatment-effect-picker">Exact AetherFX modules <span>Ctrl/Cmd selects several</span><select id="treatmentEffects" multiple size="6"></select></label>
+            <label>Story title<input id="treatmentStoryTitle" value="SAME ASSET / NEW DIRECTION" maxlength="64"></label>
+            <label>Supplied caption<input id="treatmentStoryCaption" value="IDENTITY STAYS TRUE. VISUAL CAPABILITY CHANGES." maxlength="96"></label>
+          </div>
+          <div class="treatment-actions">
+            <button id="treatmentCompose" type="button">Compose exact treatment</button>
+            <button id="treatmentMissing" type="button">Prove unknown effect refusal</button>
+            <a id="treatmentDownload" download>Download treated GLB</a>
+            <a id="treatmentRecipeDownload" download>Download recipe + receipt</a>
+          </div>
+          <div class="treatment-stage" id="treatmentStage">
+            <canvas id="treatmentCanvas" width="480" height="270" aria-label="Live exact visual treatment GLB"></canvas>
+            <div class="treatment-stage-badge"><span id="treatmentStyleBadge">aetherglass-cinematic</span><span id="treatmentProfileBadge">pixel-16bit-3d</span></div>
+            <div id="treatmentError" class="treatment-error" hidden></div>
+          </div>
+          <label class="treatment-orbit">Orbit <input id="treatmentOrbit" type="range" min="-180" max="180" value="32" step="4"></label>
+        </div>
+        <aside class="treatment-evidence">
+          <div class="treatment-route-summary"><strong>Executed route</strong><span id="treatmentRoutes">waiting</span></div>
+          <dl>
+            <div><dt>Identity</dt><dd id="treatmentIdentity">waiting</dd></div>
+            <div><dt>Real GLB</dt><dd id="treatmentStructure">waiting</dd></div>
+            <div><dt>Treatment digest</dt><dd id="treatmentDigest">waiting</dd></div>
+            <div><dt>Fallback / nearest</dt><dd id="treatmentFallback">false / false</dd></div>
+          </dl>
+          <div class="treatment-previews">
+            <figure><img id="treatmentStoryPreview" alt="Generated supplied-copy Storycraft board"><figcaption>Storycraft companion SVG</figcaption></figure>
+            <figure><img id="treatmentMaterialPreview" alt="Deterministic PBR material sphere preview"><figcaption id="treatmentMaterialCaption">PBR map-set preview</figcaption></figure>
+          </div>
+          <p class="treatment-boundary">Effects marked web-only or token-only remain useful companion outputs, but are never mislabeled as GLB shader parity. Everything here remains EXPERIMENTAL and uninstalled.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="sofaPanel" class="sofa-panel" hidden>
+      <div class="section-heading"><div><p class="eyebrow">SIMS-STYLE INTERIOR PROOF</p><h2>Upgrade the sofa you already own</h2></div><p class="resource-line" id="resources"></p></div>
+      <p>Each component slot holds one choice. Spending more improves the existing object, but comfort, durability, maintenance, room fit and style stay separate—there is no universal “best sofa” number.</p>
+      <div id="sofaUpgrades" class="upgrade-grid"></div>
+      <div class="sofa-readout"><div><strong>Persistent instance</strong><span id="sofaId"></span></div><div><strong>Installed components</strong><span id="sofaComponents"></span></div><div><strong>Quality vector</strong><span id="sofaQualities"></span></div></div>
+    </section>
+
+    <section class="film-panel">
+      <div><p class="eyebrow">240 SAMPLES · 40 UNIQUE RAW FRAMES</p><h2>20-second AXM pixel explainer</h2><p>The film visibly moves from the same 8-bit identities to 16-bit representations. Captions are burned into the bitmap frames and also shipped as WebVTT.</p></div>
+      <video id="film" controls muted preload="metadata" poster="pilots/film/first-frame.png">
+        <source src="pilots/film/axm-choice-first-pixel-explainer.webm" type="video/webm">
+        <source src="pilots/film/axm-choice-first-pixel-explainer.mp4" type="video/mp4">
+        <track kind="captions" srclang="en" label="English" src="pilots/film/axm-choice-first-pixel-explainer.vtt" default>
+      </video>
+    </section>
+  </main>
+
+  <footer>Original AXM deterministic pilot art · human review still required · no automatic promotion or canonization</footer>
+  <script src="../../shared/asset-hands/choice-first-core.js"></script>
+  <script src="../spatial-studio/spatial-geometry.js"></script>
+  <script src="../../shared/asset-hands/gltf-codec.js"></script>
+  <script src="../../shared/asset-hands/pixel-3d-codec.js"></script>
+  <script src="../../shared/asset-hands/pixel-3d-core.js"></script>
+  <script src="../../shared/visual-fx/fx-blocks.js"></script>
+  <script src="../../shared/asset-hands/visual-capability-catalog.generated.js"></script>
+  <script src="../../shared/asset-hands/visual-treatment-core.js"></script>
+  <script src="../../shared/asset-hands/choice-first-pilot-core.js"></script>
+  <script src="../../shared/asset-hands/game-visual-pack-core.js"></script>
+  <script src="app.js"></script>
+  <script src="game-layer-app.js"></script>
+  <script src="pixel-3d-app.js"></script>
+  <script src="visual-treatment-app.js"></script>
+</body>
+</html>

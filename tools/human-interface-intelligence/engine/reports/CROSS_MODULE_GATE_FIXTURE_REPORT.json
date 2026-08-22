@@ -1,0 +1,3371 @@
+{
+  "report_version": "0.2.0",
+  "gate_id": "axm.hii.cross-module-gate.35efa14d757ef67f",
+  "module_id": "axm.human-interface-intelligence",
+  "module_version": "0.2.0",
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "generated_at": "2026-08-05T00:00:00Z",
+  "external_atlas_execution_state": "NOT_RUN",
+  "strict_provenance": false,
+  "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+  "overall_status": "PASS",
+  "handoff_errors": [],
+  "summary": {
+    "total": 10,
+    "PASS": 10,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "NOT_RUN": 0
+  },
+  "records": [
+    {
+      "item_id": "01_file_rename",
+      "capability_id": "axm.file.rename",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "DECLARED_ONLY",
+        "declared_hash": "sha256:fixture-axm.file.rename",
+        "computed_hash": "",
+        "reason": "A source hash is declared, but source payload bytes were not supplied to this gate."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.24d377234483a193",
+        "capability_id": "axm.file.rename",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "beginner",
+          "user_goal": "Rename one file safely",
+          "task_type": "file_rename",
+          "device_types": [
+            "desktop"
+          ],
+          "available_tools": [],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "low",
+            "time": "short",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "collaboration_mode": "human_ai_shared"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "guided_form",
+          "interface_name": "Guided form",
+          "interface_family": "structured_input",
+          "confidence": 0.978,
+          "recommendation_status": "recommended",
+          "why_this_interface": [
+            "Pattern explicitly supports task type 'file_rename'.",
+            "Input fit: file, text.",
+            "User skill meets the pattern's minimum.",
+            "Pattern is suitable for beginners.",
+            "Pattern fits an available device.",
+            "Preview support lowers avoidable error cost.",
+            "The number of decisions fits a compact guided form.",
+            "Interface overhead stays within the compute budget.",
+            "Pattern stays within the attention budget.",
+            "Required feature fit: validation."
+          ],
+          "why_not_other_interfaces": [
+            "File browser: Lower deterministic fit score.",
+            "Before-and-after comparison: Lower deterministic fit score.",
+            "Searchable library: Lower deterministic fit score."
+          ],
+          "required_controls": [
+            "validation",
+            "conflict_check",
+            "undo",
+            "defaults",
+            "help_text",
+            "preview"
+          ],
+          "optional_controls": [
+            "help",
+            "undo"
+          ],
+          "hidden_advanced_controls": [],
+          "progressive_disclosure_plan": [
+            "Start with the declared beginner-safe operation and necessary controls only.",
+            "Show a plain-language summary of hidden advanced controls.",
+            "Reveal optional controls when the user asks or the task requires them.",
+            "Require explicit user choice before entering advanced mode."
+          ],
+          "preview_and_confirmation_flow": [
+            "Generate a non-destructive preview or consequence summary.",
+            "Show applied result and proof/status after execution."
+          ],
+          "error_recovery_flow": [
+            "Validate inputs before execution.",
+            "Keep cancel available until the commit point.",
+            "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+            "Record failure details without claiming success."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": true,
+          "operation_class": "simplified_control",
+          "allowed_operations": [
+            "Rename a file"
+          ],
+          "restricted_operations": [],
+          "default_values": {
+            "preview_before_apply": true,
+            "confirmation_required": false,
+            "retain_recovery_point": true,
+            "show_hidden_control_summary": true
+          },
+          "guided_steps": [
+            "State the intended goal in plain language.",
+            "Provide only the inputs required for the selected safe operation.",
+            "Review a preview or consequence summary before applying the operation.",
+            "Run the operation.",
+            "Show the result, proof/status, and the available recovery action.",
+            "Offer advanced mode as an explicit user choice; do not switch silently."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "low",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "reasons_for_restrictions": []
+        },
+        "advanced_layer": {
+          "available": false,
+          "unlock_method": "not_available",
+          "additional_controls": [],
+          "additional_risks": [],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {
+            "attention": "low",
+            "interaction": "low",
+            "minimum_skill": "beginner",
+            "deterministic_score": 105.0,
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "file_browser",
+              "interface_name": "File browser",
+              "score": 54.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "before_after_comparison",
+              "interface_name": "Before-and-after comparison",
+              "score": 49.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "searchable_library",
+              "interface_name": "Searchable library",
+              "score": 49.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: file_rename.",
+            "Declared input types: file, text.",
+            "Declared output types: file, status.",
+            "Risk level: low.",
+            "Reversibility: fully_reversible.",
+            "Proof status: tested."
+          ],
+          "inferences_used": [],
+          "unknowns": [],
+          "conflicts": [],
+          "source_references": [
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/axm.file.rename.source.json",
+              "source_hash": "sha256:fixture-axm.file.rename",
+              "last_verified_at": "2026-08-03T03:56:47Z",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.file.rename",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 105.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'file_rename'.",
+              "Input fit: file, text.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "The number of decisions fits a compact guided form.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget.",
+              "Required feature fit: validation."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "file_browser",
+            "interface_name": "File browser",
+            "interface_family": "file_selection",
+            "score": 54.0,
+            "reasons": [
+              "Input fit: file.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "before_after_comparison",
+            "interface_name": "Before-and-after comparison",
+            "interface_family": "comparison",
+            "score": 49.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "searchable_library",
+            "interface_name": "Searchable library",
+            "interface_family": "discovery",
+            "score": 49.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "template_selector",
+            "interface_name": "Template selector",
+            "interface_family": "starting_point",
+            "score": 49.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "02_image_background_replacement",
+      "capability_id": "axm.image.background_replace",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "DECLARED_ONLY",
+        "declared_hash": "sha256:fixture-axm.image.background_replace",
+        "computed_hash": "",
+        "reason": "A source hash is declared, but source payload bytes were not supplied to this gate."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.1abd50bad2ccaf71",
+        "capability_id": "axm.image.background_replace",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "beginner",
+          "user_goal": "Replace the background while preserving the subject",
+          "task_type": "background_replacement",
+          "device_types": [
+            "desktop"
+          ],
+          "available_tools": [
+            "image_renderer"
+          ],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "medium",
+            "time": "short",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "collaboration_mode": "human_ai_shared"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "live_preview_controls",
+          "interface_name": "Live preview with controls",
+          "interface_family": "previewed_manipulation",
+          "confidence": 0.878,
+          "recommendation_status": "recommended",
+          "why_this_interface": [
+            "Pattern explicitly supports task type 'background_replacement'.",
+            "Input fit: image, parameters.",
+            "Output fit: visual_preview.",
+            "Pattern is suitable for beginners.",
+            "Pattern fits an available device.",
+            "Live feedback requirement is matched by live preview.",
+            "A required supporting tool is available.",
+            "Interface overhead stays within the compute budget.",
+            "Required feature fit: before_after, undo."
+          ],
+          "why_not_other_interfaces": [
+            "Guided form: Pattern offers preview, but not continuous live feedback.",
+            "Before-and-after comparison: Pattern offers preview, but not continuous live feedback.",
+            "File browser: Pattern offers preview, but not continuous live feedback."
+          ],
+          "required_controls": [
+            "live_preview",
+            "before_after",
+            "undo",
+            "preview",
+            "controls",
+            "apply"
+          ],
+          "optional_controls": [
+            "help",
+            "undo"
+          ],
+          "hidden_advanced_controls": [
+            "edge refinement",
+            "mask editing"
+          ],
+          "progressive_disclosure_plan": [
+            "Start with the declared beginner-safe operation and necessary controls only.",
+            "Show a plain-language summary of hidden advanced controls.",
+            "Reveal optional controls when the user asks or the task requires them.",
+            "Require explicit user choice before entering advanced mode."
+          ],
+          "preview_and_confirmation_flow": [
+            "Generate a non-destructive preview or consequence summary.",
+            "Show applied result and proof/status after execution."
+          ],
+          "error_recovery_flow": [
+            "Validate inputs before execution.",
+            "Keep cancel available until the commit point.",
+            "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+            "Record failure details without claiming success."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": true,
+          "operation_class": "simplified_control",
+          "allowed_operations": [
+            "Replace an image background"
+          ],
+          "restricted_operations": [
+            "edge refinement",
+            "mask editing"
+          ],
+          "default_values": {
+            "preview_before_apply": true,
+            "confirmation_required": false,
+            "retain_recovery_point": true,
+            "show_hidden_control_summary": true
+          },
+          "guided_steps": [
+            "State the intended goal in plain language.",
+            "Provide only the inputs required for the selected safe operation.",
+            "Review a preview or consequence summary before applying the operation.",
+            "Run the operation.",
+            "Show the result, proof/status, and the available recovery action.",
+            "Offer advanced mode as an explicit user choice; do not switch silently."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "medium",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "reasons_for_restrictions": []
+        },
+        "advanced_layer": {
+          "available": true,
+          "unlock_method": "manual_choice",
+          "additional_controls": [
+            "edge refinement",
+            "mask editing"
+          ],
+          "additional_risks": [],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {
+            "attention": "medium",
+            "interaction": "medium",
+            "minimum_skill": "basic",
+            "deterministic_score": 79.0,
+            "compute_overhead": "medium",
+            "required_tool_any": [
+              "renderer",
+              "image_renderer"
+            ]
+          },
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "guided_form",
+              "interface_name": "Guided form",
+              "score": 59.0,
+              "tradeoff": "Pattern offers preview, but not continuous live feedback."
+            },
+            {
+              "interface_pattern_id": "before_after_comparison",
+              "interface_name": "Before-and-after comparison",
+              "score": 41.0,
+              "tradeoff": "Pattern offers preview, but not continuous live feedback."
+            },
+            {
+              "interface_pattern_id": "file_browser",
+              "interface_name": "File browser",
+              "score": 41.0,
+              "tradeoff": "Pattern offers preview, but not continuous live feedback."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: background_replacement.",
+            "Declared input types: image, choice, parameters.",
+            "Declared output types: image, visual_preview.",
+            "Risk level: low.",
+            "Reversibility: fully_reversible.",
+            "Proof status: tested."
+          ],
+          "inferences_used": [],
+          "unknowns": [],
+          "conflicts": [],
+          "source_references": [
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/axm.image.background_replace.source.json",
+              "source_hash": "sha256:fixture-axm.image.background_replace",
+              "last_verified_at": "2026-08-03T03:56:47Z",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.image.background_replace",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "live_preview_controls",
+            "interface_name": "Live preview with controls",
+            "interface_family": "previewed_manipulation",
+            "score": 79.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'background_replacement'.",
+              "Input fit: image, parameters.",
+              "Output fit: visual_preview.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Live feedback requirement is matched by live preview.",
+              "A required supporting tool is available.",
+              "Interface overhead stays within the compute budget.",
+              "Required feature fit: before_after, undo."
+            ],
+            "penalties": [
+              "Pattern requires basic skill, above the user's beginner level.",
+              "Pattern exceeds the stated attention budget."
+            ],
+            "minimum_user_skill": "basic",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "medium",
+            "required_tool_any": [
+              "renderer",
+              "image_renderer"
+            ]
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 59.0,
+            "reasons": [
+              "Input fit: choice, parameters.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "The number of decisions fits a compact guided form.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "before_after_comparison",
+            "interface_name": "Before-and-after comparison",
+            "interface_family": "comparison",
+            "score": 41.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "file_browser",
+            "interface_name": "File browser",
+            "interface_family": "file_selection",
+            "score": 41.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "searchable_library",
+            "interface_name": "Searchable library",
+            "interface_family": "discovery",
+            "score": 41.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "03_software_build",
+      "capability_id": "axm.software.generate_build",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "DECLARED_ONLY",
+        "declared_hash": "sha256:fixture-axm.software.generate_build",
+        "computed_hash": "",
+        "reason": "A source hash is declared, but source payload bytes were not supplied to this gate."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.3a9f04b7b03eb98c",
+        "capability_id": "axm.software.generate_build",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "beginner",
+          "user_goal": "Create a small tested starter application",
+          "task_type": "software_build",
+          "device_types": [
+            "desktop"
+          ],
+          "available_tools": [
+            "sandbox",
+            "test_runner"
+          ],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "high",
+            "time": "short",
+            "attention": "medium",
+            "complexity": "low"
+          },
+          "collaboration_mode": "human_ai_shared"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "structured_prompt_builder",
+          "interface_name": "Structured prompt builder",
+          "interface_family": "guided_generation",
+          "confidence": 0.878,
+          "recommendation_status": "conditional",
+          "why_this_interface": [
+            "Pattern explicitly supports task type 'software_build'.",
+            "Input fit: constraints, files, text.",
+            "User skill meets the pattern's minimum.",
+            "Pattern is suitable for beginners.",
+            "Pattern fits an available device.",
+            "Preview support lowers avoidable error cost.",
+            "Pattern supports a visible human-AI collaboration boundary.",
+            "Interface overhead stays within the compute budget.",
+            "Pattern stays within the attention budget."
+          ],
+          "why_not_other_interfaces": [
+            "Wizard / step-by-step flow: Lower deterministic fit score.",
+            "Guided form: Lower deterministic fit score.",
+            "Before-and-after comparison: Lower deterministic fit score."
+          ],
+          "required_controls": [
+            "structured_requirements",
+            "diff",
+            "tests",
+            "explicit_execute",
+            "goal",
+            "constraints",
+            "examples",
+            "preview",
+            "generate"
+          ],
+          "optional_controls": [
+            "help",
+            "undo"
+          ],
+          "hidden_advanced_controls": [
+            "edit build scripts",
+            "run arbitrary commands"
+          ],
+          "progressive_disclosure_plan": [
+            "Start with the declared beginner-safe operation and necessary controls only.",
+            "Show a plain-language summary of hidden advanced controls.",
+            "Reveal optional controls when the user asks or the task requires them.",
+            "Require explicit user choice before entering advanced mode."
+          ],
+          "preview_and_confirmation_flow": [
+            "Generate a non-destructive preview or consequence summary.",
+            "Show applied result and proof/status after execution."
+          ],
+          "error_recovery_flow": [
+            "Validate inputs before execution.",
+            "Keep cancel available until the commit point.",
+            "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+            "Record failure details without claiming success."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": true,
+          "operation_class": "guided_advanced_operation",
+          "allowed_operations": [
+            "generate a sandboxed starter project"
+          ],
+          "restricted_operations": [
+            "edit build scripts",
+            "run arbitrary commands"
+          ],
+          "default_values": {
+            "preview_before_apply": true,
+            "confirmation_required": false,
+            "retain_recovery_point": true,
+            "show_hidden_control_summary": true
+          },
+          "guided_steps": [
+            "State the intended goal in plain language.",
+            "Provide only the inputs required for the selected safe operation.",
+            "Review a preview or consequence summary before applying the operation.",
+            "Run the operation.",
+            "Show the result, proof/status, and the available recovery action.",
+            "Offer advanced mode as an explicit user choice; do not switch silently."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "high",
+            "attention": "high",
+            "complexity": "high"
+          },
+          "reasons_for_restrictions": [
+            "Risk level requires staged review and explicit consequence explanation.",
+            "Full control exceeds the user's current declared skill level."
+          ]
+        },
+        "advanced_layer": {
+          "available": true,
+          "unlock_method": "demonstrated_skill",
+          "additional_controls": [
+            "edit build scripts",
+            "run arbitrary commands"
+          ],
+          "additional_risks": [
+            "build failure",
+            "generated code mismatch"
+          ],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {
+            "attention": "medium",
+            "interaction": "medium",
+            "minimum_skill": "beginner",
+            "deterministic_score": 102.0,
+            "compute_overhead": "medium",
+            "required_tool_any": []
+          },
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "wizard",
+              "interface_name": "Wizard / step-by-step flow",
+              "score": 82.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "guided_form",
+              "interface_name": "Guided form",
+              "score": 61.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "before_after_comparison",
+              "interface_name": "Before-and-after comparison",
+              "score": 52.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: software_build.",
+            "Declared input types: text, files, constraints.",
+            "Declared output types: code, build, logs.",
+            "Risk level: moderate.",
+            "Reversibility: partly_reversible.",
+            "Proof status: tested."
+          ],
+          "inferences_used": [],
+          "unknowns": [],
+          "conflicts": [],
+          "source_references": [
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/axm.software.generate_build.source.json",
+              "source_hash": "sha256:fixture-axm.software.generate_build",
+              "last_verified_at": "2026-08-03T03:56:47Z",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.software.generate_build",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "structured_prompt_builder",
+            "interface_name": "Structured prompt builder",
+            "interface_family": "guided_generation",
+            "score": 102.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'software_build'.",
+              "Input fit: constraints, files, text.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern supports a visible human-AI collaboration boundary.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "medium",
+            "required_tool_any": []
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "wizard",
+            "interface_name": "Wizard / step-by-step flow",
+            "interface_family": "guided_sequence",
+            "score": 82.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'software_build'.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 61.0,
+            "reasons": [
+              "Input fit: text.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "The number of decisions fits a compact guided form.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "before_after_comparison",
+            "interface_name": "Before-and-after comparison",
+            "interface_family": "comparison",
+            "score": 52.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget.",
+              "Required feature fit: diff."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "file_browser",
+            "interface_name": "File browser",
+            "interface_family": "file_selection",
+            "score": 48.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "04_destructive_file_deletion",
+      "capability_id": "axm.file.delete",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "DECLARED_ONLY",
+        "declared_hash": "sha256:fixture-axm.file.delete",
+        "computed_hash": "",
+        "reason": "A source hash is declared, but source payload bytes were not supplied to this gate."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.d41f61d340f799b6",
+        "capability_id": "axm.file.delete",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "beginner",
+          "user_goal": "Remove selected obsolete files",
+          "task_type": "destructive_file_deletion",
+          "device_types": [
+            "desktop"
+          ],
+          "available_tools": [
+            "trash",
+            "audit_log"
+          ],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "low",
+            "time": "short",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "collaboration_mode": "supervised_automation"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "approval_confirmation",
+          "interface_name": "Approval and confirmation interface",
+          "interface_family": "safety_gate",
+          "confidence": 0.978,
+          "recommendation_status": "conditional",
+          "why_this_interface": [
+            "Pattern explicitly supports task type 'destructive_file_deletion'.",
+            "Output fit: audit_record.",
+            "User skill meets the pattern's minimum.",
+            "Pattern is suitable for beginners.",
+            "Pattern fits an available device.",
+            "Preview support lowers avoidable error cost.",
+            "Pattern supports exact review or parameter entry.",
+            "Pattern supports supervised automation with human oversight.",
+            "Explicit approval matches the declared consequence and confirmation requirements.",
+            "Pattern reduces the declared high recovery cost."
+          ],
+          "why_not_other_interfaces": [
+            "Guided form: High-consequence action lacks a strong explicit approval gate.",
+            "Wizard / step-by-step flow: Pattern exceeds the stated attention budget.",
+            "File browser: High-consequence action lacks a strong explicit approval gate."
+          ],
+          "required_controls": [
+            "target_summary",
+            "explicit_confirmation",
+            "audit_log",
+            "summary",
+            "consequences",
+            "preview",
+            "approve",
+            "cancel"
+          ],
+          "optional_controls": [
+            "help",
+            "undo"
+          ],
+          "hidden_advanced_controls": [
+            "permanent recursive deletion"
+          ],
+          "progressive_disclosure_plan": [
+            "Start with the declared beginner-safe operation and necessary controls only.",
+            "Show a plain-language summary of hidden advanced controls.",
+            "Reveal optional controls when the user asks or the task requires them.",
+            "Require explicit user choice before entering advanced mode."
+          ],
+          "preview_and_confirmation_flow": [
+            "Generate a non-destructive preview or consequence summary.",
+            "Require explicit confirmation after preview and before execution.",
+            "Show applied result and proof/status after execution."
+          ],
+          "error_recovery_flow": [
+            "Validate inputs before execution.",
+            "Keep cancel available until the commit point.",
+            "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+            "Record failure details without claiming success."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": true,
+          "operation_class": "restricted_safe_operation",
+          "allowed_operations": [
+            "move one file to recoverable trash"
+          ],
+          "restricted_operations": [
+            "permanent recursive deletion"
+          ],
+          "default_values": {
+            "preview_before_apply": true,
+            "confirmation_required": true,
+            "retain_recovery_point": false,
+            "show_hidden_control_summary": true
+          },
+          "guided_steps": [
+            "State the intended goal in plain language.",
+            "Provide only the inputs required for the selected safe operation.",
+            "Review a preview or consequence summary before applying the operation.",
+            "Give explicit confirmation after reviewing the target and consequences.",
+            "Run the operation.",
+            "Show the result, proof/status, and the available recovery action.",
+            "Offer advanced mode as an explicit user choice; do not switch silently."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "low",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "reasons_for_restrictions": [
+            "Irreversible variants remain restricted from the beginner layer.",
+            "Risk level requires staged review and explicit consequence explanation."
+          ]
+        },
+        "advanced_layer": {
+          "available": true,
+          "unlock_method": "demonstrated_skill",
+          "additional_controls": [
+            "permanent recursive deletion"
+          ],
+          "additional_risks": [
+            "unintended data loss"
+          ],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {
+            "attention": "low",
+            "interaction": "low",
+            "minimum_skill": "beginner",
+            "deterministic_score": 154.0,
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "guided_form",
+              "interface_name": "Guided form",
+              "score": 62.0,
+              "tradeoff": "High-consequence action lacks a strong explicit approval gate."
+            },
+            {
+              "interface_pattern_id": "wizard",
+              "interface_name": "Wizard / step-by-step flow",
+              "score": 53.0,
+              "tradeoff": "Pattern exceeds the stated attention budget."
+            },
+            {
+              "interface_pattern_id": "file_browser",
+              "interface_name": "File browser",
+              "score": 49.0,
+              "tradeoff": "High-consequence action lacks a strong explicit approval gate."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: destructive_file_deletion.",
+            "Declared input types: file, folder.",
+            "Declared output types: status, audit_record.",
+            "Risk level: high.",
+            "Reversibility: irreversible.",
+            "Proof status: tested."
+          ],
+          "inferences_used": [],
+          "unknowns": [],
+          "conflicts": [],
+          "source_references": [
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/axm.file.delete.source.json",
+              "source_hash": "sha256:fixture-axm.file.delete",
+              "last_verified_at": "2026-08-03T03:56:47Z",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.file.delete",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "approval_confirmation",
+            "interface_name": "Approval and confirmation interface",
+            "interface_family": "safety_gate",
+            "score": 154.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'destructive_file_deletion'.",
+              "Output fit: audit_record.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern supports exact review or parameter entry.",
+              "Pattern supports supervised automation with human oversight.",
+              "Explicit approval matches the declared consequence and confirmation requirements.",
+              "Pattern reduces the declared high recovery cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 62.0,
+            "reasons": [
+              "Input fit: file.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern supports exact review or parameter entry.",
+              "The number of decisions fits a compact guided form.",
+              "Pattern reduces the declared high recovery cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "High-consequence action lacks a strong explicit approval gate."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "wizard",
+            "interface_name": "Wizard / step-by-step flow",
+            "interface_family": "guided_sequence",
+            "score": 53.0,
+            "reasons": [
+              "Output fit: status.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern includes a review or confirmation control.",
+              "Pattern reduces the declared high recovery cost.",
+              "Interface overhead stays within the compute budget."
+            ],
+            "penalties": [
+              "Pattern exceeds the stated attention budget."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "file_browser",
+            "interface_name": "File browser",
+            "interface_family": "file_selection",
+            "score": 49.0,
+            "reasons": [
+              "Input fit: file, folder.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern reduces the declared high recovery cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "High-consequence action lacks a strong explicit approval gate."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "before_after_comparison",
+            "interface_name": "Before-and-after comparison",
+            "interface_family": "comparison",
+            "score": 39.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern reduces the declared high recovery cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "High-consequence action lacks a strong explicit approval gate."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "05_realtime_visual_editing",
+      "capability_id": "axm.visual.realtime_edit",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "DECLARED_ONLY",
+        "declared_hash": "sha256:fixture-axm.visual.realtime_edit",
+        "computed_hash": "",
+        "reason": "A source hash is declared, but source payload bytes were not supplied to this gate."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.e37a43b61a603fea",
+        "capability_id": "axm.visual.realtime_edit",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "beginner",
+          "user_goal": "Tune a visual effect interactively",
+          "task_type": "real_time_visual_editing",
+          "device_types": [
+            "desktop"
+          ],
+          "available_tools": [
+            "renderer"
+          ],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "medium",
+            "time": "short",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "collaboration_mode": "human_ai_shared"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "live_preview_controls",
+          "interface_name": "Live preview with controls",
+          "interface_family": "previewed_manipulation",
+          "confidence": 0.978,
+          "recommendation_status": "recommended",
+          "why_this_interface": [
+            "Pattern explicitly supports task type 'real_time_visual_editing'.",
+            "Input fit: image, parameters, pointer.",
+            "Output fit: visual_preview.",
+            "Pattern is suitable for beginners.",
+            "Pattern fits an available device.",
+            "Live feedback requirement is matched by live preview.",
+            "Pattern is suited to continuous interaction or observation.",
+            "A required supporting tool is available.",
+            "Interface overhead stays within the compute budget.",
+            "Required feature fit: undo."
+          ],
+          "why_not_other_interfaces": [
+            "Guided form: Pattern offers preview, but not continuous live feedback.",
+            "Before-and-after comparison: Pattern offers preview, but not continuous live feedback.",
+            "File browser: Pattern offers preview, but not continuous live feedback."
+          ],
+          "required_controls": [
+            "live_preview",
+            "undo",
+            "reset",
+            "preview",
+            "controls",
+            "before_after",
+            "apply"
+          ],
+          "optional_controls": [
+            "help",
+            "undo"
+          ],
+          "hidden_advanced_controls": [
+            "custom shader parameters"
+          ],
+          "progressive_disclosure_plan": [
+            "Start with the declared beginner-safe operation and necessary controls only.",
+            "Show a plain-language summary of hidden advanced controls.",
+            "Reveal optional controls when the user asks or the task requires them.",
+            "Require explicit user choice before entering advanced mode."
+          ],
+          "preview_and_confirmation_flow": [
+            "Generate a non-destructive preview or consequence summary.",
+            "Show applied result and proof/status after execution."
+          ],
+          "error_recovery_flow": [
+            "Validate inputs before execution.",
+            "Keep cancel available until the commit point.",
+            "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+            "Record failure details without claiming success."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": true,
+          "operation_class": "simplified_control",
+          "allowed_operations": [
+            "Edit visuals in real time"
+          ],
+          "restricted_operations": [
+            "custom shader parameters"
+          ],
+          "default_values": {
+            "preview_before_apply": true,
+            "confirmation_required": false,
+            "retain_recovery_point": true,
+            "show_hidden_control_summary": true
+          },
+          "guided_steps": [
+            "State the intended goal in plain language.",
+            "Provide only the inputs required for the selected safe operation.",
+            "Review a preview or consequence summary before applying the operation.",
+            "Run the operation.",
+            "Show the result, proof/status, and the available recovery action.",
+            "Offer advanced mode as an explicit user choice; do not switch silently."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "medium",
+            "attention": "medium",
+            "complexity": "low"
+          },
+          "reasons_for_restrictions": []
+        },
+        "advanced_layer": {
+          "available": true,
+          "unlock_method": "manual_choice",
+          "additional_controls": [
+            "custom shader parameters"
+          ],
+          "additional_risks": [],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {
+            "attention": "medium",
+            "interaction": "medium",
+            "minimum_skill": "basic",
+            "deterministic_score": 92.0,
+            "compute_overhead": "medium",
+            "required_tool_any": [
+              "renderer",
+              "image_renderer"
+            ]
+          },
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "guided_form",
+              "interface_name": "Guided form",
+              "score": 54.0,
+              "tradeoff": "Pattern offers preview, but not continuous live feedback."
+            },
+            {
+              "interface_pattern_id": "before_after_comparison",
+              "interface_name": "Before-and-after comparison",
+              "score": 41.0,
+              "tradeoff": "Pattern offers preview, but not continuous live feedback."
+            },
+            {
+              "interface_pattern_id": "file_browser",
+              "interface_name": "File browser",
+              "score": 41.0,
+              "tradeoff": "Pattern offers preview, but not continuous live feedback."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: real_time_visual_editing.",
+            "Declared input types: image, pointer, parameters.",
+            "Declared output types: visual_preview, image.",
+            "Risk level: low.",
+            "Reversibility: fully_reversible.",
+            "Proof status: tested."
+          ],
+          "inferences_used": [],
+          "unknowns": [],
+          "conflicts": [],
+          "source_references": [
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/axm.visual.realtime_edit.source.json",
+              "source_hash": "sha256:fixture-axm.visual.realtime_edit",
+              "last_verified_at": "2026-08-03T03:56:47Z",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.visual.realtime_edit",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "live_preview_controls",
+            "interface_name": "Live preview with controls",
+            "interface_family": "previewed_manipulation",
+            "score": 92.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'real_time_visual_editing'.",
+              "Input fit: image, parameters, pointer.",
+              "Output fit: visual_preview.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Live feedback requirement is matched by live preview.",
+              "Pattern is suited to continuous interaction or observation.",
+              "A required supporting tool is available.",
+              "Interface overhead stays within the compute budget.",
+              "Required feature fit: undo."
+            ],
+            "penalties": [
+              "Pattern requires basic skill, above the user's beginner level.",
+              "Pattern exceeds the stated attention budget."
+            ],
+            "minimum_user_skill": "basic",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "medium",
+            "required_tool_any": [
+              "renderer",
+              "image_renderer"
+            ]
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 54.0,
+            "reasons": [
+              "Input fit: parameters.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "The number of decisions fits a compact guided form.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "before_after_comparison",
+            "interface_name": "Before-and-after comparison",
+            "interface_family": "comparison",
+            "score": 41.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "file_browser",
+            "interface_name": "File browser",
+            "interface_family": "file_selection",
+            "score": 41.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "searchable_library",
+            "interface_name": "Searchable library",
+            "interface_family": "discovery",
+            "score": 41.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "06_data_analysis",
+      "capability_id": "axm.data.analyze",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "DECLARED_ONLY",
+        "declared_hash": "sha256:fixture-axm.data.analyze",
+        "computed_hash": "",
+        "reason": "A source hash is declared, but source payload bytes were not supplied to this gate."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.6267d4da9ecde1c8",
+        "capability_id": "axm.data.analyze",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "basic",
+          "user_goal": "Find trends in a CSV",
+          "task_type": "data_analysis",
+          "device_types": [
+            "desktop"
+          ],
+          "available_tools": [
+            "table_engine"
+          ],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "medium",
+            "time": "short",
+            "attention": "medium",
+            "complexity": "low"
+          },
+          "collaboration_mode": "human_ai_shared"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "table_spreadsheet",
+          "interface_name": "Table / spreadsheet",
+          "interface_family": "tabular_work",
+          "confidence": 0.978,
+          "recommendation_status": "conditional",
+          "why_this_interface": [
+            "Pattern explicitly supports task type 'data_analysis'.",
+            "Input fit: columns, csv, numbers, rows.",
+            "Output fit: analysis, chart, table.",
+            "User skill meets the pattern's minimum.",
+            "Pattern is suitable for beginners.",
+            "Pattern fits an available device.",
+            "Preview support lowers avoidable error cost.",
+            "A required supporting tool is available.",
+            "Interface overhead stays within the compute budget.",
+            "Pattern stays within the attention budget."
+          ],
+          "why_not_other_interfaces": [
+            "Guided form: Lower deterministic fit score.",
+            "Conversational interface: Lower deterministic fit score.",
+            "Property inspector: Lower deterministic fit score."
+          ],
+          "required_controls": [
+            "filter",
+            "sort",
+            "provenance",
+            "export",
+            "table",
+            "formula",
+            "undo"
+          ],
+          "optional_controls": [
+            "help",
+            "undo"
+          ],
+          "hidden_advanced_controls": [
+            "custom formulas",
+            "statistical model configuration"
+          ],
+          "progressive_disclosure_plan": [
+            "Start with the declared beginner-safe operation and necessary controls only.",
+            "Show a plain-language summary of hidden advanced controls.",
+            "Reveal optional controls when the user asks or the task requires them.",
+            "Require explicit user choice before entering advanced mode."
+          ],
+          "preview_and_confirmation_flow": [
+            "Generate a non-destructive preview or consequence summary.",
+            "Show applied result and proof/status after execution."
+          ],
+          "error_recovery_flow": [
+            "Validate inputs before execution.",
+            "Keep cancel available until the commit point.",
+            "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+            "Record failure details without claiming success."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": true,
+          "operation_class": "simplified_control",
+          "allowed_operations": [
+            "Analyze structured data"
+          ],
+          "restricted_operations": [
+            "custom formulas",
+            "statistical model configuration"
+          ],
+          "default_values": {
+            "preview_before_apply": true,
+            "confirmation_required": false,
+            "retain_recovery_point": true,
+            "show_hidden_control_summary": true
+          },
+          "guided_steps": [
+            "State the intended goal in plain language.",
+            "Provide only the inputs required for the selected safe operation.",
+            "Review a preview or consequence summary before applying the operation.",
+            "Run the operation.",
+            "Show the result, proof/status, and the available recovery action.",
+            "Offer advanced mode as an explicit user choice; do not switch silently."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "medium",
+            "attention": "medium",
+            "complexity": "low"
+          },
+          "reasons_for_restrictions": [
+            "Risk level requires staged review and explicit consequence explanation."
+          ]
+        },
+        "advanced_layer": {
+          "available": true,
+          "unlock_method": "demonstrated_skill",
+          "additional_controls": [
+            "custom formulas",
+            "statistical model configuration"
+          ],
+          "additional_risks": [
+            "misinterpretation",
+            "incorrect column typing"
+          ],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {
+            "attention": "medium",
+            "interaction": "medium",
+            "minimum_skill": "basic",
+            "deterministic_score": 126.0,
+            "compute_overhead": "low",
+            "required_tool_any": [
+              "table_engine",
+              "spreadsheet"
+            ]
+          },
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "guided_form",
+              "interface_name": "Guided form",
+              "score": 56.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "conversational_interface",
+              "interface_name": "Conversational interface",
+              "score": 53.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "property_inspector",
+              "interface_name": "Property inspector",
+              "score": 53.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: data_analysis.",
+            "Declared input types: csv, rows, columns, numbers.",
+            "Declared output types: table, chart, analysis.",
+            "Risk level: moderate.",
+            "Reversibility: fully_reversible.",
+            "Proof status: tested."
+          ],
+          "inferences_used": [],
+          "unknowns": [],
+          "conflicts": [],
+          "source_references": [
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/axm.data.analyze.source.json",
+              "source_hash": "sha256:fixture-axm.data.analyze",
+              "last_verified_at": "2026-08-03T03:56:47Z",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.data.analyze",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "table_spreadsheet",
+            "interface_name": "Table / spreadsheet",
+            "interface_family": "tabular_work",
+            "score": 126.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'data_analysis'.",
+              "Input fit: columns, csv, numbers, rows.",
+              "Output fit: analysis, chart, table.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "A required supporting tool is available.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget.",
+              "Required feature fit: filter, sort."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "basic",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "low",
+            "required_tool_any": [
+              "table_engine",
+              "spreadsheet"
+            ]
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 56.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "The number of decisions fits a compact guided form.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "conversational_interface",
+            "interface_name": "Conversational interface",
+            "interface_family": "natural_language",
+            "score": 53.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern supports a visible human-AI collaboration boundary.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "basic",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "medium",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "property_inspector",
+            "interface_name": "Property inspector",
+            "interface_family": "parameter_editing",
+            "score": 53.0,
+            "reasons": [
+              "Input fit: numbers.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "basic",
+            "attention_cost": "medium",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "structured_prompt_builder",
+            "interface_name": "Structured prompt builder",
+            "interface_family": "guided_generation",
+            "score": 53.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern supports a visible human-AI collaboration boundary.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "medium",
+            "required_tool_any": []
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "07_game_controller_input",
+      "capability_id": "axm.input.game_controller",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "DECLARED_ONLY",
+        "declared_hash": "sha256:fixture-axm.input.game_controller",
+        "computed_hash": "",
+        "reason": "A source hash is declared, but source payload bytes were not supplied to this gate."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.4dbc9582ff443e61",
+        "capability_id": "axm.input.game_controller",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "beginner",
+          "user_goal": "Control a simulated character",
+          "task_type": "game_controller_input",
+          "device_types": [
+            "controller",
+            "desktop"
+          ],
+          "available_tools": [
+            "controller_driver"
+          ],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "very_low",
+            "time": "short",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "collaboration_mode": "human_only"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "controller_game_style",
+          "interface_name": "Controller / game-style interface",
+          "interface_family": "continuous_control",
+          "confidence": 0.978,
+          "recommendation_status": "recommended",
+          "why_this_interface": [
+            "Pattern explicitly supports task type 'game_controller_input'.",
+            "Input fit: controller.",
+            "Output fit: movement, simulation_state.",
+            "Pattern is suitable for beginners.",
+            "Pattern fits an available device.",
+            "Live feedback requirement is matched by live preview.",
+            "Pattern is suited to continuous interaction or observation.",
+            "A required supporting tool is available.",
+            "Interface overhead stays within the compute budget.",
+            "Required feature fit: deadzone, pause."
+          ],
+          "why_not_other_interfaces": [
+            "Guided form: Pattern offers preview, but not continuous live feedback.",
+            "File browser: Pattern offers preview, but not continuous live feedback.",
+            "Approval and confirmation interface: Pattern offers preview, but not continuous live feedback."
+          ],
+          "required_controls": [
+            "input_mapping",
+            "pause",
+            "deadzone",
+            "input_map",
+            "feedback"
+          ],
+          "optional_controls": [
+            "help",
+            "undo"
+          ],
+          "hidden_advanced_controls": [
+            "custom input curves"
+          ],
+          "progressive_disclosure_plan": [
+            "Start with the declared beginner-safe operation and necessary controls only.",
+            "Show a plain-language summary of hidden advanced controls.",
+            "Reveal optional controls when the user asks or the task requires them.",
+            "Require explicit user choice before entering advanced mode."
+          ],
+          "preview_and_confirmation_flow": [
+            "Generate a non-destructive preview or consequence summary.",
+            "Show applied result and proof/status after execution."
+          ],
+          "error_recovery_flow": [
+            "Validate inputs before execution.",
+            "Keep cancel available until the commit point.",
+            "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+            "Record failure details without claiming success."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": true,
+          "operation_class": "simplified_control",
+          "allowed_operations": [
+            "Receive game controller input"
+          ],
+          "restricted_operations": [
+            "custom input curves"
+          ],
+          "default_values": {
+            "preview_before_apply": true,
+            "confirmation_required": false,
+            "retain_recovery_point": true,
+            "show_hidden_control_summary": true
+          },
+          "guided_steps": [
+            "State the intended goal in plain language.",
+            "Provide only the inputs required for the selected safe operation.",
+            "Review a preview or consequence summary before applying the operation.",
+            "Run the operation.",
+            "Show the result, proof/status, and the available recovery action.",
+            "Offer advanced mode as an explicit user choice; do not switch silently."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "very_low",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "reasons_for_restrictions": []
+        },
+        "advanced_layer": {
+          "available": true,
+          "unlock_method": "manual_choice",
+          "additional_controls": [
+            "custom input curves"
+          ],
+          "additional_risks": [],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {
+            "attention": "medium",
+            "interaction": "low",
+            "minimum_skill": "basic",
+            "deterministic_score": 91.0,
+            "compute_overhead": "very_low",
+            "required_tool_any": [
+              "controller_driver"
+            ]
+          },
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "guided_form",
+              "interface_name": "Guided form",
+              "score": 49.0,
+              "tradeoff": "Pattern offers preview, but not continuous live feedback."
+            },
+            {
+              "interface_pattern_id": "file_browser",
+              "interface_name": "File browser",
+              "score": 41.0,
+              "tradeoff": "Pattern offers preview, but not continuous live feedback."
+            },
+            {
+              "interface_pattern_id": "approval_confirmation",
+              "interface_name": "Approval and confirmation interface",
+              "score": 33.0,
+              "tradeoff": "Pattern offers preview, but not continuous live feedback."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: game_controller_input.",
+            "Declared input types: controller, buttons, axes.",
+            "Declared output types: movement, simulation_state.",
+            "Risk level: minimal.",
+            "Reversibility: fully_reversible.",
+            "Proof status: tested."
+          ],
+          "inferences_used": [],
+          "unknowns": [],
+          "conflicts": [],
+          "source_references": [
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/axm.input.game_controller.source.json",
+              "source_hash": "sha256:fixture-axm.input.game_controller",
+              "last_verified_at": "2026-08-03T03:56:47Z",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.input.game_controller",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "controller_game_style",
+            "interface_name": "Controller / game-style interface",
+            "interface_family": "continuous_control",
+            "score": 91.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'game_controller_input'.",
+              "Input fit: controller.",
+              "Output fit: movement, simulation_state.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Live feedback requirement is matched by live preview.",
+              "Pattern is suited to continuous interaction or observation.",
+              "A required supporting tool is available.",
+              "Interface overhead stays within the compute budget.",
+              "Required feature fit: deadzone, pause."
+            ],
+            "penalties": [
+              "Pattern requires basic skill, above the user's beginner level.",
+              "Pattern exceeds the stated attention budget."
+            ],
+            "minimum_user_skill": "basic",
+            "attention_cost": "medium",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": [
+              "controller_driver"
+            ]
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 49.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "The number of decisions fits a compact guided form.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "file_browser",
+            "interface_name": "File browser",
+            "interface_family": "file_selection",
+            "score": 41.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "approval_confirmation",
+            "interface_name": "Approval and confirmation interface",
+            "interface_family": "safety_gate",
+            "score": 33.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback.",
+              "An approval gate would add unnecessary friction for this low-risk task."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "before_after_comparison",
+            "interface_name": "Before-and-after comparison",
+            "interface_family": "comparison",
+            "score": 27.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "Pattern offers preview, but not continuous live feedback.",
+              "Interface overhead exceeds the compute budget."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "08_long_running_automation",
+      "capability_id": "axm.automation.long_run",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "DECLARED_ONLY",
+        "declared_hash": "sha256:fixture-axm.automation.long_run",
+        "computed_hash": "",
+        "reason": "A source hash is declared, but source payload bytes were not supplied to this gate."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.5ec7b51c8625d7d2",
+        "capability_id": "axm.automation.long_run",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "basic",
+          "user_goal": "Run a repeatable nightly packaging workflow",
+          "task_type": "long_running_automation",
+          "device_types": [
+            "desktop"
+          ],
+          "available_tools": [
+            "scheduler",
+            "logger"
+          ],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "medium",
+            "time": "short",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "collaboration_mode": "supervised_automation"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "automation_recipe_builder",
+          "interface_name": "Automation recipe builder",
+          "interface_family": "automation",
+          "confidence": 0.748,
+          "recommendation_status": "conditional",
+          "why_this_interface": [
+            "Pattern explicitly supports task type 'long_running_automation'.",
+            "Input fit: actions, conditions, schedule, trigger.",
+            "Output fit: logs, run_status.",
+            "User skill meets the pattern's minimum.",
+            "Pattern is suitable for beginners.",
+            "Pattern fits an available device.",
+            "Pattern supports supervised automation with human oversight.",
+            "Trigger-action structure fits a repeatable long-running workflow.",
+            "A required supporting tool is available.",
+            "Interface overhead stays within the compute budget."
+          ],
+          "why_not_other_interfaces": [
+            "Approval and confirmation interface: Lower deterministic fit score.",
+            "Monitoring / status interface: A safe preview is recommended but not well supported.",
+            "Wizard / step-by-step flow: Pattern exceeds the stated attention budget."
+          ],
+          "required_controls": [
+            "test_run",
+            "pause",
+            "stop",
+            "logs",
+            "approval",
+            "trigger",
+            "conditions",
+            "actions"
+          ],
+          "optional_controls": [
+            "help",
+            "undo",
+            "disable",
+            "approval"
+          ],
+          "hidden_advanced_controls": [
+            "unattended schedule",
+            "external side effects"
+          ],
+          "progressive_disclosure_plan": [
+            "Start with the declared beginner-safe operation and necessary controls only.",
+            "Show a plain-language summary of hidden advanced controls.",
+            "Reveal optional controls when the user asks or the task requires them.",
+            "Require explicit user choice before entering advanced mode."
+          ],
+          "preview_and_confirmation_flow": [
+            "Generate a non-destructive preview or consequence summary.",
+            "Require explicit confirmation after preview and before execution.",
+            "Show applied result and proof/status after execution."
+          ],
+          "error_recovery_flow": [
+            "Validate inputs before execution.",
+            "Keep cancel available until the commit point.",
+            "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+            "Record failure details without claiming success."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": true,
+          "operation_class": "guided_advanced_operation",
+          "allowed_operations": [
+            "run a tested recipe manually"
+          ],
+          "restricted_operations": [
+            "unattended schedule",
+            "external side effects"
+          ],
+          "default_values": {
+            "preview_before_apply": true,
+            "confirmation_required": true,
+            "retain_recovery_point": true,
+            "show_hidden_control_summary": true
+          },
+          "guided_steps": [
+            "State the intended goal in plain language.",
+            "Provide only the inputs required for the selected safe operation.",
+            "Review a preview or consequence summary before applying the operation.",
+            "Give explicit confirmation after reviewing the target and consequences.",
+            "Run the operation.",
+            "Show the result, proof/status, and the available recovery action.",
+            "Offer advanced mode as an explicit user choice; do not switch silently."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "medium",
+            "attention": "low",
+            "complexity": "high"
+          },
+          "reasons_for_restrictions": [
+            "Risk level requires staged review and explicit consequence explanation.",
+            "Full control exceeds the user's current declared skill level."
+          ]
+        },
+        "advanced_layer": {
+          "available": true,
+          "unlock_method": "demonstrated_skill",
+          "additional_controls": [
+            "unattended schedule",
+            "external side effects"
+          ],
+          "additional_risks": [
+            "repeated unintended action",
+            "resource exhaustion"
+          ],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {
+            "attention": "medium",
+            "interaction": "medium",
+            "minimum_skill": "basic",
+            "deterministic_score": 102.0,
+            "compute_overhead": "low",
+            "required_tool_any": [
+              "scheduler"
+            ]
+          },
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "approval_confirmation",
+              "interface_name": "Approval and confirmation interface",
+              "score": 95.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "monitoring_status",
+              "interface_name": "Monitoring / status interface",
+              "score": 49.0,
+              "tradeoff": "A safe preview is recommended but not well supported."
+            },
+            {
+              "interface_pattern_id": "wizard",
+              "interface_name": "Wizard / step-by-step flow",
+              "score": 38.0,
+              "tradeoff": "Pattern exceeds the stated attention budget."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: long_running_automation.",
+            "Declared input types: trigger, conditions, actions, schedule.",
+            "Declared output types: run_status, logs, artifacts.",
+            "Risk level: moderate.",
+            "Reversibility: partly_reversible.",
+            "Proof status: tested."
+          ],
+          "inferences_used": [],
+          "unknowns": [],
+          "conflicts": [],
+          "source_references": [
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/axm.automation.long_run.source.json",
+              "source_hash": "sha256:fixture-axm.automation.long_run",
+              "last_verified_at": "2026-08-03T03:56:47Z",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.automation.long_run",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "automation_recipe_builder",
+            "interface_name": "Automation recipe builder",
+            "interface_family": "automation",
+            "score": 102.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'long_running_automation'.",
+              "Input fit: actions, conditions, schedule, trigger.",
+              "Output fit: logs, run_status.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Pattern supports supervised automation with human oversight.",
+              "Trigger-action structure fits a repeatable long-running workflow.",
+              "A required supporting tool is available.",
+              "Interface overhead stays within the compute budget.",
+              "Required feature fit: approval, logs, test_run."
+            ],
+            "penalties": [
+              "A safe preview is recommended but not well supported.",
+              "High-consequence action lacks a strong explicit approval gate.",
+              "Pattern exceeds the stated attention budget."
+            ],
+            "minimum_user_skill": "basic",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "low",
+            "required_tool_any": [
+              "scheduler"
+            ]
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "approval_confirmation",
+            "interface_name": "Approval and confirmation interface",
+            "interface_family": "safety_gate",
+            "score": 95.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern supports supervised automation with human oversight.",
+              "Explicit approval matches the declared consequence and confirmation requirements.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "monitoring_status",
+            "interface_name": "Monitoring / status interface",
+            "interface_family": "monitoring",
+            "score": 49.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Pattern supports supervised automation with human oversight.",
+              "Pattern is suited to continuous interaction or observation.",
+              "Monitoring is useful after the automation is configured.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget.",
+              "Required feature fit: logs, pause, stop."
+            ],
+            "penalties": [
+              "A safe preview is recommended but not well supported.",
+              "High-consequence action lacks a strong explicit approval gate."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "very_low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "wizard",
+            "interface_name": "Wizard / step-by-step flow",
+            "interface_family": "guided_sequence",
+            "score": 38.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "Pattern includes a review or confirmation control.",
+              "Interface overhead stays within the compute budget."
+            ],
+            "penalties": [
+              "Pattern exceeds the stated attention budget."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "medium",
+            "interaction_cost": "medium",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 37.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Preview support lowers avoidable error cost.",
+              "The number of decisions fits a compact guided form.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [
+              "High-consequence action lacks a strong explicit approval gate."
+            ],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "09_incomplete_documentation",
+      "capability_id": "axm.unknown.partial",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "MISSING",
+        "declared_hash": "",
+        "computed_hash": "",
+        "reason": "No source hash was declared."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.6c75c059517a034b",
+        "capability_id": "axm.unknown.partial",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "beginner",
+          "user_goal": "Use the capability safely",
+          "task_type": "unknown_task",
+          "device_types": [
+            "desktop"
+          ],
+          "available_tools": [],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "low",
+            "time": "short",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "collaboration_mode": "human_ai_shared"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "",
+          "interface_name": "",
+          "interface_family": "",
+          "confidence": 0.0,
+          "recommendation_status": "insufficient_information",
+          "why_this_interface": [
+            "A safe recommendation is blocked until critical evidence is resolved."
+          ],
+          "why_not_other_interfaces": [],
+          "required_controls": [],
+          "optional_controls": [],
+          "hidden_advanced_controls": [],
+          "progressive_disclosure_plan": [
+            "Do not expose execution controls while the recommendation is blocked."
+          ],
+          "preview_and_confirmation_flow": [
+            "Show unresolved unknowns or conflicts instead of a fake preview."
+          ],
+          "error_recovery_flow": [
+            "Correct the source record, revalidate it, and rerun deterministic selection."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": false,
+          "operation_class": "restricted_safe_operation",
+          "allowed_operations": [],
+          "restricted_operations": [],
+          "default_values": {},
+          "guided_steps": [
+            "Resolve the listed unknowns or conflicts.",
+            "Revalidate the capability record.",
+            "Generate a new recommendation only after evidence is adequate."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "none",
+            "attention": "low",
+            "complexity": "blocked"
+          },
+          "reasons_for_restrictions": [
+            "The system cannot honestly expose a beginner operation while critical evidence is unresolved."
+          ]
+        },
+        "advanced_layer": {
+          "available": false,
+          "unlock_method": "not_available",
+          "additional_controls": [],
+          "additional_risks": [],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {},
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "simple_action_button",
+              "interface_name": "Simple action button",
+              "score": 48.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "before_after_comparison",
+              "interface_name": "Before-and-after comparison",
+              "score": 40.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "file_browser",
+              "interface_name": "File browser",
+              "score": 40.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: unknown_task.",
+            "Declared input types: none.",
+            "Declared output types: none.",
+            "Risk level: unknown.",
+            "Reversibility: unknown.",
+            "Proof status: unverified."
+          ],
+          "inferences_used": [],
+          "unknowns": [
+            "input_profile.input_types",
+            "output_profile.output_types",
+            "risk_profile.risk_level"
+          ],
+          "conflicts": [],
+          "source_references": [
+            {
+              "source_type": "human_note",
+              "source_location": "fixtures/partial_note.txt",
+              "source_hash": "",
+              "last_verified_at": "",
+              "confidence": 0.25
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.unknown.partial",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "simple_action_button",
+            "interface_name": "Simple action button",
+            "interface_family": "direct_action",
+            "score": 48.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "The task has few decisions and can stay direct.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "very_low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "before_after_comparison",
+            "interface_name": "Before-and-after comparison",
+            "interface_family": "comparison",
+            "score": 40.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "file_browser",
+            "interface_name": "File browser",
+            "interface_family": "file_selection",
+            "score": 40.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 40.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "monitoring_status",
+            "interface_name": "Monitoring / status interface",
+            "interface_family": "monitoring",
+            "score": 40.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "very_low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "10_conflicted_declaration",
+      "capability_id": "axm.conflicted.operation",
+      "gate_status": "PASS",
+      "reasons": [
+        "Shared record, deterministic recommendation, and expected outcome agree."
+      ],
+      "capability_validation": {
+        "valid": true,
+        "schema_kind": "capability",
+        "schema_path": "schemas/capability-interface-contract.schema.json",
+        "errors": []
+      },
+      "recommendation_validation": {
+        "valid": true,
+        "schema_kind": "recommendation",
+        "schema_path": "schemas/interface-recommendation.schema.json",
+        "errors": []
+      },
+      "provenance": {
+        "status": "DECLARED_ONLY",
+        "declared_hash": "sha256:fixture-axm.conflicted.operation",
+        "computed_hash": "",
+        "reason": "A source hash is declared, but source payload bytes were not supplied to this gate."
+      },
+      "immutable_source": {
+        "status": "PASS",
+        "mismatches": [],
+        "reason": "Source identity is unchanged."
+      },
+      "expectation_differences": [],
+      "recommendation": {
+        "contract_id": "axm.capability-interface-contract",
+        "contract_version": "0.1.0",
+        "record_kind": "interface_recommendation",
+        "recommendation_id": "axm.hii.recommendation.49b11283b61174a1",
+        "capability_id": "axm.conflicted.operation",
+        "generated_at": "2026-08-05T00:00:00Z",
+        "context": {
+          "user_skill_level": "beginner",
+          "user_goal": "Run the operation",
+          "task_type": "structured_configuration",
+          "device_types": [
+            "desktop"
+          ],
+          "available_tools": [],
+          "accessibility_needs": [],
+          "privacy_mode": "local_preferred",
+          "offline_required": true,
+          "resource_budget": {
+            "compute": "low",
+            "time": "short",
+            "attention": "low",
+            "complexity": "low"
+          },
+          "collaboration_mode": "human_ai_shared"
+        },
+        "recommended_interface": {
+          "interface_pattern_id": "",
+          "interface_name": "",
+          "interface_family": "",
+          "confidence": 0.0,
+          "recommendation_status": "no_safe_match",
+          "why_this_interface": [
+            "A safe recommendation is blocked because credible capability evidence conflicts."
+          ],
+          "why_not_other_interfaces": [],
+          "required_controls": [],
+          "optional_controls": [],
+          "hidden_advanced_controls": [],
+          "progressive_disclosure_plan": [
+            "Do not expose execution controls while the recommendation is blocked."
+          ],
+          "preview_and_confirmation_flow": [
+            "Show unresolved unknowns or conflicts instead of a fake preview."
+          ],
+          "error_recovery_flow": [
+            "Correct the source record, revalidate it, and rerun deterministic selection."
+          ]
+        },
+        "beginner_layer": {
+          "enabled": false,
+          "operation_class": "restricted_safe_operation",
+          "allowed_operations": [],
+          "restricted_operations": [],
+          "default_values": {},
+          "guided_steps": [
+            "Resolve the listed unknowns or conflicts.",
+            "Revalidate the capability record.",
+            "Generate a new recommendation only after evidence is adequate."
+          ],
+          "explanation_depth": "practical",
+          "estimated_capability_cost": {
+            "compute": "none",
+            "attention": "low",
+            "complexity": "blocked"
+          },
+          "reasons_for_restrictions": [
+            "The system cannot honestly expose a beginner operation while critical evidence is unresolved."
+          ]
+        },
+        "advanced_layer": {
+          "available": false,
+          "unlock_method": "not_available",
+          "additional_controls": [],
+          "additional_risks": [],
+          "required_knowledge": [
+            "review inputs",
+            "run safe example",
+            "inspect output"
+          ]
+        },
+        "cost_comparison": {
+          "selected_interface_cost": {},
+          "alternative_interfaces": [
+            {
+              "interface_pattern_id": "guided_form",
+              "interface_name": "Guided form",
+              "score": 97.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "simple_action_button",
+              "interface_name": "Simple action button",
+              "score": 58.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            },
+            {
+              "interface_pattern_id": "before_after_comparison",
+              "interface_name": "Before-and-after comparison",
+              "score": 45.0,
+              "tradeoff": "Lower total fit than selected pattern."
+            }
+          ],
+          "unnecessary_costs_avoided": []
+        },
+        "evidence": {
+          "facts_used": [
+            "Declared task types: structured_configuration.",
+            "Declared input types: parameters.",
+            "Declared output types: result.",
+            "Risk level: moderate.",
+            "Reversibility: partly_reversible.",
+            "Proof status: tested."
+          ],
+          "inferences_used": [],
+          "unknowns": [],
+          "conflicts": [
+            "maturity_profile.proof_status: Manifest declares tested, but observed test fixture fails the core operation."
+          ],
+          "source_references": [
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/axm.conflicted.operation.source.json",
+              "source_hash": "sha256:fixture-axm.conflicted.operation",
+              "last_verified_at": "2026-08-03T03:56:47Z",
+              "confidence": 0.95
+            },
+            {
+              "source_type": "manifest",
+              "source_location": "fixtures/conflicted.manifest.json",
+              "source_hash": "sha256:declared",
+              "last_verified_at": "2026-08-03T03:40:00Z",
+              "confidence": 0.8
+            },
+            {
+              "source_type": "test",
+              "source_location": "fixtures/conflicted.test.json",
+              "source_hash": "sha256:failed",
+              "last_verified_at": "2026-08-03T03:50:00Z",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      "score_trace": {
+        "trace_version": "0.2.0",
+        "capability_id": "axm.conflicted.operation",
+        "contract_version": "0.1.0",
+        "registry_fingerprint": "sha256:19bfdc41f7b095ffc75d20196bd7b93f98548ea1f0a478a45d47584bf0ee2929",
+        "ranked_patterns": [
+          {
+            "rank": 1,
+            "interface_pattern_id": "guided_form",
+            "interface_name": "Guided form",
+            "interface_family": "structured_input",
+            "score": 97.0,
+            "reasons": [
+              "Pattern explicitly supports task type 'structured_configuration'.",
+              "Input fit: parameters.",
+              "Output fit: result.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Pattern can expose status feedback.",
+              "The number of decisions fits a compact guided form.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 2,
+            "interface_pattern_id": "simple_action_button",
+            "interface_name": "Simple action button",
+            "interface_family": "direct_action",
+            "score": 58.0,
+            "reasons": [
+              "Output fit: result.",
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Pattern can expose status feedback.",
+              "The task has few decisions and can stay direct.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "very_low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 3,
+            "interface_pattern_id": "before_after_comparison",
+            "interface_name": "Before-and-after comparison",
+            "interface_family": "comparison",
+            "score": 45.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Pattern can expose status feedback.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "very_low",
+            "interaction_cost": "low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 4,
+            "interface_pattern_id": "file_browser",
+            "interface_name": "File browser",
+            "interface_family": "file_selection",
+            "score": 45.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Pattern can expose status feedback.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "low",
+            "compute_overhead": "very_low",
+            "required_tool_any": []
+          },
+          {
+            "rank": 5,
+            "interface_pattern_id": "monitoring_status",
+            "interface_name": "Monitoring / status interface",
+            "interface_family": "monitoring",
+            "score": 45.0,
+            "reasons": [
+              "User skill meets the pattern's minimum.",
+              "Pattern is suitable for beginners.",
+              "Pattern fits an available device.",
+              "Pattern can expose status feedback.",
+              "Interface overhead stays within the compute budget.",
+              "Pattern stays within the attention budget."
+            ],
+            "penalties": [],
+            "minimum_user_skill": "beginner",
+            "attention_cost": "low",
+            "interaction_cost": "very_low",
+            "compute_overhead": "low",
+            "required_tool_any": []
+          }
+        ]
+      }
+    }
+  ]
+}

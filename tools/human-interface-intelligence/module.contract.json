@@ -1,0 +1,18 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "human-interface-intelligence",
+  "version": "0.6.0",
+  "provides": ["interface.context.validate/v1", "interface.pattern.recommend/v0.6", "interface.decision.receipt/v1", "interface.recommendation.assure/v1", "evolution.observation.emit/advisory"],
+  "consumes": ["contract:axm.capability-interface-contract/0.1.0", "capability.record.adapted-review/v1", "human:recommendation-context"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.interface-recommendation/v0.6", "axm.interface-decision-receipt/v1", "axm.evolution-observation/advisory", "axm.quarantine-signal/advisory"],
+    "accepts": ["axm.capability-interface-contract capability record", "axm.capability-interface-adaptation-receipt/v1", "recommendation context"]
+  },
+  "boundaries": {
+    "writes": ["explicit-cli-output-only"],
+    "refuses": ["source-authority-rewrite", "automatic-execution", "automatic-code-change", "automatic-ledger-persistence", "blocked-anchor-consumption", "assurance-as-permission", "automatic-merge", "automatic-canon"]
+  },
+  "lifecycle": {"state_owner": "filesystem", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+}
+

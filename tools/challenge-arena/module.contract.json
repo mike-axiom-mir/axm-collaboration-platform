@@ -1,0 +1,58 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "challenge-arena",
+  "version": "0.6.0-workshop.1",
+  "status": "TEST",
+  "provides": [
+    "challenge.lock-and-coordinate/v0.6",
+    "challenge.deterministic-evidence/v0.6",
+    "challenge.assigned-blind-review/v0.6",
+    "challenge.evidence-bundle.verify/v0.6",
+    "challenge.human-decision-packet/v0.6"
+  ],
+  "consumes": [
+    "axm.module-job/0.1",
+    "local:candidate-artifacts",
+    "local:review-ballots",
+    "human:final-decision"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.challenge-arena-return/0.4",
+      "axm.challenge-bundle/0.4",
+      "axm.challenge-bundle-verification/0.4"
+    ],
+    "accepts": [
+      "axm.module-job/0.1",
+      "axm.challenge-arena/0.5",
+      "axm.deterministic-receipt/0.2"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "explicit-cli-selected-tool-local-workspace",
+      "explicit-cli-selected-evidence-export",
+      "explicit-cli-selected-filebridge-root"
+    ],
+    "refuses": [
+      "embedded-document-authority",
+      "candidate-content-as-instruction",
+      "candidate-execution-by-default",
+      "bounded-process-as-security-sandbox",
+      "self-voting",
+      "unassigned-review",
+      "automatic-final-decision",
+      "automatic-merge",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

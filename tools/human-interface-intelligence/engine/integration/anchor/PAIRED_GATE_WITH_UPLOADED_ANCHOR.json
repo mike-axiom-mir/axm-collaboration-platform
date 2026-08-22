@@ -1,0 +1,355 @@
+{
+  "paired_gate_version": "0.3.0",
+  "paired_gate_id": "axm.hii.paired-gate.7f791c8675bc4522",
+  "generated_at": "2026-08-09T00:20:00Z",
+  "overall_status": "BLOCKED",
+  "recommendation_execution_state": "NOT_RUN",
+  "reason": "The Module One stable anchor did not pass the strict compatibility gate. Capability records were not consumed and recommendations were not generated.",
+  "anchor_report": {
+    "report_version": "0.4.0",
+    "report_id": "axm.hii.anchor-gate.a0bcb6ca1d4b46c0",
+    "generated_at": "2026-08-09T00:20:00Z",
+    "module_two": {
+      "module_id": "axm.human-interface-intelligence",
+      "module_version": "0.6.0",
+      "contract_id": "axm.capability-interface-contract",
+      "contract_version": "0.1.0"
+    },
+    "inspected_anchor": {
+      "zip_path_name": "legacy_blocked_module1_anchor_v0_1_0.zip",
+      "zip_sha256": "cd220d9cbadaa286e1b14102a6ecf33dfb1300c6ce85e015219373003b936239",
+      "root_name": "AXM_HUMAN_CAPABILITY_ATLAS_STABLE_HANDOFF_ANCHOR_v0_1_0",
+      "package_identifier": "axm.handoff.human-capability-atlas.stable-anchor",
+      "package_version": "0.1.0",
+      "atlas_module_identifier": "axm.module.human_capability_atlas",
+      "atlas_version": "0.5.0",
+      "atlas_build_identifier": "package-sha256:c2ccaf1c3f6a08830a24edd1663e0fc46398768e22a85c453b3f75f4b650d974",
+      "producer_execution_state": {
+        "state": "RUN",
+        "scope": "Real Atlas v0.5.0 execution on the ten existing shared fixtures only.",
+        "real_axm_registry": "NOT_RUN",
+        "module_two": "NOT_RUN",
+        "local_integration": "NOT_RUN"
+      }
+    },
+    "overall_status": "CONFLICTED",
+    "strict_merge_status": "BLOCKED",
+    "safe_record_analysis_status": "NOT_RUN",
+    "recommendation_execution_state": "NOT_RUN",
+    "safe_record_analysis_reason": "The stable anchor contains fixture hashes and policies, not the full Atlas Capability Records. Schema identity must also be reconciled before paired record intake.",
+    "inventory": {
+      "status": "PASS",
+      "errors": [],
+      "unlisted_nonblocking_files": [
+        "__pycache__/axm_canonical_json.cpython-313.pyc"
+      ],
+      "declared_file_count": 17
+    },
+    "schema_comparison": [
+      {
+        "producer_schema": "shared_capability.schema.json",
+        "local_schema": "schemas/capability-interface-contract.schema.json",
+        "status": "MISMATCH",
+        "producer_sha256": "c63d2c5d4b0ae7aeb8754a5a006a1efd2364c330ad18b74064d74ec7428a71b3",
+        "local_sha256": "cf5b3d94f6dafcd9b1f2d93e7af9219db5c85f57931ecae7481f27924929a644"
+      },
+      {
+        "producer_schema": "interface_recommendation.schema.json",
+        "local_schema": "schemas/interface-recommendation.schema.json",
+        "status": "MISMATCH",
+        "producer_sha256": "b85e9916f599d2c469b00ea91b12bc3de1e7cd3cceedcd226340fad6dd636e4f",
+        "local_sha256": "90ca0bb938fba5595ef29e8fab8ca18a7c91e1b46b14000456525230a40f4062"
+      },
+      {
+        "producer_schema": "source_capability.schema.json",
+        "local_schema": null,
+        "status": "NO_CANONICAL_COUNTERPART",
+        "producer_sha256": "b0e740e64771531633e095581b063927ade7ce6fa7aac8a044065828ff3a9e09",
+        "local_sha256": "",
+        "note": "Module One source-declaration schema is not part of the standalone shared-contract v0.1.0 package."
+      },
+      {
+        "producer_schema": null,
+        "local_schema": "schemas/evidence-annotation.schema.json",
+        "status": "UNDECLARED_BY_PRODUCER",
+        "producer_sha256": "",
+        "local_sha256": "d6cfdcfbc9b7da03e6eb55a269a8d5746109db23d038bc91b93cd931a73736fe",
+        "note": "The producer anchor did not fingerprint the canonical evidence-annotation schema used by Module Two."
+      }
+    ],
+    "evidence_state_mapping_declared_by_anchor": {
+      "KNOWN": "known",
+      "INFERRED": "inferred",
+      "UNKNOWN": "unknown",
+      "CONFLICTED": "conflicted",
+      "NOT_APPLICABLE": "not_applicable"
+    },
+    "local_evidence_state_tokens": {
+      "evidence_annotation.state": [
+        "KNOWN",
+        "INFERRED",
+        "UNKNOWN",
+        "CONFLICTED",
+        "NOT_APPLICABLE"
+      ],
+      "output_profile.preview_available": [
+        "KNOWN",
+        "INFERRED",
+        "UNKNOWN",
+        "CONFLICTED",
+        "NOT_APPLICABLE"
+      ]
+    },
+    "canonicalization": {
+      "profile": "AXM-CJ-1",
+      "profile_version": "1.0.0",
+      "status": "PASS",
+      "results": [
+        {
+          "id": "key_order_decimal_unicode_nfc",
+          "status": "PASS",
+          "expected_canonical": "{\"a\":\"é\",\"b\":2.5}",
+          "actual_canonical": "{\"a\":\"é\",\"b\":2.5}",
+          "expected_sha256": "0c11e427b895bd31bef2b758889d106f3ec4a9f3028b4e380ec4567ec5f65606",
+          "actual_sha256": "0c11e427b895bd31bef2b758889d106f3ec4a9f3028b4e380ec4567ec5f65606"
+        },
+        {
+          "id": "negative_zero_nested_array",
+          "status": "PASS",
+          "expected_canonical": "{\"a\":[3,1.23,true,null],\"z\":0}",
+          "actual_canonical": "{\"a\":[3,1.23,true,null],\"z\":0}",
+          "expected_sha256": "22016ac8217086f8a3a3a5a0adb2d3ab8af9d928b748c176474750d87efe3418",
+          "actual_sha256": "22016ac8217086f8a3a3a5a0adb2d3ab8af9d928b748c176474750d87efe3418"
+        },
+        {
+          "id": "formatting_whitespace_ignored",
+          "status": "PASS",
+          "expected_canonical": "{\"nested\":{\"x\":1,\"y\":2},\"s\":\"line\\nvalue\"}",
+          "actual_canonical": "{\"nested\":{\"x\":1,\"y\":2},\"s\":\"line\\nvalue\"}",
+          "expected_sha256": "d18d3a3b36fdedba05a9eab08c887fce2d8ce9674b741754d3abbeddc806bbeb",
+          "actual_sha256": "d18d3a3b36fdedba05a9eab08c887fce2d8ce9674b741754d3abbeddc806bbeb"
+        },
+        {
+          "id": "unicode_key_normalization_collision",
+          "status": "PASS",
+          "detail": "Unicode normalization created duplicate key: 'é'"
+        }
+      ]
+    },
+    "fixture_summary": {
+      "declared_fixture_count": 10,
+      "invariant_record_count": 10,
+      "run_evidence_count": 10,
+      "identity_set_status": "PASS",
+      "duplicate_invariant_ids": [],
+      "duplicate_run_evidence_ids": [],
+      "missing_run_evidence_ids": [],
+      "unexpected_run_evidence_ids": [],
+      "shared_schema_failures": 0,
+      "stable_invariant_failures": 0,
+      "stable_evidence_policy": {
+        "PASS": 4,
+        "FAIL": 6,
+        "status": "PARTIAL"
+      }
+    },
+    "findings": [
+      {
+        "id": "package_inventory",
+        "status": "PASS",
+        "severity": "info",
+        "summary": "All inventory-declared anchor files match their byte sizes and SHA-256 hashes.",
+        "evidence": {
+          "status": "PASS",
+          "errors": [],
+          "unlisted_nonblocking_files": [
+            "__pycache__/axm_canonical_json.cpython-313.pyc"
+          ],
+          "declared_file_count": 17
+        }
+      },
+      {
+        "id": "archive_hygiene",
+        "status": "WARN",
+        "severity": "low",
+        "summary": "Archive contains compiled Python cache files that are not required for the handoff.",
+        "required_action": "Exclude __pycache__ and .pyc files from the next package; they are not needed for intake."
+      },
+      {
+        "id": "stable_identity",
+        "status": "PASS",
+        "severity": "info",
+        "summary": "Package, module, and shared-contract identifiers match the expected stable handshake identities.",
+        "evidence": {
+          "package_identifier": true,
+          "package_version": true,
+          "atlas_module_identifier": true,
+          "module_identity_identifier": true,
+          "contract_identifier": true,
+          "contract_version": true,
+          "module_contract_version": true
+        }
+      },
+      {
+        "id": "authority_enums",
+        "status": "PASS",
+        "severity": "info",
+        "summary": "Field authority vocabulary matches the requested stable set."
+      },
+      {
+        "id": "authority_map_contract_fields",
+        "status": "CONFLICTED",
+        "severity": "critical",
+        "summary": "The anchor declares shared-contract-owned fields that are absent from Module Two's standalone contract v0.1.0 schema.",
+        "evidence": {
+          "anchor_only_top_level_fields": [
+            "knowledge"
+          ]
+        },
+        "required_action": "Do not treat these as stable v0.1.0 fields. Reconcile against the standalone contract or submit a versioned shared-contract change request."
+      },
+      {
+        "id": "export_guarantees",
+        "status": "PASS",
+        "severity": "info",
+        "summary": "The requested stable export guarantees are present."
+      },
+      {
+        "id": "shared_schema_byte_identity",
+        "status": "CONFLICTED",
+        "severity": "critical",
+        "summary": "The same shared-contract version is represented by different schema bytes in Module One and Module Two.",
+        "evidence": [
+          {
+            "producer_schema": "shared_capability.schema.json",
+            "local_schema": "schemas/capability-interface-contract.schema.json",
+            "status": "MISMATCH",
+            "producer_sha256": "c63d2c5d4b0ae7aeb8754a5a006a1efd2364c330ad18b74064d74ec7428a71b3",
+            "local_sha256": "cf5b3d94f6dafcd9b1f2d93e7af9219db5c85f57931ecae7481f27924929a644"
+          },
+          {
+            "producer_schema": "interface_recommendation.schema.json",
+            "local_schema": "schemas/interface-recommendation.schema.json",
+            "status": "MISMATCH",
+            "producer_sha256": "b85e9916f599d2c469b00ea91b12bc3de1e7cd3cceedcd226340fad6dd636e4f",
+            "local_sha256": "90ca0bb938fba5595ef29e8fab8ca18a7c91e1b46b14000456525230a40f4062"
+          }
+        ],
+        "required_action": "Module One must consume the exact standalone shared-contract v0.1.0 schema files, or both modules must approve a new contract version. Do not normalize this mismatch silently."
+      },
+      {
+        "id": "evidence_state_serialization",
+        "status": "CONFLICTED",
+        "severity": "critical",
+        "summary": "Module One and Module Two serialize the same evidence-state semantics with different tokens under contract version 0.1.0.",
+        "evidence": {
+          "evidence_annotation.state": {
+            "producer": [
+              "known",
+              "inferred",
+              "unknown",
+              "conflicted",
+              "not_applicable"
+            ],
+            "module_two": [
+              "KNOWN",
+              "INFERRED",
+              "UNKNOWN",
+              "CONFLICTED",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "output_profile.preview_available": {
+            "producer": [
+              "known",
+              "inferred",
+              "unknown",
+              "conflicted",
+              "not_applicable"
+            ],
+            "module_two": [
+              "KNOWN",
+              "INFERRED",
+              "UNKNOWN",
+              "CONFLICTED",
+              "NOT_APPLICABLE"
+            ]
+          }
+        },
+        "required_action": "Use the exact standalone v0.1.0 contract serialization. A semantic mapping may be documented for diagnostics but must not rewrite records silently."
+      },
+      {
+        "id": "canonicalization_vectors",
+        "status": "PASS",
+        "severity": "info",
+        "summary": "Module Two's independent AXM-CJ-1 implementation reproduces all supplied test vectors.",
+        "evidence": {
+          "vector_count": 4
+        }
+      },
+      {
+        "id": "fixture_identity_and_run_evidence",
+        "status": "PASS",
+        "severity": "info",
+        "summary": "All ten stable fixture identities have Atlas run evidence and passed the producer's current schema and invariant checks.",
+        "evidence": {
+          "declared_fixture_count": 10,
+          "invariant_record_count": 10,
+          "run_evidence_count": 10,
+          "identity_set_status": "PASS",
+          "duplicate_invariant_ids": [],
+          "duplicate_run_evidence_ids": [],
+          "missing_run_evidence_ids": [],
+          "unexpected_run_evidence_ids": [],
+          "shared_schema_failures": 0,
+          "stable_invariant_failures": 0,
+          "stable_evidence_policy": {
+            "PASS": 4,
+            "FAIL": 6,
+            "status": "PARTIAL"
+          }
+        }
+      },
+      {
+        "id": "strict_evidence_policy",
+        "status": "PARTIAL",
+        "severity": "high",
+        "summary": "6 of 10 Atlas fixture outputs fail the anchor's own strict inference-metadata policy.",
+        "evidence": {
+          "PASS": 4,
+          "FAIL": 6,
+          "status": "PARTIAL"
+        },
+        "required_action": "Keep those inferred values non-authoritative. Align Atlas output with the accepted shared contract; do not add private fields to force a pass."
+      },
+      {
+        "id": "strict_inference_metadata_representability",
+        "status": "CONFLICTED",
+        "severity": "critical",
+        "summary": "The anchor declares mandatory inference metadata that Module Two's accepted v0.1.0 evidence schema cannot represent directly because additional properties are forbidden.",
+        "evidence": {
+          "gaps": [
+            {
+              "requirement": "evidence reference",
+              "local_schema_support": "No dedicated evidence_reference field; additional properties are forbidden."
+            },
+            {
+              "requirement": "producer/build identity for machine-generated inference",
+              "local_schema_support": "No dedicated producer or build identity field in evidence annotations; additional properties are forbidden."
+            }
+          ],
+          "local_evidence_fields": [
+            "confidence",
+            "path",
+            "reasoning",
+            "source_basis",
+            "state"
+          ]
+        },
+        "required_action": "Treat the extra metadata as a proposed shared-contract change, not a stable v0.1.0 guarantee. Do not privately extend either module's schema."
+      }
+    ],
+    "merge_rule": "Any critical identity, schema, serialization, provenance, or representability conflict blocks paired merge. No recommendation was generated from the anchor alone."
+  },
+  "cross_module_report": null
+}

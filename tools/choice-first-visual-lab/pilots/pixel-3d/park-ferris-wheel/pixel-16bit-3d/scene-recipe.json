@@ -1,0 +1,1407 @@
+{
+  "schema": "axm.pixel-3d-scene-recipe/v1",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "id": "park-ferris-wheel-pixel-16bit-3d-scene",
+  "identity_id": "axm.park.ferris-wheel",
+  "representation_profile_id": "pixel-16bit-3d",
+  "animation_state": "running",
+  "footprint": {
+    "width": 8,
+    "depth": 4,
+    "height": 9,
+    "unit": "world-unit",
+    "origin": [
+      0.5,
+      0.5,
+      0
+    ]
+  },
+  "pivots": [
+    {
+      "id": "world-origin",
+      "position": [
+        0.5,
+        0.5,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "placement"
+    },
+    {
+      "id": "wheel-axis",
+      "position": [
+        0.5,
+        0.5,
+        0.62
+      ],
+      "unit": "normalized-footprint",
+      "role": "rotation"
+    }
+  ],
+  "sockets": [
+    {
+      "id": "entry",
+      "position": [
+        0.15,
+        0.85,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "guest-entry"
+    },
+    {
+      "id": "exit",
+      "position": [
+        0.85,
+        0.85,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "guest-exit"
+    },
+    {
+      "id": "maintenance",
+      "position": [
+        0.5,
+        0.05,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "maintenance"
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel-blue",
+      "role": "steel-blue",
+      "colour": "#277DA1",
+      "unlit": false,
+      "roughness": 0.62,
+      "metallic": 0.18,
+      "double_sided": false
+    },
+    {
+      "id": "wheel-gold",
+      "role": "wheel-gold",
+      "colour": "#F9C74F",
+      "unlit": false,
+      "roughness": 0.7,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "cabin-red",
+      "role": "cabin-red",
+      "colour": "#F94144",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "cabin-green",
+      "role": "cabin-green",
+      "colour": "#43AA8B",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "base-dark",
+      "role": "base-dark",
+      "colour": "#223047",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "lamp",
+      "role": "lamp",
+      "colour": "#FDF1A7",
+      "unlit": false,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ferris-root",
+      "component_id": "base",
+      "parent_id": null,
+      "primitive": null,
+      "material_id": null,
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "base-platform",
+      "component_id": "base",
+      "parent_id": "ferris-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "base-dark",
+      "translation": [
+        0,
+        0.22,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        3.7,
+        0.22,
+        1.65
+      ]
+    },
+    {
+      "id": "support-a",
+      "component_id": "support-a",
+      "parent_id": "ferris-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        -1.65,
+        2.55,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.169182,
+        0.985585
+      ],
+      "scale": [
+        0.24,
+        2.8,
+        0.24
+      ]
+    },
+    {
+      "id": "support-b",
+      "component_id": "support-b",
+      "parent_id": "ferris-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        1.65,
+        2.55,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.169182,
+        0.985585
+      ],
+      "scale": [
+        0.24,
+        2.8,
+        0.24
+      ]
+    },
+    {
+      "id": "wheel-axis",
+      "component_id": "wheel",
+      "parent_id": "ferris-root",
+      "primitive": null,
+      "material_id": null,
+      "translation": [
+        0,
+        5.15,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "wheel-ring",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "torus",
+        "detail": 16,
+        "minor_radius": 0.06
+      },
+      "material_id": "wheel-gold",
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0.707107,
+        0,
+        0,
+        0.707107
+      ],
+      "scale": [
+        4.15,
+        4.15,
+        4.15
+      ]
+    },
+    {
+      "id": "drive-hub",
+      "component_id": "drive",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cylinder",
+        "detail": 16
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0.707107,
+        0,
+        0,
+        0.707107
+      ],
+      "scale": [
+        0.48,
+        0.42,
+        0.48
+      ]
+    },
+    {
+      "id": "control-box",
+      "component_id": "control-box",
+      "parent_id": "ferris-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-red",
+      "translation": [
+        2.8,
+        0.85,
+        0.75
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.45,
+        0.65,
+        0.38
+      ]
+    },
+    {
+      "id": "spoke-0",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        1.48,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-0",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-red",
+      "translation": [
+        3.25,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-0",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        2.73,
+        0,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-1",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        1.2817175976009694,
+        0.7399999999999999,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.258819,
+        0.965926
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-1",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-green",
+      "translation": [
+        2.814582562299426,
+        1.6249999999999998,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-1",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        2.364249352331518,
+        1.3649999999999998,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-2",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        0.7400000000000001,
+        1.2817175976009691,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.5,
+        0.866025
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-2",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-red",
+      "translation": [
+        1.6250000000000004,
+        2.8145825622994254,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-2",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        1.3650000000000002,
+        2.3642493523315173,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-3",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        9.062386313690413e-17,
+        1.48,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.707107,
+        0.707107
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-3",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-green",
+      "translation": [
+        1.9900510486144489e-16,
+        3.25,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-3",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        1.671642880836137e-16,
+        2.73,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-4",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        -0.7399999999999997,
+        1.2817175976009694,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.866025,
+        0.5
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-4",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-red",
+      "translation": [
+        -1.6249999999999993,
+        2.814582562299426,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-4",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        -1.3649999999999993,
+        2.364249352331518,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-5",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        -1.2817175976009694,
+        0.7399999999999999,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.965926,
+        0.258819
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-5",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-green",
+      "translation": [
+        -2.814582562299426,
+        1.6249999999999998,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-5",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        -2.364249352331518,
+        1.3649999999999998,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-6",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        -1.48,
+        1.8124772627380827e-16,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-6",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-red",
+      "translation": [
+        -3.25,
+        3.9801020972288977e-16,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-6",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        -2.73,
+        3.343285761672274e-16,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-7",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        -1.2817175976009691,
+        -0.7400000000000001,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.965926,
+        -0.258819
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-7",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-green",
+      "translation": [
+        -2.8145825622994254,
+        -1.6250000000000004,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-7",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        -2.3642493523315173,
+        -1.3650000000000002,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-8",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        -0.7400000000000007,
+        -1.281717597600969,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.866025,
+        -0.5
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-8",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-red",
+      "translation": [
+        -1.6250000000000013,
+        -2.814582562299425,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-8",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        -1.365000000000001,
+        -2.364249352331517,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-9",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        -2.718715894107124e-16,
+        -1.48,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.707107,
+        -0.707107
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-9",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-green",
+      "translation": [
+        -5.970153145843346e-16,
+        -3.25,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-9",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        -5.0149286425084115e-16,
+        -2.73,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-10",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        0.7400000000000001,
+        -1.2817175976009691,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.5,
+        -0.866025
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-10",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-red",
+      "translation": [
+        1.6250000000000004,
+        -2.8145825622994254,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-10",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        1.3650000000000002,
+        -2.3642493523315173,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    },
+    {
+      "id": "spoke-11",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "steel-blue",
+      "translation": [
+        1.2817175976009687,
+        -0.7400000000000007,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0.258819,
+        -0.965926
+      ],
+      "scale": [
+        1.55,
+        0.055,
+        0.055
+      ]
+    },
+    {
+      "id": "gondola-11",
+      "component_id": "gondolas",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "cabin-green",
+      "translation": [
+        2.8145825622994245,
+        -1.6250000000000013,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.38,
+        0.32,
+        0.52
+      ]
+    },
+    {
+      "id": "lamp-11",
+      "component_id": "wheel",
+      "parent_id": "wheel-axis",
+      "primitive": {
+        "type": "sphere",
+        "detail": 8
+      },
+      "material_id": "lamp",
+      "translation": [
+        2.364249352331517,
+        -1.365000000000001,
+        0.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.08,
+        0.08
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "id": "wheel-motion",
+      "name": "running",
+      "duration_seconds": 8,
+      "loop": true,
+      "channels": [
+        {
+          "node_id": "wheel-axis",
+          "path": "rotation",
+          "interpolation": "LINEAR",
+          "keys": [
+            {
+              "time": 0,
+              "value": [
+                0,
+                0,
+                0,
+                1
+              ]
+            },
+            {
+              "time": 1,
+              "value": [
+                0,
+                0,
+                0.382683,
+                0.92388
+              ]
+            },
+            {
+              "time": 2,
+              "value": [
+                0,
+                0,
+                0.707107,
+                0.707107
+              ]
+            },
+            {
+              "time": 3,
+              "value": [
+                0,
+                0,
+                0.92388,
+                0.382683
+              ]
+            },
+            {
+              "time": 4,
+              "value": [
+                0,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "time": 5,
+              "value": [
+                0,
+                0,
+                0.92388,
+                -0.382683
+              ]
+            },
+            {
+              "time": 6,
+              "value": [
+                0,
+                0,
+                0.707107,
+                -0.707107
+              ]
+            },
+            {
+              "time": 7,
+              "value": [
+                0,
+                0,
+                0.382683,
+                -0.92388
+              ]
+            },
+            {
+              "time": 8,
+              "value": [
+                0,
+                0,
+                0,
+                -1
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "budgets": {
+    "max_triangles": 6000,
+    "max_nodes": 96,
+    "max_materials": 64,
+    "max_glb_bytes": 1048576
+  },
+  "game_adapter": {
+    "format": "glTF.2.0/GLB",
+    "coordinate_system": "right-handed-y-up",
+    "unit": "world-unit",
+    "animation_clips": [
+      "running"
+    ],
+    "identity_extras": true,
+    "integration_boundary": "Engine-neutral candidate GLB; collision, physics and gameplay adapters remain caller-owned."
+  },
+  "invariants": [
+    "identity-persists-across-representations",
+    "footprint-pivots-and-sockets-are-representation-independent",
+    "simulation-state-is-not-owned-by-visual-fidelity",
+    "8-bit-and-16-bit-are-art-directions-not-hardware-bit-depth",
+    "animation-is-driven-by-semantic-state-not-visual-profile",
+    "profile-resolution-never-falls-back-silently"
+  ],
+  "provenance": {
+    "generated_by": "AXMPixel3DCore",
+    "version": "1.0.0",
+    "identity_digest": "d578dc28a8e7c9b5",
+    "profile_digest": "977646ae21dda4ef",
+    "originality_boundary": "Original deterministic primitive construction; no copied mesh, texture, map, sound, or layout."
+  },
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

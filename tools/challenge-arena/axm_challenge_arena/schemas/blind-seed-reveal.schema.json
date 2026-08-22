@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-blind-seed-reveal/0.5",
+  "title": "AXM Blind Ordering Seed Reveal v0.5",
+  "description": "Post-voting reveal that allows the blind label map to be reproduced from the precommitted seed and sealed submissions.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "algorithm",
+    "seed",
+    "commitment",
+    "blind_map_hash",
+    "revealed_at",
+    "reveal_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-blind-seed-reveal/0.5"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "algorithm": {
+      "const": "hmac-sha256-opaque-labels-v2"
+    },
+    "seed": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "commitment": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "blind_map_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "revealed_at": {
+      "type": "string"
+    },
+    "reveal_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

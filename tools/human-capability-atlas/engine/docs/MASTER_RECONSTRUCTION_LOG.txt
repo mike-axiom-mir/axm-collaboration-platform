@@ -1,0 +1,1157 @@
+AXM HUMAN CAPABILITY + HUMAN INTERFACE INTELLIGENCE
+MASTER RECONSTRUCTION LOG
+
+Log version: 0.1.0
+Created: 2026-08-03 05:55 Europe/Amsterdam
+Prepared for: Mike / AXM
+Format: Plain UTF-8 text
+Purpose: Durable rebuild record for the two paired modules and their shared contract.
+
+======================================================================
+0. HONEST STATUS
+======================================================================
+
+This log records the architecture, agreed boundaries, shared data contract,
+build requirements, test fixtures, integration sequence, and reconstruction
+instructions established in chat on 2026-08-03.
+
+At the time this log was created:
+
+- Module A had been architecturally defined in this chat.
+- Module B had received a complete build prompt for another build chat.
+- The shared contract had been fixed at an initial design level.
+- No claim is made here that either module has already been fully implemented,
+  tested, packaged, or locally integrated.
+- Tomorrow's local intake must verify the real files, tests, schemas, and
+  implementations produced by both build chats.
+
+This distinction protects against fake done, source drift, or reconstructing
+visual front doors without the actual reasoning and validation systems.
+
+======================================================================
+1. WHY THESE TWO MODULES EXIST
+======================================================================
+
+AXM already has a large machine-readable capability inventory, approximately
+1,200 platform capabilities and approximately 1,800 local capabilities at the
+time of discussion.
+
+Machine manifests and capability declarations can preserve what the system can
+do, but they do not automatically explain those capabilities to humans.
+
+Without a human translation layer, capability growth becomes difficult to:
+
+- discover;
+- understand;
+- teach;
+- connect to practical interfaces;
+- expose safely to beginners;
+- compare by cost and difficulty;
+- combine into human or AI learning paths;
+- verify as genuinely usable rather than merely declared.
+
+The paired system solves two different but connected questions.
+
+MODULE A:
+"What is this capability, what does it mean, why does it matter, and how can a
+human or AI learn to use it?"
+
+MODULE B:
+"Which human interface should expose this capability for this user, task,
+device, environment, and skill level, and why is that interface the lowest-cost
+honest fit?"
+
+The modules must remain separate. They cooperate through one versioned shared
+contract.
+
+======================================================================
+2. SYSTEM MAP
+======================================================================
+
+Original machine capability declaration / manifest
+        |
+        v
+Validated technical facts and provenance
+        |
+        v
+AXM Human Capability Atlas
+        |
+        | produces human-readable capability knowledge
+        v
+AXM Capability Interface Shared Contract
+        |
+        v
+AXM Human Interface Intelligence
+        |
+        | produces justified interface and beginner-layer recommendations
+        v
+Human, AI, or mixed human-AI interface
+        |
+        v
+Course, workflow, tutorial, tool surface, or local platform integration
+
+SOURCE-OF-TRUTH RULE:
+
+The original machine capability declaration remains the technical source of
+truth.
+
+The Human Capability Atlas may translate, explain, classify, and organize it.
+
+The Human Interface Intelligence module may recommend ways to expose it.
+
+Neither module may silently modify, expand, or claim a technical capability
+that is absent from the source declaration.
+
+======================================================================
+3. MODULE A — AXM HUMAN CAPABILITY ATLAS
+======================================================================
+
+WORKING NAME:
+AXM Human Capability Atlas
+
+PURPOSE:
+Translate machine capability declarations into human-readable, teachable,
+searchable, interface-ready knowledge without replacing the original machine
+registry.
+
+PRIMARY QUESTIONS:
+
+- What is this capability?
+- What does it actually do?
+- Why might a person use it?
+- What problem does it solve?
+- Which inputs does it require?
+- Which outputs does it produce?
+- What can a human do with it?
+- What can an AI do with it?
+- How can a human and AI collaborate through it?
+- What does it cost in compute, time, attention, setup, and skill?
+- What are its risks, limitations, dependencies, and failure modes?
+- What proof exists that it works?
+- How can it be learned?
+- Which interfaces can realistically expose it?
+
+----------------------------------------------------------------------
+3.1 CAPABILITY CARD
+----------------------------------------------------------------------
+
+Every capability should receive a Capability Card linked to its original,
+stable capability identifier.
+
+Minimum fields:
+
+1. Capability ID
+   Permanent link to the original machine declaration.
+
+2. Capability revision
+   Source revision or explicit UNKNOWN.
+
+3. Human name
+   Understandable without requiring specialist terminology.
+
+4. Plain explanation
+   What the capability actually does.
+
+5. Why it matters
+   What problem or human goal it serves.
+
+6. Simple examples
+   Concrete uses recognizable by a beginner.
+
+7. Required inputs
+   What information, files, devices, permissions, or resources are needed.
+
+8. Optional inputs
+   Inputs that improve or alter the result but are not mandatory.
+
+9. Outputs
+   What the capability produces or changes.
+
+10. Human actions
+    What a person must or may do.
+
+11. Machine actions
+    What an AI, tool, or module performs.
+
+12. Human-AI collaboration mode
+    Human only, AI only, shared, or supervised automation.
+
+13. Dependencies
+    Other capabilities, software, hardware, data, or permissions required.
+
+14. Capability costs
+    Compute, time, attention, setup, skill, and error-recovery cost.
+
+15. Risks and limitations
+    Failure modes, privacy risks, irreversibility, misuse boundaries, and
+    unsuitable contexts.
+
+16. Availability
+    AVAILABLE, LIMITED, UNAVAILABLE, or UNKNOWN.
+
+17. Maturity
+    EXPERIMENTAL, WORKING, TESTED, STABLE, DEPRECATED, or UNKNOWN.
+
+18. Proof status
+    UNVERIFIED, DECLARED, DEMONSTRATED, TESTED, or INDEPENDENTLY_VERIFIED.
+
+19. Learning difficulty
+    BEGINNER, BASIC, INTERMEDIATE, ADVANCED, SPECIALIST, or UNKNOWN.
+
+20. Interface needs
+    Buttons, forms, canvas, timeline, file browser, code view, preview,
+    controller, voice, dashboard, confirmation, or other requirements.
+
+21. Related capabilities
+    Prerequisites, dependencies, alternatives, combinations, and next steps.
+
+22. Provenance
+    Source type, location, hash, verification time, and confidence.
+
+23. Freshness
+    When the explanation and proof were last checked.
+
+24. Unknowns and conflicts
+    Explicitly preserved rather than smoothed over.
+
+----------------------------------------------------------------------
+3.2 THREE EXPLANATION DEPTHS
+----------------------------------------------------------------------
+
+QUICK VIEW
+
+- One or two sentence explanation.
+- One recognizable example.
+- Main input and output.
+- Main action.
+- Primary risk or limitation.
+- Suitable for menus, search results, and tooltips.
+
+PRACTICAL VIEW
+
+- Step-by-step usage.
+- Required inputs.
+- Expected output.
+- Common mistakes.
+- Limitations.
+- Small exercise or guided example.
+- Suitable for normal users and beginner interfaces.
+
+DEEP VIEW
+
+- Technical operation.
+- Dependencies and contracts.
+- Source evidence.
+- Proof tests.
+- Failure modes.
+- Resource costs.
+- Integration notes.
+- Suitable for builders, teachers, maintainers, and AI collaborators.
+
+The explanation layers must share the same source facts. Shorter layers may
+compress detail but may not contradict or silently remove material warnings.
+
+----------------------------------------------------------------------
+3.3 LEARNING ATOMS AND COURSE GENERATION
+----------------------------------------------------------------------
+
+The Atlas should not only store fixed courses. It should store reusable learning
+atoms that can be assembled into courses.
+
+Course-generation inputs may include:
+
+- target capability;
+- learner type: human, AI, or mixed;
+- current skill level;
+- desired outcome;
+- available tools;
+- device;
+- time budget;
+- attention budget;
+- compute budget;
+- accessibility needs;
+- required prerequisites;
+- privacy or offline requirements.
+
+Suggested learning path:
+
+1. Orientation
+2. Required concepts
+3. Demonstration
+4. Guided use
+5. Independent exercise
+6. Failure examples
+7. Repair examples
+8. Proof of successful use
+9. Suggested next capabilities
+
+A course must distinguish remembering an explanation from actually being able to
+use the capability.
+
+----------------------------------------------------------------------
+3.4 KEY METRIC
+----------------------------------------------------------------------
+
+USABLE CAPABILITY COVERAGE
+
+Definition:
+
+The percentage of registered capabilities that have all of the following:
+
+- a source-linked human explanation;
+- an honest proof or maturity state;
+- a usable interface route;
+- a learning route;
+- known risks and limitations;
+- current provenance.
+
+This prevents capability counts from being treated as equal to human usability.
+
+======================================================================
+4. MODULE B — AXM HUMAN INTERFACE INTELLIGENCE
+======================================================================
+
+WORKING NAME:
+AXM Human Interface Intelligence
+
+PURPOSE:
+Pre-analyse capabilities, tasks, users, environments, and resource limits, then
+determine which human interface pattern should expose a capability and which
+beginner layer can achieve the intended goal with the lowest unnecessary cost.
+
+PRIMARY QUESTIONS:
+
+- Which human interface patterns work for this capability?
+- Why do they work?
+- Which patterns are unsuitable?
+- Which beginner layer is safest and easiest?
+- Which interface exposes enough power without unnecessary complexity?
+- Which controls should be visible, hidden, restricted, or progressively
+  disclosed?
+- When should no interface be recommended?
+- How should the recommendation change by device, skill, accessibility,
+  privacy, offline need, risk, and reversibility?
+
+The module must support:
+
+- human-only workflows;
+- AI-only operations that still require human oversight;
+- shared human-AI workflows;
+- supervised automation;
+- beginner, normal, advanced, and specialist layers.
+
+----------------------------------------------------------------------
+4.1 INTERFACE PATTERN REGISTRY
+----------------------------------------------------------------------
+
+The module must maintain reusable interface patterns rather than hard-code one
+interface for each capability.
+
+Initial interface families:
+
+- simple action button;
+- guided form;
+- wizard or step-by-step flow;
+- searchable library;
+- command palette;
+- conversational interface;
+- structured prompt builder;
+- drag-and-drop workspace;
+- node or graph editor;
+- canvas;
+- timeline;
+- layer editor;
+- property inspector;
+- table or spreadsheet;
+- dashboard;
+- live preview with controls;
+- before-and-after comparison;
+- template selector;
+- file browser;
+- map or spatial interface;
+- controller or game-style interface;
+- voice interaction;
+- automation recipe builder;
+- code editor;
+- hybrid visual-plus-code interface;
+- approval and confirmation interface;
+- monitoring and status interface.
+
+Each pattern must record:
+
+- suitable task types;
+- unsuitable task types;
+- minimum user skill;
+- attention cost;
+- interaction cost;
+- setup cost;
+- likely error rate;
+- accessibility strengths;
+- accessibility weaknesses;
+- preview support;
+- reversibility support;
+- best input types;
+- best output types;
+- beginner suitability;
+- advanced limitations;
+- device suitability;
+- offline suitability;
+- privacy considerations;
+- reasons for and against selection.
+
+Important:
+
+Conversational chat must not be assumed to be the correct interface for every
+capability.
+
+----------------------------------------------------------------------
+4.2 BEGINNER-LAYER PRINCIPLES
+----------------------------------------------------------------------
+
+A beginner layer is not merely an expert interface with fewer visible buttons.
+
+A valid beginner layer must:
+
+- preserve the user's intended goal;
+- remove unnecessary decisions;
+- use safe defaults honestly;
+- explain consequences before important actions;
+- provide previews where possible;
+- make mistakes recoverable where possible;
+- clearly show what is simplified, restricted, or hidden;
+- permit leaving beginner mode by user choice;
+- never imply the simplified layer exposes the complete capability;
+- minimize capability, compute, attention, and complexity cost;
+- avoid manipulation, dependency-building, or hidden control;
+- preserve an escalation path to advanced control.
+
+Required distinctions:
+
+- simplified control;
+- restricted safe operation;
+- guided advanced operation;
+- full expert control.
+
+----------------------------------------------------------------------
+4.3 DETERMINISTIC SELECTION ENGINE
+----------------------------------------------------------------------
+
+Deterministic scoring must exist before relying on language-model judgement.
+
+The engine should consider:
+
+- capability input types;
+- capability output types;
+- task type;
+- user goal;
+- required precision;
+- number of decisions;
+- interaction complexity;
+- interaction frequency;
+- reversibility;
+- risk;
+- privacy sensitivity;
+- need for preview;
+- need for confirmation;
+- skill level;
+- device;
+- accessibility needs;
+- offline requirement;
+- available tools;
+- available compute;
+- time budget;
+- attention budget;
+- complexity budget;
+- setup cost;
+- error-recovery cost.
+
+The result must include reasons, not merely a rank.
+
+Example:
+
+Recommended:
+Guided form with live preview.
+
+Reasons:
+- The capability accepts structured inputs.
+- The user is a beginner.
+- Changes are visual and reversible.
+- Preview reduces error cost.
+- Canvas editing would add unnecessary interaction complexity.
+- Raw code would exceed the user's current skill requirement.
+
+LLM assistance may later provide extra interpretation, but deterministic rules
+must remain inspectable, testable, and usable offline.
+
+======================================================================
+5. SHARED CONTRACT
+======================================================================
+
+PACKAGE NAME:
+AXM Capability Interface Shared Contract
+
+SUGGESTED IDENTIFIER:
+axm.capability-interface-contract
+
+INITIAL VERSION:
+0.1.0
+
+PURPOSE:
+Provide one stable, versioned exchange format between the Human Capability
+Atlas and Human Interface Intelligence.
+
+Neither module may privately redefine shared fields.
+
+----------------------------------------------------------------------
+5.1 KNOWLEDGE STATES
+----------------------------------------------------------------------
+
+Use explicit knowledge states:
+
+KNOWN
+INFERRED
+UNKNOWN
+CONFLICTED
+NOT_APPLICABLE
+
+Rules:
+
+- KNOWN requires evidence.
+- INFERRED requires a reason and source basis.
+- UNKNOWN must remain unknown.
+- CONFLICTED must preserve the competing claims and evidence.
+- NOT_APPLICABLE must not be used as a shortcut for missing information.
+
+----------------------------------------------------------------------
+5.2 SHARED CAPABILITY OBJECT
+----------------------------------------------------------------------
+
+{
+  "contract_version": "0.1.0",
+  "capability_id": "stable-original-capability-id",
+  "capability_revision": "source-revision-or-unknown",
+
+  "source_reference": {
+    "source_type": "manifest|registry|code|test|human_note|generated",
+    "source_location": "",
+    "source_hash": "",
+    "last_verified_at": "",
+    "confidence": 0.0
+  },
+
+  "identity": {
+    "machine_name": "",
+    "human_name": "",
+    "category": [],
+    "tags": []
+  },
+
+  "purpose": {
+    "plain_explanation": "",
+    "why_it_matters": "",
+    "example_uses": []
+  },
+
+  "task_profile": {
+    "supported_task_types": [],
+    "typical_goals": [],
+    "required_human_actions": [],
+    "required_machine_actions": [],
+    "collaboration_modes": [
+      "human_only",
+      "ai_only",
+      "human_ai_shared",
+      "supervised_automation"
+    ]
+  },
+
+  "input_profile": {
+    "input_types": [],
+    "required_inputs": [],
+    "optional_inputs": [],
+    "input_constraints": []
+  },
+
+  "output_profile": {
+    "output_types": [],
+    "expected_outputs": [],
+    "output_constraints": [],
+    "preview_available": "KNOWN|INFERRED|UNKNOWN|NOT_APPLICABLE"
+  },
+
+  "cost_profile": {
+    "compute_cost": "none|very_low|low|medium|high|very_high|unknown",
+    "time_cost": "instant|short|medium|long|variable|unknown",
+    "attention_cost": "very_low|low|medium|high|very_high|unknown",
+    "skill_cost": "beginner|basic|intermediate|advanced|specialist|unknown",
+    "setup_cost": "none|low|medium|high|unknown",
+    "error_recovery_cost": "low|medium|high|unknown"
+  },
+
+  "risk_profile": {
+    "risk_level": "minimal|low|moderate|high|critical|unknown",
+    "reversibility": "fully_reversible|partly_reversible|irreversible|unknown",
+    "privacy_sensitivity": "none|low|medium|high|unknown",
+    "failure_modes": [],
+    "human_confirmation_required": false,
+    "safe_preview_recommended": false
+  },
+
+  "maturity_profile": {
+    "availability": "available|limited|unavailable|unknown",
+    "maturity": "experimental|working|tested|stable|deprecated|unknown",
+    "proof_status": "unverified|declared|demonstrated|tested|independently_verified",
+    "known_limitations": []
+  },
+
+  "learning_profile": {
+    "minimum_skill_level": "beginner|basic|intermediate|advanced|specialist|unknown",
+    "prerequisite_capability_ids": [],
+    "recommended_learning_steps": [],
+    "beginner_safe_operations": [],
+    "advanced_operations": [],
+    "common_mistakes": []
+  },
+
+  "interaction_profile": {
+    "interaction_complexity": "very_low|low|medium|high|very_high|unknown",
+    "interaction_frequency": "one_shot|occasional|iterative|continuous|unknown",
+    "precision_requirement": "low|medium|high|exact|unknown",
+    "feedback_requirement": "none|status|preview|live_preview|continuous|unknown",
+    "preferred_input_methods": [],
+    "preferred_output_methods": [],
+    "accessibility_considerations": []
+  },
+
+  "interface_requirements": {
+    "required_interface_features": [],
+    "optional_interface_features": [],
+    "unsafe_interface_patterns": [],
+    "beginner_layer_constraints": [],
+    "advanced_layer_requirements": []
+  },
+
+  "relationships": {
+    "dependency_capability_ids": [],
+    "related_capability_ids": [],
+    "alternative_capability_ids": [],
+    "commonly_combined_capability_ids": []
+  }
+}
+
+----------------------------------------------------------------------
+5.3 INTERFACE RECOMMENDATION OBJECT
+----------------------------------------------------------------------
+
+{
+  "contract_version": "0.1.0",
+  "recommendation_id": "",
+  "capability_id": "",
+  "generated_at": "",
+
+  "context": {
+    "user_skill_level": "beginner|basic|intermediate|advanced|specialist|unknown",
+    "user_goal": "",
+    "task_type": "",
+    "device_types": [],
+    "available_tools": [],
+    "accessibility_needs": [],
+    "privacy_mode": "",
+    "offline_required": false,
+
+    "resource_budget": {
+      "compute": "",
+      "time": "",
+      "attention": "",
+      "complexity": ""
+    }
+  },
+
+  "recommended_interface": {
+    "interface_pattern_id": "",
+    "interface_name": "",
+    "interface_family": "",
+    "confidence": 0.0,
+    "recommendation_status":
+      "recommended|conditional|insufficient_information|no_safe_match",
+    "why_this_interface": [],
+    "why_not_other_interfaces": [],
+    "required_controls": [],
+    "optional_controls": [],
+    "hidden_advanced_controls": [],
+    "progressive_disclosure_plan": [],
+    "preview_and_confirmation_flow": [],
+    "error_recovery_flow": []
+  },
+
+  "beginner_layer": {
+    "enabled": true,
+    "allowed_operations": [],
+    "restricted_operations": [],
+    "default_values": {},
+    "guided_steps": [],
+    "explanation_depth": "quick|practical|deep",
+    "estimated_capability_cost": {},
+    "reasons_for_restrictions": []
+  },
+
+  "advanced_layer": {
+    "available": true,
+    "unlock_method":
+      "manual_choice|demonstrated_skill|contextual|always_visible|not_available",
+    "additional_controls": [],
+    "additional_risks": [],
+    "required_knowledge": []
+  },
+
+  "cost_comparison": {
+    "selected_interface_cost": {},
+    "alternative_interfaces": [],
+    "unnecessary_costs_avoided": []
+  },
+
+  "evidence": {
+    "facts_used": [],
+    "inferences_used": [],
+    "unknowns": [],
+    "conflicts": [],
+    "source_references": []
+  }
+}
+
+======================================================================
+6. REQUIRED SHARED-CONTRACT DELIVERABLES
+======================================================================
+
+The shared contract must be built before either module grows deeply.
+
+Required deliverables:
+
+1. Versioned JSON Schema files
+2. Human-readable contract documentation
+3. Enumerations and definitions
+4. Validation utilities
+5. Migration rules for future versions
+6. Compatibility-check utility
+7. Example capability records
+8. Example interface recommendations
+9. Malformed examples
+10. Incomplete examples
+11. Deterministic test fixtures
+12. Provenance rules
+13. Confidence rules
+14. Explicit UNKNOWN handling
+15. Change log
+16. Integration guide for the Human Capability Atlas
+17. Integration guide for Human Interface Intelligence
+18. Local intake manifest
+19. Machine-readable capability declaration for each module
+20. Negative tests and unsupported cases
+
+Suggested folder structure:
+
+shared-contract/
+  schemas/
+  enums/
+  examples/
+  fixtures/
+  validators/
+  migrations/
+  docs/
+  tests/
+  CHANGELOG.md
+  CONTRACT.md
+  INTEGRATION.md
+  intake_manifest.json
+
+======================================================================
+7. CROSS-MODULE TEST FIXTURES
+======================================================================
+
+Both modules must use the same fixtures so independently built systems can be
+compared during local intake.
+
+Fixture 1:
+Simple reversible file rename
+
+Expected concerns:
+- structured text input;
+- low risk;
+- full reversibility;
+- simple form or inline rename;
+- beginner-safe with validation.
+
+Fixture 2:
+Image background replacement
+
+Expected concerns:
+- image input;
+- visual output;
+- live or before-and-after preview;
+- reversible editing;
+- beginner controls with advanced masking hidden or optional.
+
+Fixture 3:
+Software build or code generation
+
+Expected concerns:
+- text and project inputs;
+- complex outputs;
+- medium or high skill;
+- preview is not proof;
+- code view, test results, file changes, and validation required;
+- beginner layer must not claim full correctness.
+
+Fixture 4:
+Destructive file deletion
+
+Expected concerns:
+- irreversible or partly reversible;
+- confirmation required;
+- selection review;
+- trash or backup preferred;
+- no one-click silent deletion for beginners.
+
+Fixture 5:
+Real-time visual editing
+
+Expected concerns:
+- continuous interaction;
+- live preview;
+- canvas, layers, and property inspector;
+- beginner presets;
+- performance cost.
+
+Fixture 6:
+Data analysis
+
+Expected concerns:
+- table or spreadsheet;
+- chart or report output;
+- provenance;
+- formula transparency;
+- uncertainty and missing values.
+
+Fixture 7:
+Game controller input
+
+Expected concerns:
+- continuous low-latency interaction;
+- controller interface;
+- mapping and calibration;
+- accessibility alternatives.
+
+Fixture 8:
+Long-running automation
+
+Expected concerns:
+- monitoring and status;
+- pause, stop, and resume;
+- resource visibility;
+- condition and schedule clarity;
+- no fake background completion.
+
+Fixture 9:
+Capability with incomplete documentation
+
+Expected concerns:
+- UNKNOWN fields preserved;
+- recommendation may be conditional or insufficient_information;
+- no invented explanation.
+
+Fixture 10:
+Declaration conflicts with observed tests
+
+Expected concerns:
+- CONFLICTED state;
+- preserve both declaration and evidence;
+- lower confidence;
+- block unsafe recommendation where needed.
+
+For every fixture include:
+
+- original source capability declaration;
+- shared Capability Card data;
+- expected interface recommendation;
+- expected beginner restrictions;
+- expected unknowns;
+- expected reasons;
+- expected validation result;
+- expected negative cases.
+
+======================================================================
+8. BUILD ORDER
+======================================================================
+
+Use this order for Module B and the paired shared work:
+
+1. Establish shared terminology.
+2. Build the standalone shared contract.
+3. Build schemas and validation.
+4. Add fixtures and cross-module tests.
+5. Build the interface-pattern registry.
+6. Build deterministic selection and scoring.
+7. Build beginner-layer planning.
+8. Add explanation and evidence reports.
+9. Add course/interface connection hooks.
+10. Test incomplete, conflicting, destructive, and unsafe cases.
+11. Prepare complete local intake package.
+12. Produce an honest Action Report.
+
+Suggested corresponding order for Module A:
+
+1. Read and normalize source capability declarations.
+2. Preserve source provenance.
+3. Generate source-linked Capability Cards.
+4. Generate quick, practical, and deep explanations.
+5. Validate that explanations do not add unsupported capability claims.
+6. Build search, category, relationship, and dependency indexes.
+7. Build reusable learning atoms.
+8. Build course assembly rules.
+9. Export shared-contract objects.
+10. Test incomplete and conflicting capability sources.
+11. Prepare local intake package.
+12. Produce an honest Action Report.
+
+======================================================================
+9. INTEGRITY REQUIREMENTS
+======================================================================
+
+- No fake completion.
+- No silent rewrite.
+- No visual front door presented as proof of an operating engine.
+- No invented capability facts.
+- Preserve source provenance.
+- Mark inference as inference.
+- Preserve UNKNOWN.
+- Preserve CONFLICTED evidence.
+- Use deterministic tests where possible.
+- Explain every interface recommendation.
+- Include negative and unsupported tests.
+- Report capability and tool gaps without punishment.
+- Do not claim local integration before local verification.
+- Keep the shared contract independent from both modules.
+- Explain every new shared field and compatibility impact.
+- Never silently break compatibility.
+- Preserve user agency.
+- Do not use beginner layers as hidden restriction or manipulation.
+- Allow advanced access by choice where safety permits.
+- Never claim a generated progress image is a screenshot of actual work.
+- If real screenshots are impossible, explicitly opt out.
+
+======================================================================
+10. LOCAL INTAKE PLAN FOR TOMORROW
+======================================================================
+
+When both build chats return packages:
+
+STEP 1 — PRESERVE ORIGINALS
+
+- Copy both packages unchanged into an intake staging folder.
+- Record filenames, sizes, timestamps, and SHA-256 hashes.
+- Do not merge immediately.
+
+STEP 2 — LOCATE SHARED CONTRACTS
+
+- Identify the shared-contract version in both packages.
+- Compare schema files byte-for-byte where expected.
+- Compare enumerations.
+- Compare fixture identifiers.
+- Compare field meanings.
+- Record any drift.
+
+STEP 3 — VALIDATE PACKAGES
+
+- Run schema validation.
+- Run unit tests.
+- Run cross-module fixtures.
+- Record pass, fail, skipped, and unavailable separately.
+- Do not convert unavailable tests into passes.
+
+STEP 4 — CONTRACT COMPATIBILITY
+
+Check:
+
+- contract_version;
+- required fields;
+- optional fields;
+- enum compatibility;
+- unknown handling;
+- inferred-value evidence;
+- migration support;
+- source-reference format;
+- recommendation status values.
+
+STEP 5 — CROSS-MODULE ROUND TRIP
+
+For every fixture:
+
+1. Feed the original capability declaration into the Atlas.
+2. Export the shared capability object.
+3. Validate it.
+4. Feed it into Interface Intelligence.
+5. Produce an interface recommendation.
+6. Validate it.
+7. Compare it against expected fixture outcomes.
+8. Confirm that source provenance survived the full route.
+
+STEP 6 — HUMAN REVIEW
+
+Review:
+
+- whether explanations are understandable;
+- whether risks remain visible;
+- whether beginner layers remain honest;
+- whether interface reasons make sense;
+- whether advanced controls are preserved;
+- whether cost claims are evidence-based.
+
+STEP 7 — MERGE GATE
+
+Only merge if:
+
+- source provenance is preserved;
+- shared schemas are compatible;
+- critical tests pass;
+- no silent capability expansion occurred;
+- no destructive path lacks confirmation;
+- no beginner layer falsely implies full capability;
+- no fake proof or fake screenshot is included.
+
+Otherwise place the package in TEST-HOLD-REVIEW with a repair list.
+
+======================================================================
+11. REBUILD PROCEDURE IF ALL IMPLEMENTATION FILES ARE LOST
+======================================================================
+
+This text log is designed to permit a slower but honest reconstruction.
+
+Rebuild sequence:
+
+1. Create the independent shared-contract folder.
+2. Implement the shared capability JSON Schema.
+3. Implement the interface recommendation JSON Schema.
+4. Implement enums and explicit knowledge states.
+5. Implement validators.
+6. Create all ten shared fixtures.
+7. Implement compatibility and migration checks.
+8. Build Module A source adapters for capability manifests.
+9. Build Module A Capability Card generator.
+10. Build three explanation-depth renderers.
+11. Build learning atoms and course assembly.
+12. Build Module B interface-pattern registry.
+13. Build deterministic scoring.
+14. Build beginner-layer planner.
+15. Build evidence and reason reports.
+16. Run fixtures through the full round trip.
+17. Package both modules separately with the shared contract unchanged.
+18. Generate hashes, test reports, and honest Action Reports.
+19. Perform local intake through Merge Gate.
+20. Preserve this reconstruction log beside the final packages.
+
+Do not rebuild from a screenshot, marketing description, or user interface alone.
+Rebuild from the contract, schemas, fixtures, source rules, and tests.
+
+======================================================================
+12. REQUIRED ACTION REPORT TEMPLATE
+======================================================================
+
+Each build chat should end with:
+
+MODULE:
+VERSION:
+SHARED CONTRACT VERSION:
+DATE:
+
+GENUINELY IMPLEMENTED:
+- ...
+
+DESIGNED BUT NOT IMPLEMENTED:
+- ...
+
+FILES CREATED OR CHANGED:
+- ...
+
+TESTS PASSED:
+- ...
+
+TESTS FAILED:
+- ...
+
+TESTS SKIPPED OR UNAVAILABLE:
+- ...
+
+ASSUMPTIONS:
+- ...
+
+UNKNOWNS:
+- ...
+
+CONFLICTS:
+- ...
+
+CAPABILITY OR TOOL GAPS:
+- ...
+
+SOURCE AND PROVENANCE STATUS:
+- ...
+
+COMPATIBILITY RISKS:
+- ...
+
+LOCAL INTAKE RECOMMENDATION:
+- ACCEPT
+- TEST-HOLD-REVIEW
+- REJECT
+Reason:
+
+REAL WORK SCREENSHOT:
+- PROVIDED
+or
+- OPTED OUT: environment cannot produce a real screenshot
+
+NEXT INTEGRATION STEP:
+- ...
+
+======================================================================
+13. INITIAL CHANGE LOG
+======================================================================
+
+0.1.0 — 2026-08-03
+
+- Defined AXM Human Capability Atlas.
+- Defined AXM Human Interface Intelligence.
+- Separated capability meaning from interface selection.
+- Established independent shared-contract package.
+- Established source-of-truth rule.
+- Added explicit KNOWN, INFERRED, UNKNOWN, CONFLICTED, and NOT_APPLICABLE
+  states.
+- Defined shared capability object.
+- Defined interface recommendation object.
+- Defined interface-pattern registry requirements.
+- Defined beginner-layer principles.
+- Required deterministic scoring before LLM judgement.
+- Defined ten cross-module fixtures.
+- Defined local intake and Merge Gate sequence.
+- Added reconstruction procedure.
+- Added honest Action Report template.
+- Added screenshot opt-out rule.
+
+======================================================================
+14. ROOT PRINCIPLE
+======================================================================
+
+Raw capability count measures potential.
+
+Human-readable explanation measures legibility.
+
+Interface matching measures reachability.
+
+Learning routes measure transfer.
+
+Tests and provenance measure truth.
+
+AXM should not treat a capability as genuinely usable merely because a machine
+manifest says it exists.
+
+END OF MASTER RECONSTRUCTION LOG

@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/v0.1.0/module_passport.schema.json",
+  "title": "Module Passport",
+  "type": "object",
+  "properties": {
+    "module_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "canonical_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lifecycle_status": {
+      "type": "string",
+      "enum": [
+        "IDEA",
+        "PLANNED",
+        "IN_PRODUCTION",
+        "ACTIVE",
+        "TEST_HOLD_REVIEW",
+        "DEPRECATED",
+        "ARCHIVED",
+        "EXTERNAL_REFERENCE"
+      ]
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_locations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "artifact_hashes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^sha256:[a-f0-9]{64}$"
+      },
+      "uniqueItems": true
+    },
+    "owners_or_stewards": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "dependents": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "declared_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "proven_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "available_interfaces": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "resource_requirements": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+        ]
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "known_risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "open_needs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "current_blockers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "last_meaningful_change": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "evidence_references": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "truth_state": {
+      "type": "string",
+      "enum": [
+        "OBSERVED",
+        "DECLARED",
+        "TESTED",
+        "REPRODUCED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "CONFLICTED",
+        "OBSOLETE",
+        "UNKNOWN"
+      ]
+    },
+    "freshness_status": {
+      "type": "string",
+      "enum": [
+        "CURRENT",
+        "STALE",
+        "UNKNOWN",
+        "CONFLICTED"
+      ]
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "module_id",
+    "contract_version",
+    "canonical_name",
+    "aliases",
+    "version",
+    "lifecycle_status",
+    "purpose",
+    "source_locations",
+    "artifact_hashes",
+    "owners_or_stewards",
+    "inputs",
+    "outputs",
+    "dependencies",
+    "dependents",
+    "declared_capabilities",
+    "proven_capabilities",
+    "available_interfaces",
+    "resource_requirements",
+    "tests",
+    "known_limitations",
+    "known_risks",
+    "open_needs",
+    "current_blockers",
+    "last_meaningful_change",
+    "evidence_references",
+    "truth_state",
+    "freshness_status",
+    "notes"
+  ],
+  "additionalProperties": false
+}

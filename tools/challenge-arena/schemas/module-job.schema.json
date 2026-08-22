@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.module-job/0.1",
+  "title": "AXM Neutral Module Job v0.1 (stable outer seam)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "job_id",
+    "source_module",
+    "artifact_kind",
+    "title",
+    "goal"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.module-job/0.1"
+    },
+    "job_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "source_module": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_kind": {
+      "enum": [
+        "generic",
+        "asset",
+        "code",
+        "hand",
+        "game",
+        "video",
+        "research",
+        "document"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "packet_overrides": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

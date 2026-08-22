@@ -1,0 +1,42 @@
+AXM Human Interface Intelligence v0.4.0 — Test Report
+Generated: 2026-08-08T01:21:44Z
+
+Shared contract dependency: axm.capability-interface-contract 0.1.0 (unchanged)
+
+Automated pytest suite:
+- Collected: 76 tests
+- Passed: 76
+- Failed: 0
+
+Test groups:
+- shared-contract/tests/test_compatibility.py: 2
+- shared-contract/tests/test_migrations.py: 2
+- shared-contract/tests/test_recommendation_schema.py: 10
+- shared-contract/tests/test_schema_validation.py: 17
+- tests/test_anchor_gate.py: 10
+- tests/test_cross_module_gate.py: 9
+- tests/test_engine.py: 16
+- tests/test_intake_readiness.py: 10
+
+v0.4.0-specific verified behavior:
+- valid shared-fixture runtime contexts pass explicit context preflight;
+- missing/undeclared context fields fail without silent defaults;
+- malformed context prevents recommendation generation;
+- decision receipts remain identical when only generated_at changes;
+- changed runtime context changes the receipt fingerprint;
+- current dependency lock: PASS across 5 locked inputs;
+- one-byte locked dependency mutation: BLOCKED as expected;
+- ten-fixture consistency gate: 10 PASS / 0 FAIL / 0 BLOCKED / 0 NOT_RUN;
+- readiness is not conflated with consistency: 4 direct, 4 conditional, 2 blocked recommendation outcomes;
+- advisory evolution observations keep automatic canon and automatic code change disabled;
+- full fixture intake audit emits 10 reproducible decision receipts;
+- currently supplied Module One anchor still blocks before record consumption, as expected.
+
+CLI smoke verification:
+- python -m axm_hii.cli verify-lock => PASS
+- fixture intake audit => gate PASS, 10 receipts
+- current-anchor intake audit => paired BLOCKED, recommendation execution NOT_RUN
+
+Module capability declaration shared-schema validation: PASS.
+
+No real AXM local runtime integration was performed by these tests.

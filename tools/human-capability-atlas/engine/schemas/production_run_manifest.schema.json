@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/production-run-manifest.schema.json",
+  "title": "AXM Capability Production Run Manifest",
+  "type": "object",
+  "required": [
+    "production_run_manifest_version",
+    "plan_version",
+    "plan_hash",
+    "plan_semantic_hash",
+    "implementation_fingerprint",
+    "source_seal_hash",
+    "upstream_ingestion",
+    "planned_record_count",
+    "verified_record_keys",
+    "missing_record_keys",
+    "extra_record_keys",
+    "batch_validation",
+    "module_id",
+    "module_version",
+    "shared_contract_version",
+    "generated_at",
+    "status",
+    "merge_claim",
+    "issues",
+    "summary",
+    "manifest_hash"
+  ],
+  "properties": {
+    "production_run_manifest_version": {
+      "const": "0.2.0"
+    },
+    "plan_version": {
+      "const": "0.2.0"
+    },
+    "plan_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "implementation_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_seal_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "upstream_ingestion": {
+      "type": "object",
+      "required": [
+        "ingestion_report_present",
+        "ingestion_report_sha256",
+        "preflight_status",
+        "public_intake_in_progress",
+        "ingest_in_progress",
+        "source_seal_hash",
+        "normalized_inventory_present",
+        "normalized_inventory_hash",
+        "normalized_inventory_semantic_hash",
+        "normalized_inventory_valid",
+        "summary",
+        "public_intake_preflight"
+      ],
+      "properties": {
+        "ingestion_report_present": {
+          "type": "boolean"
+        },
+        "ingestion_report_sha256": {
+          "type": "string"
+        },
+        "preflight_status": {
+          "enum": [
+            "READY",
+            "TEST_HOLD_REVIEW",
+            "UNSEALED_SCOPE",
+            "UNVERIFIED_SCOPE"
+          ]
+        },
+        "source_seal_hash": {
+          "type": "string"
+        },
+        "enrichment_catalog_hash": {
+          "type": "string"
+        },
+        "enrichment_source_seal_hash": {
+          "type": "string"
+        },
+        "ingestion_module_version": {
+          "type": "string"
+        },
+        "public_intake_preflight": {
+          "type": "object",
+          "required": [
+            "present",
+            "status",
+            "preflight_hash",
+            "preflight_semantic_hash",
+            "file_sha256",
+            "verification_valid",
+            "repository_snapshot_hash",
+            "discovery_bundle_hash"
+          ],
+          "properties": {
+            "present": {
+              "type": "boolean"
+            },
+            "status": {
+              "type": "string"
+            },
+            "preflight_hash": {
+              "type": "string"
+            },
+            "file_sha256": {
+              "type": "string"
+            },
+            "verification_valid": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "repository_snapshot_hash": {
+              "type": "string"
+            },
+            "discovery_bundle_hash": {
+              "type": "string"
+            },
+            "preflight_semantic_hash": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "summary": {
+          "type": "object"
+        },
+        "normalized_inventory_present": {
+          "type": "boolean"
+        },
+        "normalized_inventory_hash": {
+          "type": "string"
+        },
+        "normalized_inventory_valid": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "normalized_inventory_semantic_hash": {
+          "type": "string"
+        },
+        "ingest_in_progress": {
+          "type": "boolean"
+        },
+        "public_intake_in_progress": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "planned_record_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "verified_record_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{20}$"
+      }
+    },
+    "missing_record_keys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "extra_record_keys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "batch_validation": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "batch_id",
+          "valid",
+          "batch_receipt_hash",
+          "batch_hash"
+        ],
+        "properties": {
+          "batch_id": {
+            "type": "string",
+            "pattern": "^batch_[0-9]{4}$"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "batch_receipt_hash": {
+            "type": "string"
+          },
+          "batch_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "module_id": {
+      "const": "axm.module.human_capability_atlas"
+    },
+    "module_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "shared_contract_version": {
+      "const": "0.1.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "COMPLETE_VERIFIED",
+        "TEST_HOLD_REVIEW"
+      ]
+    },
+    "merge_claim": {
+      "const": false
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "planned_records",
+        "verified_records",
+        "missing_records",
+        "extra_records",
+        "batch_count",
+        "verified_batch_count"
+      ],
+      "properties": {
+        "planned_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verified_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "extra_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "batch_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verified_batch_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "manifest_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "plan_semantic_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,595 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-seat-task/0.4",
+  "title": "AXM Challenge Seat Task v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "challenge_id",
+    "phase",
+    "participant_id",
+    "required",
+    "packet_hash",
+    "rubric_hash",
+    "participant_roster_hash",
+    "assignment_hash",
+    "assigned_candidate_labels",
+    "budget",
+    "lease_policy",
+    "authority_boundary",
+    "task_core_hash",
+    "status",
+    "created_at",
+    "updated_at",
+    "active_lease",
+    "attempts",
+    "completion_history",
+    "completed_output",
+    "final_failure",
+    "cancelled"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-seat-task/0.4"
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "phase": {
+      "enum": [
+        "BUILD",
+        "REVIEW"
+      ]
+    },
+    "participant_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "packet_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rubric_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "participant_roster_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "assignment_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "assigned_candidate_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "max_wall_seconds",
+        "max_token_units",
+        "max_tool_calls",
+        "max_input_bytes",
+        "max_output_bytes"
+      ],
+      "properties": {
+        "max_wall_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "max_token_units": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "max_tool_calls": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "max_input_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "max_output_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "measurement_note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "lease_policy": {
+      "type": "object",
+      "required": [
+        "leases_required",
+        "allow_delegate_workers",
+        "lease_seconds",
+        "lease_extension_seconds",
+        "max_total_lease_seconds",
+        "max_heartbeat_count",
+        "max_attempts"
+      ],
+      "properties": {
+        "leases_required": {
+          "type": "boolean"
+        },
+        "allow_delegate_workers": {
+          "type": "boolean"
+        },
+        "lease_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "lease_extension_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_total_lease_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_heartbeat_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "authority_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_core_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "READY",
+        "LEASED",
+        "COMPLETED",
+        "DEAD_LETTER",
+        "CANCELLED"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "active_lease": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "lease_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "attempt_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "worker_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "claimed_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expires_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "max_expires_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "heartbeat_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "last_heartbeat_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lease_token_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "attempts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "attempt_number",
+          "worker_id",
+          "status",
+          "claimed_at",
+          "finished_at",
+          "failure",
+          "completion"
+        ],
+        "properties": {
+          "attempt_number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "lease_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worker_id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "EXPIRED",
+              "FAILED",
+              "COMPLETED",
+              "COMPLETED_DIRECT",
+              "CANCELLED"
+            ]
+          },
+          "claimed_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "finished_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "failure": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "class": {
+                "enum": [
+                  "INFRASTRUCTURE",
+                  "MODEL_UNAVAILABLE",
+                  "TIMEOUT",
+                  "INVALID_OUTPUT",
+                  "POLICY_REFUSAL",
+                  "OPERATOR_CANCELLED",
+                  "UNKNOWN"
+                ]
+              },
+              "detail": {
+                "type": "string"
+              },
+              "retryable": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          "completion": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "actor": {
+                "type": "string"
+              },
+              "completed_at": {
+                "type": "string",
+                "minLength": 1
+              },
+              "usage": {
+                "type": "object",
+                "properties": {
+                  "wall_seconds": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "token_units": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "tool_calls": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "input_bytes": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "output_bytes": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "measurement_source": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "budget_evaluation": {
+                "type": "object"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "completion_history": {
+      "type": "array",
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "actor": {
+            "type": "string"
+          },
+          "completed_at": {
+            "type": "string",
+            "minLength": 1
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "wall_seconds": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "token_units": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "tool_calls": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "input_bytes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "output_bytes": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "measurement_source": {
+                "type": "string",
+                "maxLength": 256
+              },
+              "notes": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "budget_evaluation": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "completed_output": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "completed_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "usage": {
+          "type": "object",
+          "properties": {
+            "wall_seconds": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "token_units": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "tool_calls": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "input_bytes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "output_bytes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "measurement_source": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "budget_evaluation": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    },
+    "final_failure": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "class": {
+          "enum": [
+            "INFRASTRUCTURE",
+            "MODEL_UNAVAILABLE",
+            "TIMEOUT",
+            "INVALID_OUTPUT",
+            "POLICY_REFUSAL",
+            "OPERATOR_CANCELLED",
+            "UNKNOWN"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cancelled": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

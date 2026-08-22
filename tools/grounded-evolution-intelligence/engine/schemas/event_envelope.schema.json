@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/v0.1.0/event_envelope.schema.json",
+  "title": "Append-Only Event Envelope",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "ENTITY_UPSERTED",
+        "STATUS_APPENDED",
+        "RELATION_CREATED",
+        "RELATION_UPDATED",
+        "ENTITY_DEPRECATED",
+        "STEWARD_DECISION_RECORDED",
+        "INTERVENTION_BASELINE_RECORDED",
+        "INTERVENTION_OUTCOME_RECORDED"
+      ]
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "module_passport",
+        "capability_record",
+        "interface_intelligence_reference",
+        "evidence_record",
+        "dependency_edge",
+        "improvement_need",
+        "research_need",
+        "evolution_direction",
+        "intervention_record",
+        "steward_decision"
+      ]
+    },
+    "entity_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "UPSERT",
+        "APPEND_STATUS",
+        "RELATE",
+        "DEPRECATE"
+      ]
+    },
+    "truth_state": {
+      "type": "string",
+      "enum": [
+        "OBSERVED",
+        "DECLARED",
+        "TESTED",
+        "REPRODUCED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "CONFLICTED",
+        "OBSOLETE",
+        "UNKNOWN"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "previous_event_hash": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "event_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "event_id",
+    "contract_version",
+    "sequence",
+    "occurred_at",
+    "actor",
+    "event_type",
+    "entity_type",
+    "entity_id",
+    "operation",
+    "truth_state",
+    "payload",
+    "evidence_refs",
+    "previous_event_hash",
+    "event_hash"
+  ],
+  "additionalProperties": false
+}

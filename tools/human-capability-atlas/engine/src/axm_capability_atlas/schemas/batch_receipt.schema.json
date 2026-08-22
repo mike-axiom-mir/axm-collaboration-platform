@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/batch-receipt.schema.json",
+  "title": "AXM Capability Production Batch Receipt",
+  "type": "object",
+  "required": [
+    "batch_receipt_version",
+    "plan_hash",
+    "plan_semantic_hash",
+    "batch_id",
+    "batch_hash",
+    "expected_record_count",
+    "results",
+    "producer",
+    "completed_at",
+    "summary",
+    "status",
+    "batch_receipt_hash"
+  ],
+  "properties": {
+    "batch_receipt_version": {
+      "const": "0.2.0"
+    },
+    "plan_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "batch_id": {
+      "type": "string",
+      "pattern": "^batch_[0-9]{4}$"
+    },
+    "batch_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "expected_record_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "record_key",
+              "capability_id",
+              "capability_revision",
+              "status",
+              "output_directory",
+              "producer_run_id",
+              "producer_receipt_hash",
+              "artifact_set_hash",
+              "capability_card_canonical_sha256",
+              "issues"
+            ],
+            "properties": {
+              "record_key": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{20}$"
+              },
+              "capability_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "capability_revision": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "enum": [
+                  "BUILT",
+                  "REUSED"
+                ]
+              },
+              "output_directory": {
+                "type": "string",
+                "minLength": 1
+              },
+              "producer_run_id": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+              },
+              "producer_receipt_hash": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "artifact_set_hash": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "capability_card_canonical_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "record_key",
+              "capability_id",
+              "status",
+              "issues"
+            ],
+            "properties": {
+              "record_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "capability_id": {
+                "type": "string"
+              },
+              "capability_revision": {
+                "type": "string"
+              },
+              "status": {
+                "const": "FAILED"
+              },
+              "issues": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "producer": {
+      "type": "object",
+      "required": [
+        "module_id",
+        "module_version",
+        "implementation_fingerprint",
+        "shared_contract_version"
+      ],
+      "properties": {
+        "module_id": {
+          "const": "axm.module.human_capability_atlas"
+        },
+        "module_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "implementation_fingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "shared_contract_version": {
+          "const": "0.1.0"
+        }
+      },
+      "additionalProperties": false
+    },
+    "completed_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "expected",
+        "built",
+        "reused",
+        "failed",
+        "completed"
+      ],
+      "properties": {
+        "expected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "built": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reused": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "TEST_HOLD_REVIEW"
+      ]
+    },
+    "batch_receipt_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "plan_semantic_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

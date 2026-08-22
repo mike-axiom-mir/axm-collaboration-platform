@@ -1,0 +1,80 @@
+{
+  "schema": "axm.visual-representation-profile/v1",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "id": "pixel-16bit-3d",
+  "label": "Pixel 16-bit 3D art direction",
+  "installed": true,
+  "preset": true,
+  "axes": {
+    "medium": "pixel-styled-realtime-3d",
+    "projection": "perspective-world",
+    "detail": {
+      "geometry_language": "faceted-readable-3d",
+      "radial_facets": 16,
+      "silhouette_steps": 4
+    },
+    "palette": {
+      "max_colours": 64,
+      "enforcement": "hard-limit",
+      "colour_space": "sRGB"
+    },
+    "motion": {
+      "frame_rate": {
+        "numerator": 12,
+        "denominator": 1
+      },
+      "interpolation": "LINEAR",
+      "deterministic_clips": true
+    },
+    "materials": {
+      "model": "faceted-pbr-palette",
+      "authored_channels": [
+        "colour",
+        "roughness",
+        "metallic"
+      ],
+      "unlit": false
+    },
+    "lighting": {
+      "model": "realtime-key-fill",
+      "dynamic": true
+    },
+    "camera": {
+      "projection": "perspective",
+      "identity_anchors": true,
+      "player_controlled": true
+    },
+    "target_canvas": {
+      "internal_width": 640,
+      "internal_height": 360,
+      "pixel_format": "RGBA8",
+      "nearest_upscale": true
+    },
+    "budgets": {
+      "max_triangles": 6000,
+      "max_nodes": 96,
+      "max_materials": 64,
+      "max_glb_bytes": 1048576
+    }
+  },
+  "limits": {
+    "maximum_colours": 64,
+    "maximum_triangles": 6000,
+    "maximum_nodes": 96,
+    "maximum_glb_bytes": 1048576
+  },
+  "provenance": {
+    "resolver": "AXMPixel3DCore",
+    "resolver_version": "1.0.0",
+    "semantic_note": "8-bit and 16-bit name visual art directions, not literal GPU colour depth.",
+    "source_geometry": "deterministic AXM primitives"
+  },
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

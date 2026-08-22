@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-signal-ledger-preview-0.1.0.schema.json",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["ledger_version","stream_id","persistence_state","authority","entries","verification","note"],
+  "properties":{
+    "ledger_version":{"const":"0.1.0"},
+    "stream_id":{"type":"string","minLength":1},
+    "persistence_state":{"const":"NOT_WRITTEN_TO_LOCAL_LEDGER"},
+    "authority":{"const":"integrity_preview_only"},
+    "entries":{"type":"array","items":{"type":"object"}},
+    "verification":{"type":"object"},
+    "note":{"type":"string","minLength":1}
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-robustness-report-0.1.0.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["robustness_version","robustness_id","capability_id","authority","base_outcome","classification","probe_count","changed_probe_count","sensitivity_ratio","probes","interpretation_limits"],
+  "properties": {
+    "robustness_version": {"const":"0.1.0"},
+    "robustness_id": {"type":"string","minLength":1},
+    "capability_id": {"type":"string"},
+    "authority": {"const":"shadow_advisory_only"},
+    "base_outcome": {"type":"object"},
+    "classification": {"enum":["not_enough_probe_surface","stable_under_bounded_probes","stable_blocked_under_bounded_probes","pattern_sensitive","status_sensitive"]},
+    "probe_count": {"type":"integer","minimum":0,"maximum":8},
+    "changed_probe_count": {"type":"integer","minimum":0,"maximum":8},
+    "sensitivity_ratio": {"type":"number","minimum":0,"maximum":1},
+    "probes": {"type":"array","items":{"type":"object"}},
+    "interpretation_limits": {"type":"array","minItems":1,"items":{"type":"string"}}
+  }
+}

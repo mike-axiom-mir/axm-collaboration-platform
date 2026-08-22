@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/repository-snapshot.schema.json",
+  "title": "AXM Repository Snapshot",
+  "type": "object",
+  "required": [
+    "snapshot_version",
+    "repository_root_at_generation",
+    "generated_at",
+    "git",
+    "snapshot_hash"
+  ],
+  "properties": {
+    "snapshot_version": {
+      "const": "0.1.0"
+    },
+    "repository_root_at_generation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "git": {
+      "type": "object",
+      "required": [
+        "state",
+        "commit",
+        "branch",
+        "dirty",
+        "status_entry_count",
+        "status_hash"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "NO_GIT_METADATA",
+            "GIT_SNAPSHOT",
+            "GIT_METADATA_PARTIAL"
+          ]
+        },
+        "commit": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "dirty": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "status_entry_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status_hash": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "snapshot_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

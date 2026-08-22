@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/three-module-intake-preflight-report/v3",
+  "type": "object",
+  "required": [
+    "schema", "status", "package_admission_allowed", "materialization_required",
+    "merge_review_allowed", "active_merge_allowed", "checks", "errors", "warnings",
+    "record_collisions", "staged_plan", "module_roles", "canonical_module_ids",
+    "truth_boundary", "report_hash"
+  ],
+  "properties": {
+    "schema": {"const": "axm.three-module-intake-preflight-report/v3"},
+    "status": {"enum": ["PACKAGE_REHEARSAL_PASS_MATERIALIZATION_REQUIRED", "CORPUS_REHEARSAL_PASS", "MERGE_HOLD", "ACTIVE_INTAKE_REJECTED"]},
+    "package_admission_allowed": {"type": "boolean"},
+    "materialization_required": {"type": "boolean"},
+    "merge_review_allowed": {"type": "boolean"},
+    "active_merge_allowed": {"const": false},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check_id", "status", "subject", "details"],
+        "properties": {
+          "check_id": {"type": "string"},
+          "status": {"enum": ["PASS", "WARN", "FAIL", "DEFERRED"]},
+          "subject": {"type": "string"},
+          "details": {}
+        },
+        "additionalProperties": false
+      }
+    },
+    "errors": {"type": "array", "items": {"type": "string"}},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "record_collisions": {"type": "array"},
+    "staged_plan": {"type": "array"},
+    "module_roles": {"type": "array", "uniqueItems": true, "minItems": 3, "maxItems": 3},
+    "canonical_module_ids": {"type": "array", "uniqueItems": true, "minItems": 3, "maxItems": 3},
+    "truth_boundary": {"type": "array", "items": {"type": "string"}},
+    "report_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,140 @@
+{
+  "revision": "1.0.0",
+  "category": [
+    "automation"
+  ],
+  "tags": [
+    "long_running",
+    "status"
+  ],
+  "supported_task_types": [
+    "automation"
+  ],
+  "typical_goals": [
+    "Run a lengthy repeatable workflow"
+  ],
+  "required_human_actions": [
+    "Define the workflow",
+    "Review resource use",
+    "Pause or stop when needed"
+  ],
+  "required_machine_actions": [
+    "Execute steps",
+    "Persist status",
+    "Expose errors and recovery options"
+  ],
+  "collaboration_modes": [
+    "human_ai_shared"
+  ],
+  "inputs": {
+    "input_types": [
+      "workflow",
+      "resources"
+    ],
+    "required_inputs": [
+      "Defined workflow"
+    ],
+    "optional_inputs": [
+      "Limits and stop conditions"
+    ],
+    "input_constraints": [
+      "The runtime must support persistence"
+    ]
+  },
+  "outputs": {
+    "output_types": [
+      "status_stream",
+      "result_set",
+      "action_report"
+    ],
+    "expected_outputs": [
+      "Progress status",
+      "Final results",
+      "Error report"
+    ],
+    "output_constraints": [
+      "No fake background completion"
+    ],
+    "preview_available": "KNOWN"
+  },
+  "cost_profile": {
+    "compute_cost": "high",
+    "time_cost": "long",
+    "attention_cost": "low",
+    "skill_cost": "beginner",
+    "setup_cost": "medium",
+    "error_recovery_cost": "low"
+  },
+  "risk_profile": {
+    "risk_level": "moderate",
+    "reversibility": "partly_reversible",
+    "privacy_sensitivity": "low",
+    "failure_modes": [
+      "Resource exhaustion",
+      "Partial completion"
+    ],
+    "human_confirmation_required": true,
+    "safe_preview_recommended": true
+  },
+  "maturity_profile": {
+    "availability": "available",
+    "maturity": "tested",
+    "proof_status": "tested",
+    "known_limitations": []
+  },
+  "learning_profile": {
+    "minimum_skill_level": "beginner",
+    "prerequisite_capability_ids": [],
+    "recommended_learning_steps": [],
+    "beginner_safe_operations": [],
+    "advanced_operations": [],
+    "common_mistakes": []
+  },
+  "interaction_profile": {
+    "interaction_complexity": "low",
+    "interaction_frequency": "continuous",
+    "precision_requirement": "medium",
+    "feedback_requirement": "continuous",
+    "preferred_input_methods": [
+      "workflow builder"
+    ],
+    "preferred_output_methods": [
+      "monitoring dashboard",
+      "notifications"
+    ],
+    "accessibility_considerations": []
+  },
+  "interface_requirements": {
+    "required_interface_features": [
+      "progress",
+      "pause",
+      "stop",
+      "resume",
+      "resource visibility",
+      "error log"
+    ],
+    "optional_interface_features": [],
+    "unsafe_interface_patterns": [
+      "unobservable background task"
+    ],
+    "beginner_layer_constraints": [],
+    "advanced_layer_requirements": []
+  },
+  "relationships": {
+    "dependency_capability_ids": [],
+    "related_capability_ids": [],
+    "alternative_capability_ids": [],
+    "commonly_combined_capability_ids": []
+  },
+  "source_reference": {
+    "source_type": "manifest",
+    "confidence": 0.95
+  },
+  "capability_id": "axm.automation.long_running",
+  "machine_name": "long_running_automation",
+  "description": "Executes a defined workflow over an extended period while exposing progress, controls, and outcomes.",
+  "why_it_matters": "Allows repeatable work to continue without requiring constant manual action.",
+  "examples": [
+    "Process a large local archive while showing progress and allowing pause or stop."
+  ]
+}

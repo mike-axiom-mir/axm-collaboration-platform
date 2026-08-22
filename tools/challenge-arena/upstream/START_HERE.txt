@@ -1,0 +1,83 @@
+AXM CHALLENGE ARENA v0.6.0 — START HERE
+========================================
+
+PURPOSE
+-------
+Reusable challenge module for code, Hands, organs, assets, games, video,
+research, documents, and future artifact types.
+
+Same locked challenge -> independent attempts -> deterministic evidence ->
+assigned blind review -> synthesis/merge proposals -> explicit human decision.
+
+WHAT v0.6 ADDS
+--------------
+1. Evidence ZIP verification is independent of ZIP member ordering.
+2. Observer progress exposes counts/readiness, not per-seat identity lists.
+3. Observer integrity exposes aggregate validity, not forensic identity detail.
+4. Observer lineage exposes topology/counts, not copied participant ids or
+   selected blind labels.
+5. Observer HTTP errors hide raw exception text.
+6. Additional same-origin browser isolation headers.
+7. Reusable randomized bundle portability audit tool.
+8. v0.5 scoring, opaque aliases, revision preconditions, task binding,
+   independence evidence, and replay behavior remain preserved.
+
+FIRST CHECK
+-----------
+From this folder:
+
+  py -m pytest -q tests
+  py -m unittest discover -s tests -q
+  py tools\sync_contract_resources.py --check
+  py tools\verify_runtime_contracts.py
+  py tools\audit_bundle_portability.py --cases 20
+
+Expected sealed source suite:
+- 164 pytest tests pass
+- 10 pytest subtests pass
+- 164 unittest tests pass
+- 30 schemas validate
+- 28 deterministic validator kinds
+
+DEMO
+----
+  py -m axm_challenge_arena --root .\workspace demo
+  py -m axm_challenge_arena --root .\workspace verify arena-demo-001
+  py -m axm_challenge_arena --root .\workspace serve
+
+Observer: http://127.0.0.1:8765
+
+IMPORTANT DEFAULTS
+------------------
+- Candidate execution is OFF.
+- --allow-execution is not a hostile-code sandbox.
+- No self-voting.
+- No unassigned review.
+- No automatic merge/canon.
+- Losing/superseded revisions are preserved.
+- Human final authority remains required.
+- Observer routes are public-safe views, not forensic/debug interfaces.
+
+TRUSTED VS OBSERVER READS
+-------------------------
+Trusted local adapters may use the detailed Python methods such as progress(),
+verify_integrity(), and lineage_view().
+
+The HTTP observer intentionally uses public_progress(), public_integrity_view(),
+and public_lineage_view() so normal dashboards cannot become identity side
+channels. Use the CLI/Python API for forensic detail.
+
+LOCAL INTEGRATION
+-----------------
+The private current Asset Factory / Workshop / Game Builder trees are not inside
+this package and are not falsely described as patched. Use:
+
+  axm.module-job/0.1 -> Arena -> axm.challenge-arena-return/0.4
+
+or FileBridge / Python callable adapter.
+
+ROLLBACK
+--------
+Keep v0.5 unchanged beside v0.6 and keep the matching pre-v0.6 workspace
+snapshot before using v0.6 on production evidence. Do not rewrite older rounds
+to manufacture v0.6 evidence. See UPGRADE_FROM_V0_5.txt.

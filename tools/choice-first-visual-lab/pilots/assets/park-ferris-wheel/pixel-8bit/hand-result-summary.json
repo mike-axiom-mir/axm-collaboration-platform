@@ -1,0 +1,1418 @@
+{
+  "schema": "axm.choice-first-hand-summary/v1",
+  "status": "READY",
+  "hand": {
+    "schema": "axm.asset-hand/v2",
+    "legacy_schema": null,
+    "contract_version": "2.0",
+    "source_contract": "native-v2",
+    "id": "choice-first-visual-simulation",
+    "title": "Choice-First Visual & Simulation Hand",
+    "version": "1.0.0",
+    "category": "visual-simulation",
+    "summary": "Resolves exact visual profiles and binds deterministic pixel representations to persistent identities and causal state without fallback.",
+    "purpose": "Let human, AI and deterministic-program callers change visual direction without making the representation own simulation truth.",
+    "lifecycle_status": "experimental",
+    "operation_modes": [
+      "create",
+      "workflow"
+    ],
+    "canvas_models": [
+      "raster-frame",
+      "host-neutral"
+    ],
+    "entry_surfaces": [
+      "command",
+      "asset-fabric",
+      "export-recipe"
+    ],
+    "mutability": "generate",
+    "kinds": [
+      "sprite",
+      "character",
+      "prop",
+      "animation",
+      "sequence",
+      "inspection"
+    ],
+    "wildcard_kind_policy": "fallback",
+    "accepts": [
+      "axm.asset-brief/v1",
+      "axm.asset-source-artifact/v1",
+      "axm.choice-first-request/v1"
+    ],
+    "produces": [
+      "axm.asset-hand-result/v1",
+      "image/png",
+      "image/apng",
+      "axm.asset-identity/v1",
+      "axm.visual-representation-profile/v1",
+      "axm.asset-representation-set/v1",
+      "axm.causal-asset-simulation/v1",
+      "axm.upgradeable-object/v1",
+      "axm.missing-representation/v1",
+      "axm.pixel-animation-recipe/v1",
+      "axm.object-upgrade-sequence/v1"
+    ],
+    "output_types": [
+      {
+        "mime": "image/png",
+        "format": "PNG",
+        "schema": "",
+        "role": "identity-bound-source-sheet",
+        "editable": false,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "image/apng",
+        "format": "APNG",
+        "schema": "",
+        "role": "identity-bound-animation-preview",
+        "editable": false,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.asset-identity/v1",
+        "role": "persistent-asset-identity",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.visual-representation-profile/v1",
+        "role": "resolved-visual-profile",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.causal-asset-simulation/v1",
+        "role": "causal-simulation-state",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.asset-representation-set/v1",
+        "role": "asset-representation-set",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.upgradeable-object/v1",
+        "role": "upgradeable-object-state",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.pixel-animation-recipe/v1",
+        "role": "editable-pixel-animation-recipe",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.object-upgrade-sequence/v1",
+        "role": "object-upgrade-receipts",
+        "editable": false,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      }
+    ],
+    "input_types": [
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.choice-first-request/v1",
+        "roles": [],
+        "required_for": [
+          "create",
+          "workflow"
+        ],
+        "mutable": false,
+        "max_bytes": 200000
+      }
+    ],
+    "canvas_types": [
+      {
+        "medium": "game-world",
+        "units": [
+          "px"
+        ],
+        "colour_spaces": [
+          "srgb"
+        ],
+        "transparency_modes": [
+          "required",
+          "allowed"
+        ],
+        "material_behaviours": [],
+        "behaviours": [
+          "animated"
+        ],
+        "intended_uses": [
+          "sprite",
+          "character",
+          "prop",
+          "animation",
+          "sequence",
+          "inspection"
+        ],
+        "locale_patterns": [],
+        "up_axes": [],
+        "handedness": []
+      }
+    ],
+    "canvas_limits": {
+      "min_width": 48,
+      "min_height": 48,
+      "max_width": 96,
+      "max_height": 96,
+      "max_pixels": 9216,
+      "texture_bytes_per_pixel": 4,
+      "max_bleed": null,
+      "min_stroke": null,
+      "max_stroke": null,
+      "max_tool_width": null,
+      "max_depth": null,
+      "min_animation_frames": 2,
+      "max_animation_frames": 12,
+      "min_fps": null,
+      "max_fps": null,
+      "min_polygon_count": null,
+      "min_vertices": null
+    },
+    "constraints_honoured": [
+      "dimensions",
+      "dimensions.unit",
+      "colour.space",
+      "colour.transparency",
+      "behaviour.animated",
+      "performance.max-animation-frames"
+    ],
+    "editable_recipe_formats": [
+      "axm.choice-first-request/v1",
+      "axm.pixel-animation-recipe/v1"
+    ],
+    "operations": {
+      "preview": true,
+      "validate": true,
+      "edit": false
+    },
+    "emits_editable_source": true,
+    "supports_edit_operation": false,
+    "requires": [],
+    "required_permissions": {
+      "local_file_system": "none",
+      "clipboard": false,
+      "network_domains": [],
+      "device_access": [],
+      "plugin_data": false
+    },
+    "network_policy": {
+      "mode": "none",
+      "domains": [],
+      "rationale": "Profile resolution, simulation, raster drawing and PNG/APNG encoding are deterministic and local."
+    },
+    "host_compatibility": {
+      "hosts": [
+        "asset-fabric",
+        "studio",
+        "mirror",
+        "standalone"
+      ],
+      "minimum_versions": {},
+      "dependencies": [
+        {
+          "name": "AXM Choice First Core",
+          "version": "1.0.0",
+          "bundled": true
+        },
+        {
+          "name": "AXM Choice First Pilot Core",
+          "version": "1.0.0",
+          "bundled": true
+        }
+      ]
+    },
+    "engine": {
+      "name": "AXM choice-first deterministic pilot",
+      "version": "1.0.0",
+      "execution": "local-async-bounded"
+    },
+    "editable": true,
+    "deterministic": true,
+    "authority": "candidate-only",
+    "implementation_status": "executable",
+    "safety_tier": "safe-local",
+    "portability": {
+      "interchange_formats": [
+        "image/png",
+        "image/apng",
+        "axm.asset-identity/v1",
+        "axm.visual-representation-profile/v1",
+        "axm.asset-representation-set/v1",
+        "axm.causal-asset-simulation/v1",
+        "axm.upgradeable-object/v1"
+      ],
+      "known_losses": [
+        "8-bit and 16-bit are art-direction presets over RGBA8 sRGB, not console emulatio"
+      ],
+      "unsupported_features": [
+        "realtime 3D",
+        "cinematic render",
+        "automatic taste approval"
+      ],
+      "fallbacks": []
+    },
+    "validation": {
+      "checks": [
+        "exact profile with no fallback",
+        "persistent identity binding",
+        "no time-only decay",
+        "palette boundary",
+        "PNG/APNG structure",
+        "candidate-only authority"
+      ]
+    },
+    "rollback": {
+      "strategy": "discard-candidate-artifacts-and-retain-request"
+    },
+    "observability": {
+      "logs": true,
+      "duration": true,
+      "warnings": true
+    },
+    "evidence": [
+      {
+        "claim": "One causal identity and state can drive both installed pixel profiles without silent substitution.",
+        "source_url": "local:shared/asset-hands/choice-first-core.js",
+        "specification_version": "1.0.0",
+        "retrieved_at": "2026-08-12"
+      }
+    ],
+    "tests": [
+      "choice-first-selftest",
+      "asset-hands-selftest",
+      "schema-contract-selftest",
+      "html-script-syntax-test"
+    ],
+    "implementation_priority": "",
+    "limits": {
+      "installedProfiles": [
+        "pixel-8bit",
+        "pixel-16bit",
+        "pixel-custom"
+      ],
+      "automaticApproval": false,
+      "automaticPromotion": false,
+      "fallback": false
+    }
+  },
+  "measures": {
+    "identityId": "axm.park.ferris-wheel",
+    "representationProfileId": "pixel-8bit",
+    "width": 48,
+    "height": 48,
+    "frames": 8,
+    "paletteColours": 12,
+    "simulationEvents": 4,
+    "sofaUpgrades": 0,
+    "fallbackUsed": false
+  },
+  "validation": {
+    "schema": "axm.asset-validation-receipt/v1",
+    "status": "PASS",
+    "validator": {
+      "id": "choice-first-visual-simulation",
+      "version": "1.0.0",
+      "capability": true
+    },
+    "target_canvas_digest": "21512868",
+    "artifact_digests": [
+      {
+        "id": "source-sheet",
+        "digest": "add2ffdc",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-preview",
+        "digest": "1d99625c",
+        "mime": "image/apng"
+      },
+      {
+        "id": "asset-identity",
+        "digest": "a6a27fc5",
+        "mime": "application/json"
+      },
+      {
+        "id": "visual-profile",
+        "digest": "c3e578cd",
+        "mime": "application/json"
+      },
+      {
+        "id": "causal-simulation",
+        "digest": "aa71df4f",
+        "mime": "application/json"
+      },
+      {
+        "id": "pixel-animation-recipe",
+        "digest": "7e3f882f",
+        "mime": "application/json"
+      },
+      {
+        "id": "representation-set",
+        "digest": "e362ba68",
+        "mime": "application/json"
+      }
+    ],
+    "checks": [
+      {
+        "name": "core-artifact-envelope",
+        "pass": true,
+        "errors": []
+      },
+      {
+        "name": "exact-profile-no-fallback",
+        "pass": true
+      },
+      {
+        "name": "identity-bound",
+        "pass": true
+      },
+      {
+        "name": "representation-profile-bound",
+        "pass": true
+      },
+      {
+        "name": "idle-time-no-decay",
+        "pass": true
+      },
+      {
+        "name": "palette-limit",
+        "pass": true,
+        "details": {
+          "actual": 12,
+          "maximum": 16
+        }
+      },
+      {
+        "name": "png-structure",
+        "pass": true
+      },
+      {
+        "name": "apng-structure",
+        "pass": true
+      },
+      {
+        "name": "candidate-only",
+        "pass": true
+      },
+      {
+        "name": "target-canvas-effective-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "target-canvas-original-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-output:image/png",
+        "pass": true,
+        "details": {
+          "required": "image/png"
+        }
+      },
+      {
+        "name": "required-output:image/apng",
+        "pass": true,
+        "details": {
+          "required": "image/apng"
+        }
+      },
+      {
+        "name": "required-output:axm.asset-identity/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.asset-identity/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.visual-representation-profile/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.visual-representation-profile/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.asset-representation-set/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.asset-representation-set/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.causal-asset-simulation/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.causal-asset-simulation/v1"
+        }
+      },
+      {
+        "name": "editable-recipe:axm.choice-first-request/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.choice-first-request/v1",
+          "actual": "axm.choice-first-request/v1"
+        }
+      },
+      {
+        "name": "declared-artifact-types",
+        "pass": true,
+        "details": {
+          "undeclared": []
+        }
+      },
+      {
+        "name": "editable-source-emitted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-preview-emitted",
+        "pass": true,
+        "details": null
+      }
+    ],
+    "createdAt": "2026-08-12T00:00:00.000Z"
+  },
+  "technical": {
+    "pass": true,
+    "errors": [],
+    "validationReceipt": "axm.asset-validation-receipt/v1"
+  },
+  "artifact_records": [
+    {
+      "id": "source-sheet",
+      "role": "identity-bound-source-sheet",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-sheet.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/ferris-wheel-pixel-8bit-sheet.png",
+      "bytes": 73910,
+      "sha256": "7ea88a18ae1b501165c45bb235bbadb9f24ebe05fd8310776a49ed881c859d39"
+    },
+    {
+      "id": "animation-preview",
+      "role": "identity-bound-animation-preview",
+      "mime": "image/apng",
+      "filename": "ferris-wheel-pixel-8bit-preview.apng",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/ferris-wheel-pixel-8bit-preview.apng",
+      "bytes": 74706,
+      "sha256": "7561d35daeb33f377c7d228935f10f225f0b4a49ecbe032246efb1d9855f10c1"
+    },
+    {
+      "id": "asset-identity",
+      "role": "persistent-asset-identity",
+      "mime": "application/json",
+      "filename": "ferris-wheel-pixel-8bit-identity.json",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/ferris-wheel-pixel-8bit-identity.json",
+      "bytes": 2566,
+      "sha256": "e10ee3d9955377cd3b9f450959a4806a45ac946b663c306b62bca9ace28d2b05"
+    },
+    {
+      "id": "visual-profile",
+      "role": "resolved-visual-profile",
+      "mime": "application/json",
+      "filename": "ferris-wheel-pixel-8bit-profile.json",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/ferris-wheel-pixel-8bit-profile.json",
+      "bytes": 1757,
+      "sha256": "b8ff8e4bfc166b70418eac4df0a83a5413a4660fb729b73081bd68cbbee24941"
+    },
+    {
+      "id": "causal-simulation",
+      "role": "causal-simulation-state",
+      "mime": "application/json",
+      "filename": "ferris-wheel-pixel-8bit-simulation.json",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/ferris-wheel-pixel-8bit-simulation.json",
+      "bytes": 3507,
+      "sha256": "6425b0d9b3f93968637e9dd01411d2d7059085e649c3bc4a7e3caa0d228142de"
+    },
+    {
+      "id": "pixel-animation-recipe",
+      "role": "editable-pixel-animation-recipe",
+      "mime": "application/json",
+      "filename": "ferris-wheel-pixel-8bit-animation-recipe.json",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/ferris-wheel-pixel-8bit-animation-recipe.json",
+      "bytes": 8008,
+      "sha256": "04df1b329780e047bb9585063efa034cd20ccec92edd402c93dfe0a8abac56d3"
+    },
+    {
+      "id": "representation-set",
+      "role": "asset-representation-set",
+      "mime": "application/json",
+      "filename": "ferris-wheel-pixel-8bit-representations.json",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/ferris-wheel-pixel-8bit-representations.json",
+      "bytes": 1255,
+      "sha256": "d1a94ee03c53b7fbe884ab7d8fc71b3a616ddc5c7090de8e15d993449ead69bf"
+    }
+  ],
+  "animation_status": "READY",
+  "animation_measures": {
+    "sourceWidth": 192,
+    "sourceHeight": 96,
+    "frameWidth": 48,
+    "frameHeight": 48,
+    "frames": 8,
+    "clips": 1,
+    "profile": "pixel-8bit",
+    "paletteColours": 12,
+    "duplicateFramePairs": 3,
+    "previewScale": 4,
+    "videoSequences": 1,
+    "sourceSha256": "7ea88a18ae1b501165c45bb235bbadb9f24ebe05fd8310776a49ed881c859d39",
+    "recipeSha256": "04df1b329780e047bb9585063efa034cd20ccec92edd402c93dfe0a8abac56d3",
+    "aiUsed": false,
+    "originalPreserved": true
+  },
+  "animation_validation": {
+    "schema": "axm.asset-validation-receipt/v1",
+    "status": "PASS",
+    "validator": {
+      "id": "pixel-animation-workshop",
+      "version": "0.1.0",
+      "capability": true
+    },
+    "target_canvas_digest": "dc1813d9",
+    "artifact_digests": [
+      {
+        "id": "immutable-animation-sheet",
+        "digest": "add2ffdc",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-0",
+        "digest": "bb5324a8",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-1",
+        "digest": "a190ecf3",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-2",
+        "digest": "d410ad1e",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-3",
+        "digest": "e7f2210e",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-4",
+        "digest": "73976fb4",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-5",
+        "digest": "d410ad1e",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-6",
+        "digest": "e7f2210e",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-7",
+        "digest": "73976fb4",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-clip-default-motion",
+        "digest": "c541b729",
+        "mime": "image/apng"
+      },
+      {
+        "id": "animation-preview-default-motion",
+        "digest": "0156df89",
+        "mime": "image/apng"
+      },
+      {
+        "id": "pixel-animation-recipe",
+        "digest": "7e3f882f",
+        "mime": "application/json"
+      },
+      {
+        "id": "sprite-animation-manifest",
+        "digest": "75bc19be",
+        "mime": "application/json"
+      },
+      {
+        "id": "pixel-video-sequence",
+        "digest": "61332b4e",
+        "mime": "application/json"
+      },
+      {
+        "id": "pixel-animation-receipt",
+        "digest": "278463f6",
+        "mime": "application/json"
+      }
+    ],
+    "checks": [
+      {
+        "name": "core-artifact-envelope",
+        "pass": true,
+        "errors": []
+      },
+      {
+        "name": "source-png-decoded",
+        "pass": true
+      },
+      {
+        "name": "source-sha256-verified",
+        "pass": true
+      },
+      {
+        "name": "source-copy-byte-identical",
+        "pass": true
+      },
+      {
+        "name": "recipe-source-bound",
+        "pass": true
+      },
+      {
+        "name": "optional-identity-profile-binding",
+        "pass": true,
+        "details": {
+          "identityId": "axm.park.ferris-wheel",
+          "representationProfileId": "pixel-8bit"
+        }
+      },
+      {
+        "name": "optional-parent-package-bound",
+        "pass": true,
+        "details": {
+          "present": false,
+          "id": null,
+          "digest_bound": false
+        }
+      },
+      {
+        "name": "workflow-profile-not-hardware-claim",
+        "pass": true
+      },
+      {
+        "name": "exact-grid-coverage",
+        "pass": true
+      },
+      {
+        "name": "repeat-extraction-pixel-equality",
+        "pass": true
+      },
+      {
+        "name": "target-frame-dimensions",
+        "pass": true,
+        "details": {
+          "target": [
+            48,
+            48
+          ],
+          "frame": [
+            48,
+            48
+          ]
+        }
+      },
+      {
+        "name": "palette-limit",
+        "pass": true,
+        "details": {
+          "maximum": 16,
+          "actual": 12
+        }
+      },
+      {
+        "name": "exact-palette",
+        "pass": true,
+        "details": {
+          "enforcement": "exact",
+          "offPalette": []
+        }
+      },
+      {
+        "name": "duplicate-frame-policy",
+        "pass": true,
+        "details": {
+          "reject": false,
+          "duplicates": [
+            [
+              2,
+              5
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              4,
+              7
+            ]
+          ]
+        }
+      },
+      {
+        "name": "game-animation-adapter",
+        "pass": true
+      },
+      {
+        "name": "video-sequence-timing-and-artifact-binding",
+        "pass": true
+      },
+      {
+        "name": "ai-and-author-provenance-visible",
+        "pass": true
+      },
+      {
+        "name": "frame-budget",
+        "pass": true
+      },
+      {
+        "name": "duration-budget",
+        "pass": true
+      },
+      {
+        "name": "texture-memory-budget",
+        "pass": true
+      },
+      {
+        "name": "candidate-only-authority",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-0",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-1",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-2",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-3",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-4",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-5",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-6",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-7",
+        "pass": true
+      },
+      {
+        "name": "apng-structure:animation-clip-default-motion",
+        "pass": true,
+        "details": {
+          "pass": true,
+          "errors": [],
+          "chunks": [
+            "IHDR",
+            "acTL",
+            "sRGB",
+            "fcTL",
+            "IDAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "IEND"
+          ],
+          "frames": 8,
+          "declaredFrames": 8,
+          "plays": 0,
+          "width": 48,
+          "height": 48,
+          "sequence": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ],
+          "durationMs": 664,
+          "decodedFrames": 8
+        }
+      },
+      {
+        "name": "apng-frame-timing:animation-clip-default-motion",
+        "pass": true,
+        "details": {
+          "expectedDurationMs": 664,
+          "actualDurationMs": 664,
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ]
+        }
+      },
+      {
+        "name": "apng-structure:animation-preview-default-motion",
+        "pass": true,
+        "details": {
+          "pass": true,
+          "errors": [],
+          "chunks": [
+            "IHDR",
+            "acTL",
+            "sRGB",
+            "fcTL",
+            "IDAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "IEND"
+          ],
+          "frames": 8,
+          "declaredFrames": 8,
+          "plays": 0,
+          "width": 192,
+          "height": 192,
+          "sequence": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ],
+          "durationMs": 664,
+          "decodedFrames": 8
+        }
+      },
+      {
+        "name": "apng-frame-timing:animation-preview-default-motion",
+        "pass": true,
+        "details": {
+          "expectedDurationMs": 664,
+          "actualDurationMs": 664,
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ]
+        }
+      },
+      {
+        "name": "declared-output-budget-before-receipt",
+        "pass": true,
+        "details": {
+          "bytes": 1440058,
+          "excludesReceipt": true
+        }
+      },
+      {
+        "name": "target-canvas-effective-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "target-canvas-original-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-output:image/png",
+        "pass": true,
+        "details": {
+          "required": "image/png"
+        }
+      },
+      {
+        "name": "required-output:image/apng",
+        "pass": true,
+        "details": {
+          "required": "image/apng"
+        }
+      },
+      {
+        "name": "required-output:axm.pixel-animation-recipe/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-animation-recipe/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.sprite-animation/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.sprite-animation/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.pixel-video-sequence/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-video-sequence/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.pixel-animation-receipt/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-animation-receipt/v1"
+        }
+      },
+      {
+        "name": "editable-recipe:axm.pixel-animation-recipe/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-animation-recipe/v1",
+          "actual": "axm.pixel-animation-recipe/v1"
+        }
+      },
+      {
+        "name": "declared-artifact-types",
+        "pass": true,
+        "details": {
+          "undeclared": []
+        }
+      },
+      {
+        "name": "editable-source-emitted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-preview-emitted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "core-file-budget",
+        "pass": true,
+        "details": {
+          "actual": 1457119,
+          "maximum": 30000000
+        }
+      }
+    ],
+    "createdAt": "2026-08-12T00:00:00.000Z"
+  },
+  "animation_artifact_records": [
+    {
+      "id": "immutable-animation-sheet",
+      "role": "immutable-animation-sheet",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-source-sheet.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-source-sheet.png",
+      "bytes": 73910,
+      "sha256": "7ea88a18ae1b501165c45bb235bbadb9f24ebe05fd8310776a49ed881c859d39"
+    },
+    {
+      "id": "animation-frame-motion-frame-0",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-motion-frame-0.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-motion-frame-0.png",
+      "bytes": 9345,
+      "sha256": "0abe26a0982a809fe6c06b1ef7ad46f019922a74a392012d2503227f70a9d768"
+    },
+    {
+      "id": "animation-frame-motion-frame-1",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-motion-frame-1.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-motion-frame-1.png",
+      "bytes": 9345,
+      "sha256": "0d1f8332337fc00efe0a4e233f1f0d6d34f58dc11b4526aaf48e6e40ff6ff15f"
+    },
+    {
+      "id": "animation-frame-motion-frame-2",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-motion-frame-2.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-motion-frame-2.png",
+      "bytes": 9345,
+      "sha256": "91d5032f90c975dcab0dd0ba30209c434cf34e40483446819ecdc2a60344c14c"
+    },
+    {
+      "id": "animation-frame-motion-frame-3",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-motion-frame-3.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-motion-frame-3.png",
+      "bytes": 9345,
+      "sha256": "ebe57ac5ae6b775f5b414acb552b5bfe173d503c6359eb01256851e9d49305a0"
+    },
+    {
+      "id": "animation-frame-motion-frame-4",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-motion-frame-4.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-motion-frame-4.png",
+      "bytes": 9345,
+      "sha256": "eb9782e92c8839ddddbe4f5b34eb715cc1f7728a050889c1284a00123b9cb66a"
+    },
+    {
+      "id": "animation-frame-motion-frame-5",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-motion-frame-5.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-motion-frame-5.png",
+      "bytes": 9345,
+      "sha256": "91d5032f90c975dcab0dd0ba30209c434cf34e40483446819ecdc2a60344c14c"
+    },
+    {
+      "id": "animation-frame-motion-frame-6",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-motion-frame-6.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-motion-frame-6.png",
+      "bytes": 9345,
+      "sha256": "ebe57ac5ae6b775f5b414acb552b5bfe173d503c6359eb01256851e9d49305a0"
+    },
+    {
+      "id": "animation-frame-motion-frame-7",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-motion-frame-7.png",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-motion-frame-7.png",
+      "bytes": 9345,
+      "sha256": "eb9782e92c8839ddddbe4f5b34eb715cc1f7728a050889c1284a00123b9cb66a"
+    },
+    {
+      "id": "animation-clip-default-motion",
+      "role": "pixel-animation-clip",
+      "mime": "image/apng",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-default-motion.apng",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-default-motion.apng",
+      "bytes": 74706,
+      "sha256": "9b63beac5e954b387487581063ddd0db97fc87748166fc3028e14e2eeee6843e"
+    },
+    {
+      "id": "animation-preview-default-motion",
+      "role": "integer-scale-animation-preview",
+      "mime": "image/apng",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-default-motion-preview-4x.apng",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-default-motion-preview-4x.apng",
+      "bytes": 1181858,
+      "sha256": "8a5e35e6f09c276bc5fa4cfb06a477b29e567388e749297bfbda13d1b8960444"
+    },
+    {
+      "id": "pixel-animation-recipe",
+      "role": "editable-pixel-animation-recipe",
+      "mime": "application/json",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-animation-recipe.json",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-animation-recipe.json",
+      "bytes": 8008,
+      "sha256": "04df1b329780e047bb9585063efa034cd20ccec92edd402c93dfe0a8abac56d3"
+    },
+    {
+      "id": "sprite-animation-manifest",
+      "role": "engine-neutral-sprite-animation",
+      "mime": "application/json",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-sprite-animation.json",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-sprite-animation.json",
+      "bytes": 16606,
+      "sha256": "48f6c0815f172ca959d66875f3dc39ebcbbab9cc78d2043f267859b90008a915"
+    },
+    {
+      "id": "pixel-video-sequence",
+      "role": "codec-neutral-video-frame-sequence",
+      "mime": "application/json",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-video-sequence.json",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-video-sequence.json",
+      "bytes": 10210,
+      "sha256": "c9ee92130bc0cf23ea23b267d82b5005476a811d2acc1420befaaea5a6552144"
+    },
+    {
+      "id": "pixel-animation-receipt",
+      "role": "pixel-animation-receipt",
+      "mime": "application/json",
+      "filename": "ferris-wheel-pixel-8bit-animation-package-animation-receipt.json",
+      "path": "pilots/assets/park-ferris-wheel/pixel-8bit/animation-package/ferris-wheel-pixel-8bit-animation-package-animation-receipt.json",
+      "bytes": 17059,
+      "sha256": "cb97a1d65fa4a4521b0c9e9825b6b9dbf862f6555957c61f1888642c9d2effac"
+    }
+  ],
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

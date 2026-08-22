@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/v0.1.0/improvement_need.schema.json",
+  "title": "Improvement Need",
+  "type": "object",
+  "properties": {
+    "need_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "affected_scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "observed_problem": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "desired_outcome": {
+      "type": "string",
+      "minLength": 1
+    },
+    "improvement_dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "RELIABILITY",
+          "USEFULNESS",
+          "INTEROPERABILITY",
+          "HUMAN_ACCESSIBILITY",
+          "AI_ACCESSIBILITY",
+          "PRIVACY",
+          "SAFETY",
+          "SPEED",
+          "COMPUTE_EFFICIENCY",
+          "VISUAL_QUALITY",
+          "TESTABILITY",
+          "PORTABILITY",
+          "DOCUMENTATION",
+          "PROOF_MATURITY",
+          "MAINTAINABILITY",
+          "MODULAR_REUSE"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "severity": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "ecosystem_reach": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "blocked_work": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    },
+    "possible_responses": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "BUILD",
+          "REPAIR",
+          "RESEARCH",
+          "TEST",
+          "INTEGRATE",
+          "DOCUMENT",
+          "SIMPLIFY",
+          "DEPRECATE",
+          "REUSE",
+          "WAIT_FOR_EVIDENCE"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "required_knowledge": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "verification_method": {
+      "type": "string",
+      "minLength": 1
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "truth_state": {
+      "type": "string",
+      "enum": [
+        "OBSERVED",
+        "DECLARED",
+        "TESTED",
+        "REPRODUCED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "CONFLICTED",
+        "OBSOLETE",
+        "UNKNOWN"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "OPEN",
+        "TRIAGED",
+        "DIRECTION_CREATED",
+        "IN_PROGRESS",
+        "VERIFIED_RESOLVED",
+        "PARTIALLY_RESOLVED",
+        "REJECTED",
+        "OBSOLETE"
+      ]
+    },
+    "assigned_direction_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "need_id",
+    "contract_version",
+    "affected_scope",
+    "observed_problem",
+    "evidence",
+    "desired_outcome",
+    "improvement_dimensions",
+    "severity",
+    "ecosystem_reach",
+    "blocked_work",
+    "possible_responses",
+    "required_knowledge",
+    "verification_method",
+    "confidence",
+    "truth_state",
+    "status",
+    "assigned_direction_ids"
+  ],
+  "additionalProperties": false
+}

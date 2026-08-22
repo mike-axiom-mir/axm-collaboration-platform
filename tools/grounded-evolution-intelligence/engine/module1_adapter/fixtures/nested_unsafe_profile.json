@@ -1,0 +1,187 @@
+{
+  "contract": {
+    "capability_record_id": "axm.shared-capability-record",
+    "capability_record_version": "0.1.0",
+    "compatibility": "EXACT_ONLY",
+    "id": "axm.capability-interface-contract",
+    "interface_recommendation_schema": {
+      "id": "https://axm.local/schemas/interface-recommendation.schema.json",
+      "path": "schemas/interface_recommendation.schema.json",
+      "sha256": "sha256:b85e9916f599d2c469b00ea91b12bc3de1e7cd3cceedcd226340fad6dd636e4f"
+    },
+    "shared_capability_schema": {
+      "id": "https://axm.local/schemas/shared-capability.schema.json",
+      "path": "schemas/shared_capability.schema.json",
+      "sha256": "sha256:c63d2c5d4b0ae7aeb8754a5a006a1efd2364c330ad18b74064d74ec7428a71b3"
+    },
+    "version": "0.1.0"
+  },
+  "enrichment_states": [
+    "VERIFIED",
+    "PARTIAL",
+    "CONFLICTED",
+    "NO_MODULE_RELATION"
+  ],
+  "evidence": {
+    "module3_should_preserve_prior_receipts_as_immutable_observations": true,
+    "primary_surfaces": [
+      "source_reference",
+      "knowledge.field_states",
+      "knowledge.inferences",
+      "knowledge.unknowns",
+      "knowledge.conflicts",
+      "observed_evidence",
+      "registry_context",
+      "enrichment_context"
+    ],
+    "receipt_append_only_by_module1_schema": false,
+    "receipts": [
+      "producer_receipt.json",
+      "batch_receipt.json",
+      "production_run_manifest.json"
+    ],
+    "standalone_evidence_tuple_schema_exists": false
+  },
+  "identity": {
+    "portable_record_key_components": [
+      "capability_id",
+      "capability_revision",
+      "source_hash",
+      "source_pointer",
+      "source_line"
+    ],
+    "primary_field": "capability_id",
+    "revision_field": "capability_revision",
+    "semantic_hash_field": "normalized_source_semantic_sha256",
+    "silent_id_rewrite": false,
+    "source_identity_case_sensitive": true
+  },
+  "materialization": {
+    "automatic_execution": false,
+    "automatic_merge_after_rebuild": false,
+    "first_command": "python -m axm_capability_atlas.cli discovery-verify <READ_ONLY_REPO_COPY> --output discovery_integrity_report.json",
+    "initial_state": "NOT_RUN",
+    "requires_local_discovery_verify": true,
+    "requires_local_public_intake": true,
+    "second_command": "python -m axm_capability_atlas.cli axm-public-intake <READ_ONLY_REPO_COPY> --output <FRESH_ATLAS_INTAKE> --batch-size 100",
+    "success_conditions": [
+      "discovery integrity valid",
+      "READY_FOR_BATCH_PRODUCTION",
+      "all batch receipts valid",
+      "zero missing records",
+      "zero extra records",
+      "COMPLETE_VERIFIED",
+      "production-verify valid=true"
+    ]
+  },
+  "module": {
+    "external_canonical_id": "axm.module.human_capability_atlas",
+    "identity_binding": "EXPLICIT_EXTERNAL_TO_LOCAL_REFERENCE",
+    "merge_claim": false,
+    "module3_local_reference_id": "axm:module:human-capability-atlas",
+    "release_role": "DISCOVERY_TRUTH_REGISTRY_ROLE_PRE_INTAKE",
+    "version": "0.10.0"
+  },
+  "package_layout": {
+    "nested_inventory": "FILE_INVENTORY_SHA256.json",
+    "nested_module_manifest": "local_intake_manifest.json",
+    "outer_authoritative_manifest": "INTAKE_MANIFEST.json",
+    "outer_checksums": "CHECKSUMS_SHA256.txt",
+    "outer_inventory": "INTAKE_BUNDLE_FILE_INVENTORY_SHA256.json",
+    "real_registry_batch_plan_bundled": false,
+    "real_registry_cards_bundled": false,
+    "real_registry_receipts_bundled": false,
+    "schemas_in_nested_payload": true
+  },
+  "packages": {
+    "final_intake_bundle": {
+      "name": "AXM_HUMAN_CAPABILITY_ATLAS_FINAL_LOCAL_INTAKE_v0_10_0.zip",
+      "sha256": "sha256:782923ce6e12249253226f7d6a2593089e6c048af8f13a187070f64b058985cd",
+      "version": "0.10.0"
+    },
+    "handoff_status_addendum": {
+      "name": "AXM_HUMAN_CAPABILITY_ATLAS_HANDOFF_STATUS_UPDATE_v0_10_0.zip",
+      "path": "HANDOFF/AXM_HUMAN_CAPABILITY_ATLAS_HANDOFF_STATUS_UPDATE_v0_10_0.zip",
+      "sha256": "sha256:548475aeec3f930f8eb4fd7d59eb369bd3ec59afea1c92c39fb0947c405bbd4b",
+      "version": "0.10.0"
+    },
+    "module_payload": {
+      "name": "AXM_HUMAN_CAPABILITY_ATLAS_v0_10_0.zip",
+      "path": "PAYLOAD/AXM_HUMAN_CAPABILITY_ATLAS_v0_10_0.zip",
+      "sha256": "sha256:c9ffad68ad91bd80807ad47a3842c32f18548eacfa94cbac9084e42716e91861",
+      "version": "0.10.0"
+    },
+    "stable_anchor": {
+      "must_remain_unchanged": true,
+      "name": "AXM_HUMAN_CAPABILITY_ATLAS_STABLE_HANDOFF_ANCHOR_v0_1_0.zip",
+      "path": "HANDOFF/AXM_HUMAN_CAPABILITY_ATLAS_STABLE_HANDOFF_ANCHOR_v0_1_0.zip",
+      "sha256": "sha256:0a65310aa369f2574b61a3a7e7e05fe587ea5fa153eef659f8a740de752d6f49",
+      "version": "0.1.0"
+    }
+  },
+  "profile_version": "1.0.0",
+  "proof_ceiling": {
+    "batch_pass_is_runtime_proof": false,
+    "complete_verified_is_runtime_proof": false,
+    "declaration_is_runtime_proof": false,
+    "discovery_verify_pass_is_runtime_proof": false,
+    "package_verified_is_merge_gate_acceptance": false,
+    "producer_run_is_runtime_proof": false,
+    "provider_join_verified_is_runtime_proof": false,
+    "schema_pass_is_runtime_proof": false,
+    "selftest_exists_is_runtime_proof": false
+  },
+  "registry_roles": [
+    "PROVIDED_ONLY",
+    "PROVIDED_AND_CONSUMED",
+    "CONSUMER_ONLY_DEPENDENCY",
+    "UNBOUND"
+  ],
+  "relation_join_states": [
+    "VERIFIED",
+    "PARTIAL",
+    "CONFLICTED",
+    "UNRESOLVED"
+  ],
+  "schema": "axm.gei.module1-intake-profile/v1",
+  "source_handoff": {
+    "authority": "DESCRIPTIVE_HANDOFF_NOT_ARTIFACT_BYTE_PROOF",
+    "path": "module1_adapter/source/MODULE1_STABLE_INTAKE_HANDOFF.txt",
+    "sha256": "sha256:748d1a677ed99679825f3f8360cf6ba1a9be435584b4b0fed93d78c5af1b7993",
+    "status": "USER_SUPPLIED_STABLE_HANDOFF"
+  },
+  "source_snapshot": {
+    "actual_provider_backed_split": "TO_BE_MEASURED_BY_REAL_LOCAL_INTAKE",
+    "observed_module_count": 210,
+    "observed_registry_identifier_count": 1769,
+    "real_registry_run": "NOT_RUN",
+    "repository_commit": "UNKNOWN_NOT_CAPTURED",
+    "source_commit_captured": false,
+    "synthetic_1769_role_split_is_real_data": false,
+    "upstream_tools_index_scope": "SUPPLIED_TOOLS_INDEX_SNAPSHOT_NOT_REGENERATED"
+  },
+  "truth_namespace": {
+    "confirmed_is_canonical": false,
+    "default_module3_ceiling": {
+      "conflicted": "CONFLICTED",
+      "inferred": "INFERRED",
+      "known": "DECLARED",
+      "not_applicable": "NO_DIRECT_MAPPING",
+      "unknown": "UNKNOWN"
+    },
+    "namespace": "axm.module1.knowledge.field_states/0.1.0",
+    "serialized": [
+      "known",
+      "inferred",
+      "unknown",
+      "conflicted",
+      "not_applicable"
+    ]
+  },
+  "visual_corrections": {
+    "confirmed_truth_token_authoritative": false,
+    "consumer_only_689_authoritative": false,
+    "provider_backed_342_authoritative": false,
+    "real_counts_status": "TO_BE_MEASURED_BY_REAL_LOCAL_INTAKE"
+  }
+}

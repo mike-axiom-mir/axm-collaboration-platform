@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-review-content-safety/0.4",
+  "title": "AXM Blind Review Content Safety Diagnostics v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "protocol_hash",
+    "scan_limits",
+    "candidate_signals",
+    "category_totals",
+    "non_punitive",
+    "limitations",
+    "report_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-review-content-safety/0.4"
+    },
+    "protocol_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "scan_limits": {
+      "type": "object",
+      "required": [
+        "max_bytes_per_file",
+        "max_bytes_per_candidate"
+      ],
+      "properties": {
+        "max_bytes_per_file": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_bytes_per_candidate": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "candidate_signals": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "signal_present",
+          "finding_count",
+          "findings",
+          "files_scanned",
+          "bytes_scanned",
+          "files_skipped_nontext",
+          "files_skipped_by_limit",
+          "files_truncated_by_file_limit",
+          "files_truncated_by_candidate_limit",
+          "scan_complete_within_declared_limits",
+          "automatic_penalty"
+        ],
+        "properties": {
+          "signal_present": {
+            "type": "boolean"
+          },
+          "finding_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "findings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "category",
+                "artifact_path",
+                "automatic_penalty"
+              ],
+              "properties": {
+                "category": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "artifact_path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "automatic_penalty": {
+                  "const": false
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "files_scanned": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bytes_scanned": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "files_skipped_nontext": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "files_skipped_by_limit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "files_truncated_by_file_limit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "files_truncated_by_candidate_limit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "scan_complete_within_declared_limits": {
+            "type": "boolean"
+          },
+          "automatic_penalty": {
+            "const": false
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "category_totals": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "non_punitive": {
+      "const": true
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "report_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": true
+}

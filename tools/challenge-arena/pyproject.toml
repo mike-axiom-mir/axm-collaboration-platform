@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "axm-challenge-arena"
+version = "0.6.0"
+description = "Local-first, deterministic multi-AI challenge, evidence, blind-review, voting, lineage, and merge-map module for AXM."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "CC0-1.0"}
+authors = [{name = "Mike / Axiom-Mir"}]
+dependencies = []
+
+[project.scripts]
+axm-challenge-arena = "axm_challenge_arena.cli:main"
+axm-challenge-observer = "axm_challenge_arena.server:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["axm_challenge_arena*"]
+
+[tool.setuptools.package-data]
+axm_challenge_arena = ["static/*", "schemas/*.json"]
+[tool.pytest.ini_options]
+pythonpath = ["."]

@@ -1,0 +1,152 @@
+{
+  "schema": "axm.visual-treatment-recipe/v1",
+  "version": "1.0.0",
+  "id": "sofa-oceanic-glass-visual-treatment",
+  "request_id": "sofa-oceanic-glass",
+  "identity_id": "axm.home.starter-sofa",
+  "profile_id": "pixel-16bit-3d",
+  "catalog_digest": "413853e116023c991509d97f22e1f29f56e9537ca88286c9f38517755b79a121",
+  "style_layers": [
+    {
+      "id": "world-oceanic-glass",
+      "name": "Oceanic Glass",
+      "source": "style-fabric:preskin",
+      "palette": {
+        "accent": "#8af6ff",
+        "primary": "#20d8d2",
+        "secondary": "#2776d6"
+      },
+      "material": {
+        "clearcoat": 0.72,
+        "emissiveStrength": 0.5,
+        "gloss": 0.86,
+        "glowIntensity": 0.4,
+        "glowRadius": 20,
+        "grain": 0.12,
+        "iridescence": 0.28,
+        "metallic": 0.15,
+        "outlineWidth": 2,
+        "pulseSpeed": 0.6,
+        "roughness": 0.12,
+        "sheen": 0.18,
+        "shimmerSpeed": 0.3,
+        "specular": 0.52,
+        "translucency": 0.58,
+        "weathering": 0
+      },
+      "pattern": {
+        "kind": "waves",
+        "scale": 1.5,
+        "strength": 0.45
+      },
+      "accessibility": {
+        "highContrast": false,
+        "minimumTextContrast": 4.5,
+        "reducedMotion": false
+      },
+      "weight": 0.78
+    }
+  ],
+  "effect_plan": [
+    {
+      "requested_id": "material.frosted-panel",
+      "module_id": "material.frosted-panel",
+      "name": "Frosted Panel",
+      "kind": "organ",
+      "category": "Materials",
+      "renderer": {
+        "className": "fx-material-frosted",
+        "scope": "surface",
+        "type": "class"
+      },
+      "params": {
+        "opacity": 0.84,
+        "frost": 0.72,
+        "blur": 24
+      },
+      "css_variables": {
+        "--fx-frost-opacity": 0.84,
+        "--fx-frost-strength": 0.72,
+        "--fx-glass-blur": 24
+      },
+      "route": "APPLIED_3D_AND_PORTABLE_WEB",
+      "fallback_used": false
+    },
+    {
+      "requested_id": "light.reflection-streak",
+      "module_id": "light.reflection-streak",
+      "name": "Reflection Streak",
+      "kind": "effect",
+      "category": "Light",
+      "renderer": {
+        "className": "fx-reflection-streak",
+        "scope": "surface",
+        "type": "class"
+      },
+      "params": {
+        "intensity": 0.52,
+        "length": 42,
+        "angle": 118,
+        "speed": 7
+      },
+      "css_variables": {
+        "--fx-reflection-intensity": 0.52,
+        "--fx-reflection-length": 42,
+        "--fx-reflection-angle": 118,
+        "--fx-reflection-speed": 7
+      },
+      "route": "APPLIED_3D_AND_PORTABLE_WEB",
+      "fallback_used": false
+    },
+    {
+      "requested_id": "atmosphere.ambient-field",
+      "module_id": "atmosphere.ambient-field",
+      "name": "Ambient Atmosphere Field",
+      "kind": "effect",
+      "category": "Atmosphere",
+      "renderer": {
+        "className": "fx-overlay-particles",
+        "generatedCount": 24,
+        "scope": "ambient",
+        "type": "overlay"
+      },
+      "params": {
+        "density": 0.34,
+        "intensity": 0.36,
+        "parallax": 0.38
+      },
+      "css_variables": {
+        "--fx-particle-density": 0.34,
+        "--fx-particle-intensity": 0.36,
+        "--fx-particle-parallax": 0.38
+      },
+      "route": "APPLIED_3D_AND_PORTABLE_WEB",
+      "fallback_used": false
+    }
+  ],
+  "material_family": "glass",
+  "accessibility": {
+    "reduced_motion": false,
+    "high_contrast": false,
+    "effect_scale": 1
+  },
+  "story": {
+    "title": "SAME SOFA / NEW FINISH",
+    "nodes": [
+      {
+        "id": "continuity",
+        "caption": "REPAIR IT. REFIT IT. KEEP ITS HISTORY.",
+        "duration_s": 3,
+        "focus_component": "sofa-root"
+      }
+    ]
+  },
+  "scene_recipe_digest": "axm-stable:f9a6ab0472b4a919",
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

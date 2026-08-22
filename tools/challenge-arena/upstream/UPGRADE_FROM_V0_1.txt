@@ -1,0 +1,51 @@
+AXM CHALLENGE ARENA — v0.1.0 TO v0.2.0 UPGRADE
+===================================================
+
+HISTORICAL NOTE
+---------------
+This file documents the original v0.1 to v0.2 step. For a current v0.4 intake,
+follow UPGRADE_FROM_V0_2.txt after preserving both earlier releases.
+
+ROOT PRESERVATION
+-----------------
+- Keep the v0.1.0 ZIP as a rollback artifact.
+- Intake v0.2.0 as a new module revision; do not overwrite the old source folder silently.
+- The neutral outer module-job seam remains axm.module-job/0.1.
+- New challenge packets and returns use axm.challenge-arena/0.2 and axm.challenge-arena-return/0.2.
+
+OLD WORKSPACES
+- v0.2 can migrate a v0.1 JSONL-only event history into canonical event files.
+- Migration validates every old event hash before creating canonical files.
+- Existing packet schema axm.challenge-arena/0.1 remains accepted at intake for compatibility.
+- New presets emit axm.challenge-arena/0.2.
+- The v0.2 wheel includes all shipped JSON contract schemas.
+
+MATERIAL BEHAVIOUR CHANGES
+- New presets require submissions to acknowledge challenge_id, packet_hash, and rubric_hash.
+- Registration seals at lock unless allow_late_registration was explicitly enabled beforehand.
+- Required deliverable counts and byte/artifact limits are structurally enforced at submission.
+- Default peer aggregation is median.
+- Exact top ties and insufficient evidence withhold a provisional winner.
+- Bridge imports are idempotent; changed incoming content requires explicit revision permission.
+- sync --advance can move evidence-complete phases but never finalizes.
+- external specialist evidence uses bound signed receipts.
+- follow-up rounds create a new DRAFT child with lineage instead of rewriting the parent.
+- inherited sealed source inputs are re-verified and resealed under the child; parent-local receipt fields are never reused as child evidence.
+- review and result sidecars participate in write-ahead recovery rather than living outside the semantic transaction.
+- Draft local inputs can now be sealed into challenge-owned hash-bound evidence;
+  old raw path references should not be treated as portable evidence.
+
+LOCAL INTAKE ORDER
+1. Unpack v0.2 beside v0.1.
+2. Run: python -m unittest discover -s tests -v (63 tests in this package)
+3. Run the demo in a fresh workspace.
+4. Verify arena-demo-001.
+5. Export two evidence bundles and confirm their SHA-256 values match.
+6. Test one existing v0.1 workspace copy; never use the only copy for migration testing.
+7. Connect Asset Factory through one module-job and FileBridge round.
+8. Add branch-specific validators or signed runner receipts only after the generic round passes.
+
+ROLLBACK
+- v0.2 does not delete v0.1 source or ZIP.
+- Challenge evidence bundles are self-contained snapshots.
+- Do not open a v0.2-mutated production workspace with v0.1 and assume parity; use a copied workspace when testing rollback.

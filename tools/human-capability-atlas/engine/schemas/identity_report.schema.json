@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/identity-report.schema.json",
+  "title": "AXM Capability Identity Resolution Report",
+  "type": "object",
+  "required": [
+    "module", "module_version", "shared_contract_version", "operation",
+    "generated_at", "input_record_count", "summary", "canonical_records",
+    "identity_groups", "normalized_id_collisions", "aliases", "lifecycle",
+    "integrity_notes"
+  ],
+  "properties": {
+    "module": {"const": "AXM Human Capability Atlas"},
+    "module_version": {"type": "string"},
+    "shared_contract_version": {"const": "0.1.0"},
+    "operation": {"const": "capability_identity_resolution"},
+    "generated_at": {"type": "string"},
+    "input_record_count": {"type": "integer", "minimum": 0},
+    "summary": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "canonical_records": {"type": "object"},
+    "identity_groups": {"type": "array", "items": {"type": "object"}},
+    "normalized_id_collisions": {"type": "object"},
+    "aliases": {"type": "object"},
+    "lifecycle": {"type": "object"},
+    "integrity_notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

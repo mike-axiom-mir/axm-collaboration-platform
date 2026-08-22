@@ -1,0 +1,224 @@
+{
+  "active_merge_allowed": false,
+  "canonical_module_ids": [
+    "axm.module.human_capability_atlas",
+    "fixture.module.grounded_evolution_intelligence",
+    "fixture.module.human_interface_intelligence"
+  ],
+  "checks": [
+    {
+      "check_id": "role-set",
+      "details": {
+        "extra": [],
+        "missing": []
+      },
+      "status": "PASS",
+      "subject": "Exactly one manifest for each three-module role"
+    },
+    {
+      "check_id": "module1-canonical-id",
+      "details": "axm.module.human_capability_atlas",
+      "status": "PASS",
+      "subject": "Module 1 canonical ID matches the stable handoff"
+    },
+    {
+      "check_id": "shared-contract",
+      "details": [
+        [
+          "axm.capability-interface-contract",
+          "0.1.0",
+          "EXACT_ONLY"
+        ]
+      ],
+      "status": "PASS",
+      "subject": "Shared contract is exact-only 0.1.0"
+    },
+    {
+      "check_id": "shared-capability-schema",
+      "details": [
+        "sha256:c63d2c5d4b0ae7aeb8754a5a006a1efd2364c330ad18b74064d74ec7428a71b3"
+      ],
+      "status": "PASS",
+      "subject": "Capability Record schema hash matches the stable anchor"
+    },
+    {
+      "check_id": "interface-recommendation-schema",
+      "details": [
+        "sha256:b85e9916f599d2c469b00ea91b12bc3de1e7cd3cceedcd226340fad6dd636e4f"
+      ],
+      "status": "PASS",
+      "subject": "Interface Recommendation schema hash matches the stable anchor"
+    },
+    {
+      "check_id": "authority:HUMAN_CAPABILITY_ATLAS",
+      "details": {
+        "automatic_materialization_authority": false,
+        "canon_authority": false,
+        "execution_authority": false,
+        "silent_overwrite_authority": false
+      },
+      "status": "PASS",
+      "subject": "No automatic authority requested by HUMAN_CAPABILITY_ATLAS"
+    },
+    {
+      "check_id": "authority:HUMAN_INTERFACE_INTELLIGENCE",
+      "details": {
+        "automatic_materialization_authority": false,
+        "canon_authority": false,
+        "execution_authority": false,
+        "silent_overwrite_authority": false
+      },
+      "status": "PASS",
+      "subject": "No automatic authority requested by HUMAN_INTERFACE_INTELLIGENCE"
+    },
+    {
+      "check_id": "authority:GROUNDED_EVOLUTION_INTELLIGENCE",
+      "details": {
+        "automatic_materialization_authority": false,
+        "canon_authority": false,
+        "execution_authority": false,
+        "silent_overwrite_authority": false
+      },
+      "status": "PASS",
+      "subject": "No automatic authority requested by GROUNDED_EVOLUTION_INTELLIGENCE"
+    },
+    {
+      "check_id": "module1-materialization",
+      "details": {
+        "corpus_bundled": true,
+        "declared_record_count": 1,
+        "real_registry_run": true,
+        "source_commit": "fixture",
+        "source_commit_captured": true,
+        "state": "COMPLETE_VERIFIED"
+      },
+      "status": "PASS",
+      "subject": "Module 1 corpus materialization state"
+    },
+    {
+      "check_id": "atlas-to-interface-capabilities",
+      "details": [],
+      "status": "PASS",
+      "subject": "Module 2 capability references resolve against Module 1 exports"
+    },
+    {
+      "check_id": "atlas-to-evolution-capabilities",
+      "details": [],
+      "status": "PASS",
+      "subject": "Module 3 capability references resolve against Module 1 exports"
+    },
+    {
+      "check_id": "interface-to-evolution-interfaces",
+      "details": [],
+      "status": "PASS",
+      "subject": "Module 3 interface references resolve against Module 2 exports"
+    },
+    {
+      "check_id": "module-refs:HUMAN_CAPABILITY_ATLAS",
+      "details": [],
+      "status": "PASS",
+      "subject": "Module references resolve for HUMAN_CAPABILITY_ATLAS"
+    },
+    {
+      "check_id": "module-refs:HUMAN_INTERFACE_INTELLIGENCE",
+      "details": [],
+      "status": "PASS",
+      "subject": "Module references resolve for HUMAN_INTERFACE_INTELLIGENCE"
+    },
+    {
+      "check_id": "module-refs:GROUNDED_EVOLUTION_INTELLIGENCE",
+      "details": [],
+      "status": "PASS",
+      "subject": "Module references resolve for GROUNDED_EVOLUTION_INTELLIGENCE"
+    },
+    {
+      "check_id": "record-collisions",
+      "details": [
+        {
+          "classification": "conflicting_duplicate",
+          "items": [
+            {
+              "artifact_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "capability_id": "axm.file.rename",
+              "capability_revision": "1.0.0",
+              "kind": "capability-record",
+              "module_role": "HUMAN_CAPABILITY_ATLAS",
+              "record_id": "cap:axm.file.rename@1.0.0",
+              "semantic_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+              "source_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+            },
+            {
+              "artifact_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "capability_id": "axm.file.rename",
+              "capability_revision": "1.0.0",
+              "kind": "capability-record",
+              "module_role": "GROUNDED_EVOLUTION_INTELLIGENCE",
+              "record_id": "other-copy",
+              "semantic_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+              "source_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+            }
+          ],
+          "record_id": "axm.file.rename"
+        }
+      ],
+      "status": "FAIL",
+      "subject": "No unresolved record collisions"
+    }
+  ],
+  "errors": [
+    "record-collisions: No unresolved record collisions"
+  ],
+  "materialization_required": false,
+  "merge_review_allowed": false,
+  "module_roles": [
+    "GROUNDED_EVOLUTION_INTELLIGENCE",
+    "HUMAN_CAPABILITY_ATLAS",
+    "HUMAN_INTERFACE_INTELLIGENCE"
+  ],
+  "package_admission_allowed": true,
+  "record_collisions": [
+    {
+      "classification": "conflicting_duplicate",
+      "items": [
+        {
+          "artifact_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "capability_id": "axm.file.rename",
+          "capability_revision": "1.0.0",
+          "kind": "capability-record",
+          "module_role": "HUMAN_CAPABILITY_ATLAS",
+          "record_id": "cap:axm.file.rename@1.0.0",
+          "semantic_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "source_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        {
+          "artifact_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "capability_id": "axm.file.rename",
+          "capability_revision": "1.0.0",
+          "kind": "capability-record",
+          "module_role": "GROUNDED_EVOLUTION_INTELLIGENCE",
+          "record_id": "other-copy",
+          "semantic_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "source_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      ],
+      "record_id": "axm.file.rename"
+    }
+  ],
+  "report_hash": "sha256:0ff2974a570c8c5929d716369320aa6560536ff7f388c5ac5ee273cfd0b03c1d",
+  "schema": "axm.three-module-intake-preflight-report/v3",
+  "staged_plan": [
+    {
+      "action": "CONFLICT_HOLD",
+      "classification": "conflicting_duplicate",
+      "record_id": "axm.file.rename"
+    }
+  ],
+  "status": "MERGE_HOLD",
+  "truth_boundary": [
+    "Package admission is not corpus materialization.",
+    "Deferred cross-module checks are not silently counted as PASS.",
+    "A full-card digest difference is not a semantic conflict when the semantic digest is unchanged.",
+    "No preflight result executes Module 1, promotes proof, merges state or grants CANON authority."
+  ],
+  "warnings": []
+}

@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-seat-task-receipt/0.5",
+  "title": "AXM Challenge Seat Task Receipt v0.5",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "task_core_hash",
+    "challenge_id",
+    "phase",
+    "participant_id",
+    "status",
+    "attempt_count",
+    "attempts_hash",
+    "completion_history_hash",
+    "active_lease_hash",
+    "completed_output",
+    "final_failure",
+    "cancelled",
+    "updated_at",
+    "authority_boundary",
+    "receipt_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-seat-task-receipt/0.5"
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "task_core_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "phase": {
+      "enum": [
+        "BUILD",
+        "REVIEW"
+      ]
+    },
+    "participant_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "status": {
+      "enum": [
+        "READY",
+        "LEASED",
+        "COMPLETED",
+        "DEAD_LETTER",
+        "CANCELLED"
+      ]
+    },
+    "attempt_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "attempts_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "completion_history_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "active_lease_hash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "completed_output": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "completed_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "usage": {
+          "type": "object",
+          "properties": {
+            "wall_seconds": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "token_units": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "tool_calls": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "input_bytes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "output_bytes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "measurement_source": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "budget_evaluation": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    },
+    "final_failure": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "class": {
+          "enum": [
+            "INFRASTRUCTURE",
+            "MODEL_UNAVAILABLE",
+            "TIMEOUT",
+            "INVALID_OUTPUT",
+            "POLICY_REFUSAL",
+            "OPERATOR_CANCELLED",
+            "UNKNOWN"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cancelled": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "receipt_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

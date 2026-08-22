@@ -1,0 +1,1642 @@
+{
+  "schema": "axm.choice-first-hand-summary/v1",
+  "status": "READY",
+  "hand": {
+    "schema": "axm.asset-hand/v2",
+    "legacy_schema": null,
+    "contract_version": "2.0",
+    "source_contract": "native-v2",
+    "id": "choice-first-visual-simulation",
+    "title": "Choice-First Visual & Simulation Hand",
+    "version": "1.0.0",
+    "category": "visual-simulation",
+    "summary": "Resolves exact visual profiles and binds deterministic pixel representations to persistent identities and causal state without fallback.",
+    "purpose": "Let human, AI and deterministic-program callers change visual direction without making the representation own simulation truth.",
+    "lifecycle_status": "experimental",
+    "operation_modes": [
+      "create",
+      "workflow"
+    ],
+    "canvas_models": [
+      "raster-frame",
+      "host-neutral"
+    ],
+    "entry_surfaces": [
+      "command",
+      "asset-fabric",
+      "export-recipe"
+    ],
+    "mutability": "generate",
+    "kinds": [
+      "sprite",
+      "character",
+      "prop",
+      "animation",
+      "sequence",
+      "inspection"
+    ],
+    "wildcard_kind_policy": "fallback",
+    "accepts": [
+      "axm.asset-brief/v1",
+      "axm.asset-source-artifact/v1",
+      "axm.choice-first-request/v1"
+    ],
+    "produces": [
+      "axm.asset-hand-result/v1",
+      "image/png",
+      "image/apng",
+      "axm.asset-identity/v1",
+      "axm.visual-representation-profile/v1",
+      "axm.asset-representation-set/v1",
+      "axm.causal-asset-simulation/v1",
+      "axm.upgradeable-object/v1",
+      "axm.missing-representation/v1",
+      "axm.pixel-animation-recipe/v1",
+      "axm.object-upgrade-sequence/v1"
+    ],
+    "output_types": [
+      {
+        "mime": "image/png",
+        "format": "PNG",
+        "schema": "",
+        "role": "identity-bound-source-sheet",
+        "editable": false,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "image/apng",
+        "format": "APNG",
+        "schema": "",
+        "role": "identity-bound-animation-preview",
+        "editable": false,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.asset-identity/v1",
+        "role": "persistent-asset-identity",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.visual-representation-profile/v1",
+        "role": "resolved-visual-profile",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.causal-asset-simulation/v1",
+        "role": "causal-simulation-state",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.asset-representation-set/v1",
+        "role": "asset-representation-set",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.upgradeable-object/v1",
+        "role": "upgradeable-object-state",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.pixel-animation-recipe/v1",
+        "role": "editable-pixel-animation-recipe",
+        "editable": true,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      },
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.object-upgrade-sequence/v1",
+        "role": "object-upgrade-receipts",
+        "editable": false,
+        "deterministic": true,
+        "lossy": false,
+        "known_losses": []
+      }
+    ],
+    "input_types": [
+      {
+        "mime": "application/json",
+        "format": "JSON",
+        "schema": "axm.choice-first-request/v1",
+        "roles": [],
+        "required_for": [
+          "create",
+          "workflow"
+        ],
+        "mutable": false,
+        "max_bytes": 200000
+      }
+    ],
+    "canvas_types": [
+      {
+        "medium": "game-world",
+        "units": [
+          "px"
+        ],
+        "colour_spaces": [
+          "srgb"
+        ],
+        "transparency_modes": [
+          "required",
+          "allowed"
+        ],
+        "material_behaviours": [],
+        "behaviours": [
+          "animated"
+        ],
+        "intended_uses": [
+          "sprite",
+          "character",
+          "prop",
+          "animation",
+          "sequence",
+          "inspection"
+        ],
+        "locale_patterns": [],
+        "up_axes": [],
+        "handedness": []
+      }
+    ],
+    "canvas_limits": {
+      "min_width": 48,
+      "min_height": 48,
+      "max_width": 96,
+      "max_height": 96,
+      "max_pixels": 9216,
+      "texture_bytes_per_pixel": 4,
+      "max_bleed": null,
+      "min_stroke": null,
+      "max_stroke": null,
+      "max_tool_width": null,
+      "max_depth": null,
+      "min_animation_frames": 2,
+      "max_animation_frames": 12,
+      "min_fps": null,
+      "max_fps": null,
+      "min_polygon_count": null,
+      "min_vertices": null
+    },
+    "constraints_honoured": [
+      "dimensions",
+      "dimensions.unit",
+      "colour.space",
+      "colour.transparency",
+      "behaviour.animated",
+      "performance.max-animation-frames"
+    ],
+    "editable_recipe_formats": [
+      "axm.choice-first-request/v1",
+      "axm.pixel-animation-recipe/v1"
+    ],
+    "operations": {
+      "preview": true,
+      "validate": true,
+      "edit": false
+    },
+    "emits_editable_source": true,
+    "supports_edit_operation": false,
+    "requires": [],
+    "required_permissions": {
+      "local_file_system": "none",
+      "clipboard": false,
+      "network_domains": [],
+      "device_access": [],
+      "plugin_data": false
+    },
+    "network_policy": {
+      "mode": "none",
+      "domains": [],
+      "rationale": "Profile resolution, simulation, raster drawing and PNG/APNG encoding are deterministic and local."
+    },
+    "host_compatibility": {
+      "hosts": [
+        "asset-fabric",
+        "studio",
+        "mirror",
+        "standalone"
+      ],
+      "minimum_versions": {},
+      "dependencies": [
+        {
+          "name": "AXM Choice First Core",
+          "version": "1.0.0",
+          "bundled": true
+        },
+        {
+          "name": "AXM Choice First Pilot Core",
+          "version": "1.0.0",
+          "bundled": true
+        }
+      ]
+    },
+    "engine": {
+      "name": "AXM choice-first deterministic pilot",
+      "version": "1.0.0",
+      "execution": "local-async-bounded"
+    },
+    "editable": true,
+    "deterministic": true,
+    "authority": "candidate-only",
+    "implementation_status": "executable",
+    "safety_tier": "safe-local",
+    "portability": {
+      "interchange_formats": [
+        "image/png",
+        "image/apng",
+        "axm.asset-identity/v1",
+        "axm.visual-representation-profile/v1",
+        "axm.asset-representation-set/v1",
+        "axm.causal-asset-simulation/v1",
+        "axm.upgradeable-object/v1"
+      ],
+      "known_losses": [
+        "8-bit and 16-bit are art-direction presets over RGBA8 sRGB, not console emulatio"
+      ],
+      "unsupported_features": [
+        "realtime 3D",
+        "cinematic render",
+        "automatic taste approval"
+      ],
+      "fallbacks": []
+    },
+    "validation": {
+      "checks": [
+        "exact profile with no fallback",
+        "persistent identity binding",
+        "no time-only decay",
+        "palette boundary",
+        "PNG/APNG structure",
+        "candidate-only authority"
+      ]
+    },
+    "rollback": {
+      "strategy": "discard-candidate-artifacts-and-retain-request"
+    },
+    "observability": {
+      "logs": true,
+      "duration": true,
+      "warnings": true
+    },
+    "evidence": [
+      {
+        "claim": "One causal identity and state can drive both installed pixel profiles without silent substitution.",
+        "source_url": "local:shared/asset-hands/choice-first-core.js",
+        "specification_version": "1.0.0",
+        "retrieved_at": "2026-08-12"
+      }
+    ],
+    "tests": [
+      "choice-first-selftest",
+      "asset-hands-selftest",
+      "schema-contract-selftest",
+      "html-script-syntax-test"
+    ],
+    "implementation_priority": "",
+    "limits": {
+      "installedProfiles": [
+        "pixel-8bit",
+        "pixel-16bit",
+        "pixel-custom"
+      ],
+      "automaticApproval": false,
+      "automaticPromotion": false,
+      "fallback": false
+    }
+  },
+  "measures": {
+    "identityId": "axm.park.carousel-horse",
+    "representationProfileId": "pixel-16bit",
+    "width": 96,
+    "height": 96,
+    "frames": 12,
+    "paletteColours": 13,
+    "simulationEvents": 4,
+    "sofaUpgrades": 0,
+    "fallbackUsed": false
+  },
+  "validation": {
+    "schema": "axm.asset-validation-receipt/v1",
+    "status": "PASS",
+    "validator": {
+      "id": "choice-first-visual-simulation",
+      "version": "1.0.0",
+      "capability": true
+    },
+    "target_canvas_digest": "58a606ca",
+    "artifact_digests": [
+      {
+        "id": "source-sheet",
+        "digest": "5d8decba",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-preview",
+        "digest": "704c507b",
+        "mime": "image/apng"
+      },
+      {
+        "id": "asset-identity",
+        "digest": "3ae3fb01",
+        "mime": "application/json"
+      },
+      {
+        "id": "visual-profile",
+        "digest": "264fd8c0",
+        "mime": "application/json"
+      },
+      {
+        "id": "causal-simulation",
+        "digest": "bc4b48cb",
+        "mime": "application/json"
+      },
+      {
+        "id": "pixel-animation-recipe",
+        "digest": "6f996b40",
+        "mime": "application/json"
+      },
+      {
+        "id": "representation-set",
+        "digest": "350b6305",
+        "mime": "application/json"
+      }
+    ],
+    "checks": [
+      {
+        "name": "core-artifact-envelope",
+        "pass": true,
+        "errors": []
+      },
+      {
+        "name": "exact-profile-no-fallback",
+        "pass": true
+      },
+      {
+        "name": "identity-bound",
+        "pass": true
+      },
+      {
+        "name": "representation-profile-bound",
+        "pass": true
+      },
+      {
+        "name": "idle-time-no-decay",
+        "pass": true
+      },
+      {
+        "name": "palette-limit",
+        "pass": true,
+        "details": {
+          "actual": 13,
+          "maximum": 64
+        }
+      },
+      {
+        "name": "png-structure",
+        "pass": true
+      },
+      {
+        "name": "apng-structure",
+        "pass": true
+      },
+      {
+        "name": "candidate-only",
+        "pass": true
+      },
+      {
+        "name": "target-canvas-effective-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "target-canvas-original-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-output:image/png",
+        "pass": true,
+        "details": {
+          "required": "image/png"
+        }
+      },
+      {
+        "name": "required-output:image/apng",
+        "pass": true,
+        "details": {
+          "required": "image/apng"
+        }
+      },
+      {
+        "name": "required-output:axm.asset-identity/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.asset-identity/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.visual-representation-profile/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.visual-representation-profile/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.asset-representation-set/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.asset-representation-set/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.causal-asset-simulation/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.causal-asset-simulation/v1"
+        }
+      },
+      {
+        "name": "editable-recipe:axm.choice-first-request/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.choice-first-request/v1",
+          "actual": "axm.choice-first-request/v1"
+        }
+      },
+      {
+        "name": "declared-artifact-types",
+        "pass": true,
+        "details": {
+          "undeclared": []
+        }
+      },
+      {
+        "name": "editable-source-emitted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-preview-emitted",
+        "pass": true,
+        "details": null
+      }
+    ],
+    "createdAt": "2026-08-12T00:00:00.000Z"
+  },
+  "technical": {
+    "pass": true,
+    "errors": [],
+    "validationReceipt": "axm.asset-validation-receipt/v1"
+  },
+  "artifact_records": [
+    {
+      "id": "source-sheet",
+      "role": "identity-bound-source-sheet",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-sheet.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/carousel-horse-pixel-16bit-sheet.png",
+      "bytes": 442767,
+      "sha256": "765305cfab660fe9ede88e08bac97be2b6694d0799f77ef8721128806804bbe0"
+    },
+    {
+      "id": "animation-preview",
+      "role": "identity-bound-animation-preview",
+      "mime": "image/apng",
+      "filename": "carousel-horse-pixel-16bit-preview.apng",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/carousel-horse-pixel-16bit-preview.apng",
+      "bytes": 444374,
+      "sha256": "15e72c9e716b86778f262d1f57adfef2ba65b18a901081bf0b816942e9fdfa01"
+    },
+    {
+      "id": "asset-identity",
+      "role": "persistent-asset-identity",
+      "mime": "application/json",
+      "filename": "carousel-horse-pixel-16bit-identity.json",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/carousel-horse-pixel-16bit-identity.json",
+      "bytes": 2003,
+      "sha256": "cd9626254e553cdcc4276f26ba5c612ebda82ba99e200329bcee5a5fbb4afd22"
+    },
+    {
+      "id": "visual-profile",
+      "role": "resolved-visual-profile",
+      "mime": "application/json",
+      "filename": "carousel-horse-pixel-16bit-profile.json",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/carousel-horse-pixel-16bit-profile.json",
+      "bytes": 1764,
+      "sha256": "a0efd5e71147fd8464a4312261759d2033ec2e3d009593547d709f2f6ba04ac9"
+    },
+    {
+      "id": "causal-simulation",
+      "role": "causal-simulation-state",
+      "mime": "application/json",
+      "filename": "carousel-horse-pixel-16bit-simulation.json",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/carousel-horse-pixel-16bit-simulation.json",
+      "bytes": 3535,
+      "sha256": "00ce8309fe3fd7095f340c71d7de30b1a0c50d21a971c79e62d8e21d1f240578"
+    },
+    {
+      "id": "pixel-animation-recipe",
+      "role": "editable-pixel-animation-recipe",
+      "mime": "application/json",
+      "filename": "carousel-horse-pixel-16bit-animation-recipe.json",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/carousel-horse-pixel-16bit-animation-recipe.json",
+      "bytes": 11082,
+      "sha256": "c18f79f9850f90c1052c0cae738ed28457508137f9e4cbb9225662e39c5bd647"
+    },
+    {
+      "id": "representation-set",
+      "role": "asset-representation-set",
+      "mime": "application/json",
+      "filename": "carousel-horse-pixel-16bit-representations.json",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/carousel-horse-pixel-16bit-representations.json",
+      "bytes": 1263,
+      "sha256": "daf50c4c934fbc4ed432300b62ee0d349ae49602b560c726bdfbb32821255117"
+    }
+  ],
+  "animation_status": "READY",
+  "animation_measures": {
+    "sourceWidth": 384,
+    "sourceHeight": 288,
+    "frameWidth": 96,
+    "frameHeight": 96,
+    "frames": 12,
+    "clips": 1,
+    "profile": "pixel-16bit",
+    "paletteColours": 13,
+    "duplicateFramePairs": 9,
+    "previewScale": 2,
+    "videoSequences": 1,
+    "sourceSha256": "765305cfab660fe9ede88e08bac97be2b6694d0799f77ef8721128806804bbe0",
+    "recipeSha256": "c18f79f9850f90c1052c0cae738ed28457508137f9e4cbb9225662e39c5bd647",
+    "aiUsed": false,
+    "originalPreserved": true
+  },
+  "animation_validation": {
+    "schema": "axm.asset-validation-receipt/v1",
+    "status": "PASS",
+    "validator": {
+      "id": "pixel-animation-workshop",
+      "version": "0.1.0",
+      "capability": true
+    },
+    "target_canvas_digest": "4e863759",
+    "artifact_digests": [
+      {
+        "id": "immutable-animation-sheet",
+        "digest": "5d8decba",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-0",
+        "digest": "2613a727",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-1",
+        "digest": "672687d1",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-2",
+        "digest": "7369dd14",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-3",
+        "digest": "7369dd14",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-4",
+        "digest": "7369dd14",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-5",
+        "digest": "672687d1",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-6",
+        "digest": "2613a727",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-7",
+        "digest": "41935e8b",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-8",
+        "digest": "b4c103a5",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-9",
+        "digest": "b4c103a5",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-10",
+        "digest": "b4c103a5",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-frame-motion-frame-11",
+        "digest": "41935e8b",
+        "mime": "image/png"
+      },
+      {
+        "id": "animation-clip-default-motion",
+        "digest": "1d8613af",
+        "mime": "image/apng"
+      },
+      {
+        "id": "animation-preview-default-motion",
+        "digest": "1470a10d",
+        "mime": "image/apng"
+      },
+      {
+        "id": "pixel-animation-recipe",
+        "digest": "6f996b40",
+        "mime": "application/json"
+      },
+      {
+        "id": "sprite-animation-manifest",
+        "digest": "7415755b",
+        "mime": "application/json"
+      },
+      {
+        "id": "pixel-video-sequence",
+        "digest": "cdf53a4a",
+        "mime": "application/json"
+      },
+      {
+        "id": "pixel-animation-receipt",
+        "digest": "b8a12342",
+        "mime": "application/json"
+      }
+    ],
+    "checks": [
+      {
+        "name": "core-artifact-envelope",
+        "pass": true,
+        "errors": []
+      },
+      {
+        "name": "source-png-decoded",
+        "pass": true
+      },
+      {
+        "name": "source-sha256-verified",
+        "pass": true
+      },
+      {
+        "name": "source-copy-byte-identical",
+        "pass": true
+      },
+      {
+        "name": "recipe-source-bound",
+        "pass": true
+      },
+      {
+        "name": "optional-identity-profile-binding",
+        "pass": true,
+        "details": {
+          "identityId": "axm.park.carousel-horse",
+          "representationProfileId": "pixel-16bit"
+        }
+      },
+      {
+        "name": "optional-parent-package-bound",
+        "pass": true,
+        "details": {
+          "present": false,
+          "id": null,
+          "digest_bound": false
+        }
+      },
+      {
+        "name": "workflow-profile-not-hardware-claim",
+        "pass": true
+      },
+      {
+        "name": "exact-grid-coverage",
+        "pass": true
+      },
+      {
+        "name": "repeat-extraction-pixel-equality",
+        "pass": true
+      },
+      {
+        "name": "target-frame-dimensions",
+        "pass": true,
+        "details": {
+          "target": [
+            96,
+            96
+          ],
+          "frame": [
+            96,
+            96
+          ]
+        }
+      },
+      {
+        "name": "palette-limit",
+        "pass": true,
+        "details": {
+          "maximum": 64,
+          "actual": 13
+        }
+      },
+      {
+        "name": "exact-palette",
+        "pass": true,
+        "details": {
+          "enforcement": "exact",
+          "offPalette": []
+        }
+      },
+      {
+        "name": "duplicate-frame-policy",
+        "pass": true,
+        "details": {
+          "reject": false,
+          "duplicates": [
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              0,
+              6
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              8,
+              10
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              7,
+              11
+            ]
+          ]
+        }
+      },
+      {
+        "name": "game-animation-adapter",
+        "pass": true
+      },
+      {
+        "name": "video-sequence-timing-and-artifact-binding",
+        "pass": true
+      },
+      {
+        "name": "ai-and-author-provenance-visible",
+        "pass": true
+      },
+      {
+        "name": "frame-budget",
+        "pass": true
+      },
+      {
+        "name": "duration-budget",
+        "pass": true
+      },
+      {
+        "name": "texture-memory-budget",
+        "pass": true
+      },
+      {
+        "name": "candidate-only-authority",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-0",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-1",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-2",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-3",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-4",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-5",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-6",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-7",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-8",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-9",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-10",
+        "pass": true
+      },
+      {
+        "name": "png-pixel-roundtrip:animation-frame-motion-frame-11",
+        "pass": true
+      },
+      {
+        "name": "apng-structure:animation-clip-default-motion",
+        "pass": true,
+        "details": {
+          "pass": true,
+          "errors": [],
+          "chunks": [
+            "IHDR",
+            "acTL",
+            "sRGB",
+            "fcTL",
+            "IDAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "IEND"
+          ],
+          "frames": 12,
+          "declaredFrames": 12,
+          "plays": 0,
+          "width": 96,
+          "height": 96,
+          "sequence": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ],
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ],
+          "durationMs": 996,
+          "decodedFrames": 12
+        }
+      },
+      {
+        "name": "apng-frame-timing:animation-clip-default-motion",
+        "pass": true,
+        "details": {
+          "expectedDurationMs": 996,
+          "actualDurationMs": 996,
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ]
+        }
+      },
+      {
+        "name": "apng-structure:animation-preview-default-motion",
+        "pass": true,
+        "details": {
+          "pass": true,
+          "errors": [],
+          "chunks": [
+            "IHDR",
+            "acTL",
+            "sRGB",
+            "fcTL",
+            "IDAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "fcTL",
+            "fdAT",
+            "IEND"
+          ],
+          "frames": 12,
+          "declaredFrames": 12,
+          "plays": 0,
+          "width": 192,
+          "height": 192,
+          "sequence": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ],
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ],
+          "durationMs": 996,
+          "decodedFrames": 12
+        }
+      },
+      {
+        "name": "apng-frame-timing:animation-preview-default-motion",
+        "pass": true,
+        "details": {
+          "expectedDurationMs": 996,
+          "actualDurationMs": 996,
+          "delays": [
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            },
+            {
+              "numerator": 83,
+              "denominator": 1000,
+              "encodedDenominator": 1000,
+              "durationMs": 83
+            }
+          ]
+        }
+      },
+      {
+        "name": "declared-output-budget-before-receipt",
+        "pass": true,
+        "details": {
+          "bytes": 3152657,
+          "excludesReceipt": true
+        }
+      },
+      {
+        "name": "target-canvas-effective-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "target-canvas-original-preserved",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-output:image/png",
+        "pass": true,
+        "details": {
+          "required": "image/png"
+        }
+      },
+      {
+        "name": "required-output:image/apng",
+        "pass": true,
+        "details": {
+          "required": "image/apng"
+        }
+      },
+      {
+        "name": "required-output:axm.pixel-animation-recipe/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-animation-recipe/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.sprite-animation/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.sprite-animation/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.pixel-video-sequence/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-video-sequence/v1"
+        }
+      },
+      {
+        "name": "required-output:axm.pixel-animation-receipt/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-animation-receipt/v1"
+        }
+      },
+      {
+        "name": "editable-recipe:axm.pixel-animation-recipe/v1",
+        "pass": true,
+        "details": {
+          "required": "axm.pixel-animation-recipe/v1",
+          "actual": "axm.pixel-animation-recipe/v1"
+        }
+      },
+      {
+        "name": "declared-artifact-types",
+        "pass": true,
+        "details": {
+          "undeclared": []
+        }
+      },
+      {
+        "name": "editable-source-emitted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "required-preview-emitted",
+        "pass": true,
+        "details": null
+      },
+      {
+        "name": "core-file-budget",
+        "pass": true,
+        "details": {
+          "actual": 3174848,
+          "maximum": 30000000
+        }
+      }
+    ],
+    "createdAt": "2026-08-12T00:00:00.000Z"
+  },
+  "animation_artifact_records": [
+    {
+      "id": "immutable-animation-sheet",
+      "role": "immutable-animation-sheet",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-source-sheet.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-source-sheet.png",
+      "bytes": 442767,
+      "sha256": "765305cfab660fe9ede88e08bac97be2b6694d0799f77ef8721128806804bbe0"
+    },
+    {
+      "id": "animation-frame-motion-frame-0",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-0.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-0.png",
+      "bytes": 37041,
+      "sha256": "410e33bdbeffb84cea9c5af3cfde9e71bfea32cfba5d57ea3599a8b454f29301"
+    },
+    {
+      "id": "animation-frame-motion-frame-1",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-1.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-1.png",
+      "bytes": 37041,
+      "sha256": "08ca10f0cd5c18824b42c3d4448ac130e4729375cfd1564ba61f39be6756d184"
+    },
+    {
+      "id": "animation-frame-motion-frame-2",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-2.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-2.png",
+      "bytes": 37041,
+      "sha256": "33cd1fc6b494397e0caf5660f3880c7c0ba5a998171ed8f80a14ffaf65bca270"
+    },
+    {
+      "id": "animation-frame-motion-frame-3",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-3.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-3.png",
+      "bytes": 37041,
+      "sha256": "33cd1fc6b494397e0caf5660f3880c7c0ba5a998171ed8f80a14ffaf65bca270"
+    },
+    {
+      "id": "animation-frame-motion-frame-4",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-4.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-4.png",
+      "bytes": 37041,
+      "sha256": "33cd1fc6b494397e0caf5660f3880c7c0ba5a998171ed8f80a14ffaf65bca270"
+    },
+    {
+      "id": "animation-frame-motion-frame-5",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-5.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-5.png",
+      "bytes": 37041,
+      "sha256": "08ca10f0cd5c18824b42c3d4448ac130e4729375cfd1564ba61f39be6756d184"
+    },
+    {
+      "id": "animation-frame-motion-frame-6",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-6.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-6.png",
+      "bytes": 37041,
+      "sha256": "410e33bdbeffb84cea9c5af3cfde9e71bfea32cfba5d57ea3599a8b454f29301"
+    },
+    {
+      "id": "animation-frame-motion-frame-7",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-7.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-7.png",
+      "bytes": 37041,
+      "sha256": "8592669d3388e8cc1298315e8e89c9462e16d6baead05d4a000a6a02b7801f11"
+    },
+    {
+      "id": "animation-frame-motion-frame-8",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-8.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-8.png",
+      "bytes": 37041,
+      "sha256": "d85b6a2c12149b59dbfaf72d9091e54a9f241030ea6e10680f381e58bff0c2f8"
+    },
+    {
+      "id": "animation-frame-motion-frame-9",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-9.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-9.png",
+      "bytes": 37041,
+      "sha256": "d85b6a2c12149b59dbfaf72d9091e54a9f241030ea6e10680f381e58bff0c2f8"
+    },
+    {
+      "id": "animation-frame-motion-frame-10",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-10.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-10.png",
+      "bytes": 37041,
+      "sha256": "d85b6a2c12149b59dbfaf72d9091e54a9f241030ea6e10680f381e58bff0c2f8"
+    },
+    {
+      "id": "animation-frame-motion-frame-11",
+      "role": "pixel-animation-frame",
+      "mime": "image/png",
+      "filename": "carousel-horse-pixel-16bit-animation-package-motion-frame-11.png",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-motion-frame-11.png",
+      "bytes": 37041,
+      "sha256": "8592669d3388e8cc1298315e8e89c9462e16d6baead05d4a000a6a02b7801f11"
+    },
+    {
+      "id": "animation-clip-default-motion",
+      "role": "pixel-animation-clip",
+      "mime": "image/apng",
+      "filename": "carousel-horse-pixel-16bit-animation-package-default-motion.apng",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-default-motion.apng",
+      "bytes": 444374,
+      "sha256": "fd98dc6998d94bcdb3c492986b331bef1e4ff7c22738df303505262250d2443c"
+    },
+    {
+      "id": "animation-preview-default-motion",
+      "role": "integer-scale-animation-preview",
+      "mime": "image/apng",
+      "filename": "carousel-horse-pixel-16bit-animation-package-default-motion-preview-2x.apng",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-default-motion-preview-2x.apng",
+      "bytes": 1772750,
+      "sha256": "dad3fc76d00126b95590a1fbbac652e885ebd9d2488e255791c5ecce3665bb81"
+    },
+    {
+      "id": "pixel-animation-recipe",
+      "role": "editable-pixel-animation-recipe",
+      "mime": "application/json",
+      "filename": "carousel-horse-pixel-16bit-animation-package-animation-recipe.json",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-animation-recipe.json",
+      "bytes": 11082,
+      "sha256": "c18f79f9850f90c1052c0cae738ed28457508137f9e4cbb9225662e39c5bd647"
+    },
+    {
+      "id": "sprite-animation-manifest",
+      "role": "engine-neutral-sprite-animation",
+      "mime": "application/json",
+      "filename": "carousel-horse-pixel-16bit-animation-package-sprite-animation.json",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-sprite-animation.json",
+      "bytes": 22333,
+      "sha256": "91ff27ec2bdb45d325a05a1533b227fb67a38734d9fbfc74ffed30e3890f5dbb"
+    },
+    {
+      "id": "pixel-video-sequence",
+      "role": "codec-neutral-video-frame-sequence",
+      "mime": "application/json",
+      "filename": "carousel-horse-pixel-16bit-animation-package-video-sequence.json",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-video-sequence.json",
+      "bytes": 14859,
+      "sha256": "700757ac876587466764bfc6138611cffea0ff8e87afb11bdd0f0792d14f77dc"
+    },
+    {
+      "id": "pixel-animation-receipt",
+      "role": "pixel-animation-receipt",
+      "mime": "application/json",
+      "filename": "carousel-horse-pixel-16bit-animation-package-animation-receipt.json",
+      "path": "pilots/assets/park-carousel-horse/pixel-16bit/animation-package/carousel-horse-pixel-16bit-animation-package-animation-receipt.json",
+      "bytes": 22189,
+      "sha256": "629ef31f67b2f06897ec2febfcd9d6af23478001f51b2d78983acaab45df3809"
+    }
+  ],
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

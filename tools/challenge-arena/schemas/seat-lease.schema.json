@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-seat-lease/0.4",
+  "title": "AXM One-Time Seat Lease Envelope v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task",
+    "lease",
+    "lease_token",
+    "token_notice"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-seat-lease/0.4"
+    },
+    "task": {
+      "type": "object"
+    },
+    "lease": {
+      "type": "object",
+      "required": [
+        "lease_id",
+        "attempt_number",
+        "worker_id",
+        "claimed_at",
+        "expires_at",
+        "max_expires_at",
+        "heartbeat_count"
+      ],
+      "properties": {
+        "lease_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "attempt_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "worker_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "claimed_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expires_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "max_expires_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "heartbeat_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "last_heartbeat_at": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "lease_token": {
+      "type": "string",
+      "pattern": "^lease_[A-Za-z0-9_-]{32,}$",
+      "description": "High-entropy one-time bearer token with a CLI-safe alphanumeric prefix."
+    },
+    "token_notice": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-decision-drift-0.1.0.schema.json",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["drift_version","drift_id","before_receipt_id","after_receipt_id","exact_match","decision_changed","candidate_change_causes","differences","interpretation"],
+  "properties":{
+    "drift_version":{"const":"0.1.0"},
+    "drift_id":{"type":"string","minLength":1},
+    "before_receipt_id":{"type":"string"},
+    "after_receipt_id":{"type":"string"},
+    "exact_match":{"type":"boolean"},
+    "decision_changed":{"type":"boolean"},
+    "candidate_change_causes":{"type":"array","items":{"type":"string"}},
+    "differences":{"type":"array","items":{"type":"object"}},
+    "interpretation":{"type":"string"}
+  }
+}

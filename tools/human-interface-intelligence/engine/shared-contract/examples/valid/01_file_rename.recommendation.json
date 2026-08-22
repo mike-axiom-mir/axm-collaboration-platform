@@ -1,0 +1,173 @@
+{
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "record_kind": "interface_recommendation",
+  "recommendation_id": "axm.hii.recommendation.24d377234483a193",
+  "capability_id": "axm.file.rename",
+  "generated_at": "2026-08-03T03:56:47Z",
+  "context": {
+    "user_skill_level": "beginner",
+    "user_goal": "Rename one file safely",
+    "task_type": "file_rename",
+    "device_types": [
+      "desktop"
+    ],
+    "available_tools": [],
+    "accessibility_needs": [],
+    "privacy_mode": "local_preferred",
+    "offline_required": true,
+    "resource_budget": {
+      "compute": "low",
+      "time": "short",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "collaboration_mode": "human_ai_shared"
+  },
+  "recommended_interface": {
+    "interface_pattern_id": "guided_form",
+    "interface_name": "Guided form",
+    "interface_family": "structured_input",
+    "confidence": 0.978,
+    "recommendation_status": "recommended",
+    "why_this_interface": [
+      "Pattern explicitly supports task type 'file_rename'.",
+      "Input fit: file, text.",
+      "User skill meets the pattern's minimum.",
+      "Pattern is suitable for beginners.",
+      "Pattern fits an available device.",
+      "Preview support lowers avoidable error cost.",
+      "The number of decisions fits a compact guided form.",
+      "Interface overhead stays within the compute budget.",
+      "Pattern stays within the attention budget.",
+      "Required feature fit: validation."
+    ],
+    "why_not_other_interfaces": [
+      "File browser: Lower deterministic fit score.",
+      "Before-and-after comparison: Lower deterministic fit score.",
+      "Searchable library: Lower deterministic fit score."
+    ],
+    "required_controls": [
+      "validation",
+      "conflict_check",
+      "undo",
+      "defaults",
+      "help_text",
+      "preview"
+    ],
+    "optional_controls": [
+      "help",
+      "undo"
+    ],
+    "hidden_advanced_controls": [],
+    "progressive_disclosure_plan": [
+      "Start with the declared beginner-safe operation and necessary controls only.",
+      "Show a plain-language summary of hidden advanced controls.",
+      "Reveal optional controls when the user asks or the task requires them.",
+      "Require explicit user choice before entering advanced mode."
+    ],
+    "preview_and_confirmation_flow": [
+      "Generate a non-destructive preview or consequence summary.",
+      "Show applied result and proof/status after execution."
+    ],
+    "error_recovery_flow": [
+      "Validate inputs before execution.",
+      "Keep cancel available until the commit point.",
+      "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+      "Record failure details without claiming success."
+    ]
+  },
+  "beginner_layer": {
+    "enabled": true,
+    "operation_class": "simplified_control",
+    "allowed_operations": [
+      "Rename a file"
+    ],
+    "restricted_operations": [],
+    "default_values": {
+      "preview_before_apply": true,
+      "confirmation_required": false,
+      "retain_recovery_point": true,
+      "show_hidden_control_summary": true
+    },
+    "guided_steps": [
+      "State the intended goal in plain language.",
+      "Provide only the inputs required for the selected safe operation.",
+      "Review a preview or consequence summary before applying the operation.",
+      "Run the operation.",
+      "Show the result, proof/status, and the available recovery action.",
+      "Offer advanced mode as an explicit user choice; do not switch silently."
+    ],
+    "explanation_depth": "practical",
+    "estimated_capability_cost": {
+      "compute": "low",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "reasons_for_restrictions": []
+  },
+  "advanced_layer": {
+    "available": false,
+    "unlock_method": "not_available",
+    "additional_controls": [],
+    "additional_risks": [],
+    "required_knowledge": [
+      "review inputs",
+      "run safe example",
+      "inspect output"
+    ]
+  },
+  "cost_comparison": {
+    "selected_interface_cost": {
+      "attention": "low",
+      "interaction": "low",
+      "minimum_skill": "beginner",
+      "deterministic_score": 105.0,
+      "compute_overhead": "very_low",
+      "required_tool_any": []
+    },
+    "alternative_interfaces": [
+      {
+        "interface_pattern_id": "file_browser",
+        "interface_name": "File browser",
+        "score": 54.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      },
+      {
+        "interface_pattern_id": "before_after_comparison",
+        "interface_name": "Before-and-after comparison",
+        "score": 49.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      },
+      {
+        "interface_pattern_id": "searchable_library",
+        "interface_name": "Searchable library",
+        "score": 49.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      }
+    ],
+    "unnecessary_costs_avoided": []
+  },
+  "evidence": {
+    "facts_used": [
+      "Declared task types: file_rename.",
+      "Declared input types: file, text.",
+      "Declared output types: file, status.",
+      "Risk level: low.",
+      "Reversibility: fully_reversible.",
+      "Proof status: tested."
+    ],
+    "inferences_used": [],
+    "unknowns": [],
+    "conflicts": [],
+    "source_references": [
+      {
+        "source_type": "manifest",
+        "source_location": "fixtures/axm.file.rename.source.json",
+        "source_hash": "sha256:fixture-axm.file.rename",
+        "last_verified_at": "2026-08-03T03:56:47Z",
+        "confidence": 0.95
+      }
+    ]
+  }
+}

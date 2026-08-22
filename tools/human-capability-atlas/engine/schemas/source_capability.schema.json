@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/source-capability.schema.json",
+  "title": "AXM Normalized Source Capability",
+  "type": "object",
+  "required": [
+    "capability_id",
+    "machine_name"
+  ],
+  "properties": {
+    "capability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "machine_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "human_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "category": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "why_it_matters": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "supported_task_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "typical_goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_human_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_machine_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "collaboration_modes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "human_only",
+          "ai_only",
+          "human_ai_shared",
+          "supervised_automation"
+        ]
+      }
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "outputs": {
+      "type": "object"
+    },
+    "cost_profile": {
+      "type": "object"
+    },
+    "risk_profile": {
+      "type": "object"
+    },
+    "maturity_profile": {
+      "type": "object"
+    },
+    "learning_profile": {
+      "type": "object"
+    },
+    "interaction_profile": {
+      "type": "object"
+    },
+    "interface_requirements": {
+      "type": "object"
+    },
+    "relationships": {
+      "type": "object"
+    },
+    "source_reference": {
+      "type": "object"
+    },
+    "observed_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "declared_claims": {
+      "type": "object"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lifecycle_profile": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "enum": [
+            "active",
+            "deprecated",
+            "replaced",
+            "retired",
+            "unknown"
+          ]
+        },
+        "replaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replaced_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deprecated_since": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "registry_context": {
+      "type": "object",
+      "description": "Module-private preservation of sparse AXM public capability registry provider/consumer routing facts."
+    },
+    "enrichment_context": {
+      "type": "object",
+      "description": "Module-private deterministic provider/module contract context. Context does not silently become capability-specific technical fact."
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/ingestion-report.schema.json",
+  "title": "AXM Capability Atlas Ingestion Report",
+  "type": "object",
+  "required": [
+    "module",
+    "module_version",
+    "shared_contract_version",
+    "operation",
+    "started_at",
+    "completed_at",
+    "source_path",
+    "output_path",
+    "settings",
+    "summary",
+    "adapter_usage",
+    "detected_format_usage",
+    "duplicates",
+    "file_reports",
+    "normalized_inventory",
+    "integrity_notes"
+  ],
+  "properties": {
+    "module": {
+      "const": "AXM Human Capability Atlas"
+    },
+    "module_version": {
+      "type": "string"
+    },
+    "shared_contract_version": {
+      "const": "0.1.0"
+    },
+    "operation": {
+      "const": "heterogeneous_source_ingestion"
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "completed_at": {
+      "type": "string"
+    },
+    "source_path": {
+      "type": "string"
+    },
+    "output_path": {
+      "type": "string"
+    },
+    "settings": {
+      "type": "object"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "files_seen",
+        "files_processed",
+        "files_unrecognized",
+        "files_failed",
+        "records_found",
+        "records_accepted",
+        "records_rejected",
+        "cards_built",
+        "duplicate_capability_id_count"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "adapter_usage": {
+      "type": "object"
+    },
+    "detected_format_usage": {
+      "type": "object"
+    },
+    "duplicates": {
+      "type": "object"
+    },
+    "file_reports": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "integrity_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "analysis": {
+      "type": "object"
+    },
+    "normalized_inventory": {
+      "type": "object",
+      "required": [
+        "path",
+        "inventory_hash",
+        "inventory_semantic_hash",
+        "verification",
+        "error"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "inventory_hash": {
+          "type": "string"
+        },
+        "verification": {
+          "type": "object"
+        },
+        "error": {
+          "type": "string"
+        },
+        "inventory_semantic_hash": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

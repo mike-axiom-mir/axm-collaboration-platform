@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/capability-graph.schema.json",
+  "title": "AXM Capability Relationship Graph",
+  "type": "object",
+  "required": [
+    "module", "module_version", "shared_contract_version", "operation",
+    "generated_at", "summary", "edge_type_counts", "nodes", "edges",
+    "integrity", "navigation", "integrity_notes"
+  ],
+  "properties": {
+    "module": {"const": "AXM Human Capability Atlas"},
+    "module_version": {"type": "string"},
+    "shared_contract_version": {"const": "0.1.0"},
+    "operation": {"const": "capability_relationship_graph"},
+    "generated_at": {"type": "string"},
+    "summary": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "edge_type_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "nodes": {"type": "array", "items": {"type": "object"}},
+    "edges": {"type": "array", "items": {"type": "object"}},
+    "integrity": {"type": "object"},
+    "navigation": {"type": "object"},
+    "integrity_notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

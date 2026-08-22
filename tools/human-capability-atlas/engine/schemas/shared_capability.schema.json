@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/shared-capability.schema.json",
+  "title": "AXM Capability Interface Shared Capability Object",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "capability_id",
+    "capability_revision",
+    "source_reference",
+    "identity",
+    "purpose",
+    "task_profile",
+    "input_profile",
+    "output_profile",
+    "cost_profile",
+    "risk_profile",
+    "maturity_profile",
+    "learning_profile",
+    "interaction_profile",
+    "interface_requirements",
+    "relationships"
+  ],
+  "properties": {
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "capability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_revision": {
+      "type": "string"
+    },
+    "source_reference": {
+      "type": "object",
+      "required": [
+        "source_type",
+        "source_location",
+        "source_hash",
+        "last_verified_at",
+        "confidence"
+      ],
+      "properties": {
+        "source_type": {
+          "enum": [
+            "manifest",
+            "registry",
+            "code",
+            "test",
+            "human_note",
+            "generated"
+          ]
+        },
+        "source_location": {
+          "type": "string"
+        },
+        "source_hash": {
+          "type": "string"
+        },
+        "last_verified_at": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "identity": {
+      "type": "object",
+      "required": [
+        "machine_name",
+        "human_name",
+        "category",
+        "tags"
+      ]
+    },
+    "purpose": {
+      "type": "object",
+      "required": [
+        "plain_explanation",
+        "why_it_matters",
+        "example_uses"
+      ]
+    },
+    "task_profile": {
+      "type": "object",
+      "required": [
+        "supported_task_types",
+        "typical_goals",
+        "required_human_actions",
+        "required_machine_actions",
+        "collaboration_modes"
+      ]
+    },
+    "input_profile": {
+      "type": "object",
+      "required": [
+        "input_types",
+        "required_inputs",
+        "optional_inputs",
+        "input_constraints"
+      ]
+    },
+    "output_profile": {
+      "type": "object",
+      "required": [
+        "output_types",
+        "expected_outputs",
+        "output_constraints",
+        "preview_available"
+      ]
+    },
+    "cost_profile": {
+      "type": "object",
+      "required": [
+        "compute_cost",
+        "time_cost",
+        "attention_cost",
+        "skill_cost",
+        "setup_cost",
+        "error_recovery_cost"
+      ]
+    },
+    "risk_profile": {
+      "type": "object",
+      "required": [
+        "risk_level",
+        "reversibility",
+        "privacy_sensitivity",
+        "failure_modes",
+        "human_confirmation_required",
+        "safe_preview_recommended"
+      ]
+    },
+    "maturity_profile": {
+      "type": "object",
+      "required": [
+        "availability",
+        "maturity",
+        "proof_status",
+        "known_limitations"
+      ]
+    },
+    "learning_profile": {
+      "type": "object",
+      "required": [
+        "minimum_skill_level",
+        "prerequisite_capability_ids",
+        "recommended_learning_steps",
+        "beginner_safe_operations",
+        "advanced_operations",
+        "common_mistakes"
+      ]
+    },
+    "interaction_profile": {
+      "type": "object",
+      "required": [
+        "interaction_complexity",
+        "interaction_frequency",
+        "precision_requirement",
+        "feedback_requirement",
+        "preferred_input_methods",
+        "preferred_output_methods",
+        "accessibility_considerations"
+      ]
+    },
+    "interface_requirements": {
+      "type": "object",
+      "required": [
+        "required_interface_features",
+        "optional_interface_features",
+        "unsafe_interface_patterns",
+        "beginner_layer_constraints",
+        "advanced_layer_requirements"
+      ]
+    },
+    "relationships": {
+      "type": "object",
+      "required": [
+        "dependency_capability_ids",
+        "related_capability_ids",
+        "alternative_capability_ids",
+        "commonly_combined_capability_ids"
+      ]
+    },
+    "knowledge": {
+      "type": "object",
+      "properties": {
+        "field_states": {
+          "type": "object",
+          "additionalProperties": {
+            "enum": [
+              "known",
+              "inferred",
+              "unknown",
+              "conflicted",
+              "not_applicable"
+            ]
+          }
+        },
+        "inferences": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

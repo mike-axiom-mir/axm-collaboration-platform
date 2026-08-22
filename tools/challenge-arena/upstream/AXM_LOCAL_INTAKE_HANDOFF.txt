@@ -1,0 +1,106 @@
+AXM LOCAL INTAKE HANDOFF — CHALLENGE ARENA v0.6.0
+==================================================
+
+STATUS
+------
+Standalone reusable module ready for local intake and deliberate producer
+integration. v0.5 remains the immediate rollback release.
+
+WHAT v0.6 REPAIRS
+-----------------
+1. Standalone evidence verification no longer depends on incidental ZIP member
+   order. Identical canonical evidence remains valid when repacked in another
+   legal member order.
+2. Observer confidentiality is now enforced across progress, integrity, lineage,
+   and HTTP failure paths rather than only the primary challenge view.
+
+INTAKE STRATEGY
+---------------
+1. Keep v0.5 unchanged as rollback.
+2. Intake v0.6 beside it; do not overwrite v0.5 first.
+3. Verify the v0.6 release SHA-256 and internal CHECKSUMS.sha256.
+4. Run the commands in START_HERE.txt.
+5. Run tools/audit_bundle_portability.py before trusting a new local packaging
+   path or courier that rewrites ZIP member order.
+6. Test a copied workspace and disposable producer bridge.
+7. Connect one producer first; Asset Factory remains a natural first candidate.
+8. Expand to Workshop/Game Builder/other seats only after verified returns.
+
+NEUTRAL MODULE CONTRACT
+-----------------------
+Producer:
+  axm.module-job/0.1
+
+Arena challenge packet:
+  axm.challenge-arena/0.5
+
+Return:
+  axm.challenge-arena-return/0.4
+
+These contract versions are wire-shape identities. v0.6 does not invent a new
+wire version when the relevant contract shape did not materially change.
+
+PRODUCER FLOW
+-------------
+producer makes job
+  -> Arena creates/locks challenge
+  -> source inputs are sealed
+  -> seats receive equal BUILD tasks
+  -> candidates return through direct API or FileBridge
+  -> deterministic checks run
+  -> Arena assigns blind REVIEW tasks
+  -> reviewers return evidence-grounded ballots
+  -> Arena synthesizes recommendation, dissent, evidence gaps, criterion winners,
+     convergence/independence diagnostics, and proposed merge map
+  -> HUMAN chooses ACCEPT / MERGE / BRANCH / RERUN / REJECT / HOLD
+
+V0.6 PUBLIC OBSERVER RULE
+-------------------------
+The observer is a public-safe visualization layer, not a forensic interface.
+During protected rounds it should not be used to retrieve raw participant IDs,
+reviewer IDs, blind-label maps, detailed integrity failures, or private lineage
+inputs. Use the local CLI/Python API for authorized forensic inspection.
+
+EVIDENCE-BUNDLE RULE
+--------------------
+Canonical evidence meaning must not depend on legal ZIP member ordering. v0.6's
+standalone verifier sorts canonical event members consistently before sequence
+checks. The shipped portability audit deliberately repacks the same evidence in
+multiple member orders and verifies each result.
+
+ASSET FACTORY CONNECTION
+------------------------
+Asset Factory keeps asset-creation/import authority. Arena receives a challenge
+job + sealed source/context, coordinates independent candidates, runs relevant
+deterministic checks, gathers blind reviews, and returns recommendation/dissent/
+merge evidence. Asset Factory or the human explicitly chooses what to import.
+
+WORKSHOP / HAND / ORGAN CONNECTION
+----------------------------------
+Treat produced code/tools as hostile candidate material until relevant VM or
+container checks have passed. Arena command execution is bounded but is not an
+OS security sandbox.
+
+AI SEAT CONNECTION
+------------------
+Vendor credentials are intentionally not embedded. Existing AXM couriers,
+explicit adapters, local models, deterministic workers, or human seats can use
+the neutral task relay/FileBridge contracts.
+
+HONEST LIMITS
+-------------
+- Hashes prove byte relationships, not semantic correctness or licensing.
+- HMAC receipts prove possession of a signing key, not measurement truth.
+- Declared reviewer independence is evidence, not proof of genuine independence.
+- Similar ballots are diagnostic evidence, not automatic collusion findings.
+- Blind review reduces identity bias but artifacts can still self-identify.
+- Local file locks are not distributed consensus for unreliable network shares.
+- Candidate execution is not a hostile-code sandbox.
+- v0.6 has no newly sealed coverage percentage; see COVERAGE_REPORT.txt.
+- No private current AXM producer source tree was falsely claimed as patched.
+
+ROLLBACK
+--------
+If v0.6 integration exposes an incompatibility, stop intake and return to the
+preserved v0.5 release/workspace. Do not rewrite v0.5 history to make v0.6 appear
+successful.

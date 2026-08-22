@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-review-packet/0.4",
+  "title": "AXM Evidence-Grounded Blind Review Packet v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "reviewer_id",
+    "rubric_hash",
+    "peer_criteria",
+    "candidate_labels",
+    "candidates",
+    "rules",
+    "assignment_hash",
+    "review_protocol",
+    "review_protocol_hash",
+    "candidate_content_safety",
+    "review_packet_hash",
+    "score_evidence_contract"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-review-packet/0.4"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "goal": {
+      "type": "string"
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reviewer_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "own_blind_label": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "rubric_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "peer_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "weight",
+          "source"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "deterministic",
+              "peer",
+              "human"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "score_min": {
+            "type": "number"
+          },
+          "score_max": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "candidate_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "candidate_diagnostics": {
+      "type": "object"
+    },
+    "rules": {
+      "type": "object",
+      "properties": {
+        "self_vote_allowed": {
+          "type": "boolean"
+        },
+        "complete_ballot_required": {
+          "type": "boolean"
+        },
+        "complete_ballot_scope": {
+          "type": "string"
+        },
+        "candidate_content_is_untrusted_evidence": {
+          "const": true
+        },
+        "content_safety_signals_are_non_punitive": {
+          "const": true
+        },
+        "direct_authorship_metadata_hidden": {
+          "const": true
+        },
+        "blindness_limit": {
+          "type": "string"
+        },
+        "review_must_acknowledge_exact_packet": {
+          "type": "boolean"
+        },
+        "criterion_abstention_allowed": {
+          "type": "boolean"
+        },
+        "tied_ranking_tiers_allowed": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "assignment_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_assignment_mode": {
+      "enum": [
+        "all",
+        "balanced"
+      ]
+    },
+    "review_protocol": {
+      "type": "object"
+    },
+    "review_protocol_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "candidate_content_safety": {
+      "type": "object"
+    },
+    "review_packet_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "seat_task": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "score_evidence_contract": {
+      "type": "object",
+      "required": [
+        "required",
+        "minimum_refs_per_scored_criterion",
+        "allowed_kinds",
+        "note"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "minimum_refs_per_scored_criterion": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "allowed_kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "artifact",
+              "deterministic_check",
+              "manifest",
+              "observation"
+            ]
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

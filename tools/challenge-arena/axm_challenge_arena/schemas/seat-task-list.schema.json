@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-seat-task-list/0.4",
+  "title": "AXM Challenge Seat Task List v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "challenge_state",
+    "phase",
+    "tasks",
+    "report",
+    "private_lease_hashes_included"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-seat-task-list/0.4"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "challenge_state": {
+      "type": "string"
+    },
+    "phase": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "BUILD",
+        "REVIEW",
+        null
+      ]
+    },
+    "tasks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "report": {
+      "type": "object"
+    },
+    "private_lease_hashes_included": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

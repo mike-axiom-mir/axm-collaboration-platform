@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-decision-receipt-0.2.0.schema.json",
+  "title": "AXM HII Decision Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "receipt_id",
+    "capability_hash",
+    "context_hash",
+    "registry_fingerprint",
+    "engine_id",
+    "engine_version",
+    "contract_id",
+    "contract_version",
+    "recommendation_core_hash",
+    "capability_id",
+    "recommendation_id",
+    "selected_interface_pattern_id",
+    "recommendation_status"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.2.0"
+    },
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "context_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "registry_fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "engine_id": {
+      "const": "axm.human-interface-intelligence"
+    },
+    "engine_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract_id": {
+      "const": "axm.capability-interface-contract"
+    },
+    "contract_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recommendation_core_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "capability_id": {
+      "type": "string"
+    },
+    "recommendation_id": {
+      "type": "string"
+    },
+    "selected_interface_pattern_id": {
+      "type": "string"
+    },
+    "recommendation_status": {
+      "enum": [
+        "recommended",
+        "conditional",
+        "insufficient_information",
+        "no_safe_match"
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-evolution-observation-batch-0.1.0.schema.json",
+  "title": "AXM HII Advisory Evolution Observation Batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["observation_version", "batch_id", "producer", "consumer_role", "source_gate_id", "governance", "observations"],
+  "properties": {
+    "observation_version": {"const": "0.1.0"},
+    "batch_id": {"type": "string", "minLength": 1},
+    "producer": {
+      "type": "object", "additionalProperties": false,
+      "required": ["module_id", "authority"],
+      "properties": {
+        "module_id": {"const": "axm.human-interface-intelligence"},
+        "authority": {"const": "advisory_only"}
+      }
+    },
+    "consumer_role": {"const": "grounded_ecosystem_improvement_analysis"},
+    "source_gate_id": {"type": "string"},
+    "governance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["advisory_only", "automatic_canon", "automatic_code_change", "source_evidence_required"],
+      "properties": {
+        "advisory_only": {"const": true},
+        "automatic_canon": {"const": false},
+        "automatic_code_change": {"const": false},
+        "source_evidence_required": {"const": true}
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["observation_id", "capability_id", "kind", "severity", "facts", "inferences", "suggested_investigations", "source_reference"],
+        "properties": {
+          "observation_id": {"type": "string", "minLength": 1},
+          "capability_id": {"type": "string"},
+          "kind": {"enum": ["boundary_block", "evidence_gap", "evidence_conflict", "no_safe_match", "conditional_dependency", "weak_differentiation", "low_confidence"]},
+          "severity": {"enum": ["info", "low", "moderate", "high", "blocking"]},
+          "facts": {"type": "array", "items": {"type": "string"}},
+          "inferences": {"type": "array", "items": {"type": "string"}},
+          "suggested_investigations": {"type": "array", "items": {"type": "string"}},
+          "source_reference": {"type": "string"}
+        }
+      }
+    }
+  }
+}

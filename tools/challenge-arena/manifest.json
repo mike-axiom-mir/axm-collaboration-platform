@@ -1,0 +1,64 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "service",
+  "id": "challenge-arena",
+  "name": "AXM Challenge Arena",
+  "version": "0.6.0-workshop.1",
+  "status": "TEST",
+  "installed": false,
+  "promoted": false,
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "VERIFY",
+  "layer": "build",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": [
+    "challenge",
+    "independent-candidates",
+    "deterministic-evidence",
+    "blind-review",
+    "dissent",
+    "lineage",
+    "human-decision"
+  ],
+  "uses": [
+    "python>=3.10",
+    "tool-local-filesystem",
+    "localhost-observer",
+    "axm.module-job/0.1"
+  ],
+  "permissions": [],
+  "actions": [
+    "lock one challenge for multiple independent seats",
+    "preserve immutable candidate and review revisions",
+    "run deterministic evidence checks with candidate execution disabled by default",
+    "assign evidence-grounded blind reviews without self-voting",
+    "surface recommendations, dissent, evidence gaps, lineage, and proposed-only merge maps",
+    "export and verify reproducible evidence bundles"
+  ],
+  "accepts": [
+    "axm.module-job/0.1",
+    "axm.challenge-arena/0.5",
+    "local candidate artifacts",
+    "review ballots",
+    "hash-bound deterministic receipts"
+  ],
+  "produces": [
+    "axm.challenge-arena-return/0.4",
+    "axm.challenge-bundle/0.4",
+    "axm.challenge-bundle-verification/0.4",
+    "proposed-only merge map",
+    "human decision packet"
+  ],
+  "readiness": [
+    "python-standard-library-runtime",
+    "tool-local-workspace",
+    "explicit-human-final-decision",
+    "sandbox-required-before-candidate-execution"
+  ],
+  "summary": "A Mike-directed, local-first challenge platform for independent attempts, deterministic evidence, assigned blind review, dissent-preserving synthesis, and explicit human decisions.",
+  "notes": "TEST intake of sealed upstream v0.6.0 source. The Hub page is an inert front door; the Python runtime writes only when explicitly invoked. Candidate execution is off by default and --allow-execution is not a security sandbox. No result, vote, recommendation, or merge map can install, promote, merge, or become CANON automatically."
+}

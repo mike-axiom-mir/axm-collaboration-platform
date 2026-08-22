@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/three-module-intake-manifest/v2",
+  "title": "AXM Three-Module Intake Manifest v2",
+  "type": "object",
+  "properties": {
+    "schema": {"const": "axm.three-module-intake-manifest/v2"},
+    "module_role": {"enum": ["HUMAN_CAPABILITY_ATLAS", "HUMAN_INTERFACE_INTELLIGENCE", "GROUNDED_EVOLUTION_INTELLIGENCE"]},
+    "canonical_module_id": {"type": "string", "minLength": 3},
+    "local_reference_id": {"type": ["string", "null"]},
+    "package": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "artifact_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "source_kind": {"enum": ["REAL_PACKAGE", "REFERENCE_ONLY"]}
+      },
+      "required": ["name", "version", "artifact_sha256", "source_kind"],
+      "additionalProperties": false
+    },
+    "shared_contract": {
+      "type": "object",
+      "properties": {
+        "id": {"const": "axm.capability-interface-contract"},
+        "version": {"const": "0.1.0"},
+        "compatibility": {"const": "EXACT_ONLY"},
+        "capability_record_schema_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "interface_recommendation_schema_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      },
+      "required": ["id", "version", "compatibility", "capability_record_schema_sha256", "interface_recommendation_schema_sha256"],
+      "additionalProperties": false
+    },
+    "payload_mode": {"enum": ["PREINTAKE_SOFTWARE", "MATERIALIZED_CORPUS", "MODULE_IMPLEMENTATION"]},
+    "materialization": {
+      "type": "object",
+      "properties": {
+        "state": {"enum": ["NOT_RUN", "READY_FOR_BATCH_PRODUCTION", "RUNNING", "COMPLETE_VERIFIED", "TEST_HOLD_REVIEW", "INGEST_FAILED"]},
+        "real_registry_run": {"type": "boolean"},
+        "corpus_bundled": {"type": "boolean"},
+        "declared_record_count": {"type": ["integer", "null"], "minimum": 0},
+        "source_commit": {"type": ["string", "null"]},
+        "source_commit_captured": {"type": "boolean"}
+      },
+      "required": ["state", "real_registry_run", "corpus_bundled", "declared_record_count", "source_commit", "source_commit_captured"],
+      "additionalProperties": false
+    },
+    "exports": {
+      "type": "object",
+      "properties": {
+        "capability_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "interface_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "evidence_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "deferred_until_materialization": {"type": "boolean"}
+      },
+      "required": ["capability_ids", "interface_ids", "evidence_ids", "deferred_until_materialization"],
+      "additionalProperties": false
+    },
+    "references": {
+      "type": "object",
+      "properties": {
+        "capability_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "interface_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "module_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      },
+      "required": ["capability_ids", "interface_ids", "module_ids"],
+      "additionalProperties": false
+    },
+    "record_inventory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "record_id": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "artifact_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+          "capability_id": {"type": ["string", "null"]},
+          "capability_revision": {"type": ["string", "null"]},
+          "semantic_digest": {"type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$"},
+          "source_hash": {"type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$"}
+        },
+        "required": ["record_id", "kind", "artifact_digest", "capability_id", "capability_revision", "semantic_digest", "source_hash"],
+        "additionalProperties": false
+      }
+    },
+    "authority": {
+      "type": "object",
+      "properties": {
+        "execution_authority": {"const": false},
+        "canon_authority": {"const": false},
+        "silent_overwrite_authority": {"const": false},
+        "automatic_materialization_authority": {"const": false}
+      },
+      "required": ["execution_authority", "canon_authority", "silent_overwrite_authority", "automatic_materialization_authority"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["schema", "module_role", "canonical_module_id", "local_reference_id", "package", "shared_contract", "payload_mode", "materialization", "exports", "references", "record_inventory", "authority"],
+  "additionalProperties": false
+}

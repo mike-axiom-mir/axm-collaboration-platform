@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-arena-checkpoint/0.4",
+  "title": "AXM Event-Bound Arena Checkpoint v0.4",
+  "description": "A semantic state snapshot bound to one checkpoint-worthy hash-chained event.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "sequence",
+    "event_hash",
+    "action",
+    "semantic_state_hash",
+    "state"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-arena-checkpoint/0.4"
+    },
+    "challenge_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "event_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "action": {
+      "enum": [
+        "CHALLENGE_CREATED",
+        "CHALLENGE_LOCKED",
+        "SUBMISSIONS_CLOSED",
+        "DETERMINISTIC_CHECKS_COMPLETED",
+        "BLIND_REVIEW_OPENED",
+        "VOTING_CLOSED",
+        "RESULT_SYNTHESIZED",
+        "HUMAN_DECISION_RECORDED",
+        "CHALLENGE_ABORTED",
+        "FOLLOWUP_SPAWNED"
+      ]
+    },
+    "semantic_state_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "state": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

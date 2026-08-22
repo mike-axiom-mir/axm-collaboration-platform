@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-pattern-coverage-0.1.0.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["coverage_version","coverage_id","source_gate_id","registry_pattern_count","selected_pattern_counts","top_three_appearance_counts","recommendation_status_counts","patterns_never_selected_in_batch","patterns_never_seen_in_top_three","interpretation_limits"],
+  "properties": {
+    "coverage_version":{"const":"0.1.0"},
+    "coverage_id":{"type":"string","minLength":1},
+    "source_gate_id":{"type":"string"},
+    "registry_pattern_count":{"type":"integer","minimum":0},
+    "selected_pattern_counts":{"type":"object","additionalProperties":{"type":"integer","minimum":0}},
+    "top_three_appearance_counts":{"type":"object","additionalProperties":{"type":"integer","minimum":0}},
+    "recommendation_status_counts":{"type":"object","additionalProperties":{"type":"integer","minimum":0}},
+    "patterns_never_selected_in_batch":{"type":"array","items":{"type":"string"}},
+    "patterns_never_seen_in_top_three":{"type":"array","items":{"type":"string"}},
+    "interpretation_limits":{"type":"array","minItems":1,"items":{"type":"string"}}
+  }
+}

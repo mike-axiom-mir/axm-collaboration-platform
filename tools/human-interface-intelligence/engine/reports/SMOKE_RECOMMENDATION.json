@@ -1,0 +1,193 @@
+{
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "record_kind": "interface_recommendation",
+  "recommendation_id": "axm.hii.recommendation.3a9f04b7b03eb98c",
+  "capability_id": "axm.software.generate_build",
+  "generated_at": "2026-08-03T04:08:12.185395Z",
+  "context": {
+    "user_skill_level": "beginner",
+    "user_goal": "Create a small tested starter application",
+    "task_type": "software_build",
+    "device_types": [
+      "desktop"
+    ],
+    "available_tools": [
+      "sandbox",
+      "test_runner"
+    ],
+    "accessibility_needs": [],
+    "privacy_mode": "local_preferred",
+    "offline_required": true,
+    "resource_budget": {
+      "compute": "high",
+      "time": "short",
+      "attention": "medium",
+      "complexity": "low"
+    },
+    "collaboration_mode": "human_ai_shared"
+  },
+  "recommended_interface": {
+    "interface_pattern_id": "structured_prompt_builder",
+    "interface_name": "Structured prompt builder",
+    "interface_family": "guided_generation",
+    "confidence": 0.878,
+    "recommendation_status": "conditional",
+    "why_this_interface": [
+      "Pattern explicitly supports task type 'software_build'.",
+      "Input fit: constraints, files, text.",
+      "User skill meets the pattern's minimum.",
+      "Pattern is suitable for beginners.",
+      "Pattern fits an available device.",
+      "Preview support lowers avoidable error cost.",
+      "Pattern supports a visible human-AI collaboration boundary.",
+      "Interface overhead stays within the compute budget.",
+      "Pattern stays within the attention budget."
+    ],
+    "why_not_other_interfaces": [
+      "Wizard / step-by-step flow: Lower deterministic fit score.",
+      "Guided form: Lower deterministic fit score.",
+      "Before-and-after comparison: Lower deterministic fit score."
+    ],
+    "required_controls": [
+      "structured_requirements",
+      "diff",
+      "tests",
+      "explicit_execute",
+      "goal",
+      "constraints",
+      "examples",
+      "preview",
+      "generate"
+    ],
+    "optional_controls": [
+      "help",
+      "undo"
+    ],
+    "hidden_advanced_controls": [
+      "edit build scripts",
+      "run arbitrary commands"
+    ],
+    "progressive_disclosure_plan": [
+      "Start with the declared beginner-safe operation and necessary controls only.",
+      "Show a plain-language summary of hidden advanced controls.",
+      "Reveal optional controls when the user asks or the task requires them.",
+      "Require explicit user choice before entering advanced mode."
+    ],
+    "preview_and_confirmation_flow": [
+      "Generate a non-destructive preview or consequence summary.",
+      "Show applied result and proof/status after execution."
+    ],
+    "error_recovery_flow": [
+      "Validate inputs before execution.",
+      "Keep cancel available until the commit point.",
+      "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+      "Record failure details without claiming success."
+    ]
+  },
+  "beginner_layer": {
+    "enabled": true,
+    "operation_class": "guided_advanced_operation",
+    "allowed_operations": [
+      "generate a sandboxed starter project"
+    ],
+    "restricted_operations": [
+      "edit build scripts",
+      "run arbitrary commands"
+    ],
+    "default_values": {
+      "preview_before_apply": true,
+      "confirmation_required": false,
+      "retain_recovery_point": true,
+      "show_hidden_control_summary": true
+    },
+    "guided_steps": [
+      "State the intended goal in plain language.",
+      "Provide only the inputs required for the selected safe operation.",
+      "Review a preview or consequence summary before applying the operation.",
+      "Run the operation.",
+      "Show the result, proof/status, and the available recovery action.",
+      "Offer advanced mode as an explicit user choice; do not switch silently."
+    ],
+    "explanation_depth": "practical",
+    "estimated_capability_cost": {
+      "compute": "high",
+      "attention": "high",
+      "complexity": "high"
+    },
+    "reasons_for_restrictions": [
+      "Risk level requires staged review and explicit consequence explanation.",
+      "Full control exceeds the user's current declared skill level."
+    ]
+  },
+  "advanced_layer": {
+    "available": true,
+    "unlock_method": "demonstrated_skill",
+    "additional_controls": [
+      "edit build scripts",
+      "run arbitrary commands"
+    ],
+    "additional_risks": [
+      "build failure",
+      "generated code mismatch"
+    ],
+    "required_knowledge": [
+      "review inputs",
+      "run safe example",
+      "inspect output"
+    ]
+  },
+  "cost_comparison": {
+    "selected_interface_cost": {
+      "attention": "medium",
+      "interaction": "medium",
+      "minimum_skill": "beginner",
+      "deterministic_score": 102.0,
+      "compute_overhead": "medium",
+      "required_tool_any": []
+    },
+    "alternative_interfaces": [
+      {
+        "interface_pattern_id": "wizard",
+        "interface_name": "Wizard / step-by-step flow",
+        "score": 82.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      },
+      {
+        "interface_pattern_id": "guided_form",
+        "interface_name": "Guided form",
+        "score": 61.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      },
+      {
+        "interface_pattern_id": "before_after_comparison",
+        "interface_name": "Before-and-after comparison",
+        "score": 52.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      }
+    ],
+    "unnecessary_costs_avoided": []
+  },
+  "evidence": {
+    "facts_used": [
+      "Declared task types: software_build.",
+      "Declared input types: text, files, constraints.",
+      "Declared output types: code, build, logs.",
+      "Risk level: moderate.",
+      "Reversibility: partly_reversible.",
+      "Proof status: tested."
+    ],
+    "inferences_used": [],
+    "unknowns": [],
+    "conflicts": [],
+    "source_references": [
+      {
+        "source_type": "manifest",
+        "source_location": "fixtures/axm.software.generate_build.source.json",
+        "source_hash": "sha256:fixture-axm.software.generate_build",
+        "last_verified_at": "2026-08-03T03:56:47Z",
+        "confidence": 0.95
+      }
+    ]
+  }
+}

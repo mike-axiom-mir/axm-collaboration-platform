@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-review-protocol/0.4",
+  "title": "AXM Review Authority Protocol v0.4",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "authority_order",
+    "rules"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-review-protocol/0.4"
+    },
+    "authority_order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "protocol_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": true
+}

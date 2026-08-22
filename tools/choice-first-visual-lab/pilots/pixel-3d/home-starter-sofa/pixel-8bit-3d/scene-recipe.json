@@ -1,0 +1,497 @@
+{
+  "schema": "axm.pixel-3d-scene-recipe/v1",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "id": "home-starter-sofa-pixel-8bit-3d-scene",
+  "identity_id": "axm.home.starter-sofa",
+  "representation_profile_id": "pixel-8bit-3d",
+  "animation_state": "sit",
+  "footprint": {
+    "width": 2.1,
+    "depth": 0.9,
+    "height": 0.95,
+    "unit": "world-unit",
+    "origin": [
+      0.5,
+      0.5,
+      0
+    ]
+  },
+  "pivots": [
+    {
+      "id": "world-origin",
+      "position": [
+        0.5,
+        0.5,
+        0
+      ],
+      "unit": "normalized-footprint",
+      "role": "placement"
+    },
+    {
+      "id": "seat-center",
+      "position": [
+        0.5,
+        0.48,
+        0.48
+      ],
+      "unit": "normalized-footprint",
+      "role": "interaction"
+    }
+  ],
+  "sockets": [
+    {
+      "id": "seat-left",
+      "position": [
+        0.32,
+        0.48,
+        0.48
+      ],
+      "unit": "normalized-footprint",
+      "role": "sim-seat"
+    },
+    {
+      "id": "seat-right",
+      "position": [
+        0.68,
+        0.48,
+        0.48
+      ],
+      "unit": "normalized-footprint",
+      "role": "sim-seat"
+    }
+  ],
+  "materials": [
+    {
+      "id": "fabric",
+      "role": "fabric",
+      "colour": "#6D597A",
+      "unlit": true,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "fabric-shadow",
+      "role": "fabric-shadow",
+      "colour": "#4D3A59",
+      "unlit": true,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "wood",
+      "role": "wood",
+      "colour": "#8B5E3C",
+      "unlit": true,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    },
+    {
+      "id": "stitch",
+      "role": "stitch",
+      "colour": "#F9C74F",
+      "unlit": true,
+      "roughness": 0.82,
+      "metallic": 0,
+      "double_sided": false
+    }
+  ],
+  "nodes": [
+    {
+      "id": "sofa-root",
+      "component_id": "frame",
+      "parent_id": null,
+      "primitive": null,
+      "material_id": null,
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "frame-base",
+      "component_id": "frame",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "fabric-shadow",
+      "translation": [
+        0,
+        0.35,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.05,
+        0.2,
+        0.42
+      ]
+    },
+    {
+      "id": "back",
+      "component_id": "frame",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "fabric",
+      "translation": [
+        0,
+        0.75,
+        -0.35
+      ],
+      "rotation": [
+        -0.059964,
+        0,
+        0,
+        0.998201
+      ],
+      "scale": [
+        1.05,
+        0.46,
+        0.13
+      ]
+    },
+    {
+      "id": "arm-left",
+      "component_id": "frame",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "fabric",
+      "translation": [
+        -0.96,
+        0.62,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.14,
+        0.34,
+        0.44
+      ]
+    },
+    {
+      "id": "arm-right",
+      "component_id": "frame",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "fabric",
+      "translation": [
+        0.96,
+        0.62,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.14,
+        0.34,
+        0.44
+      ]
+    },
+    {
+      "id": "seat-left",
+      "component_id": "cushions",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "fabric",
+      "translation": [
+        -0.46,
+        0.58,
+        0.06
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.44,
+        0.15,
+        0.36
+      ]
+    },
+    {
+      "id": "seat-right",
+      "component_id": "cushions",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "fabric",
+      "translation": [
+        0.46,
+        0.58,
+        0.06
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.44,
+        0.15,
+        0.36
+      ]
+    },
+    {
+      "id": "leg-a",
+      "component_id": "legs",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "wood",
+      "translation": [
+        -0.78,
+        0.1,
+        0.28
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.12,
+        0.08
+      ]
+    },
+    {
+      "id": "leg-b",
+      "component_id": "legs",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "wood",
+      "translation": [
+        0.78,
+        0.1,
+        0.28
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.12,
+        0.08
+      ]
+    },
+    {
+      "id": "leg-c",
+      "component_id": "legs",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "wood",
+      "translation": [
+        -0.78,
+        0.1,
+        -0.28
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.12,
+        0.08
+      ]
+    },
+    {
+      "id": "leg-d",
+      "component_id": "legs",
+      "parent_id": "sofa-root",
+      "primitive": {
+        "type": "cube",
+        "detail": 4
+      },
+      "material_id": "wood",
+      "translation": [
+        0.78,
+        0.1,
+        -0.28
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.08,
+        0.12,
+        0.08
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "id": "cushion-response",
+      "name": "sit",
+      "duration_seconds": 1.4,
+      "loop": true,
+      "channels": [
+        {
+          "node_id": "seat-left",
+          "path": "scale",
+          "interpolation": "STEP",
+          "keys": [
+            {
+              "time": 0,
+              "value": [
+                0.44,
+                0.15,
+                0.36
+              ]
+            },
+            {
+              "time": 0.7,
+              "value": [
+                0.449,
+                0.135,
+                0.367
+              ]
+            },
+            {
+              "time": 1.4,
+              "value": [
+                0.44,
+                0.15,
+                0.36
+              ]
+            }
+          ]
+        },
+        {
+          "node_id": "seat-right",
+          "path": "scale",
+          "interpolation": "STEP",
+          "keys": [
+            {
+              "time": 0,
+              "value": [
+                0.44,
+                0.15,
+                0.36
+              ]
+            },
+            {
+              "time": 0.7,
+              "value": [
+                0.449,
+                0.135,
+                0.367
+              ]
+            },
+            {
+              "time": 1.4,
+              "value": [
+                0.44,
+                0.15,
+                0.36
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "budgets": {
+    "max_triangles": 1500,
+    "max_nodes": 48,
+    "max_materials": 16,
+    "max_glb_bytes": 524288
+  },
+  "game_adapter": {
+    "format": "glTF.2.0/GLB",
+    "coordinate_system": "right-handed-y-up",
+    "unit": "world-unit",
+    "animation_clips": [
+      "sit"
+    ],
+    "identity_extras": true,
+    "integration_boundary": "Engine-neutral candidate GLB; collision, physics and gameplay adapters remain caller-owned."
+  },
+  "invariants": [
+    "identity-persists-across-representations",
+    "footprint-pivots-and-sockets-are-representation-independent",
+    "simulation-state-is-not-owned-by-visual-fidelity",
+    "8-bit-and-16-bit-are-art-directions-not-hardware-bit-depth",
+    "animation-is-driven-by-semantic-state-not-visual-profile",
+    "profile-resolution-never-falls-back-silently"
+  ],
+  "provenance": {
+    "generated_by": "AXMPixel3DCore",
+    "version": "1.0.0",
+    "identity_digest": "58cd6739b1fe6612",
+    "profile_digest": "1ff2d59b212adff2",
+    "originality_boundary": "Original deterministic primitive construction; no copied mesh, texture, map, sound, or layout."
+  },
+  "authority": {
+    "candidate_only": true,
+    "installed": false,
+    "promoted": false,
+    "canonical": false,
+    "human_review_required": true
+  }
+}

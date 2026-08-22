@@ -1,0 +1,62 @@
+{
+  "manifest_id": "axm.hii.atlas-handoff-manifest",
+  "manifest_version": "0.6.0",
+  "module_id": "axm.human-interface-intelligence",
+  "module_version": "0.6.0",
+  "shared_contract_id": "axm.capability-interface-contract",
+  "shared_contract_version": "0.1.0",
+  "handoff_batch_version": "0.2.0",
+  "input_schema": "integration/schemas/atlas-handoff-batch.schema.json",
+  "output_schema": "integration/schemas/cross-module-gate-report.schema.json",
+  "stable_anchor_report_schema": "integration/schemas/module-one-anchor-report.schema.json",
+  "paired_gate_report_schema": "integration/schemas/paired-gate-report.schema.json",
+  "stable_anchor_entrypoint": "axm_hii.anchor:evaluate_anchor",
+  "paired_gate_entrypoint": "axm_hii.paired:run_paired_gate",
+  "immutable_source_fields": [
+    "capability_id",
+    "capability_revision",
+    "source_reference.source_location",
+    "source_reference.source_hash"
+  ],
+  "gate_states": [
+    "PASS",
+    "FAIL",
+    "BLOCKED",
+    "NOT_RUN",
+    "CONFLICTED",
+    "TEST-HOLD-REVIEW"
+  ],
+  "ordering_rule": "The stable anchor gate must pass before the paired gate consumes Capability Records.",
+  "current_supplied_anchor": {
+    "package_name": "tests/fixtures/legacy_blocked_module1_anchor_v0_1_0.zip",
+    "zip_sha256": "cd220d9cbadaa286e1b14102a6ecf33dfb1300c6ce85e015219373003b936239",
+    "anchor_status": "CONFLICTED",
+    "strict_merge_status": "BLOCKED",
+    "recommendation_execution_state": "NOT_RUN",
+    "report": "integration/anchor/MODULE_ONE_ANCHOR_COMPATIBILITY_REPORT.json",
+    "status": "BLOCKED",
+    "module_two_version_checked": "0.6.0",
+    "authority": "historical_non_authoritative_regression_fixture"
+  },
+  "does_not_claim": [
+    "local AXM integration occurred",
+    "full Atlas Capability Records were present in the stable anchor",
+    "a Module Two recommendation was generated from the uploaded anchor",
+    "the underlying capabilities succeeded",
+    "different schema bytes are compatible merely because version strings match",
+    "a recommendation PASS or gate PASS grants execution authority",
+    "an assurance REVIEW silently changes the recommendation"
+  ],
+  "intake_audit_entrypoint": "axm_hii.audit:audit_handoff",
+  "context_preflight_entrypoint": "axm_hii.context:assess_context",
+  "decision_receipt_entrypoint": "axm_hii.receipts:build_decision_receipt",
+  "dependency_lock": "integration/dependency_lock.json",
+  "evolution_observation_schema": "integration/schemas/evolution-observation-batch.schema.json",
+  "three_module_guide": "integration/TRI_MODULE_INTAKE_GUIDE.md",
+  "assurance_entrypoint": "axm_hii.assurance:build_recommendation_assurance",
+  "assurance_schema": "integration/schemas/recommendation-assurance.schema.json",
+  "context_schema": "integration/schemas/recommendation-context.schema.json",
+  "registry_schema": "integration/schemas/interface-pattern-registry.schema.json",
+  "registry_validation_entrypoint": "axm_hii.registry:validate_registry_data",
+  "archive_resource_limits_document": "docs/INTAKE_RESOURCE_LIMITS.md"
+}

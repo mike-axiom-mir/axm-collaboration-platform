@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/hii-interface-pattern-registry-0.1.0.schema.json",
+  "title": "AXM HII Interface Pattern Registry",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["registry_id", "registry_version", "contract_version", "patterns"],
+  "properties": {
+    "registry_id": {"type": "string", "minLength": 1},
+    "registry_version": {"type": "string", "minLength": 1},
+    "contract_version": {"const": "0.1.0"},
+    "patterns": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/pattern"}
+    }
+  },
+  "$defs": {
+    "nonemptyStrings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "pattern": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "interface_pattern_id", "interface_name", "interface_family",
+        "handles_well", "handles_badly", "minimum_user_skill",
+        "attention_cost", "interaction_cost", "error_likelihood",
+        "accessibility_strengths", "accessibility_weaknesses",
+        "preview_capability", "reversibility_support", "best_input_types",
+        "best_output_types", "beginner_suitable",
+        "advanced_capability_types_requiring_another_interface",
+        "selection_reasons", "rejection_reasons", "features", "task_affinity",
+        "input_affinity", "output_affinity", "device_affinity", "offline_capable",
+        "compute_overhead", "required_tool_any"
+      ],
+      "properties": {
+        "interface_pattern_id": {"type": "string", "minLength": 1},
+        "interface_name": {"type": "string", "minLength": 1},
+        "interface_family": {"type": "string", "minLength": 1},
+        "handles_well": {"$ref": "#/$defs/nonemptyStrings"},
+        "handles_badly": {"$ref": "#/$defs/nonemptyStrings"},
+        "minimum_user_skill": {
+          "enum": ["unknown", "beginner", "basic", "intermediate", "advanced", "specialist"]
+        },
+        "attention_cost": {"$ref": "#/$defs/cost"},
+        "interaction_cost": {"$ref": "#/$defs/cost"},
+        "error_likelihood": {"enum": ["low", "medium", "high", "unknown"]},
+        "accessibility_strengths": {"$ref": "#/$defs/nonemptyStrings"},
+        "accessibility_weaknesses": {"$ref": "#/$defs/nonemptyStrings"},
+        "preview_capability": {"enum": ["none", "status", "preview", "live_preview"]},
+        "reversibility_support": {"enum": ["none", "limited", "medium", "strong", "unknown"]},
+        "best_input_types": {"$ref": "#/$defs/nonemptyStrings"},
+        "best_output_types": {"$ref": "#/$defs/nonemptyStrings"},
+        "beginner_suitable": {"type": "boolean"},
+        "advanced_capability_types_requiring_another_interface": {"$ref": "#/$defs/nonemptyStrings"},
+        "selection_reasons": {"$ref": "#/$defs/nonemptyStrings"},
+        "rejection_reasons": {"$ref": "#/$defs/nonemptyStrings"},
+        "features": {"$ref": "#/$defs/nonemptyStrings"},
+        "task_affinity": {"$ref": "#/$defs/nonemptyStrings"},
+        "input_affinity": {"$ref": "#/$defs/nonemptyStrings"},
+        "output_affinity": {"$ref": "#/$defs/nonemptyStrings"},
+        "device_affinity": {"$ref": "#/$defs/nonemptyStrings"},
+        "offline_capable": {"type": "boolean"},
+        "compute_overhead": {"$ref": "#/$defs/cost"},
+        "required_tool_any": {"$ref": "#/$defs/nonemptyStrings"}
+      }
+    },
+    "cost": {
+      "enum": ["none", "very_low", "low", "medium", "high", "very_high", "unknown"]
+    }
+  }
+}

@@ -1,0 +1,29 @@
+AXM HUMAN CAPABILITY ATLAS v0.11.0
+EVIDENCE CHAIN CLOSURE / TRANSACTIONAL INTAKE
+
+READ FIRST
+1. README.md
+2. docs/EVIDENCE_CHAIN_CLOSURE_v0_11.md
+3. LOCAL_INTAKE_CHECKLIST.txt
+4. ACTION_REPORT.txt
+
+FIRST REAL LOCAL COMMANDS
+
+python -m axm_capability_atlas.cli implementation-info
+python -m axm_capability_atlas.cli discovery-verify <READ_ONLY_REPO_COPY>
+python -m axm_capability_atlas.cli axm-public-intake   <READ_ONLY_REPO_COPY> --output <FRESH_INTAKE> --batch-size 100
+python -m axm_capability_atlas.cli preflight-verify   <FRESH_INTAKE> --repository-root <READ_ONLY_REPO_COPY>
+
+Do not begin batch production unless the public intake status is:
+READY_FOR_BATCH_PRODUCTION
+
+Do not accept finalization unless:
+- no in-progress marker remains;
+- production-verify passes;
+- production-chain-verify passes;
+- missing = 0;
+- extra = 0.
+
+Real full registry: NOT_RUN here.
+Module Two/Three: NOT_RUN here.
+Merge Gate: NOT_RUN here.

@@ -1,0 +1,144 @@
+{
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "record_kind": "interface_recommendation",
+  "recommendation_id": "axm.hii.recommendation.49b11283b61174a1",
+  "capability_id": "axm.conflicted.operation",
+  "generated_at": "2026-08-03T03:56:47Z",
+  "context": {
+    "user_skill_level": "beginner",
+    "user_goal": "Run the operation",
+    "task_type": "structured_configuration",
+    "device_types": [
+      "desktop"
+    ],
+    "available_tools": [],
+    "accessibility_needs": [],
+    "privacy_mode": "local_preferred",
+    "offline_required": true,
+    "resource_budget": {
+      "compute": "low",
+      "time": "short",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "collaboration_mode": "human_ai_shared"
+  },
+  "recommended_interface": {
+    "interface_pattern_id": "",
+    "interface_name": "",
+    "interface_family": "",
+    "confidence": 0.0,
+    "recommendation_status": "no_safe_match",
+    "why_this_interface": [
+      "A safe recommendation is blocked because credible capability evidence conflicts."
+    ],
+    "why_not_other_interfaces": [],
+    "required_controls": [],
+    "optional_controls": [],
+    "hidden_advanced_controls": [],
+    "progressive_disclosure_plan": [
+      "Do not expose execution controls while the recommendation is blocked."
+    ],
+    "preview_and_confirmation_flow": [
+      "Show unresolved unknowns or conflicts instead of a fake preview."
+    ],
+    "error_recovery_flow": [
+      "Correct the source record, revalidate it, and rerun deterministic selection."
+    ]
+  },
+  "beginner_layer": {
+    "enabled": false,
+    "operation_class": "restricted_safe_operation",
+    "allowed_operations": [],
+    "restricted_operations": [],
+    "default_values": {},
+    "guided_steps": [
+      "Resolve the listed unknowns or conflicts.",
+      "Revalidate the capability record.",
+      "Generate a new recommendation only after evidence is adequate."
+    ],
+    "explanation_depth": "practical",
+    "estimated_capability_cost": {
+      "compute": "none",
+      "attention": "low",
+      "complexity": "blocked"
+    },
+    "reasons_for_restrictions": [
+      "The system cannot honestly expose a beginner operation while critical evidence is unresolved."
+    ]
+  },
+  "advanced_layer": {
+    "available": false,
+    "unlock_method": "not_available",
+    "additional_controls": [],
+    "additional_risks": [],
+    "required_knowledge": [
+      "review inputs",
+      "run safe example",
+      "inspect output"
+    ]
+  },
+  "cost_comparison": {
+    "selected_interface_cost": {},
+    "alternative_interfaces": [
+      {
+        "interface_pattern_id": "guided_form",
+        "interface_name": "Guided form",
+        "score": 97.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      },
+      {
+        "interface_pattern_id": "simple_action_button",
+        "interface_name": "Simple action button",
+        "score": 58.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      },
+      {
+        "interface_pattern_id": "before_after_comparison",
+        "interface_name": "Before-and-after comparison",
+        "score": 45.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      }
+    ],
+    "unnecessary_costs_avoided": []
+  },
+  "evidence": {
+    "facts_used": [
+      "Declared task types: structured_configuration.",
+      "Declared input types: parameters.",
+      "Declared output types: result.",
+      "Risk level: moderate.",
+      "Reversibility: partly_reversible.",
+      "Proof status: tested."
+    ],
+    "inferences_used": [],
+    "unknowns": [],
+    "conflicts": [
+      "maturity_profile.proof_status: Manifest declares tested, but observed test fixture fails the core operation."
+    ],
+    "source_references": [
+      {
+        "source_type": "manifest",
+        "source_location": "fixtures/axm.conflicted.operation.source.json",
+        "source_hash": "sha256:fixture-axm.conflicted.operation",
+        "last_verified_at": "2026-08-03T03:56:47Z",
+        "confidence": 0.95
+      },
+      {
+        "source_type": "manifest",
+        "source_location": "fixtures/conflicted.manifest.json",
+        "source_hash": "sha256:declared",
+        "last_verified_at": "2026-08-03T03:40:00Z",
+        "confidence": 0.8
+      },
+      {
+        "source_type": "test",
+        "source_location": "fixtures/conflicted.test.json",
+        "source_hash": "sha256:failed",
+        "last_verified_at": "2026-08-03T03:50:00Z",
+        "confidence": 0.95
+      }
+    ]
+  }
+}

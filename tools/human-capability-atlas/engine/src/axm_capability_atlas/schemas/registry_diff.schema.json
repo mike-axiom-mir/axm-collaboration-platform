@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/registry-diff.schema.json",
+  "title": "AXM Capability Registry Diff",
+  "type": "object",
+  "required": ["module", "module_version", "shared_contract_version", "operation", "generated_at", "before_snapshot_hash", "after_snapshot_hash", "summary", "category_counts", "added", "removed", "changed", "unchanged", "source_only_changes", "id_reuse_risks", "impact", "rebuild_plan", "integrity_notes"],
+  "properties": {
+    "module": {"const": "AXM Human Capability Atlas"},
+    "module_version": {"type": "string"},
+    "shared_contract_version": {"const": "0.1.0"},
+    "operation": {"const": "capability_registry_diff"},
+    "generated_at": {"type": "string"},
+    "before_snapshot_hash": {"type": "string"},
+    "after_snapshot_hash": {"type": "string"},
+    "summary": {"type": "object"},
+    "category_counts": {"type": "object"},
+    "added": {"type": "array", "items": {"type": "string"}},
+    "removed": {"type": "array", "items": {"type": "string"}},
+    "changed": {"type": "array", "items": {"type": "object"}},
+    "unchanged": {"type": "array", "items": {"type": "string"}},
+    "source_only_changes": {"type": "array", "items": {"type": "string"}},
+    "id_reuse_risks": {"type": "array", "items": {"type": "object"}},
+    "impact": {"type": "object"},
+    "rebuild_plan": {"type": "object"},
+    "integrity_notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

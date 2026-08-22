@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-review-assignment/0.3",
+  "title": "AXM Deterministic Review Assignment v0.3",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "mode",
+    "packet_hash",
+    "rubric_hash",
+    "candidate_labels",
+    "eligible_reviewers",
+    "candidate_target",
+    "assignments",
+    "candidate_coverage",
+    "reviewer_loads",
+    "all_candidate_targets_met",
+    "assignment_hash",
+    "assignment_algorithm",
+    "requested_candidate_target_assignments",
+    "achieved_candidate_target_assignments",
+    "target_coverage_feasible_under_cap",
+    "supplemental_participation_assignments"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-review-assignment/0.3"
+    },
+    "mode": {
+      "enum": [
+        "all",
+        "balanced"
+      ]
+    },
+    "packet_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "rubric_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "candidate_labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "eligible_reviewers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "required_reviewers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "candidate_target": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "requested_reviews_per_reviewer": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "effective_reviews_per_reviewer_cap": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "assignments": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "uniqueItems": true
+      }
+    },
+    "candidate_coverage": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "reviewer_loads": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "unmet_candidate_targets": {
+      "type": "object"
+    },
+    "empty_required_reviewers_with_available_candidates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "all_candidate_targets_met": {
+      "type": "boolean"
+    },
+    "assignment_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "assignment_algorithm": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requested_candidate_target_assignments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "achieved_candidate_target_assignments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "target_coverage_feasible_under_cap": {
+      "type": "boolean"
+    },
+    "supplemental_participation_assignments": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": true
+}

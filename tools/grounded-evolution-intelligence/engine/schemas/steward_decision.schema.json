@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/gei/v0.1.0/steward_decision.schema.json",
+  "title": "Steward Decision",
+  "type": "object",
+  "properties": {
+    "decision_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "contract_version": {
+      "const": "0.1.0"
+    },
+    "target_id": {
+      "type": "string",
+      "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "steward": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "ACCEPT",
+        "REJECT",
+        "MODIFY",
+        "DEFER",
+        "MERGE",
+        "REQUEST_EVIDENCE"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decided_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "evidence_requested": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "supersedes_decision_id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^axm:(module|capability|interface|evidence|edge|need|research|direction|intervention|decision|event|packet):[a-z0-9][a-z0-9._-]{2,127}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "decision_id",
+    "contract_version",
+    "target_id",
+    "steward",
+    "decision",
+    "reason",
+    "decided_at",
+    "conditions",
+    "evidence_requested",
+    "supersedes_decision_id"
+  ],
+  "additionalProperties": false
+}

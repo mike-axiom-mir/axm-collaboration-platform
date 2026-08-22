@@ -1,0 +1,2060 @@
+/returncore /soulcheck /mergegate
+
+MODULE1_STABLE_INTAKE_HANDOFF
+AXM Human Capability Atlas
+Prepared against the exact frozen v0.10.0 package and final local-intake bundle.
+
+TRUTH RULE
+- IMPLEMENTED != INTENDED.
+- DECLARED != VERIFIED.
+- schema PASS != runtime proof.
+- producer RUN != capability runtime proof.
+- batch PASS != Merge Gate acceptance.
+- COMPLETE_VERIFIED != CANON.
+- UNKNOWN is valid.
+- Do not infer a Git commit or real registry result that is not present.
+- The visual artwork is presentation, not a machine contract.
+
+IMPORTANT CORRECTIONS TO THE STORYTELLING VISUAL
+1. The visual's "342 provider-backed targets" and "689 consumer-only dependency references" are NOT authoritative sealed-package counts.
+   The sealed package records:
+   - observed public registry identifiers: 1769
+   - observed modules: 210
+   - actual provider-backed/dependency split: TO_BE_MEASURED_BY_REAL_LOCAL_INTAKE
+   The v0.10 synthetic scale test used 1500 provider-backed + 269 consumer-only ONLY as test data.
+2. "CONFIRMED" is NOT a canonical Module 1 truth-state token.
+   Canonical evidence-state serialization is:
+   known
+   inferred
+   unknown
+   conflicted
+   not_applicable
+
+===============================================================================
+A — MODULE IDENTITY
+===============================================================================
+
+1. Exact canonical Module ID
+   axm.module.human_capability_atlas
+
+2. Exact module version
+   0.10.0
+
+3. Exact finished package/bundle version
+   Module payload:
+   AXM_HUMAN_CAPABILITY_ATLAS_v0_10_0
+   version: 0.10.0
+
+   Final outer intake bundle:
+   AXM_HUMAN_CAPABILITY_ATLAS_FINAL_LOCAL_INTAKE_v0_10_0
+   version: 0.10.0
+
+4. Package SHA-256
+   Final outer intake bundle SHA-256:
+   bf6717cae919a459ab39d384cf24631b8b0ba10bde0519be49796128582d0d54
+
+   Nested frozen Module 1 ZIP SHA-256:
+   293234a2920e6a882868a831ca2f278142ffbd458c18800145dc026f4cb6ed05
+
+   Unchanged stable handoff anchor ZIP SHA-256:
+   cd220d9cbadaa286e1b14102a6ecf33dfb1300c6ce85e015219373003b936239
+
+   v0.10 handoff-status addendum ZIP SHA-256:
+   3ddc0f28e36e39db3e9653a182f2d09dc6a59e21b7e96ee6badbe9ef53bfcc53
+
+5. Source snapshot / commit / registry snapshot used
+   REAL REGISTRY SOURCE COMMIT:
+   UNKNOWN / NOT CAPTURED IN THE RELEASE PACKAGE.
+
+   REAL FULL REGISTRY RUN:
+   NOT_RUN.
+
+   Package observation recorded in local_intake_manifest.json:
+   - declared_registry_identifier_count: 1769
+   - module_count: 210
+   - actual_provider_backed_split: TO_BE_MEASURED_BY_REAL_LOCAL_INTAKE
+
+   Upstream discovery authority scope:
+   SUPPLIED_TOOLS_INDEX_SNAPSHOT_NOT_REGENERATED
+
+   Therefore Module 3 MUST NOT invent or infer a Git commit SHA.
+
+   The frozen Module 1 package itself can be identified by:
+   package-sha256:293234a2920e6a882868a831ca2f278142ffbd458c18800145dc026f4cb6ed05
+
+   The synthetic 1769-row truth-scale test is NOT a real registry snapshot.
+
+6. Immutable / sealed?
+   YES for intake purposes: use the exact frozen v0.10.0 ZIP identified by SHA-256.
+   Do not mutate that release in place.
+   Future corrections must become a new package/version.
+   This is content-hash sealing, not a cryptographic publisher signature.
+
+===============================================================================
+B — SHARED CONTRACT
+===============================================================================
+
+7. Exact shared contract identifier
+   axm.capability-interface-contract
+
+8. Exact shared contract version
+   0.1.0
+
+9. Is it still axm.capability-interface-contract version 0.1.0?
+   YES.
+   Compatibility policy:
+   EXACT_ONLY / ==0.1.0
+   No forward compatibility is assumed.
+
+10. Authoritative interoperability parts
+   Authoritative interoperability boundary consists of:
+
+   a. Contract identity/version:
+      axm.capability-interface-contract
+      0.1.0
+
+   b. Capability Record export identity:
+      axm.shared-capability-record
+      0.1.0
+
+   c. Canonical shared record schema:
+      schemas/shared_capability.schema.json
+      SHA-256:
+      c63d2c5d4b0ae7aeb8754a5a006a1efd2364c330ad18b74064d74ec7428a71b3
+
+   d. Shared Module 2 recommendation schema:
+      schemas/interface_recommendation.schema.json
+      SHA-256:
+      b85e9916f599d2c469b00ea91b12bc3de1e7cd3cceedcd226340fad6dd636e4f
+
+   e. Stable handoff anchor policies:
+      - FIELD_AUTHORITY_MAP.json
+      - CAPABILITY_IDENTITY_POLICY.md
+      - EVIDENCE_STATE_POLICY.md
+      - PRODUCER_STATE_POLICY.md
+      - COMPATIBILITY_POLICY.md
+      - canonicalization/provenance rules from the stable anchor
+      - stable fixture invariants/run evidence
+
+   f. Field-authority boundary:
+      Module 1 may explain/classify/derive with evidence.
+      Module 1 may not redefine Module 2 interface recommendations.
+      Neither module may silently change source-authoritative technical facts.
+
+11. Module-1-specific extensions to the shared contract?
+   NO private shared-contract fork.
+
+   Module 1 DOES have module-private/source-side context and optional evidence
+   carried through the shared schema's extensible source_reference object.
+
+12. Exact Module-1-specific context identifiers and whether Module 2/3 must understand them
+   Module-private normalized-source fields:
+   - registry_context
+   - enrichment_context
+
+   Optional source_reference context emitted into shared cards:
+   - source_reference.enrichment
+   - source_reference.enrichment_hash
+   - source_reference.enrichment_catalog_hash
+   - source_reference.enrichment_source_seal_hash
+   - source_reference.enrichment_sources
+   - source_reference.registry_role
+   - source_reference.proof_ceiling
+
+   Related Module-1 record/schema surfaces:
+   - schemas/source_capability.schema.json
+   - schemas/enrichment_catalog.schema.json
+   - schemas/enrichment_report.schema.json
+   - schemas/discovery_integrity_report.schema.json
+   - schemas/identity_report.schema.json
+   - schemas/capability_graph.schema.json
+   - schemas/quality_report.schema.json
+   - schemas/registry_snapshot.schema.json
+   - schemas/registry_diff.schema.json
+   - schemas/producer_receipt.schema.json
+   - schemas/batch_plan.schema.json
+   - schemas/batch_receipt.schema.json
+   - schemas/production_run_manifest.schema.json
+
+   Module 2/3 do NOT need these fields to validate the core shared Capability
+   Record unless they choose to consume the richer evidence.
+
+   Module 3 SHOULD understand registry_role, proof_ceiling, enrichment status,
+   receipts, snapshots/diffs and discovery-integrity reports if it wants grounded
+   diagnosis/evolution planning.
+
+===============================================================================
+C — CAPABILITY RECORDS
+===============================================================================
+
+13. Exact schema / record type
+   Export identifier:
+   axm.shared-capability-record
+   version: 0.1.0
+
+   JSON Schema:
+   https://axm.local/schemas/shared-capability.schema.json
+
+   File:
+   schemas/shared_capability.schema.json
+
+14. Exact stable identifier field
+   capability_id
+
+15. Are Capability Card IDs deterministic across rebuilds?
+   YES for capability_id.
+   capability_id is source-authoritative and preserved exactly.
+
+   Module 1 does not create a random replacement capability ID.
+   Missing/invalid identity is rejected or held rather than silently generated.
+
+16. When can an existing capability ID change?
+   Module 1 itself does not silently change it.
+
+   Legitimate change requires authoritative source identity change, e.g.:
+   - capability split -> new authoritative IDs; old ID preserved historical/deprecated
+   - capability merge -> authoritative merged ID; old IDs preserved historical/deprecated
+   - explicit source identity migration/review
+
+   Human wording/name changes do NOT change capability_id.
+
+17. Identity vs presentation/humanization
+   Stable/technical identity:
+   - capability_id
+   - capability_revision
+   - identity.machine_name when declared
+   - source_reference provenance binding
+
+   Human/presentation layer:
+   - identity.human_name
+   - purpose.plain_explanation
+   - purpose.why_it_matters
+   - purpose.example_uses
+   - learning_profile
+   - Quick / Practical / Deep markdown views
+   - source_reference.enrichment.humanization_seed
+   - search display/ranking material
+
+   Mixed/derived-with-evidence fields:
+   - task_profile
+   - cost_profile
+   - risk_profile
+   - maturity_profile
+   - interaction_profile
+   - interface_requirements
+   - relationships
+
+   These are not free prose: their truth state/evidence still matters.
+
+18. Required fields in shared schema
+   Top-level REQUIRED:
+   - contract_version
+   - capability_id
+   - capability_revision
+   - source_reference
+   - identity
+   - purpose
+   - task_profile
+   - input_profile
+   - output_profile
+   - cost_profile
+   - risk_profile
+   - maturity_profile
+   - learning_profile
+   - interaction_profile
+   - interface_requirements
+   - relationships
+
+   source_reference REQUIRED:
+   - source_type
+   - source_location
+   - source_hash
+   - last_verified_at
+   - confidence
+
+   identity REQUIRED:
+   - machine_name
+   - human_name
+   - category
+   - tags
+
+   purpose REQUIRED:
+   - plain_explanation
+   - why_it_matters
+   - example_uses
+
+   task_profile REQUIRED:
+   - supported_task_types
+   - typical_goals
+   - required_human_actions
+   - required_machine_actions
+   - collaboration_modes
+
+   input_profile REQUIRED:
+   - input_types
+   - required_inputs
+   - optional_inputs
+   - input_constraints
+
+   output_profile REQUIRED:
+   - output_types
+   - expected_outputs
+   - output_constraints
+   - preview_available
+
+   cost_profile REQUIRED:
+   - compute_cost
+   - time_cost
+   - attention_cost
+   - skill_cost
+   - setup_cost
+   - error_recovery_cost
+
+   risk_profile REQUIRED:
+   - risk_level
+   - reversibility
+   - privacy_sensitivity
+   - failure_modes
+   - human_confirmation_required
+   - safe_preview_recommended
+
+   maturity_profile REQUIRED:
+   - availability
+   - maturity
+   - proof_status
+   - known_limitations
+
+   learning_profile REQUIRED:
+   - minimum_skill_level
+   - prerequisite_capability_ids
+   - recommended_learning_steps
+   - beginner_safe_operations
+   - advanced_operations
+   - common_mistakes
+
+   interaction_profile REQUIRED:
+   - interaction_complexity
+   - interaction_frequency
+   - precision_requirement
+   - feedback_requirement
+   - preferred_input_methods
+   - preferred_output_methods
+   - accessibility_considerations
+
+   interface_requirements REQUIRED:
+   - required_interface_features
+   - optional_interface_features
+   - unsafe_interface_patterns
+   - beginner_layer_constraints
+   - advanced_layer_requirements
+
+   relationships REQUIRED:
+   - dependency_capability_ids
+   - related_capability_ids
+   - alternative_capability_ids
+   - commonly_combined_capability_ids
+
+19. Optional fields
+   Top-level schema-optional:
+   - knowledge
+
+   Module 1 implementation currently emits knowledge.
+
+   knowledge may contain:
+   - field_states
+   - inferences
+   - unknowns
+   - conflicts
+
+   source_reference permits additionalProperties=true, enabling optional
+   provenance/enrichment context listed in B12.
+
+20. Which fields may legitimately be UNKNOWN?
+   Any behavior/profile field lacking sufficient evidence may be UNKNOWN.
+
+   Examples:
+   - capability_revision may serialize as "unknown"
+   - purpose fields
+   - task profile
+   - inputs/outputs
+   - costs
+   - risks
+   - maturity/proof
+   - learning properties
+   - interaction properties
+   - interface requirements
+   - relationships
+   - enrichment when evidence is incomplete
+
+   Required strict source identity/provenance cannot simply be fabricated:
+   capability_id and machine_name must exist for an accepted normalized source;
+   strict source_location/source_hash/confidence must satisfy provenance checks.
+
+   IMPORTANT:
+   Some structural placeholders use empty arrays, "unknown", "UNKNOWN — ...",
+   or default false values. Module 3 MUST consult knowledge.field_states rather
+   than assuming a raw default value is KNOWN.
+
+MINIMAL REPRESENTATIVE CAPABILITY CARD
+Representative from included file-rename fixture shape:
+
+{
+  "contract_version": "0.1.0",
+  "capability_id": "axm.file.rename",
+  "capability_revision": "1.0.0",
+  "source_reference": {
+    "source_type": "manifest",
+    "source_location": "fixtures/source/file_rename.json",
+    "source_hash": "e81acff12aa5554033b13e46e94ae512e53848f17f8fac89a0000b392e7750b5",
+    "last_verified_at": "<verification timestamp>",
+    "confidence": 0.95
+  },
+  "identity": {
+    "machine_name": "file_rename",
+    "human_name": "Rename a File",
+    "category": ["utility"],
+    "tags": []
+  },
+  "purpose": {
+    "plain_explanation": "Changes the name of a selected file without changing its contents.",
+    "why_it_matters": "Helps people organize and identify files while preserving the underlying data.",
+    "example_uses": ["Rename draft.txt to final.txt."]
+  },
+  "task_profile": {
+    "supported_task_types": ["file_management"],
+    "typical_goals": ["Give a file a clearer name"],
+    "required_human_actions": ["Select a file", "Enter a new name"],
+    "required_machine_actions": ["Check name validity", "Apply the rename"],
+    "collaboration_modes": ["human_ai_shared"]
+  },
+  "input_profile": {
+    "input_types": ["file_reference", "text"],
+    "required_inputs": ["Existing file", "New filename"],
+    "optional_inputs": [],
+    "input_constraints": ["New name must be valid for the filesystem"]
+  },
+  "output_profile": {
+    "output_types": ["renamed_file_reference"],
+    "expected_outputs": ["The same file under the new name"],
+    "output_constraints": ["File contents remain unchanged"],
+    "preview_available": "KNOWN"
+  },
+  "cost_profile": {
+    "compute_cost": "very_low",
+    "time_cost": "instant",
+    "attention_cost": "low",
+    "skill_cost": "beginner",
+    "setup_cost": "none",
+    "error_recovery_cost": "low"
+  },
+  "risk_profile": {
+    "risk_level": "low",
+    "reversibility": "fully_reversible",
+    "privacy_sensitivity": "low",
+    "failure_modes": [],
+    "human_confirmation_required": false,
+    "safe_preview_recommended": false
+  },
+  "maturity_profile": {
+    "availability": "available",
+    "maturity": "tested",
+    "proof_status": "tested",
+    "known_limitations": []
+  },
+  "learning_profile": {
+    "minimum_skill_level": "beginner",
+    "prerequisite_capability_ids": [],
+    "recommended_learning_steps": [],
+    "beginner_safe_operations": ["Rename one selected file"],
+    "advanced_operations": [],
+    "common_mistakes": ["Removing the file extension accidentally"]
+  },
+  "interaction_profile": {
+    "interaction_complexity": "low",
+    "interaction_frequency": "one_shot",
+    "precision_requirement": "medium",
+    "feedback_requirement": "status",
+    "preferred_input_methods": [],
+    "preferred_output_methods": [],
+    "accessibility_considerations": []
+  },
+  "interface_requirements": {
+    "required_interface_features": ["file selector", "text field", "validation"],
+    "optional_interface_features": ["inline preview"],
+    "unsafe_interface_patterns": [],
+    "beginner_layer_constraints": [],
+    "advanced_layer_requirements": []
+  },
+  "relationships": {
+    "dependency_capability_ids": [],
+    "related_capability_ids": [],
+    "alternative_capability_ids": [],
+    "commonly_combined_capability_ids": []
+  },
+  "knowledge": {
+    "field_states": {
+      "/capability_id": "known",
+      "/capability_revision": "known",
+      "/identity/machine_name": "known",
+      "/identity/human_name": "known",
+      "/purpose/plain_explanation": "known"
+    },
+    "inferences": [],
+    "unknowns": [],
+    "conflicts": []
+  }
+}
+
+NOTE:
+The fixture's full generated knowledge.field_states contains more field paths.
+The example above is handoff-minimized and representative, not a replacement
+for schema validation.
+
+===============================================================================
+D — PROVIDERS AND CONSUMERS
+===============================================================================
+
+21. Do 342 provider-backed / 689 consumer-only belong to sealed package?
+   NO.
+
+   They came from storytelling artwork and are not package facts.
+
+   Sealed package facts:
+   - public registry identifiers observed: 1769
+   - modules observed: 210
+   - actual provider-backed split: TO_BE_MEASURED_BY_REAL_LOCAL_INTAKE
+
+   Synthetic test only:
+   - 1500 provider-backed
+   - 269 consumer-only
+   These MUST NOT be treated as real AXM counts.
+
+22. Exact record/relation representing PROVIDER-BACKED capability
+   Public registry source row schema:
+   axm.public-capability/v1
+
+   Relevant normalized fields:
+   registry_context.providers
+   registry_context.provider_statuses
+   registry_context.registry_role
+
+   Derived registry role:
+   classification = PROVIDED_ONLY
+   or
+   classification = PROVIDED_AND_CONSUMED
+
+   human_surface = AXM_CAPABILITY
+   is_provider_backed = true
+
+   Enrichment has:
+   enrichment_context.providers[*].role = "provider"
+   enrichment_context.providers[*].join_status =
+     VERIFIED | PARTIAL | CONFLICTED | UNRESOLVED
+
+23. Exact record/relation representing CONSUMER-ONLY dependency reference
+   registry_context.providers = []
+   registry_context.consumers = [one or more module IDs]
+
+   registry_context.registry_role.classification =
+   CONSUMER_ONLY_DEPENDENCY
+
+   registry_context.registry_role.human_surface =
+   DEPENDENCY_REFERENCE
+
+   registry_context.registry_role.is_provider_backed =
+   false
+
+   Consumer enrichment:
+   enrichment_context.consumers[*].role = "consumer"
+
+24. Typed relationships or derived?
+   The raw provider/consumer arrays are declared routing relations in
+   axm.public-capability/v1.
+
+   registry_role is DETERMINISTICALLY DERIVED from those arrays.
+
+   Provider/consumer verification status is DETERMINISTICALLY DERIVED by joining:
+   - registry/capabilities.jsonl
+   - registry/modules.json
+   - referenced module manifest
+   - referenced module contract
+
+   These are module<->capability relations.
+   They are NOT silently inserted into the shared Capability Record's
+   capability-to-capability relationships object.
+
+25. Valid provider declaration
+   For a fully VERIFIED provider join:
+   - capability row declares provider module ID
+   - provider module exists in registry/modules.json
+   - module registry's contract.provides contains capability_id
+   - referenced module contract exists
+   - referenced contract provides contains capability_id
+   - provider status is not contradictory
+   - referenced evidence bytes/hashes verify
+
+   If registry relation exists but contract evidence is incomplete:
+   join_status may be PARTIAL.
+
+   If credible checked sources disagree:
+   join_status = CONFLICTED.
+
+26. Consumer references capability but no provider exists
+   This is NOT automatically an error.
+   If there is at least one consumer and zero providers:
+   registry_role.classification = CONSUMER_ONLY_DEPENDENCY
+   human_surface = DEPENDENCY_REFERENCE
+
+27. UNKNOWN/unresolved or explicit state?
+   The no-provider condition is an explicit role:
+   CONSUMER_ONLY_DEPENDENCY.
+
+   It can still have VERIFIED consumer joins.
+
+   If the declared consumer module itself cannot be resolved:
+   consumer join_status = UNRESOLVED
+   overall enrichment status becomes PARTIAL.
+
+28. Can multiple providers satisfy same capability?
+   YES.
+
+29. Representation without false equivalence
+   registry_context.providers is an array of module IDs.
+
+   Each provider gets a separate enrichment_context.providers[] object containing:
+   - module_id
+   - role
+   - join_status
+   - registry_status
+   - module context
+   - manifest context
+   - contract context
+   - join_checks
+   - evidence_sources
+   - issues
+
+   Module 1 does not collapse providers into one equivalent provider.
+   Module 3 should preserve each provider edge and evidence separately.
+
+REPRESENTATIVE PROVIDER-BACKED RELATION
+{
+  "schema": "axm.public-capability/v1",
+  "id": "demo.goal-routing",
+  "providers": ["demo-provider"],
+  "consumers": [],
+  "provider_statuses": [
+    {"id": "demo-provider", "status": "TEST"}
+  ],
+  "truth": {
+    "declaration_is_runtime_proof": false,
+    "grants_authority": false
+  },
+  "registry_role": {
+    "classification": "PROVIDED_ONLY",
+    "human_surface": "AXM_CAPABILITY",
+    "provider_count": 1,
+    "consumer_count": 0,
+    "is_provider_backed": true
+  }
+}
+
+REPRESENTATIVE CONSUMER-ONLY RELATION
+{
+  "schema": "axm.public-capability/v1",
+  "id": "application/json",
+  "providers": [],
+  "consumers": ["demo-provider"],
+  "provider_statuses": [],
+  "truth": {
+    "declaration_is_runtime_proof": false,
+    "grants_authority": false
+  },
+  "registry_role": {
+    "classification": "CONSUMER_ONLY_DEPENDENCY",
+    "human_surface": "DEPENDENCY_REFERENCE",
+    "provider_count": 0,
+    "consumer_count": 1,
+    "is_provider_backed": false
+  }
+}
+
+These are representative shape examples, not sealed real-registry counts.
+
+===============================================================================
+E — EVIDENCE
+===============================================================================
+
+30. Exact Evidence Tuple / evidence-record schema
+   IMPORTANT CORRECTION:
+   v0.10 has NO standalone canonical record named "Evidence Tuple".
+
+   "Evidence tuple" in the visual is presentation shorthand.
+
+   Evidence is implemented across:
+   a. shared Capability Record:
+      source_reference
+      knowledge.field_states
+      knowledge.inferences
+      knowledge.unknowns
+      knowledge.conflicts
+
+   b. normalized source:
+      observed_evidence
+      registry_context
+      enrichment_context
+
+   c. producer/run evidence:
+      producer_receipt.json
+      batch_receipt.json
+      production_run_manifest.json
+
+   d. discovery/provenance sidecars:
+      source seal
+      enrichment catalog/report
+      discovery integrity report
+      registry snapshots/diffs
+
+31. Required fields for an INFERRED evidence object
+   Stable evidence policy requires:
+   - field
+   - value
+   - reasoning
+   - source_basis
+   - confidence
+   - evidence_reference
+
+   Implementation also emits:
+   - rule
+   - origin
+
+   Conformance specifically requires for an INFERRED field:
+   - reasoning
+   - source_basis
+   - confidence in [0,1]
+   - evidence_reference
+
+32. Provenance representation
+   Primary:
+   source_reference
+
+   It carries:
+   - source_type
+   - source_location
+   - source_hash
+   - last_verified_at
+   - confidence
+
+   Additional provenance may include:
+   - source_pointer
+   - source_line
+   - adapter_id
+   - adapter_version
+   - detected_format
+   - enrichment hashes/sources
+
+33. Source location representation
+   source_reference.source_location
+
+   Record-level extraction position may additionally use:
+   source_reference.source_pointer
+   source_reference.source_line
+
+   Strict policy expects deterministic pointer/line for multi-record sources,
+   even though source_pointer is not a required core shared-schema property.
+
+34. Source hashes
+   Primary source bytes:
+   source_reference.source_hash
+   lowercase SHA-256 hex
+
+   Other hashes:
+   - normalized_source_sha256
+   - normalized_source_canonical_sha256
+   - normalized_source_semantic_sha256 in batch descriptors
+   - enrichment_hash
+   - enrichment_catalog_hash
+   - enrichment_source_seal_hash
+   - capability_card_canonical_sha256
+   - plan_hash
+   - batch_hash
+   - batch_receipt_hash
+   - manifest_hash
+   - source_seal_hash
+
+35. Freshness / staleness
+   There is NO one global evidence-staleness enum on every evidence item.
+
+   Implemented signals include:
+   - source_reference.last_verified_at
+   - module enrichment "freshness" copied from module registry
+   - exact source hash verification
+   - source seal verification
+   - discovery-integrity verification
+   - receipt_matches_source
+   - registry snapshots/diffs
+   - enrichment hash/source-seal hash changes
+
+   A hash mismatch or changed source invalidates reuse.
+
+36. Confidence values?
+   YES.
+
+37. What do confidence values mean?
+   They may be:
+   - source_reference confidence supplied/defaulted by adapter/source
+   - deterministic format-detection confidence
+   - deterministic inference-rule confidence
+   - fixed rule values, e.g. generated human name confidence 0.65
+
+   They are NOT automatically runtime success probabilities.
+   Module 3 must preserve the origin/context of confidence.
+
+38. Distinguishing proof levels
+
+   DECLARATION EXISTS:
+   - source declaration present
+   - field may be knowledge state known within declared scope
+   - public registry proof ceiling explicitly says declaration_is_runtime_proof=false
+
+   STRUCTURAL VALIDATION PASSED:
+   producer receipt validation may report:
+   - shared_schema: PASS
+   - stable_evidence_policy: PASS
+   - stable_provenance_policy: PASS
+   This means structure/evidence/provenance checks passed.
+   It does NOT prove runtime behavior.
+
+   SELF-TEST EXISTS:
+   module context may include tests paths.
+   discovery-verify checks declared path existence and declared promotion
+   self-test hash where supplied.
+   Module 1 does NOT execute upstream promotion self-tests.
+   proof ceiling says selftest_is_human_approval=false.
+
+   RUNTIME BEHAVIOR REPRODUCED:
+   Requires separate reproducible execution/observation evidence tied to exact
+   capability/revision/environment/procedure/result/artifact.
+   Module 1 does not infer this from declaration, schema PASS, test-file
+   existence, producer RUN, or enrichment VERIFIED.
+
+   HUMAN VERIFICATION:
+   Requires explicit reviewed human decision/evidence with appropriate authority.
+   It is not implied by self-test existence or Module 1 packaging.
+
+39. Can Module 1 promote declaration into runtime proof by itself?
+   NO.
+
+40. Explicit statement
+   Module 1 MUST NOT promote a declaration, schema validation, provider join,
+   producer run, batch PASS, or COMPLETE_VERIFIED status into runtime capability proof.
+
+   Module 1 may CONSUME independently produced reproducible runtime evidence when
+   provided with valid provenance, but the Atlas itself is not the capability
+   executor that creates runtime proof merely by processing declarations.
+
+MINIMAL REPRESENTATIVE INFERENCE EVIDENCE OBJECT
+{
+  "field": "/identity/human_name",
+  "value": "Image Background Replace",
+  "rule": "title_from_machine_name",
+  "reasoning": "No human_name was declared. A display-only human label was deterministically derived from machine_name for readability. This does not rename the technical capability.",
+  "source_basis": {
+    "field": "/machine_name",
+    "value": "image_background_replace"
+  },
+  "confidence": 0.65,
+  "evidence_reference": {
+    "source_location": "fixtures/source/image_background_replace.json",
+    "source_hash": "da48b8294a176a2e8f8ebc5db724a38c0763fe39b360aa5be2780d9e53e1d737",
+    "source_pointer": "",
+    "field": "/machine_name"
+  },
+  "origin": "atlas"
+}
+
+===============================================================================
+F — TRUTH / STATUS STATES
+===============================================================================
+
+41. Exact canonical truth/evidence enum
+   Semantic names -> serialized tokens:
+
+   KNOWN -> known
+   INFERRED -> inferred
+   UNKNOWN -> unknown
+   CONFLICTED -> conflicted
+   NOT_APPLICABLE -> not_applicable
+
+   Machine serialization in knowledge.field_states is LOWERCASE.
+
+   IMPORTANT:
+   "CONFIRMED" is NOT a canonical Module 1 evidence state.
+   The visual's CONFIRMED label was presentation-only and must not be ingested.
+
+   Separate status namespaces also exist:
+
+   Registry roles:
+   - PROVIDED_ONLY
+   - PROVIDED_AND_CONSUMED
+   - CONSUMER_ONLY_DEPENDENCY
+   - UNBOUND
+
+   Enrichment:
+   - VERIFIED
+   - PARTIAL
+   - CONFLICTED
+   - NO_MODULE_RELATION
+   Per relation join:
+   - VERIFIED
+   - PARTIAL
+   - CONFLICTED
+   - UNRESOLVED
+
+   Producer execution:
+   - RUN
+   - NOT_RUN
+   - UNVERIFIED
+
+   Batch:
+   - PASS
+   - TEST_HOLD_REVIEW
+
+   Production run:
+   - COMPLETE_VERIFIED
+   - TEST_HOLD_REVIEW
+
+   Intake gate:
+   - READY_FOR_MERGE_REVIEW
+   - TEST_HOLD_REVIEW
+   - INGEST_FAILED
+
+   Public-intake preparation:
+   - READY_FOR_BATCH_PRODUCTION
+   - TEST_HOLD_REVIEW
+
+42. UNKNOWN cause
+   Insufficient evidence.
+   Examples:
+   - missing source field
+   - unavailable evidence
+   - unsupported assumption
+   - partial/unresolved enrichment context
+   - missing revision
+
+   knowledge.unknowns must contain fields whose field_state is unknown.
+
+43. CONFLICTED cause
+   Two or more credible declarations/observations disagree.
+
+   Examples:
+   - declared vs observed field mismatch
+   - capability/provider registry vs module contract mismatch
+   - same capability ID/revision with materially different declarations
+
+   Evidence must be preserved; no silent winner.
+
+44. CONFIRMED cause
+   NONE.
+   There is no canonical CONFIRMED truth state.
+
+   Do not generate or ingest CONFIRMED as Module 1 machine truth.
+   If a UI wants a friendly label, it must map explicitly to a real machine state
+   and must not replace the underlying token.
+
+45. Other truth states
+   yes:
+   inferred
+   not_applicable
+   plus known/unknown/conflicted above.
+
+46. Can human rendering change truth state?
+   NO.
+
+47. Can missing field be silently invented?
+   NO.
+
+   Structural placeholder values may exist, but knowledge.field_states remains
+   unknown and must be consulted.
+
+48. Two valid sources disagree
+   Preserve:
+   - both source claims
+   - source locations
+   - hashes
+   - evidence references
+   - conflict state
+
+   Mark affected field/group conflicted.
+   Resolution requires explicit reviewed resolution event.
+   Conflict history remains preserved.
+
+===============================================================================
+G — DETERMINISTIC HUMANIZATION
+===============================================================================
+
+49. Meaning of "Deterministic Humanization"
+   Implemented deterministic operations include:
+   - source normalization
+   - deterministic ID-preserving adapters
+   - deterministic title generation from machine_name when human_name is absent
+   - deterministic registry-role classification
+   - deterministic provider/module enrichment joins
+   - deterministic humanization_seed
+   - lexical provider-action candidate scoring
+   - deterministic Quick / Practical / Deep view templates
+   - deterministic learning/orientation templates
+   - deterministic search/index construction
+
+   Critical boundary:
+   provider/module context and action candidates do not become capability facts.
+
+50. Inputs determining human-readable card
+   Primary:
+   - normalized source capability record
+   - source_reference/provenance
+   - registry_context
+   - enrichment_context when available
+   - knowledge/evidence states
+   - Module 1 implementation version/rules
+
+   Derived views use the generated shared Capability Record.
+
+51. Identical normalized input -> identical card output?
+   NOT BYTE-FOR-BYTE GUARANTEED.
+
+   The semantic humanization rules are deterministic for the same normalized
+   semantics + Module 1 version.
+
+   However full serialized artifacts contain volatile provenance/run metadata,
+   especially:
+   - source_reference.last_verified_at
+   - producer run_id
+   - completed_at timestamps
+
+   Therefore two fresh builds of the same source can have different complete
+   card canonical hashes because last_verified_at changes.
+
+   Module 1 separately defines a portable semantic normalized hash that removes
+   relocation/verification-time fields:
+   portable_normalized_sha256 / normalized_source_semantic_sha256.
+
+   Module 3 must distinguish semantic reproducibility from byte-identical run metadata.
+
+52. Is an LLM required?
+   NO.
+   No LLM is required or implemented in the v0.10 humanization pipeline.
+
+53. Optional LLM authority
+   No optional LLM humanization path is implemented inside v0.10.
+
+   If an external future process/Module uses an LLM to improve wording:
+   - it has no technical authority by default
+   - output must remain derived/inferred unless independently sourced/reviewed
+   - it may not change capability_id, technical inputs/outputs, evidence state,
+     or source facts without appropriate evidence/authority.
+
+54. Summaries stored as facts or derived views?
+   BOTH layers exist.
+
+   Canonical shared card contains:
+   - identity.human_name
+   - purpose.*
+   These carry evidence states and may be known/inferred/unknown.
+
+   Derived presentation files:
+   - quick_view.md
+   - practical_view.md
+   - deep_view.md
+
+   Module-private humanization seed is contextual/derived evidence.
+
+55. Can Module 3 regenerate views?
+   YES, using the same shared Capability Record + compatible Module 1 view rules.
+
+   For exact historical text, preserve:
+   - Module 1 version
+   - source/card record
+   - relevant sidecar context
+
+   Do not expect byte-identical timestamps/receipts from a fresh rebuild.
+
+===============================================================================
+H — RECEIPTS
+===============================================================================
+
+56. Receipt types produced
+   1. per-record producer receipt
+   2. per-batch receipt
+   3. final production-run manifest
+
+   Source seal and batch plan are integrity artifacts but are not called receipts.
+
+57. Exact record identifiers/types
+   There is no separate "record_type" property in these JSON objects.
+   Type is established by schema/version fields.
+
+   Producer receipt:
+   schema:
+   https://axm.local/schemas/producer-receipt.schema.json
+   file:
+   schemas/producer_receipt.schema.json
+   version field:
+   receipt_version = 0.1.0
+
+   Batch receipt:
+   schema:
+   https://axm.local/schemas/batch-receipt.schema.json
+   file:
+   schemas/batch_receipt.schema.json
+   version field:
+   batch_receipt_version = 0.1.0
+
+   Production manifest:
+   schema:
+   https://axm.local/schemas/production-run-manifest.schema.json
+   file:
+   schemas/production_run_manifest.schema.json
+   version field:
+   production_run_manifest_version = 0.1.0
+
+58. Are receipts append-only?
+   NO schema-level append-only guarantee for producer_receipt.json or
+   batch_receipt.json.
+
+   They are atomically written and can be replaced on an explicit rebuild.
+
+   The producer receipt is deliberately written LAST and acts as the completed
+   build commit marker for resume logic.
+
+   Distinct mechanism:
+   the review/correction ledger is hash-chained append-only.
+
+   Cross-module history systems SHOULD preserve prior valid receipts rather than
+   mutate them, but that is a consumer policy, not receipt-schema enforcement.
+
+59. Hashes binding receipt inputs/outputs
+   Producer receipt:
+   source:
+   - source_hash
+   - normalized_source_sha256
+   - normalized_source_canonical_sha256 (currently emitted)
+   output:
+   - capability_card_canonical_sha256
+   canonicalization:
+   - AXM-CJ-1
+   - profile version 1.0.0
+
+   Batch receipt:
+   - plan_hash
+   - batch_hash
+   - per-result capability_card_canonical_sha256
+   - batch_receipt_hash
+
+   Production manifest:
+   - source_seal_hash
+   - plan_hash
+   - batch receipt hashes in batch_validation
+   - manifest_hash
+
+60. Cross-module consumption?
+   YES as evidence/integrity artifacts, especially for Module 3 diagnosis.
+
+   They are not part of the core shared Capability Record contract.
+   A consumer must not interpret receipt validity as runtime capability proof.
+
+61. Receipt fields Module 3 should preserve verbatim
+   Prefer preserving the FULL receipt object.
+
+   Minimum critical fields:
+   - receipt/batch/manifest version
+   - producer_execution_state
+   - producer.module_id
+   - producer.module_version
+   - producer.shared_contract_version
+   - run.run_id
+   - run.completed_at
+   - source.capability_id
+   - source.capability_revision
+   - source.source_location
+   - source.source_hash
+   - source.source_pointer
+   - source normalized hashes
+   - output canonicalization profile/version
+   - output capability_card_canonical_sha256
+   - validation results/issues
+   - complete
+   - plan_hash
+   - batch_id
+   - batch_hash
+   - batch_receipt_hash
+   - source_seal_hash
+   - production manifest_hash
+   - merge_claim
+
+MINIMAL REPRESENTATIVE PRODUCER RECEIPT
+{
+  "receipt_version": "0.1.0",
+  "producer_execution_state": "RUN",
+  "producer": {
+    "module_id": "axm.module.human_capability_atlas",
+    "module_version": "0.10.0",
+    "shared_contract_version": "0.1.0",
+    "capability_record_export_format_version": "0.1.0"
+  },
+  "run": {
+    "run_id": "<uuid>",
+    "completed_at": "<timestamp>"
+  },
+  "source": {
+    "capability_id": "axm.file.rename",
+    "capability_revision": "1.0.0",
+    "source_location": "fixtures/source/file_rename.json",
+    "source_hash": "e81acff12aa5554033b13e46e94ae512e53848f17f8fac89a0000b392e7750b5",
+    "source_pointer": "",
+    "normalized_source_sha256": "e81acff12aa5554033b13e46e94ae512e53848f17f8fac89a0000b392e7750b5",
+    "normalized_source_canonical_sha256": "<sha256>"
+  },
+  "output": {
+    "capability_card_file": "capability_card.json",
+    "canonicalization_profile": "AXM-CJ-1",
+    "canonicalization_profile_version": "1.0.0",
+    "capability_card_canonical_sha256": "<sha256>"
+  },
+  "validation": {
+    "valid": true,
+    "shared_schema": {"status": "PASS", "issues": []},
+    "stable_evidence_policy": {"status": "PASS", "issues": []},
+    "stable_provenance_policy": {"status": "PASS", "issues": []}
+  },
+  "complete": true
+}
+
+===============================================================================
+I — PACKAGE STRUCTURE
+===============================================================================
+
+62. Important top-level files/directories in FINAL OUTER intake ZIP
+   CHECKSUMS_SHA256.txt
+   DISCOVERY_TRUTH_AND_REGISTRY_ROLES_v0_10.md
+   EVIDENCE/
+     FROZEN_MODULE_VERIFICATION_REPORT.json
+     SYNTHETIC_1769_TRUTH_SCALE_REPORT.json
+   FINAL_ACTION_REPORT.txt
+   HANDOFF/
+     AXM_HUMAN_CAPABILITY_ATLAS_HANDOFF_STATUS_UPDATE_v0_10_0.zip
+     AXM_HUMAN_CAPABILITY_ATLAS_STABLE_HANDOFF_ANCHOR_v0_1_0.zip
+   INTAKE_BUNDLE_FILE_INVENTORY_SHA256.json
+   INTAKE_MANIFEST.json
+   LOCAL_INTAKE_CHECKLIST.txt
+   MIGRATION_v0_9_to_v0_10.md
+   PAYLOAD/
+     AXM_HUMAN_CAPABILITY_ATLAS_v0_10_0.zip
+     AXM_HUMAN_CAPABILITY_ATLAS_v0_10_0_SHA256.txt
+   ROLLBACK/
+     ROLLBACK_REFERENCE.txt
+   START_HERE.txt
+   TEST_REPORT.txt
+   verify_intake_bundle.py
+
+   Important top-level areas INSIDE nested Module 1 ZIP:
+   - schemas/
+   - src/axm_capability_atlas/
+   - tests/
+   - fixtures/
+   - docs/
+   - enums/
+   - examples/
+   - local_intake_manifest.json
+   - module_capability_declaration.json
+   - stable_handoff_status_v0_10_0.json
+   - FILE_INVENTORY_SHA256.json
+   - verify_package.py
+   - README.md / ACTION_REPORT.txt / TEST_REPORT.txt / etc.
+
+63. Authoritative manifest
+   For the OUTER intake bundle:
+   INTAKE_MANIFEST.json
+
+   For the nested Module 1 release:
+   local_intake_manifest.json
+
+   For a future COMPLETED real production run:
+   production_run_manifest.json
+
+   Do not confuse package manifest with production-run manifest.
+
+64. Which file contains Capability Cards?
+   NONE in the pre-intake bundle for the real registry.
+
+   Real registry is NOT_RUN.
+
+   Cards are generated locally, typically:
+   ingest path:
+   <staging>/generated/<record_name>/capability_card.json
+
+   deterministic batch path:
+   <batch_output>/batch_XXXX/records/<capability>__<record_key>/capability_card.json
+
+65. Which file contains evidence tuples?
+   There is NO standalone Evidence Tuple file.
+
+   Evidence appears in:
+   - capability_card.json -> source_reference + knowledge
+   - normalized_sources/*.json -> observed_evidence/registry_context/enrichment_context
+   - reports/enrichment_report.json
+   - analysis/enrichment_catalog.json
+   - analysis/discovery_integrity_report.json
+   - receipts/manifests
+
+66. Which file contains receipts?
+   Pre-intake bundle:
+   no real-registry producer/batch receipts because real registry is NOT_RUN.
+
+   Local generated:
+   - each record directory / producer_receipt.json
+   - each batch directory / batch_receipt.json
+   - final production_run_manifest.json
+
+   Handoff status ZIP contains frozen fixture run evidence, not the real registry run.
+
+67. Which file contains hashes?
+   Package:
+   - CHECKSUMS_SHA256.txt
+   - PAYLOAD/AXM_HUMAN_CAPABILITY_ATLAS_v0_10_0_SHA256.txt
+   - INTAKE_BUNDLE_FILE_INVENTORY_SHA256.json
+   - nested Module FILE_INVENTORY_SHA256.json
+
+   Local run:
+   hashes are also embedded in source seal, normalized records, receipts,
+   batch plan/receipts, discovery/enrichment artifacts and production manifest.
+
+68. Deterministic batch/run plan file
+   NOT precomputed for the real registry.
+
+   Generated locally as:
+   batch_plan.json
+
+   `axm-public-intake` creates it only after source/discovery/enrichment gates pass.
+
+   The visual's "Run Plan" inside the pre-intake package was illustrative, not a
+   precomputed real 1769-row plan.
+
+69. Schemas bundled?
+   YES.
+   Nested module ZIP contains schemas/.
+
+70. Are all files covered by package integrity manifest?
+   Intended release files are covered with explicit self-exclusion rules.
+
+   Nested module:
+   FILE_INVENTORY_SHA256.json covers release files but excludes itself and runtime caches.
+
+   Outer bundle:
+   INTAKE_BUNDLE_FILE_INVENTORY_SHA256.json covers outer release files but excludes itself.
+
+   Nested ZIP payload hashes are additionally in CHECKSUMS_SHA256.txt.
+
+   Outer ZIP hash is external:
+   AXM_HUMAN_CAPABILITY_ATLAS_FINAL_LOCAL_INTAKE_v0_10_0_SHA256.txt
+
+71. Presentation-only files Module 3 should ignore as factual authority
+   - README/docs prose
+   - Quick / Practical / Deep markdown views
+   - visual artwork
+   - humanization_seed action candidates
+   - search ranking/reasons
+   - course/learning wording
+   - synthetic scale role distribution
+   - categories/tags when inferred rather than source-known
+
+   These can be useful context/navigation but must not override source/evidence states.
+
+===============================================================================
+J — BATCH / REBUILD
+===============================================================================
+
+72. Deterministic batch plan contents
+   Plan top-level:
+   - plan_version = 0.1.0
+   - module_id
+   - module_version
+   - shared_contract_version
+   - capability_record_export_format_version
+   - batch_size
+   - record_count
+   - upstream_ingestion
+   - batches
+   - generated_at
+   - source_at_generation
+   - summary
+   - plan_hash
+
+   Each record descriptor:
+   - record_key
+   - capability_id
+   - capability_revision
+   - source_hash
+   - source_pointer
+   - source_line
+   - normalized_source_semantic_sha256
+   - normalized_filename
+
+   Each batch:
+   - batch_id = batch_0001, batch_0002, ...
+   - records
+   - record_count
+   - batch_hash
+
+   Sort key:
+   capability_id
+   capability_revision
+   source_hash
+   source_pointer
+   source_line
+   record_key
+
+73. Can Module 1 be rebuilt from source declarations + evidence?
+   FUNCTIONALLY/SEMANTICALLY: YES, provided exact source/evidence bytes and the
+   same Module 1/contract/canonicalization rules are available.
+
+   BYTE-FOR-BYTE FULL ARTIFACT REPRODUCTION:
+   not guaranteed from a fresh run because verification timestamps/run IDs are volatile.
+
+74. What must be preserved?
+   - exact source declaration bytes
+   - source hashes/pointers/lines
+   - referenced module manifest/contract bytes
+   - tools-index/public discovery snapshot used
+   - proof/status source bytes
+   - Module 1 version 0.10.0
+   - shared contract 0.1.0
+   - schemas/policies
+   - canonicalization profile AXM-CJ-1 v1.0.0
+   - batch size
+   - normalized semantic source content
+   - role/enrichment evidence
+   - if exact historical receipts/views are needed: preserve those artifacts too
+
+75. Ordering deterministic?
+   YES for the batch descriptors/order using the sort key in J72.
+   Batch IDs are contiguous deterministic:
+   batch_0001, batch_0002, ...
+
+76. Timestamps excluded from deterministic identity/hash calculations where appropriate?
+   PARTLY / DELIBERATELY.
+
+   portable_record_key is based on:
+   - capability_id
+   - revision
+   - source_hash
+   - source_pointer
+   - source_line
+
+   portable_normalized_payload removes:
+   - source_reference.source_location
+   - source_reference.last_verified_at
+
+   Therefore normalized_source_semantic_sha256 is relocation/time insensitive.
+
+   But full Capability Card canonical hash includes card content such as
+   last_verified_at, and receipt/manifest hashes include run metadata/timestamps.
+
+77. Output/hash proving successful deterministic rebuild
+   Do NOT require equal producer receipt/card hashes across fresh runs.
+
+   Strong success evidence is:
+   - same/valid plan_hash for the same semantic source plan/config
+   - every batch receipt validates against that plan
+   - zero missing_record_keys
+   - zero extra_record_keys
+   - production status COMPLETE_VERIFIED
+   - production-verify returns valid=true
+   - source_seal_hash and source alignment verify
+
+   COMPLETE_VERIFIED proves plan/source-chain completeness, NOT runtime behavior
+   and NOT Merge Gate acceptance.
+
+===============================================================================
+K — CONFLICT / DUPLICATE BEHAVIOR
+===============================================================================
+
+78. Same record ID + same content
+   identity classification:
+   exact_duplicate
+
+   Sources/hashes remain preserved.
+   No silent deletion/merge.
+
+79. Same record ID + different content
+   If same ID + same explicit revision + materially different declarations:
+   conflicting_duplicate
+
+   If same ID + different explicit revisions + differing content:
+   revision_family
+
+   If semantic content same but revision labels differ:
+   revision_only
+
+   If materially different and revision evidence insufficient/unknown:
+   ambiguous_duplicate
+
+80. Different IDs + apparently duplicate semantic capability
+   Remain separate identities.
+
+   Possible alias/related/replacement relationship requires source or reviewed evidence.
+   No semantic auto-merge based on similarity.
+
+81. Does Module 1 resolve?
+   It surfaces/classifies and can make deterministic canonical-selection PROPOSALS.
+
+   It does NOT make automatic authoritative merge/resolution decisions.
+
+82. Last-writer-wins?
+   NO last-writer-wins for source identity/conflict resolution.
+
+   Duplicate JSON object keys are rejected as ambiguous.
+
+   NOTE:
+   generated output files may be atomically replaced during an explicit rebuild.
+   That is build mechanics, not truth resolution.
+   Receipt/source verification prevents stale output from silently becoming trusted.
+
+83. MERGE_HOLD conditions for Module 3
+   Treat at least these as hold/review conditions:
+   - conflicting_duplicate
+   - ambiguous_duplicate
+   - alias collision
+   - alias shadowing
+   - broken lifecycle links
+   - unresolved/self/cyclic relationship graph issues when relevant
+   - rejected/unrecognized source records
+   - stale/untracked normalized records
+   - source seal/hash mismatch
+   - discovery integrity invalid
+   - enrichment CONFLICTED
+   - UNBOUND public registry role
+   - producer receipt failure/missing receipt
+   - batch receipt failure
+   - missing/extra planned records
+   - shared contract/schema mismatch
+   - provenance unverifiable
+   - any attempt to silently convert UNKNOWN/CONFLICTED into KNOWN
+   - real registry not actually run when a claim depends on real registry results
+
+   PARTIAL enrichment is not automatically a global merge blocker in current
+   public-intake logic; it is a warning/unknown context. Downstream logic must
+   still not treat missing context as known.
+
+===============================================================================
+L — MODULE 2 HANDOFF
+===============================================================================
+
+84. Exactly what Module 1 exposes to Human Interface Intelligence
+   Primary interoperable object:
+   axm.shared-capability-record v0.1.0
+
+   Important shared content:
+   - capability_id
+   - capability_revision
+   - source_reference
+   - identity
+   - purpose
+   - task_profile
+   - input_profile
+   - output_profile
+   - cost_profile
+   - risk_profile
+   - maturity_profile
+   - learning_profile
+   - interaction_profile
+   - interface_requirements
+   - relationships
+   - knowledge when emitted
+
+   Module 2 may also consume optional Module 1 evidence sidecars such as:
+   registry_role / proof_ceiling / enrichment
+   but they are not a private shared-contract fork.
+
+85. Which identifiers Module 2 should reference rather than copy?
+   Primary:
+   capability_id
+
+   Also retain/check:
+   capability_revision
+   source_reference.source_hash
+   producer/record hashes where provenance matters
+
+   Module 2 recommendation objects should reference the Module 1 capability
+   rather than create a new technical identity copy.
+
+86. Does Module 1 contain interface recommendations?
+   NO authoritative Module 2 interface recommendations are emitted by Module 1.
+
+87. If yes?
+   N/A.
+
+   Module 1 emits only capability-side interface requirements/hints:
+   interface_requirements
+
+   These are constraints/evidence, not a final interface choice.
+
+88. What Module 2 must never rewrite
+   - capability_id
+   - capability_revision
+   - source-authoritative machine_name
+   - technical inputs/outputs
+   - source_reference hashes/provenance
+   - knowledge truth-state meanings
+   - conflict history
+   - source-authoritative relationships
+   - registry role/proof ceiling evidence
+   - Module 1 receipt evidence
+
+   Module 2 recommendation stays a separate Module 2-owned object.
+
+===============================================================================
+M — MODULE 3 HANDOFF
+===============================================================================
+
+89. What Grounded Evolution Intelligence should ingest directly
+   Recommended direct evidence inputs:
+   - Module 1 release manifest/version/hash
+   - shared Capability Records
+   - normalized source records when deeper provenance is needed
+   - identity_report
+   - capability_graph
+   - quality_report
+   - enrichment_report
+   - discovery_integrity_report
+   - registry_snapshot
+   - registry_diff
+   - rebuild_plan
+   - source seal
+   - producer receipts
+   - batch plan/receipts
+   - production run manifest
+   - intake gate status
+   - review/correction ledger if present
+
+90. Derived/human presentation only
+   Treat as derived/presentation:
+   - quick_view.md
+   - practical_view.md
+   - deep_view.md
+   - human-facing explanation wording when inferred
+   - humanization_seed
+   - action_candidates
+   - course wording/learning atoms
+   - search ranking
+   - quality score as a diagnosis metric, not technical capability fact
+   - storytelling visuals
+   - synthetic scale distribution
+
+91. Safe graph nodes
+   Safe primary capability node key:
+   capability_id
+
+   Recommended node scope:
+   capability_id + capability_revision + source/provenance identity
+
+   Public dependency/reference identifiers can be graph nodes IF labeled with:
+   registry_role = CONSUMER_ONLY_DEPENDENCY
+   human_surface = DEPENDENCY_REFERENCE
+
+   Do not relabel dependency nodes as capabilities.
+
+   Provider modules can be external/module nodes keyed by module_id when Module 3
+   consumes enrichment context.
+
+92. Safe graph edges
+   Shared capability-to-capability edges:
+   - relationships.dependency_capability_ids
+   - relationships.related_capability_ids
+   - relationships.alternative_capability_ids
+   - relationships.commonly_combined_capability_ids
+
+   Module-private/evidence edges:
+   - registry_context.providers -> module provides capability
+   - registry_context.consumers -> module consumes capability
+   - lifecycle replaces/replaced_by where evidenced
+   - reviewed/resolved alias links
+
+   Preserve:
+   - edge type
+   - evidence state
+   - source/evidence reference
+   - join status
+   Do not flatten all edges into equivalence.
+
+93. External references instead of copied state
+   Prefer references/hashes for:
+   - original GitHub/source declaration bytes
+   - module manifest/contract files
+   - test artifacts
+   - external runtime evidence
+   - Module 2 recommendation records
+   - receipts/manifests owned by Module 1
+
+   Module 3 can index them but should not rewrite their authoritative contents.
+
+94. Evidence Module 3 can use for diagnosis
+   - knowledge.unknowns
+   - knowledge.conflicts
+   - knowledge.inferences and confidence/evidence refs
+   - identity classifications/conflicts
+   - graph unresolved refs/cycles
+   - usability blockers/coverage
+   - registry roles
+   - enrichment VERIFIED/PARTIAL/CONFLICTED
+   - discovery integrity issues
+   - source hash/seal failures
+   - receipt failures
+   - registry diffs/change impact
+   - proof ceilings
+   - missing/rejected records
+   - batch missing/extra records
+
+95. Evidence that MUST NOT be interpreted as runtime capability proof
+   - declaration existence
+   - provider declaration alone
+   - enrichment VERIFIED
+   - discovery-verify PASS
+   - schema PASS
+   - stable evidence-policy PASS
+   - provenance-policy PASS
+   - source hash match
+   - test-file existence
+   - declared self-test hash match
+   - module status TEST/WORKING/etc.
+   - producer_execution_state RUN
+   - batch PASS
+   - COMPLETE_VERIFIED
+   - humanization wording
+   - source confidence by itself
+
+96. Can Module 3 append observations without mutating Module 1 records?
+   YES.
+
+   Correct pattern:
+   - append/store Module 3-owned observation/evidence records
+   - include Module 1 capability_id/revision/source hash references
+   - preserve provenance/timestamps/evidence state
+   - do not mutate the original Module 1 shared/source record in place
+   - propose corrections through explicit review/change/merge mechanisms
+
+===============================================================================
+N — AUTHORITY / MERGE
+===============================================================================
+
+97. Does Module 1 have authority to merge itself into local AXM?
+   NO.
+
+   package manifest:
+   merge_claim = false
+
+98. Meaning of READY FOR INTAKE
+   It means:
+   packaged + integrity-verified + ready for local rehearsal/intake.
+
+   It does NOT mean:
+   - merged
+   - CANON
+   - accepted by Module 2
+   - accepted by Module 3
+   - runtime-proven
+   - approved by Merge Gate
+
+99. Exact local gate still required
+   AXM Merge Gate.
+
+   Before that, expected local evidence path includes:
+   - discovery-verify valid
+   - axm-public-intake -> READY_FOR_BATCH_PRODUCTION
+   - real registry role split/enrichment measured
+   - deterministic batches built/verified
+   - production manifest COMPLETE_VERIFIED with zero missing/extra
+   - Module 1 <-> Module 2 compatibility/round-trip checks
+   - Module 3 intake/evolution checks
+   - human/steward review where required
+   - then explicit AXM Merge Gate
+
+   Module 1 itself does not call or bypass Merge Gate.
+
+100. Intake rejection / MERGE_HOLD
+   Reject/hold on:
+   - package SHA/inventory mismatch
+   - unsupported/mismatched shared contract
+   - shared Capability Record schema mismatch
+   - invalid stable evidence/provenance policy
+   - source seal/hash mismatch
+   - discovery bundle stale/inconsistent
+   - real registry count/source mismatch
+   - rejected/unrecognized source format that affects required scope
+   - duplicate/conflict/alias/lifecycle blockers
+   - enrichment conflict
+   - UNBOUND public registry identifiers
+   - unresolved critical graph references/cycles
+   - missing/bad producer receipt
+   - stale normalized/generated artifact
+   - batch plan drift
+   - batch receipt failure
+   - missing/extra production records
+   - any fake RUN/PASS/COMPLETE claim
+   - any attempt to convert declaration/self-test/receipt into runtime proof
+   - any attempt to silently resolve conflicts
+   - any attempt to mutate technical identity from presentation logic
+   - Module 2/3 contract incompatibility
+   - local Merge Gate not explicitly passed
+
+===============================================================================
+O — COMPACT MACHINE-FRIENDLY HANDOFF
+===============================================================================
+
+{
+  "handoff_type": "MODULE1_STABLE_INTAKE_HANDOFF",
+  "handoff_version": "0.1.0",
+  "module": {
+    "id": "axm.module.human_capability_atlas",
+    "version": "0.10.0",
+    "release_role": "DISCOVERY_TRUTH_REGISTRY_ROLE_PRE_INTAKE",
+    "merge_claim": false
+  },
+  "packages": {
+    "final_intake_bundle": {
+      "name": "AXM_HUMAN_CAPABILITY_ATLAS_FINAL_LOCAL_INTAKE_v0_10_0.zip",
+      "version": "0.10.0",
+      "sha256": "bf6717cae919a459ab39d384cf24631b8b0ba10bde0519be49796128582d0d54"
+    },
+    "module_payload": {
+      "name": "AXM_HUMAN_CAPABILITY_ATLAS_v0_10_0.zip",
+      "version": "0.10.0",
+      "sha256": "293234a2920e6a882868a831ca2f278142ffbd458c18800145dc026f4cb6ed05"
+    },
+    "stable_anchor": {
+      "name": "AXM_HUMAN_CAPABILITY_ATLAS_STABLE_HANDOFF_ANCHOR_v0_1_0.zip",
+      "version": "0.1.0",
+      "sha256": "cd220d9cbadaa286e1b14102a6ecf33dfb1300c6ce85e015219373003b936239",
+      "must_remain_unchanged": true
+    }
+  },
+  "source_snapshot": {
+    "real_registry_run": "NOT_RUN",
+    "repository_commit": "UNKNOWN_NOT_CAPTURED",
+    "observed_registry_identifier_count": 1769,
+    "observed_module_count": 210,
+    "actual_provider_backed_split": "TO_BE_MEASURED_BY_REAL_LOCAL_INTAKE",
+    "upstream_tools_index_scope": "SUPPLIED_TOOLS_INDEX_SNAPSHOT_NOT_REGENERATED",
+    "synthetic_1769_role_split_is_real_data": false
+  },
+  "contract": {
+    "id": "axm.capability-interface-contract",
+    "version": "0.1.0",
+    "compatibility": "EXACT_ONLY",
+    "capability_record_id": "axm.shared-capability-record",
+    "capability_record_version": "0.1.0",
+    "shared_capability_schema": {
+      "path": "schemas/shared_capability.schema.json",
+      "id": "https://axm.local/schemas/shared-capability.schema.json",
+      "sha256": "c63d2c5d4b0ae7aeb8754a5a006a1efd2364c330ad18b74064d74ec7428a71b3"
+    },
+    "interface_recommendation_schema": {
+      "path": "schemas/interface_recommendation.schema.json",
+      "id": "https://axm.local/schemas/interface-recommendation.schema.json",
+      "sha256": "b85e9916f599d2c469b00ea91b12bc3de1e7cd3cceedcd226340fad6dd636e4f"
+    }
+  },
+  "record_types": {
+    "shared_capability_record": "axm.shared-capability-record@0.1.0",
+    "normalized_source_schema": "https://axm.local/schemas/source-capability.schema.json",
+    "producer_receipt_schema": "https://axm.local/schemas/producer-receipt.schema.json",
+    "batch_plan_schema": "https://axm.local/schemas/batch-plan.schema.json",
+    "batch_receipt_schema": "https://axm.local/schemas/batch-receipt.schema.json",
+    "production_manifest_schema": "https://axm.local/schemas/production-run-manifest.schema.json",
+    "discovery_integrity_schema": "https://axm.local/schemas/discovery-integrity-report.schema.json",
+    "enrichment_catalog_schema": "https://axm.local/schemas/enrichment-catalog.schema.json",
+    "enrichment_report_schema": "https://axm.local/schemas/enrichment-report.schema.json"
+  },
+  "identity": {
+    "stable_field": "capability_id",
+    "revision_field": "capability_revision",
+    "source_identity_is_case_sensitive": true,
+    "silent_id_rewrite": false,
+    "human_name_changes_id": false
+  },
+  "truth_states": {
+    "serialized": [
+      "known",
+      "inferred",
+      "unknown",
+      "conflicted",
+      "not_applicable"
+    ],
+    "CONFIRMED_is_canonical": false
+  },
+  "registry_roles": [
+    "PROVIDED_ONLY",
+    "PROVIDED_AND_CONSUMED",
+    "CONSUMER_ONLY_DEPENDENCY",
+    "UNBOUND"
+  ],
+  "enrichment_states": [
+    "VERIFIED",
+    "PARTIAL",
+    "CONFLICTED",
+    "NO_MODULE_RELATION"
+  ],
+  "relation_join_states": [
+    "VERIFIED",
+    "PARTIAL",
+    "CONFLICTED",
+    "UNRESOLVED"
+  ],
+  "producer_states": [
+    "RUN",
+    "NOT_RUN",
+    "UNVERIFIED"
+  ],
+  "evidence": {
+    "standalone_evidence_tuple_schema_exists": false,
+    "primary_fields": [
+      "source_reference",
+      "knowledge.field_states",
+      "knowledge.inferences",
+      "knowledge.unknowns",
+      "knowledge.conflicts",
+      "observed_evidence",
+      "registry_context",
+      "enrichment_context"
+    ],
+    "inference_required_metadata": [
+      "reasoning",
+      "source_basis",
+      "confidence",
+      "evidence_reference"
+    ],
+    "declaration_is_runtime_proof": false,
+    "selftest_is_human_approval": false,
+    "producer_RUN_is_runtime_proof": false,
+    "COMPLETE_VERIFIED_is_runtime_proof": false
+  },
+  "humanization": {
+    "llm_required": false,
+    "llm_implemented_in_v0_10": false,
+    "semantic_derivation_deterministic": true,
+    "full_serialized_output_byte_identical_across_fresh_runs": false,
+    "volatile_fields_include": [
+      "source_reference.last_verified_at",
+      "run.run_id",
+      "completed_at"
+    ],
+    "context_candidates_are_capability_facts": false
+  },
+  "important_relations": {
+    "capability_edges": [
+      "relationships.dependency_capability_ids",
+      "relationships.related_capability_ids",
+      "relationships.alternative_capability_ids",
+      "relationships.commonly_combined_capability_ids"
+    ],
+    "module_capability_edges": [
+      "registry_context.providers",
+      "registry_context.consumers"
+    ],
+    "module_relation_context": [
+      "enrichment_context.providers",
+      "enrichment_context.consumers"
+    ]
+  },
+  "receipts": {
+    "producer": "producer_receipt.json",
+    "batch": "batch_receipt.json",
+    "production": "production_run_manifest.json",
+    "append_only_by_schema": false,
+    "producer_receipt_written_last": true
+  },
+  "package_layout": {
+    "outer_authoritative_manifest": "INTAKE_MANIFEST.json",
+    "nested_module_manifest": "local_intake_manifest.json",
+    "schemas_in_nested_payload": true,
+    "real_registry_cards_bundled": false,
+    "real_registry_receipts_bundled": false,
+    "real_registry_batch_plan_bundled": false
+  },
+  "module2_expectations": {
+    "consume": "axm.shared-capability-record@0.1.0",
+    "reference_by": "capability_id",
+    "module1_emits_interface_recommendation": false,
+    "never_rewrite_source_authoritative_fields": true,
+    "registry_role_change_requires_re_evaluation": true
+  },
+  "module3_expectations": {
+    "safe_primary_node": "capability_id",
+    "preserve_revision_and_provenance": true,
+    "dependency_references_must_remain_labeled": true,
+    "consume_unknowns_conflicts_receipts_diffs_for_diagnosis": true,
+    "may_append_own_observations_in_separate_records": true,
+    "may_mutate_module1_source_records": false
+  },
+  "known_unknowns": [
+    "real Git commit/source snapshot not captured in release",
+    "complete real v0.10 registry run NOT_RUN",
+    "actual provider-backed/dependency role split unknown until local intake",
+    "Module 2 implementation NOT_RUN against v0.10 here",
+    "Module 3 implementation NOT_RUN against v0.10 here",
+    "local Merge Gate NOT_RUN"
+  ],
+  "merge_blockers": [
+    "package/hash mismatch",
+    "contract/schema mismatch",
+    "source/provenance mismatch",
+    "discovery integrity failure",
+    "conflicting or ambiguous identity",
+    "enrichment CONFLICTED",
+    "registry role UNBOUND",
+    "critical unresolved graph issue",
+    "receipt/batch/coverage failure",
+    "missing or extra planned records",
+    "fake runtime-proof promotion",
+    "silent conflict resolution",
+    "Module 2/3 incompatibility",
+    "Merge Gate not explicitly passed"
+  ],
+  "rebuild": {
+    "first_command": "python -m axm_capability_atlas.cli discovery-verify <READ_ONLY_REPO_COPY> --output discovery_integrity_report.json",
+    "second_command": "python -m axm_capability_atlas.cli axm-public-intake <READ_ONLY_REPO_COPY> --output <FRESH_ATLAS_INTAKE> --batch-size 100",
+    "batch_order_is_deterministic": true,
+    "batch_plan_file": "batch_plan.json",
+    "success_conditions": [
+      "discovery integrity valid",
+      "READY_FOR_BATCH_PRODUCTION",
+      "all batch receipts valid",
+      "zero missing records",
+      "zero extra records",
+      "COMPLETE_VERIFIED",
+      "production-verify valid=true"
+    ],
+    "merge_after_rebuild_automatic": false
+  }
+}
+
+===============================================================================
+FINAL AUTHORITY STATEMENT
+===============================================================================
+
+Module 1 v0.10.0 is PACKAGED and VERIFIED as a pre-intake software artifact.
+
+It is NOT:
+- merged
+- CANON
+- a completed real 1769-row registry intake
+- accepted by Module 2
+- accepted by Module 3
+- runtime proof of the declared capabilities
+
+The exact real registry role split and real Capability Card corpus remain local
+intake outputs.
+
+The final authority remains:
+explicit local AXM Merge Gate after evidence review.
+
+END MODULE1_STABLE_INTAKE_HANDOFF

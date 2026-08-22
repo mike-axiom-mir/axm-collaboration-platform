@@ -1,0 +1,199 @@
+{
+  "contract_id": "axm.capability-interface-contract",
+  "contract_version": "0.1.0",
+  "record_kind": "interface_recommendation",
+  "recommendation_id": "axm.hii.recommendation.5ec7b51c8625d7d2",
+  "capability_id": "axm.automation.long_run",
+  "generated_at": "2026-08-03T03:56:47Z",
+  "context": {
+    "user_skill_level": "basic",
+    "user_goal": "Run a repeatable nightly packaging workflow",
+    "task_type": "long_running_automation",
+    "device_types": [
+      "desktop"
+    ],
+    "available_tools": [
+      "scheduler",
+      "logger"
+    ],
+    "accessibility_needs": [],
+    "privacy_mode": "local_preferred",
+    "offline_required": true,
+    "resource_budget": {
+      "compute": "medium",
+      "time": "short",
+      "attention": "low",
+      "complexity": "low"
+    },
+    "collaboration_mode": "supervised_automation"
+  },
+  "recommended_interface": {
+    "interface_pattern_id": "automation_recipe_builder",
+    "interface_name": "Automation recipe builder",
+    "interface_family": "automation",
+    "confidence": 0.748,
+    "recommendation_status": "conditional",
+    "why_this_interface": [
+      "Pattern explicitly supports task type 'long_running_automation'.",
+      "Input fit: actions, conditions, schedule, trigger.",
+      "Output fit: logs, run_status.",
+      "User skill meets the pattern's minimum.",
+      "Pattern is suitable for beginners.",
+      "Pattern fits an available device.",
+      "Pattern supports supervised automation with human oversight.",
+      "Trigger-action structure fits a repeatable long-running workflow.",
+      "A required supporting tool is available.",
+      "Interface overhead stays within the compute budget."
+    ],
+    "why_not_other_interfaces": [
+      "Approval and confirmation interface: Lower deterministic fit score.",
+      "Monitoring / status interface: A safe preview is recommended but not well supported.",
+      "Wizard / step-by-step flow: Pattern exceeds the stated attention budget."
+    ],
+    "required_controls": [
+      "test_run",
+      "pause",
+      "stop",
+      "logs",
+      "approval",
+      "trigger",
+      "conditions",
+      "actions"
+    ],
+    "optional_controls": [
+      "help",
+      "undo",
+      "disable",
+      "approval"
+    ],
+    "hidden_advanced_controls": [
+      "unattended schedule",
+      "external side effects"
+    ],
+    "progressive_disclosure_plan": [
+      "Start with the declared beginner-safe operation and necessary controls only.",
+      "Show a plain-language summary of hidden advanced controls.",
+      "Reveal optional controls when the user asks or the task requires them.",
+      "Require explicit user choice before entering advanced mode."
+    ],
+    "preview_and_confirmation_flow": [
+      "Generate a non-destructive preview or consequence summary.",
+      "Require explicit confirmation after preview and before execution.",
+      "Show applied result and proof/status after execution."
+    ],
+    "error_recovery_flow": [
+      "Validate inputs before execution.",
+      "Keep cancel available until the commit point.",
+      "Expose undo, restore, or a clear no-recovery warning according to declared reversibility.",
+      "Record failure details without claiming success."
+    ]
+  },
+  "beginner_layer": {
+    "enabled": true,
+    "operation_class": "guided_advanced_operation",
+    "allowed_operations": [
+      "run a tested recipe manually"
+    ],
+    "restricted_operations": [
+      "unattended schedule",
+      "external side effects"
+    ],
+    "default_values": {
+      "preview_before_apply": true,
+      "confirmation_required": true,
+      "retain_recovery_point": true,
+      "show_hidden_control_summary": true
+    },
+    "guided_steps": [
+      "State the intended goal in plain language.",
+      "Provide only the inputs required for the selected safe operation.",
+      "Review a preview or consequence summary before applying the operation.",
+      "Give explicit confirmation after reviewing the target and consequences.",
+      "Run the operation.",
+      "Show the result, proof/status, and the available recovery action.",
+      "Offer advanced mode as an explicit user choice; do not switch silently."
+    ],
+    "explanation_depth": "practical",
+    "estimated_capability_cost": {
+      "compute": "medium",
+      "attention": "low",
+      "complexity": "high"
+    },
+    "reasons_for_restrictions": [
+      "Risk level requires staged review and explicit consequence explanation.",
+      "Full control exceeds the user's current declared skill level."
+    ]
+  },
+  "advanced_layer": {
+    "available": true,
+    "unlock_method": "demonstrated_skill",
+    "additional_controls": [
+      "unattended schedule",
+      "external side effects"
+    ],
+    "additional_risks": [
+      "repeated unintended action",
+      "resource exhaustion"
+    ],
+    "required_knowledge": [
+      "review inputs",
+      "run safe example",
+      "inspect output"
+    ]
+  },
+  "cost_comparison": {
+    "selected_interface_cost": {
+      "attention": "medium",
+      "interaction": "medium",
+      "minimum_skill": "basic",
+      "deterministic_score": 102.0,
+      "compute_overhead": "low",
+      "required_tool_any": [
+        "scheduler"
+      ]
+    },
+    "alternative_interfaces": [
+      {
+        "interface_pattern_id": "approval_confirmation",
+        "interface_name": "Approval and confirmation interface",
+        "score": 95.0,
+        "tradeoff": "Lower total fit than selected pattern."
+      },
+      {
+        "interface_pattern_id": "monitoring_status",
+        "interface_name": "Monitoring / status interface",
+        "score": 49.0,
+        "tradeoff": "A safe preview is recommended but not well supported."
+      },
+      {
+        "interface_pattern_id": "wizard",
+        "interface_name": "Wizard / step-by-step flow",
+        "score": 38.0,
+        "tradeoff": "Pattern exceeds the stated attention budget."
+      }
+    ],
+    "unnecessary_costs_avoided": []
+  },
+  "evidence": {
+    "facts_used": [
+      "Declared task types: long_running_automation.",
+      "Declared input types: trigger, conditions, actions, schedule.",
+      "Declared output types: run_status, logs, artifacts.",
+      "Risk level: moderate.",
+      "Reversibility: partly_reversible.",
+      "Proof status: tested."
+    ],
+    "inferences_used": [],
+    "unknowns": [],
+    "conflicts": [],
+    "source_references": [
+      {
+        "source_type": "manifest",
+        "source_location": "fixtures/axm.automation.long_run.source.json",
+        "source_hash": "sha256:fixture-axm.automation.long_run",
+        "last_verified_at": "2026-08-03T03:56:47Z",
+        "confidence": 0.95
+      }
+    ]
+  }
+}

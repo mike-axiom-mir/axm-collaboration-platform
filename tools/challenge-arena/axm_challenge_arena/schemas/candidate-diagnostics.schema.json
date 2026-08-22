@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.challenge-candidate-diagnostics/0.4",
+  "title": "AXM Candidate Convergence Diagnostics v0.4",
+  "description": "Non-punitive diagnostics recomputable from sealed candidate manifests and artifacts.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "artifact_binding_hash",
+    "policy",
+    "scan_complete",
+    "scan_errors",
+    "exact_duplicate_groups",
+    "pairwise_overlap",
+    "text_fingerprint_summary",
+    "diagnostics_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axm.challenge-candidate-diagnostics/0.4"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "artifact_binding_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "automatic_penalty",
+        "high_text_similarity_threshold",
+        "note"
+      ],
+      "properties": {
+        "automatic_penalty": {
+          "const": false
+        },
+        "high_text_similarity_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "scan_complete": {
+      "type": "boolean"
+    },
+    "scan_errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "submission_id",
+          "stage",
+          "error"
+        ],
+        "properties": {
+          "submission_id": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "exact_duplicate_groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "artifact_set_hash",
+          "submission_ids",
+          "candidate_count"
+        ],
+        "properties": {
+          "artifact_set_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "submission_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "candidate_count": {
+            "type": "integer",
+            "minimum": 2
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "pairwise_overlap": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "left_submission_id",
+          "right_submission_id",
+          "shared_file_hash_ratio",
+          "text_shingle_jaccard",
+          "high_text_similarity"
+        ],
+        "properties": {
+          "left_submission_id": {
+            "type": "string"
+          },
+          "right_submission_id": {
+            "type": "string"
+          },
+          "shared_file_hash_ratio": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "text_shingle_jaccard": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "high_text_similarity": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "text_fingerprint_summary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "diagnostics_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": true
+}

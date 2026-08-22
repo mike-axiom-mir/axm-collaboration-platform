@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "axm-human-capability-atlas"
+version = "0.11.0"
+description = "Source-bound human-readable capability archive for AXM"
+requires-python = ">=3.10"
+dependencies = ["jsonschema>=4.0"]
+
+[project.scripts]
+axm-capability-atlas = "axm_capability_atlas.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+axm_capability_atlas = ["schemas/*.json"]
