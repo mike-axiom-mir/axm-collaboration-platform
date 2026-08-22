@@ -214,6 +214,17 @@ try {
       Remove-Item -LiteralPath $candidate -Force
     }
 
+    # The public snapshot intentionally omits local/private declaration roots.
+    # Rebuild deterministic City views against the curated copy before its
+    # manifest is hashed so restored verification measures the package itself.
+    if ($Mode -in @('public','offline-windows')) {
+      $cityCompiler = Join-Path $CopyPath 'scripts\compile-city-graph.js'
+      if (-not (Test-Path -LiteralPath $cityCompiler -PathType Leaf)) { throw 'Public package City compiler is missing.' }
+      $cityNode = (Get-Command node.exe -ErrorAction Stop).Source
+      $cityOutput = @(& $cityNode $cityCompiler "--root=$CopyPath" '--write' 2>&1)
+      if ($LASTEXITCODE -ne 0) { throw ('Public package City view refresh failed: ' + (($cityOutput | Select-Object -Last 8) -join ' ')) }
+    }
+
     $textExtensions = @('.js','.cjs','.mjs','.html','.css','.json','.txt','.md','.bat','.cmd','.ps1','.sh','.yml','.yaml','.xml','.toml','.ini')
     $patterns = @(
       @{ Name='private-key'; Regex='-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----\r?\n[A-Za-z0-9+/=\r\n]{32,}' },
