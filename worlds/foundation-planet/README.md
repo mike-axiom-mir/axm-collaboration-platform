@@ -1377,6 +1377,36 @@ contract. R61 does not claim arbitrary-precision accounting, calibrated
 reaction kinetics, mechanistic microbial ecology or proof over every possible
 planet state.
 
+## Rung 62: scale-aware atmosphere gas-exchange owner closure
+
+R62 repairs the separate native-atmosphere owner used by paired floodplain gas
+exchange. That owner mutates per-square-meter native-layer reservoirs but proves
+its carbon and oxygen identities after scaling them to the receiving area's
+total kilograms. Its former fixed 0.001 kg comparison could therefore reject a
+conservative move solely because ordinary binary floating-point residue grows
+with a very large operand scale.
+
+`axm.foundation-planet.atmosphere-floodplain-gas-exchange-mass-closure-policy/v1`
+now derives carbon and oxygen bounds independently as the greater of the
+existing 0.001 kg material floor or eight IEEE-754 epsilon steps at the largest
+recorded total-kilogram operand. Atmosphere gas-exchange receipt v3 records the
+before, credit, debit and after operands, measured residuals, per-identity
+bounds, maximum residual and utilization. Atmosphere state v4 and gas-process
+state/receipt v3 preserve material and cumulative process memory while dropping
+older receipts rather than relabelling them. Basin engine v28 and step v27 bind
+the new owner evidence, and system audit v12 reconstructs both identities and
+rejects inflated receipt-supplied bounds.
+
+The repair is **WORKING** within its held numeric scope. A deterministic
+105-case sweep across seven receiving-area scales, five exchange fractions and
+three transfer directions changed from 23 fixed-floor false failures to no
+derived-bound failures. The deliberately extreme sweep retained a largest
+measured residue of 262,144 kg while maximum derived-bound utilization stayed
+below 12%. API v58 publishes separate live water-owner and atmosphere-owner
+residue/bound telemetry. R62 does not claim arbitrary-precision accounting,
+scientific gas-transfer calibration, a resolved air-water interface, proof over
+every possible planet state, promotion or canonization.
+
 ## Why there are two render scales
 
 A real-scale planet cannot render individual trees and a globe-sized continent mesh in one stable coordinate space. Caelus keeps one global latitude/longitude truth and renders it through two views:

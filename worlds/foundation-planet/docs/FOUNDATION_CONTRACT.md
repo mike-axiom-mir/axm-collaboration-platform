@@ -1274,9 +1274,41 @@ utilization remained below 11%. These are bounded representation tests, not
 scientific calibration, arbitrary-precision conservation or an exhaustive
 planet-state proof.
 
+## Rung 62 atmosphere gas-exchange owner numeric-closure addendum
+
+The native-atmosphere owner of paired floodplain gas exchange must preserve the
+measured carbon and oxygen residuals produced when per-square-meter native-layer
+state is reconciled with total-kilogram exchange. Current evidence uses
+`axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v3` under
+`axm.foundation-planet.atmosphere-floodplain-gas-exchange-mass-closure-policy/v1`.
+
+Carbon and oxygen each retain a 0.001 kg absolute material floor. Each
+identity's actual bound is the greater of that floor and eight times
+`Number.EPSILON` times the largest absolute total-kilogram operand recorded for
+the identity. The carbon identity records atmosphere before, floodplain credit,
+floodplain debit and atmosphere after; oxygen records atmosphere before,
+floodplain debit and atmosphere after. A receipt may not erase a measured
+residual, borrow another identity's scale or choose a larger free-form bound.
+
+System audit v12 independently reconstructs both identities, their bounds,
+maximum residual and maximum utilization. Altering a receipt-supplied bound
+fails the gas-exchange audit even if its truth flags remain green. Atmosphere
+state v4 migrates v3 material layers and cumulative movement without preserving
+the old v2 gas receipt. Gas-process state v3 likewise preserves clocks,
+cumulative exchange and owner digests from v2 while dropping the old process
+receipt. Basin engine v28 preserves v27 profiles, material owners and clocks,
+but accepts only step-v27 evidence; step-v26 history is not promoted.
+
+The held 105-case representation sweep observed a maximum 262,144 kg residual
+and no failures under the derived policy, versus 23 false failures under the
+former fixed threshold. Maximum observed bound utilization stayed below 12%.
+The extreme receiving-area sweep is a bounded binary floating-point accounting
+test, not scientific gas-transfer calibration, arbitrary-precision
+conservation, a resolved air-water interface or exhaustive planet-state proof.
+
 ## Runtime integrity and handoff
 
-`axm.foundation-planet.system-audit/v11` is a read-only report over the currently selected Earth-system
+`axm.foundation-planet.system-audit/v12` is a read-only report over the currently selected Earth-system
 column plus the latest loaded transport and basin receipts when those optional seams have run. It
 routes each claim to evidence that can prove it: current schema lineage; the eight-level/seven-interface
 pressure shape; the native phase thermal envelope and per-layer latent ledger; requested, applied and envelope-reconciled atmosphere boundary energy; water, surface-energy and moist-enthalpy residuals; atmosphere-owned gas state and gas
