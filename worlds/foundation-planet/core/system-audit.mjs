@@ -1,6 +1,6 @@
 import {
   EARTH_SYSTEM_COLUMN_SCHEMA
-} from './earth-system.mjs?v=0.62.0-r62.1';
+} from './earth-system.mjs?v=0.63.0-r63.1';
 import {
   ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
   ATMOSPHERE_BIOGEOCHEMISTRY_LAYER_SCHEMA,
@@ -50,9 +50,13 @@ import {
   SURFACE_EROSION_RECEIPT_SCHEMA,
   RUNOFF_SEDIMENT_TRANSFER_SCHEMA,
   RIVER_SEDIMENT_INPUT_SCHEMA,
+  RIVER_SEDIMENT_ROUTE_SCHEMA,
   COASTAL_SEDIMENT_STATE_SCHEMA,
-  COASTAL_SEDIMENT_INPUT_SCHEMA
-} from './geomorphic-sediment.mjs';
+  COASTAL_SEDIMENT_INPUT_SCHEMA,
+  GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_POLICY_SCHEMA,
+  GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+  GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ULP_FACTOR
+} from './geomorphic-sediment.mjs?v=0.63.0-r63.1';
 import { EARTH_OCEAN_ECOLOGY_SCHEMA } from './ocean-ecology.mjs';
 import {
   MIXED_LAYER_CARBONATE_DIAGNOSTIC_SCHEMA
@@ -72,19 +76,29 @@ import {
   EARTH_TRANSPORT_STEP_SCHEMA,
   PREVIOUS_EARTH_TRANSPORT_STEP_SCHEMA,
   LEGACY_EARTH_TRANSPORT_STEP_SCHEMA
-} from './earth-transport.mjs?v=0.62.0-r62.1';
+} from './earth-transport.mjs?v=0.63.0-r63.1';
 import {
   ATMOSPHERE_BIOGEOCHEMISTRY_TRANSPORT_SCHEMA
 } from './atmosphere-biogeochemistry-transport.mjs?v=0.62.0-r62.1';
 import {
+  BASIN_AGGREGATE_MASS_CLOSURE_SCHEMA,
+  BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA,
+  BASIN_AGGREGATE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+  BASIN_AGGREGATE_MASS_CLOSURE_ULP_FACTOR,
   BASIN_ROUTING_STEP_SCHEMA,
-  PREVIOUS_BASIN_ROUTING_STEP_SCHEMA
-} from './basin-routing.mjs?v=0.62.0-r62.1';
+  PREVIOUS_BASIN_ROUTING_STEP_SCHEMA,
+  RIVER_REACH_TRANSFER_SCHEMA,
+  OCEAN_MOUTH_RECEIPT_SCHEMA
+} from './basin-routing.mjs?v=0.65.0-r65.1';
 import {
   RIVER_CHEMISTRY_INPUT_SCHEMA
 } from './river-chemistry.mjs';
 import {
   FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
+  FLOODPLAIN_EXCHANGE_MASS_CLOSURE_SCHEMA,
+  FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+  FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG,
+  FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
   FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
   FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
   FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
@@ -100,7 +114,7 @@ import {
   floodplainDetritalReturnMassClosureToleranceKg,
   FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
   FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA
-} from './floodplain.mjs?v=0.62.0-r62.1';
+} from './floodplain.mjs?v=0.65.0-r65.1';
 import {
   FLOODPLAIN_HABITAT_RECEIPT_SCHEMA,
   FLOODPLAIN_HABITAT_TYPES
@@ -154,7 +168,7 @@ import {
 } from './atmosphere-co2-radiation.mjs?v=0.62.0-r62.1';
 
 export const FOUNDATION_SYSTEM_AUDIT_SCHEMA =
-  'axm.foundation-planet.system-audit/v12';
+  'axm.foundation-planet.system-audit/v15';
 
 const finite = value => Number.isFinite(Number(value));
 const close = (value, tolerance) => finite(value) &&
@@ -169,6 +183,224 @@ function check(id, status, claim, evidence, options = {}) {
     required: options.required !== false,
     claim,
     evidence
+  };
+}
+
+const SEDIMENT_GRAIN_IDS = Object.freeze(['clay', 'silt', 'sand', 'gravel']);
+const roundAudit = (value, digits = 12) => Number(Number(value).toFixed(digits));
+const sedimentGrainMap = source => Object.fromEntries(SEDIMENT_GRAIN_IDS.map(
+  grain => [grain, Number(source?.[grain])]));
+const sedimentMapFinite = source => SEDIMENT_GRAIN_IDS.every(grain =>
+  finite(source?.[grain]));
+
+function sedimentAuditToleranceKg(operandsKg = []) {
+  const magnitudeKg = operandsKg.reduce((maximum, operand) => Math.max(
+    maximum, Math.abs(Number(operand))), 0);
+  return roundAudit(Math.max(
+    GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+    magnitudeKg * Number.EPSILON *
+      GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ULP_FACTOR
+  ), 12);
+}
+
+function auditSedimentTransferReceipt(receipt) {
+  const expectedIdentities = {};
+  const expectedOperands = {};
+  const operands = receipt?.operands || {};
+  const addIdentity = (name, calculate, operandValues) => {
+    expectedIdentities[name] = Object.fromEntries(SEDIMENT_GRAIN_IDS.map(
+      grain => [grain, roundAudit(calculate(grain), 9)]));
+    expectedOperands[name] = Object.fromEntries(SEDIMENT_GRAIN_IDS.map(
+      grain => [grain, operandValues(grain)]));
+  };
+  let expectedSchema = null;
+  let primaryIdentity = null;
+  let operandsValid = false;
+
+  if (receipt?.schema === RUNOFF_SEDIMENT_TRANSFER_SCHEMA) {
+    expectedSchema = RUNOFF_SEDIMENT_TRANSFER_SCHEMA;
+    const area = Number(operands.areaM2);
+    operandsValid = finite(area) && area >= 1 &&
+      sedimentMapFinite(operands.beforeSuspendedKgM2) &&
+      sedimentMapFinite(operands.transferredKg) &&
+      sedimentMapFinite(operands.afterSuspendedKgM2) &&
+      ['sender-debit', 'receiver-credit'].includes(receipt.role);
+    if (receipt.role === 'sender-debit') {
+      primaryIdentity = 'senderDebitResidualKg';
+      addIdentity(primaryIdentity, grain =>
+        (Number(operands.beforeSuspendedKgM2?.[grain]) -
+          Number(operands.afterSuspendedKgM2?.[grain])) * area -
+          Number(operands.transferredKg?.[grain]), grain => [
+        Number(operands.beforeSuspendedKgM2?.[grain]) * area,
+        Number(operands.transferredKg?.[grain]),
+        Number(operands.afterSuspendedKgM2?.[grain]) * area
+      ]);
+    } else if (receipt.role === 'receiver-credit') {
+      primaryIdentity = 'receiverCreditResidualKg';
+      addIdentity(primaryIdentity, grain =>
+        (Number(operands.afterSuspendedKgM2?.[grain]) -
+          Number(operands.beforeSuspendedKgM2?.[grain])) * area -
+          Number(operands.transferredKg?.[grain]), grain => [
+        Number(operands.beforeSuspendedKgM2?.[grain]) * area,
+        Number(operands.transferredKg?.[grain]),
+        Number(operands.afterSuspendedKgM2?.[grain]) * area
+      ]);
+    }
+  } else if (receipt?.schema === RIVER_SEDIMENT_INPUT_SCHEMA) {
+    expectedSchema = RIVER_SEDIMENT_INPUT_SCHEMA;
+    primaryIdentity = 'receiverCreditResidualKg';
+    operandsValid = sedimentMapFinite(operands.beforeSuspendedKg) &&
+      sedimentMapFinite(operands.transferredKg) &&
+      sedimentMapFinite(operands.afterSuspendedKg);
+    addIdentity(primaryIdentity, grain =>
+      Number(operands.afterSuspendedKg?.[grain]) -
+        Number(operands.beforeSuspendedKg?.[grain]) -
+        Number(operands.transferredKg?.[grain]), grain => [
+      Number(operands.beforeSuspendedKg?.[grain]),
+      Number(operands.transferredKg?.[grain]),
+      Number(operands.afterSuspendedKg?.[grain])
+    ]);
+  } else if (receipt?.schema === RIVER_SEDIMENT_ROUTE_SCHEMA) {
+    expectedSchema = RIVER_SEDIMENT_ROUTE_SCHEMA;
+    primaryIdentity = 'senderDebitResidualKg';
+    operandsValid = [
+      'beforeSuspendedKg', 'requestedKg', 'depositedToBedKg', 'exportedKg',
+      'afterSuspendedKg', 'beforeBedDepositKg', 'afterBedDepositKg'
+    ].every(key => sedimentMapFinite(operands[key]));
+    addIdentity(primaryIdentity, grain =>
+      Number(operands.beforeSuspendedKg?.[grain]) -
+        Number(operands.afterSuspendedKg?.[grain]) -
+        Number(operands.depositedToBedKg?.[grain]) -
+        Number(operands.exportedKg?.[grain]), grain => [
+      Number(operands.beforeSuspendedKg?.[grain]),
+      Number(operands.depositedToBedKg?.[grain]),
+      Number(operands.exportedKg?.[grain]),
+      Number(operands.afterSuspendedKg?.[grain])
+    ]);
+    addIdentity('bedCreditResidualKg', grain =>
+      Number(operands.afterBedDepositKg?.[grain]) -
+        Number(operands.beforeBedDepositKg?.[grain]) -
+        Number(operands.depositedToBedKg?.[grain]), grain => [
+      Number(operands.beforeBedDepositKg?.[grain]),
+      Number(operands.depositedToBedKg?.[grain]),
+      Number(operands.afterBedDepositKg?.[grain])
+    ]);
+    addIdentity('routePartitionResidualKg', grain =>
+      Number(operands.requestedKg?.[grain]) -
+        Number(operands.depositedToBedKg?.[grain]) -
+        Number(operands.exportedKg?.[grain]), grain => [
+      Number(operands.requestedKg?.[grain]),
+      Number(operands.depositedToBedKg?.[grain]),
+      Number(operands.exportedKg?.[grain])
+    ]);
+  } else if (receipt?.schema === COASTAL_SEDIMENT_INPUT_SCHEMA) {
+    expectedSchema = COASTAL_SEDIMENT_INPUT_SCHEMA;
+    primaryIdentity = 'receiverCreditResidualKg';
+    const area = Number(operands.areaM2);
+    operandsValid = finite(area) && area >= 1 && [
+      'beforeSuspendedKgM2', 'beforeDepositedKgM2', 'transferredKg',
+      'afterSuspendedKgM2', 'afterDepositedKgM2'
+    ].every(key => sedimentMapFinite(operands[key]));
+    addIdentity(primaryIdentity, grain =>
+      (Number(operands.afterSuspendedKgM2?.[grain]) -
+        Number(operands.beforeSuspendedKgM2?.[grain]) +
+        Number(operands.afterDepositedKgM2?.[grain]) -
+        Number(operands.beforeDepositedKgM2?.[grain])) * area -
+        Number(operands.transferredKg?.[grain]), grain => [
+      Number(operands.beforeSuspendedKgM2?.[grain]) * area,
+      Number(operands.beforeDepositedKgM2?.[grain]) * area,
+      Number(operands.transferredKg?.[grain]),
+      Number(operands.afterSuspendedKgM2?.[grain]) * area,
+      Number(operands.afterDepositedKgM2?.[grain]) * area
+    ]);
+    addIdentity('inputPartitionResidualKg', grain =>
+      Number(operands.transferredKg?.[grain]) -
+        Number(receipt.suspendedKg?.[grain]) -
+        Number(receipt.depositedKg?.[grain]), grain => [
+      Number(operands.transferredKg?.[grain]),
+      Number(receipt.suspendedKg?.[grain]),
+      Number(receipt.depositedKg?.[grain])
+    ]);
+    operandsValid = operandsValid && sedimentMapFinite(receipt.suspendedKg) &&
+      sedimentMapFinite(receipt.depositedKg);
+  }
+
+  if (!expectedSchema || !primaryIdentity) {
+    return { valid: false, expectedSchema, reason: 'unsupported receipt schema' };
+  }
+  const expectedToleranceKg = Object.fromEntries(Object.entries(
+    expectedOperands).map(([identity, grainOperands]) => [identity,
+      Object.fromEntries(SEDIMENT_GRAIN_IDS.map(grain => [grain,
+        sedimentAuditToleranceKg(grainOperands[grain])]))]));
+  const identityNames = Object.keys(expectedIdentities).sort();
+  const declaredIdentityNames = Object.keys(
+    receipt.closure?.identities || {}).sort();
+  const identitiesValid = identityNames.join('|') ===
+      declaredIdentityNames.join('|') && identityNames.every(identity =>
+        SEDIMENT_GRAIN_IDS.every(grain => same(
+          receipt.closure?.identities?.[identity]?.[grain],
+          expectedIdentities[identity][grain], 1e-12)));
+  const tolerancesValid = identityNames.every(identity =>
+    SEDIMENT_GRAIN_IDS.every(grain => same(
+      receipt.closure?.numericToleranceKg?.[identity]?.[grain],
+      expectedToleranceKg[identity][grain], 1e-12)));
+  const expectedMaximumResidualKg = Math.max(0, ...identityNames.flatMap(
+    identity => SEDIMENT_GRAIN_IDS.map(grain => Math.abs(
+      expectedIdentities[identity][grain]))));
+  const expectedMaximumToleranceKg = Math.max(0, ...identityNames.flatMap(
+    identity => SEDIMENT_GRAIN_IDS.map(grain =>
+      expectedToleranceKg[identity][grain])));
+  const expectedMaximumToleranceUtilization = Math.max(0,
+    ...identityNames.flatMap(identity => SEDIMENT_GRAIN_IDS.map(grain =>
+      Math.abs(expectedIdentities[identity][grain]) /
+        expectedToleranceKg[identity][grain])));
+  const expectedClosed = identityNames.every(identity =>
+    SEDIMENT_GRAIN_IDS.every(grain =>
+      Math.abs(expectedIdentities[identity][grain]) <=
+        expectedToleranceKg[identity][grain]));
+  const aliasesValid = SEDIMENT_GRAIN_IDS.every(grain => same(
+    receipt.residualKg?.[grain], expectedIdentities[primaryIdentity][grain],
+    1e-12)) && (receipt.schema !== RIVER_SEDIMENT_ROUTE_SCHEMA ||
+      SEDIMENT_GRAIN_IDS.every(grain =>
+        same(receipt.bedResidualKg?.[grain],
+          expectedIdentities.bedCreditResidualKg[grain], 1e-12) &&
+        same(receipt.routePartitionResidualKg?.[grain],
+          expectedIdentities.routePartitionResidualKg[grain], 1e-12))) &&
+    (receipt.schema !== COASTAL_SEDIMENT_INPUT_SCHEMA ||
+      SEDIMENT_GRAIN_IDS.every(grain => same(
+        receipt.inputPartitionResidualKg?.[grain],
+        expectedIdentities.inputPartitionResidualKg[grain], 1e-12)));
+  const policyValid = receipt.closure?.policy?.schema ===
+      GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_POLICY_SCHEMA &&
+    receipt.closure?.policy?.absoluteFloorKg ===
+      GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG &&
+    receipt.closure?.policy?.ulpFactor ===
+      GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ULP_FACTOR &&
+    receipt.closure?.policy?.perGrainOperands === true;
+  const maximaValid = same(receipt.closure?.maximumResidualKg,
+      roundAudit(expectedMaximumResidualKg, 12), 1e-12) &&
+    same(receipt.closure?.maximumToleranceKg,
+      roundAudit(expectedMaximumToleranceKg, 12), 1e-12) &&
+    same(receipt.closure?.maximumToleranceUtilization,
+      roundAudit(expectedMaximumToleranceUtilization, 12), 1e-12);
+  const truthValid = receipt.closure?.conservationClosed === expectedClosed &&
+    receipt.truth?.conservationClosed === expectedClosed &&
+    receipt.truth?.scaleAwareFloatingPointClosure === true &&
+    receipt.truth?.perGrainNumericBounds === true &&
+    receipt.truth?.measuredResidualsPreserved === true &&
+    receipt.truth?.fixedAbsoluteToleranceOnly === false;
+  return {
+    valid: operandsValid && identitiesValid && tolerancesValid && aliasesValid &&
+      policyValid && maximaValid && truthValid && expectedClosed,
+    expectedSchema,
+    expectedIdentities,
+    expectedToleranceKg,
+    expectedMaximumResidualKg: roundAudit(expectedMaximumResidualKg, 12),
+    expectedMaximumToleranceKg: roundAudit(expectedMaximumToleranceKg, 12),
+    expectedMaximumToleranceUtilization:
+      roundAudit(expectedMaximumToleranceUtilization, 12),
+    criteria: { operandsValid, identitiesValid, tolerancesValid, aliasesValid,
+      policyValid, maximaValid, truthValid, expectedClosed }
   };
 }
 
@@ -879,24 +1111,32 @@ function soilRunoffBiogeochemistryCheck(column) {
 function geomorphicSedimentCheck(column) {
   if (column?.kind === 'ocean') {
     const coastal = column?.ocean?.coastalSediment;
+    const lastInputAudit = coastal?.lastInputReceipt
+      ? auditSedimentTransferReceipt(coastal.lastInputReceipt) : null;
     const valid = coastal?.schema === COASTAL_SEDIMENT_STATE_SCHEMA &&
       (!coastal.lastInputReceipt ||
         coastal.lastInputReceipt.schema === COASTAL_SEDIMENT_INPUT_SCHEMA &&
-        coastal.lastInputReceipt.truth?.conservationClosed === true);
+        lastInputAudit?.valid === true);
     return check('geomorphic-sediment-lineage', valid ? 'PASS' : 'FAIL',
       'Ocean columns retain typed suspended and deposited coastal mineral sediment.', {
         expectedCoastalSchema: COASTAL_SEDIMENT_STATE_SCHEMA,
         actualCoastalSchema: coastal?.schema || null,
-        lastInputSchema: coastal?.lastInputReceipt?.schema || null
+        lastInputSchema: coastal?.lastInputReceipt?.schema || null,
+        lastInputAudit
       });
   }
   const surface = column?.land?.surfaceSediment;
   const queue = column?.routing?.runoffSedimentQueue;
   const erosion = surface?.lastErosionReceipt;
+  const queueTransferAudit = queue?.lastTransferReceipt
+    ? auditSedimentTransferReceipt(queue.lastTransferReceipt) : null;
   const valid = surface?.schema === SURFACE_SEDIMENT_STATE_SCHEMA &&
     queue?.schema === RUNOFF_SEDIMENT_QUEUE_SCHEMA &&
     (!erosion || erosion.schema === SURFACE_EROSION_RECEIPT_SCHEMA &&
       erosion.truth?.conservationClosed === true) &&
+    (!queue?.lastTransferReceipt ||
+      queue.lastTransferReceipt.schema === RUNOFF_SEDIMENT_TRANSFER_SCHEMA &&
+      queueTransferAudit?.valid === true) &&
     surface.truth?.finiteMineralOwnership === true;
   return check('geomorphic-sediment-lineage', valid ? 'PASS' : 'FAIL',
     'Land columns retain finite grain-resolved surface sediment and a typed runoff queue.', {
@@ -905,7 +1145,9 @@ function geomorphicSedimentCheck(column) {
       expectedQueueSchema: RUNOFF_SEDIMENT_QUEUE_SCHEMA,
       actualQueueSchema: queue?.schema || null,
       erosionSchema: erosion?.schema || null,
-      migrationCheckpoint: surface?.migrationCheckpoint ?? null
+      migrationCheckpoint: surface?.migrationCheckpoint ?? null,
+      queueTransferSchema: queue?.lastTransferReceipt?.schema || null,
+      queueTransferAudit
     });
 }
 
@@ -936,6 +1178,9 @@ function transportCheck(receipt) {
     receipt.truth?.persistentRunoffSedimentQueue === true &&
     receipt.truth?.runoffSedimentSenderDebited === true &&
     receipt.truth?.landAndCoastalSedimentReceiversCredited === true &&
+    receipt.truth?.runoffSedimentScaleAwareNumericClosure === true &&
+    receipt.truth?.runoffSedimentPerGrainNumericBounds === true &&
+    receipt.truth?.runoffSedimentMeasuredResidualsPreserved === true &&
     receipt.truth?.parameterizedLandRunoffChemistryBoundary === false &&
     (receipt.runoffReceipts || []).filter(entry => entry.status === 'routed')
       .every(entry =>
@@ -959,10 +1204,10 @@ function transportCheck(receipt) {
           .senderDebit.transferId &&
         entry.transferId === entry.runoffSedimentTransfer
           .receiverCredit.transferId &&
-        entry.runoffSedimentTransfer.senderDebit.truth
-          ?.conservationClosed === true &&
-        entry.runoffSedimentTransfer.receiverCredit.truth
-          ?.conservationClosed === true) &&
+        auditSedimentTransferReceipt(entry.runoffSedimentTransfer
+          .senderDebit).valid === true &&
+        auditSedimentTransferReceipt(entry.runoffSedimentTransfer
+          .receiverCredit).valid === true) &&
     ['Carbon', 'Nitrogen', 'Phosphorus', 'Oxygen'].every(element =>
       close(receipt.conservation?.[
         `runoffBiogeochemistry${element}ResidualKg`], 1) &&
@@ -1000,6 +1245,114 @@ function transportCheck(receipt) {
     });
 }
 
+const BASIN_AGGREGATE_IDENTITY_IDS = Object.freeze([
+  'waterResidualKg',
+  'coupledCarbonResidualKgC',
+  'coupledNitrogenResidualKgN',
+  'coupledPhosphorusResidualKgP',
+  'coupledOxygenResidualKgO2',
+  'coupledAlkalinityResidualKgCaCO3Eq',
+  'loadedLandFloodplainPlantCarbonResidualKgC',
+  'loadedLandFloodplainPlantNitrogenResidualKgN',
+  'coupledClayResidualKg',
+  'coupledSiltResidualKg',
+  'coupledSandResidualKg',
+  'coupledGravelResidualKg'
+]);
+
+function auditBasinAggregateMassClosure(receipt) {
+  const closure = receipt?.aggregateMassClosure || {};
+  const identities = closure.identities || {};
+  const identityKeys = Object.keys(identities).sort();
+  const expectedKeys = [...BASIN_AGGREGATE_IDENTITY_IDS].sort();
+  const identitySetValid = identityKeys.length === expectedKeys.length &&
+    identityKeys.every((key, index) => key === expectedKeys[index]);
+  const diagnostics = {};
+  let identitiesValid = identitySetValid;
+
+  for (const identity of BASIN_AGGREGATE_IDENTITY_IDS) {
+    const entry = identities[identity] || {};
+    const signedOperandsKg = entry.signedOperandsKg;
+    const operandsValid = Array.isArray(signedOperandsKg) &&
+      signedOperandsKg.length > 0 && signedOperandsKg.every(finite);
+    const recomputedResidualKg = operandsValid ? signedOperandsKg.reduce(
+      (sum, operand) => sum + Number(operand), 0) : NaN;
+    const absoluteOperandSumKg = operandsValid ? signedOperandsKg.reduce(
+      (sum, operand) => sum + Math.abs(Number(operand)), 0) : NaN;
+    const expectedToleranceKg = operandsValid ? roundAudit(Math.max(
+      BASIN_AGGREGATE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+      absoluteOperandSumKg * Number.EPSILON *
+        BASIN_AGGREGATE_MASS_CLOSURE_ULP_FACTOR
+    ), 12) : NaN;
+    const expectedUtilization = operandsValid ? roundAudit(
+      Math.abs(recomputedResidualKg) / expectedToleranceKg, 12) : NaN;
+    const expectedClosed = operandsValid &&
+      Math.abs(recomputedResidualKg) <= expectedToleranceKg;
+    const residualMatches = same(entry.residualKg,
+      recomputedResidualKg, 1e-9);
+    const toleranceMatches = same(entry.numericToleranceKg,
+      expectedToleranceKg, 1e-9);
+    const utilizationMatches = same(entry.toleranceUtilization,
+      expectedUtilization, 1e-9);
+    const conservationMatches = same(receipt?.conservation?.[identity],
+      recomputedResidualKg, identity === 'waterResidualKg' ? 5.01e-4 :
+        5.01e-7);
+    const valid = operandsValid && residualMatches && toleranceMatches &&
+      utilizationMatches && conservationMatches &&
+      entry.closed === expectedClosed;
+    diagnostics[identity] = {
+      valid,
+      operandCount: Array.isArray(signedOperandsKg) ?
+        signedOperandsKg.length : null,
+      recomputedResidualKg: finite(recomputedResidualKg) ?
+        recomputedResidualKg : null,
+      expectedToleranceKg: finite(expectedToleranceKg) ?
+        expectedToleranceKg : null,
+      expectedClosed,
+      residualMatches,
+      toleranceMatches,
+      utilizationMatches,
+      conservationMatches
+    };
+    identitiesValid = identitiesValid && valid;
+  }
+
+  const validDiagnostics = Object.values(diagnostics);
+  const maximumResidualKg = Math.max(0, ...validDiagnostics.map(entry =>
+    Math.abs(Number(entry.recomputedResidualKg) || 0)));
+  const maximumToleranceKg = Math.max(0, ...validDiagnostics.map(entry =>
+    Number(entry.expectedToleranceKg) || 0));
+  const maximumToleranceUtilization = Math.max(0,
+    ...BASIN_AGGREGATE_IDENTITY_IDS.map(identity =>
+      Number(identities[identity]?.toleranceUtilization) || 0));
+  const policyValid =
+    closure.policy?.schema ===
+      BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA &&
+    closure.policy?.absoluteFloorKg ===
+      BASIN_AGGREGATE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG &&
+    closure.policy?.ulpFactor ===
+      BASIN_AGGREGATE_MASS_CLOSURE_ULP_FACTOR &&
+    closure.policy?.scaleBasis ===
+      'sum-of-absolute-unrounded-signed-operands-kg';
+  const summaryValid = closure.identityCount === expectedKeys.length &&
+    same(closure.maximumResidualKg, maximumResidualKg, 1e-9) &&
+    same(closure.maximumToleranceKg, maximumToleranceKg, 1e-9) &&
+    same(closure.maximumToleranceUtilization,
+      maximumToleranceUtilization, 1e-9) &&
+    closure.conservationClosed === validDiagnostics.every(entry =>
+      entry.expectedClosed === true) &&
+    closure.measuredResidualsPreserved === true;
+  return {
+    valid: closure.schema === BASIN_AGGREGATE_MASS_CLOSURE_SCHEMA &&
+      policyValid && identitiesValid && summaryValid,
+    policyValid,
+    identitySetValid,
+    identitiesValid,
+    summaryValid,
+    diagnostics
+  };
+}
+
 function basinCheck(receipt) {
   if (!receipt) {
     return check('basin-routing-receipt', 'NOT_APPLICABLE',
@@ -1020,7 +1373,13 @@ function basinCheck(receipt) {
       key.startsWith('coupled') ||
       key.startsWith('loadedLandFloodplainPlant'));
   const schemaCurrent = receipt.schema === BASIN_ROUTING_STEP_SCHEMA;
+  const aggregateMassClosureAudit =
+    auditBasinAggregateMassClosure(receipt);
   const truthBoundaryValid =
+    receipt.truth?.coupledBasinAggregateScaleAwareNumericClosure === true &&
+    receipt.truth?.coupledBasinAggregatePerIdentityNumericBounds === true &&
+    receipt.truth?.coupledBasinAggregateMeasuredResidualsPreserved === true &&
+    receipt.truth?.coupledBasinAggregateFixedAbsoluteToleranceOnly === false &&
     receipt.truth?.explicitEstuaryAtmosphericGasReceiver === true &&
     receipt.truth?.parameterizedLandRunoffChemistryBoundary === false &&
     receipt.truth?.persistentLandRunoffBiogeochemistryQueue === true &&
@@ -1035,6 +1394,10 @@ function basinCheck(receipt) {
     receipt.truth?.nitrateAmmoniumConservationClosed === true &&
     receipt.truth?.parameterizedRunoffDinSpeciation === true &&
     receipt.truth?.floodplainExchangeConservationClosed === true &&
+    receipt.truth?.floodplainExchangeScaleAwareNumericClosure === true &&
+    receipt.truth?.floodplainExchangePerIdentityNumericBounds === true &&
+    receipt.truth?.floodplainExchangeMeasuredResidualsPreserved === true &&
+    receipt.truth?.floodplainExchangeFixedAbsoluteToleranceOnly === false &&
     receipt.truth?.persistentFloodplainHabitatMemory === true &&
     receipt.truth?.floodplainHabitatPotentialOnly === true &&
     receipt.truth?.floodplainHabitatMaterialObserverReadOnly === true &&
@@ -1164,6 +1527,9 @@ function basinCheck(receipt) {
       false &&
     receipt.truth?.grainSelectiveRiverAndMouthDeposition === true &&
     receipt.truth?.sedimentMassConservationClosed === true &&
+    receipt.truth?.sedimentScaleAwareNumericClosure === true &&
+    receipt.truth?.sedimentPerGrainNumericBounds === true &&
+    receipt.truth?.sedimentMeasuredResidualsPreserved === true &&
     receipt.truth?.exactLandRunoffRiverTransferIds === true &&
     receipt.truth?.globalBasinNetwork === false;
   const inletLineageValid = (receipt.inletReceipts || []).every(entry =>
@@ -1178,22 +1544,48 @@ function basinCheck(receipt) {
         RUNOFF_SEDIMENT_TRANSFER_SCHEMA &&
       entry.riverSedimentInput?.schema === RIVER_SEDIMENT_INPUT_SCHEMA &&
       entry.transferId === entry.runoffSedimentSenderDebit?.transferId &&
-      entry.transferId === entry.riverSedimentInput?.transferId);
+      entry.transferId === entry.riverSedimentInput?.transferId &&
+      auditSedimentTransferReceipt(entry.runoffSedimentSenderDebit).valid ===
+        true &&
+      auditSedimentTransferReceipt(entry.riverSedimentInput).valid === true);
+  const routeSedimentLineageValid = (receipt.routeReceipts || []).every(entry =>
+    entry.schema === RIVER_REACH_TRANSFER_SCHEMA
+      ? auditSedimentTransferReceipt(entry.sedimentTransfer
+          ?.senderDebitAndDeposition).valid === true &&
+        auditSedimentTransferReceipt(entry.sedimentTransfer
+          ?.receiverCredit).valid === true
+      : entry.schema === OCEAN_MOUTH_RECEIPT_SCHEMA &&
+        auditSedimentTransferReceipt(entry
+          .riverSedimentSenderDebitAndDeposition).valid === true &&
+        auditSedimentTransferReceipt(entry
+          .coastalSedimentReceiverCredit).valid === true);
   const coupledShapeValid = coupled.length === 12;
-  const coupledResidualsClosed = coupled.every(([, value]) =>
-    close(value, 1));
+  const coupledResidualsClosed =
+    aggregateMassClosureAudit.valid === true &&
+    receipt.aggregateMassClosure?.conservationClosed === true;
   const valid = schemaCurrent && truthBoundaryValid && inletLineageValid &&
-    coupledShapeValid && coupledResidualsClosed;
+    routeSedimentLineageValid && coupledShapeValid && coupledResidualsClosed;
   return check('basin-routing-receipt', valid ? 'PASS' : 'FAIL',
     'Loaded basin routing closes water, reaction-ledgered alkalinity, aquatic plus plant P, land-floodplain plant C/N and four mineral grain classes.', {
       expectedSchema: BASIN_ROUTING_STEP_SCHEMA,
       actualSchema: receipt.schema || null,
-      toleranceKg: 1,
+      aggregateMassClosureSchema:
+        receipt.aggregateMassClosure?.schema || null,
+      aggregateMassClosurePolicy:
+        receipt.aggregateMassClosure?.policy || null,
+      maximumResidualKg:
+        receipt.aggregateMassClosure?.maximumResidualKg ?? null,
+      maximumToleranceKg:
+        receipt.aggregateMassClosure?.maximumToleranceKg ?? null,
+      maximumToleranceUtilization:
+        receipt.aggregateMassClosure?.maximumToleranceUtilization ?? null,
       residuals: Object.fromEntries(coupled),
+      independentAggregateMassClosureAudit: aggregateMassClosureAudit,
       criteria: {
         schemaCurrent,
         truthBoundaryValid,
         inletLineageValid,
+        routeSedimentLineageValid,
         coupledShapeValid,
         coupledResidualsClosed,
         inletReceiptCount: (receipt.inletReceipts || []).length,
@@ -3574,6 +3966,138 @@ function floodplainGasExchangeCheck(receipt) {
     });
 }
 
+const FLOODPLAIN_EXCHANGE_IDENTITY_IDS = Object.freeze([
+  'waterResidualKg',
+  'carbonResidualKgC',
+  'nitrogenResidualKgN',
+  'nitrateNitrogenResidualKgN',
+  'ammoniumNitrogenResidualKgN',
+  'phosphorusResidualKgP',
+  'oxygenResidualKgO2',
+  'alkalinityResidualKgCaCO3Eq',
+  'clayResidualKg',
+  'siltResidualKg',
+  'sandResidualKg',
+  'gravelResidualKg'
+]);
+
+function auditFloodplainExchangeMassClosure(receipt) {
+  const closure = receipt?.massClosure || {};
+  const identities = closure.identities || {};
+  const actualIds = Object.keys(identities).sort();
+  const expectedIds = [...FLOODPLAIN_EXCHANGE_IDENTITY_IDS].sort();
+  const identitySetValid = actualIds.length === expectedIds.length &&
+    actualIds.every((identity, index) => identity === expectedIds[index]);
+  const declaredFloors = closure.policy?.absoluteFloorsKg || {};
+  const declaredFloorIds = Object.keys(declaredFloors).sort();
+  const policyFloorsValid = declaredFloorIds.length === expectedIds.length &&
+    declaredFloorIds.every((identity, index) =>
+      identity === expectedIds[index] && same(declaredFloors[identity],
+        FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG[identity], 0));
+  const policyValid =
+    closure.schema === FLOODPLAIN_EXCHANGE_MASS_CLOSURE_SCHEMA &&
+    closure.policy?.schema ===
+      FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA &&
+    policyFloorsValid &&
+    closure.policy?.ulpFactor ===
+      FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR &&
+    closure.policy?.scaleBasis ===
+      'sum-of-absolute-unrounded-signed-operands-kg';
+  const identityAudits = Object.fromEntries(
+    FLOODPLAIN_EXCHANGE_IDENTITY_IDS.map(identity => {
+      const entry = identities[identity] || {};
+      const signedOperandsKg = entry.signedOperandsKg;
+      const expectedOperandCount = identity.endsWith('ResidualKg') &&
+        ['clayResidualKg', 'siltResidualKg', 'sandResidualKg',
+          'gravelResidualKg'].includes(identity) ? 8 : 4;
+      const operandsValid = Array.isArray(signedOperandsKg) &&
+        signedOperandsKg.length === expectedOperandCount &&
+        signedOperandsKg.every(finite);
+      const recomputedResidualKg = operandsValid
+        ? signedOperandsKg.reduce((sum, operand) => sum + Number(operand), 0)
+        : NaN;
+      const absoluteOperandSumKg = operandsValid
+        ? signedOperandsKg.reduce((sum, operand) =>
+          sum + Math.abs(Number(operand)), 0) : NaN;
+      const expectedToleranceKg = operandsValid ? roundAudit(Math.max(
+        FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG[identity],
+        absoluteOperandSumKg * Number.EPSILON *
+          FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR), 12) : NaN;
+      const expectedUtilization = operandsValid ? roundAudit(
+        Math.abs(recomputedResidualKg) / expectedToleranceKg, 12) : NaN;
+      const expectedClosed = operandsValid &&
+        Math.abs(recomputedResidualKg) <= expectedToleranceKg;
+      let compatibilityResidual = null;
+      let compatibilityTolerance = 5.01e-10;
+      if (identity === 'waterResidualKg') {
+        compatibilityResidual = receipt?.water?.residualKg;
+        compatibilityTolerance = 5.01e-4;
+      } else if (['clayResidualKg', 'siltResidualKg', 'sandResidualKg',
+        'gravelResidualKg'].includes(identity)) {
+        compatibilityResidual = receipt?.sediment?.residualKg?.[
+          identity.replace('ResidualKg', '')];
+      } else {
+        compatibilityResidual = receipt?.chemistry?.residuals?.[identity];
+      }
+      const residualMatches = operandsValid &&
+        Number(entry.residualKg) === recomputedResidualKg;
+      const toleranceMatches = operandsValid &&
+        Number(entry.numericToleranceKg) === expectedToleranceKg;
+      const utilizationMatches = operandsValid &&
+        Number(entry.toleranceUtilization) === expectedUtilization;
+      const compatibilityMatches = same(compatibilityResidual,
+        recomputedResidualKg, compatibilityTolerance);
+      const valid = operandsValid && residualMatches && toleranceMatches &&
+        utilizationMatches && compatibilityMatches &&
+        entry.closed === expectedClosed;
+      return [identity, {
+        valid,
+        operandsValid,
+        residualMatches,
+        toleranceMatches,
+        utilizationMatches,
+        compatibilityMatches,
+        recomputedResidualKg: finite(recomputedResidualKg)
+          ? recomputedResidualKg : null,
+        expectedToleranceKg: finite(expectedToleranceKg)
+          ? expectedToleranceKg : null,
+        expectedClosed
+      }];
+    }));
+  const entries = Object.values(identityAudits);
+  const expectedMaximumResidualKg = Math.max(0, ...entries.map(entry =>
+    Math.abs(Number(entry.recomputedResidualKg || 0))));
+  const expectedMaximumToleranceKg = Math.max(0, ...entries.map(entry =>
+    Number(entry.expectedToleranceKg || 0)));
+  const expectedMaximumToleranceUtilization = Math.max(0,
+    ...FLOODPLAIN_EXCHANGE_IDENTITY_IDS.map(identity => {
+      const residual = Math.abs(Number(
+        identityAudits[identity].recomputedResidualKg || 0));
+      const tolerance = Number(
+        identityAudits[identity].expectedToleranceKg || 0);
+      return tolerance > 0 ? roundAudit(residual / tolerance, 12) : Infinity;
+    }));
+  const aggregateValid = closure.identityCount === expectedIds.length &&
+    Number(closure.maximumResidualKg) === expectedMaximumResidualKg &&
+    Number(closure.maximumToleranceKg) === expectedMaximumToleranceKg &&
+    Number(closure.maximumToleranceUtilization) ===
+      expectedMaximumToleranceUtilization &&
+    closure.conservationClosed === entries.every(entry =>
+      entry.expectedClosed) &&
+    closure.measuredResidualsPreserved === true;
+  const identityFailures = Object.entries(identityAudits)
+    .filter(([, entry]) => !entry.valid).map(([identity]) => identity);
+  return {
+    valid: policyValid && identitySetValid && aggregateValid &&
+      identityFailures.length === 0,
+    policyValid,
+    identitySetValid,
+    aggregateValid,
+    identityFailures,
+    identityAudits
+  };
+}
+
 function floodplainCheck(receipt) {
   if (!receipt) {
     return check('floodplain-exchange-receipts', 'NOT_APPLICABLE',
@@ -3590,6 +4114,10 @@ function floodplainCheck(receipt) {
   }
   const entries = receipt.floodplainReceipts;
   const receiptShapeValid = Array.isArray(entries);
+  const massClosureAudits = receiptShapeValid
+    ? entries.map(auditFloodplainExchangeMassClosure) : [];
+  const massClosuresValid = receiptShapeValid &&
+    massClosureAudits.every(entry => entry.valid);
   const entrySchemasValid = receiptShapeValid && entries.every(entry =>
     entry?.schema === FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA &&
     typeof entry.reachId === 'string' &&
@@ -3598,13 +4126,13 @@ function floodplainCheck(receipt) {
     entry.truth?.nitrateAndAmmoniumMaterialPools === true &&
     entry.truth?.exactNitrateAmmoniumWaterFractionTransport === true &&
     entry.truth?.nitrateAndAmmoniumSenderReceiverTransfersPaired === true &&
-    entry.truth?.nitrateAndAmmoniumConservationClosed === true);
+    entry.truth?.nitrateAndAmmoniumConservationClosed === true &&
+    entry.truth?.scaleAwareNumericClosure === true &&
+    entry.truth?.perIdentityNumericBounds === true &&
+    entry.truth?.measuredResidualsPreserved === true &&
+    entry.truth?.fixedAbsoluteToleranceOnly === false);
   const entryResidualsClosed = receiptShapeValid && entries.every(entry =>
-    close(entry.water?.residualKg, 1) &&
-    Object.values(entry.chemistry?.residuals || {}).every(value =>
-      close(value, 1e-6)) &&
-    Object.values(entry.sediment?.residualKg || {}).every(value =>
-      close(value, 1e-6)) &&
+    entry.massClosure?.conservationClosed === true &&
     entry.truth?.conservationClosed === true);
   const basinTruthValid =
     receipt.truth?.persistentFloodplainWaterChemistryAndSediment === true &&
@@ -3614,23 +4142,44 @@ function floodplainCheck(receipt) {
     receipt.truth?.geometryDerivedBankfullExchange === true &&
     receipt.truth?.finiteFloodplainReturnFlow === true &&
     receipt.truth?.grainSelectiveFloodplainDeposition === true &&
+    receipt.truth?.floodplainExchangeScaleAwareNumericClosure === true &&
+    receipt.truth?.floodplainExchangePerIdentityNumericBounds === true &&
+    receipt.truth?.floodplainExchangeMeasuredResidualsPreserved === true &&
+    receipt.truth?.floodplainExchangeFixedAbsoluteToleranceOnly === false &&
     receipt.truth?.resolvedFloodplainInundationHydraulics === false &&
     receipt.truth?.unresolvedReachFloodplainRetained === true;
   const valid = receipt.schema === BASIN_ROUTING_STEP_SCHEMA &&
     receiptShapeValid && entrySchemasValid && entryResidualsClosed &&
-    basinTruthValid;
+    massClosuresValid && basinTruthValid;
   return check('floodplain-exchange-receipts', valid ? 'PASS' : 'FAIL',
     'Floodplain exchanges conserve water, chemistry and mineral grains while denying resolved inundation authority.', {
       expectedBasinSchema: BASIN_ROUTING_STEP_SCHEMA,
       actualBasinSchema: receipt.schema || null,
       expectedExchangeSchema: FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
+      expectedMassClosureSchema:
+        FLOODPLAIN_EXCHANGE_MASS_CLOSURE_SCHEMA,
+      expectedMassClosurePolicySchema:
+        FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+      massClosureAbsoluteFloorsKg: {
+        ...FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+      },
+      massClosureUlpFactor:
+        FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
       exchangeReceiptCount: Array.isArray(entries) ? entries.length : null,
       criteria: {
         receiptShapeValid,
         entrySchemasValid,
         entryResidualsClosed,
+        massClosuresValid,
         basinTruthValid
       },
+      massClosureFailures: massClosureAudits.map((entry, index) => ({
+        index,
+        identityFailures: entry.identityFailures,
+        policyValid: entry.policyValid,
+        aggregateValid: entry.aggregateValid
+      })).filter(entry => entry.identityFailures.length > 0 ||
+        !entry.policyValid || !entry.aggregateValid),
       receiptDigest: receipt.digest || null
     });
 }

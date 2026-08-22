@@ -799,7 +799,8 @@ independent C/O2 residuals; the existing river/floodplain coupled material
 ledger also includes the declared cross-owner transfer. The native atmosphere
 owner declares a 0.001 kg absolute floating-point bound because the receipt
 subtracts tiny local fluxes from planet-cell gas reservoirs; larger residuals
-still fail independently of the basin's separate one-kilogram aggregate bound.
+still fail independently of the basin's separate per-identity coupled
+aggregate policy.
 
 The exchange is physical and therefore continues when Life is disabled. A v14
 save gains zero-history process memory, and its first v15 observation moves no
@@ -1406,6 +1407,72 @@ below 12%. API v58 publishes separate live water-owner and atmosphere-owner
 residue/bound telemetry. R62 does not claim arbitrary-precision accounting,
 scientific gas-transfer calibration, a resolved air-water interface, proof over
 every possible planet state, promotion or canonization.
+
+## Rung 63: scale-aware geomorphic sediment transfer closure
+
+R63 repairs the five persistent absolute-kilogram transfer owners in the
+finite geomorphic sediment cycle: runoff sender debit, runoff receiver credit,
+river input credit, river route sender/bed partition, and coastal input
+partition. Their former fixed 0.0000001 kg comparison could reject a
+conservative transfer once area conversion or a large persistent reservoir
+made ordinary binary floating-point residue exceed that fixed floor.
+
+`axm.foundation-planet.geomorphic-sediment-transfer-mass-closure-policy/v1`
+now derives a separate clay, silt, sand and gravel bound for every identity as
+the greater of the existing 0.0000001 kg floor or eight IEEE-754 epsilon steps
+at that identity and grain's largest recorded operand. Runoff queue, river and
+coastal state plus their transfer receipts advance to v2. Each receipt retains
+the unrounded operands, measured residuals, derived per-grain bounds, maximum
+residual and maximum utilization. River routes additionally prove the
+persistent bed credit and requested-load partition; coastal credits prove the
+input partition. Surface erosion remains on its separate kg/m2 ledger.
+
+Earth engine v32, transport step v12, basin engine v29 and basin step v28 carry
+the current evidence. Their migrations preserve owned mineral reservoirs,
+cumulative movement and clocks while dropping older fixed-threshold receipts;
+they never manufacture historical numeric closure. System audit v13
+independently reconstructs every sediment identity and declared bound, so an
+inflated receipt-supplied tolerance fails even when its measured residue is
+unchanged. API v59 publishes the typed policy plus aggregate measured residual,
+bound and utilization telemetry.
+
+The repair is **WORKING** within its held numeric scope. A deterministic
+150-case discovery sweep across six scales, five fractions and all five owner
+families changed from 72 fixed-floor false failures to no derived-bound
+failures. It preserved a largest measured residual of 136,445,952 kg while the
+worst bound utilization remained below 7.5%. The maintained self-test repeats
+150 cross-family cases, includes the bed and coastal partition identities, and
+rejects tolerance inflation. R63 does not claim arbitrary-precision
+accounting, scientific erosion or transport calibration, resolved channel or
+coastal morphodynamics, a continuously active global sediment network, proof
+over every possible planet state, promotion or canonization.
+
+## Rung 64: scale-aware coupled basin aggregate closure
+
+R64 replaces the coupled basin ledger's fixed one-kilogram-only decision with
+`axm.foundation-planet.basin-aggregate-mass-closure-policy/v1`. The retained
+one-kilogram floor still catches material imbalance at ordinary scales, while
+each of the twelve water, chemistry, plant-matter and grain-sediment identities
+may derive a larger IEEE-754 bound only from the sum of its own unrounded signed
+kilogram operands. Measured residuals are preserved; they are never zeroed,
+clamped or synthesized from the bound.
+
+Basin engine v30 and step receipt v29 record those operands, residuals,
+per-identity bounds, closure results and aggregate maximum residual, bound and
+utilization. The v29-to-v30 migration preserves reach-owned material and clocks
+but discards v28 receipts instead of inventing R64 evidence. System audit v14
+independently reconstructs every signed sum and bound and rejects altered
+operands or tolerance inflation. API v60 exposes the typed policy and live
+aggregate telemetry, including the visible River-routing residual-versus-bound
+diagnostic.
+
+The repair is **WORKING** within that numeric scope. Its deterministic 150-case
+reproduction spans all twelve operand-count shapes: all 150 mathematically
+zero planetary-scale sums fail the old fixed one-kilogram decision, while all
+150 close under the derived policy with their measured binary residue intact.
+R64 does not claim arbitrary-precision accounting, proof over every planet
+state, a continuously active global basin network, scientific calibration,
+promotion or canonization.
 
 ## Why there are two render scales
 

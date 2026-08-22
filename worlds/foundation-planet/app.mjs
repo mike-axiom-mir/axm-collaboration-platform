@@ -9,17 +9,22 @@ import { geophysicsDescription } from './core/geophysics.mjs';
 import { buildHydrologySector, coupleHydrologyToEarthSystem, hydrologyDescription } from './core/hydrology-model.mjs';
 import { activityFactor, catalogDescription, speciesById } from './core/species-catalog.mjs';
 import { buildSeasonalWeather } from './core/seasonal-weather.mjs';
-import { EarthSystemEngine, earthCellIdentity, earthSystemDescription } from './core/earth-system.mjs?v=0.62.0-r62.1';
-import { earthTransportDescription, transportEarthSystemColumns } from './core/earth-transport.mjs?v=0.62.0-r62.1';
-import { BasinRoutingEngine, basinRoutingDescription } from './core/basin-routing.mjs?v=0.62.0-r62.1';
+import { EarthSystemEngine, earthCellIdentity, earthSystemDescription } from './core/earth-system.mjs?v=0.63.0-r63.1';
+import { earthTransportDescription, transportEarthSystemColumns } from './core/earth-transport.mjs?v=0.63.0-r63.1';
+import {
+  BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA,
+  BasinRoutingEngine,
+  basinRoutingDescription
+} from './core/basin-routing.mjs?v=0.65.0-r65.1';
 import {
   ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA
 } from './core/atmosphere-biogeochemistry.mjs?v=0.62.0-r62.1';
 import {
   FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA,
+  FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
   FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
   floodplainDescription
-} from './core/floodplain.mjs?v=0.61.0-r61.1';
+} from './core/floodplain.mjs?v=0.65.0-r65.1';
 import { floodplainHabitatDescription } from './core/floodplain-habitat.mjs?v=0.61.0-r61.1';
 import { floodEventHistoryDescription } from './core/flood-event-history.mjs?v=0.61.0-r61.1';
 import { floodplainSuccessionDescription } from './core/floodplain-succession.mjs';
@@ -38,8 +43,9 @@ import { floodplainNitrificationDescription } from './core/floodplain-nitrificat
 import { floodplainGasExchangeDescription } from './core/floodplain-gas-exchange.mjs?v=0.62.0-r62.1';
 import { runoffBiogeochemistryPoolElements } from './core/soil-biogeochemistry.mjs';
 import {
+  GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_POLICY_SCHEMA,
   geomorphicSedimentDescription, sedimentGrainTotal
-} from './core/geomorphic-sediment.mjs';
+} from './core/geomorphic-sediment.mjs?v=0.63.0-r63.1';
 import { createPhysicsSectorDescriptor, physicsDescription } from './core/physics-contract.mjs';
 import { WorldStateStore, worldStateDescription } from './core/world-state.mjs';
 import {
@@ -52,7 +58,7 @@ import {
 } from './core/surface-controls.mjs';
 import {
   auditFoundationSystem, foundationSystemAuditDescription
-} from './core/system-audit.mjs?v=0.62.0-r62.1';
+} from './core/system-audit.mjs?v=0.65.0-r65.1';
 import {
   EXPERIENCE_SOURCE_SCHEMA,
   auditExperienceProtocol,
@@ -75,7 +81,7 @@ const WORLD_CONTRACT = Object.freeze({
   replaceable_conditions: true,
   living_layers_independently_controllable: true,
   physics_connection: 'floating-origin-sector-frame-v1',
-  earth_system_connection: 'audited-native-pressure-radiative-cryosphere-atmosphere-soil-runoff-river-flood-event-habitat-succession-scale-aware-plant-matter-resources-and-detrital-return-receiver-coast-carbonate-air-sea-carbon-biogeochemistry-and-finite-sediment-v24',
+  earth_system_connection: 'audited-native-pressure-radiative-cryosphere-atmosphere-soil-runoff-river-flood-event-habitat-succession-scale-aware-plant-matter-resources-detrital-return-and-geomorphic-sediment-coast-carbonate-air-sea-carbon-biogeochemistry-v25',
   authoritative_shared_state: false,
   authoritative_host_seam: 'named-world-host-v1',
   multiplayer_input_seam: 'axm.controller-input/v1',
@@ -1336,6 +1342,114 @@ function updateDiagnostics() {
         ?.atmosphereFloodplainGasExchangePerIdentityNumericBounds === true &&
       lastBasinRoutingReceipt?.truth
         ?.atmosphereFloodplainGasExchangeMeasuredResidualsPreserved === true);
+  const geomorphicSedimentOwnerReceipts = [
+    ...(lastEarthTransportReceipt?.runoffReceipts || []).flatMap(entry => [
+      entry.runoffSedimentTransfer?.senderDebit,
+      entry.runoffSedimentTransfer?.receiverCredit
+    ]),
+    ...(lastBasinRoutingReceipt?.inletReceipts || []).flatMap(entry => [
+      entry.runoffSedimentSenderDebit, entry.riverSedimentInput
+    ]),
+    ...(lastBasinRoutingReceipt?.routeReceipts || []).flatMap(entry => [
+      entry.sedimentTransfer?.senderDebitAndDeposition,
+      entry.sedimentTransfer?.receiverCredit,
+      entry.riverSedimentSenderDebitAndDeposition,
+      entry.coastalSedimentReceiverCredit
+    ]),
+    localEarthSystem?.routing?.runoffSedimentQueue?.lastTransferReceipt,
+    localEarthSystem?.ocean?.coastalSediment?.lastInputReceipt
+  ].filter(Boolean);
+  const geomorphicSedimentNumericEntries = geomorphicSedimentOwnerReceipts
+    .flatMap(receipt => Object.entries(receipt.closure?.identities || {})
+      .flatMap(([identity, residuals]) => Object.entries(residuals || {})
+        .map(([grain, residualKg]) => ({
+          residualKg: Math.abs(Number(residualKg || 0)),
+          toleranceKg: Number(receipt.closure?.numericToleranceKg?.[identity]
+            ?.[grain] || 0)
+        }))));
+  const geomorphicSedimentMaximumResidualKg =
+    geomorphicSedimentNumericEntries.reduce((maximum, entry) =>
+      Math.max(maximum, entry.residualKg), 0);
+  const geomorphicSedimentMaximumToleranceKg =
+    geomorphicSedimentNumericEntries.reduce((maximum, entry) =>
+      Math.max(maximum, entry.toleranceKg), 0);
+  const geomorphicSedimentMaximumToleranceUtilization =
+    geomorphicSedimentNumericEntries.reduce((maximum, entry) =>
+      Math.max(maximum, entry.toleranceKg > 0
+        ? entry.residualKg / entry.toleranceKg : 0), 0);
+  document.body.dataset.geomorphicSedimentMaximumResidualKg =
+    geomorphicSedimentOwnerReceipts.length
+      ? String(geomorphicSedimentMaximumResidualKg) : 'unobserved';
+  document.body.dataset.geomorphicSedimentMaximumToleranceKg =
+    geomorphicSedimentOwnerReceipts.length
+      ? String(geomorphicSedimentMaximumToleranceKg) : 'unobserved';
+  document.body.dataset.geomorphicSedimentMaximumToleranceUtilization =
+    geomorphicSedimentOwnerReceipts.length
+      ? String(geomorphicSedimentMaximumToleranceUtilization) : 'unobserved';
+  document.body.dataset.geomorphicSedimentScaleAwareNumericClosure = String(
+    geomorphicSedimentOwnerReceipts.length > 0 &&
+    geomorphicSedimentOwnerReceipts.every(receipt =>
+      receipt.truth?.scaleAwareFloatingPointClosure === true &&
+      receipt.truth?.perGrainNumericBounds === true &&
+      receipt.truth?.measuredResidualsPreserved === true &&
+      receipt.truth?.fixedAbsoluteToleranceOnly === false));
+  const basinAggregateMassClosure =
+    lastBasinRoutingReceipt?.aggregateMassClosure;
+  document.body.dataset.basinAggregateMaximumResidualKg =
+    basinAggregateMassClosure ? String(
+      basinAggregateMassClosure.maximumResidualKg) : 'unobserved';
+  document.body.dataset.basinAggregateMaximumToleranceKg =
+    basinAggregateMassClosure ? String(
+      basinAggregateMassClosure.maximumToleranceKg) : 'unobserved';
+  document.body.dataset.basinAggregateMaximumToleranceUtilization =
+    basinAggregateMassClosure ? String(
+      basinAggregateMassClosure.maximumToleranceUtilization) :
+      'unobserved';
+  document.body.dataset.basinAggregateIdentityCount =
+    basinAggregateMassClosure ? String(
+      basinAggregateMassClosure.identityCount) : 'unobserved';
+  document.body.dataset.basinAggregateScaleAwareNumericClosure = String(
+    basinAggregateMassClosure?.conservationClosed === true &&
+    lastBasinRoutingReceipt?.truth
+      ?.coupledBasinAggregateScaleAwareNumericClosure === true &&
+    lastBasinRoutingReceipt?.truth
+      ?.coupledBasinAggregatePerIdentityNumericBounds === true &&
+    lastBasinRoutingReceipt?.truth
+      ?.coupledBasinAggregateMeasuredResidualsPreserved === true &&
+    lastBasinRoutingReceipt?.truth
+      ?.coupledBasinAggregateFixedAbsoluteToleranceOnly === false);
+  const floodplainExchangeMassClosures = (lastBasinRoutingReceipt
+    ?.floodplainReceipts || []).map(receipt => receipt.massClosure)
+    .filter(Boolean);
+  const floodplainExchangeMaximumResidualKg = Math.max(0,
+    ...floodplainExchangeMassClosures.map(closure =>
+      Number(closure.maximumResidualKg || 0)));
+  const floodplainExchangeMaximumToleranceKg = Math.max(0,
+    ...floodplainExchangeMassClosures.map(closure =>
+      Number(closure.maximumToleranceKg || 0)));
+  const floodplainExchangeMaximumToleranceUtilization = Math.max(0,
+    ...floodplainExchangeMassClosures.map(closure =>
+      Number(closure.maximumToleranceUtilization || 0)));
+  document.body.dataset.floodplainExchangeMaximumResidualKg =
+    floodplainExchangeMassClosures.length
+      ? String(floodplainExchangeMaximumResidualKg) : 'unobserved';
+  document.body.dataset.floodplainExchangeMaximumToleranceKg =
+    floodplainExchangeMassClosures.length
+      ? String(floodplainExchangeMaximumToleranceKg) : 'unobserved';
+  document.body.dataset.floodplainExchangeMaximumToleranceUtilization =
+    floodplainExchangeMassClosures.length
+      ? String(floodplainExchangeMaximumToleranceUtilization) : 'unobserved';
+  document.body.dataset.floodplainExchangeIdentityCount =
+    floodplainExchangeMassClosures.length ? String(Math.min(
+      ...floodplainExchangeMassClosures.map(closure =>
+        Number(closure.identityCount || 0)))) : 'unobserved';
+  document.body.dataset.floodplainExchangeScaleAwareNumericClosure = String(
+    floodplainExchangeMassClosures.length > 0 &&
+    floodplainExchangeMassClosures.every(closure =>
+      closure.conservationClosed === true && closure.identityCount === 12 &&
+      closure.measuredResidualsPreserved === true) &&
+    lastBasinRoutingReceipt?.truth
+      ?.floodplainExchangeScaleAwareNumericClosure === true);
   document.body.dataset.floodplainRespirationAudit =
     respirationAudit?.status || 'NOT_APPLICABLE';
   document.body.dataset.floodplainRespirationEvidenceBound = String(
@@ -1549,10 +1663,15 @@ function updateDiagnostics() {
     ? sedimentGrainTotal(localCoastalSediment.suspendedKgM2) : 0;
   const coastalDepositedKgM2 = localCoastalSediment
     ? sedimentGrainTotal(localCoastalSediment.depositedKgM2) : 0;
+  const sedimentNumericMass = value => value < .001
+    ? `${(value * 1e6).toFixed(3)} mg` : `${value.toExponential(3)} kg`;
+  const sedimentNumericLabel = geomorphicSedimentOwnerReceipts.length
+    ? ` · numeric ${sedimentNumericMass(geomorphicSedimentMaximumResidualKg)} ≤ ${sedimentNumericMass(geomorphicSedimentMaximumToleranceKg)}`
+    : ' · numeric unobserved';
   ui.mineralSediment.textContent = !localEarthSystem ? '--'
     : localSurfaceSediment
-      ? `${localSurfaceSediment.effectiveSoilDepthM.toFixed(3)} m surface · ${runoffSedimentKgM2.toFixed(4)} kg/m² runoff · ${(riverSediment.suspendedKg / 1000).toFixed(2)} t river / ${(riverSediment.bedDepositKg / 1000).toFixed(2)} t bed`
-      : `${coastalSuspendedKgM2.toFixed(4)} kg/m² coast water · ${coastalDepositedKgM2.toFixed(4)} kg/m² deposited · ${(riverSediment.suspendedKg / 1000).toFixed(2)} t river`;
+      ? `${localSurfaceSediment.effectiveSoilDepthM.toFixed(3)} m surface · ${runoffSedimentKgM2.toFixed(4)} kg/m² runoff · ${(riverSediment.suspendedKg / 1000).toFixed(2)} t river / ${(riverSediment.bedDepositKg / 1000).toFixed(2)} t bed${sedimentNumericLabel}`
+      : `${coastalSuspendedKgM2.toFixed(4)} kg/m² coast water · ${coastalDepositedKgM2.toFixed(4)} kg/m² deposited · ${(riverSediment.suspendedKg / 1000).toFixed(2)} t river${sedimentNumericLabel}`;
   ui.channelStorage.textContent = `${(basinStatus.activeProfileChannelWaterKg / 1e9).toFixed(3)} Gkg / ${basinStatus.activeProfileReachStates} reaches`;
   const floodplainStorage = basinStatus.activeProfileFloodplain;
   ui.floodplainStorage.textContent = floodplainStorage
@@ -1627,7 +1746,7 @@ function updateDiagnostics() {
     ? `${estuaryStorage.carbonKgC.toFixed(2)} kgC · ${(estuaryStorage.nitrogenKgN * 1000).toFixed(2)} gN · ${(estuaryStorage.phosphorusKgP * 1000).toFixed(2)} gP sediment retained · ${estuaryStorage.cumulativeAlkalinityGeneratedKgCaCO3Eq.toFixed(2)} kg CaCO3-eq generated cumulative`
     : '--';
   ui.channelClosure.textContent = lastBasinRoutingReceipt
-    ? `${lastBasinRoutingReceipt.conservation.waterResidualKg.toExponential(1)} kg`
+    ? `${lastBasinRoutingReceipt.conservation.waterResidualKg.toExponential(1)} kg water · aggregate ${Number(lastBasinRoutingReceipt.aggregateMassClosure?.maximumResidualKg || 0).toExponential(2)} ≤ ${Number(lastBasinRoutingReceipt.aggregateMassClosure?.maximumToleranceKg || 0).toExponential(2)} kg · floodplain ${floodplainExchangeMaximumResidualKg.toExponential(2)} ≤ ${floodplainExchangeMaximumToleranceKg.toExponential(2)} kg`
     : '--';
   const mouthDeliveredKg = Number(lastBasinRoutingReceipt?.transfers?.riverToOceanKg || 0);
   const retainedRiverBoundaries = lastBasinRoutingReceipt?.boundaryReceipts?.length || 0;
@@ -2285,9 +2404,12 @@ function installWorldAPI() {
             lastBasinRoutingReceipt.landEcologySubgridDebitReceipts,
           routeReceipts: lastBasinRoutingReceipt.routeReceipts,
           boundaryReceipts: lastBasinRoutingReceipt.boundaryReceipts,
+          aggregateMassClosure:
+            lastBasinRoutingReceipt.aggregateMassClosure,
           transfers: lastBasinRoutingReceipt.transfers,
           storage: lastBasinRoutingReceipt.storage,
-          conservation: lastBasinRoutingReceipt.conservation
+          conservation: lastBasinRoutingReceipt.conservation,
+          truth: lastBasinRoutingReceipt.truth
         } : null,
         loadedSector: surface.sector ? {
           key: surface.sector.key, vegetation: surface.sector.vegetation.length, faunaGroups: surface.sector.fauna.length,
@@ -2309,6 +2431,7 @@ function installWorldAPI() {
           'Air-sea carbon exchange compares that diagnostic CO2-star with Weiss-1974 wet-air CO2 fugacity equilibrium and applies one sender-bounded paired atmosphere-DIC move; wind, ice and duration still define an uncalibrated bulk relaxation rather than a scientific gas-transfer velocity, and neither pCO2 nor ocean skin temperature is measured',
           'Land owns finite dissolved soil-water C/N/P/O2/alkalinity and a persistent runoff queue; the same routed water fraction debits that queue before exact land, river, estuary or loaded-ocean receiver credits',
          'Land owns finite clay/silt/sand/gravel surface material; surface runoff moves a receipted fraction through loaded neighbors and persistent river suspended/bed reservoirs into grain-selective coastal deposition, but erosion and deposition remain bounded bulk parameterizations rather than resolved channel or coastal morphodynamics',
+         'The twelve coupled basin water, chemistry, plant-matter and grain-sediment identities preserve measured residuals and derive per-identity floating-point bounds from their own unrounded signed kilogram operands; this is not arbitrary-precision arithmetic or global-basin proof',
          'Loaded river reaches own persistent floodplain water, chemistry, suspended grains and deposits; overbank and return flow use a geometry-derived bankfull threshold, but no resolved inundation hydraulics or flood forecast is claimed',
          'Floodplain habitat memory observes wet and dry exposure, flood pulses, deposits and dissolved fertility without mutating material; its normalized mosaic is potential habitat, not plant biomass, species occupancy or population state',
          'Flood-event history keeps at most 32 completed events per reach plus explicit eviction counts; it observes magnitude, duration and material payload but is not a scientific frequency analysis or forecast',
@@ -2368,8 +2491,10 @@ function installWorldAPI() {
     }),
     refreshHostStatus: () => refreshSharedHost().then(status => JSON.parse(JSON.stringify(status)))
   });
-  document.body.dataset.api = 'AXMFoundationPlanet/v58';
-  document.body.dataset.previousApi = 'AXMFoundationPlanet/v57';
+  document.body.dataset.api = 'AXMFoundationPlanet/v61';
+  document.body.dataset.previousApi = 'AXMFoundationPlanet/v60';
+  document.body.dataset.basinAggregateMassClosurePolicy =
+    BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA;
   document.body.dataset.landEcologyMassClosurePolicy =
     'axm.foundation-planet.land-ecology-mass-closure-policy/v1';
   document.body.dataset.floodplainPlantMatterMassClosurePolicy =
@@ -2378,16 +2503,26 @@ function installWorldAPI() {
     FLOODPLAIN_PLANT_RESOURCE_MASS_CLOSURE_POLICY_SCHEMA;
   document.body.dataset.floodplainDetritalReturnMassClosurePolicy =
     FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA;
+  document.body.dataset.floodplainExchangeMassClosurePolicy =
+    FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA;
   document.body.dataset.floodplainReactionMassClosurePolicy =
     FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA;
   document.body.dataset.atmosphereFloodplainGasExchangeMassClosurePolicy =
     ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA;
+  document.body.dataset.geomorphicSedimentTransferMassClosurePolicy =
+    GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_POLICY_SCHEMA;
   document.body.dataset.airSeaCarbonExchange =
     'axm.foundation-planet.air-sea-carbon-exchange-proposal/v1';
   document.body.dataset.experienceProtocol =
     'axm.foundation-planet.experience-protocol/v1';
   document.body.dataset.geomorphicSediment =
     'axm.foundation-planet.surface-sediment-state/v1';
+  document.body.dataset.runoffSedimentQueue =
+    'axm.foundation-planet.runoff-sediment-queue/v2';
+  document.body.dataset.riverSediment =
+    'axm.foundation-planet.river-sediment-state/v2';
+  document.body.dataset.coastalSediment =
+    'axm.foundation-planet.coastal-sediment-state/v2';
   document.body.dataset.floodplain =
     'axm.foundation-planet.floodplain-state/v5';
   document.body.dataset.floodplainHabitat =

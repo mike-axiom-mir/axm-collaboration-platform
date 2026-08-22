@@ -1,6 +1,6 @@
 import { HYDROLOGY_SCHEMA } from './hydrology-model.mjs';
-import { EARTH_SYSTEM_COLUMN_SCHEMA, earthCellIdentity } from './earth-system.mjs?v=0.62.0-r62.1';
-import { earthCellAreaM2 } from './earth-transport.mjs?v=0.62.0-r62.1';
+import { EARTH_SYSTEM_COLUMN_SCHEMA, earthCellIdentity } from './earth-system.mjs?v=0.63.0-r63.1';
+import { earthCellAreaM2 } from './earth-transport.mjs?v=0.63.0-r63.1';
 import {
   applyRiverBiogeochemistryInput,
   oceanEcologyElementTotals
@@ -52,7 +52,7 @@ import {
   normalizeCoastalSediment,
   sedimentGrainTotal,
   geomorphicSedimentDescription
-} from './geomorphic-sediment.mjs';
+} from './geomorphic-sediment.mjs?v=0.63.0-r63.1';
 import {
   FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
   FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
@@ -77,7 +77,7 @@ import {
   floodplainPlantResourceCapacity,
   floodplainTotals,
   normalizeFloodplainState
-} from './floodplain.mjs?v=0.62.0-r62.1';
+} from './floodplain.mjs?v=0.65.0-r65.1';
 import {
   FLOODPLAIN_HABITAT_RECEIPT_SCHEMA,
   FLOODPLAIN_HABITAT_STATE_SCHEMA,
@@ -188,17 +188,23 @@ import {
   normalizeFloodplainGasExchangeState
 } from './floodplain-gas-exchange.mjs?v=0.62.0-r62.1';
 
-export const BASIN_ROUTING_ENGINE_SCHEMA = 'axm.foundation-planet.basin-routing-engine/v28';
+export const BASIN_ROUTING_ENGINE_SCHEMA = 'axm.foundation-planet.basin-routing-engine/v31';
 export const PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA =
-  'axm.foundation-planet.basin-routing-engine/v27';
-export const BASIN_ROUTING_STEP_SCHEMA = 'axm.foundation-planet.basin-routing-step/v27';
+  'axm.foundation-planet.basin-routing-engine/v30';
+export const BASIN_ROUTING_STEP_SCHEMA = 'axm.foundation-planet.basin-routing-step/v30';
 export const PREVIOUS_BASIN_ROUTING_STEP_SCHEMA =
-  'axm.foundation-planet.basin-routing-step/v26';
+  'axm.foundation-planet.basin-routing-step/v29';
+export const BASIN_AGGREGATE_MASS_CLOSURE_SCHEMA =
+  'axm.foundation-planet.basin-aggregate-mass-closure/v1';
+export const BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA =
+  'axm.foundation-planet.basin-aggregate-mass-closure-policy/v1';
+export const BASIN_AGGREGATE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG = 1;
+export const BASIN_AGGREGATE_MASS_CLOSURE_ULP_FACTOR = 8;
 export const BASIN_CLOCK_ALIGNMENT_CHECKPOINT_SCHEMA =
   'axm.foundation-planet.basin-clock-alignment-checkpoint/v1';
-export const BASIN_INLET_RECEIPT_SCHEMA = 'axm.foundation-planet.basin-inlet-receipt/v7';
-export const RIVER_REACH_TRANSFER_SCHEMA = 'axm.foundation-planet.river-reach-transfer/v6';
-export const OCEAN_MOUTH_RECEIPT_SCHEMA = 'axm.foundation-planet.ocean-mouth-receipt/v7';
+export const BASIN_INLET_RECEIPT_SCHEMA = 'axm.foundation-planet.basin-inlet-receipt/v8';
+export const RIVER_REACH_TRANSFER_SCHEMA = 'axm.foundation-planet.river-reach-transfer/v7';
+export const OCEAN_MOUTH_RECEIPT_SCHEMA = 'axm.foundation-planet.ocean-mouth-receipt/v8';
 export const RIVER_BOUNDARY_RECEIPT_SCHEMA = 'axm.foundation-planet.river-boundary-receipt/v1';
 
 const CLOCK_TOLERANCE_DAYS = 1e-6;
@@ -207,6 +213,58 @@ const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const clone = value => JSON.parse(JSON.stringify(value));
 const round = (value, digits = 9) => Number(Number(value).toFixed(digits));
+
+export function basinAggregateMassNumericToleranceKg(
+  signedOperandsKg = []
+) {
+  const absoluteOperandSumKg = signedOperandsKg.reduce((sum, operand) =>
+    sum + Math.abs(finite(operand)), 0);
+  return round(Math.max(
+    BASIN_AGGREGATE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+    absoluteOperandSumKg * Number.EPSILON *
+      BASIN_AGGREGATE_MASS_CLOSURE_ULP_FACTOR
+  ), 12);
+}
+
+function basinAggregateMassClosureIdentity(residualKg, signedOperandsKg) {
+  const numericToleranceKg = basinAggregateMassNumericToleranceKg(
+    signedOperandsKg);
+  return {
+    signedOperandsKg: signedOperandsKg.map(Number),
+    residualKg: Number(residualKg),
+    numericToleranceKg,
+    toleranceUtilization: round(Math.abs(Number(residualKg)) /
+      numericToleranceKg, 12),
+    closed: Math.abs(Number(residualKg)) <= numericToleranceKg
+  };
+}
+
+function basinAggregateMassClosureReceipt(identityInputs) {
+  const identities = Object.fromEntries(Object.entries(identityInputs).map(
+    ([identity, input]) => [identity, basinAggregateMassClosureIdentity(
+      input.residualKg, input.signedOperandsKg)]));
+  const entries = Object.values(identities);
+  return {
+    schema: BASIN_AGGREGATE_MASS_CLOSURE_SCHEMA,
+    policy: {
+      schema: BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorKg:
+        BASIN_AGGREGATE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+      ulpFactor: BASIN_AGGREGATE_MASS_CLOSURE_ULP_FACTOR,
+      scaleBasis: 'sum-of-absolute-unrounded-signed-operands-kg'
+    },
+    identities,
+    identityCount: entries.length,
+    maximumResidualKg: Math.max(0, ...entries.map(entry =>
+      Math.abs(entry.residualKg))),
+    maximumToleranceKg: Math.max(0, ...entries.map(entry =>
+      entry.numericToleranceKg)),
+    maximumToleranceUtilization: Math.max(0, ...entries.map(entry =>
+      entry.toleranceUtilization)),
+    conservationClosed: entries.every(entry => entry.closed),
+    measuredResidualsPreserved: true
+  };
+}
 
 function stableDigest(value) {
   const text = JSON.stringify(value);
@@ -3045,6 +3103,138 @@ export class BasinRoutingEngine {
           finalCoastalSediment[key] - initialRunoffSediment[key] -
           initialRiverSediment[key] - initialCoastalSediment[key];
     }
+    const coupledBasinAggregateIdentityInputs = {
+      waterResidualKg: {
+        residualKg: waterResidualKg,
+        signedOperandsKg: [
+          finalEarth.runoffQueueKg,
+          finalEarth.oceanFreshwaterKg,
+          finalRiverStorageKg,
+          finalFloodplainPlantResources.total.liveWaterKg,
+          -initialEarth.runoffQueueKg,
+          -initialEarth.oceanFreshwaterKg,
+          -initialRiverStorageKg,
+          -initialFloodplainPlantResources.total.liveWaterKg
+        ]
+      },
+      coupledCarbonResidualKgC: {
+        residualKg: coupledChemistryResiduals.coupledCarbonResidualKgC,
+        signedOperandsKg: [
+          finalRunoffBiogeochemistry.carbonKgC,
+          finalRiverChemistry.carbonKgC,
+          finalOceanEcology.carbonKgC,
+          finalEstuaryStorage.carbonKgC,
+          -initialRiverChemistry.carbonKgC,
+          -initialRunoffBiogeochemistry.carbonKgC,
+          -initialOceanEcology.carbonKgC,
+          -initialEstuaryStorage.carbonKgC,
+          -detritalReturnInputs.carbonKgC,
+          floodplainGasExchangeFluxes.carbonToAtmosphereKgC,
+          -floodplainGasExchangeFluxes.carbonToFloodplainKgC
+        ]
+      },
+      coupledNitrogenResidualKgN: {
+        residualKg: coupledChemistryResiduals.coupledNitrogenResidualKgN,
+        signedOperandsKg: [
+          finalRunoffBiogeochemistry.nitrogenKgN,
+          finalRiverChemistry.nitrogenKgN,
+          finalOceanEcology.nitrogenKgN,
+          finalEstuaryStorage.nitrogenKgN,
+          finalAtmosphereNitrogenGasKgN,
+          -initialRunoffBiogeochemistry.nitrogenKgN,
+          -initialRiverChemistry.nitrogenKgN,
+          -initialOceanEcology.nitrogenKgN,
+          -initialEstuaryStorage.nitrogenKgN,
+          -initialAtmosphereNitrogenGasKgN,
+          -detritalReturnInputs.nitrogenKgN
+        ]
+      },
+      coupledPhosphorusResidualKgP: {
+        residualKg: coupledChemistryResiduals.coupledPhosphorusResidualKgP,
+        signedOperandsKg: [
+          finalRunoffBiogeochemistry.phosphorusKgP,
+          finalRiverChemistry.phosphorusKgP,
+          finalOceanEcology.phosphorusKgP,
+          finalEstuaryStorage.phosphorusKgP,
+          finalFloodplainPlantResources.total.phosphorusKgP,
+          -initialRiverChemistry.phosphorusKgP,
+          -initialRunoffBiogeochemistry.phosphorusKgP,
+          -initialOceanEcology.phosphorusKgP,
+          -initialEstuaryStorage.phosphorusKgP,
+          -initialFloodplainPlantResources.total.phosphorusKgP
+        ]
+      },
+      coupledOxygenResidualKgO2: {
+        residualKg: coupledChemistryResiduals.coupledOxygenResidualKgO2,
+        signedOperandsKg: [
+          finalRunoffBiogeochemistry.oxygenKgO2,
+          finalRiverChemistry.oxygenKgO2,
+          finalOceanEcology.oxygenKgO2,
+          -initialRunoffBiogeochemistry.oxygenKgO2,
+          -initialRiverChemistry.oxygenKgO2,
+          -initialOceanEcology.oxygenKgO2,
+          estuaryBoundaryFluxes.oxygenConsumptionKgO2,
+          floodplainRespirationFluxes.dissolvedOxygenConsumedKgO2,
+          floodplainNitrificationFluxes.dissolvedOxygenConsumedKgO2,
+          -floodplainGasExchangeFluxes.oxygenToFloodplainKgO2
+        ]
+      },
+      coupledAlkalinityResidualKgCaCO3Eq: {
+        residualKg:
+          coupledChemistryResiduals.coupledAlkalinityResidualKgCaCO3Eq,
+        signedOperandsKg: [
+          finalRunoffBiogeochemistry.alkalinityKgCaCO3Eq,
+          finalRiverChemistry.alkalinityKgCaCO3Eq,
+          finalOceanEcology.alkalinityKgCaCO3Eq,
+          -initialRunoffBiogeochemistry.alkalinityKgCaCO3Eq,
+          -initialRiverChemistry.alkalinityKgCaCO3Eq,
+          -initialOceanEcology.alkalinityKgCaCO3Eq,
+          floodplainNitrificationFluxes.alkalinityDemandKgCaCO3,
+          -floodplainDenitrificationFluxes.alkalinityGeneratedKgCaCO3Eq,
+          -estuaryBoundaryFluxes.alkalinityGeneratedKgCaCO3Eq
+        ]
+      },
+      loadedLandFloodplainPlantCarbonResidualKgC: {
+        residualKg: coupledPlantMatterResiduals
+          .loadedLandFloodplainPlantCarbonResidualKgC,
+        signedOperandsKg: [
+          finalLoadedLandLiveBiomass.carbonKgC,
+          finalFloodplainPlantMatter.total.carbonKgC,
+          -initialLoadedLandLiveBiomass.carbonKgC,
+          -initialFloodplainPlantMatter.total.carbonKgC,
+          detritalReturnInputs.carbonKgC
+        ]
+      },
+      loadedLandFloodplainPlantNitrogenResidualKgN: {
+        residualKg: coupledPlantMatterResiduals
+          .loadedLandFloodplainPlantNitrogenResidualKgN,
+        signedOperandsKg: [
+          finalLoadedLandLiveBiomass.nitrogenKgN,
+          finalFloodplainPlantMatter.total.nitrogenKgN,
+          -initialLoadedLandLiveBiomass.nitrogenKgN,
+          -initialFloodplainPlantMatter.total.nitrogenKgN,
+          detritalReturnInputs.nitrogenKgN
+        ]
+      }
+    };
+    for (const grain of ['clay', 'silt', 'sand', 'gravel']) {
+      const title = `${grain[0].toUpperCase()}${grain.slice(1)}`;
+      const identity = `coupled${title}ResidualKg`;
+      const key = `${grain}Kg`;
+      coupledBasinAggregateIdentityInputs[identity] = {
+        residualKg: sedimentResiduals[identity],
+        signedOperandsKg: [
+          finalRunoffSediment[key],
+          finalRiverSediment[key],
+          finalCoastalSediment[key],
+          -initialRunoffSediment[key],
+          -initialRiverSediment[key],
+          -initialCoastalSediment[key]
+        ]
+      };
+    }
+    const aggregateMassClosure = basinAggregateMassClosureReceipt(
+      coupledBasinAggregateIdentityInputs);
     inletReceipts.sort((a, b) => a.sender.earthCellId.localeCompare(b.sender.earthCellId));
     floodplainReceipts.sort((a, b) => String(a.reachId)
       .localeCompare(String(b.reachId)));
@@ -3094,6 +3284,16 @@ export class BasinRoutingEngine {
       String(a.donorCellId).localeCompare(String(b.donorCellId)));
     routeReceipts.sort((a, b) => a.transferId.localeCompare(b.transferId));
     boundaryReceipts.sort((a, b) => a.reachId.localeCompare(b.reachId));
+    const sedimentOwnerReceipts = [
+      ...inletReceipts.flatMap(entry => [entry.runoffSedimentSenderDebit,
+        entry.riverSedimentInput]),
+      ...routeReceipts.flatMap(entry => entry.schema ===
+        RIVER_REACH_TRANSFER_SCHEMA
+        ? [entry.sedimentTransfer?.senderDebitAndDeposition,
+          entry.sedimentTransfer?.receiverCredit]
+        : [entry.riverSedimentSenderDebitAndDeposition,
+          entry.coastalSedimentReceiverCredit])
+    ].filter(Boolean);
     const receipt = {
       schema: BASIN_ROUTING_STEP_SCHEMA,
       profileId,
@@ -3128,6 +3328,7 @@ export class BasinRoutingEngine {
       floodplainGasExchangeProcessReceipts,
       routeReceipts,
       boundaryReceipts,
+      aggregateMassClosure,
       transfers: {
         earthCellToRiverKg: round(inletReceipts.reduce((sum, receipt) => sum + receipt.receiver.creditedKg, 0), 3),
         channelToFloodplainKg: round(floodplainReceipts.reduce((sum, entry) =>
@@ -3333,6 +3534,13 @@ export class BasinRoutingEngine {
       truth: {
         pairedEarthCellAndReachReceipts: true,
         simultaneousReachRouting: true,
+        coupledBasinAggregateScaleAwareNumericClosure:
+          aggregateMassClosure.conservationClosed,
+        coupledBasinAggregatePerIdentityNumericBounds:
+          aggregateMassClosure.identityCount === 12,
+        coupledBasinAggregateMeasuredResidualsPreserved:
+          aggregateMassClosure.measuredResidualsPreserved,
+        coupledBasinAggregateFixedAbsoluteToleranceOnly: false,
         canonicalReachIds: true,
         parameterizedRiverBiogeochemistryBoundary: false,
         parameterizedLandRunoffChemistryBoundary: false,
@@ -3372,6 +3580,19 @@ export class BasinRoutingEngine {
         floodplainExchangeConservationClosed: floodplainReceipts.every(entry =>
           entry.schema === FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA &&
           entry.truth?.conservationClosed === true),
+        floodplainExchangeScaleAwareNumericClosure:
+          floodplainReceipts.every(entry =>
+            entry.truth?.scaleAwareNumericClosure === true &&
+            entry.massClosure?.conservationClosed === true),
+        floodplainExchangePerIdentityNumericBounds:
+          floodplainReceipts.every(entry =>
+            entry.truth?.perIdentityNumericBounds === true &&
+            entry.massClosure?.identityCount === 12),
+        floodplainExchangeMeasuredResidualsPreserved:
+          floodplainReceipts.every(entry =>
+            entry.truth?.measuredResidualsPreserved === true &&
+            entry.massClosure?.measuredResidualsPreserved === true),
+        floodplainExchangeFixedAbsoluteToleranceOnly: false,
         persistentFloodplainHabitatMemory: true,
         floodplainHabitatPotentialOnly: true,
         floodplainHabitatMaterialObserverReadOnly:
@@ -3450,10 +3671,10 @@ export class BasinRoutingEngine {
               senderIds.size === entry.transferIds.length;
           }),
         loadedLandFloodplainPlantCarbonNitrogenClosed:
-          Math.abs(coupledPlantMatterResiduals
-            .loadedLandFloodplainPlantCarbonResidualKgC) < 1 &&
-          Math.abs(coupledPlantMatterResiduals
-            .loadedLandFloodplainPlantNitrogenResidualKgN) < 1,
+          aggregateMassClosure.identities
+            .loadedLandFloodplainPlantCarbonResidualKgC.closed &&
+          aggregateMassClosure.identities
+            .loadedLandFloodplainPlantNitrogenResidualKgN.closed,
         floodplainPlantMatterPhosphorusAuthority: false,
         floodplainPlantMatterDoubleCountedWithLandEcology: false,
         persistentFloodplainPlantResources: true,
@@ -3814,6 +4035,13 @@ export class BasinRoutingEngine {
         floodplainGasExchangeBidirectionalHenryLawSolved: false,
         floodplainGasExchangeResolvedAirWaterTurbulence: false,
         grainSelectiveRiverAndMouthDeposition: true,
+        sedimentScaleAwareNumericClosure: sedimentOwnerReceipts.every(entry =>
+          entry.truth?.scaleAwareFloatingPointClosure === true &&
+          entry.truth?.fixedAbsoluteToleranceOnly === false),
+        sedimentPerGrainNumericBounds: sedimentOwnerReceipts.every(entry =>
+          entry.truth?.perGrainNumericBounds === true),
+        sedimentMeasuredResidualsPreserved: sedimentOwnerReceipts.every(entry =>
+          entry.truth?.measuredResidualsPreserved === true),
         exactLandRunoffRiverSedimentTransferIds: inletReceipts.every(entry =>
           entry.runoffSedimentSenderDebit?.transferId ===
             entry.riverSedimentInput?.transferId &&
@@ -3826,8 +4054,13 @@ export class BasinRoutingEngine {
                 ?.senderDebited === true &&
               entry.coastalSedimentReceiverCredit?.truth
                 ?.receiverCredited === true),
-        sedimentMassConservationClosed: Object.values(sedimentResiduals)
-          .every(value => Math.abs(value) < 1),
+        sedimentMassConservationClosed:
+          ['clay', 'silt', 'sand', 'gravel'].every(grain =>
+            aggregateMassClosure.identities[
+              `coupled${grain[0].toUpperCase()}${grain.slice(1)}ResidualKg`
+            ].closed) &&
+          sedimentOwnerReceipts.every(entry =>
+            entry.truth?.scaleAwareFloatingPointClosure === true),
         reachChemistrySenderDebits: true,
         riverOceanChemistryCoupledClosure: true,
         persistentEstuarySedimentReservoirs: true,
@@ -4187,6 +4420,9 @@ export class BasinRoutingEngine {
     if (!state || ![
       BASIN_ROUTING_ENGINE_SCHEMA,
       PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA,
+      'axm.foundation-planet.basin-routing-engine/v29',
+      'axm.foundation-planet.basin-routing-engine/v28',
+      'axm.foundation-planet.basin-routing-engine/v27',
       'axm.foundation-planet.basin-routing-engine/v26',
       'axm.foundation-planet.basin-routing-engine/v25',
       'axm.foundation-planet.basin-routing-engine/v24',
@@ -4390,6 +4626,14 @@ export function basinRoutingDescription() {
   return {
     engineSchema: BASIN_ROUTING_ENGINE_SCHEMA,
     stepSchema: BASIN_ROUTING_STEP_SCHEMA,
+    aggregateMassClosureSchema: BASIN_AGGREGATE_MASS_CLOSURE_SCHEMA,
+    aggregateMassClosurePolicy: {
+      schema: BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorKg:
+        BASIN_AGGREGATE_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+      ulpFactor: BASIN_AGGREGATE_MASS_CLOSURE_ULP_FACTOR,
+      scaleBasis: 'sum-of-absolute-unrounded-signed-operands-kg'
+    },
     clockAlignmentCheckpointSchema:
       BASIN_CLOCK_ALIGNMENT_CHECKPOINT_SCHEMA,
     inletReceiptSchema: BASIN_INLET_RECEIPT_SCHEMA,

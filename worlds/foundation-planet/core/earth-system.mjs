@@ -116,7 +116,7 @@ import {
   normalizeCoastalSediment,
   erodeSurfaceSediment,
   geomorphicSedimentDescription
-} from './geomorphic-sediment.mjs';
+} from './geomorphic-sediment.mjs?v=0.63.0-r63.1';
 
 export {
   ATMOSPHERE_PRESSURE_COLUMN_SCHEMA,
@@ -161,12 +161,12 @@ export {
 };
 
 export const EARTH_SYSTEM_COLUMN_SCHEMA = 'axm.foundation-planet.earth-system-column/v1';
-export const EARTH_SYSTEM_ENGINE_SCHEMA = 'axm.foundation-planet.earth-system-engine/v31';
+export const EARTH_SYSTEM_ENGINE_SCHEMA = 'axm.foundation-planet.earth-system-engine/v32';
 export const PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA =
-  'axm.foundation-planet.earth-system-engine/v30';
+  'axm.foundation-planet.earth-system-engine/v31';
 export const EARTH_SYSTEM_FLUX_SCHEMA = 'axm.foundation-planet.earth-system-flux/v4';
 const COMPATIBLE_EARTH_TRANSPORT_RECEIPT_SCHEMA =
-  'axm.foundation-planet.earth-transport-step/v11';
+  'axm.foundation-planet.earth-transport-step/v12';
 export const EARTH_CRYOSPHERE_PHASE_SCHEMA =
   'axm.foundation-planet.cryosphere-phase-receipt/v1';
 export const EARTH_ATMOSPHERE_PHASE_CHANGE_SCHEMA = 'axm.foundation-planet.atmosphere-phase-change-receipt/v3';
@@ -3419,6 +3419,7 @@ export class EarthSystemEngine {
     if (!state || ![
       EARTH_SYSTEM_ENGINE_SCHEMA,
       PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA,
+      'axm.foundation-planet.earth-system-engine/v30',
       'axm.foundation-planet.earth-system-engine/v29',
       'axm.foundation-planet.earth-system-engine/v28',
       'axm.foundation-planet.earth-system-engine/v27',

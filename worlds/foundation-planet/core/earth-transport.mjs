@@ -12,7 +12,7 @@ import {
   boundaryLayerVaporCapacityMm,
   earthCellIdentity,
   freeTroposphereVaporCapacityMm
-} from './earth-system.mjs?v=0.62.0-r62.1';
+} from './earth-system.mjs?v=0.63.0-r63.1';
 import {
   validatePressureColumn
 } from './pressure-column.mjs';
@@ -41,7 +41,7 @@ import {
   normalizeCoastalSediment,
   sedimentGrainTotal,
   geomorphicSedimentDescription
-} from './geomorphic-sediment.mjs';
+} from './geomorphic-sediment.mjs?v=0.63.0-r63.1';
 import {
   ATMOSPHERE_PRESSURE_HORIZONTAL_TRANSPORT_SCHEMA,
   ATMOSPHERE_PRESSURE_LAYER_MASS_ROUTE_SCHEMA,
@@ -74,13 +74,13 @@ export {
 };
 
 export const EARTH_TRANSPORT_GRAPH_SCHEMA = 'axm.foundation-planet.earth-transport-graph/v1';
-export const EARTH_TRANSPORT_STEP_SCHEMA = 'axm.foundation-planet.earth-transport-step/v11';
+export const EARTH_TRANSPORT_STEP_SCHEMA = 'axm.foundation-planet.earth-transport-step/v12';
 export const PREVIOUS_EARTH_TRANSPORT_STEP_SCHEMA =
-  'axm.foundation-planet.earth-transport-step/v10';
+  'axm.foundation-planet.earth-transport-step/v11';
 export const LEGACY_EARTH_TRANSPORT_STEP_SCHEMA =
-  'axm.foundation-planet.earth-transport-step/v9';
+  'axm.foundation-planet.earth-transport-step/v10';
 export const OLDEST_EARTH_TRANSPORT_STEP_SCHEMA =
-  'axm.foundation-planet.earth-transport-step/v8';
+  'axm.foundation-planet.earth-transport-step/v9';
 export const OCEAN_ECOLOGY_TRANSPORT_RECEIPT_SCHEMA =
   'axm.foundation-planet.ocean-ecology-transport-receipt/v1';
 export const EARTH_BOUNDARY_RECEIPT_SCHEMA = 'axm.foundation-planet.earth-boundary-receipt/v1';
@@ -1776,6 +1776,23 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
       runoffSedimentMovesWithSameWaterFraction: true,
       runoffSedimentSenderDebited: true,
       landAndCoastalSedimentReceiversCredited: true,
+      runoffSedimentScaleAwareNumericClosure: runoffRouting.receipts.every(entry =>
+        !entry.runoffSedimentTransfer || [
+          entry.runoffSedimentTransfer.senderDebit,
+          entry.runoffSedimentTransfer.receiverCredit
+        ].every(receipt =>
+          receipt?.truth?.scaleAwareFloatingPointClosure === true &&
+          receipt?.truth?.fixedAbsoluteToleranceOnly === false)),
+      runoffSedimentPerGrainNumericBounds: runoffRouting.receipts.every(entry =>
+        !entry.runoffSedimentTransfer || [
+          entry.runoffSedimentTransfer.senderDebit,
+          entry.runoffSedimentTransfer.receiverCredit
+        ].every(receipt => receipt?.truth?.perGrainNumericBounds === true)),
+      runoffSedimentMeasuredResidualsPreserved: runoffRouting.receipts.every(entry =>
+        !entry.runoffSedimentTransfer || [
+          entry.runoffSedimentTransfer.senderDebit,
+          entry.runoffSedimentTransfer.receiverCredit
+        ].every(receipt => receipt?.truth?.measuredResidualsPreserved === true)),
       runoffSedimentConservative: Object.entries(residual)
         .filter(([key]) => /^(runoff|coastal)Sediment.*ResidualKg$/.test(key))
         .every(([, value]) => Math.abs(value) < 1),

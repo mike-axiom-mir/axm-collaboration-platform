@@ -399,9 +399,10 @@ biomass through
 receipt may batch several reach/guild allocations; each receiver records the
 same transfer IDs and binds the sender digest. The basin receipt closes loaded
 land live biomass plus all persistent reach plant matter across C and N with
-the same one-kilogram absolute audit tolerance used for planetary-scale
-subtraction. The partition therefore cannot be counted as both unchanged land
-biomass and new floodplain biomass.
+the coupled basin aggregate policy: its measured residual and unrounded signed
+operands determine a per-identity IEEE-754 bound with a one-kilogram floor.
+The partition therefore cannot be counted as both unchanged land biomass and
+new floodplain biomass.
 
 Mortality transfers live matter to standing dead. A bounded guild-specific
 fall fraction transfers standing dead to litter. Those are internal C/N moves,
@@ -578,7 +579,7 @@ pairing, native layer ownership, transition statuses and four C/O2 residuals.
 The native atmosphere owner permits at most 0.001 kg absolute binary
 floating-point residue when a small flux is subtracted from a planet-cell gas
 reservoir; this explicit owner-level bound is separate from the basin's
-one-kilogram aggregate planetary-ledger bound.
+per-identity coupled aggregate policy.
 The coupled basin carbon and oxygen ledgers include the same explicit transfer,
 so gas exchange cannot hide material loss or creation.
 
@@ -1306,9 +1307,43 @@ The extreme receiving-area sweep is a bounded binary floating-point accounting
 test, not scientific gas-transfer calibration, arbitrary-precision
 conservation, a resolved air-water interface or exhaustive planet-state proof.
 
+## Rung 63 geomorphic sediment transfer numeric-closure addendum
+
+Every persistent absolute-kilogram geomorphic sediment transfer owner must
+preserve its measured clay, silt, sand and gravel residuals separately. Current
+evidence uses runoff sediment transfer receipt v2, river sediment input and
+route receipts v2, and coastal sediment input receipt v2 under the shared typed
+`axm.foundation-planet.geomorphic-sediment-transfer-mass-closure-policy/v1`.
+
+Each identity and grain retains a 0.0000001 kg material floor. Its actual bound
+is the greater of that floor and eight times `Number.EPSILON` times the largest
+absolute operand recorded for that exact identity and grain. A receipt may not
+borrow another grain or identity's scale, erase a measured residual, or choose
+a larger free-form tolerance. River routing must prove sender debit, persistent
+bed credit and requested-load partition identities. Coastal input must prove
+both persistent receiver credit and input partition. The surface erosion
+kg/m2 ledger is outside this absolute-kilogram policy.
+
+System audit v13 independently reconstructs the recorded identities, each
+derived bound, maximum residual and maximum utilization. Altering a single
+receipt-supplied per-grain bound fails its owning transport or basin audit even
+when the residual and truth flags remain unchanged. Earth engine v32 and basin
+engine v29 preserve v31/v28 material owners and clocks through normalization,
+but old transport step v11 and basin step v27 evidence is discarded rather
+than promoted. Current transport step v12 and basin step v28 evidence is
+required to pass the new truth boundary.
+
+The held 150-case discovery sweep observed a maximum 136,445,952 kg residual
+and no failures under the derived policy, versus 72 false failures under the
+former fixed floor. Maximum observed bound utilization remained below 7.5%.
+These are bounded binary floating-point representation tests, not scientific
+erosion or sediment-transport calibration, arbitrary-precision conservation,
+resolved morphodynamics, a global sediment-network proof or an exhaustive
+planet-state proof.
+
 ## Runtime integrity and handoff
 
-`axm.foundation-planet.system-audit/v12` is a read-only report over the currently selected Earth-system
+`axm.foundation-planet.system-audit/v14` is a read-only report over the currently selected Earth-system
 column plus the latest loaded transport and basin receipts when those optional seams have run. It
 routes each claim to evidence that can prove it: current schema lineage; the eight-level/seven-interface
 pressure shape; the native phase thermal envelope and per-layer latent ledger; requested, applied and envelope-reconciled atmosphere boundary energy; water, surface-energy and moist-enthalpy residuals; atmosphere-owned gas state and gas
@@ -1316,13 +1351,18 @@ receipt; nested native-layer CO2-radiation schema, eight-layer shape, longwave a
 boundary; exact land/ocean compatibility mirrors; deep-ocean lineage and mixed/deep alkalinity closure; bounded mixed-layer carbonate source binding, species closure, alkalinity residual and typed refusals; carbonate-informed air-sea wet-air fugacity, direction, sender bound, paired owner application and carbon closure; loaded gas-domain receipt and
 area-weighted C/O2/N2 residuals; transport truth boundaries; scale-aware
 land-subgrid and per-channel floodplain plant-matter, plant-resource and
-detrital-return and reaction-receiver numeric closure; and
-finite surface/runoff sediment ownership, paired land/river/coast sediment receipts, coupled
+detrital-return, reaction-receiver and per-grain geomorphic-sediment numeric closure; and
+finite surface/runoff sediment ownership, paired land/river/coast sediment receipts, independently
+recomputed scale-aware coupled basin water, chemistry, plant-matter and
 per-grain basin material residuals, and typed channel/floodplain exchange receipts. A required failure makes the verdict `FAIL`. An optional seam with no
 receipt is `NOT_APPLICABLE`, producing `PASS_WITH_UNOBSERVED_OPTIONAL_SEAMS` instead of an invented pass.
-The coupled basin ledger declares a one-kilogram absolute numerical tolerance because it subtracts
-planetary-scale water, oxygen and material totals in binary floating point; sub-kilogram residue is
-not relabelled as transported matter, while any residual beyond that bound fails the audit.
+`axm.foundation-planet.basin-aggregate-mass-closure-policy/v1` covers exactly
+twelve coupled identities: water; C/N/P/O2/alkalinity; loaded-land plus
+floodplain-plant C/N; and clay/silt/sand/gravel. Each identity records its
+unrounded signed kilogram operands and measured residual. Its numerical bound
+is the greater of the retained one-kilogram floor or eight IEEE-754 epsilon
+steps at the sum of the absolute operands. The residual is never clamped or
+relabelled as transported matter, and a value beyond its derived bound fails.
 
 The browser publishes this report through `AXMFoundationPlanet.audit()` and the System integrity
 diagnostic. The audit never mutates the world, repairs evidence, creates a receipt or grants scientific

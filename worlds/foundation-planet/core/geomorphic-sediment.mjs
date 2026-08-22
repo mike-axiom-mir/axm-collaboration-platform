@@ -3,21 +3,40 @@ import { checksum } from './world-state.mjs';
 export const SURFACE_SEDIMENT_STATE_SCHEMA =
   'axm.foundation-planet.surface-sediment-state/v1';
 export const RUNOFF_SEDIMENT_QUEUE_SCHEMA =
+  'axm.foundation-planet.runoff-sediment-queue/v2';
+export const PREVIOUS_RUNOFF_SEDIMENT_QUEUE_SCHEMA =
   'axm.foundation-planet.runoff-sediment-queue/v1';
 export const SURFACE_EROSION_RECEIPT_SCHEMA =
   'axm.foundation-planet.surface-erosion-receipt/v1';
 export const RUNOFF_SEDIMENT_TRANSFER_SCHEMA =
+  'axm.foundation-planet.runoff-sediment-transfer-receipt/v2';
+export const PREVIOUS_RUNOFF_SEDIMENT_TRANSFER_SCHEMA =
   'axm.foundation-planet.runoff-sediment-transfer-receipt/v1';
 export const RIVER_SEDIMENT_STATE_SCHEMA =
+  'axm.foundation-planet.river-sediment-state/v2';
+export const PREVIOUS_RIVER_SEDIMENT_STATE_SCHEMA =
   'axm.foundation-planet.river-sediment-state/v1';
 export const RIVER_SEDIMENT_INPUT_SCHEMA =
+  'axm.foundation-planet.river-sediment-input-receipt/v2';
+export const PREVIOUS_RIVER_SEDIMENT_INPUT_SCHEMA =
   'axm.foundation-planet.river-sediment-input-receipt/v1';
 export const RIVER_SEDIMENT_ROUTE_SCHEMA =
+  'axm.foundation-planet.river-sediment-route-receipt/v2';
+export const PREVIOUS_RIVER_SEDIMENT_ROUTE_SCHEMA =
   'axm.foundation-planet.river-sediment-route-receipt/v1';
 export const COASTAL_SEDIMENT_STATE_SCHEMA =
+  'axm.foundation-planet.coastal-sediment-state/v2';
+export const PREVIOUS_COASTAL_SEDIMENT_STATE_SCHEMA =
   'axm.foundation-planet.coastal-sediment-state/v1';
 export const COASTAL_SEDIMENT_INPUT_SCHEMA =
+  'axm.foundation-planet.coastal-sediment-input-receipt/v2';
+export const PREVIOUS_COASTAL_SEDIMENT_INPUT_SCHEMA =
   'axm.foundation-planet.coastal-sediment-input-receipt/v1';
+export const GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_POLICY_SCHEMA =
+  'axm.foundation-planet.geomorphic-sediment-transfer-mass-closure-policy/v1';
+export const GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG =
+  1e-7;
+export const GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ULP_FACTOR = 8;
 
 export const SEDIMENT_GRAINS = Object.freeze([
   Object.freeze({ id: 'clay', diameterMm: .002, settlingRank: .04 }),
@@ -32,6 +51,66 @@ const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 const finite = (value, fallback = 0) => Number.isFinite(Number(value))
   ? Number(value) : fallback;
 const round = (value, digits = 12) => Number(Number(value).toFixed(digits));
+
+export function sedimentTransferNumericToleranceKg(...operandsKg) {
+  const magnitudeKg = operandsKg.reduce((maximum, operand) => Math.max(
+    maximum, Math.abs(finite(operand))), 0);
+  return round(Math.max(
+    GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+    magnitudeKg * Number.EPSILON *
+      GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ULP_FACTOR
+  ), 12);
+}
+
+function sedimentTransferClosure(identities = {}, operandsKg = {}) {
+  const numericToleranceKg = {};
+  let maximumResidualKg = 0;
+  let maximumToleranceKg = 0;
+  let maximumToleranceUtilization = 0;
+  for (const [identity, residualKg] of Object.entries(identities)) {
+    numericToleranceKg[identity] = {};
+    for (const grain of GRAIN_IDS) {
+      const toleranceKg = sedimentTransferNumericToleranceKg(
+        ...((operandsKg?.[identity]?.[grain]) || []));
+      const residueKg = Math.abs(finite(residualKg?.[grain]));
+      numericToleranceKg[identity][grain] = toleranceKg;
+      maximumResidualKg = Math.max(maximumResidualKg, residueKg);
+      maximumToleranceKg = Math.max(maximumToleranceKg, toleranceKg);
+      maximumToleranceUtilization = Math.max(maximumToleranceUtilization,
+        toleranceKg > 0 ? residueKg / toleranceKg : 0);
+    }
+  }
+  const conservationClosed = Object.entries(identities).every(
+    ([identity, residualKg]) => GRAIN_IDS.every(grain =>
+      Math.abs(finite(residualKg?.[grain])) <=
+        numericToleranceKg[identity][grain]));
+  return {
+    identities: clone(identities),
+    numericToleranceKg,
+    maximumResidualKg: round(maximumResidualKg, 12),
+    maximumToleranceKg: round(maximumToleranceKg, 12),
+    maximumToleranceUtilization: round(maximumToleranceUtilization, 12),
+    policy: {
+      schema: GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorKg:
+        GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+      ulpFactor:
+        GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ULP_FACTOR,
+      perGrainOperands: true
+    },
+    conservationClosed
+  };
+}
+
+function sedimentTransferTruth(closure) {
+  return {
+    conservationClosed: closure.conservationClosed === true,
+    scaleAwareFloatingPointClosure: true,
+    perGrainNumericBounds: true,
+    measuredResidualsPreserved: true,
+    fixedAbsoluteToleranceOnly: false
+  };
+}
 
 function grains(source = {}) {
   return Object.fromEntries(GRAIN_IDS.map(id => [id,
@@ -188,12 +267,16 @@ export function emptyRunoffSedimentQueue() {
 
 export function normalizeRunoffSedimentQueue(source) {
   const queue = emptyRunoffSedimentQueue();
-  if (source?.schema !== RUNOFF_SEDIMENT_QUEUE_SCHEMA) return queue;
+  if (![RUNOFF_SEDIMENT_QUEUE_SCHEMA,
+    PREVIOUS_RUNOFF_SEDIMENT_QUEUE_SCHEMA].includes(source?.schema)) {
+    return queue;
+  }
   queue.suspendedKgM2 = grains(source.suspendedKgM2);
   queue.cumulativeDebitedKgM2 = grains(source.cumulativeDebitedKgM2);
   queue.cumulativeCreditedKgM2 = grains(source.cumulativeCreditedKgM2);
-  queue.lastTransferReceipt = source.lastTransferReceipt?.schema ===
-    RUNOFF_SEDIMENT_TRANSFER_SCHEMA ? clone(source.lastTransferReceipt) : null;
+  queue.lastTransferReceipt = source.schema === RUNOFF_SEDIMENT_QUEUE_SCHEMA &&
+    source.lastTransferReceipt?.schema === RUNOFF_SEDIMENT_TRANSFER_SCHEMA
+    ? clone(source.lastTransferReceipt) : null;
   return queue;
 }
 
@@ -337,6 +420,18 @@ export function debitRunoffSedimentQueue(source, fraction, areaM2,
     debitedKgM2);
   const residualKg = Object.fromEntries(GRAIN_IDS.map(id => [id, round(
     (initial[id] - queue.suspendedKgM2[id]) * area - debitedKg[id], 9)]));
+  const operands = {
+    areaM2: area,
+    beforeSuspendedKgM2: grains(initial),
+    transferredKg: grains(debitedKg),
+    afterSuspendedKgM2: grains(queue.suspendedKgM2)
+  };
+  const closure = sedimentTransferClosure({ senderDebitResidualKg: residualKg },
+    { senderDebitResidualKg: Object.fromEntries(GRAIN_IDS.map(id => [id, [
+      operands.beforeSuspendedKgM2[id] * area,
+      operands.transferredKg[id],
+      operands.afterSuspendedKgM2[id] * area
+    ]])) });
   const receipt = digestReceipt({
     schema: RUNOFF_SEDIMENT_TRANSFER_SCHEMA,
     transferId: String(context.transferId || 'local-sediment-debit'),
@@ -348,9 +443,10 @@ export function debitRunoffSedimentQueue(source, fraction, areaM2,
     grainsKg: roundedGrains(debitedKg, 9),
     totalKg: round(sumGrains(debitedKg), 9),
     residualKg,
+    operands,
+    closure,
     truth: { senderDebited: true, receiverCredited: false,
-      sameWaterFraction: true, conservationClosed: Object.values(residualKg)
-        .every(value => Math.abs(value) < 1e-7) }
+      sameWaterFraction: true, ...sedimentTransferTruth(closure) }
   });
   queue.lastTransferReceipt = receipt;
   return { queue, grainsKg: debitedKg, receipt: clone(receipt) };
@@ -369,6 +465,19 @@ export function creditRunoffSedimentQueue(source, grainsKg, areaM2,
     creditKgM2);
   const residualKg = Object.fromEntries(GRAIN_IDS.map(id => [id, round(
     (queue.suspendedKgM2[id] - initial[id]) * area - creditKg[id], 9)]));
+  const operands = {
+    areaM2: area,
+    beforeSuspendedKgM2: grains(initial),
+    transferredKg: grains(creditKg),
+    afterSuspendedKgM2: grains(queue.suspendedKgM2)
+  };
+  const closure = sedimentTransferClosure(
+    { receiverCreditResidualKg: residualKg },
+    { receiverCreditResidualKg: Object.fromEntries(GRAIN_IDS.map(id => [id, [
+      operands.beforeSuspendedKgM2[id] * area,
+      operands.transferredKg[id],
+      operands.afterSuspendedKgM2[id] * area
+    ]])) });
   const receipt = digestReceipt({
     schema: RUNOFF_SEDIMENT_TRANSFER_SCHEMA,
     transferId: String(context.transferId || 'local-sediment-credit'),
@@ -380,9 +489,10 @@ export function creditRunoffSedimentQueue(source, grainsKg, areaM2,
     grainsKg: roundedGrains(creditKg, 9),
     totalKg: round(sumGrains(creditKg), 9),
     residualKg,
+    operands,
+    closure,
     truth: { senderDebited: false, receiverCredited: true,
-      sameWaterFraction: true, conservationClosed: Object.values(residualKg)
-        .every(value => Math.abs(value) < 1e-7) }
+      sameWaterFraction: true, ...sedimentTransferTruth(closure) }
   });
   queue.lastTransferReceipt = receipt;
   return { queue, receipt: clone(receipt) };
@@ -405,12 +515,16 @@ export function emptyCoastalSediment() {
 
 export function normalizeCoastalSediment(source) {
   const state = emptyCoastalSediment();
-  if (source?.schema !== COASTAL_SEDIMENT_STATE_SCHEMA) return state;
+  if (![COASTAL_SEDIMENT_STATE_SCHEMA,
+    PREVIOUS_COASTAL_SEDIMENT_STATE_SCHEMA].includes(source?.schema)) {
+    return state;
+  }
   state.suspendedKgM2 = grains(source.suspendedKgM2);
   state.depositedKgM2 = grains(source.depositedKgM2);
   state.cumulativeInputKgM2 = grains(source.cumulativeInputKgM2);
-  state.lastInputReceipt = source.lastInputReceipt?.schema ===
-    COASTAL_SEDIMENT_INPUT_SCHEMA ? clone(source.lastInputReceipt) : null;
+  state.lastInputReceipt = source.schema === COASTAL_SEDIMENT_STATE_SCHEMA &&
+    source.lastInputReceipt?.schema === COASTAL_SEDIMENT_INPUT_SCHEMA
+    ? clone(source.lastInputReceipt) : null;
   return state;
 }
 
@@ -435,6 +549,30 @@ export function creditCoastalSediment(source, grainsKg, areaM2,
     (state.suspendedKgM2[id] - initialSuspended[id] +
       state.depositedKgM2[id] - initialDeposited[id]) * area - inputKg[id],
     9)]));
+  const inputPartitionResidualKg = Object.fromEntries(GRAIN_IDS.map(id =>
+    [id, round(inputKg[id] - suspendedKg[id] - depositedKg[id], 9)]));
+  const operands = {
+    areaM2: area,
+    beforeSuspendedKgM2: grains(initialSuspended),
+    beforeDepositedKgM2: grains(initialDeposited),
+    transferredKg: grains(inputKg),
+    afterSuspendedKgM2: grains(state.suspendedKgM2),
+    afterDepositedKgM2: grains(state.depositedKgM2)
+  };
+  const closure = sedimentTransferClosure(
+    { receiverCreditResidualKg: residualKg, inputPartitionResidualKg },
+    {
+      receiverCreditResidualKg: Object.fromEntries(GRAIN_IDS.map(id => [id, [
+        operands.beforeSuspendedKgM2[id] * area,
+        operands.beforeDepositedKgM2[id] * area,
+        operands.transferredKg[id],
+        operands.afterSuspendedKgM2[id] * area,
+        operands.afterDepositedKgM2[id] * area
+      ]])),
+      inputPartitionResidualKg: Object.fromEntries(GRAIN_IDS.map(id => [id, [
+        operands.transferredKg[id], suspendedKg[id], depositedKg[id]
+      ]]))
+    });
   const receipt = digestReceipt({
     schema: COASTAL_SEDIMENT_INPUT_SCHEMA,
     transferId: String(context.transferId || 'coastal-sediment-input'),
@@ -444,11 +582,13 @@ export function creditCoastalSediment(source, grainsKg, areaM2,
     suspendedKg: roundedGrains(suspendedKg, 9),
     depositedKg: roundedGrains(depositedKg, 9),
     residualKg,
+    inputPartitionResidualKg,
+    operands,
+    closure,
     truth: {
       receiverCredited: true,
       grainSelectiveDeposition: true,
-      conservationClosed: Object.values(residualKg).every(value =>
-        Math.abs(value) < 1e-7),
+      ...sedimentTransferTruth(closure),
       resolvedCoastalMorphodynamics: false
     }
   });
@@ -478,17 +618,22 @@ export function emptyRiverSediment(options = {}) {
 
 export function normalizeRiverSediment(source, options = {}) {
   const state = emptyRiverSediment(options);
-  if (source?.schema !== RIVER_SEDIMENT_STATE_SCHEMA) return state;
+  if (![RIVER_SEDIMENT_STATE_SCHEMA,
+    PREVIOUS_RIVER_SEDIMENT_STATE_SCHEMA].includes(source?.schema)) {
+    return state;
+  }
   state.migrationCheckpoint = source.migrationCheckpoint === true;
   state.suspendedKg = grains(source.suspendedKg);
   state.bedDepositKg = grains(source.bedDepositKg);
   state.cumulativeInflowKg = grains(source.cumulativeInflowKg);
   state.cumulativeOutflowKg = grains(source.cumulativeOutflowKg);
   state.cumulativeDepositedKg = grains(source.cumulativeDepositedKg);
-  state.lastInputReceipt = source.lastInputReceipt?.schema ===
-    RIVER_SEDIMENT_INPUT_SCHEMA ? clone(source.lastInputReceipt) : null;
-  state.lastRouteReceipt = source.lastRouteReceipt?.schema ===
-    RIVER_SEDIMENT_ROUTE_SCHEMA ? clone(source.lastRouteReceipt) : null;
+  state.lastInputReceipt = source.schema === RIVER_SEDIMENT_STATE_SCHEMA &&
+    source.lastInputReceipt?.schema === RIVER_SEDIMENT_INPUT_SCHEMA
+    ? clone(source.lastInputReceipt) : null;
+  state.lastRouteReceipt = source.schema === RIVER_SEDIMENT_STATE_SCHEMA &&
+    source.lastRouteReceipt?.schema === RIVER_SEDIMENT_ROUTE_SCHEMA
+    ? clone(source.lastRouteReceipt) : null;
   return state;
 }
 
@@ -510,6 +655,17 @@ export function applyRunoffSedimentInput(source, grainsKg, context = {}) {
   state.cumulativeInflowKg = addGrains(state.cumulativeInflowKg, inputKg);
   state.migrationCheckpoint = false;
   const residualKg = grainResidual(initial, state.suspendedKg, {}, inputKg);
+  const operands = {
+    beforeSuspendedKg: grains(initial),
+    transferredKg: grains(inputKg),
+    afterSuspendedKg: grains(state.suspendedKg)
+  };
+  const closure = sedimentTransferClosure(
+    { receiverCreditResidualKg: residualKg },
+    { receiverCreditResidualKg: Object.fromEntries(GRAIN_IDS.map(id => [id, [
+      operands.beforeSuspendedKg[id], operands.transferredKg[id],
+      operands.afterSuspendedKg[id]
+    ]])) });
   const receipt = digestReceipt({
     schema: RIVER_SEDIMENT_INPUT_SCHEMA,
     transferId: String(context.transferId || 'river-sediment-input'),
@@ -518,11 +674,12 @@ export function applyRunoffSedimentInput(source, grainsKg, context = {}) {
     inputKg: roundedGrains(inputKg, 9),
     totalInputKg: round(sumGrains(inputKg), 9),
     residualKg,
+    operands,
+    closure,
     truth: {
       receiverCredited: true,
       migrationInventedHistoricalSediment: false,
-      conservationClosed: Object.values(residualKg).every(value =>
-        Math.abs(value) < 1e-7)
+      ...sedimentTransferTruth(closure)
     }
   });
   state.lastInputReceipt = receipt;
@@ -567,6 +724,37 @@ export function routeRiverSedimentLoad(source, requestedKg, context = {}) {
   const residualKg = Object.fromEntries(GRAIN_IDS.map(id => [id, round(
     initialSuspended[id] - state.suspendedKg[id] - depositedKg[id] -
       exportedKg[id], 9)]));
+  const bedResidualKg = Object.fromEntries(GRAIN_IDS.map(id => [id, round(
+    state.bedDepositKg[id] - initialBed[id] - depositedKg[id], 9)]));
+  const routePartitionResidualKg = Object.fromEntries(GRAIN_IDS.map(id =>
+    [id, round(request[id] - depositedKg[id] - exportedKg[id], 9)]));
+  const operands = {
+    beforeSuspendedKg: grains(initialSuspended),
+    requestedKg: grains(request),
+    depositedToBedKg: grains(depositedKg),
+    exportedKg: grains(exportedKg),
+    afterSuspendedKg: grains(state.suspendedKg),
+    beforeBedDepositKg: grains(initialBed),
+    afterBedDepositKg: grains(state.bedDepositKg)
+  };
+  const closure = sedimentTransferClosure({
+    senderDebitResidualKg: residualKg,
+    bedCreditResidualKg: bedResidualKg,
+    routePartitionResidualKg
+  }, {
+    senderDebitResidualKg: Object.fromEntries(GRAIN_IDS.map(id => [id, [
+      operands.beforeSuspendedKg[id], operands.depositedToBedKg[id],
+      operands.exportedKg[id], operands.afterSuspendedKg[id]
+    ]])),
+    bedCreditResidualKg: Object.fromEntries(GRAIN_IDS.map(id => [id, [
+      operands.beforeBedDepositKg[id], operands.depositedToBedKg[id],
+      operands.afterBedDepositKg[id]
+    ]])),
+    routePartitionResidualKg: Object.fromEntries(GRAIN_IDS.map(id => [id, [
+      operands.requestedKg[id], operands.depositedToBedKg[id],
+      operands.exportedKg[id]
+    ]]))
+  });
   const receipt = digestReceipt({
     schema: RIVER_SEDIMENT_ROUTE_SCHEMA,
     transferId: String(context.transferId || 'river-sediment-route'),
@@ -584,11 +772,14 @@ export function routeRiverSedimentLoad(source, requestedKg, context = {}) {
       competence: round(competence, 9)
     },
     residualKg,
+    bedResidualKg,
+    routePartitionResidualKg,
+    operands,
+    closure,
     truth: {
       senderDebited: true,
       grainSelectiveDeposition: true,
-      conservationClosed: Object.values(residualKg).every(value =>
-        Math.abs(value) < 1e-7),
+      ...sedimentTransferTruth(closure),
       resolvedChannelMorphodynamics: false
     }
   });
@@ -608,24 +799,44 @@ export function geomorphicSedimentDescription() {
   return {
     surfaceStateSchema: SURFACE_SEDIMENT_STATE_SCHEMA,
     runoffQueueSchema: RUNOFF_SEDIMENT_QUEUE_SCHEMA,
+    previousRunoffQueueSchema: PREVIOUS_RUNOFF_SEDIMENT_QUEUE_SCHEMA,
     surfaceErosionReceiptSchema: SURFACE_EROSION_RECEIPT_SCHEMA,
     runoffTransferReceiptSchema: RUNOFF_SEDIMENT_TRANSFER_SCHEMA,
+    previousRunoffTransferReceiptSchema:
+      PREVIOUS_RUNOFF_SEDIMENT_TRANSFER_SCHEMA,
     riverStateSchema: RIVER_SEDIMENT_STATE_SCHEMA,
+    previousRiverStateSchema: PREVIOUS_RIVER_SEDIMENT_STATE_SCHEMA,
     riverInputReceiptSchema: RIVER_SEDIMENT_INPUT_SCHEMA,
+    previousRiverInputReceiptSchema: PREVIOUS_RIVER_SEDIMENT_INPUT_SCHEMA,
     riverRouteReceiptSchema: RIVER_SEDIMENT_ROUTE_SCHEMA,
+    previousRiverRouteReceiptSchema: PREVIOUS_RIVER_SEDIMENT_ROUTE_SCHEMA,
     coastalStateSchema: COASTAL_SEDIMENT_STATE_SCHEMA,
+    previousCoastalStateSchema: PREVIOUS_COASTAL_SEDIMENT_STATE_SCHEMA,
     coastalInputReceiptSchema: COASTAL_SEDIMENT_INPUT_SCHEMA,
+    previousCoastalInputReceiptSchema: PREVIOUS_COASTAL_SEDIMENT_INPUT_SCHEMA,
+    transferMassClosurePolicy: {
+      schema: GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorKg:
+        GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ABSOLUTE_FLOOR_KG,
+      ulpFactor:
+        GEOMORPHIC_SEDIMENT_TRANSFER_MASS_CLOSURE_ULP_FACTOR,
+      perGrainOperands: true,
+      measuredResidualsPreserved: true
+    },
     grains: SEDIMENT_GRAINS.map(grain => ({ ...grain })),
     processes: [
       'finite-parameterized-surface-erosion',
       'persistent-runoff-sediment-queue',
       'same-water-fraction-loaded-neighbor-transfer',
       'persistent-river-suspended-and-bed-storage',
-      'grain-selective-reach-and-coastal-deposition'
+      'grain-selective-reach-and-coastal-deposition',
+      'scale-aware-per-grain-transfer-mass-closure'
     ],
     truth: {
       finiteMineralOwnership: true,
       massConservationReceipted: true,
+      scaleAwareTransferMassClosure: true,
+      fixedAbsoluteToleranceOnly: false,
       scientificErosionModel: false,
       mechanisticSoilFormation: false,
       resolvedChannelMorphodynamics: false,

@@ -12,7 +12,7 @@ import {
   normalizeRiverSediment,
   riverSedimentTotals,
   sedimentGrainTotal
-} from './geomorphic-sediment.mjs';
+} from './geomorphic-sediment.mjs?v=0.63.0-r63.1';
 
 export const FLOODPLAIN_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-state/v5';
@@ -25,9 +25,29 @@ export const OLDEST_FLOODPLAIN_STATE_SCHEMA =
 export const EARLIEST_FLOODPLAIN_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-state/v1';
 export const FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA =
-  'axm.foundation-planet.floodplain-exchange-receipt/v3';
+  'axm.foundation-planet.floodplain-exchange-receipt/v4';
 export const PREVIOUS_FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA =
-  'axm.foundation-planet.floodplain-exchange-receipt/v1';
+  'axm.foundation-planet.floodplain-exchange-receipt/v3';
+export const FLOODPLAIN_EXCHANGE_MASS_CLOSURE_SCHEMA =
+  'axm.foundation-planet.floodplain-exchange-mass-closure/v1';
+export const FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA =
+  'axm.foundation-planet.floodplain-exchange-mass-closure-policy/v1';
+export const FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG =
+  Object.freeze({
+    waterResidualKg: 1,
+    carbonResidualKgC: 1e-6,
+    nitrogenResidualKgN: 1e-6,
+    nitrateNitrogenResidualKgN: 1e-6,
+    ammoniumNitrogenResidualKgN: 1e-6,
+    phosphorusResidualKgP: 1e-6,
+    oxygenResidualKgO2: 1e-6,
+    alkalinityResidualKgCaCO3Eq: 1e-6,
+    clayResidualKg: 1e-6,
+    siltResidualKg: 1e-6,
+    sandResidualKg: 1e-6,
+    gravelResidualKg: 1e-6
+  });
+export const FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR = 8;
 export const FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA =
   'axm.foundation-planet.floodplain-plant-resource-debit/v1';
 export const FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA =
@@ -87,6 +107,63 @@ const finite = (value, fallback = 0) => Number.isFinite(Number(value))
   ? Number(value) : fallback;
 const round = (value, digits = 12) => Number(Number(value).toFixed(digits));
 const clone = value => JSON.parse(JSON.stringify(value));
+
+export function floodplainExchangeMassClosureToleranceKg(identity,
+  signedOperandsKg = []) {
+  const absoluteFloorKg =
+    FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG[identity];
+  if (!Number.isFinite(absoluteFloorKg)) {
+    throw new Error(`Unknown floodplain exchange closure identity: ${identity}`);
+  }
+  const absoluteOperandSumKg = signedOperandsKg.reduce((sum, operand) =>
+    sum + Math.abs(finite(operand)), 0);
+  return round(Math.max(absoluteFloorKg,
+    absoluteOperandSumKg * Number.EPSILON *
+      FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR), 12);
+}
+
+function floodplainExchangeMassClosureIdentity(identity, signedOperandsKg) {
+  const measuredResidualKg = signedOperandsKg.reduce((sum, operand) =>
+    sum + finite(operand), 0);
+  const numericToleranceKg = floodplainExchangeMassClosureToleranceKg(
+    identity, signedOperandsKg);
+  return {
+    signedOperandsKg: signedOperandsKg.map(Number),
+    residualKg: Number(measuredResidualKg),
+    numericToleranceKg,
+    toleranceUtilization: round(Math.abs(measuredResidualKg) /
+      numericToleranceKg, 12),
+    closed: Math.abs(measuredResidualKg) <= numericToleranceKg
+  };
+}
+
+function floodplainExchangeMassClosureReceipt(identityInputs) {
+  const identities = Object.fromEntries(Object.entries(identityInputs).map(
+    ([identity, signedOperandsKg]) => [identity,
+      floodplainExchangeMassClosureIdentity(identity, signedOperandsKg)]));
+  const entries = Object.values(identities);
+  return {
+    schema: FLOODPLAIN_EXCHANGE_MASS_CLOSURE_SCHEMA,
+    policy: {
+      schema: FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorsKg: {
+        ...FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+      },
+      ulpFactor: FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
+      scaleBasis: 'sum-of-absolute-unrounded-signed-operands-kg'
+    },
+    identities,
+    identityCount: entries.length,
+    maximumResidualKg: Math.max(0, ...entries.map(entry =>
+      Math.abs(entry.residualKg))),
+    maximumToleranceKg: Math.max(0, ...entries.map(entry =>
+      entry.numericToleranceKg)),
+    maximumToleranceUtilization: Math.max(0, ...entries.map(entry =>
+      entry.toleranceUtilization)),
+    conservationClosed: entries.every(entry => entry.closed),
+    measuredResidualsPreserved: true
+  };
+}
 
 export function floodplainDetritalReturnMassClosureToleranceKg(channel,
   ...values) {
@@ -209,6 +286,10 @@ function truth() {
     nitrificationAlkalinityDemandDiagnostic: false,
     nitrificationAlkalinityMaterialOwnerDebited: true,
     denitrificationAlkalinityMaterialOwnerCredited: true,
+    channelFloodplainExchangeScaleAwareNumericClosure: true,
+    channelFloodplainExchangePerIdentityNumericBounds: true,
+    channelFloodplainExchangeMeasuredResidualsPreserved: true,
+    channelFloodplainExchangeFixedAbsoluteToleranceOnly: false,
     reactionReceiptsScaleAwareNumericClosure: true,
     reactionReceiptsPerIdentityNumericBounds: true,
     reactionReceiptsMeasuredResidualsPreserved: true,
@@ -1414,19 +1495,59 @@ function chemistryTransportTotals(source) {
   };
 }
 
-function combinedChemistry(channelChemistry, floodplainChemistry) {
-  const channel = chemistryTransportTotals(channelChemistry);
-  const floodplain = chemistryTransportTotals(floodplainChemistry);
-  return Object.fromEntries(CHEMISTRY_KEYS.map(key => [key,
-    finite(channel[key]) + finite(floodplain[key])]));
+function floodplainExchangeOwnerSnapshot(channelWaterKg, channelChemistry,
+  channelSediment, floodplain) {
+  const channelMineral = normalizeRiverSediment(channelSediment);
+  return {
+    water: {
+      channelKg: finite(channelWaterKg),
+      floodplainKg: finite(floodplain.waterKg)
+    },
+    chemistry: {
+      channel: chemistryTransportTotals(channelChemistry),
+      floodplain: chemistryTransportTotals(floodplain.chemistry)
+    },
+    sediment: {
+      channelSuspendedKg: grains(channelMineral.suspendedKg),
+      channelBedDepositKg: grains(channelMineral.bedDepositKg),
+      floodplainSuspendedKg: grains(floodplain.suspendedSedimentKg),
+      floodplainDepositedKg: grains(floodplain.depositedSedimentKg)
+    }
+  };
 }
 
-function combinedSediment(channelSediment, floodplain) {
-  const channel = riverSedimentTotals(channelSediment);
-  return Object.fromEntries(GRAINS.map(id => [id,
-    finite(channel.suspendedKg?.[id]) + finite(channel.bedDepositKg?.[id]) +
-      finite(floodplain.suspendedSedimentKg?.[id]) +
-      finite(floodplain.depositedSedimentKg?.[id])]));
+function floodplainExchangeMassClosureFromOwners(initial, final) {
+  const identityInputs = {
+    waterResidualKg: [
+      final.water.channelKg,
+      final.water.floodplainKg,
+      -initial.water.channelKg,
+      -initial.water.floodplainKg
+    ]
+  };
+  for (const key of CHEMISTRY_KEYS) {
+    const identity = key.replace('Kg', 'ResidualKg');
+    identityInputs[identity] = [
+      finite(final.chemistry.channel[key]),
+      finite(final.chemistry.floodplain[key]),
+      -finite(initial.chemistry.channel[key]),
+      -finite(initial.chemistry.floodplain[key])
+    ];
+  }
+  for (const grain of GRAINS) {
+    const identity = `${grain}ResidualKg`;
+    identityInputs[identity] = [
+      final.sediment.channelSuspendedKg[grain],
+      final.sediment.channelBedDepositKg[grain],
+      final.sediment.floodplainSuspendedKg[grain],
+      final.sediment.floodplainDepositedKg[grain],
+      -initial.sediment.channelSuspendedKg[grain],
+      -initial.sediment.channelBedDepositKg[grain],
+      -initial.sediment.floodplainSuspendedKg[grain],
+      -initial.sediment.floodplainDepositedKg[grain]
+    ];
+  }
+  return floodplainExchangeMassClosureReceipt(identityInputs);
 }
 
 export function advanceFloodplainExchange(source, channelSource, reach,
@@ -1437,9 +1558,8 @@ export function advanceFloodplainExchange(source, channelSource, reach,
   let channelChemistry = normalizeRiverChemistry(channelSource?.chemistry);
   let channelSediment = normalizeRiverSediment(channelSource?.sediment);
   const initialWaterKg = channelWaterKg + state.waterKg;
-  const initialChemistry = combinedChemistry(channelChemistry,
-    state.chemistry);
-  const initialSediment = combinedSediment(channelSediment, state);
+  const initialOwners = floodplainExchangeOwnerSnapshot(channelWaterKg,
+    channelChemistry, channelSediment, state);
   const reachLengthM = Math.max(1, finite(context.reachLengthM, 1000));
   const widthM = clamp(finite(reach?.widthM, 3), .5, 2000);
   const depthM = clamp(finite(reach?.depthM, .25), .05, 100);
@@ -1454,6 +1574,9 @@ export function advanceFloodplainExchange(source, channelSource, reach,
 
   if (state.migrationCheckpoint) {
     state.migrationCheckpoint = false;
+    const massClosure = floodplainExchangeMassClosureFromOwners(initialOwners,
+      floodplainExchangeOwnerSnapshot(channelWaterKg, channelChemistry,
+        channelSediment, state));
     const receipt = {
       schema: FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
       exchangeId,
@@ -1474,10 +1597,17 @@ export function advanceFloodplainExchange(source, channelSource, reach,
         overbankKg: roundedGrains(), returnedKg: roundedGrains(),
         depositedKg: roundedGrains(), residualKg: roundedGrains()
       },
+      massClosure,
       inundatedFraction: 0,
       truth: {
         ...truth(), migrationInventedHistoricalFloodplain: false,
         senderDebitsAndReceiverCreditsPaired: true,
+        nitrateAndAmmoniumSenderReceiverTransfersPaired: true,
+        nitrateAndAmmoniumConservationClosed: true,
+        scaleAwareNumericClosure: massClosure.conservationClosed,
+        perIdentityNumericBounds: massClosure.identityCount === 12,
+        measuredResidualsPreserved: massClosure.measuredResidualsPreserved,
+        fixedAbsoluteToleranceOnly: false,
         conservationClosed: true
       }
     };
@@ -1550,18 +1680,17 @@ export function advanceFloodplainExchange(source, channelSource, reach,
   state.inundatedFraction = clamp(state.waterKg /
     floodplainReferenceCapacityKg);
 
-  const finalChemistry = combinedChemistry(channelChemistry,
-    state.chemistry);
-  const finalSediment = combinedSediment(channelSediment, state);
-  const waterResidualKg = channelWaterKg + state.waterKg - initialWaterKg;
+  const finalOwners = floodplainExchangeOwnerSnapshot(channelWaterKg,
+    channelChemistry, channelSediment, state);
+  const massClosure = floodplainExchangeMassClosureFromOwners(initialOwners,
+    finalOwners);
+  const waterResidualKg = massClosure.identities.waterResidualKg.residualKg;
   const chemistryResiduals = Object.fromEntries(CHEMISTRY_KEYS.map(key =>
-    [key.replace('Kg', 'ResidualKg'), round(finalChemistry[key] -
-      initialChemistry[key], 9)]));
+    [key.replace('Kg', 'ResidualKg'), round(massClosure.identities[
+      key.replace('Kg', 'ResidualKg')].residualKg, 9)]));
   const sedimentResidualKg = Object.fromEntries(GRAINS.map(id => [id,
-    round(finalSediment[id] - initialSediment[id], 9)]));
-  const conservationClosed = Math.abs(waterResidualKg) < 1 &&
-    Object.values(chemistryResiduals).every(value => Math.abs(value) < 1e-6) &&
-    Object.values(sedimentResidualKg).every(value => Math.abs(value) < 1e-6);
+    round(massClosure.identities[`${id}ResidualKg`].residualKg, 9)]));
+  const conservationClosed = massClosure.conservationClosed;
   const receipt = {
     schema: FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
     exchangeId,
@@ -1603,14 +1732,19 @@ export function advanceFloodplainExchange(source, channelSource, reach,
       depositedKg: roundedGrains(depositedKg),
       residualKg: sedimentResidualKg
     },
+    massClosure,
     inundatedFraction: round(state.inundatedFraction, 9),
     truth: {
       ...truth(), migrationInventedHistoricalFloodplain: false,
       senderDebitsAndReceiverCreditsPaired: true,
       nitrateAndAmmoniumSenderReceiverTransfersPaired: true,
       nitrateAndAmmoniumConservationClosed:
-        Math.abs(chemistryResiduals.nitrateNitrogenResidualKgN) < 1e-6 &&
-        Math.abs(chemistryResiduals.ammoniumNitrogenResidualKgN) < 1e-6,
+        massClosure.identities.nitrateNitrogenResidualKgN.closed &&
+        massClosure.identities.ammoniumNitrogenResidualKgN.closed,
+      scaleAwareNumericClosure: massClosure.conservationClosed,
+      perIdentityNumericBounds: massClosure.identityCount === 12,
+      measuredResidualsPreserved: massClosure.measuredResidualsPreserved,
+      fixedAbsoluteToleranceOnly: false,
       waterUsesBankfullThreshold: true,
       returnFlowDonorBounded: returnWaterKg <=
         normalizeFloodplainState(source).waterKg + 1e-6,
@@ -1634,6 +1768,15 @@ export function floodplainDescription() {
   return {
     stateSchema: FLOODPLAIN_STATE_SCHEMA,
     exchangeReceiptSchema: FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
+    exchangeMassClosureSchema: FLOODPLAIN_EXCHANGE_MASS_CLOSURE_SCHEMA,
+    exchangeMassClosurePolicy: {
+      schema: FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorsKg: {
+        ...FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+      },
+      ulpFactor: FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
+      scaleBasis: 'sum-of-absolute-unrounded-signed-operands-kg'
+    },
     plantResourceDebitSchema: FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
     plantWaterReturnSchema: FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA,
     detritalReturnCreditSchema:
