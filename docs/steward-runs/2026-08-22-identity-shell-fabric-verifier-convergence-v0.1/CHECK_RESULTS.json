@@ -1,0 +1,48 @@
+{
+  "schema": "axm.steward-check-results/v1",
+  "runId": "identity-shell-fabric-verifier-convergence-v0.1",
+  "status": "PASS_WITH_LIMITS",
+  "baseCommit": "621efa038f6e0c9c528ef25b11c1864bf1058b33",
+  "productCommit": "e5a62f6103c8258e23ab5dc6dbd2c59eeabc4293",
+  "focused": [
+    {"command": "node shared/identity-shell-fabric/selftest.js", "exitCode": 0, "result": "PASS", "detail": "87 assertions"},
+    {"command": "node shared/identity-shell-fabric/schema-selftest.js", "exitCode": 0, "result": "PASS", "detail": "155 contract-topology assertions across 12 schemas"},
+    {"command": "node shared/identity-shell-fabric/adversarial-corpus-selftest.js", "exitCode": 0, "result": "PASS", "detail": "26 re-signed attacks rejected by primary verifier, independent verifier, export gate, and import gate"},
+    {"command": "node shared/identity-shell-fabric/examples/keel-workshop-collaborator/trial-selftest.js", "exitCode": 0, "result": "PASS", "detail": "origin rebuild, distinct fork, candidate-memory acceptance, and disclosed neural migration"},
+    {"command": "node shared/identity-shell-fabric/examples/keel-workshop-collaborator/fresh-process-verifier.js", "exitCode": 0, "result": "PASS", "detail": "fresh Node process; compiler not imported"}
+  ],
+  "crossProcess": {
+    "adversarialCorpus": {"processes": 20, "failures": 0},
+    "keelTrial": {"processes": 20, "failures": 0, "uniqueManifestDigests": 1},
+    "independentVerifier": {"processes": 20, "failures": 0}
+  },
+  "requiredWorkshopChecks": [
+    {"command": "node verify.js", "exitCode": 0, "result": "PASS_WITH_WARNINGS", "detail": "0 FAIL; 41 warn; spine b618c5762240070c"},
+    {"command": "node hub/hub-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/route-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/graft-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/skin-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/verify-plus.js", "exitCode": 0, "result": "VERIFIED_WITH_LIMITS", "detail": "workshop-full; 6 receipts; 9 atomic claims"},
+    {"command": "node tests/html-script-syntax-test.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node tests/tool-forge-package-test.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node tools/agent-tool-forge/selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node tools/evidence-desk/selftest.js", "exitCode": 0, "result": "PASS"}
+  ],
+  "initialCounterevidence": {
+    "corpusCases": 11,
+    "acceptedByPrimaryVerifier": 8,
+    "acceptedByIndependentVerifier": 5,
+    "interpretation": "A valid recomputed top digest could preserve semantic drift at one or more verification gates."
+  },
+  "finalHeldOutCorpus": {
+    "cases": 26,
+    "gateEvaluations": 104,
+    "unexpectedAcceptances": 0
+  },
+  "keelManifestDigest": "sha256:575f667d86b5b81784579f080a07c6e6c581545233f2e9c013fa464e78e85307",
+  "browserRenderClick": "NOT_RUN",
+  "runtimeHost": "NOT_PRESENT",
+  "humanAuthentication": "NOT_PRESENT",
+  "roboticActuation": "UNAVAILABLE_V0_1",
+  "canon": false
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.blueprint/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "blueprintId", "identityRoot", "continuityPolicy", "resourceEnvelope", "slots", "continuityReceiptRefs", "expectedContinuityHeadDigest", "lineage"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.blueprint/v1"},
+    "version": {"const": "0.1.0"},
+    "blueprintId": {"$ref": "common.schema.json#/$defs/id"},
+    "identityRoot": {"$ref": "identity-root.schema.json"},
+    "continuityPolicy": {"$ref": "continuity-policy.schema.json"},
+    "resourceEnvelope": {"$ref": "resource-envelope.schema.json"},
+    "slots": {
+      "type": "array", "minItems": 2, "maxItems": 128,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["slotId", "kind", "role", "descriptorId", "descriptorVersion", "descriptorSha256", "required"],
+        "properties": {
+          "slotId": {"$ref": "common.schema.json#/$defs/id"},
+          "kind": {"enum": ["ADAPTER", "BODY"]},
+          "role": {"enum": ["NEURAL_REASONER", "DETERMINISTIC_TOOL", "HUMAN_INPUT", "SENSOR", "BODY", "OUTPUT"]},
+          "descriptorId": {"$ref": "common.schema.json#/$defs/id"},
+          "descriptorVersion": {"$ref": "common.schema.json#/$defs/semver"},
+          "descriptorSha256": {"$ref": "common.schema.json#/$defs/digest"},
+          "required": {"const": true}
+        }
+      }
+    },
+    "continuityReceiptRefs": {"type": "array", "maxItems": 256, "items": {"$ref": "common.schema.json#/$defs/reference"}},
+    "expectedContinuityHeadDigest": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/digest"}]},
+    "lineage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["eventKind", "parentManifestRefs", "continuityEvidenceRefs", "humanDecisionReceiptRef", "disclosures"],
+      "properties": {
+        "eventKind": {"enum": ["ORIGIN", "FORK", "MIGRATION", "RECONSTRUCTION", "SUCCESSION_PROPOSAL", "RETIREMENT_PROPOSAL"]},
+        "parentManifestRefs": {"type": "array", "maxItems": 8, "items": {"$ref": "common.schema.json#/$defs/reference"}},
+        "continuityEvidenceRefs": {"type": "array", "maxItems": 64, "items": {"$ref": "common.schema.json#/$defs/reference"}},
+        "humanDecisionReceiptRef": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/reference"}]},
+        "disclosures": {
+          "type": "array", "maxItems": 32,
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["kind", "statement", "beforeRef", "afterRef"],
+            "properties": {
+              "kind": {"enum": ["FORK", "MIGRATION", "RECONSTRUCTION", "SUCCESSION", "RETIREMENT", "ADAPTER_SWAP", "BODY_SWAP", "MODEL_OR_CONNECTOR_SWAP"]},
+              "statement": {"type": "string", "minLength": 1, "maxLength": 1000},
+              "beforeRef": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/reference"}]},
+              "afterRef": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/reference"}]}
+            }
+          }
+        }
+      }
+    }
+  }
+}

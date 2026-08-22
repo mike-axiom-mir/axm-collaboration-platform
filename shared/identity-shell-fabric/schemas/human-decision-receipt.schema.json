@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.human-decision-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "decisionId", "decisionAt", "actor", "subject", "decision", "consent", "lineageEvidenceRefs", "continuityEvidenceRefs", "confirmation", "truth", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.human-decision-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "decisionId": {"$ref": "common.schema.json#/$defs/id"},
+    "decisionAt": {"type": "string", "format": "date-time"},
+    "actor": {"type": "object", "additionalProperties": false, "required": ["kind", "id", "authorshipVerificationRef"], "properties": {"kind": {"const": "HUMAN"}, "id": {"$ref": "common.schema.json#/$defs/id"}, "authorshipVerificationRef": {"$ref": "common.schema.json#/$defs/reference"}}},
+    "subject": {
+      "type": "object", "additionalProperties": false, "required": ["eventKind", "parentShellId", "parentManifestDigest", "proposedShellId", "proposalDigest"],
+      "properties": {"eventKind": {"enum": ["SUCCESSION_PROPOSAL", "RETIREMENT_PROPOSAL"]}, "parentShellId": {"$ref": "common.schema.json#/$defs/id"}, "parentManifestDigest": {"$ref": "common.schema.json#/$defs/digest"}, "proposedShellId": {"$ref": "common.schema.json#/$defs/id"}, "proposalDigest": {"$ref": "common.schema.json#/$defs/digest"}}
+    },
+    "decision": {"enum": ["AUTHORIZE_SUCCESSION_PROPOSAL", "AUTHORIZE_RETIREMENT_PROPOSAL", "HOLD", "REJECT"]},
+    "consent": {"type": "object", "additionalProperties": false, "required": ["explicit", "scope", "automatic"], "properties": {"explicit": {"const": true}, "scope": {"const": "SINGLE_LINEAGE_PROPOSAL"}, "automatic": {"const": false}}},
+    "lineageEvidenceRefs": {"type": "array", "maxItems": 32, "items": {"allOf": [{"$ref": "common.schema.json#/$defs/reference"}, {"properties": {"schema": {"const": "axm.identity-shell.manifest/v1"}}}]}},
+    "continuityEvidenceRefs": {"type": "array", "maxItems": 64, "items": {"allOf": [{"$ref": "common.schema.json#/$defs/reference"}, {"properties": {"schema": {"const": "axm.identity-shell.continuity-event/v1"}}}]}},
+    "confirmation": {"enum": ["AUTHORIZE SUCCESSION PROPOSAL", "AUTHORIZE RETIREMENT PROPOSAL", "HOLD IDENTITY LINEAGE PROPOSAL", "REJECT IDENTITY LINEAGE PROPOSAL"]},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["humanAuthorshipVerifiedByCompiler", "declarativeReceiptOnly", "successionEffective", "retirementEffective", "automaticInheritance", "automaticPromotion"],
+      "properties": {"humanAuthorshipVerifiedByCompiler": {"const": false}, "declarativeReceiptOnly": {"const": true}, "successionEffective": {"const": false}, "retirementEffective": {"const": false}, "automaticInheritance": {"const": false}, "automaticPromotion": {"const": false}}
+    },
+    "receiptDigest": {"$ref": "common.schema.json#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "AUTHORIZE_SUCCESSION_PROPOSAL"}}, "required": ["decision"]},
+      "then": {"properties": {"subject": {"properties": {"eventKind": {"const": "SUCCESSION_PROPOSAL"}}}, "lineageEvidenceRefs": {"minItems": 1, "maxItems": 1}, "continuityEvidenceRefs": {"minItems": 1}, "confirmation": {"const": "AUTHORIZE SUCCESSION PROPOSAL"}}}
+    },
+    {
+      "if": {"properties": {"decision": {"const": "AUTHORIZE_RETIREMENT_PROPOSAL"}}, "required": ["decision"]},
+      "then": {"properties": {"subject": {"properties": {"eventKind": {"const": "RETIREMENT_PROPOSAL"}}}, "lineageEvidenceRefs": {"minItems": 1, "maxItems": 1}, "continuityEvidenceRefs": {"minItems": 1}, "confirmation": {"const": "AUTHORIZE RETIREMENT PROPOSAL"}}}
+    },
+    {
+      "if": {"properties": {"decision": {"const": "HOLD"}}, "required": ["decision"]},
+      "then": {"properties": {"confirmation": {"const": "HOLD IDENTITY LINEAGE PROPOSAL"}}}
+    },
+    {
+      "if": {"properties": {"decision": {"const": "REJECT"}}, "required": ["decision"]},
+      "then": {"properties": {"confirmation": {"const": "REJECT IDENTITY LINEAGE PROPOSAL"}}}
+    }
+  ]
+}

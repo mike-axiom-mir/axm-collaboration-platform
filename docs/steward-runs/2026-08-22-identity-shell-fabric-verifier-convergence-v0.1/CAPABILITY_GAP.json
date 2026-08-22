@@ -1,0 +1,210 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "primary-manifest-semantic-gate",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.manifest.verify.primary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.manifest.verify.primary": [
+          "static inert manifest verification only"
+        ]
+      }
+    },
+    {
+      "id": "independent-manifest-semantic-gate",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.manifest.verify.independent"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.manifest.verify.independent": [
+          "does not import the compiler",
+          "static inert manifest verification only"
+        ]
+      }
+    },
+    {
+      "id": "schema-contract-topology-check",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.schema.topology.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.schema.topology.verify": [
+          "JSON parsing, local reference topology, and declared hardening clauses; not a general-purpose JSON Schema engine"
+        ]
+      }
+    },
+    {
+      "id": "resigned-adversarial-corpus",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.adversarial.resign.reject"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.adversarial.resign.reject": [
+          "deterministic held-out corpus of 26 JSON-safe re-signed mutations"
+        ]
+      }
+    },
+    {
+      "id": "portable-boundary-replay",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.export-import.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.export-import.verify": [
+          "canonical inert manifest bytes only"
+        ]
+      }
+    },
+    {
+      "id": "workshop-regression-checkpoint",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "workshop.regression.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "workshop.regression.verify": [
+          "ten repository-required Node checks",
+          "browser UI excluded"
+        ]
+      }
+    },
+    {
+      "id": "future-live-host-binding",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.host.bind"
+      ],
+      "declaredConstraints": {
+        "identity.shell.host.bind": [
+          "held future surface"
+        ]
+      }
+    },
+    {
+      "id": "future-human-authentication",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.human.authenticate"
+      ],
+      "declaredConstraints": {
+        "identity.shell.human.authenticate": [
+          "external authenticated human gate required"
+        ]
+      }
+    },
+    {
+      "id": "future-runtime-continuity",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.runtime.continuity.observe"
+      ],
+      "declaredConstraints": {
+        "identity.shell.runtime.continuity.observe": [
+          "no runtime host or persistence substrate in v0.1"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "identity.shell.host.bind",
+    "identity.shell.human.authenticate",
+    "identity.shell.runtime.continuity.observe"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "identity.shell.host.bind",
+      "requiredBy": [
+        "future-live-host-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "identity.shell.human.authenticate",
+      "requiredBy": [
+        "future-human-authentication"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "identity.shell.runtime.continuity.observe",
+      "requiredBy": [
+        "future-runtime-continuity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

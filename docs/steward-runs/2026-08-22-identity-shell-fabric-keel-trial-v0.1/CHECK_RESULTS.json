@@ -1,0 +1,63 @@
+{
+  "schema": "axm.identity-shell.keel-trial-check-results/v1",
+  "status": "TEST",
+  "branch": "codex/identity-shell-fabric-keel-trial-v0.1",
+  "fabricParentCommit": "083ab53719fdc434cd710875443bea4819ed5827",
+  "focused": {
+    "fabricSelftest": {
+      "command": "node shared/identity-shell-fabric/selftest.js",
+      "exit": 0,
+      "assertions": 62,
+      "verdict": "PASS"
+    },
+    "keelTrial": {
+      "command": "node shared/identity-shell-fabric/examples/keel-workshop-collaborator/trial-selftest.js",
+      "exit": 0,
+      "verdict": "PASS",
+      "manifestDigest": "sha256:575f667d86b5b81784579f080a07c6e6c581545233f2e9c013fa464e78e85307",
+      "independentVerification": "PASS",
+      "continuityState": "EMPTY",
+      "runtimeClaimed": false,
+      "canon": false
+    },
+    "jsonParseCount": 9,
+    "diffCheck": "PASS",
+    "machinePathMatches": 0,
+    "refinedSecretOrSessionMatches": 0,
+    "capabilityRoute": "DEGRADED",
+    "requiredCapabilityRequirementsNotReady": 0
+  },
+  "iteration": {
+    "initialFailure": "The fit test expected invented acceptedMemoryCount and candidateMemoryCount fields that the compiler does not emit.",
+    "resolution": "The test now asserts the authoritative empty acceptedReceiptDigests and candidateReceiptDigests arrays.",
+    "compilerChanged": false,
+    "reason": "The compiler shape was correct; padding it with derived zero fields would have added redundant state."
+  },
+  "requiredWorkshopChecks": [
+    {"command": "node verify.js", "exit": 0},
+    {"command": "node hub/hub-selftest.js", "exit": 0},
+    {"command": "node hub/route-selftest.js", "exit": 0},
+    {"command": "node hub/graft-selftest.js", "exit": 0},
+    {"command": "node hub/skin-selftest.js", "exit": 0},
+    {"command": "node hub/verify-plus.js", "exit": 0},
+    {"command": "node tests/html-script-syntax-test.js", "exit": 0},
+    {"command": "node tests/tool-forge-package-test.js", "exit": 0},
+    {"command": "node tools/agent-tool-forge/selftest.js", "exit": 0},
+    {"command": "node tools/evidence-desk/selftest.js", "exit": 0}
+  ],
+  "workshopVerification": {
+    "verifyWarnings": 41,
+    "verifyPlus": "VERIFIED_WITH_LIMITS",
+    "verifyPlusReceipts": 6,
+    "verifyPlusAtomicClaims": 9,
+    "warningBoundary": "Workshop-wide game QA, legacy declaration, promotion-reverification, and generated-index limits were preserved; they were not rewritten by this trial."
+  },
+  "notRun": [
+    "browser-render-click: no UI or visual claim",
+    "live-shell-host-binding: unavailable in v0.1",
+    "authenticated-human-acceptance: compiler cannot authenticate a human",
+    "cross-runtime-continuity: no live host observation surface",
+    "model-or-connector-execution: prohibited by v0.1",
+    "robotic-actuation: unavailable in v0.1"
+  ]
+}

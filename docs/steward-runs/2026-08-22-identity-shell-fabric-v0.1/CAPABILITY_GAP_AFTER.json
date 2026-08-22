@@ -1,0 +1,26 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "source": "deterministic comparator over CAPABILITY_REQUIREMENTS.json and CAPABILITY_INVENTORY_AFTER.json",
+  "requiredRequirements": {
+    "strict-blueprint-compile": "READY",
+    "portable-manifest": "READY",
+    "continuity": "READY",
+    "inert-composition": "READY",
+    "lineage": "READY",
+    "succession": "READY",
+    "verification": "READY"
+  },
+  "optionalGaps": [
+    {"capabilityId": "shell.visual-blueprint-editor.render-and-click", "gapType": "HAND", "state": "OPTIONAL_GAP", "cheapestEvidence": "Build only after the compiler contract is accepted, then perform a real browser render/click test."},
+    {"capabilityId": "shell.adapter-host.execute", "gapType": "HAND", "state": "OPTIONAL_GAP", "cheapestEvidence": "Specify a separate host/executor contract and prove denied/allowed authority in an isolated runtime."},
+    {"capabilityId": "sandbox.process.os-isolated", "gapType": "SUBSTRATE", "state": "OPTIONAL_GAP", "cheapestEvidence": "Provide and verify an OS-isolated process substrate before any adapter code execution."},
+    {"capabilityId": "shell.human-authorship.authenticate", "gapType": "AUTHORITY", "state": "OPTIONAL_GAP", "cheapestEvidence": "Use an external authenticated human decision service that returns an exact receipt digest."},
+    {"capabilityId": "robot.body.actuate", "gapType": "SUBSTRATE", "state": "OPTIONAL_GAP", "cheapestEvidence": "Requires a separately authorized robotic safety contract, hardware substrate, and live verifier; v0.1 refuses it."},
+    {"capabilityId": "robot.safety.live-verify", "gapType": "EVIDENCE", "state": "OPTIONAL_GAP", "cheapestEvidence": "Run bounded hardware safety tests only after explicit authority and an actuation contract exist."}
+  ],
+  "routeMeaning": "DEGRADED reflects intentionally absent future UI/runtime/authentication/actuation capabilities. Every required inert compiler requirement is READY from declared implementation evidence, pending the sealed stable-snapshot checks.",
+  "automaticInstall": false,
+  "automaticPermission": false,
+  "automaticQualityReduction": false
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.manifest/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "lifecycleState", "shellId", "blueprintRef", "identityRoot", "continuityPolicy", "resourceEnvelope", "components", "continuity", "lineageReceipt", "portability", "truth", "manifestDigest"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.manifest/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "EXPERIMENTAL"},
+    "lifecycleState": {"enum": ["ACTIVE_PROPOSAL", "SUCCESSION_PROPOSED", "RETIREMENT_PROPOSED"]},
+    "shellId": {"$ref": "common.schema.json#/$defs/id"},
+    "blueprintRef": {"$ref": "common.schema.json#/$defs/reference"},
+    "identityRoot": {"$ref": "identity-root.schema.json"},
+    "continuityPolicy": {"$ref": "continuity-policy.schema.json"},
+    "resourceEnvelope": {"$ref": "resource-envelope.schema.json"},
+    "components": {
+      "type": "array", "minItems": 2, "maxItems": 128,
+      "allOf": [
+        {"contains": {"type": "object", "required": ["kind"], "properties": {"kind": {"const": "ADAPTER"}}}, "minContains": 1},
+        {"contains": {"type": "object", "required": ["kind"], "properties": {"kind": {"const": "BODY"}}}, "minContains": 1}
+      ],
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["slotId", "kind", "role", "descriptorRef", "descriptor"],
+        "properties": {
+          "slotId": {"$ref": "common.schema.json#/$defs/id"},
+          "kind": {"enum": ["ADAPTER", "BODY"]},
+          "role": {"enum": ["NEURAL_REASONER", "DETERMINISTIC_TOOL", "HUMAN_INPUT", "SENSOR", "BODY", "OUTPUT"]},
+          "descriptorRef": {"$ref": "common.schema.json#/$defs/reference"},
+          "descriptor": {"oneOf": [{"$ref": "adapter-descriptor.schema.json"}, {"$ref": "body-descriptor.schema.json"}]}
+        }
+      }
+    },
+    "continuity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "headReceiptDigest", "acceptedReceiptDigests", "candidateReceiptDigests", "effectiveAcceptedReceiptDigests", "stateDigest"],
+      "properties": {
+        "state": {"enum": ["EMPTY", "RECONSTRUCTED"]},
+        "headReceiptDigest": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/digest"}]},
+        "acceptedReceiptDigests": {"$ref": "common.schema.json#/$defs/digests"},
+        "candidateReceiptDigests": {"$ref": "common.schema.json#/$defs/digests"},
+        "effectiveAcceptedReceiptDigests": {"$ref": "common.schema.json#/$defs/digests"},
+        "stateDigest": {"$ref": "common.schema.json#/$defs/digest"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"state": {"const": "EMPTY"}}, "required": ["state"]},
+          "then": {"properties": {"headReceiptDigest": {"type": "null"}, "acceptedReceiptDigests": {"maxItems": 0}, "candidateReceiptDigests": {"maxItems": 0}, "effectiveAcceptedReceiptDigests": {"maxItems": 0}}}
+        },
+        {
+          "if": {"properties": {"state": {"const": "RECONSTRUCTED"}}, "required": ["state"]},
+          "then": {
+            "properties": {"headReceiptDigest": {"$ref": "common.schema.json#/$defs/digest"}},
+            "anyOf": [{"properties": {"acceptedReceiptDigests": {"minItems": 1}}}, {"properties": {"candidateReceiptDigests": {"minItems": 1}}}]
+          }
+        }
+      ]
+    },
+    "lineageReceipt": {"$ref": "lineage-receipt.schema.json"},
+    "portability": {
+      "type": "object", "additionalProperties": false,
+      "required": ["format", "encoding", "providerIndependent", "valueFreeClaimed", "machinePathsIncluded", "secretsIncluded", "privateChatsIncluded", "hiddenReasoningIncluded", "defaultsApplied"],
+      "properties": {
+        "format": {"const": "CANONICAL_JSON"}, "encoding": {"const": "UTF-8"}, "providerIndependent": {"const": true}, "valueFreeClaimed": {"const": false},
+        "machinePathsIncluded": {"const": false}, "secretsIncluded": {"const": false}, "privateChatsIncluded": {"const": false}, "hiddenReasoningIncluded": {"const": false},
+        "defaultsApplied": {"type": "array", "maxItems": 0}
+      }
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["inert", "runtimeClaimed", "adapterCodeLoaded", "modelExecuted", "networkUsed", "filesystemMutated", "actuationPerformed", "identityStateExpandedByAttachment", "memorySilentlyAccepted", "consciousnessClaimed", "subjectiveContinuityClaimed", "installed", "promoted", "canon"],
+      "properties": {
+        "inert": {"const": true}, "runtimeClaimed": {"const": false}, "adapterCodeLoaded": {"const": false}, "modelExecuted": {"const": false}, "networkUsed": {"const": false},
+        "filesystemMutated": {"const": false}, "actuationPerformed": {"const": false}, "identityStateExpandedByAttachment": {"const": false}, "memorySilentlyAccepted": {"const": false},
+        "consciousnessClaimed": {"const": false}, "subjectiveContinuityClaimed": {"const": false}, "installed": {"const": false}, "promoted": {"const": false}, "canon": {"const": false}
+      }
+    },
+    "manifestDigest": {"$ref": "common.schema.json#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"lifecycleState": {"const": "ACTIVE_PROPOSAL"}}, "required": ["lifecycleState"]},
+      "then": {"properties": {"lineageReceipt": {"properties": {"eventKind": {"enum": ["ORIGIN", "FORK", "MIGRATION", "RECONSTRUCTION"]}}}}}
+    },
+    {
+      "if": {"properties": {"lifecycleState": {"const": "SUCCESSION_PROPOSED"}}, "required": ["lifecycleState"]},
+      "then": {"properties": {"lineageReceipt": {"properties": {"eventKind": {"const": "SUCCESSION_PROPOSAL"}}}}}
+    },
+    {
+      "if": {"properties": {"lifecycleState": {"const": "RETIREMENT_PROPOSED"}}, "required": ["lifecycleState"]},
+      "then": {"properties": {"lineageReceipt": {"properties": {"eventKind": {"const": "RETIREMENT_PROPOSAL"}}}}}
+    }
+  ]
+}

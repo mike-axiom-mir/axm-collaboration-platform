@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.continuity-policy/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "policyId", "acceptedEventTypes", "candidateMemory", "acceptance", "dissent", "retention", "reconstruction", "migration", "rollback", "lostContinuity"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.continuity-policy/v1"},
+    "version": {"const": "0.1.0"},
+    "policyId": {"$ref": "common.schema.json#/$defs/id"},
+    "acceptedEventTypes": {"$ref": "#/$defs/events"},
+    "candidateMemory": {
+      "type": "object", "additionalProperties": false, "required": ["defaultState", "neuralOutputIsMemory", "generatedMemoryRequiresAcceptance"],
+      "properties": {"defaultState": {"const": "CANDIDATE"}, "neuralOutputIsMemory": {"const": false}, "generatedMemoryRequiresAcceptance": {"const": true}}
+    },
+    "acceptance": {
+      "type": "object", "additionalProperties": false, "required": ["actorKinds", "requiresReceipt", "allowedEventTypes"],
+      "properties": {"actorKinds": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"const": "HUMAN"}}, "requiresReceipt": {"const": true}, "allowedEventTypes": {"$ref": "#/$defs/events"}}
+    },
+    "dissent": {"type": "object", "additionalProperties": false, "required": ["preserve", "automaticResolution"], "properties": {"preserve": {"const": true}, "automaticResolution": {"const": false}}},
+    "retention": {
+      "type": "object", "additionalProperties": false, "required": ["maxAcceptedReceipts", "maxCandidateReceipts", "rawPrivateDataAllowed"],
+      "properties": {"maxAcceptedReceipts": {"type": "integer", "minimum": 0, "maximum": 256}, "maxCandidateReceipts": {"type": "integer", "minimum": 0, "maximum": 256}, "rawPrivateDataAllowed": {"const": false}}
+    },
+    "reconstruction": {
+      "type": "object", "additionalProperties": false, "required": ["authoritativeStateFromAcceptedReceipts", "missingEvidenceState", "ordering"],
+      "properties": {"authoritativeStateFromAcceptedReceipts": {"const": true}, "missingEvidenceState": {"const": "UNKNOWN"}, "ordering": {"const": "STRICT_HASH_CHAIN"}}
+    },
+    "migration": {"type": "object", "additionalProperties": false, "required": ["modelSwapDisclosureRequired", "connectorSwapDisclosureRequired"], "properties": {"modelSwapDisclosureRequired": {"const": true}, "connectorSwapDisclosureRequired": {"const": true}}},
+    "rollback": {"type": "object", "additionalProperties": false, "required": ["targetDigestRequired", "preserveSupersededHistory"], "properties": {"targetDigestRequired": {"const": true}, "preserveSupersededHistory": {"const": true}}},
+    "lostContinuity": {"type": "object", "additionalProperties": false, "required": ["state", "action"], "properties": {"state": {"const": "UNKNOWN"}, "action": {"const": "HOLD"}}}
+  },
+  "$defs": {
+    "events": {"type": "array", "minItems": 1, "maxItems": 9, "uniqueItems": true, "items": {"enum": ["ORIGIN", "MEMORY_CANDIDATE", "MEMORY_ACCEPTANCE", "DISSENT", "MODEL_OR_CONNECTOR_SWAP", "MIGRATION", "RECONSTRUCTION", "ROLLBACK", "RETIREMENT_PROPOSAL"]}}
+  }
+}

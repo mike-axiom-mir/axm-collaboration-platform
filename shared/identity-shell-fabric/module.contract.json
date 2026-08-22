@@ -1,0 +1,79 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "identity-shell-fabric",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.identity-shell.identity-root/v1",
+    "axm.identity-shell.continuity-policy/v1",
+    "axm.identity-shell.continuity-event/v1",
+    "axm.identity-shell.adapter-descriptor/v1",
+    "axm.identity-shell.body-descriptor/v1",
+    "axm.identity-shell.resource-envelope/v1",
+    "axm.identity-shell.blueprint/v1",
+    "axm.identity-shell.manifest/v1",
+    "axm.identity-shell.lineage-receipt/v1",
+    "axm.identity-shell.build-gap-receipt/v1",
+    "axm.identity-shell.human-decision-receipt/v1",
+    "identity.shell.compile.deterministic",
+    "identity.shell.manifest.verify-primary",
+    "identity.shell.manifest.verify-independent",
+    "identity.shell.receipt.verify-primary",
+    "identity.shell.receipt.verify-independent",
+    "identity.shell.export.canonical-redacted",
+    "identity.shell.continuity.reconstruct",
+    "identity.shell.lineage.proposal-gated"
+  ],
+  "consumes": [
+    "strict-deterministic-canonical-json",
+    "caller-authored-blueprint",
+    "exact-component-descriptors-and-digests",
+    "explicit-authority-and-resource-envelope",
+    "axm.human-acceptance/v1",
+    "exact-parent-continuity-lineage-and-human-decision-references"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.identity-shell.manifest/v1",
+      "axm.identity-shell.lineage-receipt/v1",
+      "axm.identity-shell.build-gap-receipt/v1"
+    ],
+    "accepts": [
+      "axm.identity-shell.blueprint/v1",
+      "axm.identity-shell.adapter-descriptor/v1",
+      "axm.identity-shell.body-descriptor/v1",
+      "axm.identity-shell.continuity-event/v1",
+      "axm.identity-shell.human-decision-receipt/v1"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "model-or-provider-invocation",
+      "adapter-code-loading-or-execution",
+      "network-or-filesystem-use",
+      "robotic-actuation",
+      "automatic-memory-acceptance",
+      "identity-or-authority-expansion-by-attachment",
+      "human-authorship-authentication-claim",
+      "consciousness-personhood-or-subjective-continuity-claim",
+      "fork-identity-id-reuse",
+      "undisclosed-model-or-connector-swap",
+      "re-signed-manifest-semantic-drift",
+      "arbitrary-continuity-acceptance-schema",
+      "re-signed-receipt-status-output-drift",
+      "human-decision-subject-or-evidence-drift",
+      "automatic-succession-retirement-or-inheritance",
+      "automatic-install-promotion-merge-or-canon",
+      "foundation-parent-registry-or-hub-mutation",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "exact-rebuild-from-caller-inputs",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

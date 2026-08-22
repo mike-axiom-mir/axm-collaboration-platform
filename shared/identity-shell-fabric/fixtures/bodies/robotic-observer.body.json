@@ -1,0 +1,45 @@
+{
+  "schema": "axm.identity-shell.body-descriptor/v1",
+  "version": "0.1.0",
+  "descriptorId": "robotic-observer-body",
+  "descriptorVersion": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "bodyClass": "ROBOTIC",
+  "interfaces": [
+    {
+      "id": "sensor-observation-input",
+      "direction": "OBSERVATION_IN",
+      "schema": "axm.identity-shell.sensor-observation/v1"
+    },
+    {
+      "id": "proposal-output",
+      "direction": "OUTPUT_OUT",
+      "schema": "axm.identity-shell.neural-proposal/v1"
+    }
+  ],
+  "requestedPermissions": ["observation.receive", "proposal.emit"],
+  "resourceRequest": {
+    "computeUnits": 3,
+    "memoryBytes": 131072,
+    "storageBytes": 1024,
+    "timeMilliseconds": 100,
+    "networkDomains": [],
+    "energyMilliwattHours": 1,
+    "actuationOperations": 0
+  },
+  "observationBoundary": {
+    "allowedInterfaceIds": ["proposal-output", "sensor-observation-input"],
+    "undeclaredObservationAllowed": false
+  },
+  "actuationBoundary": {
+    "mode": "UNAVAILABLE_V0_1",
+    "allowedInterfaceIds": []
+  },
+  "execution": {
+    "mode": "INERT_DESCRIPTOR_ONLY",
+    "codeIncluded": false,
+    "loadable": false,
+    "executable": false
+  },
+  "evidenceCeiling": "Declares a robotic-class observation boundary for portability tests. Motion, energy delivery, actuator interfaces, commands, and physical execution are unavailable."
+}
