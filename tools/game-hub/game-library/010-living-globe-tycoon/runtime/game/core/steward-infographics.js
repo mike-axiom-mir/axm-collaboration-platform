@@ -145,7 +145,7 @@
     var provider = options && options.provider;
     if (typeof provider !== 'function') throw new TypeError('steward metric provider required');
     var toggle = element('button', '', 'Brief'); toggle.id = 'axmMetricsToggle'; toggle.type = 'button'; toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-controls', 'axmMetricsPanel'); toggle.title = 'Open the shared Island Brief';
-    var panel = element('aside', 'axm-metrics-panel'); panel.id = 'axmMetricsPanel'; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-label', 'Shared Island Brief');
+    var panel = element('aside', 'axm-metrics-panel'); panel.id = 'axmMetricsPanel'; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-hidden', 'true'); panel.setAttribute('aria-label', 'Shared Island Brief');
     panel.innerHTML = '<header class="axm-metrics-head"><div><div class="axm-brief-kicker">SHARED HUMAN + AI ISLAND BRIEF</div><h2>THE ISLAND, WITHOUT THE PALACE SPIN</h2><p id="axmBriefStamp"></p></div><button class="axm-metrics-close" type="button" aria-label="Close Island Brief">close</button></header><div class="axm-no-score"><b>NO OVERALL ISLAND SCORE</b><span>Ecology, people, public books, supply and missions stay separate so one success cannot hide another problem.</span></div><section><h3 class="axm-brief-label">FIVE AT A GLANCE · TAP TO INSPECT</h3><div class="axm-brief-quick" id="axmMetricQuick"></div></section><section><h3 class="axm-brief-label">WHAT NEEDS YOUR EYES</h3><div class="axm-signal-grid" id="axmMetricSignals"></div></section><section><h3 class="axm-brief-label">FIVE DIFFERENT TRUTHS</h3><div class="axm-infographic-grid" id="axmMetricCards"></div></section><footer class="axm-metrics-foot"><span>Every line comes from current strategic, mission or declared player-seat state.</span><span>Reading this screen advances nothing.</span></footer>';
     document.body.appendChild(toggle); document.body.appendChild(panel);
     var cards = panel.querySelector('#axmMetricCards'), signals = panel.querySelector('#axmMetricSignals'), quick = panel.querySelector('#axmMetricQuick'), stamp = panel.querySelector('#axmBriefStamp');
@@ -159,17 +159,17 @@
       renderBriefQuick(quick, report); renderSignals(signals, report); report.cards.forEach(function (entry) { cards.appendChild(renderCard(entry)); }); return report;
     }
     function open() {
-      render(); panel.classList.add('open'); document.body.classList.add('axm-brief-open'); toggle.setAttribute('aria-expanded', 'true');
+      render(); panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); document.body.classList.add('axm-brief-open'); toggle.setAttribute('aria-expanded', 'true');
       try { root.dispatchEvent(new CustomEvent('axm-infographics-open')); } catch (error) {}
       panel.querySelector('.axm-metrics-close').focus();
     }
     function close(focusToggle) {
-      panel.classList.remove('open'); document.body.classList.remove('axm-brief-open'); toggle.setAttribute('aria-expanded', 'false'); if (focusToggle) toggle.focus();
+      panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); document.body.classList.remove('axm-brief-open'); toggle.setAttribute('aria-expanded', 'false'); if (focusToggle) toggle.focus();
     }
     toggle.addEventListener('click', function (event) { event.stopPropagation(); if (panel.classList.contains('open')) close(true); else open(); });
     panel.querySelector('.axm-metrics-close').addEventListener('click', function () { close(true); });
     ['pointerdown','pointerup','click','wheel','touchstart'].forEach(function (name) { panel.addEventListener(name, function (event) { event.stopPropagation(); }, { passive: name === 'wheel' || name === 'touchstart' }); });
-    root.addEventListener('keydown', function (event) { if (event.key === 'Escape' && panel.classList.contains('open')) close(true); });
+    root.addEventListener('keydown', function (event) { if (event.key === 'Escape' && panel.classList.contains('open')) { event.preventDefault(); close(true); } });
     root.addEventListener('axm-palace-open', function () { close(false); });
     return { refresh: function () { return panel.classList.contains('open') ? render() : lastReport; }, open: open, close: function () { close(false); }, isOpen: function () { return panel.classList.contains('open'); }, observeRenderedReport: function () { return lastReport ? JSON.parse(JSON.stringify(lastReport)) : null; } };
   }

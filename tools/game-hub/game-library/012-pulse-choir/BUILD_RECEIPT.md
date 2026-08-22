@@ -1,8 +1,20 @@
 # Pulse Choir build receipt
 
-Status: **playable human-stewarded Game Night alpha V4**.
+Status: **TEST · Constellation Circuit 3D expansion**. This is reviewable material, not CANON.
 
-Pulse Choir is installed as Game Hub slot `012` and currently launched through the managed Game Hub runtime with one human seat and two AI seats.
+Pulse Choir is installed as Game Hub slot `012`. The direct-development roster and this pass's isolated verification use one human seat and two AI seats; Game Hub still owns the real launch roster.
+
+## 2026-08-16 bounded content expansion
+
+- Expanded the main show arc from three to five 75-second rounds, taking the declared room target from roughly two minutes to roughly eight minutes including intermissions.
+- Added Moonwell Atrium, Prism Causeway, Static Garden, Twin Comet Bridge, and Dawn Archive. Every venue changes authoritative beat population/mix, movement pace, glitch timing, score factor, and mastery goal.
+- Added bounded SHOW MEMORY tour receipts: visits, best venue score, last round, first mastery, and mastery repeat count. Legacy show memory migrates into the empty tour contract without losing the existing receipt/Conductor state.
+- Added a dependency-free WebGL 3D stage with depth-tested low-poly architecture, per-face shading, venue palettes, a perspective camera, 5-bit color quantization, deliberately reduced internal resolution, fallback behavior, and reduced-motion camera lock.
+- Kept performers, beats, hazards, scores, and input authority in the existing Canvas/server layer. The visual expansion does not move rules into the client.
+- Exposed current and upcoming venue rules on the shared screen and controller, plus current stamp count in results and the lobby.
+- Added focused circuit, mastery migration, WebGL syntax/contract, static delivery, observation, venue rotation, and venue beat-count checks.
+
+Live browser receipt on isolated port `19812`: Moonwell completed at 2704 / IN RHYTHM and awarded stamp 1/5; Prism completed at 2818 / IN RHYTHM and awarded stamp 2/5; Static Garden then rendered as the third distinct WebGL venue. The WebGL canvas reported `renderer=webgl` and the matching venue IDs. A browser reload preserved active Prism state and the Moonwell stamp. Reduced motion reported zero camera drift across repeated frames while the render loop continued. At 1280×720, the page measured 1280×701 with no overflow. Browser console output was not used as evidence in this pass.
 
 ## What was built
 
@@ -37,7 +49,7 @@ Pulse Choir is installed as Game Hub slot `012` and currently launched through t
 
 ## Verification
 
-- Pure core and package self-test: **23 PASS, 0 FAIL**, including deterministic receipt-adaptive Conductor modes, human-only ROOM SIGNAL authorization/resolution/consumption, legacy-state normalization, show-memory replay/abort safety, Setlist determinism/variation, authoritative timeout rotation, human gating, bonus scoring, receipt closure, TRIAD scoring, harmony expiry, perfect-sync shields, AI contribution weighting, the idle-human rank guard, and idle-AI ledger suppression.
+- Pure core and package self-test: **25 PASS, 0 FAIL**, now also covering deterministic five-venue routing and bounded mastery migration/persistence in addition to the prior Conductor, ROOM SIGNAL, show-memory, Setlist, TRIAD, shield, AI, and package checks.
 - Fresh-process HTTP lifecycle: **PASS** for health, static screen, controller, start, action, authoritative Setlist/show-memory state, changed-seed replay, abort-safe recovery, seat observation, stale-sequence refusal, telemetry, and reset.
 - Separate-process crash-recovery suite: **PASS** for active-round restore, paused clock, neutral held input, stale-sequence refusal after restart, next-sequence acceptance, New Show, corrupt checkpoint, expiry, and roster mismatch.
 - Focused Game Hub package verifier: **PASS slot 012**. The concurrently changing library is not used as evidence for this lane.

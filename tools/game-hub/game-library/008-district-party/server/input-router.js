@@ -8,6 +8,13 @@ function isExternalController(actor) {
   return actor && (actor.controller === 'human' || actor.controller === 'adapter');
 }
 
+function meaningfulInput(input) {
+  return Math.hypot(Number(input.moveX) || 0, Number(input.moveY) || 0) > 0.12
+    || Math.hypot(Number(input.aimX) || 0, Number(input.aimY) || 0) > 0.12
+    || ['action', 'fire', 'attack', 'sprint', 'brake', 'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate', 'mapToggle']
+      .some((field) => input[field] === true);
+}
+
 function routeInput(sessionManager, packet, now = Date.now()) {
   const validation = validateInputPacket(packet);
   if (!validation.ok) return { ok: false, statusCode: 400, reason: 'malformed-input', errors: validation.errors };
@@ -20,11 +27,23 @@ function routeInput(sessionManager, packet, now = Date.now()) {
   if (!tokensEqual(packet.token, session.seatTokens[packet.seatId])) {
     return { ok: false, statusCode: 403, reason: 'seat-token-rejected' };
   }
-  if (packet.seq <= actor.inputSequence) {
-    return { ok: false, statusCode: 409, reason: 'stale-input-sequence', acceptedSeq: actor.inputSequence };
+  const inputSource = packet.source === 'shared-gamepad' ? 'shared-gamepad' : 'controller';
+  actor.inputSequences ||= { controller: actor.inputSequence || 0, 'shared-gamepad': 0 };
+  const acceptedForSource = Number(actor.inputSequences[inputSource]) || 0;
+  if (packet.seq <= acceptedForSource) {
+    return { ok: false, statusCode: 409, reason: 'stale-input-sequence', acceptedSeq: acceptedForSource, inputSource };
   }
 
   const nextInput = sanitizeInputIntent(packet.input);
+  const meaningful = meaningfulInput(nextInput);
+  actor.inputSequences[inputSource] = packet.seq;
+  if (actor.inputSource && actor.inputSource !== inputSource && now < (actor.inputSourceActiveUntil || 0) && !meaningful) {
+    return { ok: true, ignored: true, reason: 'other-input-source-active', acceptedSeq: packet.seq, inputSource };
+  }
+  if (meaningful || actor.inputSource === inputSource || now >= (actor.inputSourceActiveUntil || 0)) {
+    actor.inputSource = inputSource;
+    actor.inputSourceActiveUntil = now + (meaningful ? 1500 : 250);
+  }
   actor.inputHeld ||= {};
   actor.pendingPulses ||= {};
   for (const field of ['action', 'fire', 'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate', 'mapToggle']) {
@@ -35,7 +54,8 @@ function routeInput(sessionManager, packet, now = Date.now()) {
   }
   actor.actionHeld = actor.inputHeld.action === true;
   actor.input = nextInput;
-  actor.inputSequence = packet.seq;
+  if (inputSource === 'controller') actor.inputSequence = packet.seq;
+  actor.gamepadInputSequence = Number(actor.inputSequences['shared-gamepad']) || 0;
   actor.lastInputAt = now;
   actor.connected = true;
   const playerRecord = session.players.find((player) => player.seatId === actor.seatId);
@@ -52,7 +72,8 @@ function routeInput(sessionManager, packet, now = Date.now()) {
     player,
     actorId: actor.id,
     seatId: actor.seatId,
-    acceptedSeq: actor.inputSequence,
+    acceptedSeq: packet.seq,
+    inputSource,
   };
 }
 
@@ -112,4 +133,4 @@ function getControllerInfo(sessionManager, { roomCode, sessionId, seatId, token 
   };
 }
 
-module.exports = { getControllerInfo, isExternalController, routeInput };
+module.exports = { getControllerInfo, isExternalController, meaningfulInput, routeInput };

@@ -49,9 +49,15 @@ button.danger { border-color: rgba(255, 122, 153, .45); color: #ffc5d2; }
 .eyebrow, .section-label { color: var(--mint); font-size: .66rem; font-weight: 800; letter-spacing: .26em; text-transform: uppercase; }
 .glass { background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); backdrop-filter: blur(18px); }
 
-#world { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#world-depth, #world { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#world-depth { z-index: 0; image-rendering: pixelated; }
+#world { z-index: 1; transition: opacity .45s ease; }
+body.three-depth-ready #world { opacity: .28; mix-blend-mode: screen; pointer-events: none; }
+body.three-depth-ready .ambient-grid { opacity: .11; }
+body.three-depth-ready .title-constellation { opacity: .28; }
+body.three-depth-ready .title-art { opacity: .42; }
 .ambient-grid {
-  position: fixed; inset: 0; pointer-events: none; opacity: .18;
+  position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: .18;
   background-image: linear-gradient(rgba(96, 231, 210, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(96, 231, 210, .05) 1px, transparent 1px);
   background-size: 54px 54px;
   mask-image: radial-gradient(circle at center, black, transparent 80%);

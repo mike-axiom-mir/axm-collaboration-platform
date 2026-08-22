@@ -349,7 +349,7 @@ function spawnRelayWave(world, wave) {
   const roles = Array.isArray(configuredRoles) && configuredRoles.length
     ? configuredRoles
     : wave === 1 ? ['rusher', 'skirmisher'] : wave === 2
-      ? ['rusher', 'skirmisher', 'blocker'] : ['blocker', 'rusher', 'skirmisher'];
+      ? ['rusher', 'skirmisher', 'blocker'] : ['blocker', 'rusher', 'sapper', 'skirmisher'];
   const occupied = [];
   for (let index = 0; index < count; index += 1) {
     const [offsetX, offsetY] = offsets[index % offsets.length];
@@ -387,7 +387,7 @@ function spawnSupplyGuards(world, layout) {
     world.npcs[id] = createHostileNpc({
       id,
       faction: 'neon-rivals',
-      role: index % 2 === 0 ? 'rusher' : 'skirmisher',
+      role: index === 2 ? 'sapper' : index % 2 === 0 ? 'rusher' : 'skirmisher',
       position: point,
       source: 'mission',
       kind: 'rival',

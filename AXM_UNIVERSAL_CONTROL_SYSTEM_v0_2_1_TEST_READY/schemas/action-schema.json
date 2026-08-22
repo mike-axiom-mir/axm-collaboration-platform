@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/action-schema.json",
+  "title": "AXM Input Action",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "type",
+    "range",
+    "behavior",
+    "sensitivity",
+    "accessibilityAlternatives",
+    "defaultBindings"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "enum": [
+        "digital",
+        "axis1",
+        "axis2",
+        "trigger",
+        "pointer",
+        "text"
+      ]
+    },
+    "range": {
+      "type": "object",
+      "required": [
+        "min",
+        "max"
+      ],
+      "properties": {
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        }
+      }
+    },
+    "behavior": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "tap",
+          "hold",
+          "double-tap",
+          "toggle",
+          "repeat",
+          "continuous"
+        ]
+      },
+      "minItems": 1
+    },
+    "deadZone": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "inner",
+            "outer"
+          ],
+          "properties": {
+            "inner": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "outer": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      ]
+    },
+    "sensitivity": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "contexts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "accessibilityAlternatives": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "defaultBindings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

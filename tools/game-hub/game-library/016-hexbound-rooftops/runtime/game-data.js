@@ -333,7 +333,10 @@
       effect:{ kind:'lead-role-spotlight', period:13, duration:5, range:520, damageBonus:.18 } },
     { id:'every-window-assembly', factionId:'lantern-republic', buildingId:'borough', name:'Every-Window Assembly', icon:'CIVIC',
       detail:'Every 13s, a visible enemy formation raises 5s of Civic Cover: nearby allied formations take 14% less damage, strengthened by mixed charters',
-      effect:{ kind:'civic-cover', period:13, duration:5, range:520, damageReduction:.14 } }
+      effect:{ kind:'civic-cover', period:13, duration:5, range:520, damageReduction:.14 } },
+    { id:'department-of-later', factionId:'temporal-mischief', buildingId:'watch', name:'Department of Later', icon:'LATER',
+      detail:'Every 14s postpones the nearest visible enemy formation for 3s, pausing movement and attacks; mixed charters lengthen the deferral',
+      effect:{ kind:'deadline-deferral', period:14, duration:3, range:520, maxDuration:4.35 } }
   ];
 
   const BUILDINGS = [

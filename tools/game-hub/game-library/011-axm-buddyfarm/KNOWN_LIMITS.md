@@ -1,6 +1,7 @@
 # Known limits
 
-Status: **WORKING TEST · LARGE BLANK WORLD**, not a finished game.
+Status: **WORKING TEST · LARGE BLANK WORLD · UNIVERSAL GAMEPAD LOGIC QA ·
+PHYSICAL DEVICE QA PENDING**, not a finished game.
 
 - The 12,288 × 8,192 substrate is intentionally blank and transparent. Outside
   the authored 40 × 28 starter district, the current visible/walkable layer is
@@ -25,9 +26,11 @@ Status: **WORKING TEST · LARGE BLANK WORLD**, not a finished game.
   physically hold a keyboard/gamepad/phone button for 200 ms, so the exact live
   hold routes remain physical QA even though the shared client timing code and
   authoritative 199/200 ms boundary are deterministic-tested.
-- Bluetooth/USB gamepad routing remains hardware-unverified. Deterministic tests
-  cover keyboard + one pad (`P2`) and two pads (`P1`, `P2`) without silently
-  assigning an AI seat.
+- Bluetooth/USB gamepad routing remains hardware-unverified. Deterministic and
+  labeled browser simulation cover stable one-, two- and three-pad ownership,
+  standard-mapping refusal, Action/Work, map, controls menu and disconnect
+  fallback without silently assigning an AI seat. Simulation is not hardware
+  evidence.
 - Physical two-phone QA is still pending. The simulated phone viewport has no
   horizontal/vertical overflow and all controls remain visible.
 - AI work is off by default. Seat 3 exists only when explicitly present in the

@@ -47,6 +47,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 .world-card { padding: 10px 14px; display: grid; grid-template-columns: 1fr 64px; gap: 4px 12px; align-items: center; }
 .world-card strong { font: 900 17px "Arial Black", sans-serif; color: var(--gold); }
 .world-card > span { grid-column: 1 / -1; color: #bcd1dd; letter-spacing: .08em; font-size: 9px; font-weight: 900; }
+.world-card .gamepad-status { color: #7fe8d8; font-size: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .omen-track { height: 8px; border-radius: 9px; background: rgba(255,255,255,.08); overflow: hidden; }
 .omen-track i { display: block; width: 0; height: 100%; background: linear-gradient(90deg, var(--teal), var(--violet), #5d226f); }
 .round-button { border-radius: 15px; border: 1px solid var(--line); font-weight: 900; cursor: pointer; }
@@ -91,6 +92,14 @@ kbd { display: inline-flex; align-items: center; justify-content: center; min-wi
 .coop-card[data-state="wide"] em { color: var(--gold); }
 .coop-card[data-state="regroup"] { border-color: rgba(255,108,101,.9); box-shadow: 0 0 0 2px rgba(255,108,101,.18), var(--shadow); }
 .coop-card[data-state="regroup"] em { color: #ff9d96; }
+
+.gamepad-qa-panel { position: fixed; z-index: 220; left: 18px; bottom: 112px; width: min(390px, calc(100vw - 36px)); max-height: calc(100vh - 140px); overflow: auto; border-radius: 16px; padding: 14px; }
+.gamepad-qa-panel > small { display: block; color: var(--gold); font-size: 9px; font-weight: 1000; letter-spacing: .16em; }
+.gamepad-qa-panel > strong { display: block; margin-top: 3px; font: 900 15px "Arial Black", sans-serif; }
+.gamepad-qa-panel > p { margin: 4px 0 10px; color: #aec1cc; font-size: 10px; }
+.gamepad-qa-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+.gamepad-qa-actions button { min-height: 34px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.07); font-size: 9px; font-weight: 900; cursor: pointer; }
+.gamepad-qa-panel output { display: block; margin-top: 9px; color: #7fe8d8; font: 800 10px/1.35 ui-monospace, monospace; }
 
 .event-toast { position: fixed; z-index: 60; left: 50%; top: 21%; transform: translate(-50%, -12px); width: min(500px, calc(100vw - 30px)); padding: 18px 24px; text-align: center; border-radius: 20px; background: rgba(12,22,38,.9); border: 1px solid rgba(255,255,255,.18); box-shadow: var(--shadow); animation: toast-in .35s forwards; }
 .event-toast small { color: var(--gold); letter-spacing: .18em; font-size: 9px; font-weight: 900; }
@@ -242,6 +251,8 @@ kbd { display: inline-flex; align-items: center; justify-content: center; min-wi
 .memory-note { background: #317f79; border-color: #ffdd84; }
 .pet-note { background: #247c70; }
 .regret-note { background: #a23f64; }
+.route-board-note { transform: translate(-50%,calc(-50% + 38px)); background: #314a63; border-color: #71d7cf; }
+.nightline-report-note { transform: translate(-50%,calc(-50% - 38px)); }
 
 .modal { position: fixed; z-index: 110; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(5,11,22,.76); backdrop-filter: blur(8px); }
 .activity-card, .choice-card, .pet-card, .finale-card, .result-card, .pause-card, .help-card { position: relative; width: min(780px, calc(100vw - 30px)); max-height: calc(100vh - 35px); overflow: auto; padding: 28px; border-radius: 24px; background: linear-gradient(145deg,#1e3148,#0d192a); border: 1px solid rgba(255,255,255,.18); box-shadow: var(--shadow); }
@@ -365,6 +376,7 @@ kbd { display: inline-flex; align-items: center; justify-content: center; min-wi
   .action-dock kbd { display: none; }
   .action-dock strong { font-size: 8px; white-space: normal; }
   .quick-menu, .minimap, .coop-card { display: none !important; }
+  .gamepad-qa-panel { left: 8px; bottom: 72px; width: calc(100vw - 16px); max-height: 46vh; }
   .title-shade { background: linear-gradient(0deg,rgba(7,15,27,.97),rgba(7,15,27,.35) 75%); }
   .title-content { width: 100%; min-height: 620px; padding: 50vh 22px 30px; justify-content: flex-end; }
   .title-content h1 { font-size: 48px; }

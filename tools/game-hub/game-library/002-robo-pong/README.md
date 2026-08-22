@@ -2,7 +2,9 @@
 
 Status: **WORKING TEST** · local browser and Game Night build · physical phone QA pending.
 
-Duet is the 1–2 player half of the AXM Pong pair. It keeps server-authoritative movement and outcomes while replacing the original presentation with AXM Aetherglass lighting, three playable arenas, story/co-op rules, and a compact local-versus route.
+Duet is the 1–2 player half of the AXM Pong pair. It keeps server-authoritative movement and outcomes while combining AXM Aetherglass lighting, three playable arenas, story/co-op rules, a compact local-versus route, and a registered low-poly WebGL relief layer.
+
+The arena plates remain the authored environmental backdrop. A transparent depth-tested WebGL canvas now raises the live paddles, Warden, relay core, boundary rails, and ball into faceted 3D. The shader uses sixteen light steps per color channel, while the original Canvas layer remains the gameplay-readable fallback when WebGL is unavailable.
 
 ## Play modes
 
@@ -21,6 +23,7 @@ Every arena plate is a real project-local raster asset. Paddles, ball position, 
 
 - Phone/touch: **LEFT**, **RIGHT**, and **USE POWER**.
 - Shared keyboard: P1 uses **A / D** and **Space**; P2 uses **Left / Right Arrow** and **Enter**.
+- Shared-screen Xbox/Brawl gamepads: pad 1 controls P1 and pad 2 controls P2. Left stick or D-pad moves, **A** or right trigger uses power, and **Menu** pauses. Other buttons may remain unused.
 - **Escape** pauses or resumes from the shared screen.
 
 Random specials remain available: Mega Shield, Paddle Warp, Slow Field, and Signal Jam.
@@ -41,4 +44,4 @@ Run `node neon-duet-selftest.cjs` from this package folder for the story/co-op a
 
 ## Honest verification boundary
 
-Local HTTP, authoritative state, mode/map configuration, keyboard/controller delivery, and browser rendering can be tested on this machine. Real same-Wi-Fi latency, vibration, safe-area behavior, reconnect timing, and simultaneous physical-phone input remain a separate device QA gate.
+Local HTTP, authoritative state, mode/map configuration, sparse gamepad mapping, keyboard/controller delivery, and browser rendering can be tested on this machine. Real Xbox/gamepad feel, same-Wi-Fi latency, vibration, safe-area behavior, reconnect timing, and simultaneous physical-phone input remain a separate device QA gate.

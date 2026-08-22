@@ -1,5 +1,14 @@
 # Known Limits — AXM District Party v0.2.7 Interactable Asset Pass
 
+## Visual adventure pass (v0.8.0)
+
+- **PASS - deterministic renderer:** layered roofs/facades, venue storefronts, landmark motion, city-clock atmosphere and route breadcrumbs are generated from local Canvas code and authoritative world state.
+- **PASS - authority boundary:** the presentation layer does not alter collision, routing, mission selection, rewards, purchases or controller input.
+- **PARTIAL - building depth:** facades and roof equipment add readable depth, but entities do not disappear behind tall structures and there is no per-floor interior occlusion.
+- **PARTIAL - adventure direction:** breadcrumbs cover the active voluntary city contract or optional cache. They are not a street-navigation solver and may cross blocks visually.
+- **PARTIAL - time of day:** morning/evening/night presentation follows the host city clock, but weather, cast shadows and a full day/night lighting simulation are not implemented.
+- **UNTESTED - living-room legibility:** the generated renderer frame is clean, but final sign scale, colour and animation comfort still need human television-distance approval.
+
 ## Version and integration
 
 - **PARTIAL — local version alignment:** this was built over the validated v0.2.6 package. Mike reported a newer Local Codex bugfixed copy; use the focused v0.2.7 port kit instead of replacing that project wholesale.
@@ -17,7 +26,7 @@
 - **PARTIAL — style depth:** the supplied buildings are oblique/isometric overlays on a top-down structured map. Footprints and approaches align, but roof occlusion and per-entity depth sorting are not implemented.
 - **PARTIAL — curation:** four single-building images are loaded. Two multi-building sheets remain preserved for later deliberate separation and placement.
 - **PARTIAL — public licensing:** the batch was user supplied for this local AXM prototype. No public redistribution license was independently verified or assigned; do not publish it as CC0 without review.
-- **NOT IMPLEMENTED — equipment-driven character visuals or skins.**
+- **PARTIAL — equipment visuals:** current ranged weapons, body armor and kinetic boots have animated code-drawn shared-screen overlays; a complete clothing/skin catalogue is not implemented.
 
 ## Interactable alpha-pack intake
 
@@ -36,7 +45,7 @@
 ## Shopkeepers and stores
 
 - **PASS — honest previews:** the neutral city shopkeeper and AXM Party House shopkeeper are visibly labelled as future stock modules.
-- **NOT IMPLEMENTED — shopping:** no stock list, prices, buy/sell flow, dialogue, opening hours or ownership exists.
+- **PARTIAL — shopping/venues:** the free-roam Armory, Casino and Crew Garage now expose priced optional menus; a complete district-wide stock catalogue, selling, dialogue, opening hours, ownership and walkable venue floors remain absent.
 - **NOT IMPLEMENTED — four distributed stores:** the map has future locations/landmarks, but this pass does not pretend they are active stores.
 
 ## Devices and browser
@@ -50,9 +59,9 @@
 - **PARTIAL — mission variety:** four modes × four layouts work, but there are no difficulty tiers, story chains or rare route rewards.
 - **PARTIAL — group saves:** nine fixed-roster slots persist bounded progress, not live city/health/position state. No profiles, cloud sync, rename, delete or export UI.
 - **PARTIAL — combat:** ranged projectiles and central damage rules work. General explosions, vehicle impact and broader melee feel remain limited.
-- **PARTIAL — cars:** occupants, passenger fire, destruction/ejection and respawn work; impact damage, repair, vehicle weapons and civilian drivers are absent.
-- **PARTIAL — inventory content:** six equipped plus twelve bag slots and ammo replacement work, but no complete item/shop catalogue ships.
-- **PARTIAL — economy:** personal/party funds and 40/60 rewards work; shops, bodyguards and profiles remain absent.
+- **PARTIAL — cars:** parked-car takeover, four moving traffic cars, occupants, passenger fire, destruction/ejection, armored gang-car delivery and respawn work; impact damage, repair, vehicle weapons and simulated civilian-driver characters are absent.
+- **PARTIAL — inventory content:** six equipped plus twelve bag slots, three guns, three body armors, kinetic boots, matched ammo and role-based rival drops work. Buy/sell crafting, hats, functional melee and a complete citywide catalogue remain future work.
+- **PARTIAL — economy:** personal/party funds, 40/60 rewards, priced personal upgrades, bodyguard hires, gang cars, roadblocks and a deterministic casino table work; a complete shop economy, profiles and persistent upgrade save format remain absent.
 - **PARTIAL — AI:** built-in Host AI can follow, fight, enter vehicles and complete bounded objectives, but has no advanced formations, revive system or hot seat handback.
 - **NOT IMPLEMENTED — audio.**
 

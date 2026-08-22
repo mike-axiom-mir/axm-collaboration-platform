@@ -1,4 +1,48 @@
-# Build receipt — verified local beta
+# Build receipt — TEST beta 0.26 (unsealed)
+
+Version: `0.26.0-beta`  
+Observed: `2026-08-16T05:57:11Z`  
+Status: `TEST` — playable local 3D beta; Mike Tobi review and balance acceptance pending.
+
+## Result
+
+Beta 0.26 adds Signal Dispatches, a repeatable optional objective layer that remains active throughout all three existing contracts. Four seed-ordered dispatches ask the player to cover all three lanes manually, complete a hands-on quota, protect a clean convoy, or clear customers early. The sequence rotates after completion or failure and repeats for longer contracts. Current objective, deadline, progress, completions, failures, streak, marks, and rotation revision persist in the browser-local save.
+
+Dispatches do not change cash, supplies, debt split, bad reviews, arrivals, event effects, upgrade prices, or the 6/9/12-minute contract timers. Each captured mark adds 30 retirement-score points before the existing contract multiplier. A compact HUD strip and a physical roof-mounted 3D signal board show the same deterministic state; Reduced Motion preserves the semantic read while stopping decorative signal animation. Valid 0.9 through 0.25 saves migrate to 0.26.
+
+## Verification
+
+- Runtime syntax: `app.mjs`, `game-core.mjs`, `run-telemetry.mjs`, `scene.mjs`, and `server.cjs` passed `node --check`.
+- Focused/full slot suite: **52/52 passing** (including three new deterministic dispatch/migration/score tests and an end-to-end HTTP check).
+- Slot package verifier: **0 errors**, one unchanged honest warning (`physical phone qa is pending`).
+- Required Workshop gates: all **10/10 commands exited 0**. Repository `verify.js` remained **0 failures / 43 warnings**; the warnings predate and remain outside this leaf lane.
+- Isolated local server on port 19818 stopped cleanly; the port was confirmed free. Browser tabs were closed.
+
+## Live desktop 3D proof
+
+Visual backend: in-app browser at 1280×720. No rolling-video buffer or true 390×844 viewport override was exposed, so this receipt covers bounded desktop frames only and does not claim physical-phone or fresh portrait-browser proof.
+
+- Held active route: HUD and canvas both reported `lane-circuit / active / 2/3 / 7 marks`; the roof board visibly showed the same title, progress, remaining time, and marks. Horizontal overflow was zero and no runtime-error UI appeared.
+- Real interaction: the actual Serve Bay control removed the queued Bay customer and completed the dispatch through the normal manual-service path. HUD and canvas moved to `completed / 3/3 / 10 marks`, the completion announcement reported `+3 MARKS · 1 STREAK`, and the physical board entered its captured state.
+- Rotation: after the authored 4.5-second result read, the same live run rotated to `early-clear / active / 0/4 / 10 marks`; the HUD and 3D board agreed.
+- Persistence: a normal non-QA standard run was paused and reloaded through the player-facing save/continue flow. `early-clear / 0/4 / 0 marks / 0:48` matched before and after reload exactly.
+- Reduced Motion: the real Pause control enabled the reduced branch. A completed clean-sweep route reported `7/7 / 11 marks / reduced`, while the dispatch signal's computed CSS animation was `none`.
+- Fresh primary and secondary tab log reads were both empty. No screenshots were retained as files during this pass.
+
+## Honest boundary
+
+Human fun, Signal Dispatch difficulty, the 30-point mark value, physical-phone behavior, physical screen-reader behavior, representative GPU performance, gamepad/controller support, Steam packaging/depot upload, Steamworks integration, store review, and broader multi-player testing remain unproven. This is a `TEST` content expansion, not `CANON` and not a Steam-release certification.
+
+## Selected digests
+
+- deterministic core: `F35B2B2E6B67DC70CFEAEE872973A08832831E0BB79DECF733B5B74D5715EA24`
+- UI/controller: `450ECC5E1D19B5BB8033C1C06227B7F4D20659D369BC40A58D29248B48896790`
+- 3D scene: `71579050EF72427FDCBE824BEA5115C1B624277F89F732DB3AC6D729921A6191`
+- slot manifest: `68F14F4D294D708A0F2486BE9D0F416B0EDC07E5E79FDE0BE4128A7567A7060D`
+
+---
+
+# Prior sealed build receipt — verified local beta 0.25
 
 Version: `0.25.0-beta`  
 Sealed: `2026-07-28T13:41:06.1126029Z`

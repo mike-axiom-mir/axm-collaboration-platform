@@ -117,6 +117,22 @@ test('graphics quality is player-selectable, persistent, and routed into WebGL c
   assert.match(scene, /renderer\.setPixelRatio\(pixelRatio\)/);
 });
 
+test('retiree operator and customer craft use a bounded faceted presentation rig', () => {
+  const scene = read('runtime/scene.mjs');
+  assert.match(scene, /dataset\.visualPass = 'last-stop-retiree-service-detail-01'/);
+  assert.match(scene, /dataset\.visualAuthority = 'presentation-only'/);
+  assert.match(scene, /dataset\.changesSimulation = 'false'/);
+  assert.match(scene, /dataset\.changesCollision = 'false'/);
+  assert.match(scene, /group\.name = 'faceted-retiree-operator'/);
+  assert.match(scene, /new THREE\.DodecahedronGeometry\(\.69, 1\)/);
+  assert.match(scene, /group\.name = ambient \? 'faceted-ambient-craft' : 'faceted-customer-craft'/);
+  assert.match(scene, /new THREE\.DodecahedronGeometry\(\.84, 0\)/);
+  assert.match(scene, /dataset\.operatorMotion = this\.reducedMotion \? 'reduced-static' : 'animated'/);
+  assert.match(scene, /dataset\.customerModels/);
+  assert.match(scene, /dataset\.drawCalls/);
+  assert.match(scene, /dataset\.triangles/);
+});
+
 test('installed upgrade cards inspect their 3D result without mutating game balance', () => {
   const app = read('runtime/app.mjs');
   const scene = read('runtime/scene.mjs');
@@ -349,4 +365,32 @@ test('debt liberation turns real repayment into persistent HUD and 3D ownership 
   assert.match(css, /\.debt-line\[data-tone="clear"\]/);
   assert.match(css, /\.debt-line\[data-tone="clear"\] > strong \{ color: var\(--teal\); text-shadow:/);
   assert.match(css, /\.mission-panel \.debt-line/);
+});
+
+test('signal dispatch board adds repeatable scored objectives across HUD, save state, and 3D station', () => {
+  const app = read('runtime/app.mjs');
+  const core = read('runtime/game-core.mjs');
+  const scene = read('runtime/scene.mjs');
+  const css = read('runtime/styles.css');
+  const html = read('runtime/index.html');
+  assert.match(core, /export const DISPATCHES = \[/);
+  for (const id of ['lane-circuit', 'hands-on', 'clean-sweep', 'early-clear']) assert.match(core, new RegExp(`id: '${id}'`));
+  assert.match(core, /export function dispatchStatus\(state\)/);
+  assert.match(core, /recordDispatchService\(state, customer, automated, patienceRatio\)/);
+  assert.match(core, /dispatchBonus = dispatchStatus\(state\)\.marks \* 30/);
+  assert.match(core, /merged\.dispatch = createDispatch/);
+  assert.match(html, /id="dispatch-line"[^>]*data-status="active"/);
+  assert.match(html, /id="dispatch-meter"/);
+  assert.match(html, /id="dispatch-marks"/);
+  assert.match(css, /\.dispatch-line\[data-status="completed"\]/);
+  assert.match(css, /\.dispatch-line\[data-status="failed"\]/);
+  assert.match(app, /const dispatch = dispatchStatus\(state\)/);
+  assert.match(app, /scene\.setDispatchStatus\(dispatch\)/);
+  assert.match(app, /function handleDispatchOutcome\(\)/);
+  assert.match(app, /signal marks .*\(\+\$\{dispatchBonus\.toLocaleString\(\)\}\)/);
+  assert.match(scene, /buildDispatchBoard\(\)/);
+  assert.match(scene, /setDispatchStatus\(dispatch\)/);
+  assert.match(scene, /flashDispatch\(status = 'completed'\)/);
+  assert.match(scene, /canvas\.dataset\.dispatchProgress/);
+  assert.match(scene, /canvas\.dataset\.dispatchMotion/);
 });

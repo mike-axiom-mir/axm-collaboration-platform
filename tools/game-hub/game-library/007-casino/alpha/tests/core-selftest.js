@@ -179,14 +179,28 @@ test("moves exactly five percent of a human wager into the progressive", functio
   assert.equal((session.players.seat_1.walletUnits - beforeWallet) + (session.parties.A.houseUnits - beforeHouse) + (session.jackpotUnits - beforeJackpot), 0);
 });
 
-test("uses a one-percent human jackpot chance, caps at 100x, and leaves the remainder", function () {
+test("requires visible paid-spin heat before a human jackpot ticket can pay", function () {
+  var session = war({ jackpot: 1000, seed: "jackpot-heat-seed", bookLength: 50000, house: 100000 });
+  seekDraw(session, "lux-5", function (row) { return row.humanJackpot; });
+  var result = command(session, "seat_1", 1, { type: "spin", wager: 1 }).result;
+  assert.equal(result.jackpotTicketMatched, true);
+  assert.equal(result.jackpotEligible, false);
+  assert.equal(result.jackpotHit, false);
+  assert.equal(result.jackpotPayout, 0);
+  assert.equal(session.observePlayer("seat_1", session.players.seat_1.token).jackpotHeat.current, 1);
+});
+
+test("pays an eligible one-percent human jackpot at 100x and resets the heat", function () {
   var session = war({ jackpot: 1000, seed: "jackpot-cap-seed", bookLength: 50000, house: 100000 });
+  session.jackpotHeatPaidSpins = Core.constants.humanJackpotHeatPaidSpins - 1;
   seekDraw(session, "lux-5", function (row) { return row.humanJackpot; });
   var before = session.jackpotUnits;
   var result = command(session, "seat_1", 1, { type: "spin", wager: 1 }).result;
+  assert.equal(result.jackpotEligible, true);
   assert.equal(result.jackpotHit, true);
   assert.equal(result.jackpotPayout, 100);
   assert.equal(session.jackpotUnits, before + Core.creditsToUnits(0.05) - Core.creditsToUnits(100));
+  assert.equal(session.jackpotHeatPaidSpins, 0);
 });
 
 test("uses the NPC 0.05-percent chance and one-percent contribution", function () {
@@ -329,9 +343,37 @@ test("opens all ten free-play cabinets immediately with no quest events", functi
   assert.equal(session.observePlayer("seat_2", session.players.seat_2.token).quest, null);
 });
 
+test("keeps a long two-player cabinet tour alive across repeated style changes", function () {
+  var session = story({
+    players: [player(1, "Mike"), player(2, "Errol")],
+    house: 1000000,
+    wallet: 10000,
+    seed: "long-two-player-cabinet-tour",
+    bookLength: 500
+  });
+  var sequences = { seat_1: 1, seat_2: 1 };
+
+  for (var index = 0; index < 80; index += 1) {
+    var seatId = index % 2 === 0 ? "seat_1" : "seat_2";
+    var styleId = Catalog.styleIds[index % Catalog.styleIds.length];
+    command(session, seatId, sequences[seatId]++, { type: "select_machine", styleId: styleId });
+    var receipt = command(session, seatId, sequences[seatId]++, { type: "spin", wager: [1, 2, 5, 10][index % 4] }).result;
+    assert.equal(receipt.styleId, styleId);
+    sequences[seatId] = drainFreeSpins(session, seatId, sequences[seatId]);
+    session.advance(250);
+    assert.equal(session.status, "running");
+  }
+
+  assert.equal(session.players.seat_1.stats.paidSpins, 40);
+  assert.equal(session.players.seat_2.stats.paidSpins, 40);
+  assert.ok(session.jackpotHeatPaidSpins >= 0 && session.jackpotHeatPaidSpins <= Core.constants.humanJackpotHeatPaidSpins);
+  assert.equal(session.events.some(function (event) { return /^quest_|^slot_chapter_|^story_/.test(event.type); }), false);
+});
+
 test("persists free-play economy but never quests or the future Draw Spine", function () {
   var first = story({ seed: "persistent-first" });
   command(first, "seat_1", 1, { type: "fund_house", amount: 10 });
+  first.jackpotHeatPaidSpins = 17;
   var saved = first.exportPersistentState();
   assert.equal(Object.prototype.hasOwnProperty.call(saved, "seed"), false);
   assert.equal(JSON.stringify(saved).includes(first.sessionSeed), false);
@@ -343,6 +385,7 @@ test("persists free-play economy but never quests or the future Draw Spine", fun
   assert.equal(second.questProgress, null);
   assert.deepStrictEqual(second.unlockedStyleIds, first.unlockedStyleIds);
   assert.equal(second.jackpotUnits, first.jackpotUnits);
+  assert.equal(second.jackpotHeatPaidSpins, 17);
   assert.notEqual(second.sessionSeed, first.sessionSeed);
   assert.equal(second.drawSpine.totalConsumed, 0);
 });

@@ -2,9 +2,9 @@
   "slot": "012",
   "game_id": "012-pulse-choir",
   "name": "Pulse Choir",
-  "status": "PLAYABLE ALPHA V4 · HUMAN-STEWARDSHIP LOCAL GAME NIGHT",
-  "description": "A 1–4 player cosmic co-op show: build risky three-note TRIADs, chain bank multipliers, synchronize a room-wide surge, and turn perfect harmony into glitch shields.",
-  "version": "0.4.0-stewarded-alpha",
+  "status": "TEST · CONSTELLATION CIRCUIT 3D EXPANSION",
+  "description": "A 1–4 player cosmic co-op tour across five pixelated 3D venues: build risky TRIADs, master venue-specific goals, chain bank multipliers, and synchronize room-wide surges.",
+  "version": "0.5.0-constellation-circuit-test",
   "min_players": 1,
   "max_players": 4,
   "default_visible_seats": 3,
@@ -31,6 +31,9 @@
     "intent_protocol": "axm-semantic-input-v1",
     "phone_controller": true,
     "gamepad": true,
+    "gamepad_profile": "axm-universal-xbox-brawl-v0.2.1",
+    "gamepad_actions": ["MOVE", "PRIMARY_ACTION", "OPEN_MENU"],
+    "unused_gamepad_inputs_allowed": true,
     "keyboard": true,
     "mouse": true,
     "touch": true,
@@ -41,7 +44,7 @@
     "passes_seat_map": true,
     "returns_result_summary": true,
     "drop_in_out_later": true,
-    "target_minutes": 2
+    "target_minutes": 8
   },
   "rules": {
     "no_hidden_players": true,
@@ -54,7 +57,12 @@
     "team_mode": "cooperative",
     "shared_objective_authority": "server",
     "random_seed": 12026,
-    "round_seconds": 75
+    "round_seconds": 75,
+    "show_arc_rounds": 5,
+    "constellation_venues": 5,
+    "venue_mastery_persistent": true,
+    "renderer": "lane-local-webgl-3d-plus-authoritative-2d-gameplay-overlay",
+    "pixel_style": "16-bit-inspired-low-poly"
   },
   "verification": {
     "game_night": {
@@ -85,10 +93,12 @@
       "evidence/live-conductor-verification.json",
       "evidence/room-signal-verification.json",
       "evidence/managed-launch-receipt.json",
+      "evidence/2026-08-16-constellation-circuit-pass/VERIFICATION_RECEIPT.json",
       "runtime/server.js",
       "runtime/checkpoint-store.js",
       "runtime/hub-handback.js",
       "runtime/game-core.js",
+      "runtime/arena-3d.js",
       "runtime/index.html",
       "runtime/styles.css",
       "runtime/app.js",

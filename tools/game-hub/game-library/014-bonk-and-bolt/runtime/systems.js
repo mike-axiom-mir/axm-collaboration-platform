@@ -79,7 +79,7 @@
         discovered: ['middle'], fishReleased: 0, robotJobs: 0, villagersHelped: 0,
         pondSpecies: [], pondHarvestDay: 0,
         nextStoneAt: 240 + Math.floor(Math.random() * 300), activeStone: null,
-        meals: [], decisions: {}, regionKills: {}, villageFavors: {}, cookRivals: {}, cookRecords: {}, encounterRecords: {}, aftermathReports: {}, originEchoes: {}, enemySerial: 0,
+        meals: [], decisions: {}, regionKills: {}, villageFavors: {}, cookRivals: {}, cookRecords: {}, encounterRecords: {}, aftermathReports: {}, originEchoes: {}, routeTrials: { active: null, records: {} }, enemySerial: 0,
         petCooldowns: {}, petDailyDays: {}, petBuffs: { mossDrop: 0, ledgerRebate: 0 }
       },
       quests: {},
@@ -148,6 +148,25 @@
       echo.resolvedAt = Math.max(0, Number(echo.resolvedAt || 0));
       return [id, echo];
     }));
+    const routeTrials = merged.world.routeTrials && typeof merged.world.routeTrials === 'object' ? merged.world.routeTrials : {};
+    const activeRoute = routeTrials.active && typeof routeTrials.active === 'object' && routeTrials.active.id ? routeTrials.active : null;
+    merged.world.routeTrials = {
+      active: activeRoute ? {
+        id: String(activeRoute.id), checkpoint: Math.max(0, Math.floor(Number(activeRoute.checkpoint || 0))),
+        elapsed: Math.max(0, Number(activeRoute.elapsed || 0))
+      } : null,
+      records: Object.fromEntries(Object.entries(routeTrials.records || {}).map(([id, raw]) => {
+        const record = raw && typeof raw === 'object' ? raw : {};
+        const best = Number(record.bestSeconds);
+        return [id, {
+          attempts: Math.max(0, Math.floor(Number(record.attempts || 0))),
+          completions: Math.max(0, Math.floor(Number(record.completions || 0))),
+          abandons: Math.max(0, Math.floor(Number(record.abandons || 0))),
+          bestSeconds: Number.isFinite(best) && best > 0 ? best : null,
+          lastSeconds: Math.max(0, Number(record.lastSeconds || 0))
+        }];
+      }))
+    };
     merged.world.specialistBrains = Array.isArray(merged.world.specialistBrains) ? Array.from(new Set(merged.world.specialistBrains)) : [];
     merged.world.invasion = clamp(Number(merged.world.invasion || 0), 0, 1);
     merged.world.omenStage = Math.max(0, Math.floor(Number(merged.world.omenStage || 0)));
@@ -177,10 +196,10 @@
     const result = {
       cookZone: 1, questBolts: 0, riverSpeed: 1, fishYield: 0,
       doodledeanAggro: 1, companionDamage: 1, petDamageTaken: 1, petCooldownRate: 1,
-      puddleWarning: 0, rainbowShelters: 0
+      puddleWarning: 0, rainbowShelters: 0, routeGateRadius: 1, routeSanctuary: 0
     };
     if (!choiceDefs) return result;
-    const additive = new Set(['questBolts', 'fishYield', 'puddleWarning', 'rainbowShelters']);
+    const additive = new Set(['questBolts', 'fishYield', 'puddleWarning', 'rainbowShelters', 'routeSanctuary']);
     Object.keys(choiceDefs).forEach(choiceId => {
       const outcome = storyOutcome(save, choiceId, choiceDefs);
       if (!outcome || !outcome.effects) return;
@@ -329,6 +348,69 @@
     const reward = favor.reward.type === 'bolts' ? amount + ' bolt' + (amount === 1 ? '' : 's') : amount + ' ' + favor.reward.id.replace(/-/g, ' ');
     save.journal.push({ at: Date.now(), text: 'Tiny town favor for ' + favor.name + ': ' + favor.favor + ' Reward: ' + reward + '.' });
     return { ok: true, id: favor.id, reward, villagersHelped: save.world.villagersHelped };
+  }
+
+  function routeTrialStatus(save, trial) {
+    if (!save || !trial) return { active: false, attempts: 0, completions: 0, abandons: 0, bestSeconds: null, lastSeconds: 0 };
+    const record = save.world.routeTrials?.records?.[trial.id] || {};
+    const active = save.world.routeTrials?.active?.id === trial.id ? save.world.routeTrials.active : null;
+    return {
+      active: Boolean(active), checkpoint: active ? active.checkpoint : 0, elapsed: active ? active.elapsed : 0,
+      attempts: Number(record.attempts || 0), completions: Number(record.completions || 0), abandons: Number(record.abandons || 0),
+      bestSeconds: Number.isFinite(Number(record.bestSeconds)) && Number(record.bestSeconds) > 0 ? Number(record.bestSeconds) : null,
+      lastSeconds: Number(record.lastSeconds || 0)
+    };
+  }
+
+  function beginRouteTrial(save, trial) {
+    if (!save || !trial || !Array.isArray(trial.points) || !trial.points.length) return { ok: false, reason: 'invalid' };
+    save.world.routeTrials = save.world.routeTrials || { active: null, records: {} };
+    save.world.routeTrials.records = save.world.routeTrials.records || {};
+    if (save.world.routeTrials.active) return { ok: false, reason: 'already-active', active: save.world.routeTrials.active };
+    const previous = save.world.routeTrials.records[trial.id] || { attempts: 0, completions: 0, abandons: 0, bestSeconds: null, lastSeconds: 0 };
+    const record = Object.assign({}, previous, { attempts: Number(previous.attempts || 0) + 1 });
+    save.world.routeTrials.records[trial.id] = record;
+    save.world.routeTrials.active = { id: trial.id, checkpoint: 0, elapsed: 0 };
+    if (record.attempts === 1) save.journal.push({ at: Date.now(), text: 'Started the replayable route rehearsal “' + trial.title + '”. Its clock records a best but cannot fail the run.' });
+    return { ok: true, active: save.world.routeTrials.active, record };
+  }
+
+  function tickRouteTrial(save, dtSeconds) {
+    const active = save && save.world && save.world.routeTrials && save.world.routeTrials.active;
+    if (!active) return null;
+    active.elapsed += clamp(Number(dtSeconds) || 0, 0, 1);
+    return active;
+  }
+
+  function advanceRouteTrial(save, trial) {
+    const active = save && save.world && save.world.routeTrials && save.world.routeTrials.active;
+    if (!active || !trial || active.id !== trial.id) return { ok: false, reason: 'inactive' };
+    active.checkpoint += 1;
+    if (active.checkpoint < trial.points.length) return { ok: true, finished: false, active };
+    const record = save.world.routeTrials.records[trial.id] || { attempts: 1, completions: 0, abandons: 0, bestSeconds: null, lastSeconds: 0 };
+    const elapsed = Math.max(.01, Number(active.elapsed || 0));
+    const previousBest = Number(record.bestSeconds);
+    const firstCompletion = Number(record.completions || 0) === 0;
+    const personalBest = firstCompletion || !Number.isFinite(previousBest) || elapsed < previousBest;
+    record.completions = Number(record.completions || 0) + 1;
+    record.lastSeconds = elapsed;
+    if (personalBest) record.bestSeconds = elapsed;
+    save.world.routeTrials.records[trial.id] = record;
+    save.world.routeTrials.active = null;
+    if (firstCompletion) save.journal.push({ at: Date.now(), text: 'Completed “' + trial.title + '” in ' + elapsed.toFixed(1) + ' seconds. It remains replayable from the Central Meadow.' });
+    else if (personalBest) save.journal.push({ at: Date.now(), text: 'New “' + trial.title + '” personal best: ' + elapsed.toFixed(1) + ' seconds.' });
+    return { ok: true, finished: true, firstCompletion, personalBest, elapsed, record };
+  }
+
+  function abandonRouteTrial(save, trial) {
+    const active = save && save.world && save.world.routeTrials && save.world.routeTrials.active;
+    if (!active || !trial || active.id !== trial.id) return { ok: false, reason: 'inactive' };
+    const record = save.world.routeTrials.records[trial.id] || { attempts: 1, completions: 0, abandons: 0, bestSeconds: null, lastSeconds: 0 };
+    record.abandons = Number(record.abandons || 0) + 1;
+    record.lastSeconds = Math.max(0, Number(active.elapsed || 0));
+    save.world.routeTrials.records[trial.id] = record;
+    save.world.routeTrials.active = null;
+    return { ok: true, record };
   }
 
   function beginEncounter(save, encounter) {
@@ -852,8 +934,8 @@
   }
 
   return {
-    FINAL_HOUR, GEAR_DRAWBACKS, GEAR_EFFECTS, OMEN_HOUR, SAVE_SCHEMA, STORAGE_KEY, acceptEncounterRecovery, addGear, addIngredient, advanceWorld, aftermathStatus, applyStoryChoice, beginEncounter, bondPet, claimPondHarvest, clamp, completeVillageFavor, consumeMossDrop, cook, cookLegacy, damagePet,
+    FINAL_HOUR, GEAR_DRAWBACKS, GEAR_EFFECTS, OMEN_HOUR, SAVE_SCHEMA, STORAGE_KEY, abandonRouteTrial, acceptEncounterRecovery, addGear, addIngredient, advanceRouteTrial, advanceWorld, aftermathStatus, applyStoryChoice, beginEncounter, beginRouteTrial, bondPet, claimPondHarvest, clamp, completeVillageFavor, consumeMossDrop, cook, cookLegacy, damagePet,
     equipGear, equipmentCouncilStatus, fishingReward, formatClock, gearArgumentProfile, loadFromStorage, mulberry32, newSave, normalizeSave, omenProgress, omenStage,
-    gearEffects, hearAftermath, loseEncounter, mealActive, originEchoEffects, originEchoStatus, originParadeRoute, originParadeStatus, recordChallenge, releaseFish, requirementMet, resolveOriginEcho, retuneCost, retuneGear, revivePets, rollDrop, ruinStage, salvageGear, saveToStorage, selectPet, setGearArgument, stoneCost, storyEffects, storyOutcome, triggerPetSpecial, useIngredients, winEncounter
+    gearEffects, hearAftermath, loseEncounter, mealActive, originEchoEffects, originEchoStatus, originParadeRoute, originParadeStatus, recordChallenge, releaseFish, requirementMet, resolveOriginEcho, retuneCost, retuneGear, revivePets, rollDrop, routeTrialStatus, ruinStage, salvageGear, saveToStorage, selectPet, setGearArgument, stoneCost, storyEffects, storyOutcome, tickRouteTrial, triggerPetSpecial, useIngredients, winEncounter
   };
 });

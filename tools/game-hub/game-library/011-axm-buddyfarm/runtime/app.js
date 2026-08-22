@@ -4,8 +4,10 @@
 
   const core = window.BuddyFarmCore;
   const motion = window.BuddyFarmMotion;
+  const gamepad = window.AXMBuddyFarmGamepad;
   const query = new URLSearchParams(location.search);
   const localPlayer = query.get('player') || 'p1';
+  const gamepadQaEnabled = query.get('gamepadQa') === '1';
   const views = document.getElementById('views');
   const canvases = new Map();
   let packet = null;
@@ -15,7 +17,10 @@
   let visualClock = 0;
   let lastVisualFrame = 0;
   let fullMap = query.get('map') === 'full';
+  let controlsMenuOpen = false;
+  let qaLast = 'NONE';
   const gamepadStates = new Map();
+  const qaGamepads = new Map();
   const actorVisuals = new Map();
   const workVisuals = new Map();
   const substrateImages = new Map();
@@ -52,17 +57,20 @@
     const root = document.createElement('article');
     root.className = 'player-view shared-view';
     root.dataset.player = 'shared';
-    root.innerHTML = '<canvas aria-label="One shared BuddyFarm world"></canvas>' +
+    root.innerHTML = '<canvas class="farm-depth" aria-hidden="true"></canvas>' +
+      '<canvas class="farm-semantic" aria-label="One shared BuddyFarm world"></canvas>' +
       '<div class="view-label"><i></i><span></span><em></em></div><div class="scene-label"></div><div class="action-hint"></div>';
     views.appendChild(root);
     canvases.set('shared', {
       root,
-      canvas: root.querySelector('canvas'),
+      canvas: root.querySelector('.farm-semantic'),
+      depth: root.querySelector('.farm-depth'),
       name: root.querySelector('.view-label span'),
       kind: root.querySelector('.view-label em'),
       scene: root.querySelector('.scene-label'),
       hint: root.querySelector('.action-hint')
     });
+    if (window.BuddyFarmThree) window.BuddyFarmThree.attach(root.querySelector('.farm-depth'), core);
   }
 
   function escapeHtml(value) {
@@ -639,6 +647,18 @@
     camera.y = Math.round(camera.y);
     camera.scene = focus.scene;
     const overview = fullMap && focus.scene === 'farm';
+    record.root.dataset.scene = focus.scene;
+    record.root.dataset.overview = String(overview);
+    if (window.BuddyFarmThree) {
+      window.BuddyFarmThree.render({
+        state,
+        actors: visualActors,
+        camera,
+        focus,
+        overview,
+        time: visualClock
+      });
+    }
     const info = tileInfo(record.canvas, camera, overview);
     info.ctx.clearRect(0, 0, info.width, info.height);
     if (focus.scene === 'farm') drawFarm(info, state, packet.worldView, overview);
@@ -706,8 +726,22 @@
     } finally { postingPlayers.delete(playerId); }
   }
 
+  function setControlsMenu(open) {
+    controlsMenuOpen = Boolean(open);
+    const menu = document.getElementById('controls-menu');
+    const toggle = document.getElementById('controls-toggle');
+    if (menu) menu.hidden = !controlsMenuOpen;
+    if (toggle) toggle.setAttribute('aria-expanded', String(controlsMenuOpen));
+  }
+
   const moveKeys = { ArrowUp: 'up', w: 'up', W: 'up', ArrowDown: 'down', s: 'down', S: 'down', ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right' };
   window.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && controlsMenuOpen) {
+      event.preventDefault();
+      setControlsMenu(false);
+      return;
+    }
+    if (controlsMenuOpen) return;
     const now = performance.now();
     if (moveKeys[event.key] || event.key === 'e' || event.key === 'E' || event.key === 'f' || event.key === 'F' || event.key === ' ') enableAudio();
     if ((event.key === 'm' || event.key === 'M') && !event.repeat) {
@@ -751,73 +785,192 @@
     updateMapToggle();
     render();
   });
+  document.getElementById('controls-toggle').addEventListener('click', () => setControlsMenu(!controlsMenuOpen));
+  document.getElementById('close-controls').addEventListener('click', () => setControlsMenu(false));
 
   window.addEventListener('resize', render);
 
   function gamepadAssignments(pads) {
     if (!packet || !pads.length) return [];
-    const playerIds = core.gamepadPlayerIds(packet.state.actors, localPlayer, pads.length);
-    return playerIds.map((playerId, index) => ({ pad: pads[index], playerId }));
-  }
-
-  function buttonPressed(gamepad, index) {
-    return !!(gamepad.buttons[index] && gamepad.buttons[index].pressed);
+    const playerIds = core.gamepadPlayerIds(packet.state.actors, localPlayer, 3);
+    return pads.map(pad => ({ pad, playerId: playerIds[pad.index] || null }));
   }
 
   function stateForPad(pad) {
     if (!gamepadStates.has(pad.index)) {
-      gamepadStates.set(pad.index, { actionDown: false, actionStarted: 0, workDown: false, lastMoveAt: 0 });
+      gamepadStates.set(pad.index, {
+        actionDown: false,
+        actionStarted: 0,
+        lastMoveAt: 0,
+        sample: gamepad.emptySample(false, false, '')
+      });
     }
     return gamepadStates.get(pad.index);
   }
 
   function updateGamepadStatus(assignments) {
     const status = document.getElementById('gamepads');
-    if (!status) return;
-    if (!assignments.length) {
-      status.textContent = 'Pair a Bluetooth pad, then press a button';
-      return;
+    const qaStatus = document.getElementById('gamepad-qa-status');
+    const ready = assignments.filter(entry => entry.playerId && entry.sample && entry.sample.supported);
+    const unsupported = assignments.filter(entry => entry.sample && !entry.sample.supported);
+    const blocked = assignments.filter(entry => !entry.playerId && entry.sample && entry.sample.supported);
+    views.dataset.gamepadProfile = gamepad.PROFILE_ID;
+    views.dataset.gamepadQa = gamepadQaEnabled ? 'simulated-not-physical' : 'off';
+    views.dataset.gamepadReady = String(ready.length);
+    views.dataset.gamepadUnsupported = String(unsupported.length);
+    views.dataset.gamepadBlocked = String(blocked.length);
+    ['p1', 'p2', 'p3'].forEach(playerId => {
+      const entry = assignments.find(candidate => candidate.playerId === playerId);
+      views.dataset['gamepad' + playerId.toUpperCase()] = !entry
+        ? 'disconnected'
+        : entry.sample.supported ? 'ready' : 'unsupported';
+    });
+    let sentence = 'GAMEPADS · NO PADS · KEYBOARD + PHONE READY';
+    if (assignments.length) {
+      const parts = [];
+      if (ready.length) parts.push(ready.map(entry => entry.playerId.toUpperCase()).join(' / ') + ' READY');
+      if (unsupported.length) parts.push(unsupported.length + ' NEEDS STANDARD MAPPING');
+      if (blocked.length) parts.push(blocked.length + ' UNASSIGNED');
+      parts.push('KEYBOARD + PHONE READY');
+      sentence = 'GAMEPADS · ' + parts.join(' · ');
     }
-    status.textContent = assignments.map(({ pad, playerId }) => `PAD ${pad.index + 1} \u2192 ${playerId.toUpperCase()}`).join(' \u00b7 ');
+    if (status) status.textContent = sentence;
+    if (qaStatus) qaStatus.textContent = sentence + ' · LAST ' + qaLast;
   }
 
   function pollAssignedGamepad(now, pad, playerId) {
     const state = stateForPad(pad);
+    const sample = gamepad.sampleStandardGamepad(pad, state.sample);
+    if (!sample.supported || !playerId) {
+      state.actionDown = false;
+      state.actionStarted = 0;
+      state.sample = sample;
+      return sample;
+    }
+    if (sample.menuEdge) {
+      state.actionDown = false;
+      state.actionStarted = 0;
+      setControlsMenu(!controlsMenuOpen);
+    }
+    if (controlsMenuOpen) {
+      state.sample = sample;
+      return sample;
+    }
+    if (sample.mapEdge) {
+      fullMap = !fullMap;
+      updateMapToggle();
+      render();
+    }
     let direction = null;
-    const x = Number(pad.axes[0] || 0), y = Number(pad.axes[1] || 0);
-    if (buttonPressed(pad, 12) || y < -.55) direction = 'up';
-    else if (buttonPressed(pad, 13) || y > .55) direction = 'down';
-    else if (buttonPressed(pad, 14) || x < -.55) direction = 'left';
-    else if (buttonPressed(pad, 15) || x > .55) direction = 'right';
+    if (Math.abs(sample.moveX) >= Math.abs(sample.moveY) && sample.moveX) direction = sample.moveX < 0 ? 'left' : 'right';
+    else if (sample.moveY) direction = sample.moveY < 0 ? 'up' : 'down';
     if (direction && now - state.lastMoveAt > 145) {
       state.lastMoveAt = now;
       action({ type: 'move', direction }, playerId);
     }
-    const actionPressed = buttonPressed(pad, 0);
-    const workPressed = buttonPressed(pad, 2);
-    if (direction || actionPressed || workPressed) enableAudio();
-    if (actionPressed && !state.actionDown) {
+    if (direction || sample.action || sample.work) enableAudio();
+    if (sample.action && !state.actionDown) {
       state.actionDown = true;
       state.actionStarted = now;
-    } else if (!actionPressed && state.actionDown) {
+    } else if (!sample.action && state.actionDown) {
       const holdMs = Math.round(now - state.actionStarted);
       state.actionDown = false;
       state.actionStarted = 0;
       action({ type: 'action', holdMs }, playerId);
     }
-    if (workPressed && !state.workDown) action({ type: 'work' }, playerId);
-    state.workDown = workPressed;
+    if (sample.workEdge) action({ type: 'work' }, playerId);
+    state.sample = sample;
+    return sample;
+  }
+
+  function qaPad(index, mapping) {
+    return {
+      axes: [0, 0, 0, 0],
+      buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })),
+      connected: true,
+      id: 'AXM SIMULATED PAD ' + (index + 1),
+      index,
+      mapping: mapping == null ? 'standard' : mapping
+    };
+  }
+
+  function connectQaPads(count) {
+    qaGamepads.clear();
+    for (let index = 0; index < count; index += 1) qaGamepads.set(index, qaPad(index));
+    qaLast = count + ' PADS CONNECTED';
+  }
+
+  function ensureQaPad(index) {
+    if (!qaGamepads.has(index)) qaGamepads.set(index, qaPad(index));
+    return qaGamepads.get(index);
+  }
+
+  function toggleQaAxis(index, axis, value, label) {
+    const pad = ensureQaPad(index);
+    pad.mapping = 'standard';
+    pad.axes[axis] = pad.axes[axis] === value ? 0 : value;
+    qaLast = label + (pad.axes[axis] ? ' HELD' : ' RELEASED');
+  }
+
+  function pulseQaButton(index, button, duration, label) {
+    const pad = ensureQaPad(index);
+    pad.mapping = 'standard';
+    pad.buttons[button].pressed = true;
+    pad.buttons[button].value = 1;
+    qaLast = label;
+    setTimeout(() => {
+      pad.buttons[button].pressed = false;
+      pad.buttons[button].value = 0;
+    }, duration);
+  }
+
+  function setupGamepadQa() {
+    const panel = document.getElementById('gamepad-qa-panel');
+    panel.hidden = !gamepadQaEnabled;
+    if (!gamepadQaEnabled) return;
+    panel.querySelectorAll('[data-qa]').forEach(button => button.addEventListener('click', () => {
+      const command = button.dataset.qa;
+      if (command === 'connect2') connectQaPads(2);
+      else if (command === 'connect3') connectQaPads(3);
+      else if (command === 'unsupported') {
+        qaGamepads.set(0, qaPad(0, 'xinput'));
+        qaLast = 'P1 UNSUPPORTED';
+      } else if (command === 'p1-right') toggleQaAxis(0, 0, 1, 'P1 RIGHT');
+      else if (command === 'p2-left') toggleQaAxis(1, 0, -1, 'P2 LEFT');
+      else if (command === 'p3-down') toggleQaAxis(2, 1, 1, 'P3 DOWN');
+      else if (command === 'p1-action') pulseQaButton(0, 0, 90, 'P1 ACTION TAP');
+      else if (command === 'p1-hold') pulseQaButton(0, 0, 260, 'P1 ACTION HOLD');
+      else if (command === 'p1-work') pulseQaButton(0, 2, 90, 'P1 WORK');
+      else if (command === 'map') pulseQaButton(0, 8, 90, 'P1 MAP');
+      else if (command === 'menu') pulseQaButton(0, 9, 90, 'P1 MENU');
+      else if (command === 'disconnect') {
+        qaGamepads.clear();
+        qaLast = 'DISCONNECTED';
+      }
+    }));
+  }
+
+  function connectedGamepads() {
+    if (gamepadQaEnabled) return Array.from(qaGamepads.values()).sort((a, b) => a.index - b.index);
+    return navigator.getGamepads
+      ? Array.from(navigator.getGamepads()).filter(Boolean).sort((a, b) => a.index - b.index)
+      : [];
   }
 
   function pollGamepad(now) {
-    const pads = navigator.getGamepads
-      ? Array.from(navigator.getGamepads()).filter(Boolean).sort((a, b) => a.index - b.index)
-      : [];
+    const pads = connectedGamepads();
     const assignments = gamepadAssignments(pads);
+    assignments.forEach(entry => { entry.sample = pollAssignedGamepad(now, entry.pad, entry.playerId); });
     updateGamepadStatus(assignments);
-    assignments.forEach(({ pad, playerId }) => pollAssignedGamepad(now, pad, playerId));
     const liveIndexes = new Set(pads.map(pad => pad.index));
-    Array.from(gamepadStates.keys()).forEach(index => { if (!liveIndexes.has(index)) gamepadStates.delete(index); });
+    Array.from(gamepadStates.keys()).forEach(index => {
+      if (!liveIndexes.has(index)) {
+        const state = gamepadStates.get(index);
+        state.actionDown = false;
+        state.actionStarted = 0;
+        gamepadStates.delete(index);
+      }
+    });
     if (!document.hidden && packet && now - lastVisualFrame >= 100) {
       lastVisualFrame = now;
       render(now);
@@ -826,6 +979,7 @@
   }
 
   updateMapToggle();
+  setupGamepadQa();
   refresh();
   setInterval(refresh, 800);
   requestAnimationFrame(pollGamepad);

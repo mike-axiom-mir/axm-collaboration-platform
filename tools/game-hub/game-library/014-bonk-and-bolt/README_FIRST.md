@@ -1,6 +1,6 @@
 # Bonk & Bolt: The 24th Hour
 
-Status: **FIRST EDITION · PLAYABLE · MIKE'S TASTE REVIEW REQUIRED**
+Status: **TEST · FIRST EDITION CONTENT EXPANSION · UNIVERSAL GAMEPAD LOGIC + LIVE SIMULATION PASS · PHYSICAL DEVICE + MIKE'S TASTE REVIEW REQUIRED**
 
 Bonk & Bolt is a separate slot-014 game. It is a real-time full-3D open-world
 comedy RPG with a high three-quarter action-brawler camera. It never modifies or
@@ -27,10 +27,17 @@ daily timers, advertisements, or away-progress pressure in the game.
 
 - Player 1: `WASD` move, mouse aim, click or `Space` attack, `Q` class special,
   `R` miniature special, `Shift` dodge, `E` interact.
-- Player 2: arrow keys move, `/` attack, `,` special, `.` dodge. A standard
-  gamepad can control Player 2 with left stick and the first three face buttons.
+- Player 2: arrow keys move, `/` attack, `,` special, `.` dodge.
+- Standard gamepad 1 controls P1 and standard gamepad 2 controls P2. Left stick
+  or D-pad moves; `A` or right trigger attacks; `B` dodges; `X` uses the class
+  special. P1 additionally uses `Y` to interact, left bumper for the miniature
+  partner action, and View for the world map.
 - Menus: `I` equipment, `P` miniature workshop, `J` adventures and clear
-  challenges, `M` map, `Esc` pause or close.
+  challenges, `M` map, `Esc` pause or close. Gamepad Menu pauses, resumes, or
+  closes the current non-final activity.
+- Unsupported mappings, inactive P2 ownership and disconnect fallback are
+  visible. The labeled `?testSteward=gamepad&testCoop=1&gamepadQa=1` route is
+  simulated browser evidence only; physical controller QA remains pending.
 
 ## The game in this edition
 
@@ -54,11 +61,11 @@ daily timers, advertisements, or away-progress pressure in the game.
   of palette swaps: heckling slows, flying forms, mood puddles, screw dashes and
   a tax goose that steals bolts, flees, then refunds everything when defeated.
   Every species has a readable tell and its own persistent sight-gag aftermath.
-- Thirteen named Human, Toon and robot residents keep day, night and danger
-  routines across all four settlements. Each carries a small, plainly stated
+- Fourteen named Human, Toon and robot residents keep day, night and danger
+  routines across all four settlements, Wobblewoods and the Central Meadow. Each carries a small, plainly stated
   town favor with one useful reward; favors save once completed, while residents
   remain present to check on afterward.
-- Five independent adventure chains. Each begins like a side quest, becomes its
+- Six independent adventure chains. Each begins like a side quest, becomes its
   own story, and ends in a permanent decision whose exact mechanic is visible
   before choosing. Every outcome builds a different interactive 3D memory in
   its region, remains named in the journal and map, and can change cooking,
@@ -71,6 +78,14 @@ daily timers, advertisements, or away-progress pressure in the game.
   ordered forecast circles. The river adventure advances only when Gossip
   Chowder beats its named cook-off rival; a loss still makes a meal but cannot
   silently complete the story.
+- The sixth adventure, **The Lantern That Missed Curfew**, is a non-combat 3D
+  companionship route. Its first ordered eight-gate circuit unlocks three
+  permanent rehearsals: a compact meadow loop, a two-town nightline and a
+  full-valley tour. Runs have no failure state, consumable cost or reward grind;
+  they save attempts, completions, active checkpoint/clock and personal bests.
+  The final decision either widens every visible route gate by 30% or makes
+  active rehearsals nuisance-free civic safe spaces. The relay board, current
+  gate and saved bests remain visible in the world, HUD and map.
 - Losing any authored fight saves that defeat and invites one named robot from a
   different town to offer free, optional help until victory. Chime-2 pre-files a
   hearing form, Nib-7 widens the encore spotlight, Dock-3 lengthens the
@@ -79,8 +94,8 @@ daily timers, advertisements, or away-progress pressure in the game.
   knockout rebound before the same recovery rules apply.
 - After each decisive chapter, one named village robot leaves its ordinary route
   to file a public report at the relevant civic site. The report updates after
-  the permanent choice, unheard versions are marked on the map, all five form an
-  exact five-region challenge, and every heard witness physically carries that
+  the permanent choice, unheard versions are marked on the map, all six form an
+  exact six-region challenge, and every heard witness physically carries that
   adventure memory into the village robot team at the 24th Hour.
 - Every challenge states the exact action, count, and region. There are no
   secret puzzle steps or internet-dependent locations.

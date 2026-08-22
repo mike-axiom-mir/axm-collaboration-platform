@@ -4,6 +4,12 @@ Overall route: **DEGRADED, PLAYABLE NOW**. The current workshop can deliver and
 verify a local 3D First Edition. The following tools would materially raise it
 from a strong procedural browser game to a commercial-quality production.
 
+Current TEST expansion note: the Workshop was sufficient to add and verify a
+sixth non-combat adventure plus three saved route rehearsals. This reduces the
+immediate content-depth gap, but it does not replace human pacing review, a
+physical-controller pass, Steam packaging, representative hardware coverage or
+commercial-scale authored region production.
+
 ## 1. Remaining `asset.character.skeletal-3d-production` breadth
 
 - Gap type: **HAND + SUBSTRATE**
@@ -115,3 +121,9 @@ existing capability before adding a new external tool.
 
 Recommended tool: a game-content production hand with quest graphs, region
 budgets, nav/collision bake, asset assignment, and automated no-filler audits.
+
+Current rung: `The Lantern That Missed Curfew` proves one additive pattern that
+does not copy the existing combat or cook-off chapters. It opens three
+non-failing traversal courses with persistent bests and a mechanical world
+choice. Future content should preserve that standard: a new interaction rule,
+an explicit route, a saved consequence and no substitute grind.

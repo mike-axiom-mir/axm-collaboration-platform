@@ -243,8 +243,9 @@ Physical keyboard/gamepad/phone hold feel therefore remains unclaimed.
 3. Hold `E` for roughly 0.2 sec at the visibly highlighted farm door, cellar
    stairs, return stairs and exit.
 4. Open the phone URL for P2 and try movement, Work and a 0.2 sec Action hold.
-5. Pair one gamepad, then two, and confirm the displayed routing:
-   `PAD 1 → P2`, then `PAD 1 → P1 · PAD 2 → P2`.
+5. Pair one gamepad, then two, and confirm stable routing:
+   `P1 READY`, then `P1 / P2 READY`. Also test A/RT Action hold, X Work, View
+   map, Menu controls, disconnect fallback and a deliberately non-standard pad.
 6. If desired, explicitly add a third human seat. Test AI only in a separate
    launch with an explicit AI roster and `BUDDYFARM_AI_ENABLED=1`.
 
@@ -253,3 +254,10 @@ Keep the runtime playable at:
 - Host: `http://127.0.0.1:8801/games/011/?room=AXM1&player=p1`
 - P2 phone: `http://127.0.0.1:8801/controller.html?room=AXM1&player=p2`
 - Health: `http://127.0.0.1:8801/health`
+
+## 2026-08-16 universal gamepad handoff
+
+- Profile: `axm-universal-xbox-brawl-v0.2.1`.
+- Logic and labeled browser simulation are TEST evidence only.
+- Physical Bluetooth/USB gamepads and exact A/RT hold feel remain pending.
+- The prior low-poly Three.js pass and its evidence were preserved unchanged.

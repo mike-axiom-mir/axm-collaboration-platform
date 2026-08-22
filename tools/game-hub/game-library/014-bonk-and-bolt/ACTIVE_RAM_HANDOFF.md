@@ -1,7 +1,7 @@
 # Bonk & Bolt — Active RAM Handoff
 
-Updated: 2026-07-28 16:04 Europe/Amsterdam  
-Status: `ACTIVE STEWARDSHIP / LATEST SEALED PASS: LICENSED HUMAN PRODUCTION-RIG BRIDGE`
+Updated: 2026-08-16 Europe/Amsterdam  
+Status: `ACTIVE STEWARDSHIP / CURRENT UNSEALED TEST: LANTERN ROUTE EXPANSION + UNIVERSAL GAMEPAD READINESS / LATEST SEALED PASS: LICENSED HUMAN PRODUCTION-RIG BRIDGE`
 
 This is the compact operational handoff for a fresh Codex task. It is a
 `DERIVED_VIEW`, not hidden model reasoning and not a replacement for source,
@@ -14,14 +14,24 @@ Continue stewarding Bonk & Bolt toward the user's deliberately ambitious finishe
 game vision. The full objective is still active. Do not call the whole game
 finished merely because a bounded pass is sealed.
 
-The latest completed slice is the licensed Human production-rig bridge. Bonk &
-Bolt now packages one Quaternius CC0 Human GLB with one skinned mesh, 31 joints
-and 11 authored clips. Its source, license, byte size and SHA-256 are recorded;
-its path is game-local and resolved from `import.meta.url` for future full-package
-movement to the 5 TB asset drive. Human idle, walk and class action roles reach a
-real animation mixer while existing comedy weapons, cues and deterministic class
-timing remain authoritative. The original Human is retained as a validated safe
-fallback, and Toon identity remains deliberately code-native in this rung.
+The current unsealed package is `1.1.1-universal-gamepad-test`. Its content slice
+remains `1.1.0-relay-test`: a sixth independent adventure, The Lantern That
+Missed Curfew, and three ordered non-failing 3D route
+rehearsals. Active course, checkpoint and clock survive reload; attempts,
+completions, exits and personal bests persist. One story outcome widens route
+gates 30%; the other suspends ordinary nuisance aggression during active runs.
+Mile-0 becomes the sixth outcome-specific robot witness. This extends things to
+do without lengthening the 24-hour clock or adding a currency/reward grind.
+
+The `1.1.1` Steam-readiness overlay migrates P1 and P2 to
+`axm-universal-xbox-brawl-v0.2.1`, preserves keyboard/mouse fallback, exposes
+unsupported/unassigned/disconnect states, and has a labeled live browser
+simulation receipt. Physical controller feel remains unrun and must not be
+promoted from that simulation.
+
+The latest sealed slice remains the licensed Human production-rig bridge. Its
+Quaternius CC0 source, hash, license, animation mixer and procedural fallback are
+unchanged by the route expansion.
 The next task should read this handoff and `STEWARD_MEMORY.md`, take a new
 shared-workspace snapshot, then continue one bounded high-value game-depth or
 production-quality seam.
@@ -61,7 +71,7 @@ production-quality seam.
 
 Owned lane:
 
-`C:\axm workshop\tools\game-hub\game-library\014-bonk-and-bolt`
+`<AXM_WORKSHOP>\tools\game-hub\game-library\014-bonk-and-bolt`
 
 The user has three or more builders working on separate games. Never edit slots
 015, 016, 017, 018 or any other game while stewarding 014. Do not change shared
@@ -126,13 +136,14 @@ Useful call sites:
   revival.
 - Six neutral/bondable miniature robots with distinct terms, health, world jobs,
   executable specialties, partner combat and enemy hijacking.
-- Five authored story decisions with persistent rendered world consequences.
+- Six authored story decisions with persistent rendered world consequences.
+- Three replayable route rehearsals with saved active state, completions and bests.
 - Four authored comedy encounters: passport hearing, spotlight Hecklecrab encore,
   readable identity-thief chase and the three-clearing weather relay; river
   progression separately requires a cook-off win.
 - Named cross-town recovery helpers after real authored-fight losses. Help is free,
   optional, non-stacking, untimed, survives repeated losses and has no reward penalty.
-- Five named post-adventure public witnesses with outcome-specific reports, exact
+- Six named post-adventure public witnesses with outcome-specific reports, exact
   map markers/challenge wording and named participation in the 24th-Hour robot team.
 - Gradual 23rd-hour omen, robot-only finale damage, persistent ruined-world loss,
   bonded-robot resistance and a playable won world.
@@ -236,7 +247,7 @@ The permanent saved-world choice is fully explicit:
 Neither branch costs bolts, consumes an item, reduces rewards, starts a pressure
 timer or hides a correct answer. Raincheck-4 becomes a public village witness.
 After a loss, Lux-11's free Patient Weather Lamps slow relay-cloud drift to 62%
-until victory. The named report challenge now requires five exact witness regions
+until victory. The named report challenge now requires six exact witness regions
 and recomputes completion from progress against its current amount, preventing a
 legacy 4-of-5 save from displaying false completion.
 
@@ -334,20 +345,24 @@ exactly `[]`.
   reported reduced-static. Forced fallback reported procedural / original-code
   and visibly completed Pan Slap. Final browser warning/error logs were empty.
 
-## Latest exact verification
+## Current unsealed TEST verification
 
 - JavaScript syntax checks: PASS.
 - Hero motion test: `8/8 PASS`.
 - Co-op camera test: `10/10 PASS`.
 - Hero rig contract test: `7/7 PASS`.
-- Systems test: `PASS 236`.
-- Package self-test: `PASS 118`.
+- Systems test: `PASS 253`.
+- Package self-test: `PASS 126`.
 - HTTP smoke: `4/4 PASS`.
-- Focused package verifier: `0 errors / 0 warnings`.
-- Evidence JSON parsing: `51 files PASS` after the production-rig hash manifest.
-- Production-rig hash manifest: `PASS`.
-- Browser tabs were finalized after live verification.
-- Port `8814` was verified clean after testing.
+- Focused package verifier: `0 errors / 1 pre-existing gamepad-profile migration warning`.
+- Live 1280×720 WebGL: Meadow route completed by visible keyboard input; saved
+  best exposed in the three-course board; Two-Town checkpoint 2 and hero position
+  survived two reloads; active map marker and reduced-motion static frames checked.
+- Latest sealed evidence JSON and production-rig hash manifest remain unchanged.
+- Required Workshop gates: `10/10 PASS` at the final snapshot. The first run
+  briefly saw a foreign `challenge-arena` lifecycle failure; its owner repaired
+  it concurrently and both affected gates were rerun at `0 FAIL`.
+- Browser tabs were finalized and isolated port `19814` was cleaned.
 
 Primary receipts:
 
@@ -377,6 +392,11 @@ invalid lines, SHA-256
   identity thieves moving too quickly to read, activity-area enemy damage, an
   encounter QA normalization leak, ambient interference and projectile cleanup
   after same-frame encounter loss. Do not remove those guards casually.
+- The first route QA hook reset the active course on every reload. It now stages
+  only an empty ledger, writes `qaRouteTrialVersion`, and preserves real active
+  checkpoint, clock, records and hero position on later reloads.
+- The first route map frame stacked the new board and Mile-0 report over the
+  central world memory. Dedicated vertical offsets keep all three labels readable.
 
 ## Honest capability gaps
 
@@ -404,15 +424,17 @@ relative paths so moving the package to the large drive will not break it.
 2. If another provenance-ready production source is available, prioritize one
    bounded Toon or miniature-robot rig bridge, or improve Human weapon grip/socket
    alignment without creating a parallel combat-motion authority.
-3. Extend the five origin echoes only when a new source can change a genuinely
+3. Human-play the full Two-Town Nightline and Vale Companion Tour on the target
+   controller; tune route landmarks only from that evidence, not to chase the par.
+4. Extend the five origin echoes only when a new source can change a genuinely
    different world rule; never add repeat chores, collectible volume or generic
    reward mail.
-4. When Blender is ready, prioritize bespoke Human/Toon/robot silhouettes,
+5. When Blender is ready, prioritize bespoke Human/Toon/robot silhouettes,
    facial animation, grip sockets, costume variants and LODs. Record licenses and
    provenance, keep runtime paths relocatable, and retain the tested fallback.
-5. For every slice: deterministic tests first, focused verifier, then repeated
+6. For every slice: deterministic tests first, focused verifier, then repeated
    live visual interaction. Source checks alone do not prove a game works.
-6. Never claim sub-frame timing from screenshots; the browser has no rolling
+7. Never claim sub-frame timing from screenshots; the browser has no rolling
    frame buffer. Finalize browser tabs and clean temporary ports after verification.
 
 ## Exact commands for a fresh checkpoint

@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../../../AXM_UNIVERSAL_CONTROL_SYSTEM_v0_2_1_TEST_READY/schemas/game-control-profile.schema.json",
+  "id": "hearthgate-twin-stick-defense-v1",
+  "version": "1.2.0",
+  "gameId": "021-hearthgate-two-sides",
+  "baseProfile": "axm-universal-xbox-brawl-v0.2.1",
+  "actions": [
+    { "id": "MOVE", "required": true, "label": "Move warden" },
+    { "id": "AIM", "required": true, "label": "Aim bow" },
+    { "id": "PRIMARY_ACTION", "required": true, "label": "Fire" },
+    { "id": "TOWER_VOLLEY", "required": false, "label": "Tower power shot" },
+    { "id": "UPGRADE", "required": false, "label": "Upgrade tower" },
+    { "id": "REPAIR", "required": false, "label": "Repair or rebuild" },
+    { "id": "FORTIFY", "required": false, "label": "Fortify shared gate" },
+    { "id": "BUILD", "required": false, "label": "Hold build wheel or upgrade nearby plot" },
+    { "id": "PAUSE", "required": false, "label": "Pause" },
+    { "id": "BACK", "required": false, "label": "Back" }
+  ],
+  "phoneLayout": {
+    "mode": "standard",
+    "twinStick": true,
+    "preferredOrientation": "landscape",
+    "controls": [
+      { "id": "move", "type": "stick", "side": "left", "action": "MOVE" },
+      { "id": "aim", "type": "stick", "side": "right", "action": "AIM", "releaseAction": "PRIMARY_ACTION" },
+      { "id": "fire", "type": "hold", "label": "A / RT FIRE", "action": "PRIMARY_ACTION" },
+      { "id": "volley", "type": "pulse", "label": "LT VOLLEY", "action": "TOWER_VOLLEY" },
+      { "id": "upgrade", "type": "pulse", "label": "X UPGRADE", "action": "UPGRADE" },
+      { "id": "repair", "type": "pulse", "label": "Y REPAIR", "action": "REPAIR" },
+      { "id": "fortify", "type": "pulse", "label": "LB GATE", "action": "FORTIFY" },
+      { "id": "build", "type": "hold", "label": "RB HOLD WHEEL", "action": "BUILD", "selectionControl": "move" },
+      { "id": "pause", "type": "pulse", "label": "MENU", "action": "PAUSE" },
+      { "id": "back", "type": "pulse", "label": "B BACK", "action": "BACK" }
+    ]
+  },
+  "controllerLayout": {
+    "MOVE": ["leftStick", "dpad"],
+    "AIM": "rightStick",
+    "PRIMARY_ACTION": ["rightTrigger", "south", { "control": "rightStick", "gesture": "release", "threshold": 0.55, "releaseThreshold": 0.28 }],
+    "TOWER_VOLLEY": "leftTrigger",
+    "UPGRADE": "west",
+    "REPAIR": "north",
+    "FORTIFY": "leftBumper",
+    "BUILD": "rightBumper",
+    "BACK": "east",
+    "PAUSE": "menu"
+  },
+  "contexts": [
+    { "id": "gameplay", "visibleLabel": "Defend the gate", "allowedActions": ["MOVE", "AIM", "PRIMARY_ACTION", "TOWER_VOLLEY", "UPGRADE", "REPAIR", "FORTIFY", "BUILD", "PAUSE"] },
+    { "id": "menu", "visibleLabel": "Menu", "allowedActions": ["MOVE", "PRIMARY_ACTION", "BACK", "PAUSE"] }
+  ],
+  "radialBuild": {
+    "activation": "hold rightBumper near an empty plot",
+    "selectionControl": "leftStick",
+    "commit": "release rightBumper",
+    "existingBuilding": "tap rightBumper to upgrade"
+  },
+  "aimAssist": { "enabled": true, "coneDotMinimum": 0.42, "range": 285 },
+  "cameraAimSeparate": true
+}

@@ -7,6 +7,7 @@
   const $$ = selector => Array.from(document.querySelectorAll(selector));
   const canvas = $('#battlefield');
   const ctx = canvas.getContext('2d');
+  const depthCanvas = $('#rooftop-depth');
   const minimap = $('#minimap');
   const mctx = minimap.getContext('2d');
   const ui = {
@@ -42,6 +43,10 @@
     rallyAnchorId:null, tacticalSignal:null, matchId:'',
     rival:{ schemeId:'roof-grab', phase:'idle', countdown:0, cycle:-1, targetId:null, targetAnchorId:null, stagingAnchorId:null, targetLabel:'Unknown roof', stagedIds:[] }
   };
+  const depthReducedMotion = Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const depthRenderer = window.HexboundDepth && depthCanvas
+    ? window.HexboundDepth.create({ canvas: depthCanvas, host: $('#game-shell'), reducedMotion: depthReducedMotion })
+    : null;
 
   function resize() {
     const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -118,6 +123,7 @@
       hp: spec.maxHp, attackClock: Math.random() * .6, targetEntity: null, selected: false,
       order: team === 0 ? 'ready' : 'march', facing: 0, wobble: Math.random() * 6, ghost: false, reassembled:false, deadlineHaste:0,
       unionShiftUntil:0, unionShiftMoveMultiplier:1, unionShiftAttackRecoveryMultiplier:1,
+      temporalAdjournedUntil:0, temporalAdjournmentSourceId:null,
       doctrineId:branch&&branch.id||null,extraMembers,route:[], routeCost:0, routeGoal:null, routeTargetId:null, rerouteClock:0 }, spec);
     state.squads.push(item); return item;
   }
@@ -639,6 +645,18 @@
         if(building.team===0)feed('Every-Window Assembly raised Civic Cover for '+pulse.targets.length+' formation'+(pulse.targets.length>1?'s':'')+'.',DATA.COLORS.gold);
         continue;
       }
+      if(effect&&effect.kind==='deadline-deferral'){
+        const visible=building.team===2?state.rivalVisible:state.visible,visibleSquads=state.squads.filter(squad=>SYS.exploredAt(visible,squad.x,squad.y,80));
+        const pulse=SYS.districtAdjournmentPulse(building,state.buildings,visibleSquads,state.elapsed);if(!pulse)continue;
+        building.conversionClock=(Number.isFinite(building.conversionClock)&&building.conversionClock>0?building.conversionClock:pulse.period)-dt;
+        if(building.conversionClock>0)continue;building.conversionClock=pulse.period;
+        if(!pulse.target)continue;
+        pulse.target.temporalAdjournedUntil=state.elapsed+pulse.duration;pulse.target.temporalAdjournmentSourceId=building.id;
+        building.conversionPulseUntil=pulse.target.temporalAdjournedUntil;building.conversionTargets=[pulse.target.id];
+        floatText(pulse.target.x,pulse.target.y,'FILED: LATER '+pulse.duration.toFixed(1)+'s',SYS.faction(building.factionId).color);burst(building.x,building.y,SYS.faction(building.factionId).color,18);burst(pulse.target.x,pulse.target.y,DATA.COLORS.cyan,14);
+        if(building.team===0)feed('Department of Later deferred one enemy formation without changing its order.',SYS.faction(building.factionId).color);
+        continue;
+      }
       const pulse=SYS.districtConversionPulse(building,state.buildings);if(!pulse)continue;
       building.conversionClock=(Number.isFinite(building.conversionClock)&&building.conversionClock>0?building.conversionClock:pulse.period)-dt;
       if(building.conversionClock>0)continue;building.conversionClock=pulse.period;
@@ -715,7 +733,10 @@
     const livingSquads=state.squads.filter(s=>s.hp>0); const livingBuildings=state.buildings.filter(b=>b.hp>0&&b.progress>=.4);
     for (const squad of livingSquads) {
       const unionShifted=squad.unionShiftUntil>state.elapsed;if(!unionShifted){squad.unionShiftMoveMultiplier=1;squad.unionShiftAttackRecoveryMultiplier=1;}
-      squad.attackClock-=dt*(unionShifted?Number(squad.unionShiftAttackRecoveryMultiplier||1):1); squad.wobble+=dt; squad.deadlineHaste=Math.max(0,(squad.deadlineHaste||0)-dt);squad.rerouteClock=Math.max(0,(squad.rerouteClock||0)-dt);
+      const adjourned=Number(squad.temporalAdjournedUntil||0)>state.elapsed;if(!adjourned)squad.temporalAdjournmentSourceId=null;
+      squad.wobble+=dt*(adjourned?.22:1); squad.deadlineHaste=Math.max(0,(squad.deadlineHaste||0)-dt);squad.rerouteClock=Math.max(0,(squad.rerouteClock||0)-dt);
+      if(adjourned)continue;
+      squad.attackClock-=dt*(unionShifted?Number(squad.unionShiftAttackRecoveryMultiplier||1):1);
       let target = squad.targetEntity && (livingSquads.find(e=>e.id===squad.targetEntity)||livingBuildings.find(e=>e.id===squad.targetEntity));
       if (!target || target.hp<=0 || !isEnemy(squad.team,target.team)) target = SYS.nearest(squad,[...livingSquads,...livingBuildings],e=>e.id!==squad.id&&isEnemy(squad.team,e.team)&&SYS.distance(squad,e)<squad.sight);
       if (target) {
@@ -858,6 +879,12 @@
     ctx.clearRect(-20,-20,innerWidth+40,innerHeight+40); drawSky();
     ctx.save();ctx.translate(innerWidth/2-state.camera.x*state.camera.zoom,innerHeight/2-state.camera.y*state.camera.zoom);ctx.scale(state.camera.zoom,state.camera.zoom);
     drawWorld(); drawFog(); ctx.restore(); ctx.restore();
+    if(depthRenderer){
+      const depthAnchors=state.anchors.map((anchor,index)=>({id:anchor.id,index:index,x:anchor.x,y:anchor.y,radius:anchor.radius,visible:SYS.exploredAt(state.visible,anchor.x,anchor.y,80)}));
+      const depthBuildings=state.buildings.filter(building=>building.hp>0&&building.progress>.2&&(building.team!==2||SYS.exploredAt(state.visible,building.x,building.y,80))).map(building=>({x:building.x,y:building.y,kind:building.kind,progress:building.progress,team:building.team,color:teamColor(building.team,building.factionId)}));
+      const depthSquads=state.squads.filter(squad=>squad.hp>0&&(squad.team!==2||SYS.exploredAt(state.visible,squad.x,squad.y,80))).map(squad=>({x:squad.x,y:squad.y,team:squad.team,color:teamColor(squad.team,squad.factionId),selected:state.selected.has(squad.id),members:squad.members}));
+      depthRenderer.render({anchors:depthAnchors,links:state.links,buildings:depthBuildings,squads:depthSquads,mapColor:state.map.mechanic.color,elapsed:state.elapsed},{cameraX:state.camera.x,cameraY:state.camera.y,zoom:state.camera.zoom,width:innerWidth,height:innerHeight,shake:shake});
+    }
   }
 
   function drawSky() {
@@ -915,6 +942,12 @@
         const active=gate.conversionPulseUntil>state.elapsed,network=SYS.districtNetworkBonus(gate,state.buildings),reduction=Math.min(.45,Number(effect.damageReduction||0)*network),color=SYS.faction(gate.factionId).color;
         ctx.save();ctx.translate(gate.x,gate.y);ctx.strokeStyle=DATA.COLORS.gold;ctx.fillStyle=color;ctx.lineWidth=active?5:2;ctx.globalAlpha=active?.9:.24;ctx.setLineDash(active?[]:[4,7]);ctx.beginPath();ctx.arc(0,0,64+(active?Math.sin(state.elapsed*7)*5:Math.sin(state.elapsed*2+gate.pulse)*3),0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);for(let window=0;window<8;window++){const angle=window/8*Math.PI*2,x=Math.cos(angle)*69,y=Math.sin(angle)*69;ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.fillRect(-5,-7,10,14);ctx.restore();}if(active){ctx.globalAlpha=1;ctx.font='900 11px Arial';ctx.textAlign='center';ctx.fillStyle=DATA.COLORS.gold;ctx.fillText('CIVIC COVER '+Math.round(reduction*1000)/10+'%',0,-80);}ctx.restore();
         if(active)for(const id of gate.conversionTargets||[]){const target=state.squads.find(squad=>squad.id===id&&squad.hp>0);if(!target||SYS.distance(gate,target)>Number(effect.range||0)||target.team===2&&!SYS.exploredAt(state.visible,target.x,target.y,80))continue;ctx.save();ctx.strokeStyle=DATA.COLORS.gold;ctx.globalAlpha=.38;ctx.lineWidth=2;ctx.setLineDash([4,8]);ctx.beginPath();ctx.moveTo(gate.x,gate.y);ctx.quadraticCurveTo((gate.x+target.x)/2,(gate.y+target.y)/2-38,target.x,target.y);ctx.stroke();ctx.setLineDash([]);ctx.restore();}
+        continue;
+      }
+      if(effect.kind==='deadline-deferral'){
+        const target=(gate.conversionTargets||[]).map(id=>state.squads.find(squad=>squad.id===id&&squad.hp>0)).find(Boolean),active=gate.conversionPulseUntil>state.elapsed&&target&&target.temporalAdjournedUntil>state.elapsed,network=SYS.districtNetworkBonus(gate,state.buildings),duration=Math.min(Number(effect.maxDuration||4.35),Number(effect.duration||3)*network),color=SYS.faction(gate.factionId).color;
+        ctx.save();ctx.translate(gate.x,gate.y);ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=active?5:2;ctx.globalAlpha=active?.86:.24;ctx.setLineDash(active?[2,5]:[7,9]);ctx.beginPath();ctx.arc(0,0,62+(active?Math.sin(state.elapsed*8)*5:Math.sin(state.elapsed*2+gate.pulse)*3),0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);for(let tick=0;tick<8;tick++){const angle=tick/8*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(angle)*48,Math.sin(angle)*48);ctx.lineTo(Math.cos(angle)*70,Math.sin(angle)*70);ctx.stroke();}if(active){ctx.globalAlpha=1;ctx.font='900 11px Arial';ctx.textAlign='center';ctx.fillText('DEFERRED '+duration.toFixed(1)+'s',0,-80);}ctx.restore();
+        if(active){ctx.save();ctx.strokeStyle=color;ctx.fillStyle=DATA.COLORS.cyan;ctx.globalAlpha=.78;ctx.lineWidth=3;ctx.setLineDash([3,7]);ctx.beginPath();ctx.moveTo(gate.x,gate.y);ctx.quadraticCurveTo((gate.x+target.x)/2,(gate.y+target.y)/2-58,target.x,target.y);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.ellipse(target.x,target.y+8,45+Math.sin(state.elapsed*8)*4,28,0,0,Math.PI*2);ctx.stroke();ctx.font='900 11px Arial';ctx.textAlign='center';ctx.fillText('FILED: LATER',target.x,target.y-44);ctx.restore();}
         continue;
       }
       const active=gate.conversionPulseUntil>state.elapsed,pulse=active?1-(gate.conversionPulseUntil-state.elapsed)/1.35:0;ctx.save();ctx.translate(gate.x,gate.y);ctx.strokeStyle=DATA.COLORS.pink;ctx.lineWidth=active?5:2;ctx.globalAlpha=active?.82:.22;ctx.setLineDash(active?[]:[5,8]);ctx.beginPath();ctx.arc(0,0,54+(active?pulse*34:Math.sin(state.elapsed*2+gate.pulse)*3),0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.restore();
@@ -1045,7 +1078,8 @@
     if(spec.conversionId==='last-rites-exchange'){ctx.strokeStyle=arch.light;ctx.fillStyle=arch.trim;ctx.lineWidth=3;ctx.strokeRect(-29,top+2,58,38);for(const y of [top+12,top+23,top+34]){ctx.beginPath();ctx.moveTo(-23,y);ctx.lineTo(23,y);ctx.stroke();for(const x of [-15,0,15]){ctx.beginPath();ctx.arc(x+(y===top+23?5:0),y,4,0,Math.PI*2);ctx.fill();}}ctx.fillStyle=arch.light;ctx.beginPath();ctx.arc(0,top-8,11,0,Math.PI*2);ctx.fill();ctx.fillStyle=arch.material;ctx.beginPath();ctx.arc(-4,top-10,2.5,0,Math.PI*2);ctx.arc(4,top-10,2.5,0,Math.PI*2);ctx.fill();}
     if(spec.conversionId==='foreground-spotlight'){ctx.strokeStyle=arch.light;ctx.fillStyle=arch.trim;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-27,top+5);ctx.lineTo(-27,31);ctx.moveTo(27,top+5);ctx.lineTo(27,31);ctx.moveTo(-34,top+7);ctx.lineTo(34,top+7);ctx.stroke();for(const x of [-20,0,20]){ctx.beginPath();ctx.arc(x,top+7,6,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(x-5,top+13);ctx.lineTo(x-13,8);ctx.lineTo(x+13,8);ctx.closePath();ctx.globalAlpha=.18;ctx.fill();ctx.globalAlpha=1;}}
     if(spec.conversionId==='every-window-assembly'){ctx.strokeStyle=arch.light;ctx.fillStyle=arch.trim;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-39,3);ctx.lineTo(0,top-27);ctx.lineTo(39,3);ctx.closePath();ctx.stroke();for(const x of [-28,-14,0,14,28]){ctx.fillRect(x-4,5,8,13);ctx.strokeRect(x-4,5,8,13);}for(const side of [-1,1]){ctx.beginPath();ctx.moveTo(side*31,-5);ctx.lineTo(side*31,top-10);ctx.lineTo(side*20,top-3);ctx.closePath();ctx.stroke();}}
-    const districtLabel=spec.conversionId==='thirteenth-hour-union-hall'?'UNION XIII':spec.conversionId==='spectral-census-bureau'?'CENSUS':spec.conversionId==='black-sail-anchorage'?'ANCHORAGE':spec.conversionId==='briarway-gatehouse'?'BRIARWAY':spec.conversionId==='last-rites-exchange'?'LAST RITES':spec.conversionId==='foreground-spotlight'?'FOREGROUND':spec.conversionId==='every-window-assembly'?'ASSEMBLY':arch.id.split('-')[0].toUpperCase();ctx.fillStyle=arch.trim;ctx.font='900 9px Arial';ctx.textAlign='center';ctx.fillText(districtLabel,0,32);ctx.restore();
+    if(spec.conversionId==='department-of-later'){ctx.strokeStyle=arch.light;ctx.fillStyle=arch.trim;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,top-15,20,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(0,top-15);ctx.lineTo(0,top-30);ctx.moveTo(0,top-15);ctx.lineTo(14,top-5);ctx.stroke();for(const x of [-23,23]){ctx.fillRect(x-6,top+7,12,19);ctx.strokeRect(x-6,top+7,12,19);}}
+    const districtLabel=spec.conversionId==='thirteenth-hour-union-hall'?'UNION XIII':spec.conversionId==='spectral-census-bureau'?'CENSUS':spec.conversionId==='black-sail-anchorage'?'ANCHORAGE':spec.conversionId==='briarway-gatehouse'?'BRIARWAY':spec.conversionId==='last-rites-exchange'?'LAST RITES':spec.conversionId==='foreground-spotlight'?'FOREGROUND':spec.conversionId==='every-window-assembly'?'ASSEMBLY':spec.conversionId==='department-of-later'?'LATER':arch.id.split('-')[0].toUpperCase();ctx.fillStyle=arch.trim;ctx.font='900 9px Arial';ctx.textAlign='center';ctx.fillText(districtLabel,0,32);ctx.restore();
   }
 
   function drawBuilding(building) {
@@ -1062,6 +1096,7 @@
     if(selected){ctx.beginPath();ctx.ellipse(0,9,32,20,0,0,Math.PI*2);ctx.strokeStyle=DATA.COLORS.mint;ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);}
     const civicCover=SYS.districtCivicCoverDamageMultiplier(squad,state.buildings,state.elapsed);if(civicCover.multiplier<1){ctx.save();ctx.strokeStyle=DATA.COLORS.gold;ctx.fillStyle='rgba(255,212,71,.12)';ctx.lineWidth=3;ctx.globalAlpha=.88;ctx.beginPath();for(let corner=0;corner<8;corner++){const angle=-Math.PI/2+corner/8*Math.PI*2,x=Math.cos(angle)*39,y=8+Math.sin(angle)*27;if(corner===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle=DATA.COLORS.gold;ctx.font='900 10px Arial';ctx.textAlign='center';ctx.fillText('CIVIC COVER '+Math.round(civicCover.damageReduction*1000)/10+'%',0,-38);ctx.restore();}
     if(squad.unionShiftUntil>state.elapsed){ctx.save();ctx.strokeStyle=DATA.COLORS.orange;ctx.fillStyle=DATA.COLORS.orange;ctx.lineWidth=3;ctx.globalAlpha=.8;ctx.beginPath();ctx.ellipse(0,8,39+Math.sin(state.elapsed*9)*3,26,0,0,Math.PI*2);ctx.stroke();for(const side of [-1,1]){ctx.beginPath();ctx.moveTo(side*43,-9);ctx.lineTo(side*32,-2);ctx.lineTo(side*43,5);ctx.stroke();}ctx.font='900 10px Arial';ctx.textAlign='center';ctx.fillText('XIII ×'+Number(squad.unionShiftMoveMultiplier||1).toFixed(2),0,-39);ctx.restore();}
+    if(squad.temporalAdjournedUntil>state.elapsed){ctx.save();ctx.strokeStyle=DATA.COLORS.cyan;ctx.fillStyle=SYS.faction('temporal-mischief').color;ctx.lineWidth=3;ctx.globalAlpha=.88;ctx.setLineDash([2,5]);ctx.beginPath();ctx.ellipse(0,8,41+Math.sin(state.elapsed*8)*3,28,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);for(const side of [-1,1]){ctx.fillRect(side*34-4,-17,8,35);ctx.strokeRect(side*34-4,-17,8,35);}ctx.font='900 10px Arial';ctx.textAlign='center';ctx.fillText('FILED: LATER',0,-41);ctx.restore();}
     if(squad.ghost){ctx.shadowColor=DATA.COLORS.violet;ctx.shadowBlur=16;ctx.globalAlpha=.82;}
     const unit=SYS.unit(squad.unitId),presentation=SYS.doctrineUnitPresentation(squad.unitId,squad.factionId,squad.doctrineId),formation=SYS.coreFormationPresentation(squad.unitId,squad.factionId);
     if(presentation.doctrineId&&!unit.signatureOf){ctx.save();ctx.globalAlpha=.72;ctx.strokeStyle=presentation.color;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,8,34,22,0,0,Math.PI*2);ctx.stroke();ctx.fillStyle=presentation.color;ctx.textAlign='center';ctx.font='900 13px Arial';ctx.fillText(presentation.icon,0,-31);ctx.restore();}
@@ -1152,6 +1187,7 @@
 
   function showGuide(){showModal('COMMAND CROWDS, NOT CHORES','Every click should change the war.',`<p><b>Left-drag</b> selects squads. <b>Right-click</b> moves them or attacks a visible target. Your logical units are full squads, so individual deaths hurt the formation without creating a micro-management emergency.</p><div class="guide-grid"><div><b>1 · Whole army</b><span>Select every squad. 2 guards, 3 raids, 4 grand-marches.</span></div><div><b>A · Auto-scout</b><span>Broom Patrols seek unexplored rooftops on their own.</span></div><div><b>T · Signature regiment</b><span>Recruit your faction's unique squad. Its battlefield ability is automatic.</span></div><div><b>B · Faction Wonderwork</b><span>Claim one of two faction-exclusive landmarks. Its automatic macro effect grows faster inside a mixed charter wonderweb.</span></div><div><b>5–8 · District charters</b><span>Set one global plan for future roofs. Mix nearby charters to strengthen their wonderweb.</span></div><div><b>9 / 0 · Grand Doctrine</b><span>Ratify one of two faction-exclusive constitutions. It permanently mutates a core formation and an empire lever.</span></div><div><b>Bridge logistics</b><span>Macro orders become visible rooftop routes. Stage beside a good crossing, then let whole formations march.</span></div><div><b>Expansion is economy</b><span>Every claimed roof inherits the active charter. No builders or villagers to babysit.</span></div><div><b>Death is currency</b><span>Every casualty—friend or foe—creates Essence for field summons.</span></div><div><b>No siege spiral</b><span>There are no routine siege engines. Mass, routes, claims and powers decide the war.</span></div><div><b>Fog remembers</b><span>Scouted land stays mapped, but armies vanish when vision leaves.</span></div></div>`,'Back to the war',()=>{ui.modal.classList.add('hidden');state.paused=false;});state.paused=true;}
   function showModal(title,eyebrow,content,button,action){$('#modal-title').textContent=title;$('#modal-eyebrow').textContent=eyebrow;$('#modal-content').innerHTML=content;$('#modal-primary').textContent=button;$('#modal-primary').onclick=action;ui.modal.classList.remove('hidden');}
+  function dismissBlockingOverlay(){if(ui.modal.classList.contains('hidden'))return false;if(state.gameOver){$('#modal-primary').click();return true;}ui.modal.classList.add('hidden');state.paused=false;return true;}
 
   function onPointerDown(event){if(state.phase!=='battle'||state.paused||event.button!==0)return;state.cursor={x:event.clientX,y:event.clientY};const world=screenToWorld(event.clientX,event.clientY);if(state.placement){state.placement.type==='building'?placeBuilding(world):placePower(world);return;}state.drag={startX:event.clientX,startY:event.clientY,currentX:event.clientX,currentY:event.clientY};ui.selectionBox.classList.remove('hidden');}
   function onPointerMove(event){state.cursor={x:event.clientX,y:event.clientY};if(!state.drag)return;state.drag.currentX=event.clientX;state.drag.currentY=event.clientY;const x=Math.min(state.drag.startX,event.clientX),y=Math.min(state.drag.startY,event.clientY),w=Math.abs(state.drag.startX-event.clientX),h=Math.abs(state.drag.startY-event.clientY);Object.assign(ui.selectionBox.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});}
@@ -1159,7 +1195,7 @@
   function onContext(event){event.preventDefault();if(state.phase!=='battle')return;if(state.placement)return cancelPlacement();const selected=selectedSquads();if(!selected.length)return;const world=screenToWorld(event.clientX,event.clientY);const target=SYS.nearest(world,[...state.squads,...state.buildings],e=>isEnemy(0,e.team)&&e.hp>0&&SYS.distance(world,e)<55);selected.forEach((s,i)=>orderSquad(s,world.x+(i%4-1.5)*22,world.y+Math.floor(i/4)*25,target?'fight':'move',target&&target.id));burst(world.x,world.y,target?DATA.COLORS.danger:DATA.COLORS.mint,7);sound('order');}
   function onWheel(event){if(state.phase!=='battle')return;event.preventDefault();const before=screenToWorld(event.clientX,event.clientY);state.camera.zoom=SYS.clamp(state.camera.zoom*(event.deltaY>0?.9:1.1),.42,1.35);const after=screenToWorld(event.clientX,event.clientY);state.camera.x+=before.x-after.x;state.camera.y+=before.y-after.y;}
 
-  function hotkey(event,down){if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;const key=event.key.toLowerCase();state.keys[event.key]=down;if(!down)return;if(key==='escape'){if(state.placement)cancelPlacement();else{state.paused=!state.paused;if(state.paused)showGuide();else ui.modal.classList.add('hidden');}}if(event.key==='F1'){event.preventDefault();showGuide();}if(key==='a'&&!event.ctrlKey){state.autoScout=!state.autoScout;ui.autoScout.classList.toggle('active',state.autoScout);feed('Auto-scout '+(state.autoScout?'enabled. Brooms have permission to wander.':'disabled.'),DATA.COLORS.mint);}if(key==='1')applyMacro('army');if(key==='2')applyMacro('guard');if(key==='3')applyMacro('raid');if(key==='4')applyMacro('march');if(['5','6','7','8'].includes(key))setDistrictCharter(DATA.CHARTERS[Number(key)-5].id);if(key==='9'||key==='0'){const choices=SYS.doctrinesForFaction(state.factionId),choice=choices[key==='9'?0:1];if(choice)chooseDoctrine(choice.id);}if(key==='q')train('mobs');if(key==='w')train('hexbows');if(key==='e')train('brooms');if(key==='r')train('lanterns');if(key==='t')train(SYS.signatureForFaction(state.factionId).id);if(key==='z')beginPlacement('borough');if(key==='x')beginPlacement('moot');if(key==='c')beginPlacement('watch');if(key==='v')beginPlacement('bridgehead');if(key==='b')beginPlacement('wonderwork');if(key==='f')usePower('pirates');if(key==='g')usePower('reinforce');if(key==='h')usePower('parade');if(key===' ')focusBattle();}
+  function hotkey(event,down){if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;const key=event.key.toLowerCase();state.keys[event.key]=down;if(!down)return;if(key==='escape'){if(event.repeat)return;event.preventDefault();if(state.placement){cancelPlacement();return;}if(dismissBlockingOverlay())return;if(state.phase==='battle'&&!state.gameOver)showGuide();return;}if(event.key==='F1'){event.preventDefault();showGuide();}if(key==='a'&&!event.ctrlKey){state.autoScout=!state.autoScout;ui.autoScout.classList.toggle('active',state.autoScout);feed('Auto-scout '+(state.autoScout?'enabled. Brooms have permission to wander.':'disabled.'),DATA.COLORS.mint);}if(key==='1')applyMacro('army');if(key==='2')applyMacro('guard');if(key==='3')applyMacro('raid');if(key==='4')applyMacro('march');if(['5','6','7','8'].includes(key))setDistrictCharter(DATA.CHARTERS[Number(key)-5].id);if(key==='9'||key==='0'){const choices=SYS.doctrinesForFaction(state.factionId),choice=choices[key==='9'?0:1];if(choice)chooseDoctrine(choice.id);}if(key==='q')train('mobs');if(key==='w')train('hexbows');if(key==='e')train('brooms');if(key==='r')train('lanterns');if(key==='t')train(SYS.signatureForFaction(state.factionId).id);if(key==='z')beginPlacement('borough');if(key==='x')beginPlacement('moot');if(key==='c')beginPlacement('watch');if(key==='v')beginPlacement('bridgehead');if(key==='b')beginPlacement('wonderwork');if(key==='f')usePower('pirates');if(key==='g')usePower('reinforce');if(key==='h')usePower('parade');if(key===' ')focusBattle();}
   function focusBattle(){const combat=state.squads.find(s=>s.team===0&&s.order==='fight');if(combat){state.camera.x=combat.x;state.camera.y=combat.y;}}
   function sound(kind){try{if(!state.audio)state.audio=new(window.AudioContext||window.webkitAudioContext)();const ac=state.audio,o=ac.createOscillator(),g=ac.createGain();const notes={tick:320,select:440,order:180,train:250,ready:620,build:140,power:110,heal:720,start:90,warning:150,victory:520,defeat:70};o.type=kind==='power'?'sawtooth':kind==='ready'||kind==='victory'?'triangle':'sine';o.frequency.setValueAtTime(notes[kind]||220,ac.currentTime);o.frequency.exponentialRampToValueAtTime((notes[kind]||220)*(kind==='defeat'?.55:1.55),ac.currentTime+.14);g.gain.setValueAtTime(.045,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.18);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.2);}catch(_){} }
 
@@ -1168,7 +1204,7 @@
   $$('.mode-switch button').forEach(button=>button.addEventListener('click',()=>{$$('.mode-switch button').forEach(b=>b.classList.remove('active'));button.classList.add('active');state.mode=button.dataset.mode;sound('tick');}));
   $$('.rack-tabs button').forEach(button=>button.addEventListener('click',()=>{$$('.rack-tabs button').forEach(b=>b.classList.remove('active'));button.classList.add('active');state.currentTab=button.dataset.tab;renderCards();sound('tick');}));
   ui.autoScout.addEventListener('click',()=>{state.autoScout=!state.autoScout;ui.autoScout.classList.toggle('active',state.autoScout);});
-  $('#pause-button').addEventListener('click',showGuide);$('#help-button').addEventListener('click',showGuide);$('#modal-close').addEventListener('click',()=>{ui.modal.classList.add('hidden');state.paused=false;});
+  $('#pause-button').addEventListener('click',showGuide);$('#help-button').addEventListener('click',showGuide);$('#modal-close').addEventListener('click',dismissBlockingOverlay);
   minimap.addEventListener('click',event=>{const rect=minimap.getBoundingClientRect();state.camera.x=(event.clientX-rect.left)/rect.width*DATA.WORLD.width;state.camera.y=(event.clientY-rect.top)/rect.height*DATA.WORLD.height;});
   canvas.addEventListener('pointerdown',onPointerDown);canvas.addEventListener('pointermove',onPointerMove);window.addEventListener('pointerup',onPointerUp);canvas.addEventListener('contextmenu',onContext);canvas.addEventListener('wheel',onWheel,{passive:false});
   window.addEventListener('keydown',event=>hotkey(event,true));window.addEventListener('keyup',event=>hotkey(event,false));window.addEventListener('resize',resize);

@@ -37,7 +37,8 @@ async function action(base, body) {
     assert.strictEqual(result.response.status, 200);
     assert.strictEqual(result.value.ok, true);
     assert.strictEqual(result.value.humanSeats, 1);
-    assert.strictEqual(result.value.aiCompanions, 1);
+    assert.strictEqual(result.value.inGameAiSeats, 1);
+    assert.strictEqual(result.value.partnerMode, 'in-game-ai');
     assert.strictEqual(result.value.splitScreen, false);
     assert.strictEqual(result.response.headers.get('access-control-allow-origin'), null);
     assert.strictEqual(result.response.headers.get('cross-origin-resource-policy'), 'same-origin');
@@ -53,7 +54,8 @@ async function action(base, body) {
 
     result = await json(base, '/api/launcher-state');
     assert.strictEqual(result.value.team.humanSeats, 1);
-    assert.strictEqual(result.value.team.aiCompanions, 1);
+    assert.strictEqual(result.value.team.inGameAiSeats, 1);
+    assert.strictEqual(result.value.team.partnerMode, 'in-game-ai');
     assert.strictEqual(result.value.controllerLinks.length, 0);
     assert.strictEqual(result.value.authority.combat, 'managed-server');
     console.log('PASS launcher state exposes local managed-server seams');

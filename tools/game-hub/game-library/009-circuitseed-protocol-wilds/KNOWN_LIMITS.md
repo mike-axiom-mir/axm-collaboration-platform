@@ -2,16 +2,16 @@
 
 ## Status gate
 
-- **NOT LOCAL ALPHA TEST:** this build remains **ALPHA CANDIDATE / WORKING** because a browser executable and approved private preview URL were unavailable. The title, settlement, exploration, encounter, shop, profile, lobby/controller, disconnect and result screens have not received the required screenshot eyes-loop.
+- **ALPHA CANDIDATE / WORKING:** fresh 1280x720 local browser evidence now covers the title, Lumen Yard entry/movement/scan, journey menu/resume, and the reversible blocker set. It does not cover every region, the complete codex/evolution/shop/order flows, Hub lobby/result pixels, controller/disconnect presentation, physical devices, or a complete human playthrough, so no broader label or canon claim is made.
 - **UNVERIFIED PLAY DURATION:** the chapter has ten integrated authored stages and replay paths, but the 60–120 minute first-play target has not been timed with a human or traversed through rendered browser play in this environment.
 - **NOT PRODUCTION-READY:** no security, performance, device, accessibility or balance certification is claimed.
 
 ## Presentation and devices
 
-- **UNRUN — rendered browser pass:** Canvas/CSS/HTML/JavaScript syntax, live HTTP routes, and a dependency-isolated DOM boot/action smoke passed, but no actual browser pixels were available for inspection. DOM success is not counted as visual certification.
+- **PARTIAL — rendered browser pass:** `evidence/2026-08-16-low-poly-three-pass-01/VISUAL_RECEIPT.md` and `evidence/2026-08-16-blocking-overlay-escape/RECEIPT.md` provide local 1280x720 pixels and typed interaction observations for the bounded paths above. Relayborn, Threadwild, Corewild, full inventory/journal/Signal Board, complete profile import/export/conflict, Hub lobby/result, controller/disconnect, responsive and physical-device journeys remain unobserved.
 - **UNTESTED — physical phone controller:** touch/pointer math and HTTP packets are automated; handset comfort, Wi-Fi latency and safe-area layout need a phone.
 - **UNTESTED — eight physical people/devices:** one-to-eight layouts and local multi-client semantics are automated. Eight simultaneous physical controllers are not.
-- **UNTESTED — Windows batch/firewall flow:** batch files are syntax-simple but Windows was unavailable.
+- **UNTESTED — Windows batch/firewall flow:** the retained browser receipts did not exercise the batch or firewall path.
 - **PARTIAL — audio:** procedural cues and ambience exist; subjective mix, accessibility and long-session comfort are untested.
 - **NO QR YET:** the controller link is shown as a local URL. The manifest reports QR support false.
 - **MANAGED RETURN ENDS THE CHILD:** returning a result to the Game Hub intentionally stops port 8799. The launch helper must be run again for another managed session.

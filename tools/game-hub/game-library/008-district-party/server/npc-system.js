@@ -54,9 +54,78 @@ function respawnNpc(npc) {
   npc.downedAtTick = null;
   npc.respawnAtTick = null;
   npc.pendingAttack = null;
+  npc.telegraph = null;
+  npc.chargeUntilTick = null;
+  npc.burstShotsRemaining = 0;
+  npc.lootDropped = false;
+}
+
+function updateScheduledCivilian(world, npc, deltaSeconds) {
+  const nearbyProjectile = nearestProjectile(world, npc);
+  const nearbyVehicle = nearestMovingVehicle(world, npc);
+  let target = npc.routine?.target || npc.spawnPosition;
+  let movementState = npc.routine?.phase === 'duty' ? 'working' : npc.routine?.phase || 'home';
+  let speed = Number(npc.routine?.moveSpeed) || 36;
+
+  if (nearbyProjectile) {
+    npc.state = 'flee';
+    npc.stateUntilTick = world.tick + 60;
+    npc.routineEscapeTarget = {
+      x: npc.position.x + (npc.position.x - nearbyProjectile.position.x) * 2,
+      y: npc.position.y + (npc.position.y - nearbyProjectile.position.y) * 2,
+    };
+  } else if (nearbyVehicle && npc.state !== 'flee') {
+    npc.state = 'avoid_vehicle';
+    npc.stateUntilTick = world.tick + 30;
+    npc.routineEscapeTarget = {
+      x: npc.position.x + (npc.position.x - nearbyVehicle.vehicle.position.x) * 2,
+      y: npc.position.y + (npc.position.y - nearbyVehicle.vehicle.position.y) * 2,
+    };
+  }
+
+  if (world.tick < (npc.stateUntilTick || 0) && ['flee', 'avoid_vehicle'].includes(npc.state) && npc.routineEscapeTarget) {
+    target = npc.routineEscapeTarget;
+    movementState = npc.state;
+    speed = npc.state === 'flee' ? 75 : 55;
+  } else {
+    npc.routineEscapeTarget = null;
+    npc.stateUntilTick = 0;
+  }
+
+  const direct = normalized(target.x - npc.position.x, target.y - npc.position.y);
+  if (direct.distance < 11 && !npc.routineEscapeTarget) {
+    npc.velocity = { x: 0, y: 0 };
+    npc.state = movementState;
+    npc.routinePath = [];
+    npc.routinePathTargetKey = null;
+    return;
+  }
+
+  let movementTarget = target;
+  if (!npc.routineEscapeTarget) {
+    const targetKey = `${npc.routine?.phase || 'home'}:${npc.routine?.destinationId || 'home'}:${Math.round(target.x / 16)}:${Math.round(target.y / 16)}`;
+    if (npc.routinePathTargetKey !== targetKey || world.tick >= (npc.routineRepathAtTick || 0) || !Array.isArray(npc.routinePath)) {
+      npc.routinePath = findGridPath(world, npc.position, target, 32);
+      npc.routinePathTargetKey = targetKey;
+      npc.routineRepathAtTick = world.tick + 90;
+    }
+    while (npc.routinePath.length && Math.hypot(npc.routinePath[0].x - npc.position.x, npc.routinePath[0].y - npc.position.y) < 13) npc.routinePath.shift();
+    movementTarget = npc.routinePath[0] || target;
+  }
+
+  const direction = normalized(movementTarget.x - npc.position.x, movementTarget.y - npc.position.y);
+  npc.state = movementState;
+  npc.velocity = { x: direction.x * speed, y: direction.y * speed };
+  npc.facing = { x: direction.x, y: direction.y };
+  const moved = moveNpcWithCollision(world, npc, npc.velocity, deltaSeconds);
+  if (!moved && direction.distance >= 8) npc.routineRepathAtTick = world.tick + 1;
 }
 
 function updateCivilian(world, npc, deltaSeconds) {
+  if (npc.cityLifeResident && npc.routine) {
+    updateScheduledCivilian(world, npc, deltaSeconds);
+    return;
+  }
   const nearbyProjectile = nearestProjectile(world, npc);
   const nearbyVehicle = nearestMovingVehicle(world, npc);
   if (nearbyProjectile) {
@@ -123,6 +192,29 @@ function hostileObjective(world, npc) {
   if (npc.source === 'mission' && world.mission?.mode === 'hold_relay' && world.mission.relay?.health > 0) {
     return { kind: 'relay', id: world.mission.relay.id, position: world.mission.relay.position };
   }
+  if (npc.kind === 'crew' && npc.source === 'bodyguard' && npc.partyId) {
+    let nearestThreat = null;
+    const threats = Object.values(world.npcs).filter((other) => (
+      other.id !== npc.id
+      && other.alive
+      && other.hostile
+      && other.partyId !== npc.partyId
+      && other.kind !== 'civilian'
+    ));
+    for (const threat of threats) {
+      const threatDistance = Math.hypot(threat.position.x - npc.position.x, threat.position.y - npc.position.y);
+      if (threatDistance <= 230 && (!nearestThreat || threatDistance < nearestThreat.distance)) {
+        nearestThreat = { entity: threat, distance: threatDistance };
+      }
+    }
+    if (nearestThreat) {
+      const target = nearestThreat.entity;
+      return { kind: 'npc', id: target.id, position: target.position, npc: target };
+    }
+    const owner = world.actors[npc.ownerActorId];
+    if (owner?.alive) return { kind: 'escort', id: owner.id, position: owner.position, actor: owner };
+    return null;
+  }
   if (npc.kind === 'crew' && npc.partyId) {
     let nearest = null;
     const candidates = [
@@ -177,11 +269,27 @@ function executeHostileAttack(world, npc, target) {
     else applyRelayDamage(world, npc);
     return;
   }
+  if (npc.role === 'rusher' && target.kind === 'actor') {
+    const direction = normalized(target.position.x - npc.position.x, target.position.y - npc.position.y);
+    npc.chargeDirection = { x: direction.x, y: direction.y };
+    npc.chargeTargetId = target.id;
+    npc.chargeUntilTick = world.tick + 11;
+    npc.state = 'charge';
+    npc.nextAttackTick = world.tick + npc.attackCooldownTicks;
+    world.effects.push({ id: `effect-charge-${npc.id}-${world.tick}`, kind: 'rusher-charge', position: { ...npc.position }, targetPosition: { ...target.position }, expiresAtTick: world.tick + 14 });
+    return;
+  }
   if (npc.attackKind === 'projectile') {
     spawnNpcProjectile(world, npc, target.position, target.kind === 'npc' ? 'npc' : null);
+    if (npc.role === 'skirmisher') {
+      npc.burstShotsRemaining = 1;
+      npc.nextBurstTick = world.tick + 5;
+      npc.burstTargetId = target.id;
+    }
     return;
   }
   if (target.kind === 'npc') {
+    if (npc.role === 'blocker') world.effects.push({ id: `effect-slam-${npc.id}-${world.tick}`, kind: 'blocker-slam', position: { ...npc.position }, expiresAtTick: world.tick + 18 });
     applyNpcDamage(world, npc, target.npc, {
       id: `npc-melee-${npc.id}-${world.tick}`,
       ownerActorId: null,
@@ -193,6 +301,7 @@ function executeHostileAttack(world, npc, target) {
     npc.nextAttackTick = world.tick + npc.attackCooldownTicks;
     return;
   }
+  if (npc.role === 'blocker') world.effects.push({ id: `effect-slam-${npc.id}-${world.tick}`, kind: 'blocker-slam', position: { ...npc.position }, expiresAtTick: world.tick + 18 });
   applyActorDamage(world, npc, target.actor, {
     id: `npc-melee-${npc.id}-${world.tick}`,
     ownerActorId: null,
@@ -205,6 +314,35 @@ function executeHostileAttack(world, npc, target) {
 }
 
 function updateHostile(world, npc, deltaSeconds) {
+  if (npc.chargeUntilTick && world.tick < npc.chargeUntilTick) {
+    const target = world.actors[npc.chargeTargetId];
+    npc.state = 'charge';
+    npc.velocity = { x: npc.chargeDirection.x * 175, y: npc.chargeDirection.y * 175 };
+    npc.facing = { ...npc.chargeDirection };
+    moveNpcWithCollision(world, npc, npc.velocity, deltaSeconds);
+    if (target?.alive && Math.hypot(target.position.x - npc.position.x, target.position.y - npc.position.y) <= 24) {
+      applyActorDamage(world, npc, target, {
+        id: `npc-charge-${npc.id}-${world.tick}`, ownerActorId: null, ownerNpcId: npc.id,
+        damage: npc.damage, channel: 'meleeDamage', velocity: { ...npc.velocity },
+      });
+      npc.chargeUntilTick = null;
+      npc.state = 'recover';
+    }
+    return;
+  }
+  if (npc.chargeUntilTick && world.tick >= npc.chargeUntilTick) {
+    npc.chargeUntilTick = null;
+    npc.state = 'recover';
+  }
+  if (npc.burstShotsRemaining > 0 && world.tick >= (npc.nextBurstTick || 0)) {
+    const target = world.actors[npc.burstTargetId] || world.npcs[npc.burstTargetId];
+    if (target?.alive) {
+      npc.nextAttackTick = world.tick;
+      spawnNpcProjectile(world, npc, target.position, target.kind === 'player' ? null : 'npc');
+    }
+    npc.burstShotsRemaining -= 1;
+    npc.nextAttackTick = Math.max(npc.nextAttackTick, world.tick + npc.attackCooldownTicks);
+  }
   const target = hostileObjective(world, npc);
   if (!target) {
     const home = normalized(npc.spawnPosition.x - npc.position.x, npc.spawnPosition.y - npc.position.y);
@@ -233,6 +371,11 @@ function updateHostile(world, npc, deltaSeconds) {
     npc.velocity = { x: 0, y: 0 };
     return;
   }
+  if (target.kind === 'escort' && directDistance <= 52) {
+    npc.state = 'escort';
+    npc.velocity = { x: 0, y: 0 };
+    return;
+  }
   if (npc.pendingAttack) {
     npc.state = 'windup';
     npc.velocity = { x: 0, y: 0 };
@@ -243,12 +386,20 @@ function updateHostile(world, npc, deltaSeconds) {
         if (currentDistance <= npc.attackRange + 18) executeHostileAttack(world, npc, refreshed);
       }
       npc.pendingAttack = null;
+      npc.telegraph = null;
       npc.nextAttackTick = Math.max(npc.nextAttackTick, world.tick + npc.attackCooldownTicks);
     }
     return;
   }
   if (directDistance <= npc.attackRange && world.tick >= npc.nextAttackTick) {
-    npc.pendingAttack = { targetId: target.id, targetKind: target.kind, executeAtTick: world.tick + 9 };
+    const windupTicks = Math.max(6, Number(npc.windupTicks) || 9);
+    npc.pendingAttack = { targetId: target.id, targetKind: target.kind, executeAtTick: world.tick + windupTicks };
+    npc.telegraph = {
+      kind: npc.role === 'rusher' ? 'charge' : npc.role === 'blocker' ? 'slam' : npc.role === 'sapper' ? 'slow-orb' : 'burst',
+      targetPosition: { ...target.position },
+      startedAtTick: world.tick,
+      executeAtTick: world.tick + windupTicks,
+    };
     npc.state = 'windup';
     npc.velocity = { x: 0, y: 0 };
     return;
@@ -256,7 +407,10 @@ function updateHostile(world, npc, deltaSeconds) {
 
   npc.state = 'engage';
   let direction = vector;
-  if (npc.attackKind === 'projectile' && directDistance < 72) direction = { x: -vector.x, y: -vector.y };
+  if (npc.role === 'skirmisher' && directDistance >= 72 && directDistance <= 175) {
+    const side = ((world.tick + npc.id.length) % 120) < 60 ? 1 : -1;
+    direction = { x: -vector.y * side, y: vector.x * side };
+  } else if (npc.attackKind === 'projectile' && directDistance < (npc.role === 'sapper' ? 125 : 72)) direction = { x: -vector.x, y: -vector.y };
   npc.velocity = { x: direction.x * npc.moveSpeed, y: direction.y * npc.moveSpeed };
   moveNpcWithCollision(world, npc, npc.velocity, deltaSeconds);
 }
@@ -282,4 +436,5 @@ module.exports = {
   npcCollidesObstacle,
   respawnNpc,
   updateNpcs,
+  updateScheduledCivilian,
 };

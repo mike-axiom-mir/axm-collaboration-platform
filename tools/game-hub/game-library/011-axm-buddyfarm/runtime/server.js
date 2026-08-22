@@ -10,6 +10,7 @@ const { createWorldAdapter } = require('./world-adapter');
 const HOST = process.env.HOST || '127.0.0.1';
 const PORT = Number(process.env.PORT || 8801);
 const GAME_PREFIX = '/games/011/';
+const THREE_VENDOR = path.resolve(__dirname, '../../../../..', 'shared', 'vendor', 'three-r160');
 const MIME = {
   '.css': 'text/css; charset=utf-8',
   '.html': 'text/html; charset=utf-8',
@@ -31,6 +32,7 @@ function parseRoster(env) {
 
 function safeFile(urlPath) {
   let relative = decodeURIComponent(String(urlPath || '/').split('?')[0]);
+  if (relative === '/vendor/three.module.js') return path.join(THREE_VENDOR, 'three.module.js');
   if (relative.startsWith(GAME_PREFIX)) relative = relative.slice(GAME_PREFIX.length);
   else if (relative === '/games/011') relative = '';
   else if (relative === '/controller.html') relative = 'controller.html';
@@ -95,6 +97,12 @@ function createRuntime(options) {
       })),
       partyScreenLinks: { all: GAME_PREFIX },
       authority: { session: 'managed-server', world: 'managed-server-shared-farm' },
+      controls: {
+        gamepadProfile: 'axm-universal-xbox-brawl-v0.2.1',
+        standardMappingOnly: true,
+        seatBinding: 'stable-pad-index-to-ordered-human-seat',
+        physicalDeviceQa: 'pending'
+      },
       optionalAiHelper: { enabled: aiEnabled, default: false },
       world: worldAdapter.receiptSummary()
     };

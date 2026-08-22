@@ -2,8 +2,11 @@
   'use strict';
 
   var Core = window.BraceRoomCore;
+  var Gamepad = window.AXMBraceRoomGamepad;
   var canvas = document.getElementById('scene');
   var ctx = canvas.getContext('2d');
+  var depthCanvas = document.getElementById('scene-depth');
+  var depthRenderer = window.AXMBraceDepth ? window.AXMBraceDepth.create(depthCanvas) : null;
   var appEl = document.getElementById('app');
 
   var startScreen = document.getElementById('start-screen');
@@ -19,6 +22,24 @@
   var endTitle = document.getElementById('end-title');
   var endSummary = document.getElementById('end-summary');
   var soundToggle = document.getElementById('sound-toggle');
+  var gamepadStatus = document.getElementById('gamepad-status');
+
+  appEl.dataset.gamepadProfile = Gamepad.PROFILE_ID;
+  appEl.dataset.gamepadsReady = '0';
+  appEl.dataset.gamepadsUnsupported = '0';
+
+  var gamepadQaPanel = document.getElementById('gamepad-qa-panel');
+  var gamepadQaEnabled = new URLSearchParams(location.search).get('gamepadQa') === '1';
+  var gamepadQaState = {
+    connected: false,
+    mapping: 'standard',
+    axes: [0, 0, 0, 0],
+    buttons: Array.from({ length: 16 }, function () { return { pressed: false, value: 0 }; })
+  };
+  if (gamepadQaEnabled) {
+    gamepadQaPanel.hidden = false;
+    appEl.dataset.gamepadQa = 'simulated-not-physical';
+  }
 
   /**
    * All sound is synthesized with WebAudio oscillators — no audio files,
@@ -92,6 +113,7 @@
     soundToggle.setAttribute('aria-pressed', String(next));
     soundToggle.textContent = next ? '🔇' : '🔊';
     soundToggle.title = next ? 'Unmute sound' : 'Mute sound';
+    soundToggle.setAttribute('aria-label', next ? 'Unmute sound' : 'Mute sound');
   });
 
   var selectedPlayers = 4;
@@ -192,8 +214,12 @@
   });
   function setActiveChip(groupId, btn) {
     var group = document.getElementById(groupId);
-    Array.prototype.forEach.call(group.querySelectorAll('.chip'), function (c) { c.classList.remove('active'); });
+    Array.prototype.forEach.call(group.querySelectorAll('.chip'), function (c) {
+      c.classList.remove('active');
+      c.setAttribute('aria-checked', 'false');
+    });
     btn.classList.add('active');
+    btn.setAttribute('aria-checked', 'true');
   }
 
   function blurActiveElement() {
@@ -247,11 +273,24 @@
 
   // Phone input relay: Game Hub's existing QR/lobby seam (lobby-controller.html,
   // one level up) redirects a joined phone to runtime/controller.html?player=pN,
-  // which posts d-pad + action state to this game's own /api/input. We poll
+  // which posts joystick + action state to this game's own /api/input. We poll
   // that back out here and merge it per-seat with the shared keyboard, so a
   // seat can be played from the couch keyboard, a joined phone, or both.
   var phoneInputs = {};
   var phoneEdgeQueue = new Set();
+  var gamepadEdgeQueue = new Set();
+  var gamepadFrames = {
+    p1: Gamepad.sampleStandardGamepad(null),
+    p2: Gamepad.sampleStandardGamepad(null),
+    p3: Gamepad.sampleStandardGamepad(null),
+    p4: Gamepad.sampleStandardGamepad(null)
+  };
+  var gamepadStatusKey = '';
+  // Tracks the last known 'fresh' / 'disconnected' per seat so a toast only
+  // fires on an actual transition, not on every 80ms poll while a phone
+  // stays dropped (or stays connected).
+  var phoneConnectionState = {};
+  var PLAYER_LABEL = { p1: 'P1', p2: 'P2', p3: 'P3', p4: 'P4' };
 
   function pollPhoneInputs() {
     fetch('/api/input', { cache: 'no-store' }).then(function (res) {
@@ -259,14 +298,112 @@
     }).then(function (data) {
       if (!data) return;
       var fresh = data.inputs || {};
+      var status = data.phoneStatus || {};
       Object.keys(phoneInputs).forEach(function (id) { if (!fresh[id]) delete phoneInputs[id]; });
       Object.keys(fresh).forEach(function (id) {
         phoneInputs[id] = fresh[id];
         if (fresh[id].actionEdge) phoneEdgeQueue.add(id);
       });
+      // Only meaningful once a run is actually in progress — the setup
+      // screen already shows nothing is connected, so a toast there would
+      // just be noise before there's anything to be disconnected *from*.
+      if (state && state.status === 'running') {
+        Object.keys(status).forEach(function (id) {
+          var prev = phoneConnectionState[id];
+          var next = status[id];
+          if (prev === 'fresh' && next === 'disconnected') {
+            pushToast((PLAYER_LABEL[id] || id) + ' phone controller lost connection — keyboard still works', 'bad');
+          } else if (prev === 'disconnected' && next === 'fresh') {
+            pushToast((PLAYER_LABEL[id] || id) + ' phone controller reconnected', 'good');
+          }
+          phoneConnectionState[id] = next;
+        });
+      } else {
+        phoneConnectionState = {};
+      }
     }).catch(function () { /* no phone joined this run — normal for shared-screen-only play */ });
   }
   setInterval(pollPhoneInputs, 80);
+
+  function updateGamepadStatus() {
+    var samples = Core.PLAYER_IDS.map(function (id) { return gamepadFrames[id]; });
+    var ready = samples.filter(function (sample) { return sample.supported; }).length;
+    var readySeats = Core.PLAYER_IDS.filter(function (id) { return gamepadFrames[id].supported; }).map(function (id) { return id.toUpperCase(); });
+    var unsupported = samples.filter(function (sample) { return sample.connected && !sample.supported; }).length;
+    var nextKey = ready + '|' + unsupported;
+    if (nextKey === gamepadStatusKey) return;
+    gamepadStatusKey = nextKey;
+    appEl.dataset.gamepadsReady = String(ready);
+    appEl.dataset.gamepadsUnsupported = String(unsupported);
+    gamepadStatus.classList.toggle('ready', ready > 0);
+    gamepadStatus.classList.toggle('unsupported', unsupported > 0);
+    if (unsupported > 0) {
+      gamepadStatus.textContent = unsupported + ' gamepad' + (unsupported === 1 ? ' needs' : 's need') + ' standard mapping · fallback ready';
+    } else if (ready > 0) {
+      gamepadStatus.textContent = ready + ' gamepad' + (ready === 1 ? '' : 's') + ' ready · ' + readySeats.join(' / ');
+    } else {
+      gamepadStatus.textContent = 'No gamepads detected · keyboard/phone ready';
+    }
+  }
+
+  function rememberGamepadActivity(id, sample) {
+    if (sample.actionEdge) appEl.dataset.lastGamepadInput = 'action';
+    else if (Math.abs(sample.moveX) > Math.abs(sample.moveY) && sample.moveX) appEl.dataset.lastGamepadInput = sample.moveX < 0 ? 'move-left' : 'move-right';
+    else if (sample.moveY) appEl.dataset.lastGamepadInput = sample.moveY < 0 ? 'move-up' : 'move-down';
+    else return;
+    appEl.dataset.lastGamepadSeat = id;
+  }
+
+  function qaPressButton(index) {
+    gamepadQaState.buttons[index] = { pressed: true, value: 1 };
+    setTimeout(function () { gamepadQaState.buttons[index] = { pressed: false, value: 0 }; }, 100);
+  }
+
+  if (gamepadQaEnabled) {
+    gamepadQaPanel.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-gamepad-qa]');
+      if (!button) return;
+      var action = button.dataset.gamepadQa;
+      if (action === 'connect' || action === 'unsupported') {
+        gamepadQaState.connected = true;
+        gamepadQaState.mapping = action === 'connect' ? 'standard' : 'nonstandard';
+      } else if (action === 'right') {
+        gamepadQaState.axes[0] = gamepadQaState.axes[0] > 0 ? 0 : 0.9;
+        button.classList.toggle('active', gamepadQaState.axes[0] > 0);
+      } else if (action === 'action') {
+        qaPressButton(0);
+      } else if (action === 'menu') {
+        qaPressButton(9);
+      } else if (action === 'disconnect') {
+        gamepadQaState.connected = false;
+        gamepadQaState.axes[0] = 0;
+        gamepadQaPanel.querySelector('[data-gamepad-qa="right"]').classList.remove('active');
+      }
+    });
+  }
+
+  function availableGamepads() {
+    if (gamepadQaEnabled) return gamepadQaState.connected ? [gamepadQaState] : [];
+    try { return Array.from(navigator.getGamepads ? navigator.getGamepads() : []); } catch (_) { return []; }
+  }
+
+  function pollGamepads() {
+    var pads = availableGamepads();
+    Core.PLAYER_IDS.forEach(function (id, index) {
+      var previous = gamepadFrames[id];
+      var sample = Gamepad.sampleStandardGamepad(pads[index] || null, previous);
+      gamepadFrames[id] = sample;
+      if (sample.supported) rememberGamepadActivity(id, sample);
+      if (sample.actionEdge) {
+        gamepadEdgeQueue.add(id);
+        if ((!state && !startScreen.classList.contains('hidden')) || (state && (state.status === 'won' || state.status === 'lost'))) startRun();
+      }
+      if (sample.pauseEdge) onEscape();
+    });
+    updateGamepadStatus();
+    requestAnimationFrame(pollGamepads);
+  }
+  pollGamepads();
 
   // Adapter observation push: mirrors the live `state` object out to the
   // server at ~8Hz so an external agent (Codex, another Claude instance,
@@ -332,20 +469,17 @@
       var kbAction = keysDown.has(map.action);
       var kbEdge = actionEdgeQueue.has(map.action);
       var phone = phoneInputs[id];
-
-      if (phone) {
-        inputs[id] = {
-          moveX: phone.moveX,
-          moveY: phone.moveY,
-          action: phone.action || kbAction,
-          actionEdge: phoneEdgeQueue.has(id) || kbEdge
-        };
-      } else {
-        inputs[id] = { moveX: kbMoveX, moveY: kbMoveY, action: kbAction, actionEdge: kbEdge };
-      }
+      var pad = gamepadFrames[id];
+      inputs[id] = {
+        moveX: Gamepad.strongestAxis(kbMoveX, phone && phone.moveX, pad && pad.supported && pad.moveX),
+        moveY: Gamepad.strongestAxis(kbMoveY, phone && phone.moveY, pad && pad.supported && pad.moveY),
+        action: kbAction || Boolean(phone && phone.action) || Boolean(pad && pad.supported && pad.action),
+        actionEdge: kbEdge || phoneEdgeQueue.has(id) || gamepadEdgeQueue.has(id)
+      };
     }
     actionEdgeQueue.clear();
     phoneEdgeQueue.clear();
+    gamepadEdgeQueue.clear();
     return inputs;
   }
 
@@ -377,6 +511,8 @@
       }
     } else {
       actionEdgeQueue.clear();
+      phoneEdgeQueue.clear();
+      gamepadEdgeQueue.clear();
     }
 
     updateParticles(dtMs);
@@ -459,10 +595,17 @@
     });
   }
 
+  function pushToast(text, cls) {
+    var el = document.createElement('div');
+    el.className = 'toast ' + cls;
+    el.textContent = text;
+    toastLayer.appendChild(el);
+    setTimeout(function () { el.remove(); }, 1600);
+  }
+
   function showToasts(events) {
     if (!events || events.length === 0) return;
     events.forEach(function (evt) {
-      var el = document.createElement('div');
       var text = '';
       var cls = 'neutral';
       var station = Core.STATIONS.find(function (s) { return s.id === evt.stationId; });
@@ -471,10 +614,7 @@
       else if (evt.type === 'missed') { text = name + ' failed'; cls = 'bad'; }
       else if (evt.type === 'false-alarm-mistake') { text = name + ' — false alarm, wrong call'; cls = 'bad'; }
       else if (evt.type === 'false-alarm-avoided') { text = name + ' — false alarm dodged'; cls = 'good'; }
-      el.className = 'toast ' + cls;
-      el.textContent = text;
-      toastLayer.appendChild(el);
-      setTimeout(function () { el.remove(); }, 1600);
+      pushToast(text, cls);
     });
   }
 
@@ -516,6 +656,7 @@
   function render(now) {
     if (!state) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (depthRenderer) depthRenderer.clear();
       return;
     }
     var nowMs = now || performance.now();
@@ -546,19 +687,33 @@
       ctx.translate((Math.random() - 0.5) * shakeMagnitude * shakeLeft * 6, (Math.random() - 0.5) * shakeMagnitude * shakeLeft * 6);
     }
 
-    drawBackgroundGrid();
+    drawBackgroundGrid(highContrast);
 
     // center hull gauge
     var hull = state.hull;
+    var hColor = hullColor(hull);
     ctx.beginPath();
     ctx.arc(Core.ARENA.centerX, Core.ARENA.centerY, 70, 0, Math.PI * 2);
     ctx.fillStyle = palette.hullBg;
     ctx.fill();
+    // Dim full-circle track behind the progress arc — without it the gauge
+    // only ever shows "how much hull is left" with no reference for "out
+    // of what," which reads oddly once hull drops low and the arc becomes
+    // a short, context-free sliver.
+    ctx.beginPath();
     ctx.lineWidth = 6;
-    ctx.strokeStyle = hullColor(hull);
+    ctx.strokeStyle = highContrast ? 'rgba(255,255,255,0.18)' : 'rgba(147,164,194,0.18)';
+    ctx.arc(Core.ARENA.centerX, Core.ARENA.centerY, 70, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.save();
+    if (!highContrast) { ctx.shadowColor = hColor; ctx.shadowBlur = 10; }
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = hColor;
+    ctx.lineCap = 'round';
     ctx.beginPath();
     ctx.arc(Core.ARENA.centerX, Core.ARENA.centerY, 70, -Math.PI / 2, -Math.PI / 2 + (hull / 100) * Math.PI * 2);
     ctx.stroke();
+    ctx.restore();
     ctx.fillStyle = '#eaf2ff';
     ctx.font = '700 22px sans-serif';
     ctx.textAlign = 'center';
@@ -575,14 +730,26 @@
       var idleGlow = !fault && !reducedMotion ? 0.5 + 0.5 * Math.sin(nowMs / 900 + station.angleDeg) : 0;
 
       ctx.save();
-      if (idleGlow > 0) {
-        ctx.shadowColor = 'rgba(79,139,255,0.5)';
-        ctx.shadowBlur = 6 * idleGlow;
+      // A small always-on glow (not just the idle breathing pulse) so every
+      // station reads as a powered console rather than dead metal, plus a
+      // subtle radial gradient fill instead of one flat color for a hint of
+      // real depth — both skipped under high contrast, which wants flat
+      // maximum-contrast shapes on purpose.
+      if (!highContrast) {
+        ctx.shadowColor = 'rgba(79,139,255,0.45)';
+        ctx.shadowBlur = 4 + 6 * idleGlow;
       }
       ctx.strokeStyle = palette.stationStroke;
       ctx.lineWidth = highContrast ? 3 : 2;
       drawShape(VERB_SHAPE[station.verb], pos.x, pos.y, 24);
-      ctx.fillStyle = palette.stationFill;
+      if (highContrast) {
+        ctx.fillStyle = palette.stationFill;
+      } else {
+        var stationFill = ctx.createRadialGradient(pos.x, pos.y - 6, 2, pos.x, pos.y, 26);
+        stationFill.addColorStop(0, '#1b283f');
+        stationFill.addColorStop(1, palette.stationFill);
+        ctx.fillStyle = stationFill;
+      }
       ctx.fill();
       ctx.stroke();
       ctx.restore();
@@ -606,12 +773,19 @@
           ctx.textAlign = 'center';
           ctx.fillText((remainingMs / 1000).toFixed(1) + 's', pos.x, pos.y - 44);
         } else {
-          // Outer ring: time remaining before the fault expires (shrinks clockwise).
+          // Outer ring: time remaining before the fault expires (shrinks
+          // clockwise). A matching glow gives active faults a genuine
+          // "something needs attention" neon urgency instead of a flat
+          // stroke — skipped under high contrast for the same legibility
+          // reason as everywhere else.
+          ctx.save();
+          if (!highContrast) { ctx.shadowColor = ringColor; ctx.shadowBlur = 8; }
           ctx.beginPath();
           ctx.lineWidth = 5;
           ctx.strokeStyle = ringColor;
           ctx.arc(pos.x, pos.y, 34, -Math.PI / 2, -Math.PI / 2 + remainingFraction * Math.PI * 2);
           ctx.stroke();
+          ctx.restore();
         }
 
         // Inner ring: how close this fault is to being resolved — this is the
@@ -619,11 +793,15 @@
         // a faint 18px dot. Bright and thick, plus a live percentage label.
         var effortFraction = fault.effort / Core.EFFORT_TARGET;
         if (effortFraction > 0) {
+          var effortColor = fault.kind === 'false' ? palette.effortFalse : palette.effortReal;
+          ctx.save();
+          if (!highContrast) { ctx.shadowColor = effortColor; ctx.shadowBlur = 7; }
           ctx.beginPath();
           ctx.lineWidth = 6;
-          ctx.strokeStyle = fault.kind === 'false' ? palette.effortFalse : palette.effortReal;
+          ctx.strokeStyle = effortColor;
           ctx.arc(pos.x, pos.y, 24, -Math.PI / 2, -Math.PI / 2 + effortFraction * Math.PI * 2);
           ctx.stroke();
+          ctx.restore();
         }
 
         ctx.fillStyle = highContrast ? '#ffffff' : '#eaf2ff';
@@ -671,10 +849,16 @@
     Core.PLAYER_IDS.forEach(function (id, index) {
       if (index >= state.playerCount) return;
       var player = state.players[id];
+      // A soft glow in the seat's own color gives each crew member a small
+      // "presence" halo rather than a flat token — same skip-under-high-
+      // contrast rule as every other glow added this pass.
+      ctx.save();
+      if (!highContrast) { ctx.shadowColor = PLAYER_COLORS[id]; ctx.shadowBlur = 9; }
       ctx.beginPath();
       ctx.fillStyle = PLAYER_COLORS[id];
       ctx.arc(player.x, player.y, Core.PLAYER_RADIUS, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
       ctx.fillStyle = '#051019';
       ctx.font = '700 11px sans-serif';
       ctx.textAlign = 'center';
@@ -706,15 +890,45 @@
     hullBar.classList.toggle('critical', hull > 0 && hull <= 30);
     waveLabel.textContent = 'WAVE ' + (state.wave || 1);
     timerValue.textContent = formatClock(state.sessionLengthMs - state.elapsedMs);
+    if (depthRenderer) {
+      depthRenderer.draw({
+        state: state,
+        stations: Core.STATIONS.map(function (station) {
+          var position = Core.stationPosition(station);
+          return { id: station.id, verb: station.verb, x: position.x, y: position.y };
+        }),
+        reducedMotion: reducedMotion,
+        highContrast: highContrast,
+        now: nowMs
+      });
+    }
   }
 
-  function drawBackgroundGrid() {
+  function drawBackgroundGrid(highContrast) {
     // Subtle engineering-grid texture so the play field reads as a
-    // structure under stress, not empty space. Cheap: drawn once per
-    // frame with a fixed step, no state, no animation.
+    // structure under stress, not empty space. A soft radial vignette sits
+    // under the grid so the hull/stations read as the well-lit center of a
+    // room rather than shapes floating on flat black — still cheap (one
+    // gradient fill + a fixed-step line grid, no images, no per-frame
+    // allocation beyond the gradient object). Skipped under high contrast:
+    // that mode's whole point is maximum legibility against pure black, and
+    // a vignette would only fight that.
+    if (!highContrast) {
+      var vignette = ctx.createRadialGradient(
+        Core.ARENA.centerX, Core.ARENA.centerY, 40,
+        Core.ARENA.centerX, Core.ARENA.centerY, Math.max(canvas.width, canvas.height) * 0.62
+      );
+      vignette.addColorStop(0, 'rgba(23,34,54,0.55)');
+      vignette.addColorStop(1, 'rgba(5,8,13,0)');
+      ctx.save();
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
+
     var step = 40;
     ctx.save();
-    ctx.strokeStyle = 'rgba(79,139,255,0.06)';
+    ctx.strokeStyle = highContrast ? 'rgba(255,255,255,0.08)' : 'rgba(79,139,255,0.06)';
     ctx.lineWidth = 1;
     for (var x = step; x < canvas.width; x += step) {
       ctx.beginPath();

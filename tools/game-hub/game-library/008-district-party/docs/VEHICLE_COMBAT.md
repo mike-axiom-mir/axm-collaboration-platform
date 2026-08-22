@@ -23,4 +23,4 @@ At 0 HP the host:
 
 At default 100 HP plus 1 shield, 80 damage consumes the shield and 79 HP, leaving 21 HP. A previously damaged actor may still be downed; the promise is deliberately not invulnerability.
 
-Vehicle-to-actor impact damage, repair, vehicle weapons, deformation and territorial ownership are not implemented.
+Free-roam also includes six stealable parked cars, four deterministic ambient traffic cars that can be hijacked, two purchasable armored gang cars per party, and a temporary vehicle-blocking street roadblock. Vehicle-to-actor impact damage, theft reaction, repair, vehicle weapons, deformation and persistent territorial ownership are not implemented.

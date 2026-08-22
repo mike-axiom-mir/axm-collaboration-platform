@@ -27,6 +27,7 @@
         <div><small>SAVED WORLD AGE</small><strong id="worldAge">00:00 / 24:00</strong></div>
         <div class="omen-track"><i id="omenBar"></i></div>
         <span id="worldPhase">THE VALE IS BRIGHT</span>
+        <span class="gamepad-status" id="gamepadStatus">GAMEPADS · NO STANDARD PADS</span>
       </div>
       <button class="round-button glass" id="pauseButton" type="button" aria-label="Pause">II</button>
     </header>
@@ -61,12 +62,32 @@
     </div>
 
     <canvas class="hud minimap glass" id="minimap" width="220" height="220" hidden aria-label="World map"></canvas>
-    <div class="hud coop-card glass" id="coopCard" data-state="together" hidden><small>LOCAL CO-OP</small><strong>P2 ACTIVE</strong><em id="coopRange">TOGETHER · 3m</em><span>ARROWS move · / attack · . dodge</span></div>
+    <div class="hud coop-card glass" id="coopCard" data-state="together" hidden><small>LOCAL CO-OP</small><strong>P2 ACTIVE</strong><em id="coopRange">TOGETHER · 3m</em><span>ARROWS or GAMEPAD 2 · A/RT attack · B dodge · X special</span></div>
 
     <div class="event-toast" id="eventToast" hidden><small id="toastKicker">PATCHWORK VALE</small><strong id="toastTitle">Welcome, probably.</strong><p id="toastCopy">There is no main quest. Pick a problem and make it stranger.</p></div>
     <div class="speech-bubble" id="speechBubble" hidden><b id="speaker">MAYOR</b><p id="speechText"></p></div>
     <div class="bonk-word" id="bonkWord" hidden>BONK!</div>
     <div class="screen-flash" id="screenFlash" aria-hidden="true"></div>
+
+    <section class="gamepad-qa-panel glass" id="gamepadQaPanel" hidden aria-label="Test gamepad simulation">
+      <small>TEST GAMEPAD SIMULATION</small>
+      <strong>SIMULATED STANDARD PADS</strong>
+      <p>Logic/browser QA only · not physical-device evidence</p>
+      <div class="gamepad-qa-actions">
+        <button type="button" data-gamepad-qa="connect">CONNECT P1 + P2</button>
+        <button type="button" data-gamepad-qa="unsupported">P1 UNSUPPORTED</button>
+        <button type="button" data-gamepad-qa="p1-right">P1 RIGHT</button>
+        <button type="button" data-gamepad-qa="p2-left">P2 LEFT</button>
+        <button type="button" data-gamepad-qa="p1-primary">P1 A</button>
+        <button type="button" data-gamepad-qa="p2-primary">P2 A</button>
+        <button type="button" data-gamepad-qa="p1-dodge">P1 B</button>
+        <button type="button" data-gamepad-qa="p1-special">P1 X</button>
+        <button type="button" data-gamepad-qa="p1-interact">P1 Y</button>
+        <button type="button" data-gamepad-qa="menu">MENU</button>
+        <button type="button" data-gamepad-qa="disconnect">DISCONNECT</button>
+      </div>
+      <output id="gamepadQaStatus">NO SIMULATED INPUT</output>
+    </section>
 
     <section class="screen title-screen" id="titleScreen">
       <div class="key-art" role="img" aria-label="A human, a toon and miniature robots overlooking Patchwork Vale"></div>
@@ -191,7 +212,7 @@
     </section>
 
     <section class="modal help-modal" id="helpModal" hidden aria-label="Controls and accessibility">
-      <div class="help-card"><button class="close-button" data-close-help type="button">×</button><span class="eyebrow">FIELD MANUAL</span><h2>Everything important is visible.</h2><div class="control-columns"><div><strong>PLAYER ONE</strong><span><kbd>WASD</kbd> move</span><span><kbd>MOUSE</kbd> aim</span><span><kbd>LMB / SPACE</kbd> attack</span><span><kbd>Q</kbd> class special</span><span><kbd>R</kbd> partner job</span><span><kbd>SHIFT</kbd> dodge</span><span><kbd>E</kbd> interact</span></div><div><strong>PLAYER TWO</strong><span><kbd>ARROWS</kbd> move</span><span><kbd>/</kbd> attack</span><span><kbd>,</kbd> special</span><span><kbd>.</kbd> dodge</span><span>Gamepad supported</span></div><div><strong>MENUS</strong><span><kbd>I</kbd> equipment</span><span><kbd>P</kbd> miniatures</span><span><kbd>J</kbd> adventures</span><span><kbd>M</kbd> world map</span><span><kbd>ESC</kbd> pause / close</span></div></div><div class="settings-row"><label><input id="reducedMotion" type="checkbox"> Reduced motion</label><label><input id="highContrast" type="checkbox"> High contrast markers</label><label><input id="soundToggle" type="checkbox" checked> Comedic sound</label></div></div>
+      <div class="help-card"><button class="close-button" data-close-help type="button">×</button><span class="eyebrow">FIELD MANUAL</span><h2>Everything important is visible.</h2><div class="control-columns"><div><strong>PLAYER ONE</strong><span><kbd>WASD</kbd> move · <kbd>MOUSE</kbd> aim</span><span><kbd>LMB / SPACE</kbd> attack</span><span><kbd>Q</kbd> class special</span><span><kbd>R</kbd> partner job</span><span><kbd>SHIFT</kbd> dodge · <kbd>E</kbd> interact</span><span>Gamepad 1: stick/D-pad move</span><span><kbd>A / RT</kbd> attack · <kbd>B</kbd> dodge</span><span><kbd>X</kbd> special · <kbd>Y</kbd> interact</span></div><div><strong>PLAYER TWO</strong><span><kbd>ARROWS</kbd> move</span><span><kbd>/</kbd> attack · <kbd>,</kbd> special</span><span><kbd>.</kbd> dodge</span><span>Gamepad 2: stick/D-pad move</span><span><kbd>A / RT</kbd> attack · <kbd>B</kbd> dodge</span><span><kbd>X</kbd> special</span></div><div><strong>MENUS</strong><span><kbd>I</kbd> equipment</span><span><kbd>P</kbd> miniatures</span><span><kbd>J</kbd> adventures</span><span><kbd>M / VIEW</kbd> world map</span><span><kbd>ESC / MENU</kbd> pause / close</span><span>Standard-mapping pads only</span></div></div><div class="settings-row"><label><input id="reducedMotion" type="checkbox"> Reduced motion</label><label><input id="highContrast" type="checkbox"> High contrast markers</label><label><input id="soundToggle" type="checkbox" checked> Comedic sound</label></div></div>
     </section>
 
     <section class="loading-screen" id="loadingScreen" hidden><div class="loading-gear">B</div><strong>ASSEMBLING AN UNREASONABLY LARGE VALLEY</strong><span id="loadingText">Teaching the river labor law...</span></section>
@@ -202,6 +223,7 @@
   <script src="motion-system.js"></script>
   <script src="coop-camera.js"></script>
   <script src="hero-rig-contract.js"></script>
+  <script src="universal-gamepad.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>

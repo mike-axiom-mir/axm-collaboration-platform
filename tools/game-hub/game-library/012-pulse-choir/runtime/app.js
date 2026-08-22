@@ -3,12 +3,13 @@
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
   const core = window.PulseChoirCore;
+  const stage3d = window.PulseChoirStage3D;
   const canvas = document.getElementById('arena');
   const ctx = canvas.getContext('2d');
   const query = new URLSearchParams(location.search);
   const requestedPlayer = query.get('player') || 'screen';
   const els = Object.fromEntries([
-    'network','score','rank','charge','chargeFill','timer','phase','surges','bestSync','combo','streak','revision','frameCost','eventToast','syncBanner','syncDots','comboCallout','setlistPanel','setlistAct','setlistClock','setlistGlyph','setlistTitle','setlistCopy','setlistFill','setlistProgress','phaseOverlay','overlayCard','showBadge','showArc','conductorPlan','conductorMode','conductorReason','overlayEyebrow','overlayTitle','overlayCopy','ruleLegend','resultDebrief','resultStats','resultShowMemory','resultSetlist','resultPlayers','startButton','returnButton','startNote','helpOverlay','closeHelp','seatRail','soundToggle','motionToggle','contrastToggle','resetButton','announcer'
+    'network','score','rank','charge','chargeFill','timer','phase','surges','bestSync','combo','streak','revision','frameCost','eventToast','syncBanner','syncDots','comboCallout','setlistPanel','setlistAct','setlistClock','setlistGlyph','setlistTitle','setlistCopy','setlistFill','setlistProgress','phaseOverlay','overlayCard','showBadge','showArc','conductorPlan','conductorMode','conductorReason','overlayEyebrow','overlayTitle','overlayCopy','ruleLegend','resultDebrief','resultStats','resultShowMemory','resultSetlist','resultPlayers','startButton','returnButton','startNote','helpOverlay','closeHelp','seatRail','soundToggle','motionToggle','contrastToggle','resetButton','announcer','venueBadge','venueName','venueCue','tourStamps'
   ].map(id => [id, document.getElementById(id)]));
   const displayPlayers = new Map();
   const particles = [];
@@ -21,6 +22,7 @@
   const sequences = { p1: 0, p2: 0, p3: 0, p4: 0 };
   const lastSentVectors = new Map();
   const gamepadPulse = new Map();
+  const gamepadMenu = new Map();
   let packet = null;
   let connected = false;
   let polling = false;
@@ -65,8 +67,10 @@
     const current = state.setlist && state.setlist.conductor || upcoming;
     const conductor = [core.PHASES.LOBBY, core.PHASES.RESULTS].includes(state.phase) ? upcoming : current;
     const roomSignal = conductor.roomSignal || null;
-    return { show, roundNumber, position, next, nextTitles, conductor, roomSignal };
+    const venue = [core.PHASES.LOBBY, core.PHASES.RESULTS].includes(state.phase) ? (next.venue || state.venue) : state.venue;
+    return { show, roundNumber, position, next, nextTitles, conductor, roomSignal, venue: venue || core.venueForRound(roundNumber) };
   }
+  function masteryCount(show) { return Object.keys(show && show.tour && show.tour.masteries || {}).length; }
   function roomSignalLabel(signal) {
     if (!signal) return '';
     return signal.choice
@@ -80,7 +84,7 @@
     let detail = 'Tonight remembers every result and changes the next Setlist.';
     if (context.show.completedRounds > 0) {
       const acts = Number(context.show.totalActsCleared || 0);
-      detail = context.show.totalScore + ' NIGHT POINTS · ' + acts + ' ACT' + (acts === 1 ? '' : 'S') + ' · ' + roomSignalLabel(context.roomSignal) + ' · NEXT: ' + context.nextTitles;
+      detail = context.show.totalScore + ' NIGHT POINTS · ' + acts + ' ACT' + (acts === 1 ? '' : 'S') + ' · ' + masteryCount(context.show) + '/' + core.VENUE_CIRCUIT.length + ' VENUES MASTERED · ' + roomSignalLabel(context.roomSignal) + ' · NEXT: ' + context.nextTitles;
     }
     if (recovered) detail = 'RESTORED AFTER HOST RESTART · ' + detail;
     els.showArc.innerHTML = '<b>' + escapeHtml(label) + '</b><span>' + escapeHtml(detail) + '</span>';
@@ -208,6 +212,7 @@
   }
   function replayChallenge(state) {
     const result = state.result || {};
+    if (result.venue && !result.venueMastery) return 'Stamp ' + result.venue.name + ': ' + result.venue.rule;
     const setlist = result.setlist;
     if (setlist && setlist.completed < setlist.acts.length) {
       const next = setlist.acts.find(act => act.status !== 'completed');
@@ -232,7 +237,8 @@
     const nextTitles = show.next && Array.isArray(show.next.acts) ? show.next.acts.map(act => act.title).join(' · ') : 'new directives';
     const conductor = show.next && show.next.conductor || { title: 'OPENING SET', cue: 'ESTABLISH THE ROOM' };
     const signal = conductor.roomSignal || null;
-    els.resultShowMemory.innerHTML = '<b>'+escapeHtml(conductor.title)+' · '+Number(show.completedRounds || 0)+' ROUND'+(Number(show.completedRounds || 0)===1?'':'S')+'</b><span>'+Number(show.totalScore || 0)+' TOTAL · BEST '+Number(show.bestScore || 0)+' / '+escapeHtml(show.bestRank || 'WARM-UP')+' · WHY '+escapeHtml(conductor.cue || conductor.title)+(signal?' · '+escapeHtml(roomSignalLabel(signal)):'')+' · NEXT '+escapeHtml(nextTitles)+'</span>';
+    const venueReceipt = result.venue ? result.venue.name + (result.venueMastery ? ' MASTERED' : ' VISITED') : 'VENUE RECORDED';
+    els.resultShowMemory.innerHTML = '<b>'+escapeHtml(venueReceipt)+' · '+masteryCount(show)+'/'+core.VENUE_CIRCUIT.length+' STAMPS · '+Number(show.completedRounds || 0)+' ROUND'+(Number(show.completedRounds || 0)===1?'':'S')+'</b><span>'+Number(show.totalScore || 0)+' TOTAL · BEST '+Number(show.bestScore || 0)+' / '+escapeHtml(show.bestRank || 'WARM-UP')+' · '+escapeHtml(conductor.title)+' · WHY '+escapeHtml(conductor.cue || conductor.title)+(signal?' · '+escapeHtml(roomSignalLabel(signal)):'')+' · NEXT '+escapeHtml(nextTitles)+'</span>';
     els.resultSetlist.innerHTML = setlist.acts.map(act => '<span class="'+escapeHtml(act.status)+'"><b>'+(act.status === 'completed' ? '✓' : '·')+'</b> '+escapeHtml(act.title)+'</span>').join('');
     els.resultPlayers.innerHTML = players.map(player => {
       const live = state.players[player.id] || {};
@@ -277,19 +283,19 @@
       els.overlayEyebrow.textContent = 'LOCAL CO-OP · ' + Object.keys(state.players).length + ' ACTIVE SEATS' + (context.roomSignal ? ' · ' + roomSignalLabel(context.roomSignal) : '');
       els.overlayTitle.innerHTML = 'Steal the beat.<br><em>Own the spotlight.</em>';
       els.overlayCopy.textContent = context.show.completedRounds
-        ? 'The server read the last show receipt. Human seats can now steer its transparent next-round plan from their phones.'
-        : 'Build risky TRIADs, pulse together, and clear a changing three-act LIVE SETLIST that gives the room a new plan every round.';
+        ? context.venue.name + ' is next. ' + context.venue.rule + ' Human seats can steer the transparent Setlist plan from their phones.'
+        : 'Tour five 3D venues, build risky TRIADs, and stamp each venue by meeting its own server-owned mastery goal.';
       els.startButton.textContent = 'START 75-SECOND ROUND';
       const clearedActs = Number(context.show.totalActsCleared || 0);
       els.startNote.textContent = context.show.completedRounds
         ? 'WHY: ' + (context.conductor.cue || context.conductor.title) + ' · ' + roomSignalLabel(context.roomSignal) + ' · NEXT: ' + context.nextTitles + ' · ' + context.show.totalScore + ' NIGHT POINTS · ' + clearedActs + ' ACT' + (clearedActs === 1 ? '' : 'S')
-        : 'The server chooses one human, one whole-room, and one risk/flow directive; later rounds adapt from the authoritative receipt.';
+        : 'The five-round Constellation Circuit changes beat balance, pace, glitch timing, and mastery goals while preserving one authoritative show.';
     } else if (state.phase === core.PHASES.COUNTDOWN) {
       els.phaseOverlay.hidden = false;
       els.showBadge.textContent = 'SHOW ' + context.position.showNumber + ' · ROUND ' + context.position.roundInShow + '/' + core.METRICS.showArcRounds;
       els.overlayEyebrow.textContent = context.conductor.title + ' · READ THE ARENA · SEED ' + state.seed;
       els.overlayTitle.innerHTML = '<em>' + Math.max(1, Math.ceil((state.phaseEndsAt-state.clockMs)/1000)) + '</em>';
-      els.overlayCopy.textContent = 'Striped lane means warning. Solid lane means active. Bank at the center.';
+      els.overlayCopy.textContent = context.venue.rule + ' Striped lane means warning; solid lane means active.';
       els.startButton.textContent = 'GET READY';
       els.startButton.disabled = true;
       els.startNote.textContent = 'Find your performer, then chase a TRIAD or bank early to stay fast.';
@@ -322,6 +328,12 @@
     els.streak.textContent = 'CHAIN ' + Number(state.harmony && state.harmony.streak || 0);
     els.combo.closest('.harmony').classList.toggle('hot', Boolean(state.harmony && state.harmony.streak >= 3));
     els.revision.textContent = 'R' + state.revision;
+    const venue = context.venue;
+    els.venueName.textContent = venue.name;
+    els.venueCue.textContent = venue.cue;
+    els.tourStamps.textContent = masteryCount(context.show) + ' / ' + core.VENUE_CIRCUIT.length + ' MASTERED';
+    els.venueBadge.title = venue.rule;
+    els.venueBadge.dataset.venue = venue.id;
     els.syncBanner.hidden = !state.sync;
     if (state.sync) {
       const pulsed = new Set(state.sync.pulses.map(item => item.player));
@@ -385,9 +397,10 @@
     ctx.drawImage(image,(width-w)/2,(height-h)/2,w,h);
   }
   function drawArena(view,state,time) {
-    ctx.fillStyle='#050510';ctx.fillRect(0,0,view.width,view.height);
-    if(arenaArt.complete&&arenaArt.naturalWidth){ctx.save();ctx.globalAlpha=document.body.classList.contains('high-contrast')?.2:.76;drawCover(arenaArt,view.width,view.height);ctx.restore()}
-    const wash=ctx.createLinearGradient(0,0,0,view.height);wash.addColorStop(0,'#09041b22');wash.addColorStop(.5,'#070a1890');wash.addColorStop(1,'#02030bd0');ctx.fillStyle=wash;ctx.fillRect(0,0,view.width,view.height);
+    const has3D=Boolean(stage3d&&stage3d.available);ctx.clearRect(0,0,view.width,view.height);
+    if(!has3D){ctx.fillStyle='#050510';ctx.fillRect(0,0,view.width,view.height)}
+    if(arenaArt.complete&&arenaArt.naturalWidth){ctx.save();ctx.globalAlpha=document.body.classList.contains('high-contrast')?.12:(has3D?.1:.76);drawCover(arenaArt,view.width,view.height);ctx.restore()}
+    const wash=ctx.createLinearGradient(0,0,0,view.height);wash.addColorStop(0,'#09041b18');wash.addColorStop(.5,has3D?'#070a1822':'#070a1890');wash.addColorStop(1,has3D?'#02030b38':'#02030bd0');ctx.fillStyle=wash;ctx.fillRect(0,0,view.width,view.height);
     const motion=document.body.classList.contains('reduced-motion')?0:1;
     ctx.save();ctx.globalCompositeOperation='screen';
     ['#41dfff','#ff4fb9','#ffc94f','#a9ff6b'].forEach((color,index)=>{const anchor=(index+.5)*view.width/4;const sway=Math.sin(time*.00035+index*1.9)*view.width*.035*motion;const beam=ctx.createLinearGradient(anchor,0,view.width*.5,view.height*.7);beam.addColorStop(0,color+'32');beam.addColorStop(1,color+'00');ctx.fillStyle=beam;ctx.beginPath();ctx.moveTo(anchor-18+sway,-10);ctx.lineTo(anchor+18+sway,-10);ctx.lineTo(view.width*.5+(index-1.5)*55,view.height*.74);ctx.closePath();ctx.fill()});ctx.restore();
@@ -426,7 +439,7 @@
     if(flashStrength>0){ctx.save();ctx.globalAlpha=flashStrength;const flash=ctx.createRadialGradient(view.width*.5,view.height*.5,0,view.width*.5,view.height*.5,view.width*.65);flash.addColorStop(0,'#ffffff');flash.addColorStop(.3,'#62f4ff');flash.addColorStop(1,'#ff4fb900');ctx.fillStyle=flash;ctx.fillRect(0,0,view.width,view.height);ctx.restore();flashStrength=Math.max(0,flashStrength-dt/420)}
   }
   function render(now) {
-    const started=performance.now(),dt=Math.min(50,now-lastFrameAt);lastFrameAt=now;const baseView=scaleInfo(),motion=document.body.classList.contains('reduced-motion')?0:1;if(packet){const strength=cameraKick*motion,view=Object.assign({},baseView,{ox:baseView.ox+(Math.random()-.5)*strength,oy:baseView.oy+(Math.random()-.5)*strength});cameraKick=Math.max(0,cameraKick-dt*.025);drawArena(view,packet.state,now);drawBeats(view,packet.state,now);drawCore(view,packet.state,now);drawPlayers(view,packet.state,now);drawEffects(view,dt)}else{ctx.fillStyle='#070816';ctx.fillRect(0,0,baseView.width,baseView.height)}
+    const started=performance.now(),dt=Math.min(50,now-lastFrameAt);lastFrameAt=now;const baseView=scaleInfo(),motion=document.body.classList.contains('reduced-motion')?0:1;if(packet){if(stage3d)stage3d.render(packet.state,now,{reducedMotion:!motion,highContrast:document.body.classList.contains('high-contrast')});const strength=cameraKick*motion,view=Object.assign({},baseView,{ox:baseView.ox+(Math.random()-.5)*strength,oy:baseView.oy+(Math.random()-.5)*strength});cameraKick=Math.max(0,cameraKick-dt*.025);drawArena(view,packet.state,now);drawBeats(view,packet.state,now);drawCore(view,packet.state,now);drawPlayers(view,packet.state,now);drawEffects(view,dt)}else{ctx.fillStyle='#070816';ctx.fillRect(0,0,baseView.width,baseView.height)}
     const cost=performance.now()-started;renderSamples.push(cost);if(renderSamples.length>90)renderSamples.shift();if(Math.floor(now/500)!==Math.floor((now-dt)/500)){const avg=renderSamples.reduce((sum,value)=>sum+value,0)/Math.max(1,renderSamples.length);els.frameCost.textContent=avg.toFixed(1)+' MS';els.frameCost.style.color=avg>core.METRICS.frameBudgetMs?'#ff637d':'#dff'}
     pollGamepads();requestAnimationFrame(render);
   }
@@ -440,7 +453,7 @@
     if(!packet)return;Object.entries(keyProfiles).forEach(([player,profile])=>{if(!packet.state.players[player]||packet.state.players[player].type==='ai')return;const vector=vectorFor(profile);const key=vector.x+','+vector.y;if(lastSentVectors.get(player)===key)return;lastSentVectors.set(player,key);sendAction(player,{type:'move',x:vector.x,y:vector.y})})
   }
   function pollGamepads() {
-    if(!packet||!navigator.getGamepads)return;Array.from(navigator.getGamepads()).filter(Boolean).slice(0,4).forEach((pad,index)=>{const player='p'+(index+1);if(!packet.state.players[player]||packet.state.players[player].type==='ai')return;const dead=.18;const x=Math.abs(pad.axes[0]||0)>dead?(pad.axes[0]||0):0;const y=Math.abs(pad.axes[1]||0)>dead?(pad.axes[1]||0):0;const key=x.toFixed(2)+','+y.toFixed(2);if(lastSentVectors.get('pad-'+player)!==key){lastSentVectors.set('pad-'+player,key);sendAction(player,{type:'move',x,y})}const pressed=Boolean(pad.buttons[0]&&pad.buttons[0].pressed);if(pressed&&!gamepadPulse.get(index))sendAction(player,{type:'pulse'});gamepadPulse.set(index,pressed)})
+    if(!packet||!navigator.getGamepads)return;Array.from(navigator.getGamepads()).filter(Boolean).slice(0,4).forEach((pad,index)=>{const player='p'+(index+1);if(!packet.state.players[player]||packet.state.players[player].type==='ai')return;const dead=.18,dpadX=(pad.buttons[15]&&pad.buttons[15].pressed?1:0)-(pad.buttons[14]&&pad.buttons[14].pressed?1:0),dpadY=(pad.buttons[13]&&pad.buttons[13].pressed?1:0)-(pad.buttons[12]&&pad.buttons[12].pressed?1:0);const x=Math.abs(pad.axes[0]||0)>dead?(pad.axes[0]||0):dpadX;const y=Math.abs(pad.axes[1]||0)>dead?(pad.axes[1]||0):dpadY;const key=x.toFixed(2)+','+y.toFixed(2);if(lastSentVectors.get('pad-'+player)!==key){lastSentVectors.set('pad-'+player,key);sendAction(player,{type:'move',x,y})}const pressed=Boolean((pad.buttons[0]&&pad.buttons[0].pressed)||(pad.buttons[2]&&pad.buttons[2].pressed)||(pad.buttons[5]&&pad.buttons[5].pressed));if(pressed&&!gamepadPulse.get(index))sendAction(player,{type:'pulse'});gamepadPulse.set(index,pressed);const menu=Boolean(pad.buttons[9]&&pad.buttons[9].pressed);if(menu&&!gamepadMenu.get(index)&&(packet.state.phase===core.PHASES.LOBBY||packet.state.phase===core.PHASES.RESULTS)){ensureAudio();api('/api/start',{method:'POST'}).then(()=>{dismissedResultRevision=-1;return poll()}).catch(error=>{els.eventToast.textContent=error.message})}gamepadMenu.set(index,menu)})
   }
   document.addEventListener('keydown',event=>{if(event.repeat)return;const code=event.code;if(['Space','Enter','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(code))event.preventDefault();if(code==='KeyH'){helpOpen=!helpOpen;els.helpOverlay.hidden=!helpOpen;return}if(code==='KeyM'){els.motionToggle.click();return}if(code==='KeyC'){els.contrastToggle.click();return}if(code==='Escape'){helpOpen=false;els.helpOverlay.hidden=true;if(packet&&packet.state.phase===core.PHASES.RESULTS){dismissedResultRevision=packet.state.revision;els.phaseOverlay.hidden=true}return}heldKeys.add(code);Object.entries(keyProfiles).forEach(([player,profile])=>{if(code===profile.pulse)sendAction(player,{type:'pulse'})});sendKeyboardVectors()});
   document.addEventListener('keyup',event=>{heldKeys.delete(event.code);sendKeyboardVectors()});

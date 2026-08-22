@@ -3,9 +3,19 @@
 const { DISCONNECT_TIMEOUT_MS } = require('../shared/constants');
 const { clamp } = require('../shared/validation');
 const { collidesObstacle } = require('./spatial-index');
+const { collidesCityRoadblock } = require('./city-life-system');
+const { recordVehicleTheft } = require('./justice-system');
+const { ensureVehicleTuning, vehiclePerformance } = require('./vehicle-tuning-system');
 
 function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function signedAngleDelta(from, to) {
+  let delta = (to - from) % (Math.PI * 2);
+  if (delta > Math.PI) delta -= Math.PI * 2;
+  if (delta < -Math.PI) delta += Math.PI * 2;
+  return delta;
 }
 
 function nearestEnterableVehicle(world, actor, maximumDistance = 52) {
@@ -59,7 +69,18 @@ function claimVehicleSeat(world, actorId, vehicleId, requestedSeat = 'auto') {
   actor.currentVehicleId = vehicle.id;
   actor.vehicleSeat = seat;
   actor.position = { ...vehicle.position };
+  const publicVehicleTheft = seat === 'driver' && vehicle.stealable === true && !vehicle.partyOwnerId && !vehicle.purchasedByActorId;
+  const movingTheft = publicVehicleTheft && vehicle.traffic?.active === true;
   if (!vehicle.partyOwnerId) vehicle.partyOwnerId = actor.partyId;
+  if (publicVehicleTheft) {
+    vehicle.stolenByActorId = actor.id;
+    recordVehicleTheft(world, actor, vehicle, movingTheft);
+  }
+  if (seat === 'driver' && vehicle.traffic?.active) {
+    vehicle.traffic.active = false;
+    vehicle.ambientDriver = false;
+    vehicle.parked = false;
+  }
   return { ok: true, vehicleId: vehicle.id, actorId: actor.id, seat };
 }
 
@@ -124,7 +145,10 @@ function ejectAllOccupants(world, vehicle, reason = 'forced-eject') {
 }
 
 function respawnVehicle(vehicle) {
+  const retainOwner = Boolean(vehicle.purchasedByActorId || ['custom', 'gang-car'].includes(vehicle.vehicleClass));
   vehicle.position = { ...vehicle.spawnPosition };
+  vehicle.rotation = Number(vehicle.spawnRotation ?? vehicle.rotation) || 0;
+  vehicle.travelRotation = vehicle.rotation;
   vehicle.speed = 0;
   vehicle.velocity = { x: 0, y: 0 };
   vehicle.health = vehicle.maxHealth;
@@ -133,12 +157,55 @@ function respawnVehicle(vehicle) {
   vehicle.respawnAtTick = null;
   vehicle.driverActorId = null;
   vehicle.passengerActorIds = [];
-  vehicle.partyOwnerId = null;
+  if (!retainOwner) vehicle.partyOwnerId = null;
+  if (vehicle.traffic) {
+    vehicle.traffic.active = true;
+    vehicle.traffic.waitUntilTick = 0;
+    vehicle.ambientDriver = true;
+    vehicle.stolenByActorId = null;
+  }
+}
+
+function updateAmbientTraffic(world, vehicle, deltaSeconds) {
+  const traffic = vehicle.traffic;
+  if (!traffic?.active || vehicle.driverActorId) return false;
+  if (world.tick < (traffic.waitUntilTick || 0)) {
+    vehicle.speed = 0;
+    vehicle.velocity = { x: 0, y: 0 };
+    return true;
+  }
+  const points = traffic.points || [];
+  if (points.length < 2) return false;
+  let target = points[traffic.waypointIndex % points.length];
+  let dx = target.x - vehicle.position.x;
+  let dy = target.y - vehicle.position.y;
+  if (Math.hypot(dx, dy) < 34) {
+    traffic.waypointIndex = (traffic.waypointIndex + 1) % points.length;
+    target = points[traffic.waypointIndex];
+    dx = target.x - vehicle.position.x;
+    dy = target.y - vehicle.position.y;
+  }
+  const length = Math.hypot(dx, dy) || 1;
+  const cruiseSpeed = Math.max(36, Number(traffic.cruiseSpeed) || 68);
+  const previous = { ...vehicle.position };
+  vehicle.rotation = Math.atan2(dy, dx);
+  vehicle.speed = cruiseSpeed;
+  vehicle.velocity = { x: dx / length * cruiseSpeed, y: dy / length * cruiseSpeed };
+  vehicle.position.x = clamp(vehicle.position.x + vehicle.velocity.x * deltaSeconds, vehicle.radius, world.staticMap.width - vehicle.radius);
+  vehicle.position.y = clamp(vehicle.position.y + vehicle.velocity.y * deltaSeconds, vehicle.radius, world.staticMap.height - vehicle.radius);
+  if (collidesObstacle(world, vehicle.position, vehicle.radius) || collidesCityRoadblock(world, vehicle.position, vehicle.radius)) {
+    vehicle.position = previous;
+    vehicle.speed = 0;
+    vehicle.velocity = { x: 0, y: 0 };
+    traffic.waitUntilTick = world.tick + 24;
+  }
+  return true;
 }
 
 function recoverDisconnectedDrivers(world, now = Date.now()) {
   const released = [];
   for (const vehicle of Object.values(world.vehicles)) {
+    ensureVehicleTuning(vehicle);
     if (!vehicle.driverActorId) continue;
     const actor = world.actors[vehicle.driverActorId];
     if (!actor) {
@@ -201,31 +268,39 @@ function updateVehicles(world, deltaSeconds, now = Date.now()) {
       vehicle.speed = 0;
       vehicle.velocity = { x: 0, y: 0 };
     }
+    if (!['board', 'countdown', 'results'].includes(world.mission?.status)
+      && updateAmbientTraffic(world, vehicle, deltaSeconds)) continue;
     const driver = vehicle.driverActorId ? world.actors[vehicle.driverActorId] : null;
+    const performance = vehiclePerformance(vehicle);
     if (driver && driver.alive && !['board', 'countdown', 'results'].includes(world.mission?.status)) {
       const input = driver.input;
       const forwardRequested = input.sprint || input.moveY < -0.1;
       const reverseRequested = input.moveY > 0.1;
-      const acceleration = forwardRequested ? 210 : reverseRequested ? -145 : 0;
+      const acceleration = forwardRequested ? performance.acceleration : reverseRequested ? -performance.reverseAcceleration : 0;
       vehicle.speed += acceleration * deltaSeconds;
       if (input.brake) {
-        if (vehicle.speed > 9) vehicle.speed *= Math.pow(0.05, deltaSeconds);
-        else vehicle.speed -= 145 * deltaSeconds;
+        if (vehicle.speed > 9) vehicle.speed *= Math.pow(performance.brakeRetention, deltaSeconds);
+        else vehicle.speed -= performance.reverseAcceleration * deltaSeconds;
       }
       const steeringStrength = Math.min(1, Math.abs(vehicle.speed) / 55);
-      vehicle.rotation += input.moveX * 2.3 * steeringStrength * deltaSeconds * (vehicle.speed >= 0 ? 1 : -1);
+      vehicle.rotation += input.moveX * performance.steeringRate * steeringStrength * deltaSeconds * (vehicle.speed >= 0 ? 1 : -1);
     }
-    vehicle.speed *= Math.pow(0.42, deltaSeconds);
-    vehicle.speed = clamp(vehicle.speed, -80, 190);
+    vehicle.speed *= Math.pow(performance.dragRetention, deltaSeconds);
+    vehicle.speed = clamp(vehicle.speed, -performance.reverseSpeed, performance.topSpeed);
     const previous = { ...vehicle.position };
-    vehicle.velocity.x = Math.cos(vehicle.rotation) * vehicle.speed;
-    vehicle.velocity.y = Math.sin(vehicle.rotation) * vehicle.speed;
+    if (!Number.isFinite(vehicle.travelRotation)) vehicle.travelRotation = vehicle.rotation;
+    if (performance.presetId === 'drift') {
+      vehicle.travelRotation += signedAngleDelta(vehicle.travelRotation, vehicle.rotation) * Math.min(1, performance.tractionResponse * deltaSeconds);
+    } else vehicle.travelRotation = vehicle.rotation;
+    vehicle.velocity.x = Math.cos(vehicle.travelRotation) * vehicle.speed;
+    vehicle.velocity.y = Math.sin(vehicle.travelRotation) * vehicle.speed;
     vehicle.position.x += vehicle.velocity.x * deltaSeconds;
     vehicle.position.y += vehicle.velocity.y * deltaSeconds;
     vehicle.position.x = clamp(vehicle.position.x, vehicle.radius, world.staticMap.width - vehicle.radius);
     vehicle.position.y = clamp(vehicle.position.y, vehicle.radius, world.staticMap.height - vehicle.radius);
     const tether = vehiclePartyTetherGuard(world, { ...vehicle, position: previous }, vehicle.position);
-    if (tether.blocked || collidesObstacle(world, vehicle.position, vehicle.radius)) {
+    if (tether.blocked || collidesObstacle(world, vehicle.position, vehicle.radius)
+      || collidesCityRoadblock(world, vehicle.position, vehicle.radius)) {
       vehicle.position = previous;
       vehicle.speed = tether.blocked ? 0 : vehicle.speed * -0.2;
     }
@@ -265,5 +340,6 @@ module.exports = {
   recoverDisconnectedDrivers,
   respawnVehicle,
   updateVehicles,
+  updateAmbientTraffic,
   vehiclePartyTetherGuard,
 };

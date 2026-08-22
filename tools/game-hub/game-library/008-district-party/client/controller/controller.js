@@ -11,7 +11,7 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
   const pulseButtonIds = { action: 'action', fire: 'attack', inventoryToggle: 'inventory-toggle', inventoryPrev: 'inventory-prev', inventoryNext: 'inventory-next', inventoryActivate: 'inventory-activate', mapToggle: 'inventory-toggle' };
   const pulseGeneration = Object.fromEntries(pulseKeys.map((key) => [key, 0]));
   const MAP_HOLD_MS = 650;
-  let seq = 0, lastActor = null, lastWorld = null, sending = false, stateFailures = 0, inventoryWasOpen = false;
+  let seq = 0, lastActor = null, lastWorld = null, sending = false, stateFailures = 0, inventoryWasOpen = false, linkLive = false, bootstrapReady = false;
   let moveStick = null, aimStick = null;
   let inventoryHoldTimer = null, inventoryHoldPointerId = null, inventoryHoldTriggered = false;
 
@@ -21,8 +21,34 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
   async function jsonFetch(path, options) {
     const response = await fetch(path, options);
     const data = await response.json().catch(() => ({}));
-    if (!response.ok || data.ok === false) throw new Error(data.error || data.reason || `HTTP ${response.status}`);
+    if (!response.ok || data.ok === false) {
+      const error = new Error(data.error || data.reason || `HTTP ${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
     return data;
+  }
+
+  function setLink(live, label = live ? 'LOCAL LINK · LIVE' : 'LOCAL LINK · LOST · RETRYING') {
+    linkLive = live === true;
+    const pill = $('connection');
+    pill.textContent = label;
+    pill.classList.toggle('live', linkLive);
+    pill.classList.toggle('lost', !linkLive);
+    document.body.classList.toggle('link-lost', !linkLive);
+    if (linkLive) return;
+    keys.clear();
+    clearTimeout(inventoryHoldTimer);
+    inventoryHoldTimer = null; inventoryHoldPointerId = null; inventoryHoldTriggered = false;
+    $('inventory-toggle').classList.remove('pressed', 'map-hold');
+    resetPlayInput();
+    pulseKeys.forEach((key) => {
+      input[key] = false;
+      $(pulseButtonIds[key]).classList.remove('pressed');
+    });
+    ['inventory-toggle', 'inventory-prev', 'inventory-activate', 'inventory-next', 'action', 'attack', 'sprint', 'brake'].forEach((id) => { $(id).disabled = true; });
+    moveStick?.setEnabled(false);
+    aimStick?.setEnabled(false);
   }
 
   async function bootstrap() {
@@ -34,18 +60,19 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
     $('party-label').textContent = `${(player.partyId || 'party_a').replace('_', ' ').toUpperCase()} · ${identity.seatId.toUpperCase()}`;
     $('identity').textContent = `${identity.room} · ${identity.seatId} · host validated`;
     if (Number.isSafeInteger(player.acceptedSeq)) seq = Math.max(seq, player.acceptedSeq);
-    $('connection').textContent = 'Connected'; $('connection').classList.add('live');
+    bootstrapReady = true;
+    setLink(true);
   }
 
   async function sendInput() {
-    if (sending || !identity.sessionId) return;
+    if (sending || !identity.sessionId || !linkLive) return;
     sending = true;
     const outboundInput = { ...input };
     const sentPulses = pulseKeys.filter((key) => outboundInput[key]).map((key) => [key, pulseGeneration[key]]);
     try {
       await jsonFetch('/api/input', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ roomCode: identity.room, sessionId: identity.sessionId, seatId: identity.seatId, token: identity.token, seq: ++seq, input: outboundInput }) });
-      $('connection').textContent = 'Connected'; $('connection').classList.add('live');
-    } catch (e) { $('connection').textContent = 'Input rejected'; $('connection').classList.remove('live'); }
+      setLink(true);
+    } catch (e) { setLink(false, e.status ? 'LOCAL LINK · INPUT REJECTED' : 'LOCAL LINK · LOST · RETRYING'); }
     finally {
       sentPulses.forEach(([key, generation]) => {
         if (pulseGeneration[key] !== generation) return;
@@ -64,10 +91,10 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
       const world = state.world || state;
       lastWorld = world;
       lastActor = (world.actors || []).find((a) => a.seatId === identity.seatId);
-      if (lastActor) updateReadout(lastActor, world);
+      if (bootstrapReady && lastActor) { setLink(true); updateReadout(lastActor, world); }
       stateFailures = 0;
     } catch (e) {
-      if (++stateFailures > 2) { $('connection').textContent = 'Reconnecting'; $('connection').classList.remove('live'); }
+      if (++stateFailures > 2) setLink(false);
     }
   }
 
@@ -77,6 +104,8 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
     const saveComputer = world.groupSaveComputer || {};
     const groupSaveOpen = saveComputer.open === true;
     const controlsGroupSave = groupSaveOpen && saveComputer.controlActorId === actor.id;
+    const cityMenu = world.cityLife?.menus?.[actor.id] || null;
+    const cityMenuOpen = Boolean(cityMenu);
     const externalSeat = actor.controller === 'human' || actor.controller === 'adapter';
     $('health').textContent = `${Math.max(0, Math.round(actor.health ?? 0))}/${actor.maxHealth || 100}`;
     $('shield').textContent = `${Math.max(0, Math.round(actor.shield ?? 0))}`;
@@ -86,27 +115,40 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
     $('mode').textContent = driving ? (actor.vehicleSeat === 'driver' ? 'DRIVING' : 'PASSENGER') : 'ON FOOT';
     const respawnLeft = actor.respawnAtTick ? 'RESPAWNING' : null;
     $('life-state').textContent = actor.alive === false ? (respawnLeft || 'DOWNED') : (driving ? 'IN VEHICLE' : 'ACTIVE');
-    const menuLocked = groupSaveOpen || ['board', 'countdown', 'results'].includes(mission.status);
+    const menuLocked = groupSaveOpen || cityMenuOpen || ['board', 'countdown', 'results'].includes(mission.status);
     $('move-stick-label').textContent = controlsGroupSave
       ? 'SELECT SLOT · LEFT SAVE · RIGHT LOAD'
       : groupSaveOpen ? 'PARTY SAVE PAUSED'
+      : cityMenuOpen ? 'SELECT VENUE OPTION'
       : ['board', 'results'].includes(mission.status)
       ? 'SELECT OPTION'
       : actor.vehicleSeat === 'driver' ? 'STEER · THROTTLE' : driving ? 'RIDING' : 'MOVE';
     $('aim-stick-label').textContent = groupSaveOpen
       ? 'SAVE COMPUTER · AIM PAUSED'
+      : cityMenuOpen ? 'VENUE OPEN · AIM PAUSED'
       : menuLocked
       ? 'AIM PAUSED'
       : actor.vehicleSeat === 'driver' ? 'RELEASE · FIRE FORWARD' : 'AIM · RELEASE TO FIRE';
     $('controller-mission-title').textContent = (mission.title || mission.mode || 'Party House').replaceAll('_', ' ').toUpperCase();
     const inventoryOpen = actor.inventoryOpen === true || actor.inventory?.open === true;
-    updateInventoryMode(actor, inventoryOpen, { groupSaveOpen, controlsGroupSave, menuLocked, externalSeat });
+    updateInventoryMode(actor, inventoryOpen, { groupSaveOpen, controlsGroupSave, cityMenuOpen, menuLocked, externalSeat });
+    const actionButton = $('action');
+    const fireButton = $('attack');
+    actionButton.querySelector('strong').textContent = cityMenuOpen ? 'CHOOSE / BUY' : 'ACTION';
+    actionButton.querySelector('small').textContent = cityMenuOpen
+      ? `${cityMenu.options?.[cityMenu.selectedIndex || 0]?.label || 'selected option'}`
+      : (actor.interactionPrompt || 'enter · exit · collect · choose');
+    fireButton.querySelector('strong').textContent = cityMenuOpen ? 'CLOSE' : 'FIRE';
+    fireButton.querySelector('small').textContent = cityMenuOpen ? 'leave venue' : 'forward fallback';
     if (!externalSeat) {
       $('connection').textContent = 'Host AI owns saved seat';
       $('connection').classList.remove('live');
       $('mission-hint').textContent = 'This missing saved player was replaced by Host AI when the fixed-roster save loaded.';
     } else if (controlsGroupSave) $('mission-hint').textContent = saveComputer.message || 'Choose one of nine local group save slots.';
     else if (groupSaveOpen) $('mission-hint').textContent = 'Another player is using the Party House save computer. The city is paused.';
+    else if (cityMenuOpen) $('mission-hint').textContent = cityMenu.message || 'Move up/down, ACTION chooses, FIRE closes.';
+    else if (actor.interactionPrompt) $('mission-hint').textContent = actor.interactionPrompt;
+    else if (world.cityLife?.contracts?.[actor.partyId]?.status === 'active') $('mission-hint').textContent = world.cityLife.contracts[actor.partyId].message || 'Active city job - follow the shared-screen marker.';
     else if (actor.tether?.returnToParty || actor.tether?.level === 'hard') $('mission-hint').textContent = actor.tether?.movementBlocked ? 'HARD RANGE — move back toward your party.' : 'RETURN TO PARTY — you are leaving shared-screen range.';
     else if (inventoryOpen) $('mission-hint').textContent = 'Inventory open — movement and combat are paused for this player.';
     else if (actor.tether?.level === 'soft') $('mission-hint').textContent = 'STAY CLOSE — the shared camera is widening toward its safe range.';
@@ -157,11 +199,12 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
     $('inventory-toggle').classList.toggle('open', inventoryOpen || menu.controlsGroupSave);
     $('inventory-toggle').querySelector('strong').textContent = menu.controlsGroupSave ? 'CLOSE COMPUTER' : 'INVENTORY';
     document.body.classList.toggle('inventory-open', inventoryOpen);
-    moveStick?.setEnabled(menu.externalSeat !== false && !inventoryOpen && (!menu.groupSaveOpen || menu.controlsGroupSave));
-    aimStick?.setEnabled(menu.externalSeat !== false && !inventoryOpen && !menu.menuLocked);
-    $('action').disabled = menu.externalSeat === false || inventoryOpen || (menu.groupSaveOpen && !menu.controlsGroupSave);
-    ['attack', 'sprint', 'brake'].forEach((id) => { $(id).disabled = menu.externalSeat === false || inventoryOpen || menu.groupSaveOpen; });
-    $('inventory-toggle').disabled = menu.externalSeat === false || (menu.groupSaveOpen && !menu.controlsGroupSave);
+    moveStick?.setEnabled(linkLive && menu.externalSeat !== false && !inventoryOpen && (!menu.groupSaveOpen || menu.controlsGroupSave));
+    aimStick?.setEnabled(linkLive && menu.externalSeat !== false && !inventoryOpen && !menu.menuLocked);
+    $('action').disabled = !linkLive || menu.externalSeat === false || inventoryOpen || (menu.groupSaveOpen && !menu.controlsGroupSave);
+    ['attack', 'sprint', 'brake'].forEach((id) => { $(id).disabled = !linkLive || menu.externalSeat === false || inventoryOpen || menu.groupSaveOpen || (menu.cityMenuOpen && id !== 'attack'); });
+    $('inventory-toggle').disabled = !linkLive || menu.externalSeat === false || menu.cityMenuOpen || (menu.groupSaveOpen && !menu.controlsGroupSave);
+    ['inventory-prev', 'inventory-activate', 'inventory-next'].forEach((id) => { $(id).disabled = !linkLive || !inventoryOpen || menu.externalSeat === false; });
     if (inventoryOpen) {
       if (!inventoryWasOpen) keys.clear();
       resetPlayInput();
@@ -217,6 +260,7 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
   bindHold('sprint', 'sprint'); bindHold('brake', 'brake');
 
   function triggerPulse(key) {
+    if (!linkLive) return;
     pulseGeneration[key] += 1;
     input[key] = true;
     $(pulseButtonIds[key]).classList.add('pressed');
@@ -268,6 +312,7 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
 
   const keys = new Set();
   function applyKeys() {
+    if (!linkLive) { keys.clear(); resetPlayInput(); return; }
     if (lastActor && (lastActor.inventoryOpen === true || lastActor.inventory?.open === true)) { resetPlayInput(); return; }
     const saveComputer = lastWorld?.groupSaveComputer || {};
     if (saveComputer.open) {
@@ -303,6 +348,7 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
     pulseKeys.forEach((key) => $(pulseButtonIds[key]).classList.remove('pressed'));
   });
 
-  bootstrap().catch((e) => { $('connection').textContent = 'Invalid link'; $('mission-hint').textContent = e.message; });
+  setLink(false, 'LOCAL LINK · CONNECTING');
+  bootstrap().then(pollState).catch((e) => { setLink(false, 'LOCAL LINK · INVALID'); $('mission-hint').textContent = e.message; });
   setInterval(sendInput, 50); setInterval(pollState, 250); pollState();
 })();

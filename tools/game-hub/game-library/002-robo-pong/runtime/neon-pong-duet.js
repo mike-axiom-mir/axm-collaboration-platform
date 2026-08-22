@@ -1,5 +1,36 @@
-(function () {
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(globalThis);
+  else factory(root);
+})(typeof window !== 'undefined' ? window : globalThis, function (root) {
   'use strict';
+
+  function gamepadButton(pad, index) {
+    var button = pad && pad.buttons && pad.buttons[index];
+    if (!button) return 0;
+    return Math.max(button.pressed ? 1 : 0, Number(button.value) || 0);
+  }
+
+  function sampleStandardGamepad(pad, deadZone) {
+    if (!pad) return { connected: false, supported: false, left: false, right: false, primary: false, pause: false };
+    if (pad.mapping !== 'standard') return { connected: true, supported: false, id: pad.id || '', left: false, right: false, primary: false, pause: false };
+    var threshold = Number.isFinite(deadZone) ? deadZone : 0.22;
+    var stickX = Number(pad.axes && pad.axes[0]) || 0;
+    if (Math.abs(stickX) < threshold) stickX = 0;
+    var dpadX = gamepadButton(pad, 15) - gamepadButton(pad, 14);
+    var moveX = dpadX || stickX;
+    return {
+      connected: true,
+      supported: true,
+      id: pad.id || '',
+      left: moveX < -threshold,
+      right: moveX > threshold,
+      primary: gamepadButton(pad, 0) >= 0.5 || gamepadButton(pad, 7) >= 0.5,
+      pause: gamepadButton(pad, 9) >= 0.5
+    };
+  }
+
+  var publicApi = { sampleStandardGamepad: sampleStandardGamepad };
+  if (!root || !root.document) return publicApi;
 
   var params = new URLSearchParams(location.search);
   var rawPlayer = params.get('player') || '';
@@ -7,6 +38,8 @@
   var base = location.pathname.indexOf('/games/002') === 0 ? '/games/002' : '';
   var canvas = document.getElementById('game');
   var ctx = canvas.getContext('2d');
+  var depthCanvas = document.getElementById('game3d');
+  var depthStage = root.NeonPongDuetDepth && depthCanvas ? root.NeonPongDuetDepth.create(depthCanvas) : { available: false, render: function () {} };
   var state = null;
   var lastPacket = 0;
   var lastEventAt = 0;
@@ -16,6 +49,11 @@
   var visuals = null;
   var lighting = null;
   var toastTimer = null;
+  var gamepadFrames = { p1: sampleStandardGamepad(null), p2: sampleStandardGamepad(null) };
+  var gamepadStatusKey = '';
+  var arenaPickerRenderKey = '';
+  var startCountdownActive = false;
+  var startCountdownLabel = '';
 
   var connection = document.getElementById('connection');
   var modeLabel = document.getElementById('modeLabel');
@@ -48,9 +86,17 @@
   var controllerMissionValue = document.getElementById('controllerMissionValue');
   var powerName = document.getElementById('powerName');
   var powerState = document.getElementById('powerState');
+  var abilityPanel = document.getElementById('abilityPanel');
+  var controllerMatch = document.getElementById('controllerMatch');
+  var controllerMatchTitle = document.getElementById('controllerMatchTitle');
+  var controllerArenaPicker = document.getElementById('controllerArenaPicker');
+  var controllerStartButton = document.getElementById('controllerStartButton');
+  var controllerNextButton = document.getElementById('controllerNextButton');
 
   if (player !== 'screen') {
     document.body.classList.add('player-view');
+    document.body.dataset.effects = 'minimal';
+    document.body.dataset.motion = 'reduced';
     controls.hidden = false;
     controllerPanel.hidden = false;
   }
@@ -100,6 +146,13 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { eventToast.classList.remove('show'); }, 1100);
   }
+  function updateControlNote() {
+    var samples = [gamepadFrames.p1, gamepadFrames.p2];
+    var connected = samples.filter(function (sample) { return sample.supported; }).length;
+    var unsupported = samples.filter(function (sample) { return sample.connected && !sample.supported; }).length;
+    var padStatus = connected ? connected + ' GAMEPAD' + (connected === 1 ? '' : 'S') + ' READY' : unsupported ? 'GAMEPAD NEEDS STANDARD MAPPING' : 'CONNECT XBOX/BRAWL PADS';
+    seatNote.textContent = 'P1 A / D · P2 arrows · Xbox stick/D-pad moves · A/RT power · Menu pauses · QR phones stay active · ' + padStatus;
+  }
   function accept(next) {
     state = next;
     lastPacket = Date.now();
@@ -114,13 +167,14 @@
       pulse(color, /SEALED|WINS/i.test(next.event || '') ? 0.72 : 0.42);
     }
   }
-  function renderArenaPicker() {
+  function fillArenaPicker(target) {
     if (!state || !state.arenas) return;
-    arenaPicker.innerHTML = '';
+    target.innerHTML = '';
     state.arenas.forEach(function (item) {
       var button = document.createElement('button');
       button.type = 'button';
       button.className = 'arena-choice' + (item.id === state.arenaId ? ' selected' : '');
+      button.disabled = state.phase === 'countdown';
       var strong = document.createElement('strong');
       strong.textContent = item.label.toUpperCase();
       var small = document.createElement('small');
@@ -130,8 +184,15 @@
         button.disabled = true;
         post('/arena', { arenaId: item.id }).then(function (result) { accept(result.state); pulse(item.accent, 0.55); }).catch(function (error) { connection.textContent = error.message; }).finally(function () { button.disabled = false; });
       };
-      arenaPicker.appendChild(button);
+      target.appendChild(button);
     });
+  }
+  function renderArenaPicker() {
+    var nextKey = state.arenaId + '|' + state.phase + '|' + state.arenas.map(function (item) { return item.id; }).join(',');
+    if (nextKey === arenaPickerRenderKey) return;
+    arenaPickerRenderKey = nextKey;
+    fillArenaPicker(arenaPicker);
+    if (player !== 'screen') fillArenaPicker(controllerArenaPicker);
   }
   function updateUi() {
     if (!state) return;
@@ -154,13 +215,16 @@
       metricLabel.textContent = 'SCORE';
       metricValue.textContent = state.scores.p1 + ' · ' + state.scores.p2;
     }
+    var countdownSeconds = state.phase === 'countdown' ? Math.max(1, Math.ceil(Math.min(3000, state.countdownRemaining || 0) / 1000)) : 0;
     launchPanel.hidden = state.phase === 'running' || state.phase === 'paused';
     launchEyebrow.textContent = coop ? '1–2 PLAYER STORY / CO-OP' : '2 PLAYER LOCAL MULTIPLAYER';
     launchTitle.textContent = state.phase === 'gameover' ? (state.outcome === 'victory' ? 'LIGHT RESTORED' : state.outcome === 'defeat' ? 'THE CORE FELL' : 'MATCH COMPLETE') : item.objective;
-    launchCopy.textContent = coop ? (state.phase === 'gameover' ? (state.outcome === 'victory' ? 'The breach is sealed. Carry the light into the next arena.' : 'The Warden broke the line. Rebuild the relay and try again.') : 'Protect the core together. One player gets an AI wingmate; two players share the defense.') : (state.phase === 'gameover' ? state.players[state.winner].name + ' takes the arena.' : 'Two seats, one ball, first to seven. Every return bends the light.');
-    startButton.textContent = state.phase === 'gameover' ? 'REMATCH' : 'ENTER ARENA';
+    launchCopy.textContent = coop ? (state.phase === 'gameover' ? (state.outcome === 'victory' ? 'The breach is sealed. Carry the light into the next arena.' : 'The Warden broke the line. Rebuild the relay and try again.') : 'Protect the core together. The room stays ready until the host starts the match.') : (state.phase === 'gameover' ? state.players[state.winner].name + ' takes the arena.' : 'Two seats, one ball, first to seven. The room stays ready until the host starts the match.');
+    startCountdownLabel = countdownSeconds ? 'STARTING IN ' + countdownSeconds : '';
+    startButton.textContent = startCountdownActive ? 'STARTING…' : startCountdownLabel || (state.phase === 'gameover' ? 'START REMATCH' : 'START MATCH');
+    startButton.disabled = startCountdownActive || state.phase === 'countdown';
     nextButton.hidden = !(coop && state.phase === 'gameover' && state.outcome === 'victory');
-    seatNote.textContent = 'P1 keyboard: A / D · P2 keyboard: arrows · Space / Enter uses power';
+    updateControlNote();
     renderArenaPicker();
     if (player !== 'screen') updateController(coop);
   }
@@ -170,11 +234,22 @@
     var seconds = Math.ceil((power && power.readyIn || 0) / 1000);
     controllerSeat.textContent = player.toUpperCase() + ' · ' + (coop ? 'DUET' : 'VERSUS');
     controllerName.textContent = mine.name.toUpperCase();
-    controllerStatus.textContent = state.phase.toUpperCase();
+    var betweenMatches = state.phase === 'ready' || state.phase === 'gameover' || state.phase === 'countdown';
+    controllerStatus.textContent = state.phase === 'countdown' ? 'GET READY' : state.phase.toUpperCase();
     controllerMissionLabel.textContent = coop ? 'CORE / RELAY' : 'SCORE';
     controllerMissionValue.textContent = coop ? state.mission.core + ' CORE · ' + state.mission.charge + '/' + state.mission.target : state.scores.p1 + ' · ' + state.scores.p2;
     powerName.textContent = power && (power.activeLabel || power.label) || 'RANDOM SPECIAL';
     powerState.textContent = state.phase !== 'running' ? 'WAITING FOR MATCH' : power && power.active ? 'ACTIVE' : seconds ? 'RECHARGING · ' + seconds + 's' : 'READY · TAP USE POWER';
+    document.body.classList.toggle('between-matches', betweenMatches);
+    controllerMatch.hidden = !betweenMatches;
+    abilityPanel.hidden = betweenMatches;
+    controls.hidden = betweenMatches;
+    controllerMatchTitle.textContent = arena().chapter + ' · ' + arena().label.toUpperCase();
+    controllerStartButton.textContent = state.phase === 'countdown' ? 'STARTING IN ' + Math.max(1, Math.ceil(Math.min(3000, state.countdownRemaining || 0) / 1000)) : state.phase === 'gameover' ? 'START REMATCH' : 'START MATCH';
+    controllerStartButton.disabled = startCountdownActive || state.phase === 'countdown';
+    controllerNextButton.hidden = !(coop && state.phase === 'gameover' && state.outcome === 'victory');
+    leftButton.disabled = state.phase !== 'running';
+    rightButton.disabled = state.phase !== 'running';
     powerButton.disabled = state.phase !== 'running' || seconds > 0;
     powerButton.style.color = power && power.color || '#ff3dd8';
   }
@@ -211,8 +286,28 @@
   bindHold(leftButton, 'left');
   bindHold(rightButton, 'right');
   powerButton.onclick = function () { sendInput(player, { power: true }); };
-  startButton.onclick = function () { startButton.disabled = true; post(state && state.phase === 'gameover' ? '/reset' : '/start').then(function (result) { accept(result.state); }).catch(function (error) { connection.textContent = error.message; }).finally(function () { startButton.disabled = false; }); };
-  nextButton.onclick = function () { nextButton.disabled = true; post('/next-arena').then(function (result) { accept(result.state); }).catch(function (error) { connection.textContent = error.message; }).finally(function () { nextButton.disabled = false; }); };
+  function beginStartCountdown() {
+    if (!state || startCountdownActive || (state.phase !== 'ready' && state.phase !== 'gameover')) return;
+    var route = state.phase === 'gameover' ? '/reset' : '/start';
+    startCountdownActive = true;
+    updateUi();
+    post(route, { player: player }).then(function (result) { accept(result.state); }).catch(function (error) {
+      connection.textContent = error.message;
+      return fetch(api('/state?room=AXM1')).then(function (response) { return response.json(); }).then(accept).catch(function () {});
+    }).finally(function () {
+      startCountdownActive = false;
+      if (state) updateUi();
+    });
+  }
+  startButton.onclick = beginStartCountdown;
+  controllerStartButton.onclick = beginStartCountdown;
+  function chooseNextArena() {
+    nextButton.disabled = true;
+    controllerNextButton.disabled = true;
+    post('/next-arena').then(function (result) { accept(result.state); }).catch(function (error) { connection.textContent = error.message; }).finally(function () { nextButton.disabled = false; controllerNextButton.disabled = false; });
+  }
+  nextButton.onclick = chooseNextArena;
+  controllerNextButton.onclick = chooseNextArena;
   pauseButton.onclick = function () { post('/pause').then(function (result) { accept(result.state); }).catch(function (error) { connection.textContent = error.message; }); };
 
   function keyRoute(key) {
@@ -235,6 +330,30 @@
   addEventListener('blur', function () {
     ['p1', 'p2'].forEach(function (id) { inputs[id].left = false; inputs[id].right = false; sendInput(id); });
   });
+
+  function pollGamepads() {
+    if (player === 'screen') {
+      var pads = [];
+      try { pads = Array.from(navigator.getGamepads ? navigator.getGamepads() : []); } catch (error) {}
+      ['p1', 'p2'].forEach(function (target, index) {
+        var previous = gamepadFrames[target];
+        var sample = sampleStandardGamepad(pads[index] || null);
+        if (sample.supported) {
+          setHeld(target, 'left', sample.left);
+          setHeld(target, 'right', sample.right);
+          if (sample.primary && !previous.primary) sendInput(target, { power: true });
+          if (sample.pause && !previous.pause && state && (state.phase === 'running' || state.phase === 'paused')) pauseButton.click();
+        } else if (previous.connected || previous.supported) {
+          setHeld(target, 'left', false);
+          setHeld(target, 'right', false);
+        }
+        gamepadFrames[target] = sample;
+      });
+      var nextStatusKey = JSON.stringify([gamepadFrames.p1.connected, gamepadFrames.p1.supported, gamepadFrames.p2.connected, gamepadFrames.p2.supported]);
+      if (nextStatusKey !== gamepadStatusKey) { gamepadStatusKey = nextStatusKey; updateControlNote(); }
+    }
+    requestAnimationFrame(pollGamepads);
+  }
 
   function drawCover(image) {
     if (!image || !image.complete || !image.naturalWidth) { ctx.fillStyle = '#050914'; ctx.fillRect(0, 0, canvas.width, canvas.height); return; }
@@ -268,9 +387,14 @@
     ctx.fillText(label, paddle.x, paddle.y - 22);
     ctx.restore();
   }
-  function drawTrail() {
-    if (!state) return;
-    trail.unshift({ x: state.ball.x, y: state.ball.y });
+  function projectedBall() {
+    if (!state || !state.ball || state.phase !== 'running') return state && state.ball;
+    var age = Math.min(0.055, Math.max(0, Date.now() - lastPacket) / 1000);
+    return Object.assign({}, state.ball, { x: state.ball.x + state.ball.vx * age, y: state.ball.y + state.ball.vy * age });
+  }
+  function drawTrail(ball) {
+    if (!ball) return;
+    trail.unshift({ x: ball.x, y: ball.y });
     if (trail.length > 14) trail.pop();
     ctx.save();
     for (var index = trail.length - 1; index >= 0; index -= 1) {
@@ -278,13 +402,13 @@
       var alpha = (trail.length - index) / trail.length * 0.22;
       ctx.fillStyle = 'rgba(70,215,231,' + alpha + ')';
       ctx.beginPath();
-      ctx.arc(point.x, point.y, Math.max(2, state.ball.radius * (1 - index / trail.length) * 0.58), 0, Math.PI * 2);
+      ctx.arc(point.x, point.y, Math.max(2, ball.radius * (1 - index / trail.length) * 0.58), 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
   }
   function drawBall(ball) {
-    drawTrail();
+    drawTrail(ball);
     ctx.save();
     ctx.fillStyle = '#edf6ff';
     ctx.strokeStyle = '#46d7e7';
@@ -324,13 +448,14 @@
   }
   function render() {
     var image = state ? mapImages[state.arenaId] : null;
+    var visualBall = projectedBall();
     drawCover(image);
     if (state && state.effects && state.effects.slowField) { ctx.fillStyle = 'rgba(73,107,219,.12)'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
     if (state) {
       if (state.playMode === 'story-coop') drawPaddle(state.paddles.warden, '#f0bd63', false, 'WARDEN');
       drawPaddle(state.paddles.p1, state.players.p1.color, state.power.p1.active, 'P1');
       drawPaddle(state.paddles.p2, state.players.p2.color, state.power.p2.active, 'P2');
-      drawBall(state.ball);
+      drawBall(visualBall);
       drawHud();
     } else {
       ctx.fillStyle = '#91a8bb';
@@ -338,10 +463,16 @@
       ctx.font = '700 18px "Cascadia Mono", Consolas, monospace';
       ctx.fillText('CONNECTING TO AXM1', canvas.width / 2, canvas.height / 2);
     }
+    depthStage.render(performance.now(), state, visualBall);
+    canvas.dataset.visualAuthority = depthStage.available ? 'hybrid-webgl-canvas' : 'canvas-fallback';
     requestAnimationFrame(render);
   }
 
-  mountAetherglass();
   connect();
-  render();
-})();
+  if (player === 'screen') {
+    mountAetherglass();
+    pollGamepads();
+    render();
+  }
+  return publicApi;
+});

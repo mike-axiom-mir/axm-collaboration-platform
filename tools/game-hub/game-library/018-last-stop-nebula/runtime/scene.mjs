@@ -195,6 +195,61 @@ function debtSignalTexture() {
   return { texture, draw };
 }
 
+function dispatchSignalTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 768;
+  canvas.height = 256;
+  const context = canvas.getContext('2d');
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  const draw = (dispatch = {}) => {
+    const status = dispatch.status || 'active';
+    const color = status === 'failed' ? '#ff5d78' : status === 'completed' ? '#f5fbff' : '#50f4dc';
+    const progress = Math.max(0, Math.min(1, Number(dispatch.progress) / Math.max(1, Number(dispatch.goal))));
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    roundedRect(context, 14, 14, 740, 228, 34);
+    context.fillStyle = 'rgba(3, 7, 18, .9)';
+    context.fill();
+    context.lineWidth = 7;
+    context.strokeStyle = color;
+    context.shadowColor = color;
+    context.shadowBlur = 24;
+    context.stroke();
+    context.shadowBlur = 0;
+    context.fillStyle = color;
+    context.font = '900 25px Arial, sans-serif';
+    context.textAlign = 'left';
+    context.textBaseline = 'middle';
+    context.fillText(dispatch.phase || 'LIVE DISPATCH', 46, 55);
+    context.fillStyle = '#f5fbff';
+    context.font = '900 48px Arial, sans-serif';
+    context.fillText(String(dispatch.short || 'SIGNAL DISPATCH').slice(0, 22), 46, 112);
+    context.fillStyle = 'rgba(255,255,255,.12)';
+    roundedRect(context, 46, 153, 494, 20, 10);
+    context.fill();
+    if (progress > 0) {
+      roundedRect(context, 46, 153, Math.max(20, 494 * progress), 20, 10);
+      context.fillStyle = color;
+      context.fill();
+    }
+    context.fillStyle = color;
+    context.font = '900 30px Arial, sans-serif';
+    context.textAlign = 'right';
+    context.fillText(`${dispatch.progress || 0}/${dispatch.goal || 0}`, 710, 162);
+    context.fillStyle = '#f5fbff';
+    context.font = '800 23px Arial, sans-serif';
+    context.textAlign = 'left';
+    const timeLabel = status === 'active' ? `${Math.ceil(dispatch.remaining || 0)} SEC` : `NEXT ${Math.ceil(dispatch.remaining || 0)} SEC`;
+    context.fillText(timeLabel, 46, 207);
+    context.textAlign = 'right';
+    context.fillText(`${dispatch.marks || 0} SIGNAL MARKS`, 710, 207);
+    texture.needsUpdate = true;
+  };
+  draw();
+  return { texture, draw };
+}
+
 function mesh(geometry, material, parent, position = [0, 0, 0], rotation = [0, 0, 0]) {
   const object = new THREE.Mesh(geometry, material);
   object.position.set(...position);
@@ -216,6 +271,12 @@ function cylinder(parent, radii, position, material, rotation = [0, 0, 0]) {
 export class NebulaScene {
   constructor(canvas) {
     this.canvas = canvas;
+    this.canvas.dataset.visualPass = 'last-stop-retiree-service-detail-01';
+    this.canvas.dataset.visualAuthority = 'presentation-only';
+    this.canvas.dataset.changesSimulation = 'false';
+    this.canvas.dataset.changesCollision = 'false';
+    this.canvas.dataset.operatorRig = 'faceted-retiree-01';
+    this.canvas.dataset.vehicleRig = 'faceted-service-craft-01';
     this.qualityPreset = DEFAULT_RENDER_QUALITY;
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
@@ -251,9 +312,12 @@ export class NebulaScene {
     this.decisionTextures = [];
     this.decisionMaterials = [];
     this.debtMaterials = [];
+    this.dispatchMaterials = [];
     this.effects = [];
     this.lastUpgradeSignature = '';
     this.lastDebtSignature = '';
+    this.lastDispatchSignature = '';
+    this.dispatchEffectUntil = 0;
     this.materials = this.createMaterials();
     this.glows = {
       teal: glowTexture('#50f4dc'),
@@ -299,6 +363,7 @@ export class NebulaScene {
     this.buildQueueConstellations();
     this.buildStationAtmosphere();
     this.buildDebtLien();
+    this.buildDispatchBoard();
     this.buildDecisionLegacyRoot();
     this.buildShiftHorizon();
     this.buildAttraction();
@@ -524,19 +589,52 @@ export class NebulaScene {
 
   createAlien() {
     const group = new THREE.Group();
+    group.name = 'faceted-retiree-operator';
     const coat = new THREE.MeshStandardMaterial({ color: 0x305d68, roughness: .82 });
     const skin = new THREE.MeshStandardMaterial({ color: 0x8bcf82, roughness: .65, emissive: 0x183820, emissiveIntensity: .25 });
-    cylinder(group, [.46, .65, 1.45, 18], [0, 1.1, 0], coat);
-    const head = mesh(new THREE.SphereGeometry(.65, 20, 14), skin, group, [0, 2.15, 0]);
+    const belt = new THREE.MeshStandardMaterial({ color: 0x17202a, roughness: .68, metalness: .36 });
+    cylinder(group, [.46, .65, 1.45, 8], [0, 1.1, 0], coat);
+    const head = mesh(new THREE.DodecahedronGeometry(.69, 1), skin, group, [0, 2.15, 0]);
     head.scale.set(1.08, .86, .88);
     for (const x of [-.24, .24]) {
-      const eye = mesh(new THREE.SphereGeometry(.105, 12, 8), this.materials.black, group, [x, 2.25, .53]);
+      const eye = mesh(new THREE.SphereGeometry(.105, 8, 5), this.materials.black, group, [x, 2.25, .53]);
       eye.scale.set(1, 1.45, .4);
+      mesh(new THREE.OctahedronGeometry(.035, 0), this.materials.teal, group, [x - .018, 2.285, .575]);
     }
+    const antennaTips = [];
     for (const x of [-.42, .42]) {
       cylinder(group, [.055, .07, .7, 8], [x, 2.74, 0], skin, [0, 0, x > 0 ? -.3 : .3]);
-      mesh(new THREE.SphereGeometry(.09, 8, 6), this.materials.teal, group, [x + (x > 0 ? .1 : -.1), 3.08, 0]);
+      antennaTips.push(mesh(new THREE.OctahedronGeometry(.11, 0), this.materials.teal, group, [x + (x > 0 ? .1 : -.1), 3.08, 0]));
     }
+    box(group, [.86, .22, .72], [0, .96, .24], belt);
+    box(group, [.32, .34, .08], [0, 1.28, .62], this.materials.amber);
+    const arms = [];
+    for (const side of [-1, 1]) {
+      const pivot = new THREE.Group();
+      pivot.position.set(side * .58, 1.65, 0);
+      cylinder(pivot, [.11, .14, .7, 7], [0, -.34, 0], coat);
+      mesh(new THREE.DodecahedronGeometry(.14, 0), skin, pivot, [0, -.73, 0]);
+      pivot.rotation.z = side * .15;
+      group.add(pivot);
+      arms.push(pivot);
+    }
+    for (const side of [-1, 1]) {
+      cylinder(group, [.12, .15, .58, 7], [side * .27, .37, 0], coat);
+      box(group, [.34, .16, .54], [side * .28, .09, .08], belt, [0, side * .08, 0]);
+    }
+    const wrench = new THREE.Group();
+    wrench.position.set(.73, .88, .05);
+    cylinder(wrench, [.045, .045, .65, 6], [0, 0, 0], this.materials.panel, [0, 0, .38]);
+    mesh(new THREE.TorusGeometry(.13, .035, 6, 12, Math.PI * 1.45), this.materials.panel, wrench, [-.12, .29, 0], [0, 0, -.38]);
+    wrench.scale.setScalar(.78);
+    group.add(wrench);
+    const shadow = mesh(new THREE.CircleGeometry(.78, 16), new THREE.MeshBasicMaterial({ color: 0x05070d, transparent: true, opacity: .42, depthWrite: false }), group, [0, .025, 0], [-Math.PI / 2, 0, 0]);
+    shadow.castShadow = false;
+    shadow.receiveShadow = false;
+    group.userData.head = head;
+    group.userData.arms = arms;
+    group.userData.antennaTips = antennaTips;
+    group.userData.wrench = wrench;
     return group;
   }
 
@@ -839,6 +937,85 @@ export class NebulaScene {
     this.canvas.dataset.debtLabel = this.debtLienLabel.visible ? 'visible' : 'hud-only';
     this.canvas.dataset.debtPayment = 'none';
     this.canvas.dataset.debtPaymentPhase = 'idle';
+  }
+
+  buildDispatchBoard() {
+    this.dispatchBoard = new THREE.Group();
+    this.dispatchBoard.name = 'signal-dispatch-board';
+    this.dispatchBoard.position.set(0, 6.25, -6.15);
+    const frameMaterial = new THREE.MeshStandardMaterial({
+      color: 0x15202d,
+      roughness: .28,
+      metalness: .72,
+      emissive: COLORS.teal,
+      emissiveIntensity: .18
+    });
+    this.dispatchMaterials.push(frameMaterial);
+    box(this.dispatchBoard, [9.1, 2.95, .34], [0, 0, 0], frameMaterial);
+    const renderer = dispatchSignalTexture();
+    this.dispatchTexture = renderer.texture;
+    this.dispatchLabelRenderer = renderer;
+    const labelMaterial = new THREE.SpriteMaterial({
+      map: renderer.texture,
+      transparent: true,
+      opacity: .94,
+      depthTest: false,
+      depthWrite: false
+    });
+    this.dispatchMaterials.push(labelMaterial);
+    this.dispatchLabel = new THREE.Sprite(labelMaterial);
+    this.dispatchLabel.position.set(0, .06, .24);
+    this.dispatchLabel.scale.set(8.55, 2.86, 1);
+    this.dispatchLabel.renderOrder = 44;
+    this.dispatchBoard.add(this.dispatchLabel);
+
+    this.dispatchPips = [];
+    for (let index = 0; index < 7; index += 1) {
+      const material = new THREE.MeshStandardMaterial({
+        color: 0x1a3340,
+        roughness: .24,
+        metalness: .58,
+        emissive: COLORS.teal,
+        emissiveIntensity: .16
+      });
+      this.dispatchMaterials.push(material);
+      const pip = mesh(new THREE.OctahedronGeometry(.18, 0), material, this.dispatchBoard, [-2.7 + index * .9, -1.78, .12]);
+      pip.castShadow = false;
+      this.dispatchPips.push(pip);
+    }
+    const beaconMaterial = new THREE.MeshStandardMaterial({
+      color: COLORS.teal,
+      roughness: .2,
+      metalness: .52,
+      emissive: COLORS.teal,
+      emissiveIntensity: 1.8,
+      transparent: true,
+      opacity: .86
+    });
+    this.dispatchMaterials.push(beaconMaterial);
+    this.dispatchBeacon = mesh(new THREE.TorusGeometry(.7, .075, 8, 38), beaconMaterial, this.dispatchBoard, [0, 1.84, .08], [Math.PI / 2, 0, 0]);
+    this.dispatchBeacon.castShadow = false;
+    this.dispatchGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: this.glows.teal,
+      transparent: true,
+      opacity: .42,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    }));
+    this.dispatchGlow.position.set(0, 1.84, .2);
+    this.dispatchGlow.scale.set(3.1, 3.1, 1);
+    this.dispatchBoard.add(this.dispatchGlow);
+    this.dispatchLight = new THREE.PointLight(COLORS.teal, 9, 15, 2);
+    this.dispatchLight.position.set(0, 1.7, 1);
+    this.dispatchBoard.add(this.dispatchLight);
+    this.dispatchBoard.visible = false;
+    this.scene.add(this.dispatchBoard);
+    this.canvas.dataset.dispatchId = 'none';
+    this.canvas.dataset.dispatchStatus = 'active';
+    this.canvas.dataset.dispatchProgress = '0/0';
+    this.canvas.dataset.dispatchMarks = '0';
+    this.canvas.dataset.dispatchMotion = this.reducedMotion ? 'reduced' : 'full';
+    this.canvas.dataset.dispatchEffect = 'idle';
   }
 
   buildShiftHorizon() {
@@ -1567,12 +1744,23 @@ export class NebulaScene {
     const colors = [0x32d6c4, 0xf2ad43, 0xbd5af0, 0xe65d74, 0x5b7ee8];
     const bodyMaterial = new THREE.MeshStandardMaterial({ color: colors[type % colors.length], roughness: .34, metalness: .68, emissive: colors[type % colors.length], emissiveIntensity: .14 });
     const group = new THREE.Group();
+    group.name = ambient ? 'faceted-ambient-craft' : 'faceted-customer-craft';
     const length = 2.45 + (type % 3) * .26;
     box(group, [1.65, .48, length], [0, .52, 0], bodyMaterial);
-    const nose = mesh(new THREE.SphereGeometry(.84, 16, 10), bodyMaterial, group, [0, .55, -length * .43]);
+    const nose = mesh(new THREE.DodecahedronGeometry(.84, 0), bodyMaterial, group, [0, .55, -length * .43]);
     nose.scale.set(1, .45, .9);
-    const cabin = mesh(new THREE.SphereGeometry(.68, 16, 10), this.materials.glass, group, [0, .92, .14]);
+    const cabin = mesh(new THREE.DodecahedronGeometry(.68, 1), this.materials.glass, group, [0, .92, .14]);
     cabin.scale.set(1, .58, 1.25);
+    for (const side of [-1, 1]) {
+      box(group, [.16, .09, length * .72], [side * 1.02, .49, .18], bodyMaterial, [0, 0, side * .08]);
+      mesh(new THREE.ConeGeometry(.18, .62, 5), bodyMaterial, group, [side * 1.04, .53, .92], [Math.PI / 2, 0, side * .08]);
+      const landing = cylinder(group, [.055, .055, .52, 6], [side * .56, .16, .18], this.materials.dark, [0, 0, side * .18]);
+      landing.castShadow = false;
+    }
+    for (const x of [-.48, .48]) {
+      const lamp = mesh(new THREE.OctahedronGeometry(.11, 0), type % 2 ? this.materials.amber : this.materials.teal, group, [x, .56, -length * .89]);
+      lamp.castShadow = false;
+    }
     for (const x of [-.88, .88]) {
       const pod = cylinder(group, [.18, .28, 1.5, 12], [x, .35, .16], this.materials.dark, [Math.PI / 2, 0, 0]);
       pod.castShadow = false;
@@ -1590,8 +1778,9 @@ export class NebulaScene {
       trail.castShadow = false;
     }
     if (!ambient) {
-      const head = mesh(new THREE.SphereGeometry(.22 + species % 2 * .03, 10, 8), new THREE.MeshStandardMaterial({ color: [0x92d77e, 0xb48cf0, 0x6ecbc4, 0xe39c74, 0xa8d9ed, 0xdf79b7][species % 6], roughness: .7 }), group, [0, 1.05, .05]);
+      const head = mesh(new THREE.DodecahedronGeometry(.22 + species % 2 * .03, 0), new THREE.MeshStandardMaterial({ color: [0x92d77e, 0xb48cf0, 0x6ecbc4, 0xe39c74, 0xa8d9ed, 0xdf79b7][species % 6], roughness: .7 }), group, [0, 1.05, .05]);
       head.scale.set(1.15, .9, .9);
+      for (const x of [-.075, .075]) box(group, [.035, .055, .025], [x, 1.08, .24], this.materials.black);
     }
     group.userData.target = new THREE.Vector3();
     group.userData.displayPosition = new THREE.Vector3(28, 2, 24);
@@ -1607,6 +1796,7 @@ export class NebulaScene {
     if (this.shiftHorizon) this.shiftHorizon.visible = mode === 'play';
     if (this.debtLienRoot) this.debtLienRoot.visible = mode === 'play';
     if (this.decisionLegacyRoot) this.decisionLegacyRoot.visible = mode === 'play';
+    if (this.dispatchBoard) this.dispatchBoard.visible = mode === 'play';
     if (this.activeDecisionReveal) this.activeDecisionReveal.object.visible = mode === 'play';
     if (mode === 'title') {
       this.desiredPosition.set(25, 16, 31);
@@ -1638,6 +1828,43 @@ export class NebulaScene {
     this.canvas.dataset.debtMotion = this.reducedMotion ? 'reduced' : 'full';
     this.canvas.dataset.decisionMotion = this.reducedMotion ? 'reduced' : 'full';
     this.canvas.dataset.decisionRevealMotion = this.reducedMotion ? 'reduced' : 'full';
+    this.canvas.dataset.dispatchMotion = this.reducedMotion ? 'reduced' : 'full';
+    this.canvas.dataset.operatorMotion = this.reducedMotion ? 'reduced-static' : 'animated';
+  }
+
+  setDispatchStatus(dispatch) {
+    if (!this.dispatchBoard || !dispatch) return;
+    this.dispatchBoard.visible = this.mode === 'play';
+    const signature = [dispatch.id, dispatch.status, dispatch.progress, dispatch.goal, Math.ceil(dispatch.remaining), dispatch.marks].join('|');
+    if (signature === this.lastDispatchSignature) return;
+    this.lastDispatchSignature = signature;
+    this.dispatchLabelRenderer.draw(dispatch);
+    const color = dispatch.status === 'failed' ? COLORS.red : dispatch.status === 'completed' ? COLORS.white : COLORS.teal;
+    this.dispatchPips.forEach((pip, index) => {
+      pip.visible = index < dispatch.goal;
+      const reached = index < dispatch.progress;
+      pip.material.color.setHex(reached ? color : 0x1a3340);
+      pip.material.emissive.setHex(color);
+      pip.material.emissiveIntensity = reached ? 1.7 : .16;
+      pip.scale.setScalar(reached ? 1.18 : .82);
+    });
+    this.dispatchBeacon.material.color.setHex(color);
+    this.dispatchBeacon.material.emissive.setHex(color);
+    this.dispatchLight.color.setHex(color);
+    this.dispatchLight.intensity = dispatch.status === 'completed' ? 15 : dispatch.status === 'failed' ? 11 : 9;
+    this.canvas.dataset.dispatchId = dispatch.id;
+    this.canvas.dataset.dispatchStatus = dispatch.status;
+    this.canvas.dataset.dispatchProgress = `${dispatch.progress}/${dispatch.goal}`;
+    this.canvas.dataset.dispatchMarks = String(dispatch.marks);
+    this.canvas.dataset.dispatchRemaining = String(Math.ceil(dispatch.remaining));
+    this.canvas.dataset.dispatchMotion = this.reducedMotion ? 'reduced' : 'full';
+  }
+
+  flashDispatch(status = 'completed') {
+    if (!this.dispatchBoard) return false;
+    this.canvas.dataset.dispatchEffect = this.reducedMotion ? 'static-confirmation' : status;
+    this.dispatchEffectUntil = performance.now() + (this.reducedMotion ? 900 : 2100);
+    return true;
   }
 
   setDebtLiberation(relief) {
@@ -1888,6 +2115,7 @@ export class NebulaScene {
         visual.userData.queueIndex = index;
       });
     }
+    this.canvas.dataset.customerModels = String(this.customerVisuals.size);
 
     const signature = state.upgrades.slice().sort().join('|');
     if (signature !== this.lastUpgradeSignature) {
@@ -2323,6 +2551,21 @@ export class NebulaScene {
       });
     }
 
+    if (this.dispatchBoard.visible) {
+      const effectActive = performance.now() < this.dispatchEffectUntil;
+      const pulse = this.reducedMotion ? 1 : 1 + Math.sin(time * (effectActive ? 5.4 : 2.1)) * (effectActive ? .16 : .06);
+      this.dispatchBeacon.rotation.z = this.reducedMotion ? 0 : time * (effectActive ? 1.25 : .38);
+      this.dispatchBeacon.scale.setScalar(pulse);
+      this.dispatchGlow.scale.set(3.1 * pulse, 3.1 * pulse, 1);
+      this.dispatchGlow.material.opacity = this.reducedMotion ? .4 : .32 + pulse * .1;
+      const baseLight = this.canvas.dataset.dispatchStatus === 'completed' ? 15 : this.canvas.dataset.dispatchStatus === 'failed' ? 11 : 9;
+      this.dispatchLight.intensity = baseLight * (effectActive && !this.reducedMotion ? pulse : 1);
+      this.dispatchPips.forEach((pip, index) => {
+        if (pip.visible) pip.rotation.y = this.reducedMotion ? index * .2 : time * (.28 + index * .025);
+      });
+      if (!effectActive && this.canvas.dataset.dispatchEffect !== 'idle') this.canvas.dataset.dispatchEffect = 'idle';
+    }
+
     if (this.arrivalVector.visible) {
       const approach = this.arrivalState.progress;
       const signalPulse = this.reducedMotion ? 1 : .78 + Math.sin(time * 5.2) * .22;
@@ -2470,8 +2713,19 @@ export class NebulaScene {
     if (clone.visible) clone.rotation.y = Math.sin(time * .8) * .5;
     const quantum = this.upgradeVisuals['quantum-forecourt'];
     if (quantum.visible) quantum.rotation.y += delta * .12;
-    this.alien.rotation.y = Math.sin(time * .6) * .16;
-    this.alien.position.y = Math.sin(time * 1.4) * .035;
+    const operatorTime = this.reducedMotion ? 0 : time;
+    this.alien.rotation.y = Math.sin(operatorTime * .6) * .16;
+    this.alien.position.y = Math.sin(operatorTime * 1.4) * .035;
+    this.alien.userData.head.rotation.x = this.reducedMotion ? 0 : Math.sin(operatorTime * .82) * .035;
+    this.alien.userData.arms.forEach((arm, index) => {
+      const side = index === 0 ? -1 : 1;
+      arm.rotation.z = side * .15 + (this.reducedMotion ? 0 : Math.sin(operatorTime * 1.18 + index * 1.7) * .075);
+    });
+    this.alien.userData.antennaTips.forEach((tip, index) => {
+      const pulse = this.reducedMotion ? 1 : 1 + Math.sin(operatorTime * 2.15 + index * 2.2) * .12;
+      tip.scale.setScalar(pulse);
+    });
+    this.alien.userData.wrench.rotation.y = this.reducedMotion ? 0 : Math.sin(operatorTime * .72) * .12;
     Object.values(this.laneMarkers).forEach((ring, index) => {
       const urgency = state ? state.customers.filter(customer => customer.lane === Object.keys(this.laneMarkers)[index]).reduce((max, customer) => Math.max(max, 1 - customer.patience / customer.maxPatience), 0) : 0;
       ring.material.opacity = .18 + urgency * .62 + Math.sin(time * 2 + index) * .05;
@@ -2480,6 +2734,9 @@ export class NebulaScene {
     });
     this.updateEffects(now);
     this.renderer.render(this.scene, this.camera);
+    this.canvas.dataset.frame = String((Number(this.canvas.dataset.frame) || 0) + 1);
+    this.canvas.dataset.drawCalls = String(this.renderer.info.render.calls);
+    this.canvas.dataset.triangles = String(this.renderer.info.render.triangles);
   }
 
   dispose() {
@@ -2489,6 +2746,9 @@ export class NebulaScene {
     this.debtTexture?.dispose();
     for (const material of this.debtMaterials) material.dispose();
     this.debtLienRoot?.traverse(child => child.geometry?.dispose?.());
+    this.dispatchTexture?.dispose();
+    for (const material of this.dispatchMaterials) material.dispose();
+    this.dispatchBoard?.traverse(child => child.geometry?.dispose?.());
     for (const texture of this.decisionTextures) texture.dispose();
     for (const material of this.decisionMaterials) material.dispose();
     this.decisionLegacyRoot?.traverse(child => child.geometry?.dispose?.());

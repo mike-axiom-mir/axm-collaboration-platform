@@ -89,3 +89,32 @@ winnable for a skilled/coordinated team, and there's real margin between
 Nobody should read this table as "human win rate" — it's "the rules are no
 longer lying to you about being beatable." A real human playtest, ideally
 with someone new to the game, is still the next real gate.
+
+## Confirmation pass — 300 seeds, no new bug
+
+Re-ran with 300 seeds per cell (7.5x the original 40) to check whether the
+Result table above was a real curve or a lucky small sample. It held up:
+
+| players | 6 min | 9 min | 12 min |
+|---|---|---|---|
+| 1 | 92% | 83% | 64% |
+| 2 | 94% | 87% | 85% |
+| 3 | 99% | 96% | 98% |
+| 4 | 100% | 99% | 98% |
+
+No new structural bug this time — unlike runs 1-3, this pass didn't
+change anything in `game-core.js`. Worth saying plainly rather than
+inventing a fix to justify the extra seeds.
+
+The one cell worth a second look on purpose, not by accident, is 1-player
+12-minute at 64%: even a flawless, zero-reaction-time bot loses over a
+third of the time. Checked the raw per-seed losses for that cell
+specifically — every loss happens late (610-715s into a 720s max session,
+after 125-147 successful resolves), not early or suddenly, so this reads
+as genuine long-session attrition for a solo crew rather than a spawn
+bug or an unfair spike. That's consistent with "solo is hardest by
+design," but it's a strong enough number that it's worth Mike knowing
+plainly before a human playtest, not just accepting the design intent by
+default — a real solo player experiencing a 64%-upper-bound mode should
+probably know going in that a 12-minute solo shift is genuinely difficult,
+not merely "harder than 4-player."

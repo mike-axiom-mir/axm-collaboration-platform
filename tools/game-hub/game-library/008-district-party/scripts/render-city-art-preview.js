@@ -79,7 +79,18 @@ function labelPreview(ctx, width, title, subtitle) {
   ctx.fillStyle = '#ffcd70'; ctx.font = '800 9px system-ui'; ctx.fillText('GENERATED FROM THE ACTUAL LOCAL CANVAS RENDERER', 24, 72);
 }
 
-async function renderView({ file, width, height, centre, zoom, title, subtitle, actors = [], vehicles = [], npcs = [], mission = null }, renderer, map, cityArt) {
+async function writePreview(file, buffer) {
+  const target = path.join(outputDirectory, file);
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    try { fs.writeFileSync(target, buffer); return; }
+    catch (error) {
+      if (!['UNKNOWN', 'EBUSY', 'EPERM'].includes(error?.code) || attempt === 7) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 75 * (attempt + 1)));
+    }
+  }
+}
+
+async function renderView({ file, width, height, centre, zoom, title, subtitle, actors = [], vehicles = [], npcs = [], mission = null, cityLife = null }, renderer, map, cityArt) {
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = false;
   ctx.fillStyle = '#06100d'; ctx.fillRect(0, 0, width, height);
@@ -94,13 +105,15 @@ async function renderView({ file, width, height, centre, zoom, title, subtitle, 
   }
   renderer.drawGameplayMapLayers(ctx, map, false, false);
   renderer.drawCityArt(ctx, cityArt);
+  if (cityLife) renderer.drawCityAtmosphere(ctx, map, cityLife, cityArt);
   if (mission) renderer.drawPackages(ctx, mission);
+  if (cityLife) renderer.drawCityLife(ctx, cityLife, actors);
   renderer.drawVehicles(ctx, vehicles);
   renderer.drawNpcs(ctx, npcs);
   renderer.drawPlayers(ctx, actors);
   ctx.restore();
   labelPreview(ctx, width, title, subtitle);
-  fs.writeFileSync(path.join(outputDirectory, file), canvas.toBuffer('image/png'));
+  await writePreview(file, canvas.toBuffer('image/png'));
 }
 
 async function main() {
@@ -129,6 +142,28 @@ async function main() {
       { id: 'preview-resident-3', health: 26, maxHealth: 26, alive: true, position: { x: 6150, y: 4210 }, facing: { x: 0, y: -1 }, velocity: { x: 0, y: 0 } },
       { id: 'preview-resident-4', health: 31, maxHealth: 31, alive: true, position: { x: 6390, y: 4210 }, facing: { x: 0, y: 1 }, velocity: { x: 0, y: 0 } }
     ]
+  }, renderer, map, cityArt);
+  const adventureActors = [
+    { slot: 1, partyId: 'party_a', displayName: 'P1', alive: true, position: { x: 6180, y: 4320 }, facing: { x: 1, y: 0 }, velocity: { x: 0, y: 0 } },
+    { slot: 2, partyId: 'party_a', displayName: 'P2', alive: true, position: { x: 6230, y: 4350 }, facing: { x: 1, y: 0 }, velocity: { x: 0, y: 0 } },
+  ];
+  await renderView({
+    file: 'city-visual-adventure-v0.8.0.png', width: 1440, height: 900, centre: { x: 6700, y: 4300 }, zoom: 1.05,
+    title: 'CITY VISUAL ADVENTURE', subtitle: 'Layered facades - animated storefronts - evening lights - activity breadcrumbs',
+    actors: adventureActors,
+    cityLife: {
+      enabled: true,
+      clock: { hour: 18 },
+      venues: [
+        { id: 'garage', kind: 'garage', label: 'PARTY CREW GARAGE', position: { x: 6045, y: 4680 }, accent: '#59e0b8' },
+        { id: 'armory', kind: 'armory', label: 'IRON LANTERN ARMORY', position: { x: 6240, y: 4190 }, accent: '#ffbd62' },
+        { id: 'casino', kind: 'casino', label: 'NEON CROWN CASINO', position: { x: 6600, y: 4190 }, accent: '#db86ff' },
+        { id: 'jobs', kind: 'jobs', label: 'METRO DISPATCH', position: { x: 7040, y: 4680 }, accent: '#75efff' },
+        { id: 'shop', kind: 'chop-shop', label: 'UNDERCROFT CHOP SHOP', position: { x: 7460, y: 4680 }, accent: '#ff766f' },
+      ],
+      activity: { id: 'cache', label: 'CENTRE STREET CACHE', position: { x: 6500, y: 4470 }, available: true },
+      contracts: {},
+    },
   }, renderer, map, cityArt);
   await renderView({
     file: 'open-venue-shells.png', width: 1440, height: 900, centre: { x: 6600, y: 4520 }, zoom: .9,
@@ -176,7 +211,7 @@ async function main() {
     { file: 'user-landmark-east-ring.png', centre: { x: 9252, y: 5028 }, title: 'MOERENBURG APARTMENTS', subtitle: 'User-supplied art · existing host collision · open approach' },
     { file: 'user-landmark-south-gate.png', centre: { x: 8420, y: 7204 }, title: 'SOUTH GATE ROW HOUSES', subtitle: 'User-supplied art · existing host collision · open approach' },
   ]) await renderView({ ...view, width: 960, height: 640, zoom: 1.5 }, renderer, map, cityArt);
-  process.stdout.write('CITY_ART_PREVIEWS: PASS (9 PNG files)\n');
+  process.stdout.write('CITY_ART_PREVIEWS: PASS (10 PNG files)\n');
 }
 
 main().catch((error) => { console.error('CITY_ART_PREVIEWS: FAIL'); console.error(error.stack || error.message); process.exitCode = 1; });

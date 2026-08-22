@@ -6,9 +6,14 @@ This package owns only `tools/game-hub/game-library/018-last-stop-nebula`. Share
 
 ## Current milestone
 
-- Version: `0.25.0-beta`
+- Version: `0.26.0-beta`
+- Signal Dispatches add four seed-ordered, repeatable objectives across every contract: manual three-lane coverage, five hands-on clears, seven services without a loss, and four early clears. The sequence repeats after a bounded result read, adding an optional mastery layer without extending the 6/9/12-minute timers.
+- Dispatch state persists current objective, deadline, progress, completions, failures, streak, marks, and rotation revision. Valid 0.9 through 0.25 saves migrate to 0.26.
+- Signal marks are separate from survival resources and add 30 retirement-score points each before the existing mode multiplier. They never change cash, supplies, reviews, debt, arrivals, events, or upgrades.
+- A compact HUD strip and physical 3D roof board share one deterministic dispatch projection. The real service path can complete objectives; Reduced Motion preserves the board read and removes decorative signal animation.
+- Beta 0.26 verification: five syntax checks, 52/52 slot tests, slot verifier 0 errors / one existing physical-phone warning, all ten required Workshop checks exit 0, and repository verify remains 0 failures / 43 pre-existing warnings.
+- Beta 0.26 live desktop QA at 1280×720: held `lane-circuit 2/3`, real Serve Bay completion to `3/3 / 10 marks`, rotation to `early-clear 0/4`, exact pause/reload restore at `0:48`, completed Reduced Motion `clean-sweep 7/7`, zero overflow/runtime UI error, and empty fresh logs. No true portrait override was exposed, so fresh 390×844 proof for this feature is not claimed.
 - Core fantasy and 3D launch beta remain intact.
-- Valid 0.9 through 0.24 saves migrate to 0.25.
 - Debt Liberation projects the authoritative 720-credit AXM lien into four deterministic ownership stages, a compact HUD release strip, a central station lock, six removable claim links/tethers, and a perimeter lattice. The real existing service split now exposes before/after debt receipts so the final 14→0 payment drops the last link and announces ownership without changing prices, rewards, timing, or score rules. Responsive play keeps the HUD and lock while hiding the redundant world placard; Reduced Motion uses a static confirmation.
 - Consequence Reveal makes a newly resolved event choice assemble into its permanent Decision Archaeology artifact through a bounded beam/ring/shard/flare sequence. The real choice path is the only trigger; restored history stays idle. Compact play scales the transient effect to 0.74, while Reduced Motion starts and holds the final artifact at scale 1 without spatial travel. Event effects and balance remain authoritative and unchanged.
 - Decision Archaeology projects the existing saved event-choice history into 17 distinct procedural station artifacts across seven authored anchors. The projection validates, de-duplicates, orders, and restores history without changing event effects or balance; Reduced Motion preserves each artifact while freezing decorative spin, bob, and pulse.

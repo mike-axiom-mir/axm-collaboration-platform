@@ -2,9 +2,9 @@
   "slot": "014",
   "game_id": "014-bonk-and-bolt",
   "name": "Bonk & Bolt: The 24th Hour",
-  "status": "FIRST EDITION · PLAYABLE",
-  "description": "A full-3D open-world comedy RPG where independent adventures converge after 24 saved play-hours and miniature robots—not the player—must win the final battle.",
-  "version": "1.0.0-first-edition",
+  "status": "TEST · FIRST EDITION CONTENT EXPANSION · UNIVERSAL GAMEPAD LOGIC QA · PHYSICAL DEVICE QA PENDING",
+  "description": "A full-3D open-world comedy RPG with six independent adventures, three replayable route rehearsals, a 24-saved-hour world arc, and a final battle miniature robots—not the player—must win.",
+  "version": "1.1.1-universal-gamepad-test",
   "min_players": 1,
   "max_players": 2,
   "default_visible_seats": 2,
@@ -32,10 +32,19 @@
     "keyboard": true,
     "mouse": true,
     "gamepad": true,
+    "gamepad_profile": "axm-universal-xbox-brawl-v0.2.1",
+    "gamepad_actions": ["MOVE", "PRIMARY_ACTION", "DODGE", "SPECIAL", "INTERACT", "PARTNER_ACTION", "OPEN_MAP", "OPEN_MENU"],
+    "gamepad_seat_binding": "stable standard pad index 0 to P1 and index 1 to P2",
+    "unused_gamepad_inputs_allowed": true,
     "touch": false,
     "shared_screen": true,
-    "player_one": ["WASD", "mouse", "Space", "Q", "Shift", "E"],
-    "player_two": ["arrow keys", "/", ",", ".", "standard gamepad"]
+    "player_one": ["WASD", "mouse", "Space", "Q", "Shift", "E", "standard gamepad 1"],
+    "player_two": ["arrow keys", "/", ",", ".", "standard gamepad 2"],
+    "bindings": [
+      "Left stick or D-pad moves; A or right trigger attacks; B dodges; X uses the class special",
+      "P1 Y interacts, left bumper uses the partner action, and View opens the world map",
+      "Menu pauses, resumes, or closes the current non-final activity"
+    ]
   },
   "session": {
     "passes_seat_map": true,
@@ -63,18 +72,20 @@
     "game_night": {
       "schema": "axm.game-night-seams/v1",
       "controller_delivery": "shared-runtime",
-      "controller_evidence": ["runtime/index.html", "tests/package-selftest.js"],
+      "controller_evidence": ["runtime/universal-gamepad.js", "runtime/index.html", "tests/package-selftest.js", "evidence/universal-gamepad-verification-2026-08-16.md"],
       "state_authority": "server",
       "state_authority_scope": "Game Hub launch session only; world save and real-time simulation are explicitly browser-local",
       "host_reload_recovery": "native-resume",
       "shared_screen_occupies_seat": false,
       "disconnect_recovery": "verified",
       "blocking_overlay_escape": "verified",
-      "physical_phone_qa": "not-applicable"
+      "physical_gamepad_qa": "pending",
+      "physical_phone_qa": "not-applicable",
+      "physical_phone_qa_scope": "This same-device shared-camera build advertises keyboard, mouse and gamepad input only; phone-controller and touch input are not implemented. Physical gamepad QA remains a separate pending gate."
     }
   },
   "package": {
-    "source_status": "mixed-original-and-cc0-local-threejs-first-edition",
+    "source_status": "mixed-original-and-cc0-local-threejs-first-edition-test-expansion",
     "required_paths": [
       "README_FIRST.md",
       "KNOWN_LIMITS.md",
@@ -95,6 +106,7 @@
       "runtime/motion-system.js",
       "runtime/coop-camera.js",
       "runtime/hero-rig-contract.js",
+      "runtime/universal-gamepad.js",
       "runtime/app.js",
       "runtime/vendor/three.module.js",
       "runtime/vendor/GLTFLoader.js",
@@ -102,6 +114,7 @@
       "runtime/assets/bonk-bolt-key-art-v1.png",
       "runtime/assets/characters/quaternius/animated-men/man-casual-a.glb",
       "runtime/assets/characters/quaternius/animated-men/LICENSE.txt",
+      "evidence/universal-gamepad-verification-2026-08-16.md",
       "tests/systems.test.js",
       "tests/hero-motion.test.js",
       "tests/coop-camera.test.js",

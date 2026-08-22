@@ -223,6 +223,25 @@
     return best;
   }
 
+  function districtAdjournmentPulse(buildingObject, buildings, squads, elapsed) {
+    const conversion = buildingObject && districtConversionFor(buildingObject.factionId, buildingObject.kind), effect = conversion && conversion.effect;
+    if (!effect || effect.kind !== 'deadline-deferral' || buildingObject.progress < 1 || buildingObject.hp <= 0) return null;
+    const networkBonus = districtNetworkBonus(buildingObject, buildings), range = Number(effect.range || 0), baseDuration = Number(effect.duration || 3);
+    const duration = Math.min(Number(effect.maxDuration || baseDuration * 1.45), baseDuration * networkBonus), now = Number(elapsed || 0);
+    const targets = (squads || []).filter(item => item && !item.kind && item.hp > 0 && (buildingObject.team === 2) !== (item.team === 2) && Number.isFinite(item.x) && Number.isFinite(item.y) && Number(item.temporalAdjournedUntil || 0) <= now && distance(buildingObject, item) <= range);
+    targets.sort((a,b)=>distance(buildingObject,a)-distance(buildingObject,b) || String(a.id||'').localeCompare(String(b.id||'')));
+    return {
+      conversionId:conversion.id,
+      kind:effect.kind,
+      period:Number(effect.period || 14),
+      duration,
+      baseDuration,
+      range,
+      networkBonus,
+      target:targets[0] || null
+    };
+  }
+
   function districtCensusPulse(buildingObject, buildings, anchors, links, explored) {
     const conversion = buildingObject && districtConversionFor(buildingObject.factionId, buildingObject.kind), effect = conversion && conversion.effect;
     if (!effect || effect.kind !== 'spectral-census' || buildingObject.progress < 1 || buildingObject.hp <= 0) return null;
@@ -578,5 +597,5 @@
     return { stage: 5.5, regroup: 18 };
   }
 
-  return { clamp, distance, faction, unit, building, districtArchitectureForFaction, districtConversionFor, districtPresentation, wonderworkForFaction, buildingSpec, charter, doctrine, doctrinesForFaction, activeDoctrine, doctrineForBattle, rivalScheme, signatureForFaction, recruitableUnits, formationKitForFaction, formationRoleForUnit, coreFormationPresentation, seeded, squadSpec, doctrineUnitPresentation, trainingQuote, trainingCost, claimCost, buildingHpMultiplier, districtNetworkBonus, districtConversionPulse, districtUnionShiftPulse, districtSpotlightPulse, districtSpotlightDamageMultiplier, districtCivicCoverPulse, districtCivicCoverDamageMultiplier, districtCensusPulse, districtRouteSupport, districtWakeDividend, districtCharterEffects, wonderworkCount, rivalExpansionKind, wonderworkEmpireEffects, incomeFor, casualtyDelta, essenceFromDeaths, summonCost, doctrinePowerCooldown, exploredAt, nearest, mapMechanicState, mapIncomeMultiplier, mapSpeedMultiplier, distanceToSegment, isNearBridge, nearestAnchorIndex, bridgeTraversalMultiplier, bridgeRoute, tacticalOwner, strategicKnownBuildings, constructionAuraMultiplier, essenceAuraMultiplier, lastActMultiplier, marchAuraMultiplier, rivalSchemeFor, rivalTarget, rivalComposition, rivalCadence };
+  return { clamp, distance, faction, unit, building, districtArchitectureForFaction, districtConversionFor, districtPresentation, wonderworkForFaction, buildingSpec, charter, doctrine, doctrinesForFaction, activeDoctrine, doctrineForBattle, rivalScheme, signatureForFaction, recruitableUnits, formationKitForFaction, formationRoleForUnit, coreFormationPresentation, seeded, squadSpec, doctrineUnitPresentation, trainingQuote, trainingCost, claimCost, buildingHpMultiplier, districtNetworkBonus, districtConversionPulse, districtUnionShiftPulse, districtSpotlightPulse, districtSpotlightDamageMultiplier, districtCivicCoverPulse, districtCivicCoverDamageMultiplier, districtAdjournmentPulse, districtCensusPulse, districtRouteSupport, districtWakeDividend, districtCharterEffects, wonderworkCount, rivalExpansionKind, wonderworkEmpireEffects, incomeFor, casualtyDelta, essenceFromDeaths, summonCost, doctrinePowerCooldown, exploredAt, nearest, mapMechanicState, mapIncomeMultiplier, mapSpeedMultiplier, distanceToSegment, isNearBridge, nearestAnchorIndex, bridgeTraversalMultiplier, bridgeRoute, tacticalOwner, strategicKnownBuildings, constructionAuraMultiplier, essenceAuraMultiplier, lastActMultiplier, marchAuraMultiplier, rivalSchemeFor, rivalTarget, rivalComposition, rivalCadence };
 });

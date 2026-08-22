@@ -20,7 +20,7 @@ ok(D.gear.every(item => S.GEAR_EFFECTS[item.id]?.length === 2 && S.GEAR_DRAWBACK
 equal(D.gear.filter(item => item.hybrid).length, 3, 'community-table cooking unlocks three hybrid equipment designs');
 ok(D.challenges.every(challenge => challenge.amount > 0 && challenge.where && challenge.text), 'every challenge says count, action and location');
 ok(D.quests.every(quest => quest.stages.every(stage => stage.where && stage.target)), 'every adventure stage has an explicit place and machine-readable action');
-equal(Object.keys(D.storyChoices).length, 5, 'all five independent adventure threads end in an explicit saved-world decision');
+equal(Object.keys(D.storyChoices).length, 6, 'all six independent adventure threads end in an explicit saved-world decision');
 ok(D.quests.every(quest => D.storyChoices[quest.choiceId]?.questId === quest.id), 'every adventure points to its own decision contract');
 ok(Object.values(D.storyChoices).every(choice => choice.memoryAt && choice.options.length >= 2 && choice.options.every(option => option.id && option.shortLabel && option.preview && option.consequence && option.memory && option.visual && option.effects)), 'every story branch declares mechanics, preview text and a persistent 3D memory');
 ok(D.pets.length >= 6 && D.pets.every(pet => pet.role && pet.want && pet.skill), 'miniature robots have world roles, wants and skills');
@@ -30,17 +30,21 @@ ok(D.enemies.every(enemy => enemy.behavior.range > 0 && enemy.behavior.cooldown 
 equal(D.dropOrigins.length, D.enemies.length, 'every nuisance species owns one authored uncommon-drop origin consequence');
 ok(D.dropOrigins.every(origin => D.enemies.some(enemy => enemy.id === origin.enemyId) && origin.at.length === 2 && origin.steward && origin.title && origin.consequence), 'every drop origin names its nuisance, robot steward, exact return site and permanent world change');
 equal(new Set(D.dropOrigins.flatMap(origin => Object.keys(origin.effect))).size, D.dropOrigins.length, 'each origin echo changes a different executable world rule instead of repeating a percentage reward');
-equal(D.villageLife.length, 13, 'thirteen ambient citizens extend visible robot-world life into Wobblewoods');
+equal(D.villageLife.length, 14, 'fourteen ambient citizens extend visible robot-world life into Wobblewoods and the Central Meadow');
 equal(D.cookRivals.length, 3, 'cook-off progression is a finite three-rival ladder');
 equal(new Set(D.cookRivals.map(rival => rival.legacy.round)).size, 3, 'each cook rival teaches a different permanent kitchen round');
 ok(D.cookRivals.every(rival => rival.rounds.length === 3 && rival.rounds.every(score => score > 0 && score < 1) && rival.win && rival.loss), 'each cook rival exposes three legible scores and comedy outcomes');
-equal(new Set(D.villageLife.map(citizen => citizen.region)).size, 5, 'ambient routines cover the four towns plus the Wobblewoods weather archive');
+equal(new Set(D.villageLife.map(citizen => citizen.region)).size, 6, 'ambient routines cover the four towns, Wobblewoods and the Central Meadow');
 ok(['human','toon','robot'].every(race => D.villageLife.some(citizen => citizen.race === race)), 'Human, Toon and robot citizens coexist in ambient village life');
 ok(D.villageLife.every(citizen => citizen.route.length >= 3 && citizen.favor && citizen.thanks && citizen.reward), 'every ambient citizen has a route and explicit tiny favor contract');
-equal(D.adventureAftermaths.length, 5, 'each independent adventure has one persistent village-robot witness');
+equal(D.adventureAftermaths.length, 6, 'each independent adventure has one persistent village-robot witness');
 ok(D.adventureAftermaths.every(aftermath => D.villageLife.some(citizen => citizen.id === aftermath.witnessId && citizen.race === 'robot')), 'every aftermath report belongs to a real roaming robot citizen');
 ok(D.adventureAftermaths.every(aftermath => { const choice = D.storyChoices[aftermath.choiceId]; return choice?.questId === aftermath.questId && choice.options.every(option => aftermath.outcomes[option.id]?.title && aftermath.outcomes[option.id]?.line); }), 'every permanent story outcome gives its witness a distinct named report');
-ok(D.challenges.some(challenge => challenge.id === 'robot-street-news' && challenge.event === 'aftermath' && challenge.amount === 5 && challenge.where.includes('Wobblewoods')), 'all five public reports form one explicit location-readable challenge');
+ok(D.challenges.some(challenge => challenge.id === 'robot-street-news' && challenge.event === 'aftermath' && challenge.amount === 6 && challenge.where.includes('Central Meadow')), 'all six public reports form one explicit location-readable challenge');
+equal(D.routeTrials.length, 3, 'the lantern adventure unlocks three authored replayable route courses');
+ok(D.routeTrials.every(trial => trial.points.length >= 7 && trial.parSeconds > 0 && trial.description), 'every route declares a substantial ordered 3D course and an honest timing landmark');
+ok(D.routeTrials.every(trial => new Set(trial.points.map(point => point.join(','))).size === trial.points.length), 'each course uses distinct authored world positions rather than duplicate progress markers');
+ok(D.quests.find(quest => quest.id === 'lantern-curfew').stages.some(stage => stage.target === 'relayfinish:meadow-curfew'), 'the sixth adventure advances through an actual completed route rehearsal');
 equal(D.adventureEncounters.length, 4, 'four ordinary errands become authored combat set pieces');
 equal(new Set(D.adventureEncounters.map(encounter => encounter.kind)).size, 4, 'each authored encounter has a distinct readable rule');
 ok(D.adventureEncounters.every(encounter => D.enemies.some(enemy => enemy.id === encounter.enemyId) && D.quests.find(quest => quest.id === encounter.questId)?.stages[encounter.stage]?.target === 'encounter:'+encounter.id), 'every encounter connects a real nuisance species to one explicit quest stage');
@@ -86,6 +90,26 @@ equal(S.setGearArgument(councilSave, councilItem.uid, 'factory', D.gearCouncil).
 equal(S.setGearArgument(councilSave, councilItem.uid, 'invented', D.gearCouncil).reason, 'invalid', 'unknown equipment arguments are rejected rather than silently normalized during play');
 councilItem.argument = 'heckler';
 
+const routeSave = S.newSave({ race: 'human', classId: 'panzer', seed: 14014, now: 100 });
+const meadowRoute = D.routeTrials.find(trial => trial.id === 'meadow-curfew');
+equal(routeSave.world.routeTrials, { active: null, records: {} }, 'new saves begin with an explicit resumable route-trial ledger');
+ok(S.beginRouteTrial(routeSave, meadowRoute).ok && routeSave.world.routeTrials.records[meadowRoute.id].attempts === 1, 'starting a route saves one attempt and an active checkpoint');
+equal(S.beginRouteTrial(routeSave, D.routeTrials[1]).reason, 'already-active', 'a second course cannot silently replace a saved active rehearsal');
+S.tickRouteTrial(routeSave, .5);
+const resumedRoute = S.normalizeSave(JSON.parse(JSON.stringify(routeSave)));
+ok(resumedRoute.world.routeTrials.active.id === meadowRoute.id && resumedRoute.world.routeTrials.active.elapsed === .5, 'active route identity, checkpoint and clock survive save normalization');
+let firstRouteFinish = null;
+for (let index = 0; index < meadowRoute.points.length; index += 1) firstRouteFinish = S.advanceRouteTrial(routeSave, meadowRoute);
+ok(firstRouteFinish.finished && firstRouteFinish.firstCompletion && firstRouteFinish.personalBest && firstRouteFinish.record.completions === 1, 'crossing every ordered gate creates the first saved completion and personal best');
+equal(routeSave.world.routeTrials.active, null, 'finishing a course clears only the active rehearsal');
+S.beginRouteTrial(routeSave, meadowRoute); S.tickRouteTrial(routeSave, 99);
+let slowerRouteFinish = null;
+for (let index = 0; index < meadowRoute.points.length; index += 1) slowerRouteFinish = S.advanceRouteTrial(routeSave, meadowRoute);
+ok(slowerRouteFinish.finished && !slowerRouteFinish.personalBest && slowerRouteFinish.record.completions === 2, 'a slower replay remains a real completion without overwriting the faster best');
+S.beginRouteTrial(routeSave, meadowRoute); S.tickRouteTrial(routeSave, .25);
+ok(S.abandonRouteTrial(routeSave, meadowRoute).ok && routeSave.world.routeTrials.records[meadowRoute.id].abandons === 1 && !routeSave.world.routeTrials.active, 'ending an attempt preserves completed runs while recording one non-failure abandonment');
+equal(routeSave.world.routeTrials.records[meadowRoute.id].bestSeconds, .5, 'replays and abandoned attempts preserve the exact fastest completed clock');
+
 const encounterSave = S.newSave({ race: 'toon', classId: 'pun-slinger', seed: 14014, now: 100 });
 equal(encounterSave.world.encounterRecords, {}, 'new saves begin with an explicit authored-encounter ledger');
 const hearing = D.adventureEncounters.find(encounter => encounter.id === 'lunch-hearing');
@@ -130,7 +154,7 @@ ok(pendingWitness.available && pendingWitness.version === 'pending' && !pendingW
 const firstReport = S.hearAftermath(aftermathSave, passportWitness, D.storyChoices);
 ok(firstReport.ok && firstReport.firstReport && firstReport.firstVersion && firstReport.heardCurrent, 'the first robot report becomes a durable heard version');
 S.recordChallenge(aftermathSave, 'aftermath', 'witness', 1, D.challenges);
-equal(aftermathSave.challenges['robot-street-news'].progress, 1, 'one named witness advances the explicit five-region report challenge once');
+equal(aftermathSave.challenges['robot-street-news'].progress, 1, 'one named witness advances the explicit six-region report challenge once');
 const repeatedReport = S.hearAftermath(aftermathSave, passportWitness, D.storyChoices);
 ok(repeatedReport.ok && !repeatedReport.firstReport && !repeatedReport.firstVersion, 'revisiting the same report stays available without duplicating progress');
 const journalBeforeChoice = aftermathSave.journal.length;
@@ -147,9 +171,9 @@ for (const aftermath of D.adventureAftermaths.filter(entry => entry.id !== 'pass
   const report = S.hearAftermath(aftermathSave, aftermath, D.storyChoices);
   if (report.firstReport) S.recordChallenge(aftermathSave, 'aftermath', 'witness', 1, D.challenges);
 }
-ok(aftermathSave.challenges['robot-street-news'].complete && aftermathSave.challenges['robot-street-news'].progress === 5, 'hearing the five named robots clears the explicit five-region report challenge without repetition');
-equal(S.aftermathStatus(aftermathSave, passportWitness, D.storyChoices).reportCount, 5, 'public-memory status exposes exactly five distinct heard robot witnesses');
-equal(Object.values(aftermathSave.world.aftermathReports).filter(report => report.heard).length, 5, 'all witnessed adventures remain individually addressable for the finale team');
+ok(aftermathSave.challenges['robot-street-news'].complete && aftermathSave.challenges['robot-street-news'].progress === 6, 'hearing the six named robots clears the explicit six-region report challenge without repetition');
+equal(S.aftermathStatus(aftermathSave, passportWitness, D.storyChoices).reportCount, 6, 'public-memory status exposes exactly six distinct heard robot witnesses');
+equal(Object.values(aftermathSave.world.aftermathReports).filter(report => report.heard).length, 6, 'all witnessed adventures remain individually addressable for the finale team');
 
 equal(S.stoneCost(0), 0, 'no stone means no cost');
 equal(S.stoneCost(1), 1, 'one held stone costs one');
@@ -436,6 +460,15 @@ equal(S.storyEffects(warningStory, D.storyChoices).rainbowShelters, 0, 'the mutu
 const shelterStory = storySave();
 S.applyStoryChoice(shelterStory, 'forecast', 'rainbow-shelters', D.storyChoices);
 equal(S.storyEffects(shelterStory, D.storyChoices).rainbowShelters, 1, 'the shelter pact activates post-defeat protection without granting the warning lattice');
+
+const wideRouteStory = storySave();
+S.applyStoryChoice(wideRouteStory, 'nightline', 'wide-gates', D.storyChoices);
+equal(S.storyEffects(wideRouteStory, D.storyChoices).routeGateRadius, 1.3, 'the public nightline choice widens route gates without changing route clocks');
+equal(S.storyEffects(wideRouteStory, D.storyChoices).routeSanctuary, 0, 'wide gates do not silently grant nuisance-free practice');
+const quietRouteStory = storySave();
+S.applyStoryChoice(quietRouteStory, 'nightline', 'quiet-practice', D.storyChoices);
+equal(S.storyEffects(quietRouteStory, D.storyChoices).routeSanctuary, 1, 'the lantern escort choice activates nuisance-free route practice');
+equal(S.storyEffects(quietRouteStory, D.storyChoices).routeGateRadius, 1, 'quiet practice keeps the base checkpoint geometry instead of granting both branches');
 
 const legacyDecision = storySave();
 legacyDecision.world.decisions.river = 'BUILD THE ROBOT FERRY LANE';

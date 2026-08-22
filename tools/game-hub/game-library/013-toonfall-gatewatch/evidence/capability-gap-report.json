@@ -1,15 +1,16 @@
 {
   "schema": "axm.capability-gap-report/v1",
   "artifact": "013-toonfall-gatewatch",
-  "evaluated_at": "2026-07-28",
+  "evaluated_at": "2026-08-16",
   "status": "REQUIRED_CAPABILITIES_SATISFIED_WITH_OPTIONAL_GAPS",
   "route": "DEGRADED",
   "required_gaps": [],
   "satisfied_required": [
     "authoritative-runtime",
-    "fixed-one-human-one-ai",
+    "selectable-two-seat-authority",
     "story-to-combat-journey",
-    "three-wave-outcome-and-restart",
+    "five-watch-outcome-and-restart",
+    "hybrid-low-poly-3d-16-step-presentation",
     "keyboard-mouse-controls",
     "pause-help-reload-recovery",
     "guided-exploration-and-progress",
@@ -19,10 +20,9 @@
   ],
   "non_blocking_gaps": [
     { "id": "physical-gamepad", "type": "HAND/EVIDENCE", "reason": "Mapping and edge-trigger logic are implemented, but no physical controller is available for this beta run." },
-    { "id": "multi-device-lan-or-phone", "type": "CONTRACT/EVIDENCE", "reason": "Out of scope by design; one human shares the main screen with a server-owned AI." },
+    { "id": "multi-device-lan-or-phone", "type": "CONTRACT/EVIDENCE", "reason": "Out of scope by design; the selectable second seat shares the main screen and camera." },
     { "id": "long-session-performance", "type": "EVIDENCE", "reason": "No extended soak is available; only bounded local telemetry may be claimed." },
-    { "id": "visual.capture.ephemeral-rolling-buffer/v1", "type": "HAND/EVIDENCE", "reason": "Repeated screenshots prove selected frames, but not continuous motion between samples." },
-    { "id": "visual.browser.localhost", "type": "SUBSTRATE/EVIDENCE", "reason": "The selected in-app browser currently rejects the 127.0.0.1 route; new client deltas are source-, package-, and live-static verified but not freshly rendered." }
+    { "id": "visual.capture.ephemeral-rolling-buffer/v1", "type": "HAND/EVIDENCE", "reason": "Repeated screenshots prove selected frames, but not continuous motion between samples." }
   ],
   "missing_hand_contract": {
     "capability_id": "visual.capture.ephemeral-rolling-buffer/v1",
@@ -37,5 +37,5 @@
     "verification": ["bounded size", "frame order", "target isolation", "exact cleanup"],
     "promotion_gate": "available only after contract verification"
   },
-  "decision": "The required local Game Night beta route is READY. Overall perfection evidence remains DEGRADED by the named optional hardware, soak, networking, localhost-browser, and rolling-capture gaps."
+  "decision": "The required local Game Night route, five-watch chronicle, and hybrid low-poly 3D presentation are READY. Overall perfection evidence remains DEGRADED by the named optional hardware, soak, networking, Steam, and rolling-capture gaps."
 }

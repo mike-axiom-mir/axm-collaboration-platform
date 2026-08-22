@@ -2,13 +2,13 @@
   "slot": "013",
   "game_id": "013-toonfall-gatewatch",
   "name": "Bloomvale: Gatewatch",
-  "status": "PLAYABLE BETA · STEWARDED GAME NIGHT BUILD",
-  "description": "An explorable storybook shooter with guided wayfinding, five districts, named neighbors, optional activities, six visible upgrade routes, and three player-triggered defense waves for one human Scout plus one server-owned AI companion.",
-  "version": "0.3.1-bloomvale-steward",
+  "status": "WORKING · STEWARDED GAME NIGHT BUILD · NEEDS MIKE REVIEW",
+  "description": "A hybrid low-poly 3D storybook shooter with five named defense watches for one Scout plus a selectable human, connected-AI, or built-in Moxie partner.",
+  "version": "0.5.0-chronicle-3d",
   "min_players": 1,
-  "max_players": 1,
-  "default_visible_seats": 1,
-  "allowed_seat_types": ["human"],
+  "max_players": 2,
+  "default_visible_seats": 2,
+  "allowed_seat_types": ["human", "adapter", "ai"],
   "launch": {
     "server_entry": "runtime/server.js",
     "client_entry": "/games/013/?room=AXM1&player=p1",
@@ -28,19 +28,22 @@
   "controls": {
     "profile_id": "toonfall-gatewatch-scout-v1",
     "intent_protocol": "axm-semantic-input-v1",
+    "adapter_observation": "axm-seat-screen-semantics-v1",
     "phone_controller": false,
     "gamepad": true,
     "keyboard": true,
     "mouse": true,
     "touch": false,
     "shared_screen": true,
-    "intent_lanes": ["move", "aim", "fire", "dash", "heartburst", "interact", "map", "pause", "start"]
+    "intent_lanes": ["move", "aim", "fire", "dash", "heartburst", "interact", "map", "pause", "start"],
+    "gamepad_profile": "axm-universal-xbox-brawl-v0.2.1",
+    "second_seat_choices": ["human", "adapter", "ai"]
   },
   "session": {
     "passes_seat_map": true,
     "returns_result_summary": true,
     "drop_in_out_later": false,
-    "target_minutes": 10
+    "target_minutes": 18
   },
   "rules": {
     "no_hidden_players": true,
@@ -48,16 +51,22 @@
     "game_does_not_override_hub_seats": true,
     "local_authoritative_state": true,
     "clients_send_input_intentions": true,
+    "human_and_adapter_same_input_gate": true,
+    "adapter_observation_is_seat_visible_only": true,
     "host_ai_fill_empty_seats_default": false,
     "runtime_internet_required": false,
-    "team_mode": "one-human-one-ai-cooperative-defense",
-    "fixed_human_seats": 1,
-    "server_owned_ai_companions": 1,
+    "team_mode": "two-seat-cooperative-defense",
+    "first_seat_role": "human-scout",
+    "second_seat_choices": ["human", "adapter", "ai"],
+    "default_second_seat_type": "ai",
     "split_screen": false,
     "shared_objective_authority": "server",
     "random_seed": 13013,
     "story_scenes": 3,
-    "defense_waves": 3,
+    "defense_waves": 5,
+    "named_defense_watches": 5,
+    "bounded_watch_receipts": true,
+    "final_boss": "ink-crown",
     "explorable_districts": 5,
     "named_npcs": 5,
     "optional_activities": 4,
@@ -68,7 +77,9 @@
     "visible_unlock_progress": true,
     "safe_modal_pause_lifecycle": true,
     "contained_modal_keyboard_focus": true,
-    "reload_input_resynchronization": true
+    "reload_input_resynchronization": true,
+    "hybrid_low_poly_3d": true,
+    "palette_quantization": "16-step-per-channel-webgl"
   },
   "verification": {
     "game_night": {
@@ -80,11 +91,14 @@
       "shared_screen_occupies_seat": false,
       "disconnect_recovery": "verified",
       "blocking_overlay_escape": "verified",
-      "physical_phone_qa": "not-applicable"
+      "physical_phone_qa": "not-applicable",
+      "physical_phone_qa_scope": "This build advertises no phone controller and no touch input. Its room code addresses the managed game session; play remains on the shared keyboard, mouse or gamepad screen.",
+      "adapter_state_interface": "verified",
+      "adapter_state_evidence": ["runtime/server.js", "runtime/game-core.js", "tests/server-http.test.js"]
     }
   },
   "package": {
-    "source_status": "local-native-canvas-stewarded-game-night-beta",
+    "source_status": "local-hybrid-webgl-canvas-stewarded-game-night-working-build",
     "required_paths": [
       "README_FIRST.md",
       "KNOWN_LIMITS.md",
@@ -96,13 +110,17 @@
       "evidence/capability-inventory.json",
       "evidence/capability-gap-report.json",
       "evidence/visual-verification.json",
+      "evidence/chronicle-3d-verification.json",
       "runtime/server.js",
       "runtime/game-core.js",
       "runtime/index.html",
       "runtime/styles.css",
+      "runtime/bloomvale-three.js",
       "runtime/app.js",
       "tests/toonfall-selftest.js",
+      "tests/toonfall-3d-polish-selftest.js",
       "tests/server-http.test.js",
+      "tests/partner-choice-http.test.js",
       "tests/live-semantic-driver.js"
     ]
   }

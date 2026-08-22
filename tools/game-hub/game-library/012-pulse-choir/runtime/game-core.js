@@ -11,7 +11,8 @@
   const SHOW_SCHEMA = 'axm.pulse-choir-show-arc/v1';
   const CONDUCTOR_SCHEMA = 'axm.pulse-choir-conductor-plan/v1';
   const ROOM_SIGNAL_SCHEMA = 'axm.pulse-choir-room-signal/v1';
-  const SHOW_HISTORY_LIMIT = 6;
+  const TOUR_SCHEMA = 'axm.pulse-choir-constellation-tour/v1';
+  const SHOW_HISTORY_LIMIT = 10;
   const PHASES = Object.freeze({ LOBBY: 'lobby', COUNTDOWN: 'countdown', PLAYING: 'playing', RESULTS: 'results' });
   const METRICS = Object.freeze({
     arenaWidth: 100,
@@ -39,7 +40,7 @@
     perfectShieldCharges: 1,
     setlistActMs: 23000,
     setlistTransitionMs: 1000,
-    showArcRounds: 3,
+    showArcRounds: 5,
     aiScoreFactor: 0.4,
     rankInRhythm: 1200,
     rankEncore: 3000,
@@ -77,6 +78,43 @@
     flow: Object.freeze({ id: 'flow', title: 'FLOW', cue: 'KEEP THE CHAIN MOVING', explanation: 'continuous room flow', actKinds: Object.freeze(['human-pulses', 'all-seat-bank', 'chain-four']) })
   });
   const ROOM_SIGNAL_ORDER = Object.freeze(['together', 'bold', 'flow']);
+  const VENUE_CIRCUIT = Object.freeze([
+    Object.freeze({
+      id: 'moonwell-atrium', name: 'MOONWELL ATRIUM', cue: 'FIND THE FIRST LIGHT',
+      rule: 'Classic balance · clear one Setlist act to stamp this venue.',
+      palette: Object.freeze(['#10183d', '#39dff2', '#b76cff']), beatCount: 14,
+      sparkChance: 0.58, chordChance: 0.86, glitchCadenceMs: 6400, glitchWarningMs: 1250,
+      speedScale: 1, scoreScale: 1, mastery: Object.freeze({ kind: 'acts', target: 1 })
+    }),
+    Object.freeze({
+      id: 'prism-causeway', name: 'PRISM CAUSEWAY', cue: 'KEEP THE COLOR MOVING',
+      rule: 'Sixteen beats and faster feet · build a three-bank chain.',
+      palette: Object.freeze(['#241044', '#5cf6ff', '#ff70ce']), beatCount: 16,
+      sparkChance: 0.5, chordChance: 0.82, glitchCadenceMs: 6200, glitchWarningMs: 1300,
+      speedScale: 1.08, scoreScale: 1.05, mastery: Object.freeze({ kind: 'streak', target: 3 })
+    }),
+    Object.freeze({
+      id: 'static-garden', name: 'STATIC GARDEN', cue: 'READ THE LONG WARNING',
+      rule: 'Frequent glitches, longer telegraphs · finish without a glitch hit.',
+      palette: Object.freeze(['#071f2a', '#84ff9f', '#ffd760']), beatCount: 15,
+      sparkChance: 0.62, chordChance: 0.9, glitchCadenceMs: 5000, glitchWarningMs: 1650,
+      speedScale: 1, scoreScale: 1.08, mastery: Object.freeze({ kind: 'clean', target: 0 })
+    }),
+    Object.freeze({
+      id: 'twin-comet-bridge', name: 'TWIN COMET BRIDGE', cue: 'RISK THE WILD NOTES',
+      rule: 'Wild beats arrive often · land one perfect choir.',
+      palette: Object.freeze(['#26102c', '#ff7a6b', '#ffe46b']), beatCount: 17,
+      sparkChance: 0.42, chordChance: 0.74, glitchCadenceMs: 5600, glitchWarningMs: 1200,
+      speedScale: 1.04, scoreScale: 1.12, mastery: Object.freeze({ kind: 'perfect', target: 1 })
+    }),
+    Object.freeze({
+      id: 'dawn-archive', name: 'DAWN ARCHIVE', cue: 'CLOSE THE FULL CHORD',
+      rule: 'Eighteen beats, fast glitches, 18% venue score bonus · clear all three acts.',
+      palette: Object.freeze(['#2d1837', '#ffb85f', '#fff0a6']), beatCount: 18,
+      sparkChance: 0.48, chordChance: 0.78, glitchCadenceMs: 4600, glitchWarningMs: 1150,
+      speedScale: 1.06, scoreScale: 1.18, mastery: Object.freeze({ kind: 'acts', target: 3 })
+    })
+  ]);
   const ASSET_CONTRACT = Object.freeze({
     player: 'recipe color + unique glyph/shape + name label + 2.15 world-unit contact radius',
     beat: 'type color + unique outline shape + glyph + 1.55 world-unit contact radius',
@@ -155,6 +193,55 @@
       roundInShow: ((round - 1) % METRICS.showArcRounds) + 1
     };
   }
+  function venueForRound(roundNumber) {
+    const position = showPosition(roundNumber);
+    return clone(VENUE_CIRCUIT[(position.roundInShow - 1) % VENUE_CIRCUIT.length]);
+  }
+  function normalizeTour(source) {
+    const prior = source && source.schema === TOUR_SCHEMA ? source : {};
+    const visits = {};
+    const masteries = {};
+    VENUE_CIRCUIT.forEach(venue => {
+      const visit = prior.visits && prior.visits[venue.id];
+      const mastery = prior.masteries && prior.masteries[venue.id];
+      if (visit && typeof visit === 'object') visits[venue.id] = {
+        count: Math.max(0, Math.floor(Number(visit.count) || 0)),
+        bestScore: Math.max(0, Math.floor(Number(visit.bestScore) || 0)),
+        lastRound: Math.max(0, Math.floor(Number(visit.lastRound) || 0))
+      };
+      if (mastery && typeof mastery === 'object') masteries[venue.id] = {
+        firstRound: Math.max(1, Math.floor(Number(mastery.firstRound) || 1)),
+        count: Math.max(1, Math.floor(Number(mastery.count) || 1))
+      };
+    });
+    return { schema: TOUR_SCHEMA, visits, masteries };
+  }
+  function venueMastered(venue, receipt) {
+    const rule = venue && venue.mastery || {};
+    if (rule.kind === 'acts') return Number(receipt.actsCleared || 0) >= Number(rule.target || 0);
+    if (rule.kind === 'streak') return Number(receipt.bestStreak || 0) >= Number(rule.target || 0);
+    if (rule.kind === 'clean') return Number(receipt.totalGlitchHits || 0) <= Number(rule.target || 0);
+    if (rule.kind === 'perfect') return Number(receipt.perfectSurges || 0) >= Number(rule.target || 0);
+    return false;
+  }
+  function recordVenueVisit(show, venue, receipt) {
+    show.tour = normalizeTour(show.tour);
+    const prior = show.tour.visits[venue.id] || { count: 0, bestScore: 0, lastRound: 0 };
+    show.tour.visits[venue.id] = {
+      count: prior.count + 1,
+      bestScore: Math.max(prior.bestScore, Math.max(0, Math.floor(Number(receipt.score) || 0))),
+      lastRound: Math.max(1, Math.floor(Number(receipt.roundNumber) || 1))
+    };
+    const mastered = venueMastered(venue, receipt);
+    if (mastered) {
+      const previous = show.tour.masteries[venue.id];
+      show.tour.masteries[venue.id] = {
+        firstRound: previous ? previous.firstRound : Math.max(1, Math.floor(Number(receipt.roundNumber) || 1)),
+        count: previous ? previous.count + 1 : 1
+      };
+    }
+    return mastered;
+  }
   function rankForScore(score) {
     return score >= METRICS.rankHeadliner ? 'HEADLINER' : score >= METRICS.rankEncore ? 'ENCORE' : score >= METRICS.rankInRhythm ? 'IN RHYTHM' : 'WARM-UP';
   }
@@ -227,6 +314,7 @@
       bestRank: String(previous.bestRank || 'WARM-UP'),
       totalActsCleared: Math.max(0, Math.floor(Number(previous.totalActsCleared) || 0)),
       history: Array.isArray(previous.history) ? clone(previous.history).slice(-SHOW_HISTORY_LIMIT) : [],
+      tour: normalizeTour(previous.tour),
       roomSignal: normalizeStoredRoomSignal(previous.roomSignal),
       next: null
     };
@@ -362,6 +450,7 @@
       showNumber: position.showNumber,
       roundInShow: position.roundInShow,
       seed,
+      venue: venueForRound(nextRoundNumber),
       conductor: clone(conductor),
       acts: setlist.acts.map(act => ({ kind: act.kind, title: act.title, glyph: act.glyph, humanRequired: act.humanRequired }))
     };
@@ -369,7 +458,9 @@
   }
   function normalizeConductorState(state) {
     if (!state || !state.show || !state.players || !state.setlist) return false;
-    const before = JSON.stringify({ next: state.show.next, conductor: state.setlist.conductor, acts: state.phase === PHASES.LOBBY ? state.setlist.acts : null });
+    const before = JSON.stringify({ next: state.show.next, conductor: state.setlist.conductor, acts: state.phase === PHASES.LOBBY ? state.setlist.acts : null, venue: state.venue, tour: state.show.tour });
+    state.show.tour = normalizeTour(state.show.tour);
+    state.venue = venueForRound(Math.max(1, Number(state.show.roundNumber || state.show.completedRounds + 1)));
     if (state.phase === PHASES.RESULTS) {
       setShowNext(state.show, state.players);
       if (!state.setlist.conductor || state.setlist.conductor.schema !== CONDUCTOR_SCHEMA) {
@@ -391,7 +482,7 @@
       if (state.phase === PHASES.LOBBY) state.setlist = createSetlist(state.show.next.seed, state.players, plan);
       else state.setlist.conductor = plan;
     }
-    return before !== JSON.stringify({ next: state.show.next, conductor: state.setlist.conductor, acts: state.phase === PHASES.LOBBY ? state.setlist.acts : null });
+    return before !== JSON.stringify({ next: state.show.next, conductor: state.setlist.conductor, acts: state.phase === PHASES.LOBBY ? state.setlist.acts : null, venue: state.venue, tour: state.show.tour });
   }
   function activeSetlistAct(state) {
     if (!state.setlist || state.setlist.activeIndex === null) return null;
@@ -502,7 +593,8 @@
   }
   function spawnBeat(state, forced) {
     const roll = nextRandom(state);
-    const kind = forced && forced.kind || (roll < 0.58 ? 'spark' : roll < 0.86 ? 'chord' : 'wild');
+    const venue = state.venue || venueForRound(1);
+    const kind = forced && forced.kind || (roll < venue.sparkChance ? 'spark' : roll < venue.chordChance ? 'chord' : 'wild');
     let x = forced && Number(forced.x);
     let y = forced && Number(forced.y);
     if (!Number.isFinite(x) || !Number.isFinite(y)) {
@@ -517,7 +609,8 @@
     return beat;
   }
   function refillBeats(state) {
-    while (state.beats.length < METRICS.targetBeatCount) spawnBeat(state);
+    const target = Math.max(METRICS.targetBeatCount, Number(state.venue && state.venue.beatCount || 0));
+    while (state.beats.length < target) spawnBeat(state);
   }
   function createPlayers(roster) {
     const players = {};
@@ -583,6 +676,7 @@
       glitch: null,
       nextGlitchAt: null,
       glitchIndex: 0,
+      venue: venueForRound(Math.max(1, roundNumber || show.completedRounds + 1)),
       show,
       setlist: null,
       message: 'Start the round when the room is ready.',
@@ -618,7 +712,7 @@
     state.phase = PHASES.COUNTDOWN;
     state.phaseEndsAt = now + METRICS.countdownMs;
     const position = showPosition(state.show.roundNumber);
-    state.message = 'Show ' + position.showNumber + ', round ' + position.roundInShow + '. Collect, bank, then pulse together.';
+    state.message = state.venue.name + ' · ' + state.venue.cue + '. Collect, bank, then pulse together.';
     commitEvent(state, nextId(state, 'event'), 'round-countdown', state.message, now);
     state.revision += 1;
     return { ok: true, phase: state.phase, roundNumber: state.show.roundNumber, seed: state.seed };
@@ -783,7 +877,8 @@
     const scoreBonus = triad ? METRICS.triadScoreBonus : fullCarry ? METRICS.fullCarryScoreBonus : 0;
     const charge = baseCharge + chargeBonus;
     const scoreFactor = player.type === 'ai' ? METRICS.aiScoreFactor : 1;
-    const score = Math.round((baseScore + scoreBonus) * state.harmony.multiplier * scoreFactor);
+    const venueScoreFactor = Number(state.venue && state.venue.scoreScale || 1);
+    const score = Math.round((baseScore + scoreBonus) * state.harmony.multiplier * scoreFactor * venueScoreFactor);
     const wilds = cargo.filter(kind => kind === 'wild').length;
     player.banked += cargo.length;
     state.core.charge = Math.min(100, state.core.charge + charge);
@@ -805,7 +900,9 @@
       triad,
       streak: state.harmony.streak,
       multiplier: state.harmony.multiplier,
-      scoreFactor
+      scoreFactor,
+      venueScoreFactor,
+      venue: state.venue && state.venue.id
     });
     recordSetlistEvent(state, { type: 'bank', player: player.id, cargo, triad, streak: state.harmony.streak }, now);
     openSync(state, now);
@@ -821,8 +918,8 @@
       axis,
       line,
       phase: 'telegraph',
-      warningUntil: now + METRICS.glitchWarningMs,
-      activeUntil: now + METRICS.glitchWarningMs + METRICS.glitchActiveMs
+      warningUntil: now + Number(state.venue && state.venue.glitchWarningMs || METRICS.glitchWarningMs),
+      activeUntil: now + Number(state.venue && state.venue.glitchWarningMs || METRICS.glitchWarningMs) + METRICS.glitchActiveMs
     };
     commitEvent(state, 'glitch-warning-' + state.glitch.id, 'glitch-warning', 'GLITCH INCOMING · leave the striped lane.', now, { axis, line, warningUntil: state.glitch.warningUntil });
   }
@@ -860,7 +957,8 @@
     if (now >= glitch.activeUntil) {
       commitEvent(state, 'glitch-clear-' + glitch.id, 'glitch-clear', 'Lane clear. Rebuild the rhythm.', now);
       state.glitch = null;
-      state.nextGlitchAt = now + Math.max(3900, 6400 - state.surgeCount * 260);
+      const venueCadence = Number(state.venue && state.venue.glitchCadenceMs || 6400);
+      state.nextGlitchAt = now + Math.max(3600, venueCadence - state.surgeCount * 260);
     }
   }
   function finishRound(state, now) {
@@ -883,6 +981,16 @@
     show.totalActsCleared += state.setlist.completed;
     const position = showPosition(roundNumber);
     const humanPlayers = Object.values(state.players).filter(player => player.type === 'human');
+    const venue = state.venue || venueForRound(roundNumber);
+    const venueReceipt = {
+      roundNumber,
+      score: state.score,
+      actsCleared: state.setlist.completed,
+      perfectSurges: state.perfectSurges,
+      bestStreak: state.harmony.bestStreak,
+      totalGlitchHits: Object.values(state.players).reduce((sum, player) => sum + Number(player.glitchHits || 0), 0)
+    };
+    const venueMastery = recordVenueVisit(show, venue, venueReceipt);
     pushBounded(show.history, {
       roundNumber,
       showNumber: position.showNumber,
@@ -893,7 +1001,9 @@
       actsCleared: state.setlist.completed,
       perfectSurges: state.perfectSurges,
       bestStreak: state.harmony.bestStreak,
-      totalGlitchHits: Object.values(state.players).reduce((sum, player) => sum + Number(player.glitchHits || 0), 0),
+      totalGlitchHits: venueReceipt.totalGlitchHits,
+      venue: venue.id,
+      venueMastery,
       humanBanked: humanPlayers.reduce((sum, player) => sum + Number(player.banked || 0), 0),
       humanPulses: humanPlayers.reduce((sum, player) => sum + Number(player.pulseContributions || 0), 0),
       roomSignal: clone(state.setlist.conductor && state.setlist.conductor.roomSignal || null),
@@ -909,6 +1019,8 @@
       perfectSurges: state.perfectSurges,
       bestSync: state.bestSync,
       bestStreak: state.harmony.bestStreak,
+      venue: clone(venue),
+      venueMastery,
       show: clone(show),
       setlist: clone(state.setlist),
       players: Object.values(state.players).sort(rosterSort).map(player => ({
@@ -932,8 +1044,8 @@
         state.phase = PHASES.PLAYING;
         state.phaseEndsAt = null;
         state.roundEndsAt = now + METRICS.roundMs;
-        state.nextGlitchAt = now + 6200;
-        state.message = 'Catch beats. Bank at the core. Pulse together.';
+        state.nextGlitchAt = now + Number(state.venue && state.venue.glitchCadenceMs || 6200);
+        state.message = state.venue.name + ' · ' + state.venue.rule;
         commitEvent(state, nextId(state, 'event'), 'round-start', state.message, now);
         startSetlist(state, now);
       }
@@ -954,7 +1066,7 @@
       const stunned = player.stunnedUntil > now;
       const carrySlow = 1 - player.carrying.length * 0.08;
       const seatPace = player.type === 'ai' ? 0.76 : 1;
-      const speed = stunned ? 0 : METRICS.playerSpeed * carrySlow * seatPace;
+      const speed = stunned ? 0 : METRICS.playerSpeed * carrySlow * seatPace * Number(state.venue && state.venue.speedScale || 1);
       player.vx = player.input.x * speed;
       player.vy = player.input.y * speed;
       player.x = clamp(player.x + player.vx * dt / 1000, METRICS.playerRadius, METRICS.arenaWidth - METRICS.playerRadius);
@@ -1026,6 +1138,7 @@
       core: clone(state.core),
       harmony: clone(state.harmony),
       perfectSurges: state.perfectSurges,
+      venue: clone(state.venue),
       show: clone(state.show),
       setlist: clone(state.setlist),
       sync: clone(state.sync),
@@ -1053,6 +1166,8 @@
     SETLIST_LIBRARY,
     SHOW_SCHEMA,
     STATE_SCHEMA,
+    TOUR_SCHEMA,
+    VENUE_CIRCUIT,
     activatePulse,
     applyRoomSignal,
     applyAction,
@@ -1069,17 +1184,21 @@
     finishRound,
     normalizeRoster,
     normalizeConductorState,
+    normalizeTour,
     normalizeVector,
     observe,
     openSync,
     openSetlistAct,
     recordSetlistEvent,
     refillBeats,
+    recordVenueVisit,
     resolveRoomSignal,
     resetRoundState,
     resolveSync,
     snapshot,
     showPosition,
+    venueForRound,
+    venueMastered,
     spawnBeat,
     startRound,
     startSetlist,

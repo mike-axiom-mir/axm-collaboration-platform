@@ -12,6 +12,8 @@ npm run art:preview
 
 Gameplay does not require that package or these PNG files.
 
+Current v0.8 evidence: `city-visual-adventure-v0.8.0.png` is an actual renderer frame showing evening atmosphere, deeper city blocks, active storefronts and optional-activity breadcrumbs.
+
 Retained QA views:
 
 - `city-presentation-before-v0.2.9.png` — live 1870 × 1037 exterior gameplay baseline from the failed v0.2.9 treatment.

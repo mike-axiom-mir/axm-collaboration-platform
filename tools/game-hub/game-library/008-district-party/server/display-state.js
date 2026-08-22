@@ -134,6 +134,7 @@ function serializeWorldState(session, requestedParty = 'all') {
     npcs: Object.values(world.npcs),
     vehicles: Object.values(world.vehicles),
     projectiles: Object.values(world.projectiles),
+    gearDrops: Object.values(world.gearDrops || {}),
     mission,
     economy: {
       rewardSplit: { ...world.economy.rewardSplit },
@@ -144,6 +145,8 @@ function serializeWorldState(session, requestedParty = 'all') {
     combatRules: world.combatRules,
     justice: world.justice,
     rivalGang: world.rivalGang,
+    cityLife: world.cityLife,
+    combatGear: world.combatGear,
     groupSaveComputer: publicGroupSaveComputer(world.groupSaveComputer),
     loadedGroupSave: world.loadedGroupSave ? { ...world.loadedGroupSave, seatSlots: [...world.loadedGroupSave.seatSlots] } : null,
     territory: world.territory,
@@ -159,6 +162,11 @@ function serializeWorldState(session, requestedParty = 'all') {
       justiceCount: Object.values(world.npcs).filter((npc) => npc.kind === 'cop').length,
       projectileCount: Object.keys(world.projectiles).length,
       vehicleCount: Object.keys(world.vehicles).length,
+      trafficVehicleCount: Object.values(world.vehicles).filter((vehicle) => vehicle.vehicleClass === 'traffic' && vehicle.traffic?.active).length,
+      bodyguardCount: Object.values(world.npcs).filter((npc) => npc.kind === 'crew' && npc.source === 'bodyguard' && npc.alive).length,
+      cityResidentCount: Object.values(world.npcs).filter((npc) => npc.cityLifeResident && npc.alive).length,
+      onDutyCitizenCount: Object.values(world.npcs).filter((npc) => npc.cityLifeResident && npc.alive && npc.routine?.phase === 'duty').length,
+      commutingCitizenCount: Object.values(world.npcs).filter((npc) => npc.cityLifeResident && npc.alive && npc.routine?.phase === 'commute').length,
     },
     requestedParty,
   };

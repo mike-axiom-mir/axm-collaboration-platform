@@ -1,0 +1,41 @@
+{
+  "schema": "axm.playtest-readiness/v1",
+  "gameId": "021-hearthgate-two-sides",
+  "version": "0.2.0-playtest",
+  "intendedTesters": ["Mike", "Errol"],
+  "lane": "tools/game-hub/game-library/021-hearthgate-two-sides/**",
+  "changes": [
+    "Added an eight-second setup phase that does not consume survival time.",
+    "Raised starting metal from 135 to 220 so both co-op players can make an opening build choice.",
+    "Added live zero/one/two-gamepad readiness text to the title.",
+    "Added an always-visible compact controller legend during play.",
+    "Added Xbox X/Y labels beside the existing keyboard tower shortcuts.",
+    "Warden HUD chips now use Game Hub player display names when supplied.",
+    "Added a concise Mike + Errol playtest route to README_FIRST.md."
+  ],
+  "automatedEvidence": {
+    "syntax": "PASS · runtime/game-core.js and runtime/app.js",
+    "systems": "PASS · tests/hearthgate-selftest.js including setup-time and 220-metal assertions",
+    "http": "PASS · tests/server-http.test.js",
+    "packageVerifier": "PASS · zero errors; expected physical disconnect-recovery warning remains"
+  },
+  "visualEvidence": {
+    "backend": "BROWSER_PRIMARY",
+    "viewport": "1440x900",
+    "claim": "The tuned two-player opening is readable and supports two immediate building choices.",
+    "baseline": "Title displayed no-gamepad keyboard fallback state because no physical pad was attached to the verification browser.",
+    "action": "Start Two Wardens; inspect setup HUD; place Forge north and Ballista Yard south.",
+    "observed": "Setup banner, controller ribbon, both wardens, 220 metal, and combined Xbox/keyboard tower labels were fully visible. Two buildings completed and 59 metal remained after early Forge income.",
+    "verdict": "PASS",
+    "physicalControllerVerdict": "UNKNOWN · requires Mike and Errol's attached controllers",
+    "temporaryCapturePaths": [],
+    "cleanupComplete": true
+  },
+  "playtestQuestions": [
+    "Did both controllers appear on the title before start?",
+    "Could each player remember fire, upgrade, repair, and build after one minute?",
+    "Did both players feel ownership of a side without losing awareness of shared resources?",
+    "Was the quick-rebuild decision readable under pressure?",
+    "At what held time did the run become tense, unfair, or repetitive?"
+  ]
+}

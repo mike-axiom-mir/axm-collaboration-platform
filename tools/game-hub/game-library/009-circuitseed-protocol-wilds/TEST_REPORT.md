@@ -2,21 +2,21 @@
 
 Build: **v0.2.0 local alpha candidate — director's cut**  
 Status: **ALPHA CANDIDATE / WORKING**  
-Final automated run: **2026-07-18**  
+Final automated run: **2026-08-16**  
 Rule: PASS means executed evidence. Nothing visually unrun is counted as a pass.
 
 ## Final command results
 
 | Command or gate | Result | Evidence |
 |---|---:|---|
-| `npm test` in the Circuitseed package | PASS | 49/49 Node unit and integration tests; CLI lifecycle; actual Game Hub lifecycle; package verifier |
+| `npm test` in the Circuitseed package | PASS | 54/54 Node unit and integration tests; CLI lifecycle; actual Game Hub lifecycle; package verifier |
 | Dependency-isolated UI DOM boot/action smoke | PASS | real local server and real client scripts; New Journey entered; 3 starter cards, 10 recipes, 10 journal slots, and 16 Field Requests rendered; Journal opened; session ended |
 | Actual managed Game Hub lifecycle | PASS | slot 009 discovered; port 8799 launched; one selected player; game result returned; Hub reached `LOBBY`; child stopped |
-| PR #14-compatible game-package verifier | PASS | slot 009; procedural assets 4; external assets 0 |
+| PR #14-compatible game-package verifier | PASS | slot 009; procedural assets 5; external assets 0 |
 | Shared controls/AI-native port-kit `npm test` | PASS | 19/19 tests |
-| Active Workshop `node verify.js` | PASS | 0 FAIL; 0 warn; Foundation spine `418f9ce4fb050602` intact |
+| Active Workshop `node verify.js` | PASS at final 2026-08-16 checkpoint | 0 FAIL; 15 explicit physical-phone evidence warnings; spine `b618c5762240070c` intact; `tools-index.json` matches the settled structural source digest |
 | Supplied Hub/Route/Skin/Renderer/Graft/static self-tests | PASS | every invoked command exited 0 |
-| Active Workshop root `npm test` | UNRUN | the active root `package.json` defines `dev`, `start`, and `alpha-local`; it has no `test` script |
+| Active Workshop root `npm test` | UNRUN in this report refresh | the current root `package.json` does define a comprehensive `test` chain, but this documentation repair did not execute that whole chain |
 
 The npm warning about the deprecated `http-proxy` environment spelling is an npm configuration warning, not a game failure. The shipped game still has zero dependencies. `jsdom` was installed only under `/tmp` for the isolated one-off UI smoke and is not part of the game or ZIP.
 
@@ -71,25 +71,25 @@ This is systems-level automated proof. It is not a claim that a human completed 
 
 ## Rendered eyes-loop matrix
 
-No Chromium, Chrome, Firefox, WebKit, Electron, or approved private preview URL was available in the execution environment. The cloud-browser rule forbids handing `127.0.0.1` to a cloud browser. Therefore:
+Fresh local browser evidence now exists. `evidence/2026-08-16-low-poly-three-pass-01/VISUAL_RECEIPT.md` records a 1280x720 Chromium journey through the title, Lumen Yard entry, movement, scan, journey menu and resume. `evidence/2026-08-16-blocking-overlay-escape/RECEIPT.md` separately records the production client's reversible blocker journey. These receipts replace the old environment-level claim that browser pixels were unavailable; they do not prove the untouched rows below.
 
 | Screen or device | Result | Reason |
 |---|:---:|---|
-| Animated title | UNRUN | no browser pixels available |
-| Lumen Yard settlement | UNRUN | no browser pixels available |
-| Relayborn/Threadwild/Corewild exploration | UNRUN | no browser pixels available |
-| Tactical encounter | UNRUN | no browser pixels available |
-| Workbench, 30-entry codex, evolution, shop, and order UI | UNRUN | no browser pixels available |
-| Minimap, proximity cue, region reveal, Memory Echo discovery card, journal, inventory, and Signal Board | UNRUN | DOM boot passed; no browser pixels available |
-| Profile create/export/import/conflict UI | UNRUN | no browser pixels available |
-| Game Hub lobby presentation | UNRUN | no browser pixels available |
-| Phone controller portrait/landscape | UNRUN | no browser pixels or physical handset |
-| Disconnect/reconnect presentation | UNRUN | no browser pixels available |
-| Result/return presentation | UNRUN | no browser pixels available |
+| Animated title | PASS | accepted local 1280x720 title frame; readable wordmark and actions beside the presentation-only low-poly seed sculpture |
+| Lumen Yard settlement | PASS | entry, movement, scan feedback, HUD and minimap observed with the 3D stage live |
+| Relayborn/Threadwild/Corewild exploration | UNRUN | the retained visual journey stayed in Lumen Yard |
+| Tactical encounter | PASS (bounded) | encounter blocker, all eight tactical controls, menu bridge and restored encounter state were observed; balance and complete encounter presentation remain unreviewed |
+| Workbench, 30-entry codex, evolution, shop, and order UI | PARTIAL | workbench drawer reversal was observed; the full codex, evolution, shop and order journeys were not visually reviewed |
+| Minimap, proximity cue, region reveal, Memory Echo discovery card, journal, inventory, and Signal Board | PARTIAL | minimap, scan feedback and discovery reveal reversal were observed; journal, inventory and Signal Board visual journeys remain unrun |
+| Profile create/export/import/conflict UI | PARTIAL | profile dialog reversal was observed; create/export/import/conflict presentation was not |
+| Game Hub lobby presentation | UNRUN | no retained visual evidence for the Hub lobby presentation |
+| Phone controller portrait/landscape | UNRUN | no retained phone-size browser frames or physical handset evidence |
+| Disconnect/reconnect presentation | UNRUN | no retained visual receipt for this presentation path |
+| Result/return presentation | PARTIAL | a clean session end returned the production client to its title; the Hub-side result/lobby pixels remain unreviewed |
 | Eight simultaneous physical devices | UNRUN | no physical multi-device setup |
-| Windows batch/firewall path | UNRUN | Windows unavailable |
+| Windows batch/firewall path | UNRUN | not exercised by the retained browser receipts |
 
-Because this visual matrix is UNRUN, the package is not labeled `LOCAL ALPHA TEST` despite the automated passes.
+The package remains **ALPHA CANDIDATE / WORKING** because this matrix is still partial and the physical-device, broader-region, complete-player-flow, duration, accessibility and performance evidence remains open.
 
 ## Failure/repair history
 
@@ -106,8 +106,8 @@ No failing assertion was removed or weakened.
 
 ## Final test status
 
-- Automated failures: **0**
+- Automated failures: **0** (`54/54` current package tests)
 - UI DOM boot/action smoke: **PASS**
-- Rendered visual passes: **0**
-- Rendered visual tests: **UNRUN**
+- Rendered visual passes: **PASS within the two retained 2026-08-16 receipt scopes**
+- Rendered visual matrix: **PARTIAL**
 - Honest build label: **ALPHA CANDIDATE / WORKING**

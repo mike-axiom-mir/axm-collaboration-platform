@@ -10,6 +10,13 @@
 > Windows shutdown route so deliberate lifecycle tests remove their PID marker
 > instead of leaving a false "still running" file after browser keep-alive use.
 
+> **Current Workshop pass:** the installed working tree is now
+> `v0.8.0-visual-adventure-public-test`. Buildings have deeper roof and facade
+> treatment, active venues are readable storefronts, landmarks animate, the
+> city clock adds bounded morning/evening atmosphere, and optional activities
+> gain shared-screen/full-map breadcrumb routes. These are presentation cues;
+> collision, mission authority and economy remain host-owned.
+
 **Version:** 0.2.7 curated interactable-asset pass  
 **Build type:** **STANDALONE FOUNDATION-COMPATIBILITY HARNESS — NOT YET LAUNCHED BY THE REAL AXM GAME HUB**
 
@@ -27,6 +34,9 @@ There is no account, telemetry, advertising, cloud runtime, public server, remot
 - One shared camera and one city canvas. Gameplay is never split into four views.
 - Tilburg city foundation measuring 12,288 × 8,192 pixels—96 times the old ground area—with 96 camera-local chunks. The host keeps one complete world while each party screen loads only nearby geometry.
 - Cached procedural chunk art: ground texture, tiled pavement, road edges and markings, water waves, rail sleepers, varied roof masses and bounded park dressing.
+- Layered roof extrusions, parapets, lit facade windows, service doors, rooftop details and solar panels make ordinary blocks read as buildings rather than flat collision masks.
+- Active Armory, Casino, Crew Garage, Metro Dispatch and Chop Shop locations use distinct illuminated storefronts and entrance icons. Animated landmark details and city-clock tinting make travel more visibly eventful without changing gameplay state.
+- Shared-screen breadcrumbs point toward the current voluntary contract or optional street cache; the expanded city map uses a matching curved route cue.
 - Sixteen curated user-supplied runtime images: four playable AXM identities, four stable civilian identities, a red sports presentation, a silver sedan, two clearly labelled non-interactive shopkeeper previews, and four Tilburg-style landmark overlays backed by existing host collision. Legacy Kenney actors/vehicles remain local fallbacks.
 - Fourteen newly curated interactable-art candidates: five stable package variants plus a safe, vending machine, ATM, barrel, pallet, dumpster, bench, bollard and trash can. Courier/Supply package appearance is deterministically derived from the authoritative package ID; pickup, ownership, AI, delivery and scoring rules are unchanged.
 - Twenty-eight new city placements dress the centre, Party House, Courier Yard, Piushaven, Reeshof, Spoorzone, Wandelbos and Moerenburg. Twenty-five are explicitly visual-only. The ATM, vending machine and Party House safe are labelled **RESERVED** because their transactions/storage mechanics are not implemented.
@@ -45,7 +55,7 @@ There is no account, telemetry, advertising, cloud runtime, public server, remot
 - Whole-party return to the house after success/failure. Results remain indefinitely as a break screen until a player deliberately chooses Continue, Replay or Mission List.
 - Two host-owned balances: every actor starts with a `DC 100,00` personal fund. Co-op treasuries start at `DC 0,00`; District Dominion treasuries start at `DC 50,00`. Successful co-op mission rewards split **40% personal / 60% to that actor's party**, with Party A and Party B isolated.
 - Twenty-four mapped civilian spawn records across twelve routes; sessions deliberately activate a bounded subset, with deterministic 20–50 HP and no gore.
-- Three visible Neon Rival roles: Rusher (10 HP/2 damage), Skirmisher (10 HP/2 damage), Blocker (20 HP/3 damage).
+- Four visible Neon Rival roles: Charger (10 HP/2 damage), Strafer (10 HP/2-damage burst), Shield (20 HP/3 damage) and Sapper (14 HP/2 damage plus a temporary slow). Each uses a distinct telegraph and code-drawn silhouette.
 - Forgiving harm/recency justice heat with decay, bounded justice responders and an intentional chaos mission. It is not a kill-count/star system.
 - Eight co-op vehicle spawns and six competitive vehicle spawns. Each car has one driver and three passengers; passengers aim with the stick and can fire while the driver steers and can fire forward.
 - Cars have 50 HP. Destruction ejects occupants and applies 80 damage; a full-health player with the default shield survives at 21 HP. Wrecks respawn after 30 seconds.
@@ -164,7 +174,7 @@ The city is always one shared view. Only the compact statistics use corners:
 - An open inventory temporarily occupies only its owner's quarter; it does not create an independent gameplay viewport.
 - Party B seats 5–8 reuse the four relative corners on the active Party B screen in District Dominion; `party=all` stacks both parties by relative corner.
 
-The built-in provisional pulse sidearm displays **∞** because real weapons/ammo items are intentionally deferred. Synthetic inventory tests prove finite ammo use and automatic loading from the 12-slot bag.
+The built-in provisional pulse sidearm displays **∞** as a permanent fallback. The Iron Lantern Armory now sells three real finite-ammo guns, two armor tiers, kinetic boots and matched ammunition; rival-role drops can heal, refill or equip recovered gear. Those item instances persist in the existing group-save inventory.
 
 ## Minimap and full city map
 

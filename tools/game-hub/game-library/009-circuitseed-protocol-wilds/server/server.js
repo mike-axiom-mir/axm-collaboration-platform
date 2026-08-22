@@ -22,6 +22,7 @@ const { WorldSystem } = require('./world-system');
 
 const ROOT = path.join(__dirname, '..');
 const CLIENT = path.join(ROOT, 'client');
+const THREE_VENDOR = path.resolve(ROOT, '../../../..', 'shared', 'vendor', 'three-r160');
 const DATA_ROOT = path.resolve(process.env.AXM_CIRCUITSEED_DATA_ROOT || path.join(ROOT, 'local-data'));
 const worldBones = require('../data/world.json');
 const circuitkinData = require('../data/circuitkin.json');
@@ -34,7 +35,7 @@ const requestData = require('../data/field-requests.json');
 const itemData = require('../data/items.json');
 const loreById = new Map(loreData.entries.map(entry => [entry.id, entry]));
 
-const MIME = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png', '.wav':'audio/wav' };
+const MIME = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.mjs':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png', '.wav':'audio/wav' };
 
 function parseHubPlayers() {
   try {
@@ -78,7 +79,7 @@ function notifyGameHubResult(result) {
   request.end(payload);
 }
 function sendFile(res, file) {
-  const resolved = path.resolve(file); const allowed = [CLIENT, path.join(ROOT, 'data')].some(root => resolved === root || resolved.startsWith(root + path.sep));
+  const resolved = path.resolve(file); const allowed = [CLIENT, path.join(ROOT, 'data'), THREE_VENDOR].some(root => resolved === root || resolved.startsWith(root + path.sep));
   if (!allowed) return sendJson(res, 403, { ok: false, error: 'static-path-refused' });
   fs.readFile(resolved, (error, bytes) => {
     if (error) return sendJson(res, 404, { ok: false, error: 'not-found' });
@@ -232,6 +233,8 @@ function processPulses(runtime, session, actor) {
 function staticRoute(pathname) {
   if (pathname === '/' || pathname === '/games/009' || pathname === '/games/009/' || pathname === '/index.html') return path.join(CLIENT, 'index.html');
   if (pathname === '/app.js') return path.join(CLIENT, 'app.js');
+  if (pathname === '/circuitseed-three.mjs') return path.join(CLIENT, 'circuitseed-three.mjs');
+  if (pathname === '/vendor/three.module.js') return path.join(THREE_VENDOR, 'three.module.js');
   if (pathname === '/styles.css') return path.join(CLIENT, 'styles.css');
   if (pathname === '/audio.js') return path.join(CLIENT, 'audio.js');
   if (pathname === '/controller' || pathname === '/controller/') return path.join(CLIENT, 'controller', 'index.html');

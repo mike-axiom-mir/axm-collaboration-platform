@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/game/results.css">
 </head>
 <body>
+  <canvas id="city-depth-canvas" aria-hidden="true" data-renderer="three-r160" data-scene3d="district-party-city"></canvas>
   <canvas id="city-canvas" aria-label="Shared top-down city view"></canvas>
   <header id="mission-hud" class="mission-hud" aria-label="Current mission status">
     <div class="mission-heading">
@@ -24,9 +25,12 @@
       </div>
     </div>
     <div id="mission-hint" class="hint">Loading authoritative city…</div>
+    <div id="city-pulse" class="city-pulse">CITY PULSE · starting deterministic street systems</div>
     <div id="territory-zones" class="territory-zones hidden" aria-label="District ownership"></div>
     <div id="friendly-fire" class="combat-rule">ALLY DAMAGE: —</div>
     <div id="justice-status" class="justice-status">JUSTICE: CALM</div>
+    <div id="gamepad-status" class="gamepad-status">GAMEPADS: SEARCHING</div>
+    <div class="gamepad-help">XBOX/BRAWL - LEFT STICK/D-PAD MOVE - RIGHT STICK AIM - A ACTION - X/RT FIRE - RB SPRINT - B BRAKE - Y/VIEW INVENTORY - MENU MAP</div>
     <div class="mission-progress" role="progressbar" aria-label="Delivery progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="mission-bar"></i></div>
   </header>
   <section id="player-hud" aria-label="Party player status">
@@ -38,9 +42,21 @@
   <div id="safe-zone" class="safe-zone hidden">SAFE ZONE · PLAYER DAMAGE BLOCKED</div>
   <div id="base-regen" class="base-regen hidden">PARTY BASE · HEALTH REGEN 10 HP/S · SHIELD DOES NOT REGEN</div>
   <div id="tether-warning" class="tether-warning hidden">RETURN TO PARTY</div>
+  <div id="city-interaction" class="city-interaction hidden">ACTION</div>
   <div id="inventory-overlays" aria-label="Open player inventories"></div>
   <button id="map-toggle" class="map-toggle" type="button" aria-expanded="false" aria-controls="city-canvas"><strong>FULL MAP</strong><small>M</small></button>
   <div id="mission-menu" class="mission-menu hidden"><div class="mission-menu-card"><div class="eyebrow">PARTY HOUSE</div><h1 id="mission-menu-title">MISSION BOARD</h1><p id="mission-menu-copy">Move up/down and press ACTION.</p><div id="mission-menu-options" class="menu-options"></div></div></div>
+  <div id="city-venue-menu" class="city-venue-menu hidden" aria-label="Open city venue">
+    <section class="city-venue-card">
+      <div id="city-venue-kind" class="eyebrow">CITY VENUE · OPTIONAL</div>
+      <h1 id="city-venue-title">VENUE</h1>
+      <p id="city-venue-copy">Choose an upgrade or activity.</p>
+      <div id="city-vehicle-build" class="city-vehicle-build hidden" aria-live="polite"></div>
+      <div id="city-venue-options" class="city-venue-options"></div>
+      <div id="city-venue-message" class="city-venue-message">Move up/down and press ACTION.</div>
+      <small>MOVE: select · ACTION: buy / play · FIRE: leave · no forced quest</small>
+    </section>
+  </div>
   <div id="save-computer" class="save-computer hidden" aria-label="Party House group save computer">
     <section class="save-computer-card">
       <div class="eyebrow">PARTY HOUSE · LOCAL STORAGE · NO PROFILES</div>
@@ -56,6 +72,15 @@
   </div>
   <div id="save-status-toast" class="save-status-toast hidden" role="status"></div>
   <div id="results" class="results hidden"><div class="results-card"><div id="results-mission" class="eyebrow">Mission</div><h1 id="results-title">MISSION COMPLETE</h1><div id="results-score"></div><p>Results stay here as long as the party wants a break.</p><div id="results-options" class="menu-options"></div><small>Move up/down · ACTION to choose</small></div></div>
+  <section id="session-menu" class="session-menu hidden" role="dialog" aria-modal="true" aria-labelledby="session-menu-title" aria-describedby="session-menu-copy session-menu-truth">
+    <div class="session-menu-card">
+      <div class="eyebrow">SESSION MENU · LOCAL PARTY VIEW</div>
+      <h1 id="session-menu-title">SESSION MENU</h1>
+      <p id="session-menu-copy">The authoritative city surface remains in place behind this local bridge.</p>
+      <button id="session-menu-return" type="button">RETURN TO CITY</button>
+      <small id="session-menu-truth">NO MISSION, SAVE, PURCHASE, ITEM, RESULT, OR PAUSE AUTHORITY</small>
+    </div>
+  </section>
   <pre id="debug" class="debug hidden"></pre>
   <div id="connection-banner" class="connection-banner">Connecting to local authoritative host…</div>
   <script type="module" src="/game/game.js"></script>

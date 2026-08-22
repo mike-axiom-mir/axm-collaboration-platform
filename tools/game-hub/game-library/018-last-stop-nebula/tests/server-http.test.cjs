@@ -21,7 +21,7 @@ test('local server exposes health, observation, and playable HTML', async t => {
   assert.equal(healthResponse.status, 200);
   assert.equal(health.gameId, '018-last-stop-nebula');
   assert.equal(health.renderer, 'Three.js r160 WebGL');
-  assert.equal(health.version, '0.25.0-beta');
+  assert.equal(health.version, '0.26.0-beta');
   const observation = await (await fetch(`${base}/api/observation`)).json();
   assert.equal(observation.ok, true);
   assert.match(observation.balanceLedgerLocation, /last 24 compact run summaries/i);

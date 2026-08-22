@@ -34,7 +34,7 @@ test('launcher state preserves one playable shared screen', async () => {
 });
 
 test('game and local runtime assets are served', async () => {
-  for (const route of ['/games/014/', '/games/014/app.js', '/games/014/motion-system.js', '/games/014/coop-camera.js', '/games/014/hero-rig-contract.js', '/games/014/vendor/three.module.js', '/games/014/vendor/GLTFLoader.js', '/games/014/vendor/BufferGeometryUtils.js', '/games/014/assets/bonk-bolt-key-art-v1.png', '/games/014/assets/characters/quaternius/animated-men/man-casual-a.glb']) {
+  for (const route of ['/games/014/', '/games/014/app.js', '/games/014/universal-gamepad.js', '/games/014/motion-system.js', '/games/014/coop-camera.js', '/games/014/hero-rig-contract.js', '/games/014/vendor/three.module.js', '/games/014/vendor/GLTFLoader.js', '/games/014/vendor/BufferGeometryUtils.js', '/games/014/assets/bonk-bolt-key-art-v1.png', '/games/014/assets/characters/quaternius/animated-men/man-casual-a.glb']) {
     const response = await fetch(base + route);
     assert.equal(response.status, 200, route);
     assert.equal(response.headers.get('x-content-type-options'), 'nosniff');

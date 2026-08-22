@@ -13,6 +13,8 @@ var scripts = [
   "alpha/tests/core-selftest.js",
   "alpha/tests/server-selftest.js",
   "alpha/tests/game-hub-integration-selftest.js",
+  "alpha/tests/adapter-seat-selftest.js",
+  "alpha/tests/disconnect-recovery.test.js",
   "alpha/tests/package-selftest.js"
 ];
 
@@ -32,4 +34,4 @@ for (var script of scripts) {
   }
 }
 
-console.log("\nCasino alpha v0.3.3 quest-free play verification: PASS (physical-phone QA remains separate and unrun)");
+console.log("\nCasino alpha v0.3.4 stable co-op cabinet verification: PASS (physical-phone QA remains separate and unrun)");

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#050811">
+  <title>AXM Phone Controller</title>
+  <link rel="stylesheet" href="/demo/shared-ui.css">
+  <link rel="stylesheet" href="/src/ui/phone-controller.css">
+  <style>
+    html,body{height:100%;overflow:hidden;touch-action:none}
+    body{display:grid;grid-template-rows:auto minmax(0,1fr)}
+    header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:max(8px,env(safe-area-inset-top)) 12px 8px;background:#050a12;border-bottom:1px solid rgba(53,230,255,.25)}
+    .brand{font:900 13px ui-monospace,monospace;letter-spacing:.12em;color:#35e6ff}
+    .tools{display:flex;gap:6px}.tools button{border:1px solid rgba(255,255,255,.35);border-radius:999px;background:#0b1726;color:#fff;padding:8px 11px;font-size:11px}
+    #controller{min-height:0}
+    dialog{width:min(92vw,460px);border:1px solid rgba(53,230,255,.55);border-radius:16px;background:#08111d;color:#fff;padding:18px}
+    dialog::backdrop{background:rgba(0,0,0,.72)}
+    label{display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:center;margin:12px 0;font-size:13px}
+    input[type=range]{width:100%}.row{display:flex;gap:8px;justify-content:flex-end}
+    fieldset{border:1px solid rgba(255,255,255,.18);border-radius:12px;margin:16px 0;padding:10px}legend{padding:0 6px;color:#35e6ff;font-weight:800}
+    .binding-row{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;align-items:center;margin:8px 0}.binding-warning{font-size:12px;line-height:1.4;color:#ffc85a;min-height:1.4em}
+    .row button{padding:10px 14px}.status{font:800 10px ui-monospace,monospace;letter-spacing:.08em}
+    .test-panel{position:fixed;z-index:30;right:10px;top:64px;width:min(330px,calc(100vw - 20px));padding:12px;border:1px solid rgba(255,200,90,.7);border-radius:14px;background:rgba(5,10,18,.97);box-shadow:0 18px 55px #000;font:11px/1.45 ui-monospace,monospace}
+    .test-panel[hidden]{display:none}.test-panel pre{max-height:180px;overflow:auto;white-space:pre-wrap;color:#bfeeff;background:#02060b;padding:8px;border-radius:8px}.test-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.test-actions button{padding:9px 7px;border:1px solid rgba(255,255,255,.28);border-radius:9px;background:#0d1b2b;color:#fff}.test-actions .danger{color:#ffc85a;border-color:#ffc85a}
+  </style>
+</head>
+<body>
+<header>
+  <div><div class="brand">AXM UNIVERSAL CONTROLLER</div><div class="status status-warn" id="status">CONNECTING</div></div>
+  <div class="tools"><button id="test">TEST</button><button id="edit">EDIT LAYOUT</button><button id="settings">SETTINGS</button></div>
+</header>
+<main id="controller"></main>
+<section id="testPanel" class="test-panel" hidden>
+  <strong>LIVE CONNECTION TEST</strong>
+  <p class="muted">Use with the host screen visible. The stall test intentionally stops all phone traffic long enough for the host watchdog to neutralize movement and reconnect this same player.</p>
+  <div class="test-actions">
+    <button id="sendNeutral">SEND NEUTRAL</button><button id="forceReconnect">FORCE RECONNECT</button>
+    <button id="simulateStall" class="danger">SIMULATE 5s STALL</button><button id="closeTest">CLOSE PANEL</button>
+  </div>
+  <pre id="diagnosticsText">Waiting for diagnostics…</pre>
+</section>
+<dialog id="settingsDialog">
+  <h2>Controller settings</h2>
+  <label>Stick size <input id="stickSize" type="range" min="100" max="230" step="5"></label>
+  <label>Button size <input id="buttonSize" type="range" min="48" max="100" step="2"></label>
+  <label>Opacity <input id="opacity" type="range" min=".25" max="1" step=".05"></label>
+  <label>Sensitivity <input id="sensitivity" type="range" min=".35" max="2" step=".05"></label>
+  <label>Dead zone <input id="deadZone" type="range" min="0" max=".45" step=".01"></label>
+  <label>Direction snap <select id="snapDirections"><option value="0">Off</option><option value="4">4 directions</option><option value="8">8 directions</option></select></label>
+  <label>Floating sticks <input id="floatingSticks" type="checkbox"></label>
+  <label>Left-handed <input id="leftHanded" type="checkbox"></label>
+  <label>One-handed layout <select id="oneHandedMode"><option value="off">Off</option><option value="left">Left hand</option><option value="right">Right hand</option></select></label>
+  <label>High contrast <input id="highContrast" type="checkbox"></label>
+  <label>Reduced motion <input id="reducedMotion" type="checkbox"></label>
+  <label>Vibration <input id="vibrationEnabled" type="checkbox"></label>
+  <fieldset><legend>Control remapping</legend><div id="remapControls"></div><div id="bindingWarning" class="binding-warning"></div></fieldset>
+  <div class="row"><button id="resetGame">RESET THIS GAME</button><button id="closeSettings">DONE</button></div>
+</dialog>
+<script type="module" src="/demo/phone.js"></script>
+</body>
+</html>

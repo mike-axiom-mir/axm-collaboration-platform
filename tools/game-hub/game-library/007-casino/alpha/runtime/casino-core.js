@@ -6,11 +6,12 @@ var catalog = require("../../slots/slot-catalog.js");
 var drawTools = require("../../slots/axm-draw-spine.js");
 
 var GAME_ID = "007-casino-alpha";
-var VERSION = "0.3.3-alpha";
+var VERSION = "0.3.4-coop-cabinets";
 var MONEY_SCALE = 1000000;
 var HUMAN_JACKPOT_BPS = 500;
 var NPC_JACKPOT_BPS = 100;
 var JACKPOT_CAP_MULTIPLIER = 100;
+var HUMAN_JACKPOT_HEAT_PAID_SPINS = 30;
 var HUMAN_WAGERS = Object.freeze([1, 2, 5, 10]);
 var SPOT_NAMES = Object.freeze([
   "Bar Alley",
@@ -200,6 +201,8 @@ function CasinoSession(options) {
   this.unlockedStyleIds = catalog.styleIds.slice();
   this.machineOpen = true;
   this.jackpotUnits = initialJackpotUnits;
+  this.jackpotHeatPaidSpins = Math.max(0, Math.min(HUMAN_JACKPOT_HEAT_PAID_SPINS,
+    Number.isSafeInteger(persistent.jackpotHeatPaidSpins) ? persistent.jackpotHeatPaidSpins : 0));
   this.districtReserveUnits = creditsToUnits(typeof resolved.districtReserve === "number" ? resolved.districtReserve : 100000, "district reserve");
   this.npcEnteredUnits = 0;
   this.npcExitedUnits = 0;
@@ -307,6 +310,9 @@ CasinoSession.prototype._assertInvariants = function () {
   if (!this.drawSpine || !Number.isInteger(this.drawSpine.cursor) || this.drawSpine.cursor < 0 || this.drawSpine.cursor > this.drawSpine.activeLength) {
     throw new Error("AXM Draw Spine cursor is invalid");
   }
+  if (!Number.isInteger(this.jackpotHeatPaidSpins) || this.jackpotHeatPaidSpins < 0 || this.jackpotHeatPaidSpins > HUMAN_JACKPOT_HEAT_PAID_SPINS) {
+    throw new Error("human jackpot heat is invalid");
+  }
   Object.keys(this.players).forEach(function (seatId) {
     var player = self.players[seatId];
     if (!catalog.definitionById(player.selectedStyleId)) throw new Error("selected slot style is invalid for " + seatId);
@@ -393,6 +399,8 @@ CasinoSession.prototype._settleSpin = function (actor, requestedTargetId, reques
   var payoutPpm;
   var slotPayoutUnits;
   var jackpotPayoutUnits = 0;
+  var jackpotTicketMatched;
+  var jackpotEligible;
   var jackpotHit;
   var receipt;
 
@@ -414,6 +422,13 @@ CasinoSession.prototype._settleSpin = function (actor, requestedTargetId, reques
     contributionUnits = multiplyRatio(wagerUnits, contributionBps, 10000);
     this._setBankUnits(targetId, this._bankUnits(targetId) - contributionUnits);
     this.jackpotUnits = safeAdd(this.jackpotUnits, contributionUnits, "jackpot contribution");
+    if (actorKind !== "npc") {
+      var previousHeat = this.jackpotHeatPaidSpins;
+      this.jackpotHeatPaidSpins = Math.min(HUMAN_JACKPOT_HEAT_PAID_SPINS, this.jackpotHeatPaidSpins + 1);
+      if (previousHeat < HUMAN_JACKPOT_HEAT_PAID_SPINS && this.jackpotHeatPaidSpins === HUMAN_JACKPOT_HEAT_PAID_SPINS) {
+        this._emit("jackpot_heat_ready", "public", { requiredPaidSpins: HUMAN_JACKPOT_HEAT_PAID_SPINS });
+      }
+    }
   }
 
   taken = this._takeRow(styleId);
@@ -424,11 +439,14 @@ CasinoSession.prototype._settleSpin = function (actor, requestedTargetId, reques
   this._setBankUnits(targetId, this._bankUnits(targetId) - slotPayoutUnits);
   actor.walletUnits = safeAdd(actor.walletUnits, slotPayoutUnits, "actor payout");
 
-  jackpotHit = actorKind === "npc" ? row.npcJackpot : row.humanJackpot;
+  jackpotTicketMatched = actorKind === "npc" ? row.npcJackpot : row.humanJackpot;
+  jackpotEligible = actorKind === "npc" || this.jackpotHeatPaidSpins >= HUMAN_JACKPOT_HEAT_PAID_SPINS;
+  jackpotHit = jackpotTicketMatched && jackpotEligible;
   if (jackpotHit && this.jackpotUnits > 0) {
     jackpotPayoutUnits = Math.min(this.jackpotUnits, wagerUnits * JACKPOT_CAP_MULTIPLIER);
     this.jackpotUnits -= jackpotPayoutUnits;
     actor.walletUnits = safeAdd(actor.walletUnits, jackpotPayoutUnits, "jackpot payout");
+    if (actorKind !== "npc") this.jackpotHeatPaidSpins = 0;
   }
 
   if (isFree) {
@@ -488,6 +506,8 @@ CasinoSession.prototype._settleSpin = function (actor, requestedTargetId, reques
     wheelDeltaPercent: row.wheelDeltaBps / 100,
     slotPayout: unitsToCredits(slotPayoutUnits),
     jackpotTicket: row.jackpotTicket,
+    jackpotTicketMatched: jackpotTicketMatched,
+    jackpotEligible: jackpotEligible,
     jackpotHit: jackpotHit,
     jackpotPayout: unitsToCredits(jackpotPayoutUnits),
     totalPayout: unitsToCredits(slotPayoutUnits + jackpotPayoutUnits),
@@ -966,6 +986,11 @@ CasinoSession.prototype._baseObservation = function (partyId, seatId, host) {
     endsAtMs: this.mode === "house_war" ? this.startedAtMs + this.durationMs : null,
     remainingMs: this.mode === "house_war" ? Math.max(0, this.startedAtMs + this.durationMs - this.nowMs) : null,
     jackpot: unitsToCredits(this.jackpotUnits),
+    jackpotHeat: {
+      current: this.jackpotHeatPaidSpins,
+      required: HUMAN_JACKPOT_HEAT_PAID_SPINS,
+      ready: this.jackpotHeatPaidSpins >= HUMAN_JACKPOT_HEAT_PAID_SPINS
+    },
     machineOpen: this.machineOpen,
     style: drawState,
     drawSpine: drawState,
@@ -1143,6 +1168,7 @@ CasinoSession.prototype.exportPersistentState = function () {
     schema: "axm.casino-local-state/v1",
     version: 1,
     jackpotUnits: this.jackpotUnits,
+    jackpotHeatPaidSpins: this.jackpotHeatPaidSpins,
     story: this.mode === "backroom_story" ? {
       houseUnits: this.parties.A.houseUnits,
       machineOpen: true,
@@ -1163,6 +1189,7 @@ module.exports = Object.freeze({
     humanJackpotContributionBps: HUMAN_JACKPOT_BPS,
     npcJackpotContributionBps: NPC_JACKPOT_BPS,
     jackpotCapMultiplier: JACKPOT_CAP_MULTIPLIER,
+    humanJackpotHeatPaidSpins: HUMAN_JACKPOT_HEAT_PAID_SPINS,
     humanWagers: HUMAN_WAGERS.slice()
   }),
   creditsToUnits: creditsToUnits,

@@ -3,6 +3,7 @@
 
 const http = require('http');
 const fs = require('fs');
+const net = require('net');
 const os = require('os');
 const path = require('path');
 const childProcess = require('child_process');
@@ -20,6 +21,7 @@ const {
 const { recoverRuntimeSession } = require('./game-engine/runtime-lifecycle');
 const { DEFAULT_IDLE_TIMEOUT_MS, createRuntimeIdleWatchdog, normalizeIdleTimeout } = require('./game-engine/runtime-idle-policy');
 const AssetHandoff = require('./asset-handoff');
+const { applyUniversalControlDefaults, DEFAULT_INPUT_PROFILE } = require('./universal-control-policy');
 
 const ROOT = __dirname;
 const HOST = process.env.AXM_GAME_HUB_HOST || '0.0.0.0';
@@ -28,12 +30,14 @@ const LIBRARY_DIR = path.join(ROOT, 'game-library');
 const ASSET_INBOX_DIR = path.join(ROOT, 'asset-inbox');
 const RESULT_DIR = path.resolve(process.env.AXM_GAME_HUB_RESULT_DIR || path.resolve(ROOT, '..', '..', 'state', 'game-night'));
 const RESULT_FILE = path.join(RESULT_DIR, 'results.json');
+const GAME_DATA_ROOT = path.resolve(process.env.AXM_GAME_HUB_DATA_ROOT || path.resolve(ROOT, '..', '..', 'state', 'game-data'));
 const LOBBY_CONTROLLER_FILE = path.join(ROOT, 'lobby-controller.html');
 const DISTRICT_CONTROLLER_DIR = path.join(LIBRARY_DIR, '008-district-party', 'client', 'controller');
 const DISTRICT_CLIENT_DIR = path.join(LIBRARY_DIR, '008-district-party', 'client');
 const MAX_RESULTS = 250;
 const RUNTIME_ACTIVITY_PRELOAD = path.join(ROOT, 'game-engine', 'runtime-activity-preload.js');
 const GAME_IDLE_TIMEOUT_MS = normalizeIdleTimeout(process.env.AXM_GAME_IDLE_TIMEOUT_MS, DEFAULT_IDLE_TIMEOUT_MS);
+const STEAM_DISTRIBUTION = process.env.AXM_GAME_HUB_DISTRIBUTION === 'steam';
 
 const state = createEngineState();
 let loop = null;
@@ -110,6 +114,28 @@ function waitForRuntime(port, checkPath) {
     }
     probe();
   });
+}
+
+function availableRuntimePort(port) {
+  return new Promise(resolve => {
+    const probe = net.createServer();
+    probe.unref();
+    probe.once('error', () => resolve(null));
+    probe.listen({ host: '0.0.0.0', port, exclusive: true }, () => {
+      const address = probe.address();
+      probe.close(() => resolve(address && address.port));
+    });
+  });
+}
+
+async function selectRuntimePort(launch) {
+  const preferredPort = Number(launch && launch.port || 8792);
+  if (!Number.isInteger(preferredPort) || preferredPort < 1 || preferredPort > 65535) throw new Error('game runtime port is invalid');
+  if (await availableRuntimePort(preferredPort)) return { port: preferredPort, preferredPort, fallback: false };
+  if (!launch || launch.allow_port_fallback !== true) throw new Error('game runtime port ' + preferredPort + ' is already in use');
+  const fallbackPort = await availableRuntimePort(0);
+  if (!fallbackPort) throw new Error('no fallback game runtime port is available');
+  return { port: fallbackPort, preferredPort, fallback: true };
 }
 
 function runtimeJson(port, requestPath) {
@@ -190,7 +216,10 @@ async function startGameRuntime(game, mode, selectedPlayers, playMode) {
   if (!entry.startsWith(dirPrefix)) throw new Error('game runtime entry escapes its game folder');
   if (!fs.existsSync(entry) || !/\.(?:c?js)$/i.test(entry)) throw new Error('game runtime entry missing or unsupported');
   stopGameRuntime();
-  const port = Number(launch.port || 8792);
+  const portSelection = await selectRuntimePort(launch);
+  const port = portSelection.port;
+  const gameDataRoot = path.join(GAME_DATA_ROOT, game.game_id);
+  fs.mkdirSync(gameDataRoot, { recursive: true });
   const seat1 = Array.isArray(selectedPlayers) ? selectedPlayers[0] : null;
   const seat2 = Array.isArray(selectedPlayers) ? selectedPlayers[1] : null;
   const seat3 = Array.isArray(selectedPlayers) ? selectedPlayers[2] : null;
@@ -206,6 +235,11 @@ async function startGameRuntime(game, mode, selectedPlayers, playMode) {
       AXM_PLAYERS_JSON: JSON.stringify(selectedPlayers || []),
       AXM_MANAGED_BY_GAME_HUB: '1',
       AXM_GAME_HUB_CALLBACK_URL: `http://127.0.0.1:${server.address().port}`,
+      AXM_GAME_DATA_ROOT: gameDataRoot,
+      AXM_DISTRICT_PARTY_DATA_ROOT: path.join(gameDataRoot, 'district-party'),
+      AXM_CIRCUITSEED_DATA_ROOT: path.join(gameDataRoot, 'circuitseed'),
+      CASINO_ALPHA_STATE_PATH: path.join(gameDataRoot, 'casino-alpha-state.json'),
+      PULSE_CHOIR_DATA_DIR: path.join(gameDataRoot, 'pulse-choir'),
       AXM_P1_NAME: seat1 && seat1.display_name || 'Mike',
       AXM_P2_NAME: seat2 && seat2.display_name || 'Nova',
       AXM_P3_NAME: seat3 && seat3.display_name || 'Gemini',
@@ -254,6 +288,8 @@ async function startGameRuntime(game, mode, selectedPlayers, playMode) {
     : null;
   return {
     port,
+    preferredPort: portSelection.preferredPort,
+    portFallback: portSelection.fallback,
     clientUrl: runtimeBrowserUrl(port, clientUrl),
     spectatorUrl: runtimeBrowserUrl(port, displayPath || launch.spectator_client_entry),
     controllerLinks: runtimeState && Array.isArray(runtimeState.controllerLinks) ? runtimeState.controllerLinks : []
@@ -293,7 +329,7 @@ function listGames() {
     if (!fs.existsSync(manifestPath)) continue;
     try {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-      games.push(Object.assign({ manifest_path: path.relative(ROOT, manifestPath) }, manifest));
+      games.push(applyUniversalControlDefaults(Object.assign({ manifest_path: path.relative(ROOT, manifestPath) }, manifest)));
     } catch (e) {
       games.push({ game_id: item, status: 'manifest-error', error: e.message });
     }
@@ -374,6 +410,7 @@ const server = http.createServer(async (req, res) => {
         max_seats: state.lobby.max_seats,
         default_visible_seats: state.lobby.default_visible_seats,
         runtime_idle_timeout_ms: GAME_IDLE_TIMEOUT_MS,
+        universal_gamepad_default: DEFAULT_INPUT_PROFILE,
         port: server.address().port,
         lobby_controller_path: '/lobby-controller',
         lan_addresses: lanAddresses()
@@ -412,7 +449,7 @@ const server = http.createServer(async (req, res) => {
       const requestedGame = requestedGameId ? findGame(requestedGameId) : null;
       const host = String(req.headers.host || '127.0.0.1').replace(/:\d+$/, '');
       if (requestedGame && requestedGame.join && requestedGame.join.preview_path) {
-        const previewPort = requestedGame.join.preview_via_game_hub ? server.address().port : Number(process.env.AXM_WORKSHOP_PORT || 8788);
+        const previewPort = requestedGame.join.preview_via_game_hub ? server.address().port : Number(process.env.AXM_WORKSHOP_PORT || 8790);
         previewUrl = `http://${host}:${previewPort}${requestedGame.join.preview_path}`;
       }
       if (state.session && state.session.phase === 'RUNNING' && activeGameProcess && playerIndex >= 0 && selected[playerIndex].type === 'human') {
@@ -443,15 +480,21 @@ const server = http.createServer(async (req, res) => {
       }
       return send(res, 200, { ok: true, results: results.slice(-25).reverse() });
     }
-    if (req.method === 'GET' && req.url === '/assets/inbox') return send(res, 200, { ok: true, handoffs: AssetHandoff.listHandoffs(ASSET_INBOX_DIR) });
+    if (req.method === 'GET' && req.url === '/assets/inbox') return send(res, 200, {
+      ok: true,
+      handoffs: STEAM_DISTRIBUTION ? [] : AssetHandoff.listHandoffs(ASSET_INBOX_DIR),
+      distribution: STEAM_DISTRIBUTION ? 'steam' : 'workshop'
+    });
 
     if (req.method === 'POST' && req.url === '/assets/handoff') {
+      if (STEAM_DISTRIBUTION) return send(res, 403, { ok: false, error: 'asset authoring is unavailable in the Steam distribution' });
       const packet = await readBody(req, AssetHandoff.MAX_BYTES * 2);
       const handoff = AssetHandoff.createHandoff({ packet, libraryDir: LIBRARY_DIR, inboxDir: ASSET_INBOX_DIR });
       return send(res, 200, { ok: true, handoff });
     }
 
     if (req.method === 'POST' && req.url === '/assets/accept') {
+      if (STEAM_DISTRIBUTION) return send(res, 403, { ok: false, error: 'asset authoring is unavailable in the Steam distribution' });
       const p = await readBody(req);
       const handoff = AssetHandoff.acceptHandoff({ id: p.id, libraryDir: LIBRARY_DIR, inboxDir: ASSET_INBOX_DIR });
       return send(res, 200, { ok: true, handoff });
@@ -529,7 +572,10 @@ const server = http.createServer(async (req, res) => {
         room_code: 'AXM1',
         lan_addresses: networks,
         runtime_port: runtime.port,
-        runtime_idle: runtimeIdleState()
+        preferred_runtime_port: runtime.preferredPort,
+        runtime_port_fallback: runtime.portFallback,
+        runtime_idle: runtimeIdleState(),
+        control_default: game.controls && game.controls.universal_gamepad || null
       };
       return send(res, 200, activeLaunch);
     }
@@ -597,4 +643,4 @@ if (require.main === module) {
   process.on('SIGTERM', () => { stopGameRuntime(); process.exit(0); });
 }
 
-module.exports = { GAME_IDLE_TIMEOUT_MS, listenHub, listGames, markRuntimeActivity, resolvePlayMode, runtimeBrowserUrl, runtimeIdleState, server, startGameRuntime, state, stopGameRuntime, validatePlayModeRoster };
+module.exports = { GAME_IDLE_TIMEOUT_MS, listenHub, listGames, markRuntimeActivity, resolvePlayMode, runtimeBrowserUrl, runtimeIdleState, selectRuntimePort, server, startGameRuntime, state, stopGameRuntime, validatePlayModeRoster };

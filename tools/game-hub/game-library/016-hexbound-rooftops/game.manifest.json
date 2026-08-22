@@ -2,9 +2,9 @@
   "slot": "016",
   "game_id": "016-hexbound-rooftops",
   "name": "HEXBOUND: Rooftops of Neverafter",
-  "status": "PLAYABLE LOCAL ALPHA - LAST RITES",
-  "description": "A future-Halloween fairytale RTS where eight distinct faction hosts field grouped armies across spread-friendly rooftops, and Graveyard Exchanges automatically turn nearby formation casualties into local Essence dividends without workers, siege chores, or extra command buttons.",
-  "version": "0.19.0-last-rites-exchange",
+  "status": "PLAYABLE LOCAL ALPHA - DEPARTMENT OF LATER",
+  "description": "A future-Halloween fairytale RTS where eight faction hosts field grouped armies across spread-friendly rooftops, including Temporal offices that automatically postpone one nearby enemy formation without workers, siege chores, or extra command buttons.",
+  "version": "0.20.0-department-of-later",
   "min_players": 1,
   "max_players": 2,
   "default_visible_seats": 2,
@@ -28,7 +28,7 @@
     "controller_entry": "/games/016/controller.html"
   },
   "controls": {
-    "profile_id": "hexbound-macro-rts-last-rites-exchange-v19",
+    "profile_id": "hexbound-macro-rts-department-of-later-v20",
     "intent_protocol": "hexbound.coop-command/v2",
     "keyboard": true,
     "mouse": true,
@@ -88,7 +88,7 @@
     "quartermaster_commissions_wonderworks": true,
     "faction_district_architectures": 8,
     "ordinary_district_roles": 4,
-    "faction_district_conversions": 7,
+    "faction_district_conversions": 8,
     "thirteenth_hour_union_hall_shift_pulse": true,
     "thirteenth_hour_period_seconds": 12,
     "thirteenth_hour_duration_seconds": 4,
@@ -127,6 +127,16 @@
     "last_rites_exchange_targets_buildings": false,
     "last_rites_exchange_rival_parity": true,
     "rival_spends_wake_dividends": true,
+    "department_of_later_deadline_deferral": true,
+    "department_of_later_period_seconds": 14,
+    "department_of_later_duration_seconds": 3,
+    "department_of_later_max_duration_seconds": 4.35,
+    "department_of_later_range": 520,
+    "department_of_later_mixed_charter_duration_scaling": true,
+    "department_of_later_effects_stack": false,
+    "department_of_later_targets_buildings": false,
+    "department_of_later_preserves_orders": true,
+    "department_of_later_rival_parity": true,
     "rivals_use_district_conversions": true,
     "district_charters": 4,
     "mixed_charter_network_bonus": true,
@@ -168,7 +178,7 @@
     "faction_formations": "thirty-two-core-faction-role-visual-variants-with-balance-locked-deterministic-contract-and-eight-faction-live-browser-proof",
     "grand_doctrines": "sixteen-exclusive-core-formation-and-empire-branches-deterministic-and-two-seat-live-browser-verified",
     "faction_wonderworks": "eight-exclusive-landmarks-effects-silhouettes-rival-use-and-quartermaster-commissioning-deterministic-and-live-browser-verified",
-    "faction_district_architecture": "eight-distinct-ordinary-district-rooflines-plus-clockwork-shift-boo-census-moonwake-route-thorn-repair-graveyard-wake-dividend-mob-spotlight-and-tin-civic-cover-conversions-deterministic-and-live-browser-verified",
+    "faction_district_architecture": "eight-distinct-ordinary-district-rooflines-plus-eight-automatic-faction-conversions-including-temporal-deadline-deferral-deterministic-and-live-browser-verified",
     "district_charters": "four-charters-wonderweb-and-free-mustering-deterministic-and-live-browser-verified",
     "living_war_table": "nineteen-roof-fog-safe-atlas-rally-and-pirate-targeting-deterministic-and-live-browser-verified",
     "rival_schemes": "five-own-fog-board-aware-staged-macro-plans-deterministic-and-live-browser-verified",
@@ -183,8 +193,12 @@
       "host_reload_recovery": "game-hub-active-launch",
       "host_reload_recovery_scope": "Restores the managed runtime route and relay; in-progress browser-host world state does not survive host reload",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
-      "blocking_overlay_escape": "pending",
+      "disconnect_recovery": "verified",
+      "disconnect_recovery_scope": "1280x720 desktop browser on the already-linked dedicated Quartermaster controller: a leaf-only fault proxy severed and restored HTTP relay traffic; the controller visibly failed closed and disabled commands, the server's 6500 ms seat TTL expired, the same open page relinked automatically, and a recovered Guard command reached the authoritative relay. Browser-host simulation persistence, physical phone/Wi-Fi behavior, and server-process restart remain outside this scope.",
+      "disconnect_recovery_evidence": ["runtime/controller.html", "runtime/controller.js", "runtime/server.js", "tests/disconnect-recovery-browser-harness.js", "tests/disconnect-recovery.test.js", "evidence/2026-08-16-game-night-resilience/RECEIPT.md"],
+      "blocking_overlay_escape": "verified",
+      "blocking_overlay_escape_scope": "1280x720 desktop shared screen: Escape is inert on the title; during active battle the command guide is the sole blocking modal and one focused Escape restores the visible HUD and world. The outcome modal is routed through its existing primary action by the focused contract but a forced live outcome was not run.",
+      "blocking_overlay_escape_evidence": ["runtime/index.html", "runtime/app.js", "tests/blocking-overlay-escape.test.js", "evidence/2026-08-16-game-night-resilience/RECEIPT.md"],
       "physical_phone_qa": "pending"
     }
   },
@@ -193,9 +207,9 @@
     "required_paths": [
       "README_FIRST.md", "KNOWN_LIMITS.md", "CAPABILITY_GAPS.md", "ASSET_PROVENANCE.md", "BUILD_RECEIPT.md", "EVIDENCE_ROUTE.md",
       "evidence/requirements.json", "evidence/capabilities.json", "evidence/capability-gap-report.json", "evidence/visual-verification.json",
-      "runtime/server.js", "runtime/index.html", "runtime/styles.css", "runtime/game-data.js", "runtime/systems.js", "runtime/app.js",
+      "runtime/server.js", "runtime/index.html", "runtime/styles.css", "runtime/game-data.js", "runtime/systems.js", "runtime/hexbound-depth.js", "runtime/app.js",
       "runtime/controller.html", "runtime/controller.css", "runtime/controller.js",
-      "runtime/assets/hexbound-key-art-v1.png", "tests/systems.test.js", "tests/map-mechanics.test.js", "tests/map-topologies.test.js", "tests/faction-signatures.test.js", "tests/faction-formations.test.js", "tests/faction-doctrines.test.js", "tests/faction-wonderworks.test.js", "tests/faction-districts.test.js", "tests/district-charters.test.js", "tests/bridge-routing.test.js", "tests/tactical-atlas.test.js", "tests/rival-strategy.test.js", "tests/package-selftest.js", "tests/server-http.test.js", "tests/coop-relay.test.js"
+      "runtime/assets/hexbound-key-art-v1.png", "tests/hexbound-depth.test.js", "tests/systems.test.js", "tests/map-mechanics.test.js", "tests/map-topologies.test.js", "tests/faction-signatures.test.js", "tests/faction-formations.test.js", "tests/faction-doctrines.test.js", "tests/faction-wonderworks.test.js", "tests/faction-districts.test.js", "tests/district-charters.test.js", "tests/bridge-routing.test.js", "tests/tactical-atlas.test.js", "tests/rival-strategy.test.js", "tests/package-selftest.js", "tests/server-http.test.js", "tests/coop-relay.test.js", "tests/blocking-overlay-escape.test.js", "tests/disconnect-recovery-browser-harness.js", "tests/disconnect-recovery.test.js", "evidence/2026-08-16-game-night-resilience/RECEIPT.md"
     ]
   }
 }

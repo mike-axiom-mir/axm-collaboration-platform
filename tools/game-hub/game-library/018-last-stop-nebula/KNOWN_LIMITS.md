@@ -1,8 +1,9 @@
-# Known limits — beta 0.25
+# Known limits — beta 0.26
 
 - Single-player only. Co-op, competitive multiplayer, and multiple locations are future work, not hidden beta features.
 - Human balance and fun are not yet established. Deterministic simulations only prove that one active policy can retire and inactivity fails.
 - The three run lengths are provisional. The new ledger exposes an average review curve after three runs, but it does not replace broader human playtesting.
+- Signal Dispatch durations, goals, and the 30-point-per-mark retirement bonus are deterministic authored defaults, not human-validated balance. They add optional activity inside the existing 6/9/12-minute contracts; they do not lengthen the contract timer itself.
 - Browser-local saves do not roam between browsers or computers. Clearing site storage removes the save, high score, and capped 24-run balance ledger.
 - Retirement-timer suggestions are coarse, contract-specific field estimates based on review velocity. Three matching runs provide only early confidence, and the estimates never auto-rebalance a run.
 - Anonymous report export is manual and local. The game does not upload, pool, or validate reports from other players.

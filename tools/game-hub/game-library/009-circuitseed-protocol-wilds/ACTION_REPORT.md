@@ -105,20 +105,20 @@ See `DIRECTORS_CUT_CHANGELOG.md` for the detailed player-facing inventory and `L
 
 ## Verification
 
-- Circuitseed full command: PASS — 49/49 unit/integration tests, CLI lifecycle, actual Game Hub lifecycle, package verifier.
+- Circuitseed full command: PASS — 54/54 unit/integration tests, CLI lifecycle, actual Game Hub lifecycle, package verifier (rerun 2026-08-16).
 - Dependency-isolated DOM boot smoke: PASS — real local server and real client scripts loaded; New Journey entered; 3 starters, 10 recipes, 10 journal slots, and 16 Field Requests rendered; Journal opened; session ended cleanly.
 - Shared controls/AI-native port kit: PASS — 19/19.
-- Active Workshop verifier: PASS — 0 failures, 0 warnings, Foundation spine intact.
+- Active Workshop verifier: PASS at the final 2026-08-16 refresh — 0 failures, 15 explicit physical-phone evidence warnings, spine `b618c5762240070c` intact, and `tools-index.json` matching the settled structural source digest. An earlier moving-workspace stale-index warning cleared after the concurrent phone-QA source stabilized and the derived index was regenerated.
 - Hub, Route, Skin, Skin Renderer, Graft, inline-script, and Tool Forge supplied self-tests: PASS.
-- Active Workshop root `npm test`: UNRUN because that root defines no `test` script; the supplied verifier/self-test gates were run instead.
+- Active Workshop root `npm test`: UNRUN in this report refresh. The current root now defines a comprehensive `test` chain; this documentation repair did not execute that whole chain.
 
 The complete evidence matrix is in `TEST_REPORT.md`.
 
 ## Visual inspection
 
-PIXELS UNRUN. The environment contained no browser executable and exposed no approved private preview URL. Localhost was not sent to a cloud browser. A DOM-level boot/action smoke passed, but title, settlement, exploration, Memory Echo, journal, request board, encounter, workbench/Circuitkin/shop, profile, lobby, controller, disconnect, and result pixels therefore remain for Mike's later local eyes-loop.
+Fresh local pixels now exist. The 2026-08-16 low-poly Three receipt records a 1280x720 Chromium journey through the title, Lumen Yard entry, keyboard movement, scan feedback, journey menu and resume, with no browser logs. The separate blocking-overlay receipt records the production client's journey menu, workbench, profile, settings, discovery, starter and encounter reversibility, plus an inert title Escape path. Selected accepted frames and typed observations are retained under `evidence/2026-08-16-low-poly-three-pass-01/` and `evidence/2026-08-16-blocking-overlay-escape/`.
 
-For that reason the build remains **ALPHA CANDIDATE / WORKING**, not `LOCAL ALPHA TEST`.
+This is bounded browser evidence, not complete visual acceptance. Broader regions, the complete codex/evolution/shop/order flows, physical phones, simultaneous devices, Hub lobby/result pixels, real LAN, full accessibility, performance cadence and human chapter timing remain unverified. The build therefore remains **ALPHA CANDIDATE / WORKING**, not `CANON`.
 
 ## Asset and license proof
 
@@ -133,7 +133,7 @@ See `assets/ASSET_MANIFEST.json`, `ASSET_PROVENANCE.md`, and `THIRD_PARTY_SOFTWA
 
 ## Remaining limits
 
-The exact non-passes are maintained in `KNOWN_LIMITS.md`. Most importantly: rendered browser/device inspection, physical phone/eight-device play, Windows batch/firewall behavior, human chapter timing, subjective balance/audio/accessibility, and real connected-AI consumption remain untested.
+The exact non-passes are maintained in `KNOWN_LIMITS.md`. Most importantly: the unvisited browser journeys, physical phone/eight-device play, Windows batch/firewall behavior, human chapter timing, subjective balance/audio/accessibility, and real connected-AI consumption remain untested.
 
 ## GitHub write confirmation
 

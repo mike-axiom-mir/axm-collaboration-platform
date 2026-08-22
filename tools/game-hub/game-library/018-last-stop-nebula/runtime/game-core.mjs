@@ -1,7 +1,7 @@
-export const GAME_VERSION = '0.25.0-beta';
+export const GAME_VERSION = '0.26.0-beta';
 export const REVIEW_LIMIT = 1000;
 export const STARTING_DEBT = 720;
-const COMPATIBLE_SAVE_VERSIONS = new Set(['0.9.0-beta', '0.10.0-beta', '0.11.0-beta', '0.12.0-beta', '0.13.0-beta', '0.14.0-beta', '0.15.0-beta', '0.16.0-beta', '0.17.0-beta', '0.18.0-beta', '0.19.0-beta', '0.20.0-beta', '0.21.0-beta', '0.22.0-beta', '0.23.0-beta', '0.24.0-beta', GAME_VERSION]);
+const COMPATIBLE_SAVE_VERSIONS = new Set(['0.9.0-beta', '0.10.0-beta', '0.11.0-beta', '0.12.0-beta', '0.13.0-beta', '0.14.0-beta', '0.15.0-beta', '0.16.0-beta', '0.17.0-beta', '0.18.0-beta', '0.19.0-beta', '0.20.0-beta', '0.21.0-beta', '0.22.0-beta', '0.23.0-beta', '0.24.0-beta', '0.25.0-beta', GAME_VERSION]);
 
 export const RUN_MODES = {
   quick: {
@@ -65,6 +65,49 @@ export const LANE_DEFS = {
     reviewPenalty: [27, 42]
   }
 };
+
+export const DISPATCHES = [
+  {
+    id: 'lane-circuit',
+    title: 'Three-lane circuit',
+    short: 'LANE CIRCUIT',
+    copy: 'Personally clear one Pumps, Mart, and Bay customer before the signal closes.',
+    kind: 'manual-lanes',
+    goal: 3,
+    duration: 74,
+    marks: 3
+  },
+  {
+    id: 'hands-on',
+    title: 'Hands on the counter',
+    short: 'HANDS ON',
+    copy: 'Complete five manual services. Automated clears do not count for this dispatch.',
+    kind: 'manual',
+    goal: 5,
+    duration: 68,
+    marks: 3
+  },
+  {
+    id: 'clean-sweep',
+    title: 'Clean convoy sweep',
+    short: 'CLEAN SWEEP',
+    copy: 'Serve seven customers by hand or automation without losing anyone.',
+    kind: 'clean',
+    goal: 7,
+    duration: 78,
+    marks: 4
+  },
+  {
+    id: 'early-clear',
+    title: 'Before the horns',
+    short: 'EARLY CLEAR',
+    copy: 'Clear four customers while they still have at least 68% patience.',
+    kind: 'perfect',
+    goal: 4,
+    duration: 70,
+    marks: 4
+  }
+];
 
 export const UPGRADES = [
   {
@@ -491,6 +534,107 @@ export function seededRandom(seed = 1) {
   };
 }
 
+function dispatchDefinition(state, cycle = state?.dispatch?.cycle || 0) {
+  const seedOffset = (Number(state?.seed) >>> 0) % DISPATCHES.length;
+  return DISPATCHES[(seedOffset + Math.max(0, Math.floor(Number(cycle) || 0))) % DISPATCHES.length];
+}
+
+function createDispatch(state, cycle = 0, carry = {}) {
+  const definition = dispatchDefinition(state, cycle);
+  const startedAt = Math.max(0, Number(state?.elapsed) || 0);
+  return {
+    cycle,
+    id: definition.id,
+    status: 'active',
+    progress: 0,
+    manualLanes: [],
+    startedAt,
+    deadline: startedAt + definition.duration,
+    resolvedAt: null,
+    nextAt: null,
+    completed: Math.max(0, Math.floor(Number(carry.completed) || 0)),
+    failed: Math.max(0, Math.floor(Number(carry.failed) || 0)),
+    streak: Math.max(0, Math.floor(Number(carry.streak) || 0)),
+    marks: Math.max(0, Math.floor(Number(carry.marks) || 0)),
+    revision: Math.max(0, Math.floor(Number(carry.revision) || 0)),
+    lastResult: carry.lastResult || null
+  };
+}
+
+function resolveDispatch(state, status) {
+  const dispatch = state.dispatch;
+  if (!dispatch || dispatch.status !== 'active') return false;
+  const definition = DISPATCHES.find(item => item.id === dispatch.id);
+  if (!definition) return false;
+  dispatch.status = status;
+  dispatch.resolvedAt = state.elapsed;
+  dispatch.nextAt = state.elapsed + 4.5;
+  dispatch.revision += 1;
+  if (status === 'completed') {
+    dispatch.completed += 1;
+    dispatch.streak += 1;
+    dispatch.marks += definition.marks;
+  } else {
+    dispatch.failed += 1;
+    dispatch.streak = 0;
+  }
+  dispatch.lastResult = {
+    id: definition.id,
+    status,
+    marks: status === 'completed' ? definition.marks : 0,
+    at: state.elapsed
+  };
+  return true;
+}
+
+function recordDispatchService(state, customer, automated, patienceRatio) {
+  const dispatch = state.dispatch;
+  if (!dispatch || dispatch.status !== 'active') return;
+  const definition = DISPATCHES.find(item => item.id === dispatch.id);
+  if (!definition) return;
+  if (definition.kind === 'manual-lanes' && !automated) {
+    if (!dispatch.manualLanes.includes(customer.lane)) dispatch.manualLanes.push(customer.lane);
+    dispatch.progress = dispatch.manualLanes.length;
+  } else if (definition.kind === 'manual' && !automated) {
+    dispatch.progress += 1;
+  } else if (definition.kind === 'clean') {
+    dispatch.progress += 1;
+  } else if (definition.kind === 'perfect' && patienceRatio >= .68) {
+    dispatch.progress += 1;
+  }
+  dispatch.progress = Math.min(definition.goal, dispatch.progress);
+  if (dispatch.progress >= definition.goal) resolveDispatch(state, 'completed');
+}
+
+export function dispatchStatus(state) {
+  const dispatch = state?.dispatch;
+  const definition = DISPATCHES.find(item => item.id === dispatch?.id) || dispatchDefinition(state, dispatch?.cycle);
+  const status = ['active', 'completed', 'failed'].includes(dispatch?.status) ? dispatch.status : 'active';
+  const progress = Math.min(definition.goal, Math.max(0, Math.floor(Number(dispatch?.progress) || 0)));
+  const remaining = status === 'active'
+    ? Math.max(0, (Number(dispatch?.deadline) || 0) - (Number(state?.elapsed) || 0))
+    : Math.max(0, (Number(dispatch?.nextAt) || 0) - (Number(state?.elapsed) || 0));
+  return {
+    id: definition.id,
+    title: definition.title,
+    short: definition.short,
+    copy: definition.copy,
+    kind: definition.kind,
+    status,
+    progress,
+    goal: definition.goal,
+    remaining,
+    duration: definition.duration,
+    marksReward: definition.marks,
+    marks: Math.max(0, Math.floor(Number(dispatch?.marks) || 0)),
+    completed: Math.max(0, Math.floor(Number(dispatch?.completed) || 0)),
+    failed: Math.max(0, Math.floor(Number(dispatch?.failed) || 0)),
+    streak: Math.max(0, Math.floor(Number(dispatch?.streak) || 0)),
+    revision: Math.max(0, Math.floor(Number(dispatch?.revision) || 0)),
+    phase: status === 'completed' ? 'SIGNAL CAPTURED' : status === 'failed' ? 'SIGNAL LOST' : 'LIVE DISPATCH'
+  };
+}
+
 export function createNewGame(modeId = 'standard', seed = Date.now()) {
   const mode = RUN_MODES[modeId] || RUN_MODES.standard;
   const normalizedSeed = Number(seed) >>> 0;
@@ -542,8 +686,10 @@ export function createNewGame(modeId = 'standard', seed = Date.now()) {
     ended: false,
     outcome: null,
     lastAction: null,
-    telemetry: []
+    telemetry: [],
+    dispatch: null
   };
+  state.dispatch = createDispatch(state);
   captureTelemetryPoint(state, 'start');
   return state;
 }
@@ -690,6 +836,7 @@ function completeCustomer(state, customer, automated) {
     debtBefore,
     debtAfter: state.debt
   };
+  recordDispatchService(state, customer, automated, patienceRatio);
   return { ok: true, customer, earned, debtShare, debtBefore, debtAfter: state.debt, automated };
 }
 
@@ -828,6 +975,8 @@ function loseCustomer(state, customer) {
   state.morale = Math.max(0, state.morale - 1.1);
   state.stats.lost += 1;
   state.lastAction = { type: 'lost', lane: customer.lane, customerId: customer.id, penalty };
+  const definition = DISPATCHES.find(item => item.id === state.dispatch?.id);
+  if (state.dispatch?.status === 'active' && definition?.kind === 'clean') resolveDispatch(state, 'failed');
 }
 
 function calculateSpawnInterval(state) {
@@ -841,7 +990,8 @@ export function calculateScore(state) {
   const mode = RUN_MODES[state.mode] || RUN_MODES.standard;
   const assetSale = Math.round(state.fuel * 1.4 + state.stock * 1.8 + state.upgrades.length * 42);
   const reviewBonus = Math.round((REVIEW_LIMIT - state.badReviews) * 0.7);
-  const base = Math.max(0, Math.round(state.credits + assetSale + reviewBonus - state.debt));
+  const dispatchBonus = dispatchStatus(state).marks * 30;
+  const base = Math.max(0, Math.round(state.credits + assetSale + reviewBonus + dispatchBonus - state.debt));
   return Math.round(base * mode.scoreMultiplier);
 }
 
@@ -855,6 +1005,21 @@ export function tickGame(state, dt, random = Math.random) {
   state.day = Math.min(state.totalDays, Math.floor(state.elapsed / state.dayLength) + 1);
   state.hour = Math.floor((7 + dayProgress * 18) % 24);
   const stats = derivedStats(state);
+
+  if (!state.dispatch) state.dispatch = createDispatch(state);
+  if (state.dispatch.status === 'active' && state.elapsed >= state.dispatch.deadline) {
+    resolveDispatch(state, 'failed');
+  } else if (state.dispatch.status !== 'active' && state.elapsed >= state.dispatch.nextAt) {
+    const previous = state.dispatch;
+    state.dispatch = createDispatch(state, previous.cycle + 1, {
+      completed: previous.completed,
+      failed: previous.failed,
+      streak: previous.streak,
+      marks: previous.marks,
+      revision: previous.revision + 1,
+      lastResult: { id: previous.id, status: 'rotated', marks: 0, at: state.elapsed }
+    });
+  }
 
   if (stats.leakRate > 0 && state.fuel > 0) {
     const leaked = Math.min(state.fuel, stats.leakRate * dt);
@@ -1211,6 +1376,33 @@ export function sanitizeLoadedState(value) {
   merged.telemetry = Array.isArray(value.telemetry)
     ? value.telemetry.filter(point => point && typeof point === 'object').slice(-40)
     : [];
+  const savedDispatch = value.dispatch;
+  if (!savedDispatch || !DISPATCHES.some(item => item.id === savedDispatch.id)) {
+    merged.dispatch = createDispatch(merged, 0);
+  } else {
+    const definition = DISPATCHES.find(item => item.id === savedDispatch.id);
+    const status = ['active', 'completed', 'failed'].includes(savedDispatch.status) ? savedDispatch.status : 'active';
+    merged.dispatch = {
+      cycle: Math.max(0, Math.floor(Number(savedDispatch.cycle) || 0)),
+      id: definition.id,
+      status,
+      progress: clamp(Math.floor(Number(savedDispatch.progress) || 0), 0, definition.goal),
+      manualLanes: Array.isArray(savedDispatch.manualLanes)
+        ? [...new Set(savedDispatch.manualLanes.filter(lane => Object.hasOwn(LANE_DEFS, lane)))].slice(0, 3)
+        : [],
+      startedAt: Math.max(0, Number(savedDispatch.startedAt) || merged.elapsed),
+      deadline: Math.max(merged.elapsed, Number(savedDispatch.deadline) || (merged.elapsed + definition.duration)),
+      resolvedAt: Number.isFinite(savedDispatch.resolvedAt) ? Math.max(0, savedDispatch.resolvedAt) : null,
+      nextAt: Number.isFinite(savedDispatch.nextAt) ? Math.max(merged.elapsed, savedDispatch.nextAt) : null,
+      completed: Math.max(0, Math.floor(Number(savedDispatch.completed) || 0)),
+      failed: Math.max(0, Math.floor(Number(savedDispatch.failed) || 0)),
+      streak: Math.max(0, Math.floor(Number(savedDispatch.streak) || 0)),
+      marks: Math.max(0, Math.floor(Number(savedDispatch.marks) || 0)),
+      revision: Math.max(0, Math.floor(Number(savedDispatch.revision) || 0)),
+      lastResult: savedDispatch.lastResult && typeof savedDispatch.lastResult === 'object' ? savedDispatch.lastResult : null
+    };
+    if (status !== 'active' && merged.dispatch.nextAt === null) merged.dispatch.nextAt = merged.elapsed + 4.5;
+  }
   if (!merged.telemetry.length) captureTelemetryPoint(merged, 'migrated');
   return merged;
 }

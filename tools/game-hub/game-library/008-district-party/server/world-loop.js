@@ -11,6 +11,8 @@ const { updatePlayers } = require('./player-system');
 const { isGroupSaveMenuOpen, updateGroupSaveComputer } = require('./group-save-system');
 const { updateTerritory } = require('./territory-system');
 const { updateVehicles } = require('./vehicle-system');
+const { updateCityLife } = require('./city-life-system');
+const { updateCombatGear } = require('./combat-gear-system');
 
 function updateConnectedMetrics(world) {
   world.metrics.connectedControllers = Object.values(world.actors)
@@ -26,6 +28,7 @@ function advanceWorld(world, options = {}) {
     updateConnectedMetrics(world);
     return world;
   }
+  updateCombatGear(world);
   updateAiPlayerInputs(world);
   updatePlayers(world, deltaSeconds, now);
   if (isGroupSaveMenuOpen(world)) {
@@ -39,6 +42,7 @@ function advanceWorld(world, options = {}) {
   updateTerritory(world, deltaSeconds);
   updateMission(world);
   updateJustice(world, deltaSeconds);
+  updateCityLife(world);
   updateConnectedMetrics(world);
   return world;
 }

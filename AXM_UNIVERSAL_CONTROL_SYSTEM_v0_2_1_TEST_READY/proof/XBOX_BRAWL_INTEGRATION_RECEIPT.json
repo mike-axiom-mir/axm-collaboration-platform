@@ -1,0 +1,83 @@
+{
+  "format": "axm-xbox-brawl-integration-receipt/1",
+  "createdAt": "2026-08-08T21:46:21.0136460+02:00",
+  "capabilityRoute": {
+    "software": "READY",
+    "physicalHardwareEvidence": "DEGRADED",
+    "reason": "The adapter and browser demo can be built and exercised here, but the user's actual Xbox-style controller is not exposed to the test browser."
+  },
+  "implementation": [
+    "Profile-driven GamepadAdapter controllerLayout consumption",
+    "Standard Xbox-style aliases and legacy numeric binding compatibility",
+    "Analog trigger coercion and D-pad axis composition",
+    "Brawl-style right-stick release-to-fire gesture",
+    "Explicit connected, disconnected, unsupported, error, and stopped status",
+    "Phone-optional host demo with a visible controller map",
+    "Sticky fully-visible game canvas at a 1280x720 browser viewport"
+  ],
+  "verification": {
+    "command": "npm.cmd run verify",
+    "automatedTests": {
+      "passed": 37,
+      "failed": 0
+    },
+    "staticValidation": "PASS",
+    "browserBackend": "BROWSER_PRIMARY",
+    "browserViewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "browserConsoleWarningsOrErrors": 0
+  },
+  "claims": [
+    {
+      "id": "controller-layout-translation",
+      "kind": "deterministic behavior",
+      "passCondition": "A declared Xbox layout produces normalized MOVE, AIM, PRIMARY_ACTION, DODGE, and NAVIGATE values without game code reading raw buttons.",
+      "evidence": "tests/adapters.test.js",
+      "verdict": "PASS"
+    },
+    {
+      "id": "brawl-release-fire",
+      "kind": "deterministic behavior",
+      "passCondition": "Crossing the aim threshold and returning below the release threshold produces exactly one PRIMARY_ACTION pulse followed by neutral state.",
+      "evidence": "tests/adapters.test.js",
+      "verdict": "PASS"
+    },
+    {
+      "id": "host-first-viewport",
+      "kind": "visual appearance",
+      "passCondition": "At 1280x720 the full game canvas, control legend, connection state, controller state, and gameplay context are visible without horizontal overflow.",
+      "evidence": "proof/XBOX_BRAWL_HOST_READY.png",
+      "counterevidenceAndResolution": "proof/XBOX_BRAWL_HOST_BEFORE_LAYOUT_FIX.png showed the canvas vertically centered against the tall sidebar; demo/host.html was corrected and re-observed.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "menu-context-journey",
+      "kind": "interaction journey",
+      "passCondition": "Escape/Menu changes Gameplay to Menu controls with a visible overlay, and the second press restores Gameplay.",
+      "evidence": "proof/XBOX_BRAWL_MENU_CONTEXT.png plus DOM state before/after/restore",
+      "verdict": "PASS"
+    },
+    {
+      "id": "actual-controller-hardware",
+      "kind": "physical device behavior",
+      "passCondition": "The user's controller reports the standard browser mapping and passes movement, aim, fire, menu, disconnect, and latency checks on the real game-test machine.",
+      "evidence": "No physical gamepad was exposed to the in-app browser.",
+      "verdict": "UNKNOWN",
+      "namedSeam": "MISSING_ACTUAL_GAMEPAD_HARDWARE_EVIDENCE",
+      "nextCheapestTest": "Run docs/18_XBOX_BRAWL_CONTROLLER_TRIAL.md with the user's controller."
+    }
+  ],
+  "visualReceipt": {
+    "rollingBuffer": "not used; bounded screenshots were sufficient for the non-timing visual claims",
+    "selectedProofFrames": [
+      "proof/XBOX_BRAWL_HOST_BEFORE_LAYOUT_FIX.png",
+      "proof/XBOX_BRAWL_HOST_READY.png",
+      "proof/XBOX_BRAWL_MENU_CONTEXT.png"
+    ],
+    "temporaryCapturePaths": [],
+    "cleanupComplete": true
+  },
+  "overallVerdict": "PASS_FOR_SOFTWARE_HANDOFF__PHYSICAL_CONTROLLER_TEST_REQUIRED"
+}

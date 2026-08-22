@@ -1,0 +1,70 @@
+{
+  "schema": "axm.game-visual-pass-receipt/v1",
+  "gameId": "003-robo-pong-cross",
+  "gameName": "AXM Pong: Cross",
+  "checkedAt": "2026-08-16T11:34:00+02:00",
+  "status": "WORKING",
+  "packageStatus": "TEST",
+  "canon": false,
+  "scope": "Transparent registered four-edge WebGL relief; gameplay, seats, input, and server authority unchanged.",
+  "visualBackend": "BROWSER_PRIMARY",
+  "browserRoute": "http://127.0.0.1:8123/?room=AXM1&player=screen",
+  "viewport": "1280x720",
+  "observations": {
+    "renderer": "webgl-low-poly",
+    "modelProfile": "cross-relief-v1",
+    "paletteSteps": 16,
+    "authority": "hybrid-webgl-canvas",
+    "versus": {"seatCount":4,"drawCalls":31,"submittedTriangles":320,"frameBefore":273,"frameAfter420ms":295},
+    "coop": {"humanSeatCount":3,"hostWardenVisible":true,"drawCalls":29,"submittedTriangles":304},
+    "browserLogs": []
+  },
+  "tests": {
+    "focused": [
+      {"command":"node --check runtime/neon-pong-cross-depth.js","result":"PASS"},
+      {"command":"node neon-cross-selftest.cjs","result":"PASS"}
+    ],
+    "workshop": {
+      "result": "PASS",
+      "verifySummary": "0 FAIL · 38 warn",
+      "checks": [
+        "node verify.js",
+        "node hub/hub-selftest.js",
+        "node hub/route-selftest.js",
+        "node hub/graft-selftest.js",
+        "node hub/skin-selftest.js",
+        "node hub/verify-plus.js",
+        "node tests/html-script-syntax-test.js",
+        "node tests/tool-forge-package-test.js",
+        "node tools/agent-tool-forge/selftest.js",
+        "node tools/evidence-desk/selftest.js"
+      ]
+    }
+  },
+  "screenshots": [
+    {"path":"baseline/01-versus-ready.png","bytes":63355,"sha256":"E8AB52760C4813D7928574F8786FC38C9653F983AA93074ACAB3550C75377DCF"},
+    {"path":"baseline/02-versus-running.png","bytes":55474,"sha256":"2EDA0E63CD4E630AAB3DAFED9E2B7AFA1FF80F8069788161F4F0018CC3D30D14"},
+    {"path":"final/01-versus-ready.png","bytes":64617,"sha256":"EE673DF1424C12CBD6462F943F2B78E2492DA5417D4B898E28FF74498B3BA6B6"},
+    {"path":"final/02-versus-running.png","bytes":57596,"sha256":"3A7BE8B3C7B95F7B65DEE3A49D49594A8A918714DE56CFCED5CB1B3FF87D9569"},
+    {"path":"final/03-coop-ready.png","bytes":59974,"sha256":"CF7FE24F163229F1CDF67A54439DE06BEDDB0140E19F369B4FB7632786C1FC04"},
+    {"path":"final/04-coop-running.png","bytes":54685,"sha256":"2E543BECCA3F0E1A7378279C3E234B78EE1DA3B010ACA2C9EB05032503A64986"}
+  ],
+  "finalSourceHashes": [
+    {"path":"runtime/neon-pong-cross-client.html","sha256":"C0A3A68BE8A54B15158418800FA78E868DA7FB39D9D4B982DABB7DD1AC0E17E9"},
+    {"path":"runtime/neon-pong-cross.css","sha256":"75FF7BDB2045F34FB5D0AB07A57237DCBB01B479018CD234783D725FB3D2C061"},
+    {"path":"runtime/neon-pong-cross.js","sha256":"A56A72ACF631D3138DB3BFFB7EE6C1E29222DE1170C382E6CA05C4251A73D2B5"},
+    {"path":"runtime/neon-pong-cross-depth.js","sha256":"7E2CB9A1DF13C57A4BD69657749576C0CA4B0C7180E999A5E5F27721E2446688"},
+    {"path":"runtime/neon-pong-cross-server.cjs","sha256":"EC8B14037169BC8BAF3A3AE7E3624E0C33EE242D35F5E976CD1EC0038ECE20FF"},
+    {"path":"neon-cross-selftest.cjs","sha256":"4A3B53C412C9940AF8646F3F79AB6F6765BFEBF907E2927A9DB367DB629CB65C"},
+    {"path":"game.manifest.json","sha256":"7BB549F790BBA99E6BF8028C2D546327A097769DAFC5F28CA86789FC4381B9B7"},
+    {"path":"README.md","sha256":"B3D7BDAC7F611C580F8CAD55A3570B6954F61D30C472560400B104E7A4F7B39A"}
+  ],
+  "openBoundaries": [
+    "PHYSICAL_PHONE_QA_PENDING",
+    "PHYSICAL_GAMEPAD_QA_PENDING",
+    "REDUCED_MOTION_LIVE_SCREENSHOT_PENDING",
+    "STEAM_PACKAGING_PENDING",
+    "HUMAN_FEEL_QA_PENDING",
+    "MIKE_TOBI_REVIEW_PENDING"
+  ]
+}

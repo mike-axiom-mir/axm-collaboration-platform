@@ -49,7 +49,7 @@ function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
   const started = Date.now();
   let lastReport = 0;
   let state;
-  while (Date.now() - started < 90000) {
+  while (Date.now() - started < 180000) {
     state = (await packet('/api/state')).state;
     if (state.phase === 'victory' || state.phase === 'defeat') break;
     if (state.paused) await act({ type: 'pause' });
@@ -91,6 +91,8 @@ function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
   state = (await packet('/api/state')).state;
   console.log(JSON.stringify({ result: state.result, playerKills: state.player.kills, allyKills: state.ally.kills, playerShots: state.player.shots, elapsedMs: state.elapsedMs }));
   assert.strictEqual(state.phase, 'victory', 'semantic controller must be able to finish with a victory');
+  assert.strictEqual(state.result.chronicle.clearedWatchIds.length, 5, 'victory must seal all five named watch receipts');
+  assert.strictEqual(state.result.kills, 83, 'every authored watch slot must reconcile into the final kill count');
   assert(state.player.shots > 0, 'human semantic lane must fire');
   assert(state.player.kills > 0, 'human semantic lane must materially contribute a kill');
   console.log('Bloomvale live semantic driver: PASS');

@@ -117,7 +117,7 @@ function newRoom() {
     specials[id] = makeSpecial();
   });
   return {
-    room: 'AXM1', version: '2.1.0-neon-cross', phase: 'ready', playMode: PLAY_MODE, seatCount: roster.count,
+    room: 'AXM1', version: '2.2.0-neon-cross-gamepad', phase: 'ready', playMode: PLAY_MODE, seatCount: roster.count,
     arenaId: arena.id, tick: 0, width: W, height: H, startLives: START_LIVES,
     players, paddles, inputs, lives, specials,
     balls: [makeBall('core', true), makeBall('echo', PLAY_MODE === 'versus' && roster.count === 4)],
@@ -493,6 +493,8 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html' || url.pathname === '/controller-shell')) return sendFile(res, CLIENT_FILE, 'text/html; charset=utf-8', 'public, max-age=120');
     if (req.method === 'GET' && url.pathname === '/neon-pong-cross.css') return sendFile(res, path.join(__dirname, 'neon-pong-cross.css'), 'text/css; charset=utf-8', 'no-cache');
     if (req.method === 'GET' && url.pathname === '/neon-pong-cross.js') return sendFile(res, path.join(__dirname, 'neon-pong-cross.js'), 'text/javascript; charset=utf-8', 'no-cache');
+    if (req.method === 'GET' && url.pathname === '/neon-pong-cross-depth.js') return sendFile(res, path.join(__dirname, 'neon-pong-cross-depth.js'), 'text/javascript; charset=utf-8', 'no-cache');
+    if (req.method === 'GET' && url.pathname === '/universal-gamepad.js') return sendFile(res, path.join(__dirname, 'universal-gamepad.js'), 'text/javascript; charset=utf-8', 'no-cache');
     if (req.method === 'GET' && url.pathname === '/controller-sw.js') return sendFile(res, CONTROLLER_SW_FILE, 'text/javascript; charset=utf-8', 'no-cache');
     if (req.method === 'GET' && url.pathname === '/manifest.webmanifest') return sendFile(res, MANIFEST_FILE, 'application/manifest+json; charset=utf-8');
     if (req.method === 'GET' && url.pathname === '/controller-icon.svg') return sendFile(res, CONTROLLER_ICON_FILE, 'image/svg+xml; charset=utf-8');

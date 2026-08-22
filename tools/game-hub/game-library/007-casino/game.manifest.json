@@ -3,8 +3,8 @@
   "game_id": "007-casino-alpha",
   "name": "Casino Alpha: Ten-Slot Free Play",
   "status": "TEST-WORKING",
-  "description": "A local authoritative ten-slot free-play and 1v1-4v4 casino tycoon alpha powered by one 50K Draw Spine, immutable style books, and a reactive robot theater.",
-  "version": "0.3.3-alpha",
+  "description": "A local authoritative ten-slot free-play and 1v1-4v4 casino tycoon alpha with integrated cabinet controls, visible free-spin theater, progressive heat, one 50K Draw Spine, and immutable style books.",
+  "version": "0.3.4-alpha",
   "min_players": 1,
   "max_players": 8,
   "play_modes": [
@@ -41,7 +41,10 @@
     "phone_controller": true,
     "keyboard": true,
     "mouse": true,
-    "touch": true
+    "touch": true,
+    "intent_protocol": "axm-semantic-input-v1",
+    "adapter_observation": "axm-seat-screen-semantics-v1",
+    "adapter_observation_profile": "axm.casino-alpha-adapter-observation/v1"
   },
   "session": {
     "passes_seat_map": true,
@@ -56,6 +59,10 @@
     "game_does_not_override_hub_seats": true,
     "server_authoritative_money": true,
     "immutable_slot_outcomes": true,
+    "human_and_adapter_same_input_gate": true,
+    "adapter_observation_is_seat_visible_only": true,
+    "adapter_commands_use_server_draw_authority": true,
+    "credits_are_simulated_local_only": true,
     "outside_network_required": false
   },
   "verification": {
@@ -63,20 +70,25 @@
       "schema": "axm.game-night-seams/v1",
       "controller_delivery": "runtime-issued",
       "runtime_metadata_endpoint": "/api/host/bootstrap",
-      "controller_evidence": ["alpha/client/index.html", "alpha/tests/game-hub-integration-selftest.js"],
+      "controller_evidence": ["alpha/client/index.html", "alpha/runtime/casino-server.cjs", "alpha/tests/game-hub-integration-selftest.js", "alpha/tests/adapter-seat-selftest.js"],
       "state_authority": "server",
       "host_reload_recovery": "game-hub-active-launch",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
+      "disconnect_recovery": "verified",
+      "disconnect_recovery_scope": "Desktop browser controller (1265x720 captured viewport) behind an owned loopback leaf proxy: the persistent controller link state visibly changed live to lost/retrying, authority-bearing controls failed closed, the open route relinked automatically without reload, and a recovered wager command was accepted on the same server session. Physical-phone hardware, real Wi-Fi/LAN interruption, OS network-adapter interruption, and server-process restart remain outside this scope.",
+      "disconnect_recovery_evidence": ["alpha/client/app.js", "alpha/client/styles.css", "alpha/runtime/casino-server.cjs", "alpha/tests/disconnect-recovery-browser-harness.js", "alpha/tests/disconnect-recovery.test.js", "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"],
       "blocking_overlay_escape": "not-applicable",
       "physical_phone_qa": "pending",
-      "adapter_state_interface": "pending"
+      "adapter_state_interface": "verified",
+      "adapter_state_evidence": ["ADAPTER_SEAT_CONTRACT.md", "alpha/runtime/seat-interface.js", "alpha/runtime/casino-server.cjs", "alpha/tests/adapter-seat-selftest.js"]
     }
   },
   "package": {
     "source_status": "alpha-implemented-browser-and-physical-phone-qa-required",
     "required_paths": [
       "README.md",
+      "ADAPTER_SEAT_CONTRACT.md",
+      "ASSET_LICENSES.md",
       "README_FIRST.md",
       "ALPHA_GAMEPLAY_ROUTE.md",
       "BUILD_REPORT.md",
@@ -86,14 +98,20 @@
       "alpha/runtime/casino-server.cjs",
       "alpha/runtime/casino-core.js",
       "alpha/runtime/game-hub-adapter.js",
+      "alpha/runtime/seat-interface.js",
       "alpha/client/index.html",
       "alpha/client/app.js",
+      "alpha/client/casino-three.js",
       "alpha/client/styles.css",
       "alpha/tests/core-selftest.js",
       "alpha/tests/server-selftest.js",
       "alpha/tests/game-hub-integration-selftest.js",
+      "alpha/tests/adapter-seat-selftest.js",
+      "alpha/tests/disconnect-recovery-browser-harness.js",
+      "alpha/tests/disconnect-recovery.test.js",
       "alpha/tests/run-all.js",
       "alpha/tests/package-selftest.js",
+      "evidence/2026-08-16-disconnect-recovery/RECEIPT.md",
       "slots/slot-catalog.js",
       "slots/slot-catalog-selftest.js",
       "slots/axm-draw-spine.js",

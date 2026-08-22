@@ -64,17 +64,8 @@
     const list = (Array.isArray(actors) ? actors : Object.values(actors || {})).slice().sort(actorSort);
     const humans = list.filter(actor => actor.type === 'human');
     const count = Math.max(0, Math.min(3, Number(padCount || 0)));
-    if (!count) return [];
-    if (count === 1) {
-      const friend = humans.find(actor => actor.id !== localPlayer)
-        || list.find(actor => actor.id !== localPlayer)
-        || humans[0]
-        || list[0];
-      return friend ? [friend.id] : [];
-    }
-    return Array.from({ length: Math.min(count, list.length) }, (_, index) => (
-      (humans[index] || list[index]).id
-    ));
+    void localPlayer;
+    return humans.slice(0, count).map(actor => actor.id);
   }
 
   function cellKey(x, y) {

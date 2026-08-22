@@ -8,7 +8,10 @@ const core = require('./game-core');
 const checkpoints = require('./checkpoint-store');
 const hubHandback = require('./hub-handback');
 
-const HOST = process.env.HOST || '127.0.0.1';
+// A managed Game Hub launch publishes a same-Wi-Fi controller URL, so the
+// runtime must accept LAN connections. Standalone developer launches stay
+// loopback-only unless HOST is explicitly supplied.
+const HOST = process.env.HOST || (process.env.AXM_MANAGED_BY_GAME_HUB === '1' ? '0.0.0.0' : '127.0.0.1');
 const PORT = Number(process.env.PORT || 8802);
 const GAME_PREFIX = '/games/012/';
 const MIME = {
@@ -38,6 +41,7 @@ function safeFile(urlPath) {
   else if (relative === '/app.js') relative = 'app.js';
   else if (relative === '/styles.css') relative = 'styles.css';
   else if (relative === '/game-core.js') relative = 'game-core.js';
+  else if (relative === '/arena-3d.js') relative = 'arena-3d.js';
   else return null;
   if (!relative || relative.endsWith('/')) relative += 'index.html';
   const candidate = path.resolve(__dirname, relative.replace(/^\/+/, ''));

@@ -27,7 +27,7 @@ function safeFile(urlPath) {
   if (relative.startsWith(GAME_PREFIX)) relative = relative.slice(GAME_PREFIX.length);
   else if (relative === '/games/014') relative = '';
   else if (relative === '/') relative = '';
-  else if (/^\/(?:index\.html|app\.js|game-data\.js|systems\.js|styles\.css|assets\/|vendor\/)/.test(relative)) relative = relative.slice(1);
+  else if (/^\/(?:index\.html|app\.js|universal-gamepad\.js|game-data\.js|systems\.js|styles\.css|assets\/|vendor\/)/.test(relative)) relative = relative.slice(1);
   else return null;
   if (!relative || relative.endsWith('/')) relative += 'index.html';
   const candidate = path.resolve(__dirname, relative.replace(/^\/+/, ''));
@@ -72,7 +72,7 @@ function createRuntime() {
         return sendJson(response, 200, {
           ok: true,
           gameId: GAME_ID,
-          status: 'FIRST EDITION',
+          status: 'TEST · FIRST EDITION CONTENT EXPANSION',
           localOnly: true,
           gameHubSessionAuthority: 'server',
           worldSaveAuthority: 'browser-local-persistent',
@@ -90,7 +90,7 @@ function createRuntime() {
           schema: 'bonk-bolt-runtime-observation/v1',
           runtime: 'ready',
           saveLocation: 'localStorage:bonk-and-bolt-save-v1',
-          supports: ['solo', 'two-player-local-coop', 'keyboard-mouse', 'gamepad-p2', 'persistent-world', '24-hour-finale'],
+          supports: ['solo', 'two-player-local-coop', 'keyboard-mouse', 'universal-gamepad-p1-p2', 'persistent-world', '24-hour-finale'],
           limitation: 'This endpoint proves runtime availability, not browser-rendered gameplay state.'
         });
       }

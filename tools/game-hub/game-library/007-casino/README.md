@@ -1,7 +1,7 @@
 # Casino Workbench · Ten-Slot Alpha
 
 Status: **WORKING / TEST**  
-Version: `0.3.3-alpha`  
+Version: `0.3.4-alpha`  
 Publication: local workbench only; no GitHub action and no live-library promotion
 
 This local package contains one authoritative casino game with two routes:
@@ -29,7 +29,7 @@ state never enter outcome selection. A new session seed reshuffles the neutral
 order and all ten mappings, so repeated sessions do not start with the same
 play sequence.
 
-The v0.3.3 quest-free play pass retains the Overdrive Theater, giving every cabinet an original vector emblem, its own
+The v0.3.4 co-op cabinet pass retains the Overdrive Theater, giving every cabinet an original vector emblem, its own
 robot silhouette/accent, mechanic-shaped board, win personality, and readable
 mobile card. The shared presentation follows AXM's premium dark neon-lux DNA:
 gold identity, cyan structure, magenta spark, cute machines, and honest WORKING
@@ -37,6 +37,10 @@ labels rather than fake finished-game art. The settled receipt now also drives
 the robot-to-wheel transformation, payout-tier celebrations, optional local
 synth audio, a recent-result strip, and an explicitly non-predictive wager-risk
 meter. None of those presentation systems can select or change an outcome.
+The phone controller now keeps its machine rail and current controls stable
+during background state polling, places wager and spin controls inside the
+cabinet, visibly celebrates free-spin awards, and builds shared progressive
+heat across 30 paid human spins before a matching jackpot ticket can pay.
 
 Key paths:
 
@@ -48,6 +52,21 @@ Key paths:
 - `ALPHA_GAMEPLAY_ROUTE.md` — the locked gameplay and probability contract.
 - `CODEX_LOCAL_LAYER_DROP.md` — the safe local Game Hub integration handoff.
 - `BUILD_REPORT.md` — implemented scope, verification, and remaining QA.
+
+## External adapter boundary
+
+Game Hub may explicitly assign an external collaborator with seat type
+`adapter`. Human commands and adapter intentions then pass through the same
+`axm-semantic-input-v1` server gate. The adapter receives only a bounded
+`axm-seat-screen-semantics-v1` view for its assigned seat; it receives no host
+authority, secret draw state, future outcome row, or token belonging to another
+seat. The server-owned Draw Spine and immutable style books remain the only
+outcome authority.
+
+All balances are simulated local credits. There is no purchase, deposit,
+cash-out, payment-provider, or outside-network money path. See
+`ADAPTER_SEAT_CONTRACT.md` for the exact routes, authority limits, evidence, and
+unverified physical/LAN conditions.
 
 ## Launch modes
 

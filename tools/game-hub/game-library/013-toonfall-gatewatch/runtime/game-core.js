@@ -28,12 +28,12 @@
     {
       eyebrow: 'THEN THE PAPER SKY TORE',
       title: 'The Inkblight found the gate.',
-      copy: 'Hungry Smudges are pouring through three rifts. If they drain the Heartlight, the valley becomes a blank page.'
+      copy: 'Hungry Smudges are pouring through five district rifts. If they drain the Heartlight, the valley becomes a blank page.'
     },
     {
       eyebrow: 'GATEWATCH PROTOCOL',
-      title: 'Two defenders. Three waves.',
-      copy: 'Move, aim, and fire while Moxie guards your flank. Dash out of danger and trigger a Heartburst when the swarm crowds the beacon.'
+      title: 'Two defenders. Five watches.',
+      copy: 'Move, aim, and fire while Moxie guards your flank. Clear each named watch, explore before the next breach, and face the Ink Crown at dawn.'
     }
   ]);
   const DISTRICTS = Object.freeze([
@@ -70,12 +70,19 @@
     'prism-paint': { name: 'Prism Paint', description: 'Player shots deal more damage after clearing Patch’s range.', progress: { kind: 'targets', goal: 5, label: 'RANGE BLOOMS' } },
     'heart-pocket': { name: 'Heart Pocket', description: 'Adds 25 maximum health after meeting everyone.', progress: { kind: 'neighbors', goal: 5, label: 'NEIGHBORS' } }
   });
+  const WAVE_CHRONICLE = Object.freeze([
+    Object.freeze({ id: 'petal-breach', title: 'Petal Breach', cue: 'Nibs test the Sunpetal road.', accent: '#ffd078', count: 8, spawnMs: 850, mix: Object.freeze({ nib: 1 }) }),
+    Object.freeze({ id: 'ripple-rush', title: 'Ripple Rush', cue: 'Sprinters cut across Ripplewood.', accent: '#62e7ef', count: 12, spawnMs: 700, mix: Object.freeze({ nib: .55, sprinter: .45 }) }),
+    Object.freeze({ id: 'bruiser-bloom', title: 'Bruiser Bloom', cue: 'Heavy Smudges shake the orchard paths.', accent: '#ff84b7', count: 17, spawnMs: 590, mix: Object.freeze({ nib: .3, sprinter: .4, bruiser: .3 }) }),
+    Object.freeze({ id: 'lantern-siege', title: 'Lantern Siege', cue: 'Siphons ignore defenders and drain the Heartlight.', accent: '#b794ff', count: 21, spawnMs: 520, mix: Object.freeze({ nib: .2, sprinter: .28, bruiser: .32, siphon: .2 }) }),
+    Object.freeze({ id: 'crown-of-ink', title: 'Crown of Ink', cue: 'Break the royal guard, then unmake the Ink Crown.', accent: '#ff617f', count: 25, spawnMs: 455, boss: 'crown', mix: Object.freeze({ nib: .12, sprinter: .22, bruiser: .28, siphon: .38 }) })
+  ]);
   const CONFIG = Object.freeze({
     worldWidth: 2400,
     worldHeight: 1350,
     tickMs: 50,
-    waveCounts: [8, 12, 17],
-    waveSpawnMs: [850, 700, 560],
+    waveCounts: WAVE_CHRONICLE.map(watch => watch.count),
+    waveSpawnMs: WAVE_CHRONICLE.map(watch => watch.spawnMs),
     intermissionMs: 3200,
     playerSpeed: 230,
     allySpeed: 190,
@@ -89,14 +96,16 @@
     perfectDodgeScore: 35,
     respawnMs: 4200,
     beaconHealth: 360,
-    maxEnemies: 28,
+    maxEnemies: 34,
     maxInputSeq: 2147483647,
     maxInputSeqGap: 1000000
   });
   const ENEMY_TYPES = Object.freeze({
     nib: { hp: 34, speed: 74, damage: 8, radius: 19, score: 80, attackMs: 720, windupMs: 360 },
     sprinter: { hp: 24, speed: 118, damage: 6, radius: 15, score: 120, attackMs: 620, windupMs: 250 },
-    bruiser: { hp: 105, speed: 48, damage: 17, radius: 30, score: 260, attackMs: 980, windupMs: 520 }
+    bruiser: { hp: 105, speed: 48, damage: 17, radius: 30, score: 260, attackMs: 980, windupMs: 520 },
+    siphon: { hp: 68, speed: 63, damage: 13, radius: 23, score: 210, attackMs: 760, windupMs: 430, diversionRadius: 0 },
+    crown: { hp: 560, speed: 34, damage: 24, radius: 48, score: 1600, attackMs: 1180, windupMs: 680, diversionRadius: 360 }
   });
 
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
@@ -138,12 +147,21 @@
   }
   function normalizeRoster(raw) {
     const source = Array.isArray(raw) ? raw : [];
-    const human = source.find(item => String(item && item.type || 'human').toLowerCase() === 'human') || source[0] || {};
+    const primaryIndex = source.findIndex(item => String(item && item.type || 'human').toLowerCase() === 'human');
+    const human = source[primaryIndex >= 0 ? primaryIndex : 0] || {};
+    const partner = source.find((item, index) => index !== (primaryIndex >= 0 ? primaryIndex : 0) && ['human', 'adapter', 'ai'].includes(String(item && item.type || '').toLowerCase())) || { display_name: 'Moxie', type: 'ai', seat_id: 'seat_2' };
+    const partnerType = ['human', 'adapter', 'ai'].includes(String(partner.type || '').toLowerCase()) ? String(partner.type).toLowerCase() : 'ai';
     return [{
       id: 'p1',
       seatId: String(human.seat_id || human.seatId || 'seat_1').slice(0, 80),
       name: String(human.display_name || human.displayName || human.name || 'Scout Pippa').slice(0, 60),
       type: 'human'
+    }, {
+      id: 'p2',
+      seatId: String(partner.seat_id || partner.seatId || 'seat_2').slice(0, 80),
+      name: String(partner.display_name || partner.displayName || partner.name || (partnerType === 'ai' ? 'Moxie' : 'Partner')).slice(0, 60),
+      type: partnerType,
+      adapterId: partnerType === 'adapter' ? String(partner.adapter_id || partner.adapterId || partner.display_name || 'connected-ai').slice(0, 80) : null
     }];
   }
   function createInitialState(roster, options) {
@@ -154,7 +172,7 @@
     const seed = (Number(options.seed) || 13013) >>> 0;
     const state = {
       schema: STATE_SCHEMA,
-      version: '0.3.1-bloomvale-steward',
+      version: '0.5.0-chronicle-3d',
       gameId: GAME_ID,
       seed,
       rngState: seed || 1,
@@ -172,6 +190,12 @@
       waveSpawned: 0,
       nextSpawnAt: 0,
       nextWaveAt: 0,
+      chronicle: {
+        schema: 'axm.bloomvale-watch-chronicle/v1',
+        currentWatchId: null,
+        clearedWatchIds: [],
+        receipts: []
+      },
       score: 0,
       combo: 0,
       bestCombo: 0,
@@ -182,7 +206,7 @@
       perfectDodges: 0,
       roster: seats,
       player: actor('p1', seats[0].name, 'human', 1080, 750, '#5cecff'),
-      ally: actor('moxie', 'Moxie', 'ai-companion', 1145, 760, '#ffd35c'),
+      ally: Object.assign(actor('p2', seats[1].name, seats[1].type === 'ai' ? 'ai' : seats[1].type, 1145, 760, '#ffd35c'), { seatId: seats[1].seatId, adapterId: seats[1].adapterId || null }),
       beacon: { id: 'heartlight', x: 1200, y: 675, radius: 58, health: CONFIG.beaconHealth, maxHealth: CONFIG.beaconHealth, lastHitAt: -99999 },
       exploration: {
         currentDistrictId: 'heartlight-commons',
@@ -201,16 +225,22 @@
       pickups: [],
       effects: [],
       input: { moveX: 0, moveY: 0, aimX: 1, aimY: 0, firing: false, dash: false, pulse: false, seq: 0 },
+      allyInput: { moveX: 0, moveY: 0, aimX: 1, aimY: 0, firing: false, dash: false, pulse: false, seq: 0 },
       lastInputSeq: 0,
+      lastInputSeqByActor: { p1: 0, p2: 0 },
       dashReadyAt: 0,
       pulseReadyAt: 0,
+      allyDashReadyAt: 0,
+      allyPulseReadyAt: 0,
       counterReadyUntil: 0,
       result: null,
       events: [],
       truth: {
         stateAuthority: 'managed-local-server',
-        humanSeats: 1,
-        aiCompanions: 1,
+        humanSeats: seats.filter(seat => seat.type === 'human').length,
+        connectedAiSeats: seats.filter(seat => seat.type === 'adapter').length,
+        inGameAiSeats: seats.filter(seat => seat.type === 'ai').length,
+        partnerMode: seats[1].type === 'adapter' ? 'connected-ai' : seats[1].type === 'human' ? 'human' : 'in-game-ai',
         splitScreen: false,
         internetRequired: false
       }
@@ -225,11 +255,13 @@
     if (!state || !state.player || !state.ally || !state.beacon) errors.push('required actors missing');
     if (!state || !Array.isArray(state.enemies) || !Array.isArray(state.projectiles)) errors.push('world collections missing');
     if (!state || !state.exploration || !Array.isArray(state.exploration.visitedDistrictIds) || !Array.isArray(state.exploration.unlockIds)) errors.push('exploration state missing');
-    if (state && (!state.truth || state.truth.humanSeats !== 1 || state.truth.aiCompanions !== 1 || state.truth.splitScreen !== false)) errors.push('fixed one-human one-ai truth widened');
+    if (!state || !state.chronicle || !Array.isArray(state.chronicle.clearedWatchIds) || !Array.isArray(state.chronicle.receipts) || state.chronicle.receipts.length > WAVE_CHRONICLE.length) errors.push('watch chronicle invalid');
+    if (state && (!state.truth || !['human', 'connected-ai', 'in-game-ai'].includes(state.truth.partnerMode) || state.truth.splitScreen !== false)) errors.push('invalid partner-mode truth');
     if (state && (!Number.isFinite(state.now) || state.now < 0)) errors.push('authoritative time invalid');
     if (state && (!Number.isFinite(state.clockOffsetMs) || state.clockOffsetMs < 0 || !Number.isFinite(state.pausedAtExternal) || state.pausedAtExternal < 0)) errors.push('authority clock mapping invalid');
     if (state && (!Number.isSafeInteger(state.perfectDodges) || state.perfectDodges < 0 || !Number.isFinite(state.counterReadyUntil) || state.counterReadyUntil < 0)) errors.push('Prism Counter state invalid');
     if (state && (!Number.isSafeInteger(state.lastInputSeq) || state.lastInputSeq < 0 || state.lastInputSeq > CONFIG.maxInputSeq)) errors.push('input sequence invalid');
+    if (state && (!state.lastInputSeqByActor || !Number.isSafeInteger(state.lastInputSeqByActor.p1) || !Number.isSafeInteger(state.lastInputSeqByActor.p2))) errors.push('per-actor input sequence invalid');
     return { pass: errors.length === 0, errors };
   }
   function hasUnlock(state, id) {
@@ -340,12 +372,32 @@
   function beginWave(state, now) {
     state.wave += 1;
     state.phase = PHASES.WAVE;
-    state.waveTarget = CONFIG.waveCounts[state.wave - 1];
+    const watch = WAVE_CHRONICLE[state.wave - 1];
+    state.waveTarget = watch.count;
     state.waveSpawned = 0;
     state.nextSpawnAt = now + 250;
     state.nextWaveAt = 0;
     state.combo = 0;
-    event(state, 'wave-start', 'Wave ' + state.wave + ' breached the gate.', { wave: state.wave, target: state.waveTarget });
+    state.chronicle.currentWatchId = watch.id;
+    event(state, 'wave-start', 'WATCH ' + state.wave + ' · ' + watch.title + ' · ' + watch.cue, { wave: state.wave, watchId: watch.id, title: watch.title, target: state.waveTarget });
+  }
+  function recordWatchClear(state) {
+    const watch = WAVE_CHRONICLE[state.wave - 1];
+    if (!watch || state.chronicle.clearedWatchIds.includes(watch.id)) return false;
+    state.chronicle.clearedWatchIds.push(watch.id);
+    const receipt = {
+      watchId: watch.id,
+      title: watch.title,
+      wave: state.wave,
+      score: state.score,
+      kills: state.kills,
+      beaconHealth: Math.max(0, Math.round(state.beacon.health)),
+      elapsedMs: Math.max(0, Math.round(state.elapsedMs))
+    };
+    state.chronicle.receipts.push(receipt);
+    state.chronicle.receipts = state.chronicle.receipts.slice(-WAVE_CHRONICLE.length);
+    event(state, 'watch-cleared', 'WATCH CLEARED · ' + watch.title, clone(receipt));
+    return true;
   }
   function finish(state, victory) {
     state.phase = victory ? PHASES.VICTORY : PHASES.DEFEAT;
@@ -361,7 +413,8 @@
       beaconHealth: Math.max(0, Math.round(state.beacon.health)),
       districts: state.exploration.visitedDistrictIds.length,
       neighbors: state.exploration.metNpcIds.length,
-      unlocks: state.exploration.unlockIds.length
+      unlocks: state.exploration.unlockIds.length,
+      chronicle: clone(state.chronicle)
     };
     event(state, victory ? 'victory' : 'defeat', state.result.title, clone(state.result));
   }
@@ -370,6 +423,7 @@
     if (!check.pass) throw new Error('invalid Toonfall state: ' + check.errors.join('; '));
     const action = raw || {};
     const type = String(action.type || 'input');
+    const resolvedActorId = actorId === 'moxie' ? 'p2' : (actorId || 'p1');
     const proposedExternalNow = Number(now);
     if (type === 'pause' && state.paused && Number.isFinite(proposedExternalNow) && state.pausedAtExternal > 0) {
       state.clockOffsetMs += Math.max(0, proposedExternalNow - state.pausedAtExternal);
@@ -379,7 +433,9 @@
       const mappedNow = Number.isFinite(proposedExternalNow) ? proposedExternalNow - state.clockOffsetMs : NaN;
       state.now = monotonicNow(state, mappedNow, 0);
     }
-    if (actorId && actorId !== 'p1' && actorId !== 'screen') return { ok: false, reason: 'unknown-actor' };
+    if (!['p1', 'p2', 'screen'].includes(resolvedActorId)) return { ok: false, reason: 'unknown-actor' };
+    if (resolvedActorId === 'p2' && state.ally.kind === 'ai') return { ok: false, reason: 'in-game-ai-controls-partner' };
+    if (resolvedActorId === 'p2' && type !== 'input') return { ok: false, reason: 'partner-action-not-supported' };
     if (state.paused && type !== 'pause') return { ok: false, reason: 'paused' };
     if (type === 'story-next') {
       if (state.phase !== PHASES.STORY) return { ok: false, reason: 'not-in-story' };
@@ -407,26 +463,33 @@
     if (type === 'interact') return resolveInteraction(state, state.now);
     if (type !== 'input') return { ok: false, reason: 'unsupported-action' };
     if (![PHASES.EXPLORE, PHASES.WAVE, PHASES.INTERMISSION].includes(state.phase)) return { ok: false, reason: 'input-not-active' };
+    const inputActorId = resolvedActorId === 'screen' ? 'p1' : resolvedActorId;
+    const previousSeq = state.lastInputSeqByActor[inputActorId];
     const seq = Number(action.seq);
-    if (!Number.isSafeInteger(seq) || seq < 1 || seq > CONFIG.maxInputSeq) return { ok: false, reason: 'invalid-sequence', expectedAfter: state.lastInputSeq };
-    if (seq <= state.lastInputSeq) return { ok: false, reason: 'stale-sequence', expectedAfter: state.lastInputSeq };
-    if (seq - state.lastInputSeq > CONFIG.maxInputSeqGap) return { ok: false, reason: 'sequence-gap-too-large', expectedAfter: state.lastInputSeq };
-    state.lastInputSeq = seq;
+    if (!Number.isSafeInteger(seq) || seq < 1 || seq > CONFIG.maxInputSeq) return { ok: false, reason: 'invalid-sequence', expectedAfter: previousSeq };
+    if (seq <= previousSeq) return { ok: false, reason: 'stale-sequence', expectedAfter: previousSeq };
+    if (seq - previousSeq > CONFIG.maxInputSeqGap) return { ok: false, reason: 'sequence-gap-too-large', expectedAfter: previousSeq };
+    state.lastInputSeqByActor[inputActorId] = seq;
+    if (inputActorId === 'p1') state.lastInputSeq = seq;
     const move = normalize(clamp(action.moveX, -1, 1), clamp(action.moveY, -1, 1));
     const aim = normalize(clamp(action.aimX, -1, 1), clamp(action.aimY, -1, 1));
     const hasAim = !!(aim.x || aim.y);
-    const playerOnline = state.player.health > 0 && state.player.downUntil <= state.now;
-    state.input = {
+    const controlledActor = inputActorId === 'p2' ? state.ally : state.player;
+    const targetInput = inputActorId === 'p2' ? state.allyInput : state.input;
+    const playerOnline = controlledActor.health > 0 && controlledActor.downUntil <= state.now;
+    const nextInput = {
       moveX: move.x,
       moveY: move.y,
-      aimX: hasAim ? aim.x : state.input.aimX,
-      aimY: hasAim ? aim.y : state.input.aimY,
+      aimX: hasAim ? aim.x : targetInput.aimX,
+      aimY: hasAim ? aim.y : targetInput.aimY,
       firing: playerOnline && action.firing === true,
       dash: playerOnline && action.dash === true,
       pulse: playerOnline && action.pulse === true,
       seq
     };
-    return { ok: true, seq };
+    if (inputActorId === 'p2') state.allyInput = nextInput;
+    else state.input = nextInput;
+    return { ok: true, actorId: inputActorId, seq };
   }
   function moveActor(entity, dx, dy, speed, dt) {
     const direction = normalize(dx, dy);
@@ -456,9 +519,14 @@
   }
   function chooseEnemyType(state) {
     const roll = rand(state);
-    if (state.wave >= 3 && roll > 0.7) return 'bruiser';
-    if (state.wave >= 2 && roll > 0.48) return 'sprinter';
-    return 'nib';
+    const watch = WAVE_CHRONICLE[state.wave - 1] || WAVE_CHRONICLE[0];
+    let cumulative = 0;
+    const entries = Object.entries(watch.mix);
+    for (const entry of entries) {
+      cumulative += entry[1];
+      if (roll <= cumulative) return entry[0];
+    }
+    return entries[entries.length - 1][0];
   }
   function spawnEnemy(state, now) {
     if (state.enemies.length >= CONFIG.maxEnemies) return false;
@@ -467,7 +535,8 @@
       { x: 610, y: 1130 }, { x: 1810, y: 1120 }
     ];
     const gate = gates[Math.floor(rand(state) * gates.length) % gates.length];
-    const kind = chooseEnemyType(state);
+    const watch = WAVE_CHRONICLE[state.wave - 1] || WAVE_CHRONICLE[0];
+    const kind = watch.boss && state.waveSpawned === state.waveTarget - 1 ? watch.boss : chooseEnemyType(state);
     const spec = ENEMY_TYPES[kind];
     state.enemies.push({
       id: uid(state, kind), kind, x: gate.x + (rand(state) - 0.5) * 80, y: gate.y + (rand(state) - 0.5) * 65,
@@ -495,10 +564,10 @@
     state.bestCombo = Math.max(state.bestCombo, state.combo);
     state.comboUntil = state.now + 2800;
     if (ownerId === 'p1') state.player.kills += 1;
-    if (ownerId === 'moxie') state.ally.kills += 1;
-    state.effects.push({ id: uid(state, 'fx'), type: 'pop', x: enemy.x, y: enemy.y, at: state.now, color: enemy.kind === 'bruiser' ? '#ff7ab8' : '#b377ff' });
+    if (ownerId === 'moxie' || ownerId === 'p2') state.ally.kills += 1;
+    state.effects.push({ id: uid(state, 'fx'), type: 'pop', x: enemy.x, y: enemy.y, at: state.now, color: enemy.kind === 'crown' ? '#ff617f' : enemy.kind === 'siphon' ? '#7ef0e2' : enemy.kind === 'bruiser' ? '#ff7ab8' : '#b377ff' });
     if (state.kills % 5 === 0) state.pickups.push({ id: uid(state, 'heart'), type: 'heart', x: enemy.x, y: enemy.y, bornAt: state.now, radius: 15 });
-    event(state, 'enemy-popped', (ownerId === 'moxie' ? 'Moxie' : state.player.name) + ' popped a ' + enemy.kind + '.', { enemy: enemy.kind, ownerId, combo: state.combo });
+    event(state, 'enemy-popped', (ownerId === 'moxie' || ownerId === 'p2' ? state.ally.name : state.player.name) + ' popped a ' + enemy.kind + '.', { enemy: enemy.kind, ownerId, combo: state.combo });
   }
   function damageActor(state, target, amount, now, source) {
     if (target.invulnerableUntil > now || target.downUntil > now) return false;
@@ -528,7 +597,7 @@
 
   function enemyTargetById(state, targetId) {
     if (targetId === 'p1') return state.player;
-    if (targetId === 'moxie') return state.ally;
+    if (targetId === 'moxie' || targetId === 'p2') return state.ally;
     if (targetId === 'heartlight') return state.beacon;
     return null;
   }
@@ -618,12 +687,53 @@
     state.input.dash = false;
     state.input.pulse = false;
   }
+  function updateControlledAlly(state, dt, now) {
+    const ally = state.ally;
+    const input = state.allyInput;
+    if (ally.downUntil > now) {
+      ally.vx = 0; ally.vy = 0;
+      input.firing = false; input.dash = false; input.pulse = false;
+      return;
+    }
+    if (ally.downUntil && ally.downUntil <= now && ally.health <= 0) {
+      ally.health = 75; ally.x = 1145; ally.y = 760; ally.downUntil = 0;
+      event(state, 'defender-return', ally.name + ' is back in color.', { id: ally.id });
+    }
+    moveActor(ally, input.moveX, input.moveY, CONFIG.allySpeed, dt);
+    if (input.aimX || input.aimY) { ally.facingX = input.aimX; ally.facingY = input.aimY; }
+    if (input.dash && now >= state.allyDashReadyAt) {
+      const dash = normalize(input.moveX || ally.facingX, input.moveY || ally.facingY);
+      ally.x = clamp(ally.x + dash.x * 115, 60, CONFIG.worldWidth - 60);
+      ally.y = clamp(ally.y + dash.y * 115, 70, CONFIG.worldHeight - 55);
+      ally.invulnerableUntil = now + 220;
+      state.allyDashReadyAt = now + CONFIG.dashCooldownMs;
+      state.effects.push({ id: uid(state, 'fx'), type: 'dash', x: ally.x, y: ally.y, at: now, color: ally.color });
+    }
+    if (input.pulse && now >= state.allyPulseReadyAt) {
+      let affected = 0;
+      state.enemies.forEach(enemy => {
+        if (enemy.health > 0 && distance(ally, enemy) <= 205) {
+          enemy.health -= 32; enemy.lastHitAt = now; affected += 1;
+          if (enemy.health <= 0) awardKill(state, enemy, ally.id);
+        }
+      });
+      state.allyPulseReadyAt = now + CONFIG.pulseCooldownMs;
+      state.effects.push({ id: uid(state, 'fx'), type: 'pulse', x: ally.x, y: ally.y, at: now, color: ally.color });
+      event(state, 'partner-heartburst', ally.name + ' pushed back ' + affected + ' Smudges.', { affected, actorId: ally.id });
+    }
+    if (input.firing && now - ally.lastShotAt >= CONFIG.allyFireMs) {
+      fireProjectile(state, ally, { x: input.aimX, y: input.aimY }, now, 19);
+    }
+    input.dash = false;
+    input.pulse = false;
+  }
   function updateAlly(state, dt, now) {
     const ally = state.ally;
+    if (ally.kind !== 'ai') return updateControlledAlly(state, dt, now);
     if (ally.downUntil > now) { ally.vx = 0; ally.vy = 0; return; }
     if (ally.downUntil && ally.downUntil <= now && ally.health <= 0) {
       ally.health = 75; ally.x = 1145; ally.y = 760; ally.downUntil = 0;
-      event(state, 'defender-return', 'Moxie rebooted.', { id: ally.id });
+      event(state, 'defender-return', ally.name + ' rebooted.', { id: ally.id });
     }
     const target = nearestEnemy(state, ally);
     if (!target) {
@@ -712,8 +822,9 @@
         return;
       }
       const possible = [state.beacon];
-      if (state.player.downUntil <= now && distance(enemy, state.player) < 245) possible.push(state.player);
-      if (state.ally.downUntil <= now && distance(enemy, state.ally) < 215) possible.push(state.ally);
+      const diversionRadius = Number.isFinite(spec.diversionRadius) ? spec.diversionRadius : 245;
+      if (state.player.downUntil <= now && distance(enemy, state.player) < diversionRadius) possible.push(state.player);
+      if (state.ally.downUntil <= now && distance(enemy, state.ally) < Math.max(0, diversionRadius - 30)) possible.push(state.ally);
       let target = possible[0];
       possible.forEach(candidate => { if (distance(enemy, candidate) < distance(enemy, target)) target = candidate; });
       const direction = normalize(target.x - enemy.x, target.y - enemy.y);
@@ -774,12 +885,14 @@
     state.effects = state.effects.filter(effect => state.now - effect.at < (effect.type === 'counter-hit' ? 1800 : 900)).slice(-80);
     if (state.beacon.health <= 0) finish(state, false);
     else if (state.waveSpawned >= state.waveTarget && state.enemies.length === 0) {
+      recordWatchClear(state);
       if (state.wave >= CONFIG.waveCounts.length) finish(state, true);
       else {
         state.beacon.health = Math.min(state.beacon.maxHealth, state.beacon.health + 28);
         state.player.health = Math.min(state.player.maxHealth, state.player.health + 35);
         state.ally.health = Math.min(state.ally.maxHealth, state.ally.health + 35);
-        enterExplore(state, state.now, 'Wave clear. Bloomvale is open again—explore or return to the Heartlight for wave ' + (state.wave + 1) + '.');
+        const nextWatch = WAVE_CHRONICLE[state.wave];
+        enterExplore(state, state.now, 'Watch clear. Bloomvale is open again—explore or return for ' + nextWatch.title + '.');
       }
     }
     return state;
@@ -805,7 +918,9 @@
       phase: state.phase,
       paused: state.paused,
       wave: state.wave,
-      objective: playerDown ? 'Wait for ' + state.player.name + ' to reboot' : state.phase === PHASES.STORY ? STORY[state.storyStep].title : state.phase === PHASES.BRIEFING ? 'Open Bloomvale' : state.phase === PHASES.EXPLORE ? 'Explore Bloomvale or begin wave ' + (state.wave + 1) + ' at the Heartlight' : state.phase === PHASES.WAVE ? 'Defend the Heartlight and clear wave ' + state.wave : state.phase === PHASES.INTERMISSION ? 'Regroup before wave ' + (state.wave + 1) : state.result && state.result.title,
+      watch: clone(WAVE_CHRONICLE[Math.max(0, Math.min(WAVE_CHRONICLE.length - 1, state.phase === PHASES.EXPLORE ? state.wave : state.wave - 1))]),
+      chronicle: clone(state.chronicle),
+      objective: playerDown ? 'Wait for ' + state.player.name + ' to reboot' : state.phase === PHASES.STORY ? STORY[state.storyStep].title : state.phase === PHASES.BRIEFING ? 'Open Bloomvale' : state.phase === PHASES.EXPLORE ? 'Explore Bloomvale or begin ' + WAVE_CHRONICLE[state.wave].title + ' at the Heartlight' : state.phase === PHASES.WAVE ? 'Defend the Heartlight and clear ' + WAVE_CHRONICLE[state.wave - 1].title : state.phase === PHASES.INTERMISSION ? 'Regroup before ' + WAVE_CHRONICLE[state.wave].title : state.result && state.result.title,
       player: {
         x: state.player.x, y: state.player.y, health: state.player.health, down: playerDown,
         dashReady: !playerDown && state.now >= state.dashReadyAt,
@@ -813,7 +928,7 @@
         perfectDodges: state.perfectDodges,
         counter: state.counterReadyUntil > state.now ? { readyUntil: state.counterReadyUntil, remainingMs: state.counterReadyUntil - state.now, damageMultiplier: CONFIG.prismCounterMultiplier } : null
       },
-      ally: { x: state.ally.x, y: state.ally.y, health: state.ally.health, down: state.ally.downUntil > state.now, behavior: state.enemies.length ? 'defend-and-engage' : 'orbit-heartlight' },
+      ally: { id: state.ally.id, name: state.ally.name, kind: state.ally.kind, x: state.ally.x, y: state.ally.y, health: state.ally.health, down: state.ally.downUntil > state.now, behavior: state.ally.kind === 'ai' ? (state.enemies.length ? 'defend-and-engage' : 'orbit-heartlight') : 'external-semantic-control' },
       beacon: { health: state.beacon.health, maxHealth: state.beacon.maxHealth },
       enemies: state.enemies.map(enemy => ({
         id: enemy.id, kind: enemy.kind, x: enemy.x, y: enemy.y, health: enemy.health,
@@ -827,6 +942,7 @@
       score: state.score,
       result: clone(state.result),
       allowedActions: state.phase === PHASES.STORY ? ['story-next'] : state.phase === PHASES.BRIEFING ? ['start'] : activeActions,
+      partnerMode: state.truth.partnerMode,
       authority: 'observation-only'
     };
   }
@@ -845,6 +961,7 @@
     STATE_SCHEMA,
     STORY,
     UNLOCKS,
+    WAVE_CHRONICLE,
     applyAction,
     beginWave,
     clone,
@@ -856,6 +973,7 @@
     normalizeRoster,
     observe,
     resolveInteraction,
+    recordWatchClear,
     snapshot,
     spawnEnemy,
     step,

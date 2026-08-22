@@ -2,13 +2,16 @@
 'use strict';
 
 const http = require('http');
+const crypto = require('crypto');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const SeatInterface = require('./seat-interface.cjs');
 
 const HOST = process.env.AXM_ROBO_PONG_HOST || '0.0.0.0';
 const PORT = Number(process.env.PORT || 8792);
 const TEST_MODE = process.env.AXM_TEST_MODE === '1';
+const SESSION_ID = process.env.AXM_SESSION_ID || crypto.randomUUID();
 const HUB_MODE = String(process.env.AXM_GAME_PLAY_MODE || '').toLowerCase();
 const PLAY_MODE = HUB_MODE.includes('versus') ? 'versus' : 'story-coop';
 const CLIENT_FILE = path.join(__dirname, 'neon-pong-duet-client.html');
@@ -29,6 +32,7 @@ const COOP_PADDLE_W = 158;
 const WARDEN_W = 270;
 const WIN_SCORE = 7;
 const SPECIAL_COOLDOWN = 7600;
+const START_COUNTDOWN_MS = Math.max(60, Math.min(5000, Number(process.env.AXM_PONG_COUNTDOWN_MS) || 3000));
 
 const ARENAS = [
   { id: 'cathedral-cross', label: 'Cathedral Cross', chapter: 'CHAPTER 01', objective: 'SEAL THE BREACH', target: 12, core: 5, background: 'cathedral-cross-plate.png', accent: '#69dc9a' },
@@ -48,6 +52,11 @@ function cleanName(value, fallback) {
   const text = String(value || '').replace(/[^a-z0-9 _-]/gi, '').trim().slice(0, 20);
   return text || fallback;
 }
+function seatKind(value, fallbackHuman) {
+  const kind = String(value || '').toLowerCase();
+  if (kind === 'human' || kind === 'adapter' || kind === 'ai') return kind;
+  return fallbackHuman ? 'human' : 'ai';
+}
 function loadSeats() {
   let raw = [];
   try { raw = JSON.parse(process.env.AXM_PLAYERS_JSON || '[]'); } catch (error) {}
@@ -55,10 +64,12 @@ function loadSeats() {
   return Array.from({ length: 2 }, (_, index) => {
     const seat = raw[index] || {};
     const fallbackHuman = index === 0 ? fallbackMode !== 'ai-vs-ai' && fallbackMode !== 'ai-vs-human' : fallbackMode === 'human-vs-human' || fallbackMode === 'ai-vs-human';
+    const kind = seatKind(raw[index] && seat.type, fallbackHuman);
     return {
       name: cleanName(seat.display_name || process.env['AXM_P' + (index + 1) + '_NAME'], index === 0 ? 'MIKE' : 'NOVA'),
-      human: raw.length ? seat.type === 'human' : fallbackHuman,
-      seatId: seat.seat_id || null
+      kind,
+      seatId: String(seat.seat_id || seat.seat || 'seat_' + (index + 1)),
+      adapterId: kind === 'adapter' ? String(seat.adapter_id || seat.adapterId || 'adapter-seat-' + (index + 1)) : null
     };
   });
 }
@@ -72,7 +83,7 @@ function makeSpecial() { return { kind: randomSpecial(), readyAt: 0, activeUntil
 function makePaddle(id, name, y, width) {
   return { id, name, x: W / 2, y, width, height: PADDLE_H, shieldUntil: 0, jammedUntil: 0 };
 }
-function arenaById(id) { return ARENAS.find(arena => arena.id === id) || ARENAS[1]; }
+function arenaById(id) { return ARENAS.find(arena => arena.id === id) || ARENAS[0]; }
 
 function newRoom() {
   const arena = arenaById(process.env.AXM_PONG_ARENA);
@@ -86,15 +97,18 @@ function newRoom() {
     height: H,
     tick: 0,
     players: {
-      p1: { id: 'p1', name: seats[0].name, kind: seats[0].human ? 'human' : 'adapter', color: '#46d7e7', team: PLAY_MODE === 'versus' ? 'cyan' : 'duet' },
-      p2: { id: 'p2', name: seats[1].name, kind: seats[1].human ? 'human' : 'adapter', color: '#ff3dd8', team: PLAY_MODE === 'versus' ? 'magenta' : 'duet' }
+      p1: { id: 'p1', seatId: seats[0].seatId, adapterId: seats[0].adapterId, name: seats[0].name, kind: seats[0].kind, color: '#46d7e7', team: PLAY_MODE === 'versus' ? 'cyan' : 'duet', controllerConnected: seats[0].kind === 'ai' ? null : false, adapterConsent: seats[0].kind === 'adapter' ? true : null },
+      p2: { id: 'p2', seatId: seats[1].seatId, adapterId: seats[1].adapterId, name: seats[1].name, kind: seats[1].kind, color: '#ff3dd8', team: PLAY_MODE === 'versus' ? 'magenta' : 'duet', controllerConnected: seats[1].kind === 'ai' ? null : false, adapterConsent: seats[1].kind === 'adapter' ? true : null }
     },
     paddles: {
       p1: makePaddle('p1', seats[0].name, H - 70, PLAY_MODE === 'versus' ? DUEL_PADDLE_W : COOP_PADDLE_W),
       p2: makePaddle('p2', seats[1].name, PLAY_MODE === 'versus' ? 70 : H - 70, PLAY_MODE === 'versus' ? DUEL_PADDLE_W : COOP_PADDLE_W),
       warden: makePaddle('warden', 'WARDEN', 70, WARDEN_W)
     },
-    inputs: { p1: { left: false, right: false }, p2: { left: false, right: false } },
+    inputs: {
+      p1: { left: false, right: false, lastSeenAt: 0, sequence: -1, rateWindow: [] },
+      p2: { left: false, right: false, lastSeenAt: 0, sequence: -1, rateWindow: [] }
+    },
     scores: { p1: 0, p2: 0 },
     mission: { core: arena.core, coreMax: arena.core, charge: 0, target: arena.target, wave: 1, relay: 0, status: 'READY' },
     specials: { p1: makeSpecial(), p2: makeSpecial() },
@@ -102,6 +116,7 @@ function newRoom() {
     ball: { x: W / 2, y: H / 2, vx: 0, vy: 0, radius: BALL_R, lastTouch: null },
     serveAt: 0,
     serveDirection: 1,
+    countdownEndsAt: 0,
     winner: null,
     outcome: null,
     event: PLAY_MODE === 'versus' ? 'DUEL READY' : arena.objective,
@@ -110,6 +125,7 @@ function newRoom() {
 }
 
 const room = newRoom();
+const seatBindings = SeatInterface.createSeatBindings(room);
 const streams = new Set();
 let lastTick = Date.now();
 
@@ -141,6 +157,7 @@ function resetMission() {
   room.mission = { core: arena.core, coreMax: arena.core, charge: 0, target: arena.target, wave: 1, relay: 0, status: 'ACTIVE' };
 }
 function startMatch() {
+  room.countdownEndsAt = 0;
   room.phase = 'running';
   room.winner = null;
   room.outcome = null;
@@ -158,6 +175,7 @@ function startMatch() {
 function setArena(id) {
   const arena = arenaById(id);
   room.arenaId = arena.id;
+  room.countdownEndsAt = 0;
   room.phase = 'ready';
   room.winner = null;
   room.outcome = null;
@@ -171,6 +189,15 @@ function setArena(id) {
 function nextArena() {
   const index = ARENAS.findIndex(arena => arena.id === room.arenaId);
   return setArena(ARENAS[(index + 1) % ARENAS.length].id);
+}
+function beginStartCountdown() {
+  room.inputs.p1.left = false;
+  room.inputs.p1.right = false;
+  room.inputs.p2.left = false;
+  room.inputs.p2.right = false;
+  room.countdownEndsAt = Date.now() + START_COUNTDOWN_MS;
+  room.phase = 'countdown';
+  announce('STARTING IN 3');
 }
 function serveIfReady(now) {
   if (!room.serveAt || now < room.serveAt || room.phase !== 'running') return;
@@ -319,9 +346,10 @@ function tick() {
   const dt = Math.min(0.04, Math.max(0.001, (now - lastTick) / 1000));
   lastTick = now;
   room.tick += 1;
+  if (room.phase === 'countdown' && now >= room.countdownEndsAt) startMatch();
   if (room.phase !== 'paused') {
-    if (room.players.p1.kind === 'human') controlPaddle('p1', dt, now); else aiPaddle('p1', dt, now);
-    if (room.players.p2.kind === 'human') controlPaddle('p2', dt, now); else aiPaddle('p2', dt, now);
+    if (room.players.p1.kind === 'ai') aiPaddle('p1', dt, now); else controlPaddle('p1', dt, now);
+    if (room.players.p2.kind === 'ai') aiPaddle('p2', dt, now); else controlPaddle('p2', dt, now);
     wardenPaddle(dt, now);
   }
   if (room.phase === 'running') updateBall(dt, now);
@@ -333,18 +361,28 @@ function publicPower(player, now) {
 }
 function publicState() {
   const now = Date.now();
+  const players = Object.fromEntries(Object.entries(room.players).map(([id, player]) => [id, {
+    id: player.id,
+    seatId: player.seatId,
+    name: player.name,
+    kind: player.kind,
+    color: player.color,
+    team: player.team,
+    controllerConnected: player.controllerConnected
+  }]));
   return {
     room: room.room, version: room.version, phase: room.phase, playMode: room.playMode, arenaId: room.arenaId,
     arenas: ARENAS, width: W, height: H, tick: room.tick, winScore: WIN_SCORE,
-    players: room.players, paddles: room.paddles, scores: room.scores, mission: room.mission,
+    players, paddles: room.paddles, scores: room.scores, mission: room.mission,
     ball: room.ball, winner: room.winner, outcome: room.outcome, event: room.event, eventAt: room.eventAt,
     serveIn: room.serveAt ? Math.max(0, room.serveAt - now) : 0,
+    countdownRemaining: room.phase === 'countdown' ? Math.max(0, room.countdownEndsAt - now) : 0,
     power: { p1: publicPower('p1', now), p2: publicPower('p2', now) },
     effects: { slowField: now < room.slowFieldUntil }
   };
 }
 function sendJson(res, code, value) {
-  res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type' });
+  res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type,x-axm-seat-token,authorization' });
   res.end(JSON.stringify(value));
 }
 function readJson(req) {
@@ -374,6 +412,26 @@ function lanAddresses() {
   }
   return found;
 }
+function isLoopback(req) {
+  const remote = String(req.socket && req.socket.remoteAddress || '');
+  return /^(?:127\.|::1$|::ffff:127\.)/.test(remote);
+}
+function bearer(req) { return String(req.headers['x-axm-seat-token'] || req.headers.authorization || '').replace(/^Bearer\s+/i, ''); }
+function hostBootstrap() {
+  const bindings = Object.values(seatBindings);
+  return {
+    ok: true,
+    launch: {
+      controllers: bindings.filter(binding => binding.controllerType === 'human').map(binding => ({
+        seatId: binding.seatId,
+        displayName: binding.displayName,
+        url: '/?room=AXM1&player=' + binding.playerId
+      })),
+      adapterBindings: bindings.filter(binding => binding.controllerType === 'adapter'),
+      partyScreens: [{ partyId: 'A', url: '/?room=AXM1&player=screen' }]
+    }
+  };
+}
 
 const server = http.createServer(async (req, res) => {
   try {
@@ -382,13 +440,26 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) return sendFile(res, CLIENT_FILE, 'text/html; charset=utf-8', 'no-store');
     if (req.method === 'GET' && url.pathname === '/neon-pong-duet.css') return sendFile(res, path.join(__dirname, 'neon-pong-duet.css'), 'text/css; charset=utf-8', 'no-cache');
     if (req.method === 'GET' && url.pathname === '/neon-pong-duet.js') return sendFile(res, path.join(__dirname, 'neon-pong-duet.js'), 'text/javascript; charset=utf-8', 'no-cache');
+    if (req.method === 'GET' && url.pathname === '/neon-pong-duet-depth.js') return sendFile(res, path.join(__dirname, 'neon-pong-duet-depth.js'), 'text/javascript; charset=utf-8', 'no-cache');
     if (req.method === 'GET' && url.pathname.startsWith('/assets/')) return sendFile(res, safeAsset(LOCAL_ASSETS, url.pathname.slice('/assets/'.length)), /\.png$/i.test(url.pathname) ? 'image/png' : 'application/octet-stream');
     if (req.method === 'GET' && url.pathname.startsWith('/aetherglass/')) {
       const file = safeAsset(AETHERGLASS_ROOT, url.pathname.slice('/aetherglass/'.length));
       return sendFile(res, file, /\.css$/i.test(url.pathname) ? 'text/css; charset=utf-8' : 'text/javascript; charset=utf-8', 'no-cache');
     }
     if (req.method === 'GET' && url.pathname === '/health') return sendJson(res, 200, { ok: true, name: 'AXM Pong · Duet', version: room.version, room: room.room, playMode: room.playMode, minPlayers: 1, maxPlayers: 2, arenas: ARENAS.map(arena => arena.id), aetherglass: fs.existsSync(AETHERGLASS_ROOT) });
+    if (req.method === 'GET' && url.pathname === '/api/host/bootstrap') {
+      if (!isLoopback(req)) return sendJson(res, 403, { ok: false, error: 'host-bootstrap-loopback-only' });
+      return sendJson(res, 200, hostBootstrap());
+    }
     if (req.method === 'GET' && url.pathname === '/state') return sendJson(res, 200, publicState());
+    if (req.method === 'GET' && url.pathname === '/api/adapter-observation') {
+      const result = SeatInterface.buildAdapterObservation(room, {
+        roomCode: url.searchParams.get('room'),
+        seatId: url.searchParams.get('seat'),
+        token: bearer(req)
+      }, { bindings: seatBindings, publicState, sessionId: SESSION_ID });
+      return sendJson(res, result.statusCode || (result.ok ? 200 : 400), result);
+    }
     if (req.method === 'GET' && url.pathname === '/events') {
       res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache', connection: 'keep-alive', 'access-control-allow-origin': '*' });
       res.write('retry: 1000\n\n');
@@ -404,23 +475,39 @@ const server = http.createServer(async (req, res) => {
       if (patch.phase) room.phase = patch.phase;
       return sendJson(res, 200, { ok: true, state: publicState() });
     }
+    if (req.method === 'POST' && url.pathname === '/api/input') {
+      const packet = await readJson(req);
+      const result = SeatInterface.routeSemanticInput(room, { ...packet, token: packet.token || bearer(req) }, { bindings: seatBindings, requireToken: true, usePower });
+      return sendJson(res, result.statusCode || (result.ok ? 200 : 400), result.ok ? result : Object.assign({ error: result.reason }, result));
+    }
     if (req.method === 'POST' && url.pathname === '/input') {
       const player = url.searchParams.get('player') === 'p2' ? 'p2' : 'p1';
-      if (room.players[player].kind !== 'human') return sendJson(res, 409, { ok: false, error: player + ' is adapter-controlled' });
       const input = await readJson(req);
-      room.inputs[player].left = !!input.left;
-      room.inputs[player].right = !!input.right;
-      if (input.power) usePower(player, Date.now());
-      return sendJson(res, 200, { ok: true, player });
+      const result = SeatInterface.routeSemanticInput(room, {
+        intent: { axis: (input.right ? 1 : 0) - (input.left ? 1 : 0), power: input.power === true }
+      }, { playerId: player, requireToken: false, usePower });
+      return sendJson(res, result.statusCode || (result.ok ? 200 : 400), result.ok ? result : Object.assign({ error: result.reason }, result));
     }
     if (req.method === 'POST' && url.pathname === '/arena') {
       const input = await readJson(req);
-      if (room.phase === 'running' || room.phase === 'paused') return sendJson(res, 409, { ok: false, error: 'finish or reset the active match before changing arena' });
+      if (room.phase === 'running' || room.phase === 'paused' || room.phase === 'countdown') return sendJson(res, 409, { ok: false, error: 'finish or reset the active match before changing arena' });
       const arena = setArena(input.arenaId);
       return sendJson(res, 200, { ok: true, arena, state: publicState() });
     }
-    if (req.method === 'POST' && url.pathname === '/next-arena') return sendJson(res, 200, { ok: true, arena: nextArena(), state: publicState() });
-    if (req.method === 'POST' && (url.pathname === '/start' || url.pathname === '/reset')) { startMatch(); return sendJson(res, 200, { ok: true, state: publicState() }); }
+    if (req.method === 'POST' && url.pathname === '/next-arena') {
+      if (room.phase === 'running' || room.phase === 'paused' || room.phase === 'countdown') return sendJson(res, 409, { ok: false, error: 'the active match must finish before changing chapter' });
+      return sendJson(res, 200, { ok: true, arena: nextArena(), state: publicState() });
+    }
+    if (req.method === 'POST' && url.pathname === '/start') {
+      if (room.phase !== 'ready') return sendJson(res, 409, { ok: false, error: 'match is not waiting to start' });
+      beginStartCountdown();
+      return sendJson(res, 200, { ok: true, state: publicState() });
+    }
+    if (req.method === 'POST' && url.pathname === '/reset') {
+      if (room.phase !== 'gameover') return sendJson(res, 409, { ok: false, error: 'rematch is not ready' });
+      beginStartCountdown();
+      return sendJson(res, 200, { ok: true, state: publicState() });
+    }
     if (req.method === 'POST' && url.pathname === '/pause') {
       if (room.phase === 'running') { room.phase = 'paused'; announce('PAUSED'); }
       else if (room.phase === 'paused') { room.phase = 'running'; announce('LIGHT LIVE'); }

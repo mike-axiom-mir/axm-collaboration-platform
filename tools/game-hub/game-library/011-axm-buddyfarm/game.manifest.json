@@ -2,9 +2,9 @@
   "slot": "011",
   "game_id": "011-axm-buddyfarm",
   "name": "AXM BuddyFarm",
-  "status": "WORKING TEST · LARGE BLANK WORLD",
-  "description": "A gentle 1–3 player shared farm on a streamed 12,288 × 8,192 blank transparent substrate, with one shared camera, a stable starter farm and no routine tool swapping.",
-  "version": "0.2.0-playtest-recovery",
+  "status": "WORKING TEST · LARGE BLANK WORLD · UNIVERSAL GAMEPAD LOGIC QA · PHYSICAL DEVICE QA PENDING",
+  "description": "A gentle 1–3 player shared low-poly 3D farm on a streamed 12,288 × 8,192 blank transparent substrate, with one shared camera, a stable starter farm and no routine tool swapping.",
+  "version": "0.3.1-universal-gamepad-test",
   "min_players": 1,
   "max_players": 3,
   "default_visible_seats": 2,
@@ -28,6 +28,10 @@
   },
   "controls": {
     "profile_id": "axm-buddyfarm-two-lane-v1",
+    "gamepad_profile": "axm-universal-xbox-brawl-v0.2.1",
+    "gamepad_actions": ["MOVE", "PRIMARY_ACTION", "WORK", "OPEN_MAP", "OPEN_MENU"],
+    "gamepad_seat_binding": "stable pad index 0–2 to ordered human seats only",
+    "unused_gamepad_inputs_allowed": true,
     "intent_protocol": "axm-semantic-input-v1",
     "adapter_observation": "axm-seat-screen-semantics-v1",
     "phone_controller": true,
@@ -68,13 +72,18 @@
     "game_night": {
       "schema": "axm.game-night-seams/v1",
       "controller_delivery": "dedicated-path",
-      "controller_evidence": ["runtime/controller.html"],
+      "controller_evidence": ["runtime/controller.html", "runtime/universal-gamepad.js", "runtime/index.html", "tests/universal-gamepad.test.js", "evidence/universal-gamepad-verification-2026-08-16.md"],
       "state_authority": "server",
       "host_reload_recovery": "game-hub-active-launch",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
+      "disconnect_recovery": "verified",
+      "disconnect_recovery_scope": "1280x720 landscape desktop browser on the already-linked dedicated P2 controller with two human seats: a leaf-only fault proxy severed and restored HTTP traffic; the controller visibly failed closed and disabled all six controls, managed-server farm state remained unchanged, the same open page relinked automatically, and a recovered move advanced authoritative revision, position, steps and walk sequence. Physical phone/Wi-Fi behavior, shared-screen recovery and server-process restart remain outside this scope.",
+      "disconnect_recovery_evidence": ["runtime/controller.html", "runtime/server.js", "runtime/game-core.js", "tests/disconnect-recovery-browser-harness.js", "tests/disconnect-recovery.test.js", "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"],
       "blocking_overlay_escape": "verified",
       "physical_phone_qa": "pending",
+      "gamepad_logic_qa": "verified",
+      "gamepad_disconnect_recovery": "verified",
+      "physical_gamepad_qa": "pending",
       "adapter_state_interface": "verified",
       "adapter_state_evidence": ["docs/INPUT_INTENT_CONTRACT.md", "tests/buddyfarm-selftest.js"],
       "blank_world_alpha_and_coverage": "verified",
@@ -82,14 +91,17 @@
     }
   },
   "package": {
-    "source_status": "local-deterministic-large-blank-world-working-test",
+    "source_status": "local-deterministic-large-blank-world-universal-gamepad-working-test-physical-device-qa-pending",
     "required_paths": [
       "README_FIRST.md",
       "KNOWN_LIMITS.md",
       "ASSET_PROVENANCE.md",
+      "THIRD_PARTY_SOFTWARE.md",
       "runtime/server.js",
       "runtime/game-core.js",
       "runtime/farm-motion.js",
+      "runtime/buddyfarm-three.js",
+      "runtime/universal-gamepad.js",
       "runtime/world-adapter.js",
       "runtime/world/blank-world-source.json",
       "runtime/world/blank-world-verification.json",
@@ -100,7 +112,13 @@
       "docs/REWARD_AND_INVENTORY_DIRECTION.md",
       "docs/FARM_KIT_FIT_RECEIPT.md",
       "docs/NEXT_BUILDER_HANDOFF.md",
-      "tests/buddyfarm-selftest.js"
+      "tests/buddyfarm-selftest.js",
+      "tests/buddyfarm-three-selftest.js",
+      "tests/universal-gamepad.test.js",
+      "evidence/universal-gamepad-verification-2026-08-16.md",
+      "tests/disconnect-recovery-browser-harness.js",
+      "tests/disconnect-recovery.test.js",
+      "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"
     ]
   }
 }

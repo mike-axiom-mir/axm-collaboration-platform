@@ -218,3 +218,179 @@ rather than guess at new features:
   syntax errors. None of the three claims to be *proven* on a real
   device — see the updated `KNOWN_LIMITS.md` for the honest version of
   that distinction.
+
+## Build Receipt addendum — v0.6.0, same day, real analog joystick
+
+`DESIGN_BIBLE.md` §10 originally specified "touch joystick + one large
+ACTION button" for the phone controller. The first build shipped a
+4-button d-pad instead, flagged in `KNOWN_LIMITS.md` as a deliberate
+shortcut ("simpler to get right without a real device to test against
+yet"). With more time available, built the real thing:
+
+- `runtime/controller.html`'s d-pad grid is replaced with a draggable
+  analog base+knob. Pointer events track one finger from down to up;
+  the offset from the base's own center is clamped to the base's radius
+  and converted to a `-1..1` vector, with a small dead zone near center
+  so resting a thumb near the middle doesn't register as drift.
+- No changes needed in `game-core.js`: `applyMovement()` already
+  normalized the movement vector's magnitude only when it exceeded 1
+  (`mag > 1 ? mx/mag : mx`), which means partial analog deflection was
+  always going to produce proportionally slower movement — the joystick
+  UI was the only piece actually missing, not new physics.
+- The server's `clampAxis()` in `runtime/server.js` already accepted any
+  finite float and clamped to `-1..1`, so it required no changes either;
+  the input contract (`POST /api/input`, `moveX`/`moveY`/`action`/
+  `actionEdge`) was already analog-ready even though nothing had sent
+  analog values yet.
+- Updated every "d-pad" reference across `README_FIRST.md`,
+  `game.manifest.json`'s `controls.bindings`, `KNOWN_LIMITS.md`, and a
+  code comment in `runtime/app.js` to say "joystick" instead, so the
+  docs describe what's actually running.
+- `npm test` unchanged at 35/35 — this was a controller-UI change with no
+  simulation-logic surface, so no new unit tests were added; verification
+  is `node -c`-clean JS plus the existing `/controller.html` static-serve
+  test in `tests/server-http.test.js` still passing.
+
+Still not done: no real device, so the actual feel of the joystick (dead
+zone size, base diameter, thumb reach) is unverified. `physical_phone_qa`
+stays `pending`.
+
+## Build Receipt addendum — v0.6.1, same day, real frame-stepped rhythm tests
+
+`KNOWN_LIMITS.md` flagged that the Radio station's rhythm verb had never
+actually been resolution-tested — the existing false-alarm test happened
+to use the `radio` station but with a `mash` verb, so `rhythm` itself had
+zero dedicated coverage of either the success or failure path. Added two
+tests to `tests/brace-room-selftest.js`:
+
+- A well-timed tapper: steps `Core.tick()` in ~16ms increments (a real
+  animation-frame cadence, not one lumped call) and sends a single
+  discrete `actionEdge` tap per beat cycle timed inside
+  `Core.RHYTHM_WINDOW_MS` of the beat, using `Core.nearestBeatDelta()` —
+  the same function the live beat-dot rendering and `dev/balance-sim.js`
+  already use. Confirms the fault actually resolves.
+- An off-beat tapper: same frame-stepped harness, but every tap lands
+  deliberately at the anti-phase point (325ms from the nearest beat,
+  comfortably outside the 190ms window) once per cycle. Confirms it never
+  resolves and times out as a miss — caught a real test-writing mistake
+  in the process: the first draft asserted the fault was still present in
+  `state.faults` after the loop, which is wrong for *either* outcome
+  (resolved or expired both remove it from the array); fixed to check
+  `state.stats.resolved`/`state.stats.missed` instead, which actually
+  distinguishes the two.
+
+`npm test` is now 37/37 (was 35/35). This closes the *logic* half of the
+rhythm-tap gap — the timing math genuinely works under realistic
+per-frame stepping. The *feel* half (does a 650ms beat / 190ms window
+read as fair to an actual person) is unchanged and still needs a real
+human playtest; see the updated `KNOWN_LIMITS.md`.
+
+## Build Receipt addendum — v0.6.2, same day, real evidence screenshot suite
+
+`KNOWN_LIMITS.md` flagged that the `evidence/visual/*.png` pass other
+library entries carry had never happened for this slot. Closed the setup
+and in-run half of that gap using the live `ai-seat-courier` (real headless
+Edge over CDP, not generated images): launched a fresh session, walked the
+lobby → crew size 1 → shift 6 min → start-shift flow, then captured four
+real PNGs now in `evidence/visual/` — the setup screen, an active run
+showing a live fault plus a false-alarm toast together, the same run with
+high contrast toggled (confirms the canvas-level palette switch reaches
+station outlines/rings/labels, not just page chrome), and the same run
+with reduced motion toggled (confirms the countdown ring genuinely becomes
+a static ring plus a numeric seconds readout, not a continuously shrinking
+arc — visually proven now, not just claimed in prose). See
+`evidence/visual/README.md` for exact per-file detail, including why hull
+integrity visibly drops across the set (no controller was resolving
+faults — that's the balance-sim-verified decay curve working as intended,
+not a capture artifact).
+
+Deliberately left out: a win/loss end-screen capture. The shortest
+contract is 6 real minutes and there's no debug fast-forward hook in the
+code, so reaching an end screen honestly costs several real minutes of an
+idle headless session — left for a real playtest pass to pick up naturally
+rather than spent here. `npm test` unaffected (no runtime code changed),
+still 37/37.
+
+## Build Receipt addendum — v0.6.3, same day, balance confirmation + ARIA fixes
+
+Two independent pieces of remaining-budget work, neither touching core
+gameplay math beyond what's noted below:
+
+**Balance confirmation.** Re-ran `dev/balance-sim.js` at 300 seeds per
+cell (was 40) to check whether the existing win-rate table was a real
+curve or a lucky small sample. It held up closely (see `BALANCE_NOTES.md`
+"Confirmation pass" section) — no new bug found this time, said plainly
+rather than inventing one. Did surface one number worth knowing plainly:
+1-player/12-minute sits at 64% even for a flawless bot, and checked the
+raw per-seed losses for that cell specifically — they all happen late
+(610-715s of a 720s max, after 125-147 successful resolves), so it's
+genuine long-session solo attrition, not a spawn bug or an early unfair
+spike.
+
+**ARIA/accessibility fixes.** `KNOWN_LIMITS.md` flagged the accessibility
+toggles as unverified against any actual screen reader. Found and fixed a
+real structural gap in the meantime: the crew-size/shift-length pickers
+were plain buttons inside a `role="radiogroup"`, missing `role="radio"`
+and `aria-checked` on the children entirely — a genuine ARIA pattern
+violation, not a style nitpick. Fixed in `runtime/index.html` and
+`runtime/app.js`'s `setActiveChip()`; also gave the sound-mute button a
+persistent `aria-label` instead of relying on `title` alone. Verified live
+through a real `snapshot` (`ai-seat-courier`) against a running session —
+Edge's own accessibility tree now reports `role: radio` inside a properly
+named `role: radiogroup`, confirmed by the browser, not just asserted from
+source. Full detail and honest scope (what's still visual-only, why
+`controller.html` was deliberately left alone) in the updated
+`KNOWN_LIMITS.md`. `npm test` still 37/37 — no gameplay logic touched.
+
+## Build Receipt addendum — v0.6.4, same day, disconnected-seat signal
+
+`KNOWN_LIMITS.md` said a dropped phone connection "just makes that seat
+stop responding" with nothing telling the rest of the crew why. Closed
+that: `GET /api/input` in `runtime/server.js` now reports a per-seat
+`phoneStatus` (`'fresh'` / `'disconnected'`) for every seat that has ever
+posted this session — not just currently-fresh ones, which is what the
+endpoint returned before — so the client can tell "never had a phone"
+apart from "had one, it just dropped." `app.js` tracks each seat's last
+known status and fires a real toast on the actual transition in either
+direction, reusing the existing `aria-live` toast feed rather than adding
+new UI (a small bonus from the accessibility pass two versions ago —
+connection events get announced the same way fault events already are).
+
+Added two checks to `tests/server-http.test.js` (fresh vs. disconnected
+reporting, absent-not-false-disconnected for a seat that never posted) —
+both pass, 23/23 server checks, 37/37 total with `brace-room-selftest.js`
+unchanged.
+
+Honest gap on this one: tried twice to catch the toast live in a
+screenshot through `ai-seat-courier`, both missed — the courier's own
+round trip (multi-second, file-based) is longer than the toast's 1.6s
+visible window, so timing a screenshot inside that window through this
+particular bridge isn't reliable. That's a tooling limitation of
+screenshotting something transient this way, not a claim the toast
+doesn't fire — the server-side transition data is test-verified, and the
+client trigger logic is simple, deterministic, and was read directly
+rather than assumed.
+
+## Build Receipt addendum — v0.6.5, same day, procedural visual polish
+
+Mike asked to see the visuals move toward "finished," with steps visible
+along the way. Stayed inside the zero-third-party-asset policy the whole
+pass — see the updated `ASSET_PROVENANCE.md` for the exact canvas-API
+techniques. Summary: a radial-gradient vignette behind the background
+grid, a dim track ring plus glow on the hull gauge, a persistent soft glow
+and subtle gradient fill on every station (previously only idle ones
+pulsed), matching-color glow on the fault countdown/effort rings, and a
+presence-glow halo on player tokens. All of it is gated off under high
+contrast on purpose — that mode's whole point is flat maximum-contrast
+shapes, and gradients/glow would undermine it.
+
+Verified two ways, not just visually: `node -c runtime/app.js` for syntax,
+full `npm test` (still 37/37, none of this touches simulation logic), and
+two live courier screenshots — one in normal mode showing the glow/
+gradient actually rendering (`evidence/visual/05-visual-polish-glow-
+vignette-normal.png`), one in high contrast confirming it's correctly
+suppressed there (`06-visual-polish-high-contrast-unaffected.png`). Not a
+finished art pass — still flat vector shapes, just with real depth cues
+instead of none — but a genuine step toward less "old paint," which is
+exactly the gap Mike named after seeing the holodeck's own unfinished
+skin layer earlier tonight.

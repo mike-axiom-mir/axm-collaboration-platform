@@ -1,8 +1,8 @@
-# Test report — Living Globe Steward vNext v0.10
+# Test report — Living Globe Steward vNext v0.10.1
 
-Date: 2026-07-19  
-Environment: Node v24.14.0, local loopback HTTP; no usable Chromium binary  
-Status: `EXPERIMENTAL LOCAL TEST`
+Date: 2026-08-16  
+Environment: Node v24.17.0, local loopback HTTP and Codex in-app browser  
+Status: `TEST · STEWARDSHIP TOUR EXPANSION`
 
 ## Living Globe suite
 
@@ -10,9 +10,16 @@ Status: `EXPERIMENTAL LOCAL TEST`
 node tests/run-tests.js
 ```
 
-Observed result: `99 PASS · 0 FAIL`
+Observed result: `102 PASS · 0 FAIL`
 
-All 91 v0.9 checks remain green. Eight new checks prove:
+All 99 v0.10 checks remain green. Three new checks plus the strengthened timing check prove:
+
+- the first two completed starter errands unlock six expanded variants for a twelve-mission catalog;
+- four genuine completions finish one repeatable stewardship tour and grant exactly one bounded `✦ 3` bonus;
+- v0.1 mission saves retain Laurels and bounded history while gaining valid tour progression;
+- missions remain open six active minutes, early completions retain a four-minute start cadence, and an expired errand rolls visibly into the next feasible start.
+
+The retained shared-brief checks continue to prove:
 
 - byte-equivalent deterministic reports and no mutation while reading;
 - five separate domains with no overall score;
@@ -49,15 +56,21 @@ Passed:
 
 ## Browser/render boundary
 
-v0.10 browser result: `NOT RUN`.
+v0.10.1 browser result: `PASS WITH LIMITS`.
 
-The workspace has no usable disposable Chromium executable. No browser download workaround was used for this version.
+The Codex in-app browser loaded the managed local route at a 1280×720 viewport. Repeated visible frames and semantic snapshots proved:
 
-Immutable earlier baselines previously passed disposable Chromium checks for WebGL, laptop AI PIP/focus, AI intents, Two-Shores completion, phone human-only controls, the typed economy, genuine emergence capture and Preserve/Evolve. Those results support unchanged engines, but they do not establish the new Brief layout, metric-strip legibility or panel/input feel.
+- the welcome surface transitions into the animated low-poly Three.js island;
+- the first mission appears as `TOUR 1/4` with the correct six-minute clock, objective, Laurel balance and AI-seat readout;
+- the Shared Island Brief opens over the live mission and closes back to the same 3D view;
+- reload restores the same active mission, objective and remaining active-play time after re-entry;
+- the page produced no browser console errors during the route.
+
+No raw recording or repository screenshot archive was created for this pass.
 
 ## Not proven
 
-- v0.10 infographic pixel layout, cross-browser rendering or WebGL color on a real GPU;
-- glance comprehension, status-band tuning, humor, long-session usefulness or play balance;
+- a complete four-errand human tour, expanded-catalog balance, cross-browser rendering or physical-device GPU behavior;
+- glance comprehension, status-band tuning, humor, long-session usefulness or Laurel pacing;
 - accessibility conformance, focus trapping, sound mix or low-end-phone performance;
 - AI decision quality, shared persistence, external trade balance, production security, scientific realism, readiness or canon status.

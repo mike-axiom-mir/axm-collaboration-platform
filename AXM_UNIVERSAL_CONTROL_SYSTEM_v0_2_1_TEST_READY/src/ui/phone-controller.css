@@ -1,0 +1,100 @@
+.axm-phone-controller {
+  --axm-stick-size: 150px;
+  --axm-button-size: 66px;
+  --axm-control-opacity: .82;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(40,80,110,.25), transparent 44%),
+    linear-gradient(145deg,#07111f,#02050a 70%);
+}
+.axm-phone-controller button { font: 800 14px/1 system-ui,sans-serif; }
+.axm-stick {
+  position: absolute;
+  width: var(--axm-stick-size);
+  height: var(--axm-stick-size);
+  border-radius: 50%;
+  opacity: var(--axm-control-opacity);
+  touch-action: none;
+}
+.axm-left-stick { left: 6%; bottom: 8%; }
+.axm-right-stick { right: 24%; bottom: 8%; }
+.axm-stick-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid rgba(80,225,255,.7);
+  background: radial-gradient(circle,rgba(20,40,60,.48),rgba(5,12,22,.74));
+  box-shadow: inset 0 0 28px rgba(65,220,255,.12),0 0 22px rgba(65,220,255,.15);
+}
+.axm-stick-knob {
+  position: absolute; left: 50%; top: 50%;
+  width: 46%; height: 46%; transform: translate(-50%,-50%);
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.82);
+  background: radial-gradient(circle at 35% 28%,rgba(255,255,255,.34),rgba(45,195,225,.55) 30%,rgba(8,34,54,.95));
+  box-shadow: 0 0 24px rgba(53,230,255,.42);
+  transition: transform 35ms linear;
+}
+.axm-stick > span {
+  position: absolute; left: 50%; bottom: 13%; transform: translateX(-50%);
+  color: rgba(225,245,255,.76); font: 800 10px/1 ui-monospace,monospace; letter-spacing: .16em;
+}
+.axm-face-buttons {
+  position: absolute;
+  right: 4%; bottom: 7%;
+  width: calc(var(--axm-button-size) * 2.45);
+  height: calc(var(--axm-button-size) * 2.45);
+  opacity: var(--axm-control-opacity);
+}
+.axm-face-buttons button {
+  position: absolute; width: var(--axm-button-size); height: var(--axm-button-size);
+  border-radius: 50%; border: 2px solid rgba(255,255,255,.56);
+  color: #fff; background: linear-gradient(145deg,rgba(35,65,85,.94),rgba(6,15,27,.98));
+  box-shadow: inset 0 1px rgba(255,255,255,.2),0 0 18px rgba(53,230,255,.15);
+}
+.axm-face-buttons button:nth-child(1){left:50%;top:0;transform:translateX(-50%)}
+.axm-face-buttons button:nth-child(2){left:0;top:50%;transform:translateY(-50%)}
+.axm-face-buttons button:nth-child(3){right:0;top:50%;transform:translateY(-50%)}
+.axm-face-buttons button:nth-child(4){left:50%;bottom:0;transform:translateX(-50%)}
+.axm-face-buttons small{display:block;font-size:7px;opacity:.65;margin-top:3px}
+.axm-face-buttons button.pressed,.axm-menu-button.pressed{
+  background:#1d6577; box-shadow:0 0 28px rgba(53,230,255,.55); filter:brightness(1.25);
+}
+.axm-menu-button{
+  position:absolute;left:50%;top:7%;transform:translateX(-50%);
+  min-width:78px;min-height:42px;border-radius:999px;border:1px solid rgba(255,255,255,.45);
+  color:#eaf8ff;background:rgba(8,20,34,.88);opacity:var(--axm-control-opacity);
+}
+.axm-phone-controller.left-handed .axm-left-stick{left:auto;right:6%}
+.axm-phone-controller.left-handed .axm-right-stick{right:auto;left:24%}
+.axm-phone-controller.left-handed .axm-face-buttons{right:auto;left:4%}
+.axm-phone-controller.high-contrast .axm-stick-ring,
+.axm-phone-controller.high-contrast button{border-color:#fff;background:#000;color:#fff;box-shadow:0 0 0 3px #000,0 0 0 6px #fff}
+.axm-phone-controller.reduced-motion *{transition:none!important;animation:none!important}
+.axm-phone-controller.layout-editing [data-control-id]{
+  outline:3px dashed #ffc85a;outline-offset:4px;cursor:move;touch-action:none;
+}
+@media (orientation:portrait){
+  .axm-right-stick{right:5%;bottom:29%}
+  .axm-face-buttons{right:4%;bottom:5%;transform:scale(.84);transform-origin:bottom right}
+  .axm-left-stick{left:5%;bottom:8%}
+  .axm-phone-controller.left-handed .axm-right-stick{left:5%;bottom:29%}
+}
+.axm-mode-button{
+  position:absolute;left:50%;bottom:5%;transform:translateX(-50%);
+  min-width:116px;min-height:44px;border-radius:999px;border:2px solid #ffc85a;
+  color:#fff4cf;background:rgba(35,25,5,.94);opacity:var(--axm-control-opacity);
+  box-shadow:0 0 20px rgba(255,200,90,.24);
+}
+.axm-mode-button[hidden]{display:none}
+.axm-phone-controller.one-hand-enabled .axm-right-stick{display:none}
+.axm-phone-controller.one-hand-left .axm-left-stick{left:6%;right:auto;bottom:8%}
+.axm-phone-controller.one-hand-left .axm-face-buttons{left:5%;right:auto;bottom:48%;transform:scale(.82);transform-origin:left center}
+.axm-phone-controller.one-hand-left .axm-mode-button{left:6%;bottom:38%;transform:none}
+.axm-phone-controller.one-hand-right .axm-left-stick{right:6%;left:auto;bottom:8%}
+.axm-phone-controller.one-hand-right .axm-face-buttons{right:5%;left:auto;bottom:48%;transform:scale(.82);transform-origin:right center}
+.axm-phone-controller.one-hand-right .axm-mode-button{right:6%;left:auto;bottom:38%;transform:none}

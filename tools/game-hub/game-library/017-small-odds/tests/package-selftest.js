@@ -58,6 +58,21 @@ test('million-to-one destination is wired through visible controls and transpare
   assert.match(data, /Truth Coin/);
 });
 
+test('loss aftermath stays visible, receipt-gated, exactly accounted, and outside RNG', () => {
+  const app = fs.readFileSync(path.join(root, 'runtime/app.js'), 'utf8');
+  const systems = fs.readFileSync(path.join(root, 'runtime/systems.js'), 'utf8');
+  const data = fs.readFileSync(path.join(root, 'runtime/game-data.js'), 'utf8');
+  assert.match(app,/STARSPITE DEBT AFTERMATH/);
+  assert.match(app,/data-debt-aftermath-route/);
+  assert.match(app,/storefront service income/i);
+  assert.match(systems,/replayValidCasinoLoss/);
+  assert.match(systems,/small-odds\.debt-aftermath-start\/v1/);
+  assert.match(systems,/small-odds\.debt-aftermath-return\/v1/);
+  assert.match(systems,/storefrontDailyIncomeExcluded:true/);
+  assert.match(systems,/casinoOddsChanged:false/);
+  assert.match(data,/STARSPITE_DEBT_ROUTES/);
+});
+
 test('life situations are visibly non-quest, object-reactive, delayed, and unattended-capable', () => {
   const app = fs.readFileSync(path.join(root, 'runtime/app.js'), 'utf8');
   const systems = fs.readFileSync(path.join(root, 'runtime/systems.js'), 'utf8');

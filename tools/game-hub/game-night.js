@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var API = '/game-api', STORE = 'axm.gameNight.party.v2', FEATURED = ['003-robo-pong-cross','006-lumenwake','007-casino-alpha','008-district-party','009-circuitseed-protocol-wilds','010-living-globe-tycoon'];
-  var $ = function (id) { return document.getElementById(id); }, online = false, games = [], worlds = [], selectedGameId = null, selectedPlayMode = null, lastLaunch = null, extrasOpen = false, runtimeHealth = null, lobbyPoll = null, bootRetry = null, booting = false, bootAttempts = 0;
+  var $ = function (id) { return document.getElementById(id); }, online = false, games = [], worlds = [], selectedGameId = null, selectedPlayMode = null, lastLaunch = null, extrasOpen = false, runtimeHealth = null, lobbyPoll = null, bootRetry = null, booting = false, bootAttempts = 0, partySyncInFlight = 0, launchInFlight = false;
   var defaults = [
     { name:'Mike', type:'human' }, { name:'Errol', type:'human' }, { name:'Nova', type:'adapter' }, { name:'Codex', type:'adapter' },
     { name:'Gemini', type:'adapter' }, { name:'Claude', type:'adapter' }, { name:'Grok', type:'adapter' }, { name:'Guest', type:'human' }
@@ -72,10 +72,18 @@
     persist(); renderState(); renderLobbyJoin();
     syncSeatToServer(index).catch(function(error){$('status').textContent='LOBBY SYNC FAILED · '+error.message;});
   }
-  function toggleReady(index) {
+  async function toggleReady(index) {
     if (!party.slots[index] || party.slots[index].type === 'empty') return;
-    var at=readyOrder.indexOf(index); if(at>=0)readyOrder.splice(at,1); else readyOrder.push(index); persist(); renderState();
-    if(online)call('/seat/ready',{seat_id:'seat_'+(index+1),ready:readyOrder.indexOf(index)>=0}).catch(function(error){$('status').textContent='READY SYNC FAILED · '+error.message;});
+    var previousOrder=readyOrder.slice(), at=readyOrder.indexOf(index), nextReady=at<0; if(at>=0)readyOrder.splice(at,1); else readyOrder.push(index);
+    partySyncInFlight+=1; persist(); renderState();
+    try {
+      if(online)await call('/seat/ready',{seat_id:'seat_'+(index+1),ready:nextReady});
+    } catch(error) {
+      readyOrder=previousOrder;
+      $('status').textContent='READY SYNC FAILED · '+error.message;
+    } finally {
+      partySyncInFlight=Math.max(0,partySyncInFlight-1); persist(); renderState(); renderLobbyJoin();
+    }
   }
 
   function buildSeats() {
@@ -84,7 +92,7 @@
       var slot=party.slots[index], card=document.createElement('article'); card.className='seat'; card.id='seat'+index;
       card.innerHTML='<div class="seat-head"><b>SEAT '+(index+1)+'</b><span class="seat-state" id="seatState'+index+'">NOT READY</span></div>'+
         '<input id="seatName'+index+'" maxlength="30" aria-label="Seat '+(index+1)+' name" value="'+esc(slot.name)+'">'+
-        '<select id="seatType'+index+'" aria-label="Seat '+(index+1)+' type"><option value="empty"'+(slot.type==='empty'?' selected':'')+'>Empty / remove</option><option value="human"'+(slot.type==='human'?' selected':'')+'>Human</option><option value="adapter"'+(slot.type==='adapter'?' selected':'')+'>AI</option></select>'+
+        '<select id="seatType'+index+'" aria-label="Seat '+(index+1)+' type"><option value="empty"'+(slot.type==='empty'?' selected':'')+'>Empty / remove</option><option value="human"'+(slot.type==='human'?' selected':'')+'>Human</option><option value="adapter"'+(slot.type==='adapter'?' selected':'')+'>Connected AI</option><option value="ai"'+(slot.type==='ai'?' selected':'')+'>In-game AI</option></select>'+
         '<button id="seatReady'+index+'">Ready up</button>';
       box.appendChild(card);
       $('seatName'+index).oninput=function(){syncSlot(index);}; $('seatType'+index).onchange=function(){syncSlot(index);}; $('seatReady'+index).onclick=function(){toggleReady(index);};
@@ -100,7 +108,7 @@
   function gamePreviewUrl(lan) {
     var item=game(), join=item&&item.join||{}; if(!join.preview_path)return null;
     var host=lan&&runtimeHealth&&runtimeHealth.lan_addresses&&runtimeHealth.lan_addresses[0]&&runtimeHealth.lan_addresses[0].address||'127.0.0.1';
-    var port=join.preview_via_game_hub?(runtimeHealth&&runtimeHealth.port||8789):8788;
+    var port=join.preview_via_game_hub?(runtimeHealth&&runtimeHealth.port||8789):8790;
     return 'http://'+host+':'+port+join.preview_path;
   }
   function renderLobbyJoin() {
@@ -116,9 +124,10 @@
     });
   }
   async function pollLobbySeats() {
-    if(!online)return;
+    if(!online||partySyncInFlight||launchInFlight)return;
     try {
       var response=await call('/seats'), serverSeats=response.seats||[], next=[];
+      if(partySyncInFlight||launchInFlight)return;
       serverSeats.forEach(function(seat,index){if(seat.ready&&seat.type!=='empty')next.push({index:index,order:Number.isInteger(seat.ready_order)?seat.ready_order:999999});});
       next.sort(function(a,b){return a.order-b.order;}); var nextOrder=next.map(function(item){return item.index;});
       if(JSON.stringify(nextOrder)!==JSON.stringify(readyOrder)){readyOrder=nextOrder;persist();renderState();}
@@ -134,15 +143,15 @@
       var at=readyOrder.indexOf(i), card=$('seat'+i), state=$('seatState'+i), button=$('seatReady'+i), name=$('seatName'+i), empty=party.slots[i].type==='empty'; if(!card)continue;
       card.className='seat'+(empty?' empty':at>=0&&at<max?' ready':at>=max?' wait':'');
       state.textContent=empty?'EMPTY':at<0?'NOT READY':at<max?('PLAY '+(at+1)):('WAIT '+(at-max+1));
-      name.disabled=empty; button.disabled=empty; button.classList.toggle('on',!empty&&at>=0); button.textContent=empty?'Seat empty':at>=0?'Cancel ready':'Ready up';
+      name.disabled=empty||partySyncInFlight>0||launchInFlight; button.disabled=empty||partySyncInFlight>0||launchInFlight; button.classList.toggle('on',!empty&&at>=0); button.textContent=empty?'Seat empty':partySyncInFlight>0?'Syncing…':at>=0?'Cancel ready':'Ready up';
     }
     var selected=readyOrder.slice(0,max).map(function(index){return party.slots[index];}), allowed=(item&&item.allowed_seat_types)||['human','adapter','ai'];
     var invalid=selected.filter(function(slot){return allowed.indexOf(slot.type)<0;}), modeIssue=playModeIssue();
     var occupied=party.slots.slice(0,count).filter(function(slot){return slot.type!=='empty';}).length;
     $('partyCount').textContent=readyOrder.length+' READY · '+occupied+' OCCUPIED';
     $('matchLabel').textContent=invalid.length?'This game requires human seats':modeIssue||(selected.length>=min?selected.map(function(s){return s.name;}).join(item&&item.rules&&item.rules.team_mode==='coop'?' + ':' · '):('Ready at least '+min+' seat'+(min===1?'':'s')));
-    $('launch').disabled=!online||!item||selected.length<min||invalid.length>0||!!modeIssue;
-    $('launch').textContent=!online?'Start AXM Full to play':!item?'Choose a game':invalid.length?'Fix unsupported seats':modeIssue||(selected.length<min?('Ready '+min+' seat'+(min===1?'':'s')+' to launch'):('Launch '+item.name));
+    $('launch').disabled=!online||!item||partySyncInFlight>0||launchInFlight||selected.length<min||invalid.length>0||!!modeIssue;
+    $('launch').textContent=launchInFlight?'Starting…':partySyncInFlight>0?'Waiting for party sync…':!online?'Start AXM Full to play':!item?'Choose a game':invalid.length?'Fix unsupported seats':modeIssue||(selected.length<min?('Ready '+min+' seat'+(min===1?'':'s')+' to launch'):('Launch '+item.name));
     persist();
   }
 
@@ -222,17 +231,25 @@
   function renderGame() {
     var item=game(); if(!item)return;
     $('gameName').textContent=item.name; $('gameDescription').textContent=item.description||'Installed local game.';
-    var features=[item.min_players+'–'+item.max_players+' players']; if(item.join&&item.join.supports_qr)features.push('QR controllers'); if(item.controls&&item.controls.profile_id)features.push(item.controls.profile_id); if(item.rules&&item.rules.team_mode)features.push(item.rules.team_mode);
+    var features=[item.min_players+'–'+item.max_players+' players'], universal=item.controls&&item.controls.universal_gamepad; if(item.join&&item.join.supports_qr)features.push('QR controllers'); if(item.controls&&item.controls.profile_id)features.push(item.controls.profile_id); if(universal&&universal.status==='integrated')features.push('UNIVERSAL GAMEPAD'); else if(universal&&universal.required)features.push('UNIVERSAL GAMEPAD · MAPPING NEEDED'); if(item.rules&&item.rules.team_mode)features.push(item.rules.team_mode);
     $('gameChips').innerHTML=features.map(function(value){return '<span class="chip">'+esc(value)+'</span>';}).join('');
     renderPlayModes();
     var mode=playMode(), modeSeats=visibleSeats();
     $('partyTitle').textContent=modeSeats===8?'Eight visible seats':Number(item.max_players)===1?'One active seat · party stays registered':'Four visible seats';
     $('extraSeats').hidden=Number(item.max_players)<=4||playModes().length>0; $('extraSeats').textContent=extrasOpen?'Hide seats 5–8':'Show seats 5–8';
-    $('seatRule').textContent=mode&&mode.party_rule==='party-a-only'?'Story uses Party A seats 1–4. One human can play on this laptop; phones are optional.':mode&&mode.party_rule==='balanced-parties'?'House War uses equal teams: Party A seats 1–4 and Party B seats 5–8.':Number(item.max_players)>4?'Seats 1–4 are the default group. Seats 5–8 appear only by choice. A screen never occupies a seat.':'A screen never occupies a seat. A ready human gets a controller link; a ready AI gets the same declared action vocabulary.';
+    $('seatRule').textContent=mode&&mode.party_rule==='party-a-only'?'Story uses Party A seats 1–4. One human can play on this laptop; phones are optional.':mode&&mode.party_rule==='balanced-parties'?'House War uses equal teams: Party A seats 1–4 and Party B seats 5–8.':universal&&universal.status==='integrated'?'Universal Xbox/Brawl controls are active on the shared screen. Human seats use local gamepads; phones remain optional where supported.':universal&&universal.required?'Universal gamepad is the platform default for this shared-screen co-op game, but its game-specific action mapping is still pending.':Number(item.max_players)>4?'Seats 1–4 are the default group. Seats 5–8 appear only by choice. A screen never occupies a seat.':'A screen never occupies a seat. A ready human gets a controller link; a ready AI gets the same declared action vocabulary.';
     renderState();
   }
 
-  async function clearRunning() { try { var current=await call('/state'); if(current.state&&current.state.session&&current.state.session.phase==='RUNNING') await call('/game/end',{confirmed_finish:false,reflect:false,summary:{status:'replaced-by-next-game'}}); } catch(e){} }
+  async function clearRunning() {
+    var current=await call('/state'), session=current.state&&current.state.session;
+    if(!session||session.phase!=='RUNNING')return true;
+    var activeName=session.selected_game&&session.selected_game.name||'The current game';
+    var nextName=game()&&game().name||'the selected game';
+    if(!window.confirm(activeName+' is still running. End it and switch to '+nextName+'? Current match progress will be lost.'))return false;
+    await call('/game/end',{confirmed_finish:false,reflect:false,summary:{status:'replaced-by-next-game'}});
+    return true;
+  }
   async function submitParty() {
     for(var i=0;i<8;i++){
       await call('/seat/ready',{seat_id:'seat_'+(i+1),ready:false});
@@ -242,9 +259,10 @@
   }
   function withSession(url, launch) { if(!url)return null;if(/[?&]session=/.test(url))return url;return url+(url.indexOf('?')>=0?'&':'?')+'session='+encodeURIComponent(launch.session.session_id); }
   async function launch() {
-    var button=$('launch'), label=button.textContent; button.disabled=true; button.textContent='Starting…';
-    try { await clearRunning(); await submitParty(); lastLaunch=await call('/game/start',{game_id:selectedGameId,play_mode:selectedPlayMode}); showRoom(lastLaunch); $('status').textContent='ROOM '+lastLaunch.room_code+' · LIVE'; }
-    catch(error){$('status').textContent='LAUNCH FAILED · '+error.message;} finally {button.textContent=label;renderState();}
+    if(partySyncInFlight||launchInFlight)return;
+    launchInFlight=true; renderState();
+    try { if(!await clearRunning()){$('status').textContent='CURRENT GAME KEPT · LAUNCH CANCELLED';return;} await submitParty(); lastLaunch=await call('/game/start',{game_id:selectedGameId,play_mode:selectedPlayMode}); showRoom(lastLaunch); $('status').textContent='ROOM '+lastLaunch.room_code+' · LIVE'; }
+    catch(error){$('status').textContent='LAUNCH FAILED · '+error.message;} finally {launchInFlight=false;renderState();}
   }
   function qrInto(box,url,name){box.innerHTML='';if(url&&typeof qrcode==='function'){try{var code=qrcode(0,'M');code.addData(url);code.make();var img=document.createElement('img');img.alt='QR controller for '+name;img.src=code.createDataURL(5,3);box.appendChild(img);return;}catch(e){}}box.innerHTML='<span style="color:#111;font-size:10px;text-align:center">Wi-Fi link unavailable</span>';}
   function showRoom(launch) {

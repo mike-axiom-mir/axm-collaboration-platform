@@ -4,7 +4,7 @@
   "name": "Briarfront",
   "status": "EXPERIMENTAL",
   "description": "Experimental small-scale 2v2 forest bow battle with twin-stick phone controls, neutral mobs, and a shared 550 HP respawn jar per team.",
-  "version": "0.6-bow-experiment",
+  "version": "0.6.1-semantic-seat",
   "min_players": 4,
   "max_players": 4,
   "allowed_seat_types": ["human", "adapter", "ai"],
@@ -18,25 +18,52 @@
     "local_only_default": true
   },
   "join": {"supports_qr": true, "supports_lan_link": true, "supports_room_code": true, "room_code": "AXM1"},
-  "controls": {"phone_controller": true, "keyboard": false, "mouse": false, "touch": true},
+  "controls": {
+    "profile_id": "axm-briarfront-twin-stick-v1",
+    "intent_protocol": "axm-semantic-input-v1",
+    "adapter_observation": "axm-seat-screen-semantics-v1",
+    "phone_controller": true,
+    "keyboard": false,
+    "mouse": false,
+    "touch": true
+  },
   "session": {"passes_seat_map": true, "returns_result_summary": false, "drop_in_out_later": false},
-  "rules": {"no_hidden_players": true, "host_launch_required": true, "game_does_not_override_hub_seats": true, "team_mode": "2v2", "shared_health_jar": 550, "player_health": 100, "arrow_damage": 10, "critical_damage": 20, "quiver_size": 12},
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "human_and_adapter_same_input_gate": true,
+    "adapter_observation_is_seat_visible_only": true,
+    "team_mode": "2v2",
+    "shared_health_jar": 550,
+    "player_health": 100,
+    "arrow_damage": 10,
+    "critical_damage": 20,
+    "quiver_size": 12,
+    "outside_network_required": false
+  },
   "verification": {
     "game_night": {
       "schema": "axm.game-night-seams/v1",
       "controller_delivery": "shared-runtime",
-      "controller_evidence": ["runtime/briarfront-client.html"],
+      "runtime_metadata_endpoint": "/api/host/bootstrap",
+      "controller_evidence": ["runtime/briarfront-client.html", "runtime/briarfront-server.cjs", "briarfront-selftest.cjs"],
       "state_authority": "server",
       "host_reload_recovery": "game-hub-active-launch",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
-      "blocking_overlay_escape": "pending",
+      "disconnect_recovery": "verified",
+      "disconnect_recovery_scope": "1280x720 desktop player-one browser with four human seats: a leaf-only fault proxy severed and restored live transport while the production server stayed authoritative; the client visibly reported reconnecting, controller presence expired and recovered, state resynchronized, and a recovered control queued a small mob",
+      "disconnect_recovery_evidence": ["runtime/briarfront-client.html", "runtime/briarfront-server.cjs", "tests/disconnect-recovery-browser-harness.js", "tests/disconnect-recovery.test.js", "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"],
+      "blocking_overlay_escape": "not-applicable",
+      "blocking_overlay_escape_scope": "At 1280x720 desktop, the production shared-screen and player-one routes enter active play without a blocking overlay; one focused Escape leaves zero viewport blockers and preserves all five P1 controls. The preserved Grafthold source overlay is served only on the separate /source route.",
+      "blocking_overlay_escape_evidence": ["runtime/briarfront-client.html", "runtime/briarfront-server.cjs", "briarfront-selftest.cjs", "evidence/2026-08-16-no-blocking-overlay-local-renderer/RECEIPT.md"],
       "physical_phone_qa": "pending",
-      "adapter_state_interface": "pending"
+      "adapter_state_interface": "verified",
+      "adapter_state_evidence": ["ADAPTER_SEAT_CONTRACT.md", "runtime/seat-interface.cjs", "runtime/briarfront-server.cjs", "briarfront-selftest.cjs"]
     }
   },
   "package": {
-    "source_status": "preserved-source-plus-network-experiment",
-    "required_paths": ["README.md", "runtime/briarfront-server.cjs", "runtime/briarfront-client.html", "runtime/grafthold-source.html"]
+    "source_status": "preserved-source-plus-semantic-seat-network-experiment",
+    "required_paths": ["README.md", "ADAPTER_SEAT_CONTRACT.md", "runtime/briarfront-server.cjs", "runtime/seat-interface.cjs", "runtime/briarfront-client.html", "runtime/grafthold-source.html", "briarfront-selftest.cjs", "evidence/2026-08-16-no-blocking-overlay-local-renderer/RECEIPT.md"]
   }
 }

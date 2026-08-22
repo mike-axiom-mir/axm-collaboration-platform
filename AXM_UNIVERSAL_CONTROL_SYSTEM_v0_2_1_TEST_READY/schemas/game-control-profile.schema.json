@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/game-control-profile.schema.json",
+  "title": "AXM Game Control Profile",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "gameId",
+    "actions",
+    "phoneLayout",
+    "controllerLayout",
+    "contexts"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "gameId": {
+      "type": "string"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "required"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string"
+          },
+          "bindingOverrides": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "phoneLayout": {
+      "type": "object",
+      "required": [
+        "mode",
+        "twinStick"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "simple",
+            "standard",
+            "advanced",
+            "custom"
+          ]
+        },
+        "twinStick": {
+          "type": "boolean"
+        },
+        "preferredOrientation": {
+          "enum": [
+            "portrait",
+            "landscape",
+            "either"
+          ]
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "controllerLayout": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/controllerBinding"
+      }
+    },
+    "contexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "visibleLabel"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "visibleLabel": {
+            "type": "string"
+          },
+          "remap": {
+            "type": "object"
+          },
+          "allowedActions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "aimAssist": {
+      "type": "object"
+    },
+    "cameraAimSeparate": {
+      "type": "boolean"
+    }
+  },
+  "$defs": {
+    "controllerBinding": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "pattern": "^(leftStick|rightStick|dpad|south|east|west|north|leftBumper|rightBumper|leftTrigger|rightTrigger|view|menu|leftStickButton|rightStickButton|dpadUp|dpadDown|dpadLeft|dpadRight|home|button[0-9]+)$"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/controllerBinding"
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "control"
+          ],
+          "properties": {
+            "control": {
+              "$ref": "#/$defs/controllerBinding"
+            },
+            "gesture": {
+              "const": "release"
+            },
+            "threshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "releaseThreshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": true
+}

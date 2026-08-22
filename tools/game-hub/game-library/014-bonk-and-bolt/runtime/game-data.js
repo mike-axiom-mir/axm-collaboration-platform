@@ -4,7 +4,7 @@
   const DATA = {
     title: 'BONK & BOLT',
     subtitle: 'THE 24TH HOUR',
-    version: '1.0.0-first-edition',
+    version: '1.1.0-relay-test',
     classes: [
       {
         id: 'panzer',
@@ -135,7 +135,8 @@
       { id: 'sizzle-umbrella', name: 'Mara Marinade', race: 'human', role: 'Soup Umbrella Auditor', region: 'Sizzlebank', color: '#cf7f8d', home: [-55,-52], route: [[-55,-52],[-47,-56],[-42,-48]], favor: 'Test whether this umbrella protects soup from unexpected weather.', thanks: 'The soup remains legally dry on top.', reward: { type: 'ingredient', id: 'laughing-leek', amount: 1 } },
       { id: 'sizzle-ferry', name: 'Dock-3', race: 'robot', role: 'Thimble Ferry Dispatcher', region: 'Sizzlebank', color: '#68b8d2', home: [-43,-63], route: [[-43,-63],[-35,-58],[-48,-47]], favor: 'Authorize a ferry small enough to require passengers to be folded.', thanks: 'The thimble ferry departs whenever someone sneezes east.', reward: { type: 'bolts', amount: 1 } },
       { id: 'sizzle-spice', name: 'Fizz Parsley', race: 'toon', role: 'Runaway Spice Wrangler', region: 'Sizzlebank', color: '#6bc6a4', home: [-50,-45], route: [[-50,-45],[-42,-42],[-58,-60]], favor: 'Corner a paprika cloud before it seasons the river.', thanks: 'The paprika signed a one-bowl containment agreement.', reward: { type: 'ingredient', id: 'clock-salt', amount: 1 } },
-      { id: 'wobble-raincheck', name: 'Raincheck-4', race: 'robot', role: 'Forecast Umbrella Archivist', region: 'Wobblewoods', color: '#8fcf83', home: [76,-43], route: [[76,-43],[82,-49],[72,-55]], favor: 'Hold one brass umbrella open while it remembers whether tomorrow is indoors.', thanks: 'Tomorrow has been classified as partly outside with a chance of paperwork.', reward: { type: 'ingredient', id: 'argument-tuna', amount: 1 } }
+      { id: 'wobble-raincheck', name: 'Raincheck-4', race: 'robot', role: 'Forecast Umbrella Archivist', region: 'Wobblewoods', color: '#8fcf83', home: [76,-43], route: [[76,-43],[82,-49],[72,-55]], favor: 'Hold one brass umbrella open while it remembers whether tomorrow is indoors.', thanks: 'Tomorrow has been classified as partly outside with a chance of paperwork.', reward: { type: 'ingredient', id: 'argument-tuna', amount: 1 } },
+      { id: 'middle-mile', name: 'Mile-0', race: 'robot', role: 'Companion Distance Auditor', region: 'The Unreasonably Central Meadow', color: '#f0c663', home: [-6,5], route: [[-6,5],[-11,-2],[-2,-8],[7,-3],[6,7]], favor: 'Walk one ceremonial step beside the route lantern without calling it luggage.', thanks: 'The step has been certified as company rather than cargo.', reward: { type: 'bolts', amount: 1 } }
     ],
     gearCouncil: {
       id: 'contradiction-bench', name: 'Civic Contradiction Bench', region: 'Boltborough', at: [27,-52], clerk: 'Arbiter-0', requiredReports: 2,
@@ -193,6 +194,15 @@
         outcomes: {
           'warning-lattice': { title: 'Public Forecast Lattice Keeper', line: 'Every dangerous puddle now asks permission in gold before becoming damp. The village calls this radical transparency.' },
           'rainbow-shelters': { title: 'Rainbow Shelter Ranger', line: 'Defeated clouds leave dry color behind. I inspect every shelter for leaks, applause and unauthorized weather.' }
+        }
+      },
+      {
+        id: 'nightline-witness', questId: 'lantern-curfew', choiceId: 'nightline', witnessId: 'middle-mile', witness: 'Mile-0', readyStage: 2,
+        pendingAt: [-6,5], memoryOffset: [-7,-1], pendingTitle: 'Companion Route Witness',
+        pendingLine: 'The lantern crossed every gold gate because you stayed with it. The clock recorded speed; I recorded company.',
+        outcomes: {
+          'wide-gates': { title: 'Public Nightline Gate Keeper', line: 'Every rehearsal gate is wider now. A public route should teach the road, not punish the traveler for one crooked step.' },
+          'quiet-practice': { title: 'Wandering Lantern Escort', line: 'Nuisances keep their distance during a rehearsal. The lanterns call this hospitality; the crabs call it unfair zoning.' }
         }
       }
     ],
@@ -266,6 +276,37 @@
         ],
         reward: 'Permanent weather pact + Raincheck-4 witness',
         story: 'A missing forecast begins as an umbrella filing error, then reveals that Wobblewoods recorded the violet wrong-light long before the 24th Hour.'
+      },
+      {
+        id: 'lantern-curfew',
+        title: 'The Lantern That Missed Curfew',
+        giver: 'Lantern-8',
+        region: 'The Unreasonably Central Meadow',
+        choiceId: 'nightline',
+        stages: [
+          { text: 'Inspect the brass relay board and let its lost lantern choose your pace.', where: 'Central Meadow · gold relay board', target: 'interact:route-board' },
+          { text: 'Finish the Meadow Curfew Circuit by crossing every visible gate in order.', where: 'Central Meadow · follow the one bright gate', target: 'relayfinish:meadow-curfew' },
+          { text: 'Choose: widen the public gates or make every rehearsal a nuisance-free escort.', where: 'Central Meadow · Lantern-8', target: 'choice:nightline' }
+        ],
+        reward: 'Three permanent route rehearsals + saved personal bests',
+        story: 'A lost streetlamp refuses to be carried home. It will walk beside someone, but only if the road treats companionship as more important than speed.'
+      }
+    ],
+    routeTrials: [
+      {
+        id: 'meadow-curfew', title: 'Meadow Curfew Circuit', region: 'Central Meadow', color: '#ffd36b', parSeconds: 70,
+        description: 'A compact seven-gate companionship loop. The clock records a personal best but never fails the run.',
+        points: [[10,9],[16,0],[12,-12],[0,-17],[-13,-10],[-16,3],[-7,12],[0,8]]
+      },
+      {
+        id: 'two-town-nightline', title: 'Two-Town Nightline', region: 'Kettlewick + Sizzlebank', color: '#71d7cf', parSeconds: 210,
+        description: 'Carry one wandering light from the meadow to two settlements and back without skipping the road between them.',
+        points: [[-18,8],[-42,17],[-65,12],[-57,-18],[-52,-48],[-28,-33],[-10,-12],[0,8]]
+      },
+      {
+        id: 'vale-companion-tour', title: 'Vale Companion Tour', region: 'Five regions', color: '#a994ff', parSeconds: 430,
+        description: 'A full-valley mastery route through every named settlement. No failure state, consumable cost or reward grind.',
+        points: [[-29,12],[-62,18],[-52,-57],[8,-66],[69,-58],[65,28],[28,16],[0,8]]
       }
     ],
     adventureEncounters: [
@@ -444,10 +485,31 @@
             effects: { rainbowShelters: 1 }
           }
         ]
+      },
+      nightline: {
+        questId: 'lantern-curfew',
+        region: 'The Unreasonably Central Meadow',
+        memoryAt: { x: 13, z: 13 },
+        options: [
+          {
+            id: 'wide-gates', label: 'WIDEN THE PUBLIC NIGHTLINE', shortLabel: 'WIDE NIGHTLINE', visual: 'nightline-stations',
+            preview: 'Every route remains timed, but its visible checkpoints welcome a less exact approach.',
+            consequence: 'All three replayable route gates become 30% wider without changing their recorded clocks.',
+            memory: 'Eight brass stations now lean toward approaching travelers instead of grading their footwork.',
+            effects: { routeGateRadius: 1.3 }
+          },
+          {
+            id: 'quiet-practice', label: 'LET THE LANTERNS ESCORT REHEARSALS', shortLabel: 'QUIET ESCORT', visual: 'lantern-caravan',
+            preview: 'Practice routes become moving civic safe spaces while their clocks still record honest travel.',
+            consequence: 'Ordinary nuisances suspend aggression for the full duration of every active route rehearsal.',
+            memory: 'A caravan of small lamps now follows travelers and politely asks nearby nuisances to heckle later.',
+            effects: { routeSanctuary: 1 }
+          }
+        ]
       }
     },
     challenges: [
-      { id: 'robot-street-news', title: 'Minutes of Very Small Importance', text: 'Hear 5 robot witness reports after their adventures change', where: 'Kettlewick, Sizzlebank, Doodledean, Boltborough and Wobblewoods - gold report markers', event: 'aftermath', target: 'witness', amount: 5, reward: 'Five named robots carry your choices into the 24th Hour' },
+      { id: 'robot-street-news', title: 'Minutes of Very Small Importance', text: 'Hear 6 robot witness reports after their adventures change', where: 'Kettlewick, Sizzlebank, Doodledean, Boltborough, Wobblewoods and the Central Meadow - gold report markers', event: 'aftermath', target: 'witness', amount: 6, reward: 'Six named robots carry your choices into the 24th Hour' },
       { id: 'crab-accountant', title: 'Crab Accountant', text: 'Defeat 12 Hecklecrabs', where: 'Doodledean · crab amphitheater', event: 'kill', target: 'hecklecrab', amount: 12, reward: 'Siren Sue requirement' },
       { id: 'paper-trail', title: 'Paper Trail, Literally', text: 'Defeat 20 Hostile Paperwork', where: 'Kettlewick · north orchard and hall road', event: 'kill', target: 'paperwork', amount: 20, reward: 'Committee Hat gear choice' },
       { id: 'sustainable-fish', title: 'Put It Back, But Fancier', text: 'Release 4 caught fish into Wobble Pond', where: 'Wobblewoods · blue pond marker', event: 'release', target: 'fish', amount: 4, reward: 'Moss Boss requirement' },

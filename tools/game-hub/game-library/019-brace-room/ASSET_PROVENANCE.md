@@ -25,3 +25,29 @@ three CC0 sources Mike sourced separately are the first stop then — this
 file should be updated at that point with source, license, and retrieval
 records in the same format `008-district-party/game.manifest.json` uses
 for its Kenney pack pulls.
+
+## v0.6.5 procedural polish pass
+
+Still zero external assets — everything below is canvas 2D API calls
+(`createRadialGradient`, `shadowBlur`/`shadowColor`), no images, no fonts:
+
+- A soft radial gradient vignette behind the existing background grid, so
+  the play field reads as the lit center of a room instead of shapes on
+  flat black.
+- The hull gauge gained a dim full-circle track ring behind its colored
+  progress arc (previously the arc had no reference for "out of what"),
+  plus a glow in the same color as the arc.
+- Stations get a persistent soft glow (previously only idle stations
+  pulsed) and a subtle two-stop radial gradient fill instead of one flat
+  color.
+- Fault countdown rings, the effort-progress ring, and player tokens all
+  gained a matching-color glow (`shadowBlur`) for a more "powered/neon"
+  feel appropriate to the sci-fi UI already established by the palette.
+
+All of the above is explicitly skipped under high contrast (`theme-high-
+contrast`) — that mode's entire purpose is maximum legibility against pure
+black, and gradients/glow would work against it, so the high-contrast
+render path stays exactly as flat and maximum-contrast as before. Verified
+live via the `ai-seat-courier`, not just by reading the source — see
+`evidence/visual/05-visual-polish-glow-vignette-normal.png` and
+`06-visual-polish-high-contrast-unaffected.png`.

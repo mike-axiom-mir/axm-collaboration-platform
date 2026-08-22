@@ -1,0 +1,68 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "casino-registered-route-real-3d",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.render.browser-3d",
+        "visual.capture.live",
+        "visual.compare.frames"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.render.browser-3d": [
+          "Chromium WebGL render observed through the in-app Browser"
+        ],
+        "visual.capture.live": [
+          "Full-tab screenshots at a 1280x720 viewport"
+        ],
+        "visual.compare.frames": [
+          "Repeated screenshots and SHA-256 comparison"
+        ]
+      }
+    },
+    {
+      "id": "casino-exact-motion-cadence",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "visual.capture.ephemeral-rolling-buffer/v1"
+      ],
+      "declaredConstraints": {
+        "visual.capture.ephemeral-rolling-buffer/v1": [
+          "No rolling-frame buffer was exposed by the active Browser capability"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "visual.capture.ephemeral-rolling-buffer/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "visual.capture.ephemeral-rolling-buffer/v1",
+      "requiredBy": [
+        "casino-exact-motion-cadence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

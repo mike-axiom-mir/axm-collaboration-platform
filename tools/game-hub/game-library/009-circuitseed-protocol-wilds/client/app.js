@@ -89,8 +89,28 @@
     return false;
   }
 
+  const ESCAPE_CLOSE_ORDER = Object.freeze(['menuPanel', 'profilePanel', 'settingsPanel', 'workbenchPanel', 'discoveryReveal']);
+  const SESSION_BOUND_BLOCKERS = Object.freeze(['starterPanel', 'encounterPanel']);
+
   function openPanel(id) { $('#' + id).classList.remove('hidden'); }
   function closePanel(id) { $('#' + id).classList.add('hidden'); }
+  function panelIsOpen(id) {
+    const panel = $('#' + id);
+    return Boolean(panel && !panel.classList.contains('hidden'));
+  }
+  function dismissTopOverlay() {
+    const panelId = ESCAPE_CLOSE_ORDER.find(panelIsOpen);
+    if (!panelId) return false;
+    closePanel(panelId);
+    return true;
+  }
+  function handleEscape() {
+    app.keys.clear();
+    if (dismissTopOverlay()) return;
+    // Authoritative encounters and the first Circuitkin choice cannot be
+    // discarded client-side. The journey menu supplies their safe exit path.
+    if (app.running || SESSION_BOUND_BLOCKERS.some(panelIsOpen)) openPanel('menuPanel');
+  }
   function toast(message, tone = 'normal') {
     const element = $('#eventToast');
     element.textContent = message;
@@ -1093,7 +1113,12 @@
 
   function frame(now) {
     const delta = Math.min(50, now - app.lastFrame); app.lastFrame = now; app.time += delta;
-    if (app.titleMode || !app.observation) drawTitle(app.time);
+    const titleMode = app.titleMode || !app.observation;
+    window.CircuitseedThree?.render(titleMode ? null : app.observation, app.time, {
+      titleMode,
+      reducedMotion: app.settings.reducedMotion
+    });
+    if (titleMode) drawTitle(app.time);
     else { drawWorld(app.observation, app.time); drawMiniMap(app.observation, app.time); }
     requestAnimationFrame(frame);
   }
@@ -1101,6 +1126,7 @@
   window.addEventListener('resize', resize);
   window.addEventListener('keydown', event => {
     const key = event.key.toLowerCase();
+    if (key === 'escape' && !event.repeat) { event.preventDefault(); handleEscape(); return; }
     if (['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(key)) { app.keys.add(key); event.preventDefault(); }
     if (key === 'e' && !event.repeat) {
       if (app.nearby?.kind === 'workbench' || app.nearby?.kind === 'stall') openWorkbenchTab(app.nearby.kind === 'stall' ? 'businessTab' : 'craftTab');
@@ -1111,7 +1137,6 @@
     if (key === 'r' && !event.repeat) pulse('recover');
     if (key === 'j' && !event.repeat) openWorkbenchTab('journalTab');
     if (key === 'b' && !event.repeat) openWorkbenchTab('requestsTab');
-    if (key === 'escape') openPanel('menuPanel');
   });
   window.addEventListener('keyup', event => app.keys.delete(event.key.toLowerCase()));
   window.addEventListener('blur', () => app.keys.clear());

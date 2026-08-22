@@ -78,7 +78,10 @@ a fresh full epoch from the same private session seed.
 - Base slot RTP: 96% per complete style book; jackpot sits outside base RTP.
 - Human/player paid contribution: 5% of wager from the receiving house.
 - NPC paid contribution: 1% of wager from the receiving house.
-- Human/player jackpot chance: exactly 1% of a full neutral 50K epoch.
+- Human/player jackpot ticket frequency: exactly 1% of a full neutral 50K epoch.
+- Human jackpot payment eligibility becomes ready after 30 shared paid human
+  spins and resets after a paid hit; an early matching ticket remains visible
+  in the settled receipt but does not drain the progressive.
 - NPC jackpot chance: exactly 0.05% of a full neutral 50K epoch.
 - Maximum jackpot payment: 100× that spin's wager.
 - Any unpaid pool remainder stays for a later winner.

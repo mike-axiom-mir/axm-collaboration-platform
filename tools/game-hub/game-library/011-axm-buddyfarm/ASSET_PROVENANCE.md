@@ -2,6 +2,12 @@
 
 BuddyFarm v0.2.0 contains no downloaded or extracted game assets.
 
+The v0.3.0 TEST visual layer in `runtime/buddyfarm-three.js` builds its terrain,
+house, plots, crops, furniture, cellar and Buddy figures procedurally from
+Three.js primitives. It introduces no image, model or texture assets and does
+not alter authoritative farm state. The Workshop-retained Three.js r160 module
+is served locally; its MIT notice is recorded in `THIRD_PARTY_SOFTWARE.md`.
+
 The grass, house, soil, crops, furniture, cellar, signs, player placeholders
 and interface are drawn deterministically by the local JavaScript/CSS source in
 this game folder. They were authored for AXM BuddyFarm and may be replaced

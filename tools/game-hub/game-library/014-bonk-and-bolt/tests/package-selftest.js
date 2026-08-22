@@ -15,9 +15,23 @@ const systems = read('runtime/systems.js');
 const motion = read('runtime/motion-system.js');
 const coopCamera = read('runtime/coop-camera.js');
 const heroRig = read('runtime/hero-rig-contract.js');
+const gamepad = require('../runtime/universal-gamepad.js');
 const launcher = read('START_BONK_AND_BOLT.ps1');
 let checks = 0;
 const ok = (condition, message) => { assert.ok(condition, message); checks += 1; };
+const standardPad = (overrides = {}) => {
+  const buttons = Array.from({ length: 16 }, () => ({ pressed: false, value: 0 }));
+  Object.entries(overrides.buttons || {}).forEach(([index, value]) => {
+    buttons[Number(index)] = { pressed: Number(value) >= .5, value: Number(value) };
+  });
+  return {
+    id: overrides.id || 'TEST STANDARD PAD',
+    index: Number(overrides.index || 0),
+    mapping: overrides.mapping == null ? 'standard' : overrides.mapping,
+    axes: overrides.axes || [0, 0, 0, 0],
+    buttons
+  };
+};
 
 ok(manifest.slot === '014' && manifest.launch.port === 8814, 'separate slot and isolated port are fixed');
 ok(launcher.includes("gameId -eq '014-bonk-and-bolt'") && launcher.includes('-WindowStyle Hidden'), 'launcher waits for its own hidden local server');
@@ -25,6 +39,19 @@ ok(manifest.min_players === 1 && manifest.max_players === 2, 'manifest exposes s
 ok(manifest.rules.runtime_internet_required === false, 'runtime is offline');
 ok(manifest.rules.no_away_pressure === true, 'away pressure is forbidden by contract');
 ok(manifest.rules.no_consumable_combat_upgrades === true, 'short consumable combat upgrades are forbidden by contract');
+ok(gamepad.PROFILE_ID === 'axm-universal-xbox-brawl-v0.2.1' && manifest.controls.gamepad_profile === gamepad.PROFILE_ID, 'manifest and runtime share the universal Xbox/Brawl profile');
+ok(gamepad.sampleStandardGamepad(null).connected === false && gamepad.sampleStandardGamepad(standardPad({ mapping: '' })).supported === false, 'missing and non-standard pads fail visibly without inventing input');
+const stick = gamepad.sampleStandardGamepad(standardPad({ axes: [.7, -.8, 0, 0] }));
+ok(stick.moveX === .7 && stick.moveY === -.8, 'left stick supplies two-axis movement beyond the dead zone');
+const dpad = gamepad.sampleStandardGamepad(standardPad({ axes: [.7, .8, 0, 0], buttons: { 12: 1, 14: 1 } }));
+ok(dpad.moveX === -1 && dpad.moveY === -1, 'D-pad movement overrides the left stick');
+const quiet = gamepad.sampleStandardGamepad(standardPad({ axes: [.1, -.1, 0, 0] }));
+ok(quiet.moveX === 0 && quiet.moveY === 0, 'controller dead zone rejects drift');
+const actions = gamepad.sampleStandardGamepad(standardPad({ buttons: { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 8: 1, 9: 1 } }));
+ok(actions.primaryEdge && actions.dodgeEdge && actions.specialEdge && actions.interactEdge && actions.partnerEdge && actions.mapEdge && actions.menuEdge, 'A/B/X/Y/LB/View/Menu expose one-shot semantic edges');
+const held = gamepad.sampleStandardGamepad(standardPad({ buttons: { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 8: 1, 9: 1 } }), actions);
+ok(!held.primaryEdge && !held.dodgeEdge && !held.specialEdge && !held.interactEdge && !held.partnerEdge && !held.mapEdge && !held.menuEdge, 'held buttons do not retrigger semantic actions every frame');
+ok(gamepad.sampleStandardGamepad(standardPad({ buttons: { 7: .7 } })).primaryEdge, 'right trigger mirrors the universal primary action');
 ok(html.includes('type="module" src="app.js"') && app.includes("from './vendor/three.module.js'"), 'real Three.js module drives the world');
 ok(html.includes('<script src="motion-system.js"></script>') && motion.includes('MOTION_PROFILES') && motion.includes('function sample'), 'deterministic hero motion contract loads before the Three.js renderer');
 ok(html.includes('<script src="coop-camera.js"></script>') && coopCamera.includes('function constrainDelta') && coopCamera.includes('function frame'), 'deterministic co-op covenant loads before the Three.js renderer');
@@ -39,7 +66,11 @@ ok(app.includes("beginHeroMotion(actor,'attack')") && app.includes("beginHeroMot
 ok(app.includes("QA_STEWARD==='attack-language'") && app.includes("['panzer','pun-slinger','gear-shepherd']") && app.includes('QA_COOP'), 'local verification can stage every class and shared-screen player two');
 ok(app.includes("phase:'reduced-cue'") === false && motion.includes("phase: 'reduced-cue'") && app.includes('const bounce=reducedMotion?0'), 'reduced motion disables locomotion bounce and uses the static tested cue contract');
 ok(app.includes('PerspectiveCamera(42') && app.includes('camera.lookAt'), 'elevated perspective action camera exists');
-ok(app.includes("keys.ArrowUp") && app.includes("gamepadMove") && app.includes("attack(player2,true)"), 'second player has keyboard and gamepad paths');
+ok(app.includes("keys.ArrowUp") && app.includes("gamepadMoveP1") && app.includes("gamepadMoveP2") && app.includes("attack(player2,true)"), 'both players have keyboard and stable-index gamepad paths');
+ok(html.includes('<script src="universal-gamepad.js"></script>') && app.includes('Gamepad.sampleStandardGamepad') && app.includes("Gamepad.PROFILE_ID"), 'the tested universal mapper loads before the renderer and drives the live polling path');
+ok(app.includes("QA_GAMEPAD") && html.includes('TEST GAMEPAD SIMULATION') && html.includes('not physical-device evidence'), 'a visible labeled browser harness distinguishes simulation from physical-device QA');
+ok(app.includes("sample.menuEdge") && app.includes('toggleGamepadMenu') && app.includes('syncGamepadStatus'), 'Menu, disconnect, unsupported mapping and seat readiness remain visible in the runtime');
+ok(app.includes("currentActivity===UI.fishModal&&fishState") && app.includes("next.some(entry=>entry.supported&&entry.primary)"), 'disconnecting a held primary action releases the fishing input instead of leaving it stuck');
 ok(app.includes('resolvePlayerMove(hero') && app.includes('resolvePlayerMove(player2') && app.includes('CoopCamera.constrainDelta'), 'both players share the symmetric outward movement covenant');
 ok(app.includes('REGROUP · OUTWARD EDGE HELD') && app.includes('updateCoopGuide') && app.includes("QA_STEWARD==='coop-camera'"), 'shared-screen distance, visible tether and focused QA state are player-facing');
 ok(app.includes('function openCook') && app.includes('function updateFishing'), 'cooking and fishing are interactive');
@@ -58,11 +89,19 @@ ok(app.includes("QA_STEWARD==='forecast-rule'") && app.includes("existing.world.
 ok(app.includes("activeAdventureEncounter?.definition.kind==='getaway'") && app.includes('range+encounterReach') && app.includes("facingThreshold=encounterReach?-.2:.15"), 'tiny fleeing plate thieves receive narrow encounter-only reach and facing forgiveness');
 ok(app.includes('S.beginEncounter(save,definition)') && app.includes('S.winEncounter(save,definition)') && app.includes("progressQuests('encounter',definition.id,1)"), 'set-piece attempts, wins and quest advancement reach durable systems');
 ok(app.includes("if(won)progressQuests('cookwin',recipe.id,1)") && data.includes("target: 'cookwin:gossip-chowder'"), 'the river story advances only when Gossip Chowder wins its named cook-off');
-ok(app.includes("'encounter-lunch','encounter-shadow','encounter-brain','encounter-forecast'") && app.includes("QA_STEWARD==='encounter-river'"), 'focused local routes expose all five authored adventure gates');
-ok(data.includes('adventureAftermaths:') && data.includes("id: 'passport-witness'") && data.includes("id: 'river-witness'") && data.includes("id: 'shadow-witness'") && data.includes("id: 'identity-witness'") && data.includes("id: 'forecast-witness'"), 'all five adventures declare a named robot-witness aftermath');
+ok(app.includes("'encounter-lunch','encounter-shadow','encounter-brain','encounter-forecast'") && app.includes("QA_STEWARD==='encounter-river'"), 'focused local routes expose all five pre-existing authored adventure gates');
+ok(data.includes('routeTrials:') && data.includes("id: 'meadow-curfew'") && data.includes("id: 'two-town-nightline'") && data.includes("id: 'vale-companion-tour'"), 'the sixth adventure declares three authored replayable 3D courses');
+ok(systems.includes('function beginRouteTrial') && systems.includes('function advanceRouteTrial') && systems.includes('function abandonRouteTrial') && systems.includes('bestSeconds'), 'route attempts, ordered completion, non-failure exits and personal bests reach durable systems state');
+ok(app.includes('function buildRouteTrials') && app.includes("makeInteractable('route-board'") && app.includes('function updateRouteTrial'), 'the relay board, visible gates and walking companion exist in the 3D world');
+ok(app.includes("progressQuests('relayfinish',definition.id,1)") && data.includes("target: 'relayfinish:meadow-curfew'"), 'finishing the first real route advances the authored lantern adventure');
+ok(app.includes('routeGateRadius') && app.includes('routeSanctuary') && app.includes('routeSanctuary=Boolean'), 'both lantern decisions change live route geometry or enemy behavior');
+ok(app.includes('function renderRouteMapMarkers') && app.includes('NEXT GATE ') && app.includes('function syncRouteTrialDataset'), 'active route state is readable on the map, HUD and deterministic live-verification dataset');
+ok(app.includes("QA_STEWARD==='route-trial'") && app.includes("S.beginRouteTrial(existing,definition)"), 'a focused reload-safe route stages the active 3D course without unrelated enemies');
+ok(app.includes('reducedMotion?0:Math.sin(time*2.8') && app.includes('routeTrialWorld.companion.position.y=reducedMotion?0'), 'reduced motion freezes route-gate drift and companion bounce without stopping the course clock');
+ok(data.includes('adventureAftermaths:') && data.includes("id: 'passport-witness'") && data.includes("id: 'river-witness'") && data.includes("id: 'shadow-witness'") && data.includes("id: 'identity-witness'") && data.includes("id: 'forecast-witness'") && data.includes("id: 'nightline-witness'"), 'all six adventures declare a named robot-witness aftermath');
 ok(systems.includes('function aftermathStatus') && systems.includes('function hearAftermath') && systems.includes('versionsHeard'), 'public robot reports have saved availability, evolving-version and repeat-safe contracts');
 ok(app.includes('function placeAdventureWitnesses') && app.includes('function updateAdventureWitness') && app.includes("it.kind=reportMode?'aftermath':'favor'"), 'robot witnesses physically leave ordinary routines for visible report shifts without deleting their town favors');
-ok(app.includes("else if(it.kind==='aftermath'") && app.includes("recordChallenge(save,'aftermath','witness'") && data.includes("id: 'robot-street-news'"), 'hearing a report reaches dialogue, persistence and one exact five-region challenge');
+ok(app.includes("else if(it.kind==='aftermath'") && app.includes("recordChallenge(save,'aftermath','witness'") && data.includes("id: 'robot-street-news'"), 'hearing a report reaches dialogue, persistence and one exact six-region challenge');
 ok(app.includes('function renderAftermathMapMarkers') && app.includes("marker.textContent='REPORT: '+aftermath.witness"), 'unheard current report versions are plainly marked on the world map');
 ok(app.includes('function namedVillageWitnesses') && app.includes('r.userData.aftermathWitness') && app.includes('carried your adventure choices into the village team'), 'heard named witnesses physically carry side-adventure memory into the 24th-Hour robot team');
 ok(app.includes("['aftermath','aftermath-finale'].includes(QA_STEWARD)") && app.includes("QA_STEWARD==='aftermath-finale'"), 'focused local routes expose reloadable aftermath reports and their named 24th-Hour team handoff');
@@ -74,7 +113,7 @@ ok(app.includes('startProgress=attempt.assisted') && app.includes('spotlightRadi
 ok(app.includes('function reboundSharedEncounter') && app.includes('1 / 2 KNOCKOUTS'), 'local co-op keeps the encounter through one partner knockout and loses on the second shared knockout');
 ok(app.includes("QA_STEWARD==='recovery-loss'") && app.includes('qaRecoveryStaged'), 'a focused local route preserves the actual loss-and-recovery ledger across reloads');
 ok(app.includes('claimPondHarvest') && app.includes('syncPondMemories') && app.includes('PERMANENT FISHING ECOLOGY'), 'pond restoration has visible persistent ecology and a daily output loop');
-ok(app.includes('activitySanctuary') && app.includes("['fish','cook','pet','memory','origin-echo','origin-parade']"), 'thoughtful activity, saved-memory, origin-return and moving civic sites suspend nearby enemy aggression');
+ok(app.includes('activitySanctuary') && app.includes("['fish','cook','pet','memory','origin-echo','origin-parade']") && app.includes('routeSanctuary'), 'thoughtful activity, saved-memory, origin-return and the chosen route sanctuary suspend enemy aggression');
 ok(app.includes("mealActive(save,'sunberry-pie')") && app.includes("mealActive(save,'moon-noodles')") && data.includes('hybrid: true'), 'recipe descriptions connect to runtime consequences and hybrid drops');
 ok(app.includes('S.retuneGear') && app.includes('ACTIVE MECHANIC:') && app.includes('LIVE DRAWBACK:'), 'inventory exposes real branch manipulation and explicit consequences');
 ok(app.includes('breakfastCrit') && app.includes('breadChains') && app.includes('dodgeRescue') && app.includes('recruitHits'), 'equipment branches reach distinct live combat behaviors');
@@ -113,7 +152,7 @@ ok(systems.includes('function applyStoryChoice') && systems.includes('function s
 ok(app.includes('function buildStoryMemory') && app.includes('function syncStoryConsequences') && app.includes("makeInteractable('memory'"), 'completed choices build interactive persistent 3D world memories');
 ok(app.includes("else if(it.kind==='memory')openWorldMemory") && app.includes('WORLD REMEMBERS:'), 'world memories are revisitable through play and the adventure journal');
 ok(app.includes("stage?.target.startsWith('choice:')") && app.includes("stage.target.split(':')[1]"), 'a reloaded final decision can be reopened through its visible quest giver');
-ok(app.includes('story.riverSpeed') && app.includes('storyAggro') && app.includes('storyDamage') && app.includes('petDamageTaken') && app.includes('S.storyEffects(save,D.storyChoices).cookZone') && app.includes('puddleWarning') && app.includes('spawnRainbowShelter'), 'story branches connect to movement, aggro, companion combat, cooking and two executable weather rules');
+ok(app.includes('story.riverSpeed') && app.includes('storyAggro') && app.includes('storyDamage') && app.includes('petDamageTaken') && app.includes('S.storyEffects(save,D.storyChoices).cookZone') && app.includes('puddleWarning') && app.includes('spawnRainbowShelter') && app.includes('routeGateRadius') && app.includes('routeSanctuary'), 'story branches connect to movement, aggro, companion combat, cooking, weather and two executable route rules');
 ok(app.includes('storyChoices:D.storyChoices') && app.includes("QA_STEWARD==='story'"), 'fishing, saved-play cooldowns and deterministic story verification receive the story contract');
 ok(css.includes('.thread-card.remembered') && css.includes('.memory-note') && css.includes('.story-options em'), 'story consequences receive dedicated journal, map and decision styling');
 ok(app.includes('function startFinale') && app.includes('finishFinale(true)') && app.includes('finishFinale(false)'), 'finale has explicit win and loss outcomes');
@@ -128,7 +167,7 @@ ok(app.includes('percent+\'% VISITOR INTEGRITY') && app.includes('robots are dea
 ok(data.includes('behavior: { kind: \'heckle\'') && data.includes("kind: 'form'") && data.includes("kind: 'puddle'") && data.includes("kind: 'dash'") && data.includes("kind: 'steal'"), 'all five nuisance species declare different comedy encounter mechanics');
 ok(app.includes('function updateEnemyComedy') && app.includes('function spawnEnemyForm') && app.includes('function spawnMoodPuddle'), 'telegraphed enemy behavior reaches live ranged, area, dash, heckle and theft paths');
 ok(app.includes('function spawnDefeatGag') && app.includes('function cheerNearbyCitizens') && app.includes('GOOSE REFUND PROCESSED'), 'ordinary wins leave species-specific sight gags, witnesses and recoverable stolen currency');
-ok(data.includes('villageLife:') && data.includes('Raincheck-4') && app.includes('function buildVillageLife') && app.includes('function updateVillageRoutine'), 'thirteen authored citizens extend live day/night and panic routines into Wobblewoods');
+ok(data.includes('villageLife:') && data.includes('Raincheck-4') && data.includes('Mile-0') && app.includes('function buildVillageLife') && app.includes('function updateVillageRoutine'), 'fourteen authored citizens extend live day/night and panic routines into Wobblewoods and the Central Meadow');
 ok(app.includes("else if(it.kind==='favor')") && systems.includes('function completeVillageFavor'), 'ambient town favors are playable, saved and reward useful materials once');
 ok(app.includes('worldLamps.forEach') && app.includes("routine.status='OFF DUTY · PRETENDING TO SLEEP'"), 'night lighting and visible off-duty schedules share the live world clock');
 ok(app.includes("QA_STEWARD==='combat'") && app.includes("QA_STEWARD==='combat-refund'") && app.includes("'combat','combat-refund','village','village-night'"), 'deterministic local routes expose comedy combat, goose restitution and day/night village life');

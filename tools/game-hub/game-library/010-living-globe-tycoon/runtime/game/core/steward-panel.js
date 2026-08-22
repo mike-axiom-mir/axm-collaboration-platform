@@ -34,7 +34,7 @@
     if (!bridge) throw new TypeError('steward bridge required');
     var toggle = element('button', '', 'Palace');
     toggle.id = 'axmStewardToggle'; toggle.type = 'button'; toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-controls', 'axmStewardPanel');
-    var panel = element('aside', 'axm-steward-panel'); panel.id = 'axmStewardPanel'; panel.setAttribute('aria-label', 'Living Globe palace stewardship console');
+    var panel = element('aside', 'axm-steward-panel'); panel.id = 'axmStewardPanel'; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-hidden', 'true'); panel.setAttribute('aria-label', 'Living Globe palace stewardship console');
     panel.innerHTML = '' +
       '<div class="axm-steward-head"><div><h2>PALACE OF STEWARDSHIP</h2><p>living island experiment · v0.10 shared brief + palace errands + deep economy</p></div><button class="axm-steward-close" type="button" aria-label="Close palace console">close</button></div>' +
       '<div class="axm-truth-line">FICTIONAL SATIRE · WORLD-OWNED STATE · HUMAN CHOICES · NOTHING ADVANCES BY ITSELF</div>' +
@@ -260,9 +260,19 @@
       setStatus((result && result.errors || ['Action refused.']).join(' · '), true); render(); return false;
     }
 
+    var closeButton = panel.querySelector('.axm-steward-close');
     function announceOpen() { try { root.dispatchEvent(new CustomEvent('axm-palace-open')); } catch (error) {} }
-    toggle.addEventListener('click', function (event) { event.stopPropagation(); var open = !panel.classList.contains('open'); panel.classList.toggle('open', open); document.body.classList.toggle('axm-palace-open', open); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); if (open) { announceOpen(); bridge.syncNativeObservation(); render(); } });
-    panel.querySelector('.axm-steward-close').addEventListener('click', function () { panel.classList.remove('open'); document.body.classList.remove('axm-palace-open'); toggle.setAttribute('aria-expanded', 'false'); toggle.focus(); });
+    function open(syncNative) {
+      announceOpen(); panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); document.body.classList.add('axm-palace-open'); toggle.setAttribute('aria-expanded', 'true');
+      if (syncNative) bridge.syncNativeObservation(); render(); closeButton.focus();
+    }
+    function close(focusToggle) {
+      panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); document.body.classList.remove('axm-palace-open'); toggle.setAttribute('aria-expanded', 'false');
+      if (focusToggle) toggle.focus();
+    }
+    toggle.addEventListener('click', function (event) { event.stopPropagation(); if (panel.classList.contains('open')) close(true); else open(true); });
+    closeButton.addEventListener('click', function () { close(true); });
+    root.addEventListener('keydown', function (event) { if (event.key === 'Escape' && panel.classList.contains('open')) { event.preventDefault(); close(true); } });
     ['pointerdown','pointerup','click','wheel','touchstart'].forEach(function (name) { panel.addEventListener(name, function (event) { event.stopPropagation(); }, { passive: name === 'wheel' || name === 'touchstart' }); });
     ids.axmOperation.addEventListener('change', showOperationFields);
     ids.axmDistrict.addEventListener('change', function () { if (ids.axmRoadTo.value === ids.axmDistrict.value) ids.axmRoadTo.selectedIndex = (ids.axmDistrict.selectedIndex + 1) % ids.axmRoadTo.options.length; });
@@ -294,7 +304,7 @@
     });
 
     render();
-    return { refresh: render, open: function () { announceOpen(); panel.classList.add('open'); document.body.classList.add('axm-palace-open'); toggle.setAttribute('aria-expanded', 'true'); render(); }, close: function () { panel.classList.remove('open'); document.body.classList.remove('axm-palace-open'); toggle.setAttribute('aria-expanded', 'false'); } };
+    return { refresh: render, open: function () { open(false); }, close: function () { close(false); }, isOpen: function () { return panel.classList.contains('open'); } };
   }
 
   root.AXMGlobeStewardPanel = { mount: mount };

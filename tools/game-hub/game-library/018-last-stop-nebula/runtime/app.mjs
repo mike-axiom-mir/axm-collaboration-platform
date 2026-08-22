@@ -4,6 +4,7 @@ import {
   STARTING_DEBT,
   RUN_MODES,
   LANE_DEFS,
+  DISPATCHES,
   UPGRADES,
   EVENTS,
   createNewGame,
@@ -18,6 +19,7 @@ import {
   chooseEvent,
   decisionLegacy,
   debtLiberation,
+  dispatchStatus,
   tickGame,
   queueSummary,
   queueConstellation,
@@ -53,7 +55,7 @@ const UI = {};
   'title-highscore','title-highscore-mode','setup-screen','setup-close','mode-grid','sign-contract-button','intro-screen',
   'story-kicker','story-title','story-copy','story-quote','story-progress','story-next','skip-intro','hud','day-value','total-days',
   'day-block','clock-value','shift-phase','retirement-progress','credits-value','debt-stat','debt-stage','debt-value','debt-line','debt-phase','debt-meter','debt-line-value','reviews-value','review-progress','review-stat','camera-button',
-  'upgrade-button','upgrade-ready','sound-button','pause-button','mission-panel','pressure-title','pressure-copy','pressure-action','arrival-line','arrival-label','arrival-meter','arrival-eta','demand-label','demand-meter',
+  'upgrade-button','upgrade-ready','sound-button','pause-button','mission-panel','pressure-title','pressure-copy','pressure-action','dispatch-line','dispatch-phase','dispatch-title','dispatch-copy','dispatch-meter','dispatch-progress','dispatch-timer','dispatch-marks','arrival-line','arrival-label','arrival-meter','arrival-eta','demand-label','demand-meter',
   'queue-total','served-total','fuel-value','fuel-capacity','fuel-progress','leak-indicator','buy-fuel-button','stock-value',
   'stock-capacity','stock-progress','buy-stock-button','energy-value','energy-capacity','energy-progress','rest-button','rest-status',
   'morale-progress','morale-value','camera-dock','lane-dock','upgrade-panel','upgrade-close','upgrade-cash','upgrade-count',
@@ -120,6 +122,7 @@ let lastSceneSync = 0;
 let lastSavedAt = 0;
 let lastSavedDay = 0;
 let lastHandledAction = null;
+let lastDispatchRevision = 0;
 let cameraIndex = 0;
 const cameraOrder = ['forecourt', 'mart', 'engineering', 'vista'];
 const graphicsOrder = ['cinematic', 'balanced', 'eco'];
@@ -536,6 +539,7 @@ function startGameplay(continuing = false) {
   scene.syncState(state);
   lastFrame = performance.now();
   lastSavedDay = state.day;
+  lastDispatchRevision = state.dispatch?.revision || 0;
   renderAll();
   if (continuing) toast('SHIFT RESTORED', `Day ${state.day}. The queues kept your place.`, 'upgrade');
   else {
@@ -930,6 +934,26 @@ function handleCoreAction(action) {
   }
 }
 
+function handleDispatchOutcome() {
+  if (!state?.dispatch || state.dispatch.revision === lastDispatchRevision) return;
+  lastDispatchRevision = state.dispatch.revision;
+  const dispatch = dispatchStatus(state);
+  const result = state.dispatch.lastResult;
+  if (result?.status === 'completed') {
+    sound.tone(520, .32, 'triangle', .055, 920);
+    scene.flashDispatch('completed');
+    announce('SIGNAL DISPATCH CAPTURED', `+${result.marks} MARKS · ${dispatch.streak} STREAK`);
+    toast('DISPATCH CAPTURED', `${dispatch.title} · +${result.marks} signal marks`, 'upgrade');
+  } else if (result?.status === 'failed') {
+    sound.tone(180, .28, 'sawtooth', .035, 120);
+    scene.flashDispatch('failed');
+    toast('DISPATCH SIGNAL LOST', 'The station survives. A new objective arrives in a few seconds.', 'bad');
+  } else if (result?.status === 'rotated') {
+    sound.tone(360, .16, 'sine', .035, 610);
+    toast('NEW SIGNAL DISPATCH', `${dispatch.title} · ${dispatch.goal} target · +${dispatch.marksReward} marks`);
+  }
+}
+
 function dayAnnouncement(day) {
   const progress = day / state.totalDays;
   if (day === state.totalDays) return 'RETIREMENT SHUTTLE INBOUND';
@@ -984,8 +1008,10 @@ function finishRun() {
   UI.resultCapture.textContent = `${lastRunSummary.captureRate}%`;
   UI.resultAutomation.textContent = `${lastRunSummary.automatedShare}%`;
   const mode = RUN_MODES[state.mode];
+  const dispatch = dispatchStatus(state);
+  const dispatchBonus = dispatch.marks * 30;
   UI.payoutBreakdown.innerHTML = retired
-    ? `Cash ${Math.round(state.credits).toLocaleString()} · asset sale ${Math.round(state.fuel * 1.4 + state.stock * 1.8 + state.upgrades.length * 42).toLocaleString()} · debt −${Math.round(state.debt).toLocaleString()} · ${mode.name} ×${mode.scoreMultiplier}`
+    ? `Cash ${Math.round(state.credits).toLocaleString()} · asset sale ${Math.round(state.fuel * 1.4 + state.stock * 1.8 + state.upgrades.length * 42).toLocaleString()} · signal marks ${dispatch.marks} (+${dispatchBonus.toLocaleString()}) · debt −${Math.round(state.debt).toLocaleString()} · ${mode.name} ×${mode.scoreMultiplier}`
     : 'REVOCATION CLAUSE · ALL RETIREMENT FUNDS FORFEITED';
   setScreen('results');
   scene.setFocus(retired ? 'vista' : 'engineering');
@@ -1055,6 +1081,19 @@ function renderAll() {
   UI.pressureCopy.textContent = currentAdvice.copy;
   UI.pressureAction.querySelector('span').textContent = currentAdvice.action.label;
   UI.pressureAction.setAttribute('aria-label', `${currentAdvice.action.label}. ${currentAdvice.title}. ${currentAdvice.copy}`);
+  const dispatch = dispatchStatus(state);
+  UI.dispatchLine.dataset.status = dispatch.status;
+  UI.dispatchPhase.textContent = dispatch.phase;
+  UI.dispatchTitle.textContent = dispatch.title;
+  UI.dispatchCopy.textContent = dispatch.copy;
+  UI.dispatchMeter.style.width = `${clamp(dispatch.progress / dispatch.goal, 0, 1) * 100}%`;
+  UI.dispatchProgress.textContent = `${dispatch.progress} / ${dispatch.goal}`;
+  UI.dispatchTimer.textContent = dispatch.status === 'active'
+    ? `${Math.floor(dispatch.remaining / 60)}:${String(Math.ceil(dispatch.remaining % 60)).padStart(2, '0')}`
+    : `NEXT ${Math.ceil(dispatch.remaining)}S`;
+  UI.dispatchMarks.textContent = `${dispatch.marks} MARK${dispatch.marks === 1 ? '' : 'S'}`;
+  UI.dispatchLine.setAttribute('aria-label', `${dispatch.phase}. ${dispatch.title}. ${dispatch.copy} ${dispatch.progress} of ${dispatch.goal}. ${Math.ceil(dispatch.remaining)} seconds remaining. ${dispatch.marks} signal marks.`);
+  scene.setDispatchStatus(dispatch);
   const inbound = arrivalForecast(state);
   UI.arrivalLine.dataset.tone = inbound.tone;
   UI.arrivalLabel.textContent = inbound.phase;
@@ -1185,6 +1224,7 @@ function loop(now) {
   if (state && screen === 'game' && !paused && UI.eventModal.hidden && UI.helpModal.hidden) {
     tickGame(state, delta, random);
     handleCoreAction(state.lastAction);
+    handleDispatchOutcome();
     if (state.pendingEvent) showEvent(state.pendingEvent);
     if (state.ended) finishRun();
     if (state.day !== lastSavedDay || now - lastSavedAt > 12000) saveGame();
@@ -1215,6 +1255,7 @@ function exposeTestBridge() {
         credits: state.credits,
         debt: state.debt,
         debtLiberation: debtLiberation(state),
+        dispatch: dispatchStatus(state),
         badReviews: state.badReviews,
         customers: state.customers.length,
         upgrades: [...state.upgrades],
@@ -1444,6 +1485,32 @@ function openQaMode(mode) {
   const shiftFractions = { dawn: .08, day: .38, dusk: .66, night: .88 };
   if (Object.hasOwn(shiftFractions, qaShift)) {
     state.elapsed = (state.day - 1 + shiftFractions[qaShift]) * state.dayLength;
+  }
+
+  const qaDispatch = DISPATCHES.find(item => item.id === QUERY.get('dispatch'));
+  if (qaDispatch) {
+    const requestedStatus = ['active', 'completed', 'failed'].includes(QUERY.get('dispatchStatus')) ? QUERY.get('dispatchStatus') : 'active';
+    const requestedProgress = Number.parseInt(QUERY.get('dispatchProgress') || '', 10);
+    const progress = Number.isFinite(requestedProgress)
+      ? clamp(requestedProgress, 0, qaDispatch.goal)
+      : requestedStatus === 'completed' ? qaDispatch.goal : Math.max(1, Math.floor(qaDispatch.goal / 2));
+    state.dispatch = {
+      ...state.dispatch,
+      id: qaDispatch.id,
+      status: requestedStatus,
+      progress,
+      manualLanes: qaDispatch.kind === 'manual-lanes' ? ['fuel', 'mart'].slice(0, progress) : [],
+      startedAt: state.elapsed - 22,
+      deadline: state.elapsed + 38,
+      resolvedAt: requestedStatus === 'active' ? null : state.elapsed,
+      nextAt: requestedStatus === 'active' ? null : state.elapsed + 4.5,
+      completed: requestedStatus === 'completed' ? 3 : 2,
+      failed: requestedStatus === 'failed' ? 2 : 1,
+      streak: requestedStatus === 'completed' ? 2 : 0,
+      marks: requestedStatus === 'completed' ? 11 : 7,
+      revision: 4,
+      lastResult: requestedStatus === 'active' ? null : { id: qaDispatch.id, status: requestedStatus, marks: requestedStatus === 'completed' ? qaDispatch.marks : 0, at: state.elapsed }
+    };
   }
 
   if (mode === 'retired' || mode === 'failed') {

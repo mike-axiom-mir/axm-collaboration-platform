@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Universal Controls · Xbox/Brawl Trial</title>
+  <link rel="stylesheet" href="/demo/shared-ui.css">
+  <style>
+    body{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;padding:16px}
+    main{min-width:0;display:grid;place-items:center;height:calc(100dvh - 32px);align-self:start;position:sticky;top:16px}
+    canvas{width:min(100%,1100px);height:auto;aspect-ratio:16/9;background:#050b14;border:1px solid rgba(53,230,255,.4);border-radius:18px;box-shadow:0 20px 80px #000}
+    aside{padding:18px;display:flex;flex-direction:column;gap:14px;overflow:auto}
+    h1{font-size:20px;margin:0}.pair{font-size:42px;font-weight:900;letter-spacing:.16em;color:var(--gold)}
+    .metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:10px;border-radius:10px;background:rgba(255,255,255,.04)}
+    .metric strong{display:block;font-size:19px;color:var(--cyan)}.metric span{font-size:11px;color:var(--muted)}
+    .actions{font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap;background:#03070c;padding:10px;border-radius:10px;max-height:190px;overflow:auto}
+    .hint{font-size:12px;line-height:1.5}.test-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.test-actions button{padding:10px;border:1px solid rgba(255,255,255,.25);border-radius:10px;background:#0b1726;color:#fff}.checklist{margin:0;padding-left:20px;font-size:12px;line-height:1.55}.event-line{font:11px/1.4 ui-monospace,monospace;color:#bfeeff;max-height:110px;overflow:auto;background:#03070c;padding:8px;border-radius:8px}
+    .control-map{display:grid;grid-template-columns:auto 1fr;gap:5px 10px;padding:10px;border-radius:10px;background:rgba(53,230,255,.05);font-size:12px}.control-map code{font-weight:800}
+    @media(max-width:900px){body{grid-template-columns:1fr}main{height:auto;position:static}aside{order:-1}.pair{font-size:30px}}
+  </style>
+</head>
+<body>
+  <main><canvas id="game" width="1280" height="720" aria-label="Reference twin-stick game"></canvas></main>
+  <aside class="panel">
+    <h1>AXM Universal Controls <small>Xbox/Brawl trial</small></h1>
+    <div><div class="muted">PHONE PAIR CODE</div><div class="pair" id="pairCode">------</div></div>
+    <div class="hint">Phone is optional. Play this screen directly with keyboard or a standard Xbox-style controller through the same semantic control layer.</div>
+    <div class="control-map"><code>LS</code><span>Move</span><code>RS</code><span>Aim; release after aiming to fire</span><code>RT</code><span>Fire / hold for repeat</span><code>LB</code><span>Super</span><code>A / X / Y</code><span>Dash / interact / gadget</span><code>Menu</code><span>Open or close menu</span><code>D-pad</code><span>Navigate menus</span></div>
+    <div><strong>Connection</strong><div id="connection" class="status-warn">Connecting</div></div>
+    <div><strong>Physical controller</strong><div id="gamepadStatus" class="status-warn">Press any controller button</div></div>
+    <div><strong>Visible context</strong><div id="contextLabel">Gameplay</div></div>
+    <div class="metric-grid">
+      <div class="metric"><strong id="rtt">—</strong><span>measured RTT ms</span></div>
+      <div class="metric"><strong id="rate">0</strong><span>phone samples/s</span></div>
+      <div class="metric"><strong id="gaps">0</strong><span>sequence gaps</span></div>
+      <div class="metric"><strong id="reconnects">0</strong><span>phone seat resumes</span></div>
+      <div class="metric"><strong id="controllerCount">0</strong><span>phones connected</span></div>
+      <div class="metric"><strong id="staleTimeouts">0</strong><span>watchdog recoveries</span></div>
+    </div>
+    <div><strong>Saturday fault test</strong><ol class="checklist"><li>Move normally.</li><li>Open TEST on the phone.</li><li>While movement is active, tap SIMULATE 5s STALL.</li><li>Confirm the game stops moving within the watchdog window.</li><li>Confirm the same player reconnects and controls return.</li><li>Lock/unlock the phone and repeat.</li></ol></div>
+    <div class="test-actions"><button id="resetLog">RESET LOG</button><button id="downloadLog">DOWNLOAD TEST LOG</button></div>
+    <div><strong>Latest connection events</strong><div id="eventLog" class="event-line">No events yet.</div></div>
+    <div><strong>Semantic action state</strong><div class="actions" id="actions"></div></div>
+    <div class="hint muted">The demo reports round-trip time. It does not pretend RTT equals one-way input latency.</div>
+  </aside>
+  <script type="module" src="/demo/host.js"></script>
+</body>
+</html>

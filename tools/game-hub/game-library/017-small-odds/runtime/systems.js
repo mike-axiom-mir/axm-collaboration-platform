@@ -3,7 +3,7 @@ import {
   MATERIALS, HISTORIES, CONDITIONS, STYLE_FAMILIES, WORLD_EVENTS, LOCATIONS, ACTORS,
   ACTIVITIES, HOME_UPGRADES, PORTAL_UPGRADES, BUSINESS_TYPES, BUSINESS_BUYERS,
   BUSINESS_UPGRADES, BUSINESS_BRANCHES, PET_SPECIES, PET_TRAITS, CASINO_GAMES,
-  CASINO_LOTS, LIFE_THREADS, DISTRICT_RESIDENTS, DISTRICT_CONTEXT_REACTIONS,
+  CASINO_LOTS, STARSPITE_DEBT_ROUTES, LIFE_THREADS, DISTRICT_RESIDENTS, DISTRICT_CONTEXT_REACTIONS,
   DISTRICT_SUPPLIER, DISTRICT_ARCS, NEIGHBORHOOD_WORKS, NEIGHBORHOOD_COMMONS,
   catalogCombinationCount
 } from './game-data.js';
@@ -27,6 +27,7 @@ if (!DISTRICT_RESIDENTS.some(resident => resident.id === NEIGHBORHOOD_COMMONS.ma
 if (new Set(NEIGHBORHOOD_COMMONS.maintenance.routes.map(route => route.id)).size !== NEIGHBORHOOD_COMMONS.maintenance.routes.length) throw new Error('Hushglass maintenance route ids must be unique.');
 if (new Set(NEIGHBORHOOD_COMMONS.maintenance.governance.models.map(model => model.id)).size !== NEIGHBORHOOD_COMMONS.maintenance.governance.models.length) throw new Error('Hushglass governance model ids must be unique.');
 if (new Set(NEIGHBORHOOD_COMMONS.maintenance.faults.map(fault => fault.id)).size !== NEIGHBORHOOD_COMMONS.maintenance.faults.length) throw new Error('Hushglass maintenance fault ids must be unique.');
+if (new Set(STARSPITE_DEBT_ROUTES.map(route => route.id)).size !== STARSPITE_DEBT_ROUTES.length) throw new Error('Starspite debt-aftermath route ids must be unique.');
 for (const resident of DISTRICT_RESIDENTS) {
   if (!['deepnight','foreglow','highglow','afterglow'].every(phase => resident.schedule?.[phase])) throw new Error(`District resident ${resident.id} needs all four schedule phases.`);
 }
@@ -47,6 +48,9 @@ const nowIso = () => new Date().toISOString();
 const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
 const intersects = (left = [], right = []) => left.some(tag => right.includes(tag));
 const unique = values => [...new Set(values)];
+const normalizeDebtGrammar = value => typeof value === 'string'
+  ? value.replace(/\bRecovery 1 credits\b/g,'Recovery 1 credit').replace(/\b1 recovery credits are\b/g,'1 recovery credit is')
+  : value;
 
 function initialCommonsMaintenance() {
   return {
@@ -140,7 +144,8 @@ export function createInitialState(name = 'Pip') {
       lotsPurchased: [],
       crimeReported: false,
       lastReceipt: null,
-      history: []
+      history: [],
+      aftermath: { active:null, history:[], sequence:1, lastReceipt:null }
     },
     life: {
       active: [],
@@ -161,7 +166,7 @@ export function createInitialState(name = 'Pip') {
     },
     ledger: [{ at: nowIso(), day: 1, hour: 18, kind: 'life', text: 'Fired, evicted, and carrying one box home. A statistically ordinary disaster.' }],
     settings: { sound: true, motion: true, receiptDetail: false },
-    stats: { itemsGenerated: 0, itemsSold: 0, itemsGifted: 0, itemsInstalled: 0, reactions: 0, activities: 0, casinoPlays: 0, casinoLots: 0, lifeChoices: 0, lifeConsequences: 0, businessListings: 0, businessSales: 0, businessCounters: 0, businessCallbacks: 0, districtTalks: 0, districtGifts: 0, districtDeliveries: 0, districtArcChoices: 0, districtArcReturns: 0, neighborLifeRoutes: 0, workOrdersStarted: 0, workOrdersCompleted: 0, workLifeRoutes: 0, householdLifeChoices: 0, householdReturns: 0, supplierHouseholdRoutes: 0, petHouseholdRoutes: 0, commonsMaintenanceStarts: 0, commonsMaintenanceReturns: 0, commonsMaintenanceOverdues: 0, commonsWorkConflicts: 0, commonsAssetRoutes: 0, commonsReturningPetRoutes: 0, commonsGovernanceChoices: 0, commonsGovernanceReviews: 0, commonsFaultsActivated: 0, commonsFaultsResolved: 0 }
+    stats: { itemsGenerated: 0, itemsSold: 0, itemsGifted: 0, itemsInstalled: 0, reactions: 0, activities: 0, casinoPlays: 0, casinoLots: 0, debtAftermathStarts: 0, debtAftermathReturns: 0, debtSolidarityRoutes: 0, debtWorkRoutes: 0, debtHouseholdRoutes: 0, lifeChoices: 0, lifeConsequences: 0, businessListings: 0, businessSales: 0, businessCounters: 0, businessCallbacks: 0, districtTalks: 0, districtGifts: 0, districtDeliveries: 0, districtArcChoices: 0, districtArcReturns: 0, neighborLifeRoutes: 0, workOrdersStarted: 0, workOrdersCompleted: 0, workLifeRoutes: 0, householdLifeChoices: 0, householdReturns: 0, supplierHouseholdRoutes: 0, petHouseholdRoutes: 0, commonsMaintenanceStarts: 0, commonsMaintenanceReturns: 0, commonsMaintenanceOverdues: 0, commonsWorkConflicts: 0, commonsAssetRoutes: 0, commonsReturningPetRoutes: 0, commonsGovernanceChoices: 0, commonsGovernanceReviews: 0, commonsFaultsActivated: 0, commonsFaultsResolved: 0 }
   };
 }
 
@@ -194,6 +199,13 @@ export function migrateState(candidate) {
   }
   if (!Array.isArray(state.starspite.history)) state.starspite.history = [];
   if (!Array.isArray(state.starspite.lotsPurchased)) state.starspite.lotsPurchased = [];
+  const aftermathBase = base.starspite.aftermath;
+  const aftermath = { ...aftermathBase, ...(state.starspite.aftermath && typeof state.starspite.aftermath === 'object' && !Array.isArray(state.starspite.aftermath) ? state.starspite.aftermath : {}) };
+  if (!Array.isArray(aftermath.history)) aftermath.history = [];
+  aftermath.history = aftermath.history.slice(0,80).map(entry => ({ ...entry, text:normalizeDebtGrammar(entry?.text) }));
+  aftermath.sequence = Math.max(1,Math.round(Number(aftermath.sequence) || 1));
+  if (aftermath.active && !STARSPITE_DEBT_ROUTES.some(route => route.id === aftermath.active.routeId)) aftermath.active = null;
+  state.starspite.aftermath = aftermath;
   if (!Array.isArray(state.life.active)) state.life.active = [];
   if (!Array.isArray(state.life.scheduled)) state.life.scheduled = [];
   if (!Array.isArray(state.life.history)) state.life.history = [];
@@ -201,6 +213,7 @@ export function migrateState(candidate) {
   if (!Array.isArray(state.district.gifts)) state.district.gifts = [];
   if (!Array.isArray(state.district.deliveries)) state.district.deliveries = [];
   if (!Array.isArray(state.district.houseMarks)) state.district.houseMarks = [];
+  state.district.houseMarks = state.district.houseMarks.map(mark => ({ ...mark, parentText:normalizeDebtGrammar(mark?.parentText) }));
   if (!Array.isArray(state.district.arcs)) state.district.arcs = [];
   if (!Array.isArray(state.district.scheduledArcs)) state.district.scheduledArcs = [];
   if (!state.district.cooldowns || typeof state.district.cooldowns !== 'object' || Array.isArray(state.district.cooldowns)) state.district.cooldowns = {};
@@ -247,6 +260,7 @@ export function migrateState(candidate) {
   household.maintenance = maintenance;
   state.district.households = { ...state.district.households, [NEIGHBORHOOD_COMMONS.id]:household };
   if (!Array.isArray(state.work.history)) state.work.history = [];
+  state.work.history = state.work.history.map(entry => ({ ...entry, text:normalizeDebtGrammar(entry?.text) }));
   state.work.employerId = NEIGHBORHOOD_WORKS.id;
   state.work.standing = clamp(Math.round(Number(state.work.standing) || 0),-8,12);
   state.work.pressure = clamp(Math.round(Number(state.work.pressure) || 0),0,12);
@@ -259,6 +273,8 @@ export function migrateState(candidate) {
   state.life.sequence = Math.max(1, Number(state.life.sequence) || 1);
   state.life.lastSpawnDay = Math.max(0, Number(state.life.lastSpawnDay) || 0);
   if (state.business) state.business = normalizeBusinessState(state.business, state);
+  if (state.business?.history) state.business.history = state.business.history.map(entry => ({ ...entry, text:normalizeDebtGrammar(entry?.text) }));
+  if (Array.isArray(state.ledger)) state.ledger = state.ledger.map(entry => ({ ...entry, text:normalizeDebtGrammar(entry?.text) }));
   state.version = GAME_VERSION;
   syncLifeThreads(state);
   state.updatedAt = nowIso();
@@ -1686,6 +1702,219 @@ export function playCasinoGame(state, gameId, stake, options = {}) {
   addLedger(state, 'casino', text, { gameId:game.id, receipt });
   advanceTime(state, 1);
   return { ok:true, text, won, net, grossReturn, insuranceRefund, receipt, reactions };
+}
+
+function replayValidCasinoLoss(receipt) {
+  if (!receipt || receipt.schema !== 'small-odds.casino-play/v1' || receipt.won !== false) return false;
+  const game = CASINO_GAMES.find(candidate => candidate.id === receipt.gameId);
+  if (!game || !/^[0-9a-f]{64}$/i.test(receipt.seedHex || '')) return false;
+  if (!Number.isSafeInteger(receipt.stake) || !game.stakes.includes(receipt.stake)) return false;
+  if (!Number.isSafeInteger(receipt.rawOutcomeRoll) || receipt.rawOutcomeRoll < 1 || receipt.rawOutcomeRoll > game.outcomes) return false;
+  if (game.winNumbers.includes(receipt.rawOutcomeRoll) || receipt.outcomeCount !== game.outcomes) return false;
+  if (JSON.stringify(receipt.winningOutcomes) !== JSON.stringify(game.winNumbers)) return false;
+  if (receipt.grossReturn !== 0 || receipt.grossPayoutMultiplier !== game.payoutMultiplier) return false;
+  const refund = Math.max(0,Math.round(Number(receipt.insuranceRefund) || 0));
+  if (receipt.net !== refund - receipt.stake || receipt.net >= 0 || receipt.insuranceChangesOutcome !== false) return false;
+  try {
+    return uniformInt(createRng(receipt.seedHex),game.outcomes) + 1 === receipt.rawOutcomeRoll;
+  } catch {
+    return false;
+  }
+}
+
+function casinoLossSourceKey(receipt) {
+  return replayValidCasinoLoss(receipt)
+    ? `${receipt.seedHex}:${receipt.gameId}:${receipt.rawOutcomeRoll}:${receipt.stake}:${receipt.net}`
+    : null;
+}
+
+function debtRouteGate(state, route) {
+  if (route.gate.kind === 'district-visits') {
+    const current = Math.max(0,Math.round(Number(state.district?.visits) || 0));
+    return { eligible:current >= route.gate.minimum, current, requirement:`Lopsided Lane visits ${current}/${route.gate.minimum}` };
+  }
+  if (route.gate.kind === 'work-completed') {
+    const current = Math.max(0,Math.round(Number(state.work?.completed) || 0));
+    return { eligible:current >= route.gate.minimum, current, requirement:`Long Table orders ${current}/${route.gate.minimum}` };
+  }
+  const household = districtHouseholdProfile(state);
+  const eligible = household.trust >= route.gate.minimumTrust && household.agreements >= route.gate.minimumAgreements;
+  return { eligible, current:{ trust:household.trust, agreements:household.agreements }, requirement:`Hushglass trust ${household.trust}/${route.gate.minimumTrust} · agreements ${household.agreements}/${route.gate.minimumAgreements}` };
+}
+
+export function starspiteDebtProfile(state) {
+  const aftermath = state.starspite?.aftermath || { active:null, history:[] };
+  const handled = new Set((aftermath.history || []).map(entry => entry?.sourceKey).filter(Boolean));
+  if (aftermath.active?.sourceKey) handled.add(aftermath.active.sourceKey);
+  const eligibleReceipt = (state.starspite?.history || []).find(receipt => {
+    const key = casinoLossSourceKey(receipt);
+    return key && !handled.has(key);
+  }) || null;
+  const sourceKey = casinoLossSourceKey(eligibleReceipt);
+  const recoveryTarget = eligibleReceipt ? Math.abs(eligibleReceipt.net) : 0;
+  const locationReady = state.location === 'district';
+  const routes = STARSPITE_DEBT_ROUTES.map(route => {
+    const gate = debtRouteGate(state,route);
+    const open = Boolean(eligibleReceipt && !aftermath.active && locationReady && gate.eligible);
+    const reason = aftermath.active
+      ? `${aftermath.active.label} is already due on Day ${aftermath.active.dueDay}.`
+      : !eligibleReceipt
+        ? 'No unhandled replay-valid losing Starspite receipt is saved.'
+        : !locationReady
+          ? 'Travel to Lopsided Lane to publish this response.'
+          : !gate.eligible
+            ? gate.requirement
+            : 'The route is open from saved facts.';
+    return { ...route, gateStatus:gate, open, reason, recoveryPayment:Math.min(recoveryTarget,route.recoveryCap) };
+  });
+  return {
+    active:aftermath.active || null,
+    history:Array.isArray(aftermath.history) ? aftermath.history : [],
+    eligibleReceipt,
+    sourceKey,
+    recoveryTarget,
+    routes,
+    random:false,
+    portalOddsChanged:false,
+    casinoOddsChanged:false
+  };
+}
+
+export function startStarspiteDebtAftermath(state, routeId) {
+  if (state.location !== 'district') return { ok:false, text:'Debt aftermath can only be published on Lopsided Lane.' };
+  const profile = starspiteDebtProfile(state);
+  if (profile.active) return { ok:false, text:`${profile.active.label} is already due on Day ${profile.active.dueDay}.` };
+  if (!profile.eligibleReceipt) return { ok:false, text:'No unhandled replay-valid losing Starspite receipt is available.' };
+  const route = profile.routes.find(candidate => candidate.id === routeId);
+  if (!route) return { ok:false, text:'That neighborhood recovery route is not authored.' };
+  if (!route.open) return { ok:false, text:route.reason };
+  if (state.player.energy < route.energyCost) return { ok:false, text:`Pip needs ${route.energyCost} energy to publish this route.` };
+
+  const aftermath = state.starspite.aftermath;
+  const id = `debt-aftermath-${aftermath.sequence++}`;
+  const dueDay = state.day + route.dueDays;
+  const recoveryPayment = Math.min(profile.recoveryTarget,route.recoveryCap);
+  const sourceReceipt = cloneState(profile.eligibleReceipt);
+  const startReceipt = {
+    schema:'small-odds.debt-aftermath-start/v1', random:false,
+    id, routeId:route.id, routeLabel:route.label, institution:route.institution,
+    sourceKey:profile.sourceKey,
+    sourceCasinoReceipt:sourceReceipt,
+    sourceCasinoResultFinal:true,
+    recoveryTarget:profile.recoveryTarget,
+    recoveryCap:route.recoveryCap,
+    recoveryPayment,
+    startedDay:state.day,
+    startedHour:state.hour,
+    dueDay,
+    commitments:{ hours:route.hours, energyCost:route.energyCost },
+    frozenReturnEffect:cloneState(route.returnEffect),
+    storefrontIncomeExcluded:true,
+    casinoNetCreditsChanged:false,
+    casinoOddsChanged:false,
+    portalOddsChanged:false
+  };
+  state.player.energy = clamp(state.player.energy - route.energyCost,0,state.player.maxEnergy);
+  aftermath.active = {
+    id, routeId:route.id, label:route.label, institution:route.institution,
+    sourceKey:profile.sourceKey, sourceReceipt, recoveryTarget:profile.recoveryTarget,
+    recoveryPayment, startedDay:state.day, startedHour:state.hour, dueDay,
+    returnText:route.returnText, returnEffect:cloneState(route.returnEffect),
+    visual:route.visual, startReceipt
+  };
+  aftermath.lastReceipt = startReceipt;
+  state.stats.debtAftermathStarts += 1;
+  state.district.lastReceipt = startReceipt;
+  const text = `${route.label} was published from a final ${profile.recoveryTarget}-credit Starspite loss. ${recoveryPayment} recovery credit${recoveryPayment === 1 ? '' : 's'} ${recoveryPayment === 1 ? 'is' : 'are'} due Day ${dueDay}; the casino result and all future odds remain unchanged.`;
+  addLedger(state,'debt-aftermath',text,{ receipt:startReceipt });
+  advanceTime(state,route.hours);
+  state.updatedAt = nowIso();
+  return { ok:true, text, receipt:startReceipt, active:aftermath.active };
+}
+
+export function resolveStarspiteDebtReturns(state) {
+  const aftermath = state.starspite?.aftermath;
+  const active = aftermath?.active;
+  if (!active || active.dueDay > state.day) return [];
+  const route = STARSPITE_DEBT_ROUTES.find(candidate => candidate.id === active.routeId);
+  if (!route) return [];
+  const before = {
+    money:state.money,
+    supplierStanding:state.district.supplier.standing,
+    workStanding:state.work.standing,
+    workPressure:state.work.pressure,
+    businessRating:state.business?.rating ?? null,
+    home:state.home.score,
+    household:{
+      warmth:state.district.households[NEIGHBORHOOD_COMMONS.id].warmth,
+      trust:state.district.households[NEIGHBORHOOD_COMMONS.id].trust,
+      agreements:state.district.households[NEIGHBORHOOD_COMMONS.id].agreements
+    },
+    relationships:cloneState(state.relationships)
+  };
+  const effect = active.returnEffect || {};
+  state.money += active.recoveryPayment;
+  state.world.totalEarned += active.recoveryPayment;
+  state.district.supplier.standing = clamp(state.district.supplier.standing + Math.round(Number(effect.supplierStanding) || 0),-12,12);
+  state.work.standing = clamp(state.work.standing + Math.round(Number(effect.workStanding) || 0),-8,12);
+  state.work.pressure = clamp(state.work.pressure + Math.round(Number(effect.workPressure) || 0),0,12);
+  if (state.business && effect.businessRating) state.business.rating += Math.round(Number(effect.businessRating) || 0);
+  state.home.score = Math.max(0,state.home.score + Math.round(Number(effect.home) || 0));
+  const household = state.district.households[NEIGHBORHOOD_COMMONS.id];
+  household.warmth = clamp(household.warmth + Math.round(Number(effect.warmth) || 0),-8,12);
+  household.trust = clamp(household.trust + Math.round(Number(effect.trust) || 0),-8,12);
+  for (const [residentId,delta] of Object.entries(effect.relationships || {})) {
+    state.relationships[residentId] = (state.relationships[residentId] || 0) + Math.round(Number(delta) || 0);
+  }
+  const daily = state.business?.lastDailyReceipt?.day === state.day ? state.business.lastDailyReceipt : null;
+  const after = {
+    money:state.money,
+    supplierStanding:state.district.supplier.standing,
+    workStanding:state.work.standing,
+    workPressure:state.work.pressure,
+    businessRating:state.business?.rating ?? null,
+    home:state.home.score,
+    household:{ warmth:household.warmth, trust:household.trust, agreements:household.agreements },
+    relationships:Object.fromEntries(Object.keys(effect.relationships || {}).map(id => [id,state.relationships[id]]))
+  };
+  const receipt = {
+    schema:'small-odds.debt-aftermath-return/v1', random:false,
+    id:active.id, routeId:active.routeId, routeLabel:active.label, institution:active.institution,
+    sourceKey:active.sourceKey, sourceCasinoReceipt:cloneState(active.sourceReceipt),
+    sourceCasinoResultFinal:true,
+    dueDay:active.dueDay, resolvedDay:state.day,
+    recoveryTarget:active.recoveryTarget, recoveryPayment:active.recoveryPayment,
+    recoveryArithmetic:`min(${active.recoveryTarget} saved loss, ${route.recoveryCap} route cap) = ${active.recoveryPayment}`,
+    moneySeparation:{ category:'neighborhood-recovery', storefrontDailyIncomeExcluded:true, storefrontIncomeSameDay:daily ? daily.income : 0, casinoNetCreditsChanged:false },
+    frozenReturnEffect:cloneState(effect), before, after,
+    casinoOddsChanged:false, portalOddsChanged:false
+  };
+  const text = `${active.returnText} Recovery ${active.recoveryPayment} credit${active.recoveryPayment === 1 ? '' : 's'}; storefront income ${daily ? `${daily.income} credits separately` : 'none this day'}.`;
+  aftermath.history.unshift({ id:active.id, kind:'return', sourceKey:active.sourceKey, routeId:active.routeId, label:active.label, day:state.day, hour:state.hour, recoveryPayment:active.recoveryPayment, visual:active.visual, text, receipt });
+  aftermath.history = aftermath.history.slice(0,80);
+  aftermath.lastReceipt = receipt;
+  aftermath.active = null;
+  state.district.houseMarks.unshift({ id:`house-${active.id}`, kind:'debt-aftermath', day:state.day, parentText:text, visual:active.visual, receipt });
+  state.district.houseMarks = state.district.houseMarks.slice(0,40);
+  state.district.lastReceipt = receipt;
+  state.district.supplier.lastReceipt = receipt;
+  state.stats.debtAftermathReturns += 1;
+  if (active.routeId === 'lane-solidarity-rota') state.stats.debtSolidarityRoutes += 1;
+  if (active.routeId === 'long-table-repayment') state.stats.debtWorkRoutes += 1;
+  if (active.routeId === 'hushglass-breathing-room') state.stats.debtHouseholdRoutes += 1;
+  if (active.routeId === 'long-table-repayment') {
+    state.work.lastReceipt = receipt;
+    state.work.history.unshift({ id:`work-${active.id}`, kind:'debt-recovery', day:state.day, hour:state.hour, text, receipt });
+    state.work.history = state.work.history.slice(0,80);
+    if (state.business) recordBusinessHistory(state,'debt-recovery',text,receipt);
+  }
+  if (active.routeId === 'hushglass-breathing-room') {
+    household.lastReceipt = receipt;
+    householdHistoryEntry(state,{ kind:'debt-recovery', routeId:active.routeId, text, receipt, random:false });
+  }
+  addLedger(state,'debt-aftermath',text,{ receipt });
+  state.updatedAt = nowIso();
+  return [{ ok:true, text, receipt }];
 }
 
 function authoredCasinoItem(lot, state) {
@@ -3152,6 +3381,7 @@ export function advanceTime(state, hours) {
     resolveCommonsMaintenanceOverdue(state);
     resolveDistrictArcReturns(state);
     dailyBusinessIncome(state);
+    resolveStarspiteDebtReturns(state);
     refreshBusinessOffers(state);
     resolveDistrictDeliveries(state);
     resolveBusinessCallbacks(state);
@@ -3362,7 +3592,12 @@ export function stateSnapshot(state) {
       wins:state.starspite.wins,
       losses:state.starspite.losses,
       netCredits:state.starspite.netCredits,
-      lotsPurchased:state.starspite.lotsPurchased.length
+      lotsPurchased:state.starspite.lotsPurchased.length,
+      debtAftermath:{
+        active:state.starspite.aftermath.active ? { routeId:state.starspite.aftermath.active.routeId, dueDay:state.starspite.aftermath.active.dueDay, recoveryPayment:state.starspite.aftermath.active.recoveryPayment } : null,
+        returns:state.starspite.aftermath.history.length,
+        starts:state.stats.debtAftermathStarts
+      }
     },
     life: {
       active:state.life.active.length,
@@ -3432,6 +3667,7 @@ export const SYSTEM_CONSTANTS = Object.freeze({
   namedCombinationsIncludingStyleFamilies: catalogCombinationCount(),
   casinoGames: CASINO_GAMES.length,
   casinoLots: CASINO_LOTS.length,
+  starspiteDebtRoutes: STARSPITE_DEBT_ROUTES.length,
   businessBuyers: BUSINESS_BUYERS.length,
   businessUpgrades: BUSINESS_UPGRADES.length,
   businessBranches: BUSINESS_BRANCHES.length,

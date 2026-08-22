@@ -140,6 +140,58 @@ test('Graveyard Shift converts only its ordinary Borough presentation', () => {
   assert.equal(SYS.buildingSpec('borough','temporal-mischief').name, base.name);
 });
 
+test('Temporal Mischief converts only its ordinary Watchmoon presentation', () => {
+  const base = SYS.building('watch');
+  const temporal = SYS.buildingSpec('watch','temporal-mischief');
+  assert.equal(temporal.id, 'watch');
+  assert.equal(temporal.key, base.key);
+  assert.equal(temporal.glow, base.glow);
+  assert.equal(temporal.scrap, base.scrap);
+  assert.equal(temporal.time, base.time);
+  assert.equal(temporal.hp, base.hp);
+  assert.equal(temporal.name, 'Department of Later');
+  assert.equal(temporal.icon, 'LATER');
+  assert.equal(temporal.conversionId, 'department-of-later');
+  assert.equal(temporal.conversionEffect.kind, 'deadline-deferral');
+  assert.equal(SYS.buildingSpec('borough','temporal-mischief').name, 'Crooked Borough');
+  assert.equal(SYS.buildingSpec('watch','clockwork-coven').name, base.name);
+});
+
+test('Department of Later deterministically defers one visible enemy formation with capped non-stacking parity', () => {
+  const office = {id:'office',team:0,kind:'watch',factionId:'temporal-mischief',progress:1,hp:390,maxHp:390,x:0,y:0,charterId:'pumpkin-market'};
+  const web = [
+    {id:'junk',team:0,kind:'borough',factionId:'temporal-mischief',progress:1,hp:560,maxHp:560,x:80,y:0,charterId:'junk-jamboree'},
+    {id:'housing',team:0,kind:'moot',factionId:'temporal-mischief',progress:1,hp:650,maxHp:650,x:0,y:90,charterId:'impossible-housing'},
+    {id:'volunteers',team:0,kind:'bridgehead',factionId:'temporal-mischief',progress:1,hp:760,maxHp:760,x:110,y:70,charterId:'volunteer-seance'}
+  ];
+  const candidates = [
+    {id:'enemy-b',team:2,unitId:'mobs',hp:200,x:180,y:0,temporalAdjournedUntil:0},
+    {id:'enemy-a',team:2,unitId:'hexbows',hp:180,x:180,y:0,temporalAdjournedUntil:0},
+    {id:'ally-ai',team:1,unitId:'mobs',hp:200,x:80,y:0,temporalAdjournedUntil:0},
+    {id:'already-filed',team:2,unitId:'mobs',hp:200,x:70,y:0,temporalAdjournedUntil:12},
+    {id:'dead',team:2,unitId:'mobs',hp:0,x:60,y:0,temporalAdjournedUntil:0},
+    {id:'far',team:2,unitId:'mobs',hp:200,x:521,y:0,temporalAdjournedUntil:0},
+    {id:'enemy-building',team:2,kind:'borough',hp:560,x:50,y:0}
+  ];
+  const pulse = SYS.districtAdjournmentPulse(office,[office,...web],candidates,10);
+  assert.equal(pulse.conversionId,'department-of-later');
+  assert.equal(pulse.period,14);
+  assert.equal(pulse.baseDuration,3);
+  assert.equal(pulse.duration,4.35);
+  assert.equal(pulse.range,520);
+  assert.equal(pulse.networkBonus,1.45);
+  assert.equal(pulse.target.id,'enemy-a');
+  assert.equal(SYS.districtAdjournmentPulse({...office,progress:.9},[office],candidates,10),null);
+  assert.equal(SYS.districtAdjournmentPulse({...office,hp:0},[office],candidates,10),null);
+  assert.equal(SYS.districtAdjournmentPulse({...office,factionId:'boo-brigade'},[office],candidates,10),null);
+  const rival = {...office,id:'rival-office',team:2,charterId:null};
+  const rivalPulse = SYS.districtAdjournmentPulse(rival,[rival],[{id:'player',team:0,unitId:'mobs',hp:200,x:120,y:0}],0);
+  assert.equal(rivalPulse.target.id,'player');
+  assert.equal(rivalPulse.duration,3);
+  assert.match(APP_SOURCE,/if\(adjourned\)continue/);
+  assert.match(APP_SOURCE,/temporalAdjournedUntil=state\.elapsed\+pulse\.duration/);
+});
+
 test('Black-Sail route support is allied, local, route-only, mixed-charter scaled, and non-stacking', () => {
   const anchorage = {id:'anchorage',team:0,kind:'moot',factionId:'moonwake-corsairs',progress:1,hp:650,maxHp:650,x:0,y:0,charterId:'pumpkin-market'};
   const web = [
@@ -401,4 +453,6 @@ test('rival forward expansion uses Wonderworks first and the faction conversion 
   assert.equal(SYS.rivalExpansionKind('lantern-republic',lanternWorks,2),'borough');
   const graveyardWorks=[1,2].map(index=>({id:'g'+index,team:2,kind:'wonderwork',factionId:'graveyard-shift',progress:1,hp:850}));
   assert.equal(SYS.rivalExpansionKind('graveyard-shift',graveyardWorks,2),'borough');
+  const temporalWorks=[1,2].map(index=>({id:'t'+index,team:2,kind:'wonderwork',factionId:'temporal-mischief',progress:1,hp:730}));
+  assert.equal(SYS.rivalExpansionKind('temporal-mischief',temporalWorks,2),'watch');
 });

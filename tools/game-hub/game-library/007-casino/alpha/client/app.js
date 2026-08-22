@@ -23,6 +23,9 @@
   var soundEnabled = readSoundPreference();
   var audioContext = null;
   var audioUnlocked = false;
+  var lastControllerRenderKey = "";
+  var controllerLinkState = "connecting";
+  var spinAnimationStartedAt = 0;
   var wheelFaces = ["−30%", "−15%", "−5%", "+5%", "+25%", "+35%"];
   var starterStyleIds = ["lux-5", "graftgarden", "mirror-mice", "night-courier", "pocket-vault", "weatherheart", "spare-parts-choir", "nullbloom", "orbit-oven", "twinlight-relay"];
 
@@ -97,6 +100,8 @@
       [280, 340, 410, 500, 610, 740].forEach(function (note, index) { playTone(note, index * .055, .14, "square", .018); });
     } else if (kind === "jackpot") {
       [262, 330, 392, 523, 659, 784, 1047].forEach(function (note, index) { playTone(note, index * .075, .5, "triangle", .03); });
+    } else if (kind === "bonus") {
+      [523, 659, 784, 1047].forEach(function (note, index) { playTone(note, index * .09, .36, index % 2 ? "sine" : "triangle", .028); });
     } else if (kind === "toggle") {
       playTone(523, 0, .12, "sine", .025);
       playTone(784, .08, .18, "sine", .022);
@@ -155,7 +160,10 @@
   }
 
   function bonusTheater(spin) {
-    if (!spin || (!spin.wheelTriggered && !spin.jackpotHit)) return "";
+    if (!spin || (!spin.wheelTriggered && !spin.jackpotHit && !spin.freeSpinsAwarded)) return "";
+    if (Number(spin.freeSpinsAwarded) > 0 && !spin.jackpotHit) {
+      return '<div class="overdrive-theater free-spin-theater" role="status" aria-label="' + Number(spin.freeSpinsAwarded) + ' free spins awarded"><div class="free-spin-burst"><small>BONUS UNLOCKED</small><strong>+' + Number(spin.freeSpinsAwarded) + '</strong><span>FREE SPINS</span><i></i><i></i><i></i><i></i></div><div class="theater-caption">BANKED ON THIS CABINET · PRESS SPIN TO USE</div></div>';
+    }
     var index = Number.isInteger(Number(spin.wheelIndex)) ? Math.max(0, Math.min(5, Number(spin.wheelIndex))) : 0;
     var jackpot = Boolean(spin.jackpotHit);
     var faces = wheelFaces.map(function (face, faceIndex) {
@@ -182,7 +190,11 @@
   async function requestJson(path, options) {
     var response = await fetch(path, options || {});
     var data = await response.json().catch(function () { return { ok: false, error: "invalid local response" }; });
-    if (!response.ok || data.ok === false) throw new Error(data.error || "Local request failed");
+    if (!response.ok || data.ok === false) {
+      var error = new Error(data.error || "Local request failed");
+      error.localResponse = true;
+      throw error;
+    }
     return data;
   }
 
@@ -192,6 +204,70 @@
       headers: { "content-type": "application/json" },
       body: JSON.stringify(value || {})
     });
+  }
+
+  function setControllerLinkState(nextState) {
+    if (role !== "controller") return false;
+    var previousState = controllerLinkState;
+    controllerLinkState = nextState;
+    document.body.classList.toggle("controller-link-lost", nextState === "lost");
+    app.setAttribute("aria-busy", nextState === "lost" ? "true" : "false");
+    return previousState === "lost" && nextState === "live";
+  }
+
+  function markControllerLinkLost(message) {
+    if (role !== "controller") return;
+    var firstLoss = controllerLinkState !== "lost";
+    setControllerLinkState("lost");
+    if (state && firstLoss) renderController(true);
+    if (firstLoss) showToast(message || "Local link lost · retrying", true);
+  }
+
+  function controllerRenderKey(player) {
+    var contest = state.contest ? { id: state.contest.id, styleId: state.contest.styleId } : null;
+    return JSON.stringify({
+      status: state.status,
+      result: state.result,
+      player: player,
+      contest: contest,
+      controllerLinkState: controllerLinkState,
+      styles: (state.styles || []).map(function (style) { return [style.id, style.unlocked, style.discoverable]; })
+    });
+  }
+
+  function patchControllerLiveMetrics(player) {
+    var wallet = app.querySelector("[data-live-wallet]");
+    var jackpot = app.querySelector("[data-live-jackpot]");
+    var heat = app.querySelector("[data-live-jackpot-heat]");
+    var house = app.querySelector("[data-live-house]");
+    var party = (state.parties || []).find(function (item) { return item.id === player.partyId; });
+    if (wallet) wallet.textContent = money(player.wallet);
+    if (jackpot) jackpot.textContent = money(state.jackpot);
+    if (heat && state.jackpotHeat) heat.textContent = state.jackpotHeat.ready ? "HEAT READY" : "HEAT " + state.jackpotHeat.current + "/" + state.jackpotHeat.required;
+    if (house && party) house.textContent = party.house == null ? party.houseStatus : money(party.house);
+  }
+
+  function centerSelectedMachine() {
+    var roster = app.querySelector(".machine-roster");
+    var selected = roster && roster.querySelector(".machine-card.selected");
+    if (!roster || !selected) return;
+    roster.scrollLeft = Math.max(0, selected.offsetLeft - (roster.clientWidth - selected.offsetWidth) / 2);
+  }
+
+  function beginSpinAnimation() {
+    spinAnimationStartedAt = Date.now();
+    var stage = app.querySelector(".robot-stage");
+    var button = app.querySelector(".spin-button");
+    if (stage) stage.classList.add("is-spinning");
+    if (button) {
+      button.disabled = true;
+      button.textContent = "REELS SPINNING…";
+    }
+  }
+
+  function waitForSpinAnimation() {
+    var remaining = Math.max(0, 720 - (Date.now() - spinAnimationStartedAt));
+    return new Promise(function (resolve) { setTimeout(resolve, remaining); });
   }
 
   function redirectToSoloController(candidateLaunch) {
@@ -259,6 +335,7 @@
       npc_visit_completed: "A patron left after " + data.paidSpins + " paid spins",
       npc_changed_machine: "A patron moved to " + (data.styleName || data.styleId) + " for up to " + data.nextSegmentLength + " spins",
       jackpot_hit: (data.actorId || "Someone") + " hit the progressive for " + money(data.payout),
+      jackpot_heat_ready: "Progressive heat is ready · the next matching human ticket can pay",
       free_spins_awarded: data.amount + " free spins awarded",
       contest_started: data.spotName + " opened " + (data.styleName || data.styleId) + " for two minutes",
       contest_won: "Party " + data.winnerPartyId + " claimed district traffic",
@@ -451,29 +528,35 @@
       }).join('') + '</div></section>';
   }
 
-  function renderController() {
+  function renderController(force) {
     var player = state.ownPlayer;
     if (!player) return renderError("This seat has no private observation.");
     sequence = Math.max(sequence, player.acceptedSequence || 0);
+    var renderKey = controllerRenderKey(player);
+    if (!force && renderKey === lastControllerRenderKey) {
+      patchControllerLiveMetrics(player);
+      return;
+    }
     var ownLocation = player.partyId === "A" ? "casino_a" : "casino_b";
     var rivalLocation = player.partyId === "A" ? "casino_b" : "casino_a";
     var spin = player.lastSpin;
     var activeStyle = activeStyleFor(player);
     var displaySpin = spin && activeStyle && spin.styleId === activeStyle.id ? spin : null;
     var freshSpin = !!displaySpin && displaySpin.drawIndex !== lastVisualDrawIndex;
-    var outcomeMood = !displaySpin ? "idle" : (displaySpin.jackpotHit ? "jackpot" : (Number(displaySpin.totalPayout) > 0 ? "winner" : "quiet"));
+    var outcomeMood = !displaySpin ? "idle" : (displaySpin.jackpotHit ? "jackpot" : (Number(displaySpin.freeSpinsAwarded) > 0 ? "bonus" : (Number(displaySpin.totalPayout) > 0 ? "winner" : "quiet")));
     var tier = payoutTier(displaySpin);
-    var hasTheater = !!displaySpin && (displaySpin.wheelTriggered || displaySpin.jackpotHit);
+    var hasTheater = !!displaySpin && (displaySpin.wheelTriggered || displaySpin.jackpotHit || Number(displaySpin.freeSpinsAwarded) > 0);
     var styleReady = activeStyle && (activeStyle.unlocked || player.location === 'contest');
     var canSpin = state.status === "running" && styleReady && (player.location !== "contest" || state.contest);
     var free = player.freeSpinsRemaining > 0;
     var party = state.parties.find(function (item) { return item.id === player.partyId; });
     if (freshSpin) {
       rememberSettlement(displaySpin);
-      playCue(displaySpin.jackpotHit ? "jackpot" : (displaySpin.wheelTriggered ? "wheel" : tier.id));
+      playCue(displaySpin.jackpotHit ? "jackpot" : (Number(displaySpin.freeSpinsAwarded) > 0 ? "bonus" : (displaySpin.wheelTriggered ? "wheel" : tier.id)));
     }
     app.innerHTML = '<div class="controller-shell">' +
-      '<header class="controller-header"><div class="identity"><span class="party-pill ' + partyClass(player.partyId) + '">PARTY ' + player.partyId + '</span><h1>' + escapeHtml(player.displayName) + '</h1></div><button class="sound-toggle ' + (soundEnabled ? 'is-on' : 'is-off') + '" data-sound-toggle aria-pressed="' + (soundEnabled ? 'true' : 'false') + '" title="Toggle local arcade sound"><span>' + (soundEnabled ? '♪' : '×') + '</span><small>SOUND</small></button><div class="wallet-bubble"><span>WALLET</span><strong>' + money(player.wallet) + '</strong></div><div class="jackpot-bubble"><span>JACKPOT</span><strong>' + money(state.jackpot) + '</strong></div></header>' +
+      '<header class="controller-header"><div class="identity"><span class="party-pill ' + partyClass(player.partyId) + '">PARTY ' + player.partyId + '</span><h1>' + escapeHtml(player.displayName) + '</h1></div><button class="sound-toggle ' + (soundEnabled ? 'is-on' : 'is-off') + '" data-sound-toggle aria-pressed="' + (soundEnabled ? 'true' : 'false') + '" title="Toggle local arcade sound"><span>' + (soundEnabled ? '♪' : '×') + '</span><small>SOUND</small></button><div class="wallet-bubble"><span>WALLET</span><strong data-live-wallet>' + money(player.wallet) + '</strong></div><div class="jackpot-bubble"><span>JACKPOT</span><strong data-live-jackpot>' + money(state.jackpot) + '</strong><small data-live-jackpot-heat>' + (state.jackpotHeat && state.jackpotHeat.ready ? 'HEAT READY' : 'HEAT ' + (state.jackpotHeat ? state.jackpotHeat.current + '/' + state.jackpotHeat.required : 'BUILDING')) + '</small></div></header>' +
+      '<div class="controller-link-state ' + controllerLinkState + '" role="status" aria-live="polite"><span>LOCAL LINK</span><strong>' + (controllerLinkState === 'live' ? 'LIVE' : 'LOST · RETRYING') + '</strong><small>' + (controllerLinkState === 'live' ? 'Commands settle on the local server.' : 'Commands are disabled until the authoritative server returns.') + '</small></div>' +
       (state.result ? '<div class="status-message"><strong>' + escapeHtml(state.result.winner_party_id ? 'Party ' + state.result.winner_party_id + ' wins' : state.result.outcome) + '</strong><br>' + escapeHtml(state.result.reason) + '</div>' : '') +
       '<nav class="travel-strip" aria-label="Travel"><button class="travel-button ' + partyClass(player.partyId) + (player.location === ownLocation ? ' selected' : '') + '" data-command="travel" data-location="' + ownLocation + '">Own house</button><button class="travel-button ' + (player.location === rivalLocation ? ' selected' : '') + '" data-command="travel" data-location="' + rivalLocation + '" ' + (state.mode !== 'house_war' ? 'disabled' : '') + '>Rival house</button><button class="travel-button ' + (player.location === 'contest' ? 'selected' : '') + '" data-command="travel" data-location="contest" ' + (!state.contest ? 'disabled' : '') + '>Contest</button></nav>' +
       machineRoster(player) +
@@ -486,18 +569,27 @@
         '<div class="robot-body"><div class="cabinet-identity"><span class="cabinet-emblem">' + slotEmblem(activeStyle, 'identity-emblem') + '</span><div><div class="machine-title"><span>' + escapeHtml(activeStyle.name) + '</span><small>DRAW ' + (displaySpin ? displaySpin.drawIndex : state.drawSpine.totalConsumed) + '</small></div><div class="machine-signature">' + escapeHtml(activeStyle.signature) + '</div></div><span class="volatility-chip">' + escapeHtml(activeStyle.volatility) + '</span></div><div class="reel-window">' + outcomeBoard(displaySpin, activeStyle) + '</div>' +
         '<div class="spin-readout"><div><span>LAST BET</span><strong>' + (displaySpin ? money(displaySpin.wager) : money(player.selectedWager)) + '</strong></div><div><span>SLOT WIN</span><strong>' + (displaySpin ? money(displaySpin.slotPayout) : '—') + '</strong></div><div><span>TOTAL</span><strong>' + (displaySpin ? money(displaySpin.totalPayout) : '—') + '</strong></div></div>' +
         (displaySpin && displaySpin.presentation ? '<div class="feature-readout ' + (displaySpin.presentation.featureActive ? 'active' : '') + '"><strong>' + escapeHtml(displaySpin.presentation.featureActive ? displaySpin.presentation.featureName : displaySpin.presentation.summary) + '</strong><span>' + escapeHtml(displaySpin.presentation.featureActive ? displaySpin.presentation.featureValue : activeStyle.featureName + ' sleeping') + '</span></div>' : '') +
-        (displaySpin ? '<div class="settlement-banner ' + outcomeMood + '"><span>' + (displaySpin.jackpotHit ? 'PROGRESSIVE HIT' : 'TABLE SETTLED') + '</span><strong>' + (Number(displaySpin.totalPayout) > 0 ? '+' + money(displaySpin.totalPayout) + ' cr' : 'NO WIN') + '</strong><small>Ticket committed before the bet was read</small></div>' : '<div class="cabinet-ready"><i></i><span>96% BASE BOOK · DRAW SPINE READY</span><i></i></div>') +
+        (displaySpin ? '<div class="settlement-banner ' + outcomeMood + '"><span>' + (displaySpin.jackpotHit ? 'PROGRESSIVE HIT' : (Number(displaySpin.freeSpinsAwarded) > 0 ? 'FREE SPINS WON' : 'TABLE SETTLED')) + '</span><strong>' + (Number(displaySpin.freeSpinsAwarded) > 0 ? '+' + Number(displaySpin.freeSpinsAwarded) + ' FREE SPINS' : (Number(displaySpin.totalPayout) > 0 ? '+' + money(displaySpin.totalPayout) + ' cr' : 'NO WIN')) + '</strong><small>Ticket committed before the bet was read</small></div>' : '<div class="cabinet-ready"><i></i><span>96% BASE BOOK · DRAW SPINE READY</span><i></i></div>') +
+        '<div class="cabinet-console"><div class="console-heading"><span>BET CONSOLE</span><small>Controls belong to this machine</small></div>' +
+          '<div class="wager-strip" aria-label="Wager">' + [1,2,5,10].map(function (wager) { return '<button class="wager-button ' + (player.selectedWager === wager ? 'selected' : '') + '" data-command="set_wager" data-wager="' + wager + '" ' + (free ? 'disabled' : '') + '>' + wager + '</button>'; }).join("") + '</div>' +
+          (free ? '<div class="free-spin-bank" role="status"><span>FREE SPINS BANKED</span><strong>' + player.freeSpinsRemaining + '</strong><small>Locked to ' + escapeHtml(activeStyle.shortName) + '</small></div>' : '') +
+          riskPanel(player, free) +
+          '<div class="jackpot-build ' + (state.jackpotHeat && state.jackpotHeat.ready ? 'ready' : '') + '"><div><span>PROGRESSIVE HEAT</span><strong>' + (state.jackpotHeat && state.jackpotHeat.ready ? 'READY' : (state.jackpotHeat ? state.jackpotHeat.current + ' / ' + state.jackpotHeat.required : 'BUILDING')) + '</strong></div><meter min="0" max="' + (state.jackpotHeat ? state.jackpotHeat.required : 1) + '" value="' + (state.jackpotHeat ? state.jackpotHeat.current : 0) + '"></meter><small>Paid co-op spins build eligibility before a jackpot ticket can pay.</small></div>' +
+          '<button class="spin-button ' + (free ? 'free' : '') + '" data-command="spin" ' + (!canSpin ? 'disabled' : '') + '>' + (free ? 'FREE SPIN · ' + player.freeSpinsRemaining : 'SPIN · ' + money(player.selectedWager)) + '</button>' +
+          '<p class="keyboard-hint">Laptop: Space = spin · 1 / 2 / 3 / 4 = wager 1 / 2 / 5 / 10</p></div>' +
       '</div><div class="robot-feet"><i></i><i></i></div></section>' +
       '<p class="location-note">Playing <strong>' + escapeHtml(activeStyle.shortName) + '</strong> at <strong>' + escapeHtml(locationName(player.location)) + '</strong>' + (player.location === 'contest' && state.contest ? ' · ' + duration(state.contest.remainingMs) : '') + '</p>' +
-      '<div class="wager-strip" aria-label="Wager">' + [1,2,5,10].map(function (wager) { return '<button class="wager-button ' + (player.selectedWager === wager ? 'selected' : '') + '" data-command="set_wager" data-wager="' + wager + '" ' + (free ? 'disabled' : '') + '>' + wager + '</button>'; }).join("") + '</div>' +
-      '<p class="keyboard-hint">Laptop shortcuts: Space = spin · 1 / 2 / 3 / 4 = wager 1 / 2 / 5 / 10</p>' +
-      riskPanel(player, free) +
-      '<button class="spin-button ' + (free ? 'free' : '') + '" data-command="spin" ' + (!canSpin ? 'disabled' : '') + '>' + (free ? 'FREE SPIN · ' + player.freeSpinsRemaining : 'SPIN · ' + money(player.selectedWager)) + '</button>' +
       recentResultStrip() +
       '<div class="management-strip"><button class="action-button secondary" data-command="fund_house" data-amount="10">Fund house · 10</button><button class="action-button secondary" data-command="withdraw_house" data-amount="10">Take attack cash · 10</button></div>' +
-      '<div class="status-message">House: ' + (party.house == null ? escapeHtml(party.houseStatus) : money(party.house)) + ' · Free spins stay locked to the cabinet that awarded them.</div>' +
+      '<div class="status-message">House: <span data-live-house>' + (party.house == null ? escapeHtml(party.houseStatus) : money(party.house)) + '</span> · Free spins stay locked to the cabinet that awarded them.</div>' +
       signatureLine() +
     '</div>';
+    lastControllerRenderKey = renderKey;
+    if (controllerLinkState !== "live") {
+      app.querySelectorAll("[data-command]").forEach(function (button) { button.disabled = true; });
+    }
+    patchControllerLiveMetrics(player);
+    centerSelectedMachine();
     if (displaySpin) lastVisualDrawIndex = displaySpin.drawIndex;
   }
 
@@ -539,8 +631,11 @@
   async function poll() {
     try {
       if (role === "controller") {
-        state = await requestJson("./api/player/state?seat=" + encodeURIComponent(seatId) + "&token=" + encodeURIComponent(seatToken));
-        renderController();
+        var nextState = await requestJson("./api/player/state?seat=" + encodeURIComponent(seatId) + "&token=" + encodeURIComponent(seatToken));
+        var recovered = setControllerLinkState("live");
+        state = nextState;
+        renderController(recovered);
+        if (recovered) showToast("Local link restored");
       } else if (role === "party") {
         state = await requestJson("./api/party/state?party=" + encodeURIComponent(partyId) + "&token=" + encodeURIComponent(partyToken));
         renderPartyScreen();
@@ -549,7 +644,8 @@
         renderHost();
       }
     } catch (error) {
-      showToast(error.message, true);
+      if (role === "controller" && !error.localResponse) markControllerLinkLost("Local link lost · retrying");
+      else showToast(error.message, true);
     }
   }
 
@@ -559,7 +655,13 @@
   }
 
   async function sendCommand(command) {
+    if (role === "controller" && controllerLinkState !== "live") {
+      showToast("Local link lost · command not sent", true);
+      return;
+    }
+    var spinning = command && command.type === "spin";
     sequence += 1;
+    if (spinning) beginSpinAnimation();
     try {
       var response = await postJson("./api/player/command", {
         seatId: seatId,
@@ -569,10 +671,12 @@
         command: command
       });
       if (response.result && response.result.totalPayout != null) showToast("Settled " + money(response.result.totalPayout) + " credits");
+      if (spinning) await waitForSpinAnimation();
       await poll();
     } catch (error) {
       sequence -= 1;
-      showToast(error.message, true);
+      if (error.localResponse) showToast(error.message, true);
+      else markControllerLinkLost("Local link lost · command not sent · retrying");
     }
   }
 
@@ -642,7 +746,7 @@
   });
 
   document.addEventListener("keydown", function (event) {
-    if (role !== "controller" || !state || state.status !== "running") return;
+    if (role !== "controller" || !state || state.status !== "running" || controllerLinkState !== "live") return;
     var tag = String(event.target && event.target.tagName || "").toLowerCase();
     if (["button", "input", "select", "textarea", "a"].indexOf(tag) >= 0) return;
     var wagerKeys = { Digit1: 1, Digit2: 2, Digit3: 5, Digit4: 10 };

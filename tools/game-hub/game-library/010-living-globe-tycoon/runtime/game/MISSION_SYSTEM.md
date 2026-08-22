@@ -1,15 +1,16 @@
-# Palace errands — v0.9 mission system retained in v0.10
+# Palace errands — v0.2 stewardship tour expansion
 
 `EXPERIMENTAL LOCAL GAMEPLAY SYSTEM`
 
-Palace errands put a small funny objective on top of the living island without turning the globe into a checklist. The visible layer is a title, timer, progress bar and reward. Underneath, selection, scheduling, seat contributions and currency are deterministic and saved.
+Palace errands put a small funny objective on top of the living island without turning the globe into a checklist. The visible layer is a title, timer, tour position, progress bar and reward. Underneath, selection, scheduling, seat contributions, tour progression and currency are deterministic and saved.
 
 ## Timing
 
 - The first mission begins after the player enters the walkable world.
-- Mission starts are scheduled 600 active-play seconds apart.
-- A mission expires 300 active-play seconds after it starts.
-- Completing early does not pull the next mission forward; the next start remains on its ten-minute schedule.
+- Mission starts are scheduled 240 active-play seconds apart.
+- A mission expires 360 active-play seconds after it starts.
+- Completing early does not pull the next mission forward; the next start remains on its four-minute schedule.
+- If a mission consumes its full six-minute window, the next feasible errand starts immediately after that result instead of being lost.
 - Failure carries no treasury, ecology, approval or inventory penalty.
 - The mission clock is separate from wall time and the strategic quarter clock. It cannot advance seasons, production, politics, dilemmas, edicts or proposals.
 
@@ -28,7 +29,7 @@ The AI has no mission-completion command. Its progress comes only from the same 
 
 ## Mission catalog
 
-The seeded selector avoids the immediately previous type and excludes missions that the current island clearly cannot support. Inspection and planting remain safe fallbacks.
+The seeded selector avoids the immediately previous type and excludes missions that the current island clearly cannot support. Inspection and planting remain safe fallbacks. The first six errands form the starter catalog; six expanded variants unlock after two completed errands.
 
 | Mission | Counted action | Solo goal | Solo Laurels |
 |---|---|---:|---:|
@@ -38,16 +39,30 @@ The seeded selector avoids the immediately previous type and excludes missions t
 | Lake Lunch Audit | fish actually caught | 2 fish | 2 |
 | Campfire Diplomacy | campfires actually built | 1 fire | 1 |
 | Island Supper Service | fish actually cooked | 2 fish | 2 |
+| Whole-Island Shoreline Survey | real surface travel | 110 units | 2 |
+| The Five-Sapling Promise | plant saplings/reeds or release fish | 5 acts | 2 |
+| Windbreak Works Reserve | wood actually gathered | 10 wood | 2 |
+| Lake Recovery Census | fish actually caught | 3 fish | 3 |
+| Two-Shore Beacon Chain | campfires actually built | 2 fires | 2 |
+| The Long Festival Table | fish actually cooked | 4 fish | 3 |
+
+## Stewardship tours
+
+- Four completed errands finish one repeatable stewardship tour.
+- A failed errand resets the current success streak but does not erase completed tour steps.
+- Completing a tour grants a bounded `✦ 3` ceremonial bonus and opens the next tour.
+- Tour progress changes only through real completed mission actions. Observation, strategic turns, reconnects and save migration cannot award a tour.
+- With starts at active minutes 0, 4, 8 and 12, a clean first tour targets roughly 12–18 minutes depending on travel and resource preparation.
 
 ## Festival Laurels
 
 Festival Laurels (`✦`) are a saved ceremonial mission currency. They are deliberately separate from public treasury funds, private business capital, typed products and trade lots.
 
-v0.10 can earn and display Laurels but cannot spend, trade, buy or convert them. A later monument, festival or exceptional-edict system should add explicit costs, previews, receipts and authority rules rather than silently reading Laurels as ordinary money.
+This build can earn and display Laurels, including the tour bonus, but cannot spend, trade, buy or convert them. A later monument, festival or exceptional-edict system should add explicit costs, previews, receipts and authority rules rather than silently reading Laurels as ordinary money.
 
 ## Persistence and inspection
 
-The local save stores the active-play clock, next schedule, seeded selector state, active mission, per-seat contributions, Laurel balance and the latest 40 results. Older saves receive a clean mission state and no fabricated awards.
+The local save stores the active-play clock, next schedule, seeded selector state, active mission, per-seat contributions, Laurel balance, stewardship-tour progress and the latest 40 results. v0.1 mission saves retain their Laurel balance and bounded result history; a legacy active errand closes during migration because its five-minute promise is incompatible with the new six-minute contract. No reward is fabricated.
 
 Read-only inspection is available at:
 

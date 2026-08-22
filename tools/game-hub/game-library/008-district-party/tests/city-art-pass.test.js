@@ -12,13 +12,16 @@ const json = (relative) => JSON.parse(read(relative));
 test('Tilburg streetscape profile supplies bounded identity and an honest presentation contract', () => {
   const art = json('data/city-art.json');
   const map = json('data/map.json');
-  assert.equal(art.schemaVersion, 3);
-  assert.equal(art.id, 'axm-tilburg-streetscape-foundation-v0-3-0');
+  assert.equal(art.schemaVersion, 4);
+  assert.equal(art.id, 'axm-tilburg-visual-adventure-v0-4-0');
   assert.match(art.presentation.status, /pending-human-visual-approval/);
   assert.match(art.presentation.maturity, /coarse 16 px BGT classification/i);
   assert.match(art.presentation.sourceTruth, /clipped to the existing local material masks/i);
   assert.ok(art.presentation.roofPalette.length >= 6);
   assert.ok(art.presentation.proceduralVocabulary.includes('street lamps'));
+  assert.ok(art.presentation.proceduralVocabulary.includes('lit facade windows'));
+  assert.ok(art.presentation.proceduralVocabulary.includes('route breadcrumbs'));
+  assert.match(art.presentation.atmosphere.lightingRule, /does not alter gameplay authority/i);
   assert.equal(art.districts.length, 13);
   assert.ok(art.landmarks.length >= 8);
   assert.ok(art.streetDetails.length >= 8);

@@ -1,4 +1,4 @@
-# Design Bible — beta 0.25
+# Design Bible — beta 0.26
 
 ## Fantasy
 
@@ -15,13 +15,13 @@ The player is an exhausted alien one contract away from retirement. The station 
 
 ## Core loop
 
-Arrival → queue pressure → manual or automated service → cash/debt split → supplies and upgrades → higher throughput → denser arrivals → retirement or review collapse.
+Arrival → queue pressure → manual or automated service → dispatch progress → cash/debt split → supplies and upgrades → higher throughput → denser arrivals → retirement or review collapse.
 
 Manual work costs energy and has a short lane cooldown. Automation converts capital into continuous service. Micro naps recover energy but add reviews because customers are left waiting.
 
 ## Economy
 
-Every sale routes roughly one third of gross income to outstanding debt until the debt reaches zero. The remainder becomes spendable cash. Fuel, stock, and upgrades compete for that cash. Final score uses spendable cash, residual supplies, station assets, review headroom, remaining debt, and the selected contract multiplier.
+Every sale routes roughly one third of gross income to outstanding debt until the debt reaches zero. The remainder becomes spendable cash. Fuel, stock, and upgrades compete for that cash. Final score uses spendable cash, residual supplies, station assets, review headroom, signal marks at 30 points each, remaining debt, and the selected contract multiplier.
 
 ## Difficulty shape
 
@@ -30,6 +30,12 @@ Arrival intervals shrink non-linearly across the run. Event choices can accelera
 The local balance ledger retains the newest 24 summaries, deduplicated by run identity. Quick, standard, and legend samples are never mixed into one recommendation. After three matching runs, a contract estimates a collapse horizon from observed bad reviews per day and shows 72% of that horizon as an informational suggestion, clamped to 14–30 days. A failed run remains at 1,000 reviews for later days on the aggregate curve, preventing survivor bias from making the pressure line look healthier after a revocation. This value is deliberately not applied to gameplay; human review remains the authority for future balancing.
 
 The player can export an anonymous JSON field report for voluntary sharing. It contains aggregate metrics and compact run samples, but no run identity, exact completion timestamp, save state, or device information.
+
+## Signal Dispatches
+
+A second objective stays active across the contract. Four seeded dispatches ask for one manual clear in every lane, five manual services, seven clears without a loss, or four clears above the existing perfect-service patience threshold. Completion awards three or four signal marks; failure costs no cash or reputation and rotates to the next dispatch after a short read. The sequence repeats in a stable seed-dependent order, so longer contracts contain more optional goals without introducing more random calls or changing their timer.
+
+Dispatch state—current objective, deadline, progress, completions, failures, streak, marks, and rotation revision—persists in the normal browser-local save. Its timer advances only through the authoritative simulation tick, so opening, Pause, event decisions, results, and away time cannot consume it. The HUD strip and roof-mounted 3D signal board are two views of the same deterministic projection. Reduced Motion holds the board's semantic state and suppresses decorative spin. Non-saving QA can hold an authored state with `?qa=showcase&dispatch=<id>&dispatchStatus=<active|completed|failed>&dispatchProgress=<number>`.
 
 ## Event presentation
 

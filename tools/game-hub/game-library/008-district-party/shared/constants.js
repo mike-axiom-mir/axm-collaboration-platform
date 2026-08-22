@@ -2,7 +2,7 @@
 
 module.exports = Object.freeze({
   BUILD_NAME: 'AXM District Party',
-  BUILD_VERSION: '0.4.0-authored-city-alpha',
+  BUILD_VERSION: '0.8.0-visual-adventure',
   DEFAULT_PORT: 8795,
   DEFAULT_ROOM: 'AXM1',
   TICK_RATE: 30,

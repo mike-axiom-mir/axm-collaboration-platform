@@ -1,39 +1,36 @@
 # Capability gap scout receipt
 
-Overall route: **DEGRADED for the complete objective; READY for the local Recurring Commons Service milestone.**
+Overall route: **DEGRADED for the complete objective; READY for the bounded local Milestone 11 implementation and desktop verification.**
 
-## Satisfied or buildable in this workspace
+## Satisfied or buildable here
 
-- Honest fixed RNG, replayable receipts, local browser runtime, manual export, and all prior First Contact, Starspite, Living Threads, Storefront, District, Dependency Web, and Paid Production capabilities remain verified.
-- `state.session.restore`: browser-local save version 9 migrates v1-v8 without fabricating supplier, work, Hushglass, maintenance-cycle, or participant history.
-- `district.household.second-persistent`: Hushglass warmth, trust, agreements, history, last receipt, and four public bands persist separately from Crooked Kettle.
-- `life.choice.multi-party-routed`: one hearing publishes supplier, employer, Oola, owned-object, and assigned-pet routes with visible gates.
-- `district.commons.schedule-authored`: Hushglass bands select explicit resident overrides through a public precedence rule; no schedule roll exists.
-- `life.return.household-cross-system`: the due return resolves once across household, supplier, work, storefront, home, resident, and home-mark state.
-- `pet.route.literal-traits`: one legal species point and fixed named-trait points are auditable; unrelated traits contribute zero.
-- `district.commons.receipt.nonrandom`: household-routed Life and return receipts declare `random:false`, exact effects, ignored inputs, and unchanged portal odds.
-- `district.commons.maintenance-recurring`: one persisted Hushglass valve resource has public integrity bands, a four-day authored calendar, exact active/return/history state, and one-day overdue grace.
-- `district.commons.route.history-gated`: the rota reuses a returned accord, the asset route requires real retained ownership, and the pet route requires a prior receipt id plus current assignment/literal points.
-- `work.order.commons-due-override`: the declared Hushglass valve-jig replaces the base calendar only while due/overdue and retains all disclosed tool, pet, wage, pressure, and receipt math.
-- `district.commons.maintenance-return-exact` and `district.commons.overdue-exact`: cross-system returns resolve once, overdue applies once per due date, and the cycle remains repairable.
-- Existing source/test/browser routes can continue to verify local deterministic mechanics, responsive geometry, semantics, persistence, HTTP transport, and package integrity.
+- Save version 11 migrates v1-v10 continuity and adds neutral aftermath state without fabricated recovery.
+- A replay-valid saved losing casino receipt, not a remembered-loss counter, gates the new loop.
+- Three institution-specific routes publish exact prerequisites, time/energy, due day, payment cap, frozen effects, and durable aftermath.
+- Returns resolve exactly once across wallet, supplier, work, household, storefront, home, resident, and visible memory as applicable.
+- Recovery accounting names same-day storefront income separately and does not change Starspite net or any future random result.
+- Existing honest RNG, storefront, district, paid work, Hushglass, recurring service, civic ownership, and fault capabilities remain intact under 102 tests.
+- A dependency-free WebGL 1 layer supplies six authored low-poly scenes at 480x270 with depth and 16-step lighting while Canvas remains authority/fallback.
+- Desktop browser evidence covers all six location routes, one full saved-loss→route→due-day→reload journey, a persistent repayment marker, 44px route buttons, semantic naming, unique ids, no document overflow, and an empty browser diagnostic log.
 
 ## Degraded or missing for the full objective
 
-- `asset.character.production3d` - **HAND/SUBSTRATE:** no production character, rigging, animation, LOD, or cinematic pipeline exists.
-- `world.content.planetary` - **HAND/RESOURCE:** six places, four residents, two neighborhood households, one recurring service loop, one employer, six Life families, and one deep storefront remain far below planet scale.
-- `economy.balance.longitudinal` - **EVIDENCE:** no multi-month telemetry or large independent cohort.
-- `quality.external.comparative` - **EVIDENCE:** "best game on Earth" cannot be proven through internal tests or self-assessment.
-- `distribution.production.multiplatform` - **HAND/AUTHORITY:** storefront, console, certification, legal, privacy, and release operations remain outside this slice.
-- `accessibility.audit.physical` - **EVIDENCE:** representative human, screen-reader, and physical-device audits remain required.
-- `visual.capture.ephemeral-rolling-buffer` - **HAND/EVIDENCE:** sampled observations exist, but continuous motion timing remains UNKNOWN.
+- `asset.character.production3d` - **HAND/SUBSTRATE:** the low-poly runtime is a strong spatial baseline, not a character rig, authored animation set, LOD, production asset pipeline, or cinematic hand.
+- `world.content.planetary` - **HAND/RESOURCE:** six places and the current bounded social/economic graph remain far below planet scale.
+- `distribution.steam.production` - **HAND/AUTHORITY:** no Steamworks integration, depot/build pipeline, store configuration, achievements, Cloud, controller certification, legal review, or release authority was available in this pass.
+- `input.controller.gamepad` - **HAND/SUBSTRATE:** keyboard, mouse, and touch exist; gamepad is still declared false.
+- `economy.balance.longitudinal` - **EVIDENCE:** no multi-month telemetry, large cohort, or independent balance study.
+- `quality.external.comparative` - **EVIDENCE:** comparative excellence cannot be established through internal tests or self-assessment.
+- `accessibility.audit.compact-physical` - **EVIDENCE:** this browser surface could not resize; fresh compact, screen-reader, physical-device, and assistive-technology coverage remains required.
+- `visual.webgl.context-loss-and-gpu-matrix` - **HAND/EVIDENCE:** fallback exists statically, but context loss and representative GPU breadth were not live-tested.
+- `visual.capture.ephemeral-rolling-buffer` - **HAND/EVIDENCE:** repeated screenshots proved bounded change; continuous motion timing and frame pacing remain UNKNOWN.
 
-## Cheapest honest route forward
+## Cheapest honest next routes
 
-1. Deepen the recurring service into one bounded choice of public infrastructure ownership: keep the valve communal, form a household trust, or license a transparent service cooperative, with exact rights/obligations and reversible pressure consequences.
-2. Let the next Day 30 cycle select from at least two authored maintenance faults based on real service history and installed assets, not randomness, while keeping every gate and return inspectable.
-3. Connect one Starspite debt/insurance consequence back to the neighborhood economy without allowing casino history to influence future random outcomes.
-4. Add rolling-frame capture and an independent accessibility/playtest route before promoting continuous-motion, physical-accessibility, or longitudinal-quality claims.
-5. Do not add a third shallow household or broad labor catalog until the existing household/service/work grammar produces repeated, visibly distinct long-memory outcomes.
+1. Add a small production-minded 3D character seam: one authored Pip rig or sprite-to-mesh animation set with idle/walk/interact states, bounded asset provenance, performance budgets, and Canvas fallback.
+2. Give one existing place a deeper 10-15 minute sub-arc with three repeatable variants, object participation, one failure/repair state, and a visibly changing 3D prop—do not add a shallow seventh location.
+3. Add gamepad navigation/action parity and a controller-visible focus audit because Steam living-room play is currently a concrete launch risk.
+4. Establish a separate Steam readiness lane for build/depot configuration, Cloud-save policy, overlay, achievements, store assets/copy, legal/privacy, install/update/uninstall, and release checklists; do not infer those capabilities from the browser package.
+5. Run fresh 390x844, WebGL context-loss, representative GPU, physical keyboard/controller, screen-reader, and independent 30-60 minute playtests before promoting those claims.
 
-Mocks and prototypes do not close production gaps. Each promotion must be backed by the evidence named in `evidence/requirements.json`.
+Mocks and prototypes do not close production gaps. Each promotion needs native evidence for its claim.

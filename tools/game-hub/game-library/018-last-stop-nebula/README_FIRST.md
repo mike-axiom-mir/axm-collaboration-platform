@@ -16,6 +16,7 @@ You own a ruined alien petrol station beside a forgotten nebula attraction. AXM 
 - Protect customer patience. Failed queues add bad reviews.
 - Buy supplies, repair the leak, and build automation while the station stays open.
 - Make permanent event choices that change demand, rewards, patience, or reputation.
+- Chase four rotating Signal Dispatches for manual lane coverage, hands-on volume, clean convoys, and early clears. Captured dispatches award persistent signal marks and a modest retirement-score bonus without changing the survival economy.
 - Reach the selected retirement timer under 1,000 bad reviews.
 - Escape with cash, remaining assets, and a local high score. Debt lowers the payout.
 
@@ -25,7 +26,9 @@ Three retirement contracts target approximately 6, 9, and 12 minutes. The 21-day
 
 Run state, settings, and the best score use browser `localStorage`. Finished and failed runs also add a compact summary to a private balance ledger capped at the newest 24 runs. The ledger shows retire rate, reviews gained per day, projected review-collapse day, capture rate, automation share, and an average review-pressure curve. Quick, standard, and legend contracts are calibrated separately; a contract receives an informational retirement-timer estimate only after three matching runs.
 
-No gameplay data leaves the computer, and the ledger never changes difficulty automatically. Its portable JSON report is created locally, excludes run identities and exact timestamps, and can be downloaded or copied only when the player asks. Returning to the title saves the current run; abandoning a run requires a second confirmation. Version 0.25 migrates valid 0.9 through 0.24 saves in place.
+No gameplay data leaves the computer, and the ledger never changes difficulty automatically. Its portable JSON report is created locally, excludes run identities and exact timestamps, and can be downloaded or copied only when the player asks. Returning to the title saves the current run; abandoning a run requires a second confirmation. Version 0.26 migrates valid 0.9 through 0.25 saves in place.
+
+Signal Dispatches keep a second authored objective active across the full contract. The seeded four-dispatch rotation repeats for longer contracts and preserves completions, failures, streak, and marks in the local save. Its HUD strip and physical roof board expose the same progress. Dispatch timers stop whenever the simulation stops. Marks add 30 points each before the selected contract multiplier; they never buy supplies, erase reviews, change arrivals, or unlock upgrades.
 
 Pause exposes persistent Cinematic, Balanced, and Eco graphics profiles. Cinematic retains the full authored scene; Balanced reduces particles and perimeter lights; Eco also disables soft shadows. These are player-controlled workload choices, not automatic performance claims.
 

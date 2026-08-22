@@ -1,0 +1,153 @@
+{
+  "id": "axm.reference.twin-stick.v1",
+  "version": "0.2.0",
+  "gameId": "reference-twin-stick",
+  "actions": [
+    {
+      "id": "MOVE",
+      "required": true,
+      "label": "Move"
+    },
+    {
+      "id": "AIM",
+      "required": true,
+      "label": "Aim"
+    },
+    {
+      "id": "PRIMARY_ACTION",
+      "required": true,
+      "label": "Pulse"
+    },
+    {
+      "id": "DODGE",
+      "required": false,
+      "label": "Dash"
+    },
+    {
+      "id": "SECONDARY_ACTION",
+      "required": false,
+      "label": "Super"
+    },
+    {
+      "id": "INTERACT",
+      "required": false,
+      "label": "Interact"
+    },
+    {
+      "id": "USE_ITEM",
+      "required": false,
+      "label": "Gadget"
+    },
+    {
+      "id": "OPEN_MENU",
+      "required": true,
+      "label": "Menu"
+    },
+    {
+      "id": "NAVIGATE",
+      "required": false,
+      "label": "Navigate"
+    },
+    {
+      "id": "CONFIRM",
+      "required": false,
+      "label": "Confirm"
+    },
+    {
+      "id": "CANCEL",
+      "required": false,
+      "label": "Cancel"
+    }
+  ],
+  "phoneLayout": {
+    "mode": "standard",
+    "twinStick": true,
+    "preferredOrientation": "landscape",
+    "controls": [
+      {
+        "id": "leftStick",
+        "action": "MOVE",
+        "zone": "left"
+      },
+      {
+        "id": "rightStick",
+        "action": "AIM",
+        "zone": "right"
+      },
+      {
+        "id": "A",
+        "action": "PRIMARY_ACTION"
+      },
+      {
+        "id": "B",
+        "action": "DODGE"
+      },
+      {
+        "id": "X",
+        "action": "INTERACT"
+      },
+      {
+        "id": "Menu",
+        "action": "OPEN_MENU"
+      }
+    ]
+  },
+  "controllerLayout": {
+    "MOVE": "leftStick",
+    "AIM": "rightStick",
+    "PRIMARY_ACTION": [
+      "rightTrigger",
+      {
+        "control": "rightStick",
+        "gesture": "release",
+        "threshold": 0.55,
+        "releaseThreshold": 0.3
+      }
+    ],
+    "SECONDARY_ACTION": "leftBumper",
+    "DODGE": "south",
+    "INTERACT": "west",
+    "USE_ITEM": "north",
+    "OPEN_MENU": "menu",
+    "NAVIGATE": "dpad",
+    "CONFIRM": "south",
+    "CANCEL": "east"
+  },
+  "contexts": [
+    {
+      "id": "gameplay",
+      "visibleLabel": "Gameplay",
+      "allowedActions": [
+        "MOVE",
+        "AIM",
+        "PRIMARY_ACTION",
+        "DODGE",
+        "SECONDARY_ACTION",
+        "INTERACT",
+        "USE_ITEM",
+        "OPEN_MENU"
+      ]
+    },
+    {
+      "id": "menu",
+      "visibleLabel": "Menu controls",
+      "remap": {
+        "MOVE": "NAVIGATE",
+        "PRIMARY_ACTION": "CONFIRM",
+        "DODGE": "CONFIRM",
+        "SECONDARY_ACTION": "CANCEL"
+      },
+      "allowedActions": [
+        "NAVIGATE",
+        "CONFIRM",
+        "CANCEL",
+        "OPEN_MENU"
+      ]
+    }
+  ],
+  "aimAssist": {
+    "allowed": true,
+    "defaultStrength": 0
+  },
+  "cameraAimSeparate": false
+}

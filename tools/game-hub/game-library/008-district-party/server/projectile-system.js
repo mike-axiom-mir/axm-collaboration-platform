@@ -8,6 +8,7 @@ const { consumeEquippedAmmo } = require('./inventory-system');
 const { ejectAllOccupants, exitVehicle } = require('./vehicle-system');
 const { recordCivilianHarm } = require('./justice-system');
 const { collidesObstacle, pointBlocked } = require('./spatial-index');
+const { gearSummaryForActor, spawnCombatDrop } = require('./combat-gear-system');
 
 const PULSE_INPUT_FIELDS = Object.freeze([
   'action', 'fire', 'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate',
@@ -22,7 +23,7 @@ function clearActorPulseState(actor) {
 }
 
 function spawnProjectile(world, attacker) {
-  if (!attacker || !attacker.alive || attacker.inventoryOpen
+  if (!attacker || !attacker.alive || attacker.inventoryOpen || attacker.cityMenuOpen
     || isMissionInputLocked(world) || world.tick < attacker.nextAttackTick || !world.combatRules.enabled) return null;
   let ammoResult = null;
   const rangedItem = attacker.inventory?.equipment?.ranged;
@@ -41,34 +42,50 @@ function spawnProjectile(world, attacker) {
       return null;
     }
   }
+  const weapon = gearSummaryForActor(attacker).weapon;
   const facingLength = Math.hypot(attacker.facing.x, attacker.facing.y) || 1;
   const direction = { x: attacker.facing.x / facingLength, y: attacker.facing.y / facingLength };
-  const id = `projectile-${world.nextProjectileNumber++}`;
-  const projectile = {
-    id,
-    kind: 'projectile',
-    ownerActorId: attacker.id,
-    ownerNpcId: null,
-    partyId: attacker.partyId,
-    position: {
-      x: attacker.position.x + direction.x * 16,
-      y: attacker.position.y + direction.y * 16,
-    },
-    velocity: { x: direction.x * 360, y: direction.y * 360 },
-    radius: 4,
-    damage: 5,
-    channel: 'projectileDamage',
-    spawnedAtTick: world.tick,
-    expiresAtTick: world.tick + 42,
-    rangedItemId: rangedItem?.id || null,
-    ammoType: rangedItem?.ammoType || null,
-    autoReloadedItemId: ammoResult?.autoEquippedItemId || null,
-    sourceVehicleId: attacker.currentVehicleId || null,
-  };
-  world.projectiles[id] = projectile;
-  attacker.nextAttackTick = world.tick + 10;
-  world.effects.push({ id: `effect-muzzle-${id}`, kind: 'muzzle', position: { ...projectile.position }, expiresAtTick: world.tick + 4 });
-  return projectile;
+  const baseAngle = Math.atan2(direction.y, direction.x);
+  const projectiles = [];
+  for (let pellet = 0; pellet < weapon.pelletCount; pellet += 1) {
+    const spreadIndex = pellet - (weapon.pelletCount - 1) / 2;
+    const angle = baseAngle + spreadIndex * weapon.spreadRadians;
+    const pelletDirection = { x: Math.cos(angle), y: Math.sin(angle) };
+    const id = `projectile-${world.nextProjectileNumber++}`;
+    const projectile = {
+      id,
+      kind: 'projectile',
+      ownerActorId: attacker.id,
+      ownerNpcId: null,
+      partyId: attacker.partyId,
+      position: {
+        x: attacker.position.x + pelletDirection.x * 16,
+        y: attacker.position.y + pelletDirection.y * 16,
+      },
+      velocity: { x: pelletDirection.x * weapon.projectileSpeed, y: pelletDirection.y * weapon.projectileSpeed },
+      radius: weapon.projectileRadius,
+      damage: weapon.damage,
+      channel: 'projectileDamage',
+      spawnedAtTick: world.tick,
+      expiresAtTick: world.tick + (weapon.visualStyle === 'scatter' ? 28 : 48),
+      rangedItemId: rangedItem?.id || null,
+      weaponName: weapon.name,
+      ammoType: rangedItem?.ammoType || null,
+      autoReloadedItemId: ammoResult?.autoEquippedItemId || null,
+      sourceVehicleId: attacker.currentVehicleId || null,
+      visualStyle: weapon.visualStyle,
+      visualColor: weapon.primary,
+      visualAccent: weapon.accent,
+      pierceRemaining: weapon.pierce,
+      hitEntityIds: [],
+    };
+    world.projectiles[id] = projectile;
+    projectiles.push(projectile);
+  }
+  attacker.nextAttackTick = world.tick + weapon.cooldownTicks;
+  const first = projectiles[0];
+  world.effects.push({ id: `effect-muzzle-${first.id}`, kind: 'muzzle', weaponStyle: weapon.visualStyle, colour: weapon.primary, position: { ...first.position }, expiresAtTick: world.tick + 5 });
+  return first;
 }
 
 function spawnNpcProjectile(world, attacker, targetPosition, targetKind = null) {
@@ -99,6 +116,12 @@ function spawnNpcProjectile(world, attacker, targetPosition, targetKind = null) 
     expiresAtTick: world.tick + 75,
     sourceVehicleId: null,
     targetKind,
+    visualStyle: attacker.role === 'sapper' ? 'sapper-orb' : attacker.role === 'skirmisher' ? 'rival-bolt' : 'hostile-pulse',
+    visualColor: attacker.role === 'sapper' ? '#ab8cff' : '#ff765f',
+    visualAccent: attacker.role === 'sapper' ? '#efe8ff' : '#ffe2d8',
+    slowTicks: attacker.role === 'sapper' ? 45 : 0,
+    pierceRemaining: 0,
+    hitEntityIds: [],
   };
   world.projectiles[id] = projectile;
   attacker.nextAttackTick = world.tick + Math.max(20, Number(attacker.attackCooldownTicks) || 38);
@@ -152,12 +175,16 @@ function applyActorDamage(world, attacker, target, projectile) {
     return { applied: false, reason: permission.reason };
   }
 
-  const incomingDamage = Math.max(0, Number(projectile.damage) || 0);
+  const rawIncomingDamage = Math.max(0, Number(projectile.damage) || 0);
+  const damageReduction = clamp(Number(target.gearSummary?.damageReduction) || gearSummaryForActor(target).damageReduction || 0, 0, 0.5);
+  const incomingDamage = rawIncomingDamage > 0 ? Math.max(1, Math.floor(rawIncomingDamage * (1 - damageReduction))) : 0;
+  const armorAbsorbed = rawIncomingDamage - incomingDamage;
   const currentShield = Math.max(0, Number(target.shield) || 0);
   const shieldDamage = Math.min(currentShield, incomingDamage);
   const healthDamage = incomingDamage - shieldDamage;
   target.shield = currentShield - shieldDamage;
   target.health = clamp(target.health - healthDamage, 0, target.maxHealth);
+  if (projectile.slowTicks > 0) target.slowedUntilTick = Math.max(target.slowedUntilTick || 0, world.tick + projectile.slowTicks);
   if (projectile.ownerNpcId) target.damageImmuneUntilTick = world.tick + 11;
   world.effects.push({
     id: `effect-hit-${projectile.id}`,
@@ -165,12 +192,14 @@ function applyActorDamage(world, attacker, target, projectile) {
     damage: incomingDamage,
     shieldDamage,
     healthDamage,
+    armorAbsorbed,
+    slowed: projectile.slowTicks > 0,
     position: { ...target.position },
     partyId: target.partyId,
     expiresAtTick: world.tick + 8,
   });
   if (target.health <= 0) downActor(world, target, attacker);
-  return { applied: true, damage: incomingDamage, shieldDamage, healthDamage };
+  return { applied: true, damage: incomingDamage, rawDamage: rawIncomingDamage, shieldDamage, healthDamage, armorAbsorbed };
 }
 
 function downActor(world, target, attacker = null) {
@@ -224,9 +253,11 @@ function applyNpcDamage(world, attacker, target, projectile) {
     safeZone: isInSafeZone(world, attacker.position) || isInSafeZone(world, target.position),
   }, world.combatRules);
   if (!permission.allowed) return { applied: false, reason: permission.reason };
-  target.health = clamp(target.health - projectile.damage, 0, target.maxHealth);
+  const blockerBraced = target.role === 'blocker' && target.state === 'windup';
+  const damage = blockerBraced ? Math.max(1, Math.ceil(projectile.damage * 0.45)) : projectile.damage;
+  target.health = clamp(target.health - damage, 0, target.maxHealth);
   const downed = target.health <= 0;
-  if (target.kind === 'civilian') recordCivilianHarm(world, target, projectile.damage, downed);
+  if (target.kind === 'civilian') recordCivilianHarm(world, target, damage, downed);
   target.state = target.hostile ? 'engage' : 'flee';
   target.stateUntilTick = world.tick + 90;
   if (downed) {
@@ -237,15 +268,16 @@ function applyNpcDamage(world, attacker, target, projectile) {
     target.respawnAtTick = target.kind === 'civilian'
       ? world.tick + 450
       : target.source === 'city' ? world.tick + 900 : null;
+    spawnCombatDrop(world, target);
   }
   world.effects.push({
     id: `effect-npc-hit-${projectile.id}`,
-    kind: downed ? 'npc-downed' : 'approved-hit',
-    damage: projectile.damage,
+    kind: blockerBraced ? 'blocker-shield' : downed ? 'npc-downed' : 'approved-hit',
+    damage,
     position: { ...target.position },
     expiresAtTick: world.tick + 8,
   });
-  return { applied: true, damage: projectile.damage };
+  return { applied: true, damage, blockedDamage: Math.max(0, projectile.damage - damage) };
 }
 
 function destroyVehicle(world, vehicle, projectile) {
@@ -343,9 +375,12 @@ function updateProjectiles(world, deltaSeconds) {
     }
     if (!consumed && (projectile.ownerActorId || (projectile.ownerNpcId && attacker?.partyId))) {
       for (const target of Object.values(world.npcs)) {
-        if (!target.alive || target.id === projectile.ownerNpcId || !circleHit(projectile, target)) continue;
-        applyNpcDamage(world, attacker, target, projectile);
-        consumed = true;
+        if (!target.alive || target.id === projectile.ownerNpcId || projectile.hitEntityIds?.includes(target.id) || !circleHit(projectile, target)) continue;
+        const hit = applyNpcDamage(world, attacker, target, projectile);
+        projectile.hitEntityIds ||= [];
+        projectile.hitEntityIds.push(target.id);
+        if (hit.applied && projectile.pierceRemaining > 0) projectile.pierceRemaining -= 1;
+        else consumed = true;
         break;
       }
     }

@@ -2,9 +2,9 @@
   "slot": "006",
   "game_id": "006-lumenwake",
   "name": "Lumenwake",
-  "status": "WORKING TEST",
-  "description": "A polished 1–4 player co-op game-night run: carry fallen light, cover the carrier, revive the party and wake the aurora before the eclipse.",
-  "version": "0.1.0-game-night",
+  "status": "RETEST READY · RESONANCE ROUTES",
+  "description": "A paced 1–4 player co-op run across two selectable arenas with carry-cover-revive play, Aurora Duets, and partner Pulse-combo shrines.",
+  "version": "0.3.1-semantic-seat",
   "min_players": 1,
   "max_players": 4,
   "allowed_seat_types": ["human", "adapter", "ai"],
@@ -18,34 +18,42 @@
     "local_only_default": true
   },
   "join": {"supports_qr": true, "supports_lan_link": true, "supports_room_code": true, "room_code": "AXM1"},
-  "controls": {"phone_controller": true, "keyboard": true, "mouse": false, "touch": true, "shared_screen": true},
-  "session": {"passes_seat_map": true, "returns_result_summary": true, "drop_in_out_later": false, "target_minutes": 3},
+  "controls": {"phone_controller": true, "gamepad": true, "keyboard": true, "mouse": false, "touch": true, "shared_screen": true, "intent_protocol": "axm-semantic-input-v1", "adapter_observation": "axm-seat-screen-semantics-v1", "adapter_observation_profile": "axm.lumenwake-adapter-observation/v1", "gamepad_profile": "axm-universal-xbox-brawl-v0.2.1"},
+  "session": {"passes_seat_map": true, "returns_result_summary": true, "drop_in_out_later": false, "target_minutes": 4},
   "achievements": [
     {"id":"first-light","title":"First Light","rule":"Win a run"},
     {"id":"solo-spark","title":"Solo Spark","rule":"Win with one seat"},
     {"id":"full-constellation","title":"Full Constellation","rule":"Win with four visible seats"},
     {"id":"unbroken-orbit","title":"Unbroken Orbit","rule":"Win without anyone falling"},
     {"id":"three-colors-one-dawn","title":"Three Colors, One Dawn","rule":"Return all three colors"},
+    {"id":"woven-together","title":"Woven Together","rule":"Complete both optional Aurora Duets and win"},
+    {"id":"full-chord","title":"Full Chord","rule":"Complete every partner Pulse-combo shrine and win"},
     {"id":"early-dawn","title":"Early Dawn","rule":"Win with over one minute left"},
     {"id":"pulse-artist","title":"Pulse Artist","rule":"Stun 25 gloom in one run"}
   ],
-  "rules": {"no_hidden_players": true, "host_launch_required": true, "game_does_not_override_hub_seats": true, "team_mode": "coop", "solo_scaling": true, "ai_uses_same_action_vocabulary": true},
+  "rules": {"no_hidden_players": true, "host_launch_required": true, "game_does_not_override_hub_seats": true, "team_mode": "coop", "solo_scaling": true, "ai_uses_same_action_vocabulary": true, "human_and_adapter_same_input_gate": true, "adapter_observation_is_seat_visible_only": true, "explicit_start_gate": true, "optional_shared_objectives": true, "selectable_maps": 2, "partner_combo_objectives": 3},
   "verification": {
     "game_night": {
       "schema": "axm.game-night-seams/v1",
       "controller_delivery": "shared-runtime",
-      "controller_evidence": ["runtime/lumenwake-client.html"],
+      "controller_evidence": ["runtime/lumenwake-client.html", "runtime/lumenwake-server.cjs", "adapter-seat-selftest.cjs"],
       "state_authority": "server",
       "host_reload_recovery": "game-hub-active-launch",
+      "runtime_metadata_endpoint": "/api/host/bootstrap",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
-      "blocking_overlay_escape": "pending",
+      "disconnect_recovery": "verified",
+      "disconnect_recovery_scope": "1280x720 desktop browser in forced phone-controller mode, P2 Human: a fault proxy cut changed the same page from explicit LOCAL LINK LIVE to LOCAL LINK LOST RETRYING, disabled Pulse, Dash, start, map, and movement-stick input, and preserved the server-authoritative run while the existing 700 ms server input TTL expired any held direction; restoring the proxy returned the same page to live automatically and a fresh Pulse incremented P2's authoritative pulse count without changing the run identity or selected map; physical-phone layout/touch behavior, shared-screen recovery, and a server-process restart remain outside this evidence",
+      "disconnect_recovery_evidence": ["runtime/lumenwake-client.html", "runtime/lumenwake-server.cjs", "runtime/lumenwake-core.cjs", "tests/disconnect-recovery-browser-harness.js", "tests/disconnect-recovery.test.js", "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"],
+      "blocking_overlay_escape": "verified",
+      "blocking_overlay_escape_scope": "1280x720 desktop shared-screen browser: Escape at the authoritative ready gate opens a reversible local session menu and a second Escape restores the unchanged gate without starting the run or changing the map; after an explicit Start, Escape opens the same menu while the server clock continues and the run identity, start/end timestamps, and map remain stable, then a second Escape restores the live Three.js world",
+      "blocking_overlay_escape_evidence": ["runtime/lumenwake-client.html", "runtime/lumenwake-server.cjs", "tests/blocking-overlay-escape.test.js", "evidence/2026-08-16-blocking-overlay-escape/RECEIPT.md"],
       "physical_phone_qa": "pending",
-      "adapter_state_interface": "pending"
+      "adapter_state_interface": "verified",
+      "adapter_state_evidence": ["ADAPTER_SEAT_CONTRACT.md", "runtime/seat-interface.cjs", "runtime/lumenwake-server.cjs", "adapter-seat-selftest.cjs"]
     }
   },
   "package": {
     "source_status": "clean-local-cc0-build",
-    "required_paths": ["README.md", "ASSET_LICENSES.md", "runtime/lumenwake-core.cjs", "runtime/lumenwake-server.cjs", "runtime/lumenwake-client.html", "runtime/assets/aurora-field.svg", "runtime/assets/lumenwake-mark.svg", "runtime/assets/lumenwake-logo.svg"]
+    "required_paths": ["README.md", "ASSET_LICENSES.md", "ADAPTER_SEAT_CONTRACT.md", "adapter-seat-selftest.cjs", "runtime/lumenwake-core.cjs", "runtime/lumenwake-server.cjs", "runtime/seat-interface.cjs", "runtime/lumenwake-client.html", "runtime/lumenwake-three.js", "runtime/assets/aurora-field.svg", "runtime/assets/lumenwake-mark.svg", "runtime/assets/lumenwake-logo.svg", "tests/blocking-overlay-escape.test.js", "tests/disconnect-recovery-browser-harness.js", "tests/disconnect-recovery.test.js", "evidence/2026-08-16-blocking-overlay-escape/RECEIPT.md", "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"]
   }
 }

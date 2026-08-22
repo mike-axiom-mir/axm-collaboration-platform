@@ -1,0 +1,47 @@
+{
+  "schema": "axm.live-controller-verification/v1",
+  "game_id": "021-hearthgate-two-sides",
+  "date": "2026-08-09",
+  "status": "software-fix-verified-physical-phone-retest-pending",
+  "reported_issues": [
+    "Phone controllers could not operate the title screen.",
+    "Player 1 could not reliably aim from the phone."
+  ],
+  "root_causes": [
+    "Phone fire/button edges were ignored while the title overlay was open.",
+    "Player 1's large shared-screen pointer vector could outrank the normalized phone aim vector.",
+    "A fast right-stick release could recenter before polling transported its final direction."
+  ],
+  "checks": {
+    "phone_title_controls": {
+      "result": "pass",
+      "evidence": [
+        "A on Phone 1 closed the title and started Two Wardens with both phone seats labeled.",
+        "X on Phone 1 started a one-warden game.",
+        "Y on Phone 1 started a two-warden game.",
+        "A resumed a game paused by the phone Menu button.",
+        "Reload baselined existing edge counters and did not replay a stale title press."
+      ]
+    },
+    "player_one_phone_aim": {
+      "result": "pass",
+      "evidence": [
+        "Pure input regression test proves connected controller aim overrides a -420/180 pointer vector.",
+        "A quick P1 right-stick flick changed the live canvas diagnostic from -1.00,0.00 to 1.00,0.00.",
+        "Moving the shared-screen pointer hard left afterward left P1 aim at 1.00,0.00.",
+        "Aim-release fire now transports a retained fireAimX/fireAimY snapshot instead of relying on live-stick poll timing."
+      ]
+    },
+    "phone_layout": {
+      "result": "pass",
+      "viewport": "844x390",
+      "evidence": "START / FIRE plus A start, X solo, and Y co-op guidance rendered without overflow."
+    },
+    "browser_console": {
+      "result": "pass",
+      "evidence": "No warning or error entries on the game, P1 controller, or P2 controller pages."
+    }
+  },
+  "visual_backend": "BROWSER_PRIMARY",
+  "remaining": "Mike and Errol should retest the fixes on their physical phones; disconnect/reconnect QA remains pending."
+}

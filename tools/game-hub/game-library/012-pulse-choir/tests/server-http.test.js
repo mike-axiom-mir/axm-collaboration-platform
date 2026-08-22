@@ -44,6 +44,10 @@ async function main() {
     assert.equal(result.response.status, 200);
     assert(String(result.value).includes('Movement joystick'));
 
+    result = await request(base, '/games/012/arena-3d.js');
+    assert.equal(result.response.status, 200);
+    assert(String(result.value).includes("getContext('webgl'"));
+
     result = await request(base, '/api/start', { method: 'POST' });
     assert.equal(result.response.status, 200);
     assert.equal(result.value.state.phase, 'countdown');
@@ -77,6 +81,7 @@ async function main() {
     assert.equal(result.value.observation.player.name, 'HTTP Player');
     assert.equal(result.value.observation.setlist.schema, 'axm.pulse-choir-live-setlist/v1');
     assert.equal(result.value.observation.show.schema, 'axm.pulse-choir-show-arc/v1');
+    assert.equal(result.value.observation.venue.id, 'moonwell-atrium');
 
     result = await request(base, '/api/action', {
       method: 'POST',
@@ -133,6 +138,8 @@ async function main() {
     assert.equal(result.response.status, 200);
     assert.equal(result.value.state.show.roundNumber, 2);
     assert.equal(result.value.state.seed, nextPreview.seed);
+    assert.equal(result.value.state.venue.id, 'prism-causeway');
+    assert.equal(result.value.state.beats.length, 16);
     assert.deepEqual(result.value.state.setlist.acts.map(act => act.kind), nextPreview.acts.map(act => act.kind));
     assert.deepEqual(result.value.state.setlist.conductor, nextPreview.conductor);
 

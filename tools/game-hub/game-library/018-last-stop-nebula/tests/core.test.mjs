@@ -5,6 +5,7 @@ import {
   REVIEW_LIMIT,
   STARTING_DEBT,
   EVENTS,
+  DISPATCHES,
   DECISION_LEGACY_CATALOG,
   createNewGame,
   derivedStats,
@@ -17,6 +18,7 @@ import {
   decisionLegacy,
   decisionRevealFrame,
   debtLiberation,
+  dispatchStatus,
   tickGame,
   arrivalForecast,
   queueConstellation,
@@ -155,7 +157,76 @@ test('loaded saves are versioned, bounded, and keep nested defaults', () => {
   assert.equal(sanitizeLoadedState({ ...source, version: '0.22.0-beta' }).version, GAME_VERSION);
   assert.equal(sanitizeLoadedState({ ...source, version: '0.23.0-beta' }).version, GAME_VERSION);
   assert.equal(sanitizeLoadedState({ ...source, version: '0.24.0-beta' }).version, GAME_VERSION);
+  assert.equal(sanitizeLoadedState({ ...source, version: '0.25.0-beta' }).version, GAME_VERSION);
   assert.equal(sanitizeLoadedState({ ...source, version: 'old' }), null);
+});
+
+test('signal dispatches add rotating manual and clean-service goals without touching the economy', () => {
+  assert.deepEqual(DISPATCHES.map(dispatch => dispatch.id), ['lane-circuit', 'hands-on', 'clean-sweep', 'early-clear']);
+  const state = createNewGame('standard', 4);
+  const before = {
+    reviews: state.badReviews,
+    credits: state.credits,
+    fuel: state.fuel,
+    stock: state.stock,
+    energy: state.energy
+  };
+  for (const lane of ['fuel', 'mart', 'garage']) {
+    const customer = spawnCustomer(state, () => .5, lane);
+    customer.patience = customer.maxPatience;
+    assert.equal(serveNext(state, lane).ok, true);
+  }
+  const captured = dispatchStatus(state);
+  assert.equal(captured.id, 'lane-circuit');
+  assert.equal(captured.status, 'completed');
+  assert.equal(captured.progress, 3);
+  assert.equal(captured.marks, 3);
+  assert.equal(captured.completed, 1);
+  assert.equal(state.badReviews, before.reviews);
+  assert.ok(state.credits >= before.credits);
+  assert.ok(state.fuel < before.fuel);
+  assert.ok(state.stock < before.stock);
+  assert.ok(state.energy < before.energy);
+
+  state.elapsed = state.dispatch.nextAt;
+  tickGame(state, .1, () => .5);
+  const rotated = dispatchStatus(state);
+  assert.equal(rotated.id, 'hands-on');
+  assert.equal(rotated.status, 'active');
+  assert.equal(rotated.completed, 1);
+  assert.equal(rotated.marks, 3);
+});
+
+test('clean-sweep fails on a lost customer while a timeout rotates into another authored dispatch', () => {
+  const state = createNewGame('standard', 4);
+  state.spawnClock = 100;
+  state.dispatch = {
+    ...state.dispatch,
+    id: 'clean-sweep',
+    progress: 3,
+    deadline: state.elapsed + 30
+  };
+  const customer = spawnCustomer(state, () => .5, 'fuel');
+  customer.patience = .01;
+  tickGame(state, .1, () => .5);
+  assert.equal(dispatchStatus(state).status, 'failed');
+  assert.equal(dispatchStatus(state).failed, 1);
+  const failedAt = state.dispatch.resolvedAt;
+  state.elapsed = state.dispatch.nextAt;
+  tickGame(state, .1, () => .5);
+  assert.equal(dispatchStatus(state).status, 'active');
+  assert.ok(state.dispatch.startedAt > failedAt);
+});
+
+test('dispatch marks survive migration and contribute only to the retirement score', () => {
+  const state = createNewGame('standard', 4);
+  const baseline = calculateScore(state);
+  state.dispatch.marks = 10;
+  assert.equal(calculateScore(state), baseline + 300);
+  const loaded = sanitizeLoadedState({ ...JSON.parse(JSON.stringify(state)), version: '0.25.0-beta' });
+  assert.equal(dispatchStatus(loaded).marks, 10);
+  assert.equal(dispatchStatus(loaded).id, 'lane-circuit');
+  assert.equal(loaded.version, GAME_VERSION);
 });
 
 test('every authored event choice projects one unique permanent station trace', () => {

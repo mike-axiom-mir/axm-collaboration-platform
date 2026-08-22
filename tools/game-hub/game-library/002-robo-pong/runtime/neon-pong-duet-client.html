@@ -20,6 +20,7 @@
   <main class="game-layout">
     <section class="arena-shell" id="arenaShell" aria-label="AXM Pong arena">
       <canvas id="game" width="1200" height="800" aria-label="Two-player Pong arena"></canvas>
+      <canvas id="game3d" width="1200" height="800" aria-hidden="true"></canvas>
       <div class="arena-vignette" aria-hidden="true"></div>
 
       <section class="launch-panel" id="launchPanel" aria-labelledby="launchTitle">
@@ -28,10 +29,10 @@
         <p id="launchCopy">Protect the core together. One player gets an AI wingmate; two players share the defense.</p>
         <div class="arena-picker" id="arenaPicker" aria-label="Choose arena"></div>
         <div class="launch-actions">
-          <button class="primary-action" id="startButton" type="button">ENTER ARENA</button>
+          <button class="primary-action" id="startButton" type="button">START MATCH</button>
           <button class="quiet-action" id="nextButton" type="button" hidden>NEXT CHAPTER</button>
         </div>
-        <p class="seat-note" id="seatNote">P1 keyboard: A / D · P2 keyboard: arrows · Space uses power</p>
+        <p class="seat-note" id="seatNote">The match waits here until the host presses Start Match.</p>
       </section>
 
       <div class="event-toast" id="eventToast" aria-live="polite">READY</div>
@@ -47,7 +48,17 @@
     <section class="controller-panel" id="controllerPanel" hidden aria-label="Player controller">
       <div class="controller-identity"><small id="controllerSeat">P1 · DUET</small><strong id="controllerName">PLAYER</strong><span id="controllerStatus">READY</span></div>
       <div class="controller-mission"><small id="controllerMissionLabel">CORE</small><strong id="controllerMissionValue">5 / 5</strong></div>
-      <div class="ability-panel"><small>HELD ABILITY</small><strong id="powerName">RANDOM SPECIAL</strong><span id="powerState">READY</span></div>
+      <div class="controller-match" id="controllerMatch" hidden>
+        <small>NEXT MATCH</small>
+        <strong id="controllerMatchTitle">CHAPTER 01</strong>
+        <div class="controller-arena-picker" id="controllerArenaPicker" aria-label="Choose chapter"></div>
+        <div class="controller-match-actions">
+          <button id="controllerStartButton" type="button">START MATCH</button>
+          <button id="controllerNextButton" type="button" hidden>NEXT CHAPTER</button>
+        </div>
+        <span id="controllerMatchNote">Either phone can choose the chapter and start the shared countdown.</span>
+      </div>
+      <div class="ability-panel" id="abilityPanel"><small>HELD ABILITY</small><strong id="powerName">RANDOM SPECIAL</strong><span id="powerState">READY</span></div>
     </section>
   </main>
 
@@ -59,6 +70,7 @@
 
   <script src="aetherglass/axm-aetherglass.js"></script>
   <script src="aetherglass/axm-lighting-director.js"></script>
+  <script src="neon-pong-duet-depth.js"></script>
   <script src="neon-pong-duet.js"></script>
 </body>
 </html>

@@ -155,6 +155,9 @@ function errorPayload(error) {
 }
 
 function staticFileForPath(projectRoot, pathname) {
+  if (pathname === '/vendor/three.module.js') {
+    return path.resolve(projectRoot, '../../../..', 'shared', 'vendor', 'three-r160', 'three.module.js');
+  }
   const aliases = {
     '/': 'client/launcher/launcher.html',
     '/index.html': 'client/launcher/launcher.html',
@@ -212,17 +215,40 @@ function serveStatic(projectRoot, pathname, response) {
   return true;
 }
 
+function localGamepadBindings(sessionManager, { sessionId, roomCode, partyId = 'all' }) {
+  if (!isValidSessionId(sessionId)) return { ok: false, statusCode: 400, reason: 'invalid-session' };
+  if (!validatePartyId(partyId)) return { ok: false, statusCode: 400, reason: 'invalid-party' };
+  const session = sessionManager.getSession(sessionId);
+  if (!session || session.status !== 'running') return { ok: false, statusCode: 404, reason: 'session-not-running' };
+  if (roomCode !== session.roomCode) return { ok: false, statusCode: 403, reason: 'room-session-mismatch' };
+  const bindings = Object.values(session.world.actors)
+    .filter((actor) => actor.controller === 'human' && (partyId === 'all' || actor.partyId === partyId))
+    .sort((a, b) => a.slot - b.slot)
+    .map((actor, gamepadIndex) => ({
+      gamepadIndex,
+      actorId: actor.id,
+      seatId: actor.seatId,
+      slot: actor.slot,
+      displayName: actor.displayName,
+      partyId: actor.partyId,
+      token: session.seatTokens[actor.seatId],
+      acceptedSeq: Number(actor.gamepadInputSequence) || 0,
+    }));
+  return { ok: true, sessionId: session.id, roomCode: session.roomCode, partyId, profile: 'axm-universal-xbox-brawl-v0.2.1', bindings };
+}
+
 function createDistrictPartyServer(options = {}) {
   const projectRoot = path.resolve(options.projectRoot || path.join(__dirname, '..'));
+  const storageRoot = path.resolve(options.storageRoot || process.env.AXM_DISTRICT_PARTY_DATA_ROOT || path.join(projectRoot, 'local-data'));
   const environmentPort = Number(process.env.PORT);
   const port = options.port ?? (Number.isInteger(environmentPort) && environmentPort > 0 ? environmentPort : DEFAULT_PORT);
   const host = options.host || process.env.HOST || '0.0.0.0';
   const logger = options.logger || console;
-  const sessionManager = options.sessionManager || new SessionManager({ projectRoot });
+  const sessionManager = options.sessionManager || new SessionManager({ projectRoot, groupSaveDirectory: path.join(storageRoot, 'group-saves') });
   const worldLoop = new WorldLoop(() => sessionManager.getRunningSession(), {
     processSession: (session) => sessionManager.processPendingGroupSaveOperation(session),
   });
-  const pidPath = path.join(projectRoot, '.axm-district-party.pid');
+  const pidPath = path.join(storageRoot, '.axm-district-party.pid');
 
   const server = http.createServer(async (request, response) => {
     try {
@@ -298,6 +324,20 @@ function createDistrictPartyServer(options = {}) {
 
       if (request.method === 'GET' && pathname === '/api/maps') {
         sendJson(response, 200, { ok: true, ...publicMapCatalog(projectRoot) });
+        return;
+      }
+
+      if (request.method === 'GET' && pathname === '/api/local-gamepad-bindings') {
+        if (!isLoopbackAddress(request.socket.remoteAddress)) {
+          sendJson(response, 403, { ok: false, error: 'host-local-gamepad-bindings-required' });
+          return;
+        }
+        const result = localGamepadBindings(sessionManager, {
+          sessionId: url.searchParams.get('sessionId') || url.searchParams.get('session'),
+          roomCode: url.searchParams.get('roomCode') || url.searchParams.get('room'),
+          partyId: url.searchParams.get('party') || 'all',
+        });
+        sendJson(response, result.ok ? 200 : result.statusCode, result);
         return;
       }
 
@@ -406,6 +446,7 @@ function createDistrictPartyServer(options = {}) {
   });
 
   function writePidFile() {
+    fs.mkdirSync(path.dirname(pidPath), { recursive: true, mode: 0o700 });
     fs.writeFileSync(pidPath, `${process.pid}\n`, { encoding: 'utf8', mode: 0o600 });
   }
 
@@ -498,6 +539,7 @@ if (require.main === module) {
 module.exports = {
   createDistrictPartyServer,
   isLoopbackAddress,
+  localGamepadBindings,
   privateLanAddresses,
   readJsonBody,
   serveStatic,

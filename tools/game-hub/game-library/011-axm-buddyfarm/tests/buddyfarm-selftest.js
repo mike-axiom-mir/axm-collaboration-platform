@@ -140,6 +140,9 @@ function testSharedPresentationContract() {
   assert.match(app, /interpolateGridMove/);
   assert.match(app, /12,288×8,192/);
   assert.match(page, /id="map-toggle"/);
+  assert.match(page, /id="controls-menu"/);
+  assert.match(page, /universal-gamepad\.js/);
+  assert.match(page, /not physical-device evidence/);
   assert.match(page, /One shared BuddyFarm world/);
 }
 
@@ -221,9 +224,15 @@ function testSharedWorldAndControllerRouting() {
 
   const defaults = core.normalizeRoster([]);
   assert.deepStrictEqual(defaults.map(seat => [seat.id, seat.type]), [['p1', 'human'], ['p2', 'human']]);
-  assert.deepStrictEqual(core.gamepadPlayerIds(state.actors, 'p1', 1), ['p2']);
+  assert.deepStrictEqual(core.gamepadPlayerIds(state.actors, 'p1', 1), ['p1']);
   assert.deepStrictEqual(core.gamepadPlayerIds(state.actors, 'p1', 2), ['p1', 'p2']);
-  assert.strictEqual(core.gamepadPlayerIds(defaults, 'p1', 3).includes('p3'), false);
+  assert.deepStrictEqual(core.gamepadPlayerIds(state.actors, 'p1', 3), ['p1', 'p2']);
+  const threeHumans = core.normalizeRoster([
+    { slot: 1, seat_id: 'seat_1', display_name: 'One', type: 'human' },
+    { slot: 2, seat_id: 'seat_2', display_name: 'Two', type: 'human' },
+    { slot: 3, seat_id: 'seat_3', display_name: 'Three', type: 'human' }
+  ]);
+  assert.deepStrictEqual(core.gamepadPlayerIds(threeHumans, 'p1', 3), ['p1', 'p2', 'p3']);
 }
 
 function testBoundedAiHelper() {
@@ -252,9 +261,13 @@ async function testRuntime() {
     assert.match(controller, /Action/i);
     assert.match(controller, /Work/i);
     assert.match(controller, /0\.2 seconds/i);
+    const universalGamepad = await fetch(`http://127.0.0.1:${port}/games/011/universal-gamepad.js`).then(response => response.text());
+    assert.match(universalGamepad, /axm-universal-xbox-brawl-v0\.2\.1/);
     const launcher = await fetch(`http://127.0.0.1:${port}/api/launcher-state`).then(response => response.json());
     assert.strictEqual(launcher.controllerLinks.length, 2);
     assert.strictEqual(launcher.optionalAiHelper.enabled, false);
+    assert.strictEqual(launcher.controls.gamepadProfile, 'axm-universal-xbox-brawl-v0.2.1');
+    assert.strictEqual(launcher.controls.standardMappingOnly, true);
     assert.strictEqual(launcher.world.fullyTransparent, true);
     assert.strictEqual(launcher.world.authoredCityContentImported, false);
     const statePacket = await fetch(`http://127.0.0.1:${port}/api/state`).then(response => response.json());

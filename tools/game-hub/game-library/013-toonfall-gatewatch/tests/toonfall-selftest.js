@@ -31,19 +31,40 @@ test('initial state is deterministic and valid', () => {
   assert.deepStrictEqual(core.validate(fresh()), { pass: true, errors: [] });
 });
 
-test('roster admits exactly one human and keeps Moxie outside the seat map', () => {
+test('roster keeps a human first seat and preserves the selected partner authority', () => {
   const roster = core.normalizeRoster([
     { seat_id: 'human-a', display_name: 'Mike', type: 'human' },
     { seat_id: 'human-b', display_name: 'Second Human', type: 'human' },
     { seat_id: 'bot', display_name: 'Foreign Bot', type: 'ai' }
   ]);
   const state = core.createInitialState(roster, { now: 1, seed: 4 });
-  assert.strictEqual(roster.length, 1);
+  assert.strictEqual(roster.length, 2);
   assert.strictEqual(roster[0].name, 'Mike');
-  assert.strictEqual(state.roster.length, 1);
-  assert.strictEqual(state.ally.id, 'moxie');
-  assert.strictEqual(state.ally.kind, 'ai-companion');
-  assert.deepStrictEqual(state.truth, { stateAuthority: 'managed-local-server', humanSeats: 1, aiCompanions: 1, splitScreen: false, internetRequired: false });
+  assert.strictEqual(roster[1].name, 'Second Human');
+  assert.strictEqual(state.roster.length, 2);
+  assert.strictEqual(state.ally.id, 'p2');
+  assert.strictEqual(state.ally.kind, 'human');
+  assert.deepStrictEqual(state.truth, { stateAuthority: 'managed-local-server', humanSeats: 2, connectedAiSeats: 0, inGameAiSeats: 0, partnerMode: 'human', splitScreen: false, internetRequired: false });
+  const adapter = core.createInitialState([{ display_name: 'Mike', type: 'human' }, { display_name: 'Nova', type: 'adapter', adapter_id: 'nova' }], { now: 1, seed: 4 });
+  assert.strictEqual(adapter.ally.kind, 'adapter');
+  assert.strictEqual(adapter.truth.partnerMode, 'connected-ai');
+  const builtIn = fresh(1);
+  assert.strictEqual(builtIn.ally.kind, 'ai');
+  assert.strictEqual(builtIn.truth.partnerMode, 'in-game-ai');
+});
+
+test('human and connected-AI partners use the p2 semantic input lane while in-game AI rejects it', () => {
+  const human = core.createInitialState([{ display_name: 'Mike', type: 'human' }, { display_name: 'Errol', type: 'human' }], { now: 1, seed: 4 });
+  human.phase = core.PHASES.EXPLORE;
+  assert.strictEqual(core.applyAction(human, 'p2', { type: 'input', seq: 1, moveX: 1, aimX: 1, firing: true }, 2).ok, true);
+  core.step(human, 50, 52);
+  assert(human.ally.x > 1145);
+  const adapter = core.createInitialState([{ display_name: 'Mike', type: 'human' }, { display_name: 'Nova', type: 'adapter' }], { now: 1, seed: 4 });
+  adapter.phase = core.PHASES.EXPLORE;
+  assert.strictEqual(core.applyAction(adapter, 'p2', { type: 'input', seq: 1, moveY: 1, aimY: 1 }, 2).ok, true);
+  const builtIn = fresh(1);
+  builtIn.phase = core.PHASES.EXPLORE;
+  assert.strictEqual(core.applyAction(builtIn, 'p2', { type: 'input', seq: 1 }, 2).reason, 'in-game-ai-controls-partner');
 });
 
 test('three story advances reach briefing and open Bloomvale exploration', () => {
@@ -75,6 +96,20 @@ test('expanded Bloomvale exposes five districts, five neighbors, four activities
     assert(unlock.progress && unlock.progress.goal > 0);
     assert(unlock.progress.label);
   });
+});
+
+test('five authored watches carry distinct mixes, cues, and a final Ink Crown', () => {
+  assert.strictEqual(core.WAVE_CHRONICLE.length, 5);
+  assert.deepStrictEqual(core.CONFIG.waveCounts, [8, 12, 17, 21, 25]);
+  assert.strictEqual(new Set(core.WAVE_CHRONICLE.map(watch => watch.id)).size, 5);
+  core.WAVE_CHRONICLE.forEach((watch, index) => {
+    assert.strictEqual(watch.count, core.CONFIG.waveCounts[index]);
+    assert(watch.title && watch.cue && watch.accent);
+    assert(Math.abs(Object.values(watch.mix).reduce((sum, value) => sum + value, 0) - 1) < .0001);
+  });
+  assert.strictEqual(core.WAVE_CHRONICLE[4].boss, 'crown');
+  assert(core.ENEMY_TYPES.siphon.diversionRadius === 0);
+  assert(core.ENEMY_TYPES.crown.hp >= 500);
 });
 
 test('meeting neighbors grants the field map, Moxie overclock, and Heart Pocket', () => {
@@ -151,7 +186,7 @@ test('semantic input rejects stale sequence numbers and unknown actors', () => {
   assert.strictEqual(core.applyAction(state, 'p1', { type: 'input', seq: core.CONFIG.maxInputSeq + 1 }, 605).reason, 'invalid-sequence');
   assert.strictEqual(core.applyAction(state, 'p1', { type: 'input', seq: state.lastInputSeq + core.CONFIG.maxInputSeqGap + 1 }, 606).reason, 'sequence-gap-too-large');
   assert.strictEqual(state.lastInputSeq, 2, 'rejected sequences must not poison the accepted counter');
-  assert.strictEqual(core.applyAction(state, 'p2', { type: 'input', seq: 3 }, 603).reason, 'unknown-actor');
+  assert.strictEqual(core.applyAction(state, 'p3', { type: 'input', seq: 3 }, 603).reason, 'unknown-actor');
 });
 
 test('authoritative time is monotonic and validation rejects poisoned counters', () => {
@@ -260,7 +295,7 @@ test('Moxie autonomously targets and fires at an enemy', () => {
   state.nextSpawnAt = 999999;
   state.enemies.push({ id: 'ai-target', kind: 'bruiser', x: state.ally.x + 260, y: state.ally.y, vx: 0, vy: 0, facingX: 0, facingY: 0, health: 105, maxHealth: 105, radius: 30, lastAttackAt: 0, lastHitAt: 0, wobble: 0 });
   core.step(state, 50, 1000);
-  assert(state.projectiles.some(projectile => projectile.owner === 'moxie'));
+  assert(state.projectiles.some(projectile => projectile.owner === 'p2'));
   assert(state.ally.shots >= 1);
 });
 
@@ -476,20 +511,51 @@ test('Heartlight reaching zero produces an explicit defeat result', () => {
   assert.strictEqual(state.result.beaconHealth, 0);
 });
 
-test('cleared waves reopen exploration and final wave produces victory', () => {
+test('cleared watches reopen exploration and all five produce bounded victory receipts', () => {
   const state = enterWave(fresh());
-  state.waveSpawned = state.waveTarget;
-  state.enemies = [];
-  core.step(state, 50, 1000);
-  assert.strictEqual(state.phase, core.PHASES.EXPLORE);
-  state.wave = core.CONFIG.waveCounts.length;
-  state.phase = core.PHASES.WAVE;
-  state.waveTarget = core.CONFIG.waveCounts[2];
-  state.waveSpawned = state.waveTarget;
-  state.enemies = [];
-  core.step(state, 50, 1100);
+  let now = 1000;
+  for (let wave = 1; wave <= core.WAVE_CHRONICLE.length; wave += 1) {
+    assert.strictEqual(state.wave, wave);
+    assert.strictEqual(state.chronicle.currentWatchId, core.WAVE_CHRONICLE[wave - 1].id);
+    state.waveSpawned = state.waveTarget;
+    state.enemies = [];
+    core.step(state, 50, now);
+    now += 100;
+    if (wave < core.WAVE_CHRONICLE.length) {
+      assert.strictEqual(state.phase, core.PHASES.EXPLORE);
+      assert.strictEqual(core.resolveInteraction(state, now).interaction, 'wave-start');
+      now += 100;
+    }
+  }
   assert.strictEqual(state.phase, core.PHASES.VICTORY);
   assert.strictEqual(state.result.victory, true);
+  assert.deepStrictEqual(state.chronicle.clearedWatchIds, core.WAVE_CHRONICLE.map(watch => watch.id));
+  assert.strictEqual(state.chronicle.receipts.length, 5);
+  assert.strictEqual(state.result.chronicle.receipts.length, 5);
+  assert.strictEqual(state.result.chronicle.receipts[4].title, 'Crown of Ink');
+  assert.strictEqual(core.validate(state).pass, true);
+});
+
+test('late watches add Heartlight-focused Siphons and one deterministic Crown finale', () => {
+  const state = enterWave(fresh());
+  state.wave = 4;
+  state.phase = core.PHASES.WAVE;
+  state.waveTarget = core.WAVE_CHRONICLE[3].count;
+  state.waveSpawned = 1;
+  state.nextSpawnAt = Number.MAX_SAFE_INTEGER;
+  state.player.x = 900;
+  state.player.y = 675;
+  state.enemies = [{ id: 'siphon-proof', kind: 'siphon', x: 915, y: 675, vx: 0, vy: 0, facingX: 0, facingY: 0, health: 68, maxHealth: 68, radius: 23, lastAttackAt: 0, lastHitAt: 0, wobble: 0, windupStartedAt: 0, windupUntil: 0, windupTargetId: null, attackAimX: 0, attackAimY: 0 }];
+  core.step(state, 50, 1000);
+  assert(state.enemies[0].x > 915, 'Siphon should continue toward the Heartlight instead of biting the nearby Scout');
+  assert.strictEqual(state.enemies[0].windupTargetId, null);
+  state.wave = 5;
+  state.waveTarget = core.WAVE_CHRONICLE[4].count;
+  state.waveSpawned = state.waveTarget - 1;
+  state.enemies = [];
+  assert.strictEqual(core.spawnEnemy(state, 1100), true);
+  assert.strictEqual(state.enemies[0].kind, 'crown');
+  assert.strictEqual(state.enemies[0].health, core.ENEMY_TYPES.crown.hp);
 });
 
 test('observation and snapshots are detached read-only transport values', () => {
@@ -504,10 +570,28 @@ test('observation and snapshots are detached read-only transport values', () => 
 });
 
 test('client sources are local-only and the document exposes a responsive viewport', () => {
-  const sources = ['runtime/index.html', 'runtime/styles.css', 'runtime/app.js', 'runtime/game-core.js'].map(relative => fs.readFileSync(path.join(gameDir, relative), 'utf8')).join('\n');
+  const sources = ['runtime/index.html', 'runtime/styles.css', 'runtime/app.js', 'runtime/game-core.js', 'runtime/bloomvale-three.js'].map(relative => fs.readFileSync(path.join(gameDir, relative), 'utf8')).join('\n');
   assert(!/(?:src|href)=["']https?:\/\//i.test(sources));
   assert(/name=["']viewport["']/i.test(sources));
   assert(/prefers-reduced-motion/i.test(sources));
+});
+
+test('hybrid renderer supplies a local low-poly WebGL world with quantized 16-step color', () => {
+  const html = fs.readFileSync(path.join(gameDir, 'runtime/index.html'), 'utf8');
+  const css = fs.readFileSync(path.join(gameDir, 'runtime/styles.css'), 'utf8');
+  const app = fs.readFileSync(path.join(gameDir, 'runtime/app.js'), 'utf8');
+  const three = fs.readFileSync(path.join(gameDir, 'runtime/bloomvale-three.js'), 'utf8');
+  assert(html.includes('id="world3d"'));
+  assert(html.indexOf('bloomvale-three.js') < html.indexOf('app.js'));
+  assert(/getContext\('webgl'/.test(three));
+  assert(/gl\.enable\(gl\.DEPTH_TEST\)/.test(three));
+  assert(/function perspective\(/.test(three));
+  assert(/function lookAt\(/.test(three));
+  assert(/floor\([^\n]*\*15\.0\+\.5\)\/15\.0/.test(three));
+  assert(/canvas\.dataset\.palette = '16-step-channel-quantized'/.test(three));
+  assert(/stage3d\.render\(time, state, reducedMotion\)/.test(app));
+  assert(/hybrid-webgl-low-poly-plus-canvas-2d-authority/.test(app));
+  assert(/#world3d[\s\S]*image-rendering: pixelated/.test(css));
 });
 
 test('client immediately resynchronizes semantic input after reload or reconnect', () => {
@@ -710,13 +794,15 @@ test('accessibility and gamepad polish expose modal, motion, and menu contracts'
   assert(/visibilitychange/.test(app));
 });
 
-test('manifest truth stays one-human, one-AI, no split-screen', () => {
+test('manifest truth exposes the three second-seat choices on one shared screen', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(gameDir, 'game.manifest.json'), 'utf8'));
-  assert.strictEqual(manifest.max_players, 1);
-  assert.strictEqual(manifest.rules.fixed_human_seats, 1);
-  assert.strictEqual(manifest.rules.server_owned_ai_companions, 1);
+  assert.strictEqual(manifest.max_players, 2);
+  assert.deepStrictEqual(manifest.allowed_seat_types, ['human', 'adapter', 'ai']);
+  assert.deepStrictEqual(manifest.rules.second_seat_choices, ['human', 'adapter', 'ai']);
   assert.strictEqual(manifest.rules.split_screen, false);
-  assert.strictEqual(manifest.rules.defense_waves, 3);
+  assert.strictEqual(manifest.rules.defense_waves, 5);
+  assert.strictEqual(manifest.rules.named_defense_watches, 5);
+  assert.strictEqual(manifest.session.target_minutes, 18);
 });
 
 test('complete game package passes the shared package verifier', () => {

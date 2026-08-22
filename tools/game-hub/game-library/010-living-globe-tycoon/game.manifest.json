@@ -2,12 +2,12 @@
   "slot": "010",
   "game_id": "010-living-globe-tycoon",
   "name": "Living Globe Tycoon · Island Steward",
-  "status": "ACCEPT FOR TEST",
-  "description": "A deep but casual island-scale stewardship game on the living globe, with deterministic ecology and economy plus a separate rules lab for inspecting the underlying model.",
-  "version": "0.10.0-local-intake",
+  "status": "TEST · STEWARDSHIP TOUR EXPANSION",
+  "description": "A walkable local 3D island stewardship game with deterministic ecology, economy, twelve seeded errands and repeatable four-mission tours, plus a separate rules lab for inspecting the underlying model.",
+  "version": "0.10.1-stewardship-tour-test",
   "min_players": 1,
-  "max_players": 2,
-  "allowed_seat_types": ["human", "adapter", "ai"],
+  "max_players": 1,
+  "allowed_seat_types": ["human"],
   "play_modes": [
     {
       "id": "walkable-globe",
@@ -50,7 +50,9 @@
     "passes_seat_map": false,
     "returns_result_summary": true,
     "drop_in_out_later": true,
-    "scale": "bounded-island-game-world"
+    "scale": "bounded-island-game-world",
+    "target_minutes": 16,
+    "repeatable_stewardship_tours": true
   },
   "rules": {
     "no_hidden_players": true,
@@ -58,7 +60,11 @@
     "game_does_not_override_hub_seats": true,
     "local_authoritative_state": true,
     "foundation_planet_ownership": false,
-    "runtime_internet_required": false
+    "runtime_internet_required": false,
+    "walkable_renderer": "three-r160-local",
+    "mission_catalog_size": 12,
+    "missions_per_tour": 4,
+    "expanded_catalog_unlock_wins": 2
   },
   "verification": {
     "game_night": {
@@ -69,11 +75,15 @@
       "authority_scope": "The managed server owns launch/session routing; the experimental game world remains explicitly browser-local inside this package.",
       "host_reload_recovery": "game-hub-active-launch",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
-      "blocking_overlay_escape": "pending",
-      "physical_phone_qa": "not-applicable",
-      "adapter_state_interface": "pending",
-      "adapter_state_evidence": ["docs/AI_NATIVE_SEAT_CONTRACT.md", "runtime/game/AI_PLAYER_SEAT_API.md"]
+      "disconnect_recovery": "not-applicable",
+      "disconnect_recovery_scope": "Slot 010 exposes no in-session controller, room, SSE, WebSocket or gameplay API transport to disconnect: the managed server owns launch metadata and static delivery only, while both play modes execute browser-locally. As a countercheck at 1280x720, the loaded walkable world continued through a zero-listener server outage, then a same-port server restart and page reload visibly restored the browser-local world and active mission. External adapter transport, physical-network behavior and cross-browser save roaming remain outside this scope.",
+      "disconnect_recovery_evidence": ["runtime/server.js", "runtime/game/index.html", "KNOWN_LIMITS.md", "tests/disconnect-recovery.test.js", "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"],
+      "blocking_overlay_escape": "verified",
+      "blocking_overlay_escape_scope": "1280x720 desktop browser on the production walkable route: Escape at the entry dialog enters the live browser-local world; Escape closes the Palace and Island Brief dialogs and restores focus; Escape with no blocker is inert. The separate rules-lab route presents no blocking overlay, and focused Escape leaves turn 0 and revision 0 unchanged. Browser-local ecology, timers and observation revisions continue normally while overlays are read.",
+      "blocking_overlay_escape_evidence": ["runtime/game/index.html", "runtime/game/core/steward-panel.js", "runtime/game/core/steward-infographics.js", "tests/blocking-overlay-escape.test.js", "evidence/2026-08-16-blocking-overlay-escape/RECEIPT.md"],
+      "physical_phone_qa": "pending",
+      "physical_phone_qa_scope": "The same-screen game advertises touch input, but physical touch feel, handset layout, alternate mobile viewports and device performance remain untested. It has no remote phone-controller or LAN join route; this pending gate concerns the advertised local touch experience only.",
+      "adapter_state_interface": "not-applicable"
     }
   },
   "package": {
@@ -84,10 +94,18 @@
       "SOURCE_PACKAGE.json",
       "runtime/server.js",
       "runtime/game/index.html",
+      "runtime/game/core/island-visual-polish.js",
+      "runtime/game/core/walkable-missions.js",
+      "runtime/game/MISSION_SYSTEM.md",
+      "runtime/game/tests/run-tests.js",
+      "tests/blocking-overlay-escape.test.js",
+      "tests/disconnect-recovery.test.js",
       "runtime/game/game/tycoon-steward/index.html",
       "runtime/game/README.md",
       "runtime/game/TEST_REPORT.md",
-      "docs/AI_NATIVE_SEAT_CONTRACT.md"
+      "docs/AI_NATIVE_SEAT_CONTRACT.md",
+      "evidence/2026-08-16-blocking-overlay-escape/RECEIPT.md",
+      "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"
     ]
   }
 }

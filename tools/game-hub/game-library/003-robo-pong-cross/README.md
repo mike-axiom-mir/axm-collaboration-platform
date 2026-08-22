@@ -1,8 +1,10 @@
 # AXM Pong: Cross 003
 
-Status: **WORKING TEST** · local browser and Game Night build · physical 3/4-phone QA pending.
+Status: **TEST** · working local browser and Game Night build · physical phone/gamepad QA pending.
 
-Cross is the 3–4 player half of the AXM Pong pair. It uses one server-authoritative four-edge arena, real shared-screen presentation, controller-only phone routes, three arena maps, and separate competitive and cooperative rules.
+Cross is the 3–4 player half of the AXM Pong pair. It uses one server-authoritative four-edge arena, real shared-screen presentation, controller-only phone routes, three arena maps, separate competitive and cooperative rules, and a transparent low-poly WebGL relief layer.
+
+The authored raster plates remain the environmental backdrop. A depth-tested WebGL canvas now raises all four live edges, the rotating central prism, frame rails, and each active ball into faceted 3D. The shader uses sixteen light steps per color channel; the original Canvas presentation remains the explicit no-WebGL fallback.
 
 ## Play modes
 
@@ -23,6 +25,15 @@ Each arena uses a generated project-local raster plate behind live paddles, ball
 - Shared keyboard: P1 **A / D**, P2 **J / L**, P3 **W / S**, P4 **Up / Down Arrow**.
 - Number keys **1–4** trigger the corresponding player's power when that seat is human.
 - **Escape** pauses or resumes from the shared screen.
+
+Standard-mapped Xbox/Brawl-style gamepads also work from the shared screen.
+Gamepad indexes stay bound to their matching human seats: pads 1–2 use left
+stick X or D-pad left/right for the horizontal P1/P2 edges; pads 3–4 use left
+stick Y or D-pad up/down for the vertical P3/P4 edges. `A` or right trigger
+starts, uses power, and rematches; Menu pauses/resumes. The status badge names
+ready seats and visibly rejects non-standard mappings or pads bound to
+non-human/unused seats instead of guessing. A 750 ms heartbeat renews the
+server's existing input lease while a pad remains held.
 
 The controller-only phone layout preserves the cached shell and avoids rendering a duplicate full arena.
 
@@ -53,4 +64,14 @@ Every accepted human input renews a bounded server-side lease. The controller sh
 
 ## Honest verification boundary
 
-Local HTTP, authoritative state, three/four-seat configuration, map/mode behavior, keyboard/controller delivery, pause, and browser rendering can be tested on this machine. Simultaneous physical-device input, vibration, same-Wi-Fi recovery, and installable-shell behavior remain separate phone QA.
+Local HTTP, authoritative state, three/four-seat configuration, map/mode
+behavior, keyboard/controller delivery, universal gamepad mapping, pause, and
+browser rendering can be tested on this machine. The visibly labeled
+`?gamepadQa=1` route can exercise the actual browser adapter without pretending
+to be hardware evidence. Simultaneous physical-device input, vibration,
+USB/Bluetooth reconnect, same-Wi-Fi recovery, and installable-shell behavior
+remain separate device QA.
+
+The bounded controller receipt is
+`evidence/GAMEPAD_VERIFICATION_2026-08-16.md`. It records scripted and live
+browser evidence while preserving the physical-device hold.

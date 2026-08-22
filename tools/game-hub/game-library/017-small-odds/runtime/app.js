@@ -16,9 +16,11 @@ import {
   giftDistrictItem, districtFamilyEcho, availableWorkOrder, neighborhoodWorkProfile, workPetProfile,
   matchingWorkTools, workOrderQuote, startWorkOrder, commonsMaintenanceProfile,
   commonsMaintenanceOptions, startCommonsMaintenance, commonsGovernanceOptions, chooseCommonsGovernance,
+  starspiteDebtProfile, startStarspiteDebtAftermath,
   SYSTEM_CONSTANTS
 } from './systems.js';
 import { WorldRenderer } from './renderer.js';
+import { WorldThreeRenderer } from './world-three.js';
 import { PocketAudio } from './audio.js';
 
 const $ = selector => document.querySelector(selector);
@@ -47,6 +49,7 @@ const elements = {
 
 let state = null;
 let renderer = null;
+let renderer3d = null;
 let activePanel = null;
 let discoveryQueue = [];
 let currentDiscovery = null;
@@ -115,6 +118,7 @@ function showSpeech(text) {
 function enterGame() {
   elements.splash.hidden = true;
   elements.game.hidden = false;
+  if (!renderer3d) renderer3d = new WorldThreeRenderer($('#world3dCanvas'), () => ({ state }));
   if (!renderer) renderer = new WorldRenderer($('#worldCanvas'), () => ({ state }));
   render();
 }
@@ -644,13 +648,22 @@ function districtPanel() {
   const deliveries = state.district.deliveries.slice(0,8).map((delivery,index) => `<div class="district-delivery ${delivery.status === 'delivered' ? 'is-delivered' : ''}">
     <span>${escapeHtml(delivery.item.glyph || '⇥')}</span><div><b>${escapeHtml(delivery.item.name)}</b><small>${delivery.status === 'delivered' ? `arrived Day ${delivery.deliveredDay}` : `travelling until Day ${delivery.dueDay}`} · fixed route to ${escapeHtml(ACTORS[delivery.residentId]?.name || delivery.residentId)}</small></div>${delivery.receipt ? `<button class="mini-button" data-district-delivery-receipt="${index}">AUDIT</button>` : '<strong>IN FLIGHT</strong>'}
   </div>`).join('');
-  const houseMarks = state.district.houseMarks.slice(0,4).map((mark,index) => `<div class="life-echo"><span>${mark.kind === 'delivery' ? 'THE WINDOW CHANGED' : mark.kind === 'supplier' ? 'THE KETTLE CRATE CAME HOME' : mark.kind === 'work' ? 'THE WORKBENCH KEPT THE SHIFT' : mark.kind === 'governance' ? 'THE PUBLIC CHARTER CAME HOME' : mark.kind === 'maintenance' ? 'THE SERVICE ROUTE CAME HOME' : mark.kind === 'commons' ? 'THE HEAT LEDGER CAME HOME' : 'THE HOUSE KEPT THE THANK-YOU'}</span><p>${escapeHtml(mark.parentText)}${mark.receipt ? `<button class="receipt-inline" data-district-house-receipt="${index}">AUDIT CAUSE ↗</button>` : ''}</p></div>`).join('');
+  const houseMarks = state.district.houseMarks.slice(0,4).map((mark,index) => `<div class="life-echo"><span>${mark.kind === 'delivery' ? 'THE WINDOW CHANGED' : mark.kind === 'supplier' ? 'THE KETTLE CRATE CAME HOME' : mark.kind === 'work' ? 'THE WORKBENCH KEPT THE SHIFT' : mark.kind === 'governance' ? 'THE PUBLIC CHARTER CAME HOME' : mark.kind === 'maintenance' ? 'THE SERVICE ROUTE CAME HOME' : mark.kind === 'commons' ? 'THE HEAT LEDGER CAME HOME' : mark.kind === 'debt-aftermath' ? 'THE LOSS BECAME A PUBLIC MEMORY' : 'THE HOUSE KEPT THE THANK-YOU'}</span><p>${escapeHtml(mark.parentText)}${mark.receipt ? `<button class="receipt-inline" data-district-house-receipt="${index}">AUDIT CAUSE ↗</button>` : ''}</p></div>`).join('');
   const arcHistory = state.district.arcs.slice(0,8).map((entry,index) => `<div class="district-arc-history"><time>DAY ${entry.day}<br>${String(entry.hour).padStart(2,'0')}:00</time><span>${entry.kind === 'return' ? 'RETURNED' : 'CHOICE'}</span><p>${escapeHtml(entry.text)}<button class="receipt-inline" data-district-arc-receipt="${index}">AUDIT EXACT CAUSE ↗</button></p></div>`).join('');
   const householdHistory = household.history.slice(0,6).map((entry,index) => `<div class="district-arc-history"><time>DAY ${entry.day}<br>${String(entry.hour).padStart(2,'0')}:00</time><span>${entry.kind === 'return' ? 'RETURNED' : entry.kind === 'unattended' ? 'RATIONED' : 'AGREED'}</span><p>${escapeHtml(entry.text)}${entry.receipt ? `<button class="receipt-inline" data-household-receipt-index="${index}">AUDIT COMMONS CAUSE ↗</button>` : ''}</p></div>`).join('');
+  const debt = starspiteDebtProfile(state);
+  const debtRoutes = debt.routes.map(route => `<article class="debt-route ${route.open ? 'is-open' : 'is-locked'}" style="--debt-route:${escapeHtml(route.color)}">
+    <span class="debt-route__glyph">${escapeHtml(route.glyph)}</span><div><p class="eyebrow">${escapeHtml(route.institution.toUpperCase())} · ${route.open ? 'OPEN' : 'LOCKED'}</p><h4>${escapeHtml(route.label)}</h4><p>${escapeHtml(route.description)}</p><small>${route.hours}h · ${route.energyCost} energy · return Day +${route.dueDays} · recovery min(saved loss, ${route.recoveryCap}${MONEY})</small><b>${escapeHtml(route.open ? `${route.recoveryPayment}${MONEY} would return from this receipt` : route.reason)}</b></div><button class="button" data-debt-aftermath-route="${escapeHtml(route.id)}" ${route.open ? '' : 'disabled'}>PUBLISH ROUTE</button>
+  </article>`).join('');
+  const debtHistory = debt.history.slice(0,8).map((entry,index) => `<div class="district-arc-history"><time>DAY ${entry.day}<br>${String(entry.hour).padStart(2,'0')}:00</time><span>${escapeHtml(entry.routeId.replaceAll('-',' ').toUpperCase())}</span><p>${escapeHtml(entry.text)}<button class="receipt-inline" data-debt-aftermath-receipt-index="${index}">AUDIT RECOVERY MATH ↗</button></p></div>`).join('');
+  const debtSource = debt.active ? `<div class="debt-source"><b>ACTIVE SOURCE FROZEN</b><span>${escapeHtml(debt.active.sourceReceipt.gameName)} · roll ${debt.active.sourceReceipt.rawOutcomeRoll}/${debt.active.sourceReceipt.outcomeCount} · net ${debt.active.sourceReceipt.net}${MONEY}</span><small>The next saved loss waits until this exact return resolves. Neither receipt can enter a future roll.</small></div>` : debt.eligibleReceipt ? `<div class="debt-source"><b>REPLAY-VALID LOSS READY</b><span>${escapeHtml(debt.eligibleReceipt.gameName)} · roll ${debt.eligibleReceipt.rawOutcomeRoll}/${debt.eligibleReceipt.outcomeCount} · net ${debt.eligibleReceipt.net}${MONEY}</span><small>The result stays final. These routes recover at most the saved loss and never enter a future roll.</small></div>` : '<div class="debt-source"><b>NO UNHANDLED LOSS RECEIPT</b><span>A route opens only after a replay-valid saved Starspite loss.</span><small>Wins, malformed imports, lot purchases, cash balance, and remembered bad luck do not qualify.</small></div>';
+  const debtActive = debt.active ? `<div class="debt-active"><span>${escapeHtml(debt.active.visual.replaceAll('-',' '))}</span><div><p class="eyebrow">PUBLISHED · EXACT RETURN DAY</p><h4>${escapeHtml(debt.active.label)}</h4><p>${debt.active.recoveryPayment}${MONEY} recovery is due Day ${debt.active.dueDay}. The casino net remains ${state.starspite.netCredits >= 0 ? '+' : ''}${state.starspite.netCredits}${MONEY}.</p></div><button class="button" data-debt-aftermath-active-receipt>AUDIT START</button></div>` : `<div class="debt-route-list">${debtRoutes}</div>`;
+  const debtPanel = `<section class="debt-console"><header><div><p class="eyebrow">STARSPITE DEBT AFTERMATH · THREE AUTHORED RESPONSES · RANDOM NO</p><h3>A casino loss can become neighborhood history without becoming luck</h3><p>One route may be published per saved loss. Requirements stay visible, effects freeze at commitment, and the delayed payment is accounted separately from daily storefront income.</p></div><strong>${debt.history.length}<small>RETURNS</small></strong></header>${debtSource}${debtActive}${debtHistory ? `<section class="debt-memory"><h4>Recovery memory</h4>${debtHistory}</section>` : ''}</section>`;
   return `
     <section class="district-hero"><div><p class="eyebrow">TWO HOUSEHOLDS · RECURRING SERVICE · AUTHORED BID CONFLICT · ZERO SCHEDULE ROLLS</p><h3>A street that remembers who signed, what stayed owned, and when the valve is due</h3><p>Real household history, retained objects, returning pets, Crooked Kettle stock, and one competing Long Table order now cross the shared heat loop. No route can influence the Random Item Portal Device.</p></div><span>${state.district.visits}<small>VISITS</small></span></section>
     <section class="supplier-console" style="--supplier:${escapeHtml(supplier.color)}"><span class="supplier-console__glyph">${escapeHtml(supplier.glyph)}</span><div><p class="eyebrow">PERSISTENT SUPPLIER HOUSEHOLD · ${escapeHtml(supplier.label)}</p><h3>${escapeHtml(supplier.name)}</h3><small>${escapeHtml(supplier.household)}</small><p>${escapeHtml(supplier.description)} ${escapeHtml(supplier.summary)}</p><div class="supplier-console__contract"><b>standing ${supplier.standing}</b><b>daily storefront ×${supplier.businessFactor.toFixed(2)}</b><b>${supplier.pendingReturns} return${supplier.pendingReturns === 1 ? '' : 's'} in flight</b><b>random no · portal unchanged</b></div></div></section>
     <section class="commons-console" style="--commons:${escapeHtml(household.color)}"><div class="commons-console__head"><span>${escapeHtml(household.glyph)}</span><div><p class="eyebrow">SECOND PERSISTENT HOUSEHOLD · ${escapeHtml(household.label)}</p><h3>${escapeHtml(household.name)}</h3><small>${escapeHtml(household.household)}</small><p>${escapeHtml(household.description)} ${escapeHtml(household.summary)}</p></div></div><div class="commons-console__meter"><i style="--warmth:${Math.min(100,Math.max(4,(household.warmth + 8) / 20 * 100))}%"></i></div><div class="commons-console__contract"><b>warmth ${household.warmth}</b><b>trust ${household.trust}</b><b>agreements ${household.agreements}</b><b>Kettle ${supplier.standing}</b><b>Long Table ${state.work.standing} / pressure ${state.work.pressure}</b><b>random no · portal unchanged</b></div>${household.lastReceipt ? '<button class="button" data-household-last-receipt>AUDIT LAST HEAT RECEIPT</button>' : ''}</section>
+    ${debtPanel}
     ${maintenancePanel()}
     <section class="section-block"><h3>Who is where right now</h3><div class="district-grid">${residentCards}</div></section>
     <section class="section-block"><h3>Dependency memory</h3><p>Every entry binds a relationship prerequisite, exact cooldown, fixed follow-up day, and supplier transition. Nothing here consumes entropy.</p><div>${arcHistory || '<p>No resident arc has moved yet. Build rapport, then choose an authored response.</p>'}</div></section>
@@ -745,6 +758,7 @@ function casinoPanel() {
   setPanelHeading('ONE-IN-A-MILLION DESTINATION · EVERY EDGE POSTED', 'Starspite Casino Ship');
   if (state.starspite.access !== 'member') return emptyState('1∕M', 'Starspite has not accepted your name', 'Only the authentic independent ticket roll of exactly 1,000,000 opens this destination. Money, failure, and persistence cannot persuade it.');
   const insured = state.inventory.find(item => item.id === state.starspite.insuredItemId) || null;
+  const debt = starspiteDebtProfile(state);
   const tables = CASINO_GAMES.map(game => {
     const math = casinoGameMath(game.id);
     return `<article class="casino-table" style="--table-color:${escapeHtml(game.color)}">
@@ -765,9 +779,17 @@ function casinoPanel() {
     return `<article class="choice-card casino-lot" style="--lot-color:${escapeHtml(lot.rarityColor)}"><span class="casino-lot__glyph">${escapeHtml(lot.glyph)}</span><h4>${escapeHtml(lot.name)}</h4><p>${escapeHtml(lot.description)}</p><div class="item-card__tags">${lot.tags.map(tag=>`<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div><span class="choice-card__cost">POSTED ${lot.price}${MONEY} · NOT RANDOM</span><button class="button" data-casino-lot="${lot.id}" ${purchased || state.money < lot.price ? 'disabled' : ''}>${purchased ? 'LEFT THE PLINTH' : 'BUY AUTHORED ARTIFACT'}</button></article>`;
   }).join('');
   const history = state.starspite.history.slice(0, 8).map((receipt,index) => `<button class="activity" data-casino-receipt-index="${index}"><span class="activity__icon">${receipt.won ? 'WIN' : 'LOSS'}</span><span><b>${escapeHtml(receipt.gameName)}</b><small>roll ${receipt.rawOutcomeRoll}/${receipt.outcomeCount} · stake ${receipt.stake}${MONEY} · net ${receipt.net >= 0 ? '+' : ''}${receipt.net}${MONEY}</small></span><span class="activity__cost">AUDIT ↗</span></button>`).join('');
+  const aftermathSignal = debt.active
+    ? `<section class="section-block casino-aftermath"><h3>Neighborhood response in motion</h3><p>${escapeHtml(debt.active.label)} is due Day ${debt.active.dueDay}. It cannot rewrite this ship's result or influence another table.</p><button class="button" data-travel-direct="district">RETURN TO LOPSIDED LANE</button></section>`
+    : debt.eligibleReceipt
+      ? `<section class="section-block casino-aftermath"><h3>This loss can continue somewhere other than a table</h3><p>A replay-valid ${Math.abs(debt.eligibleReceipt.net)}${MONEY} loss receipt now opens three visible neighborhood responses. Recovery is capped by the loss; future casino odds remain identical.</p><button class="button button--primary" data-travel-direct="district">TAKE THE RECEIPT TO THE LANE</button></section>`
+      : debt.history.length
+        ? `<section class="section-block casino-aftermath"><h3>The Lane remembers ${debt.history.length} completed response${debt.history.length === 1 ? '' : 's'}</h3><p>Those recovery credits remain separate from the casino net shown above.</p><button class="button" data-travel-direct="district">SEE NEIGHBORHOOD MEMORY</button></section>`
+        : '';
   return `
     <div class="stat-row"><div class="stat"><small>PLAYS</small><b>${state.starspite.gamesPlayed}</b></div><div class="stat"><small>WINS / LOSSES</small><b>${state.starspite.wins}/${state.starspite.losses}</b></div><div class="stat"><small>NET CREDITS</small><b>${state.starspite.netCredits >= 0 ? '+' : ''}${state.starspite.netCredits}${MONEY}</b></div><div class="stat"><small>AUTHORED LOTS</small><b>${state.starspite.lotsPurchased.length}/${CASINO_LOTS.length}</b></div></div>
     <section class="section-block casino-principle"><h3>The ship is allowed to be dangerous, never deceptive</h3><p>Each click requests fresh operating-system entropy. Rejection sampling selects one equally likely integer. No previous loss, relationship, item, trait, wealth, or personal history enters the roll.</p></section>
+    ${aftermathSignal}
     <section class="section-block"><h3>Transparent tables</h3><div class="casino-grid">${tables}</div></section>
     <section class="section-block" id="casinoInsurance"><h3>Item-backed loss insurance</h3><p>${insured ? `${escapeHtml(insured.name)} is pledged. It can refund part of a losing stake and loses one durability when it does; it cannot change a result.` : 'Pledge one generated or authored item. The refund is visible before play and never changes the probability.'}</p>${insured ? '<button class="button" data-casino-clear-insurance>REMOVE PLEDGE</button>' : ''}<div class="insurance-list">${insuranceItems}</div></section>
     <section class="section-block" id="casinoAuction"><h3>The honesty auction nobody else is attending</h3><p>These lots have fixed authorship and posted prices. Their receipts explicitly say “random: false”; they do not borrow portal odds or pretend to be generated variants.</p><div class="choice-grid">${lots}</div></section>
@@ -854,12 +876,19 @@ function receiptPanel() {
   const isWork = /^small-odds\.work-order-/.test(receipt?.schema || '');
   const isBusiness = /^small-odds\.(?:storefront-|business-)/.test(receipt?.schema || '');
   const isDistrict = /^small-odds\.district-/.test(receipt?.schema || '');
-  const receiptEyebrow = isCasino ? 'TRANSPARENT TABLE EVIDENCE' : isAuthored ? 'FIXED PROVENANCE · NO RANDOM CLAIM' : isMaintenance ? 'RECURRING COMMONS CAUSALITY · NO RANDOM CLAIM' : isHousehold ? 'HOUSEHOLD COMMONS CAUSALITY · NO RANDOM CLAIM' : isLife ? 'LIVED CAUSALITY · NO RANDOM CLAIM' : isWork ? 'PAID LABOR CAUSALITY · NO RANDOM CLAIM' : isBusiness ? 'ALIEN-WEB CAUSALITY · NO RANDOM CLAIM' : isDistrict ? 'NEIGHBORHOOD CAUSALITY · NO RANDOM CLAIM' : 'REPLAYABLE DRAW EVIDENCE';
-  const receiptTitle = isCasino ? receipt.gameName : isAuthored ? 'Authored artifact receipt' : isLife ? 'Life-choice receipt' : isBusiness || isDistrict || isWork || isHousehold || isMaintenance ? receipt.schema.replace('small-odds.','').replace('/v1','').replaceAll('-',' ').toUpperCase() : `Probability receipt #${receipt?.drawNumber ?? '?'}`;
+  const isDebt = /^small-odds\.debt-aftermath-/.test(receipt?.schema || '');
+  const receiptEyebrow = isCasino ? 'TRANSPARENT TABLE EVIDENCE' : isAuthored ? 'FIXED PROVENANCE · NO RANDOM CLAIM' : isDebt ? 'LOSS AFTERMATH · SEPARATE RECOVERY · NO RANDOM CLAIM' : isMaintenance ? 'RECURRING COMMONS CAUSALITY · NO RANDOM CLAIM' : isHousehold ? 'HOUSEHOLD COMMONS CAUSALITY · NO RANDOM CLAIM' : isLife ? 'LIVED CAUSALITY · NO RANDOM CLAIM' : isWork ? 'PAID LABOR CAUSALITY · NO RANDOM CLAIM' : isBusiness ? 'ALIEN-WEB CAUSALITY · NO RANDOM CLAIM' : isDistrict ? 'NEIGHBORHOOD CAUSALITY · NO RANDOM CLAIM' : 'REPLAYABLE DRAW EVIDENCE';
+  const receiptTitle = isCasino ? receipt.gameName : isAuthored ? 'Authored artifact receipt' : isLife ? 'Life-choice receipt' : isDebt || isBusiness || isDistrict || isWork || isHousehold || isMaintenance ? receipt.schema.replace('small-odds.','').replace('/v1','').replaceAll('-',' ').toUpperCase() : `Probability receipt #${receipt?.drawNumber ?? '?'}`;
   setPanelHeading(receiptEyebrow,receiptTitle);
   if (!receipt) return emptyState('∅','Receipt missing','The portal remembers the draw, but this view received no evidence.');
   const allItems = inspectableItems();
   const item = allItems.find(candidate => candidate.receipt === receipt || (receipt.seedHex && candidate.receipt.seedHex === receipt.seedHex) || (receipt.lotId && candidate.receipt.lotId === receipt.lotId));
+  if (isDebt) return `
+    <section class="section-block"><h3>${escapeHtml(receipt.routeLabel)} · ${escapeHtml(receipt.institution)}</h3><p>The source casino receipt remains final. This record accounts for a separate authored neighborhood recovery capped by that loss, with frozen effects and no hidden success roll.</p></section>
+    <div class="stat-row"><div class="stat"><small>RANDOM</small><b>NO</b></div><div class="stat"><small>CASINO ODDS</small><b>UNCHANGED</b></div><div class="stat"><small>LOSS TARGET</small><b>${receipt.recoveryTarget}${MONEY}</b></div><div class="stat"><small>RECOVERY</small><b>${receipt.recoveryPayment}${MONEY}</b></div></div>
+    ${receipt.moneySeparation ? `<section class="section-block"><h3>Separate money paths</h3><p>Neighborhood recovery: ${receipt.recoveryPayment}${MONEY}. Same-day storefront service income: ${receipt.moneySeparation.storefrontIncomeSameDay}${MONEY}, excluded from the recovery arithmetic. Starspite net credits were not changed.</p></section>` : `<section class="section-block"><h3>Frozen commitment</h3><p>Return Day ${receipt.dueDay}; ${receipt.commitments.hours} hours and ${receipt.commitments.energyCost} energy. The maximum payment was fixed before time advanced.</p></section>`}
+    <section class="section-block"><h3>Full loss-aftermath record</h3><pre class="receipt">${escapeHtml(JSON.stringify(receipt,null,2))}</pre></section>
+    <section class="section-block"><h3>What never entered this response</h3><p>Future table entropy, belief that Pip was due, later wins, session length, portal rarity, and unrelated daily storefront income.</p></section>`;
   if (isMaintenance) return `
     <section class="section-block"><h3>${escapeHtml(receipt.modelLabel || receipt.label || receipt.routeLabel || NEIGHBORHOOD_COMMONS.maintenance.resource)}</h3><p>This record binds the saved accord, public service date, ownership rights and obligations, deterministic fault cause, retained asset or returning-pet identity, Hushglass integrity, both neighborhood institutions, work pressure, storefront, home, resident, and visible aftermath. It contains no entropy seed or hidden success roll.</p></section>
     <div class="stat-row"><div class="stat"><small>RANDOM</small><b>NO</b></div><div class="stat"><small>PORTAL ODDS</small><b>UNCHANGED</b></div><div class="stat"><small>DAY</small><b>${receipt.resolvedDay ?? receipt.chosenDay ?? receipt.activatedDay ?? receipt.startedDay ?? '—'}</b></div><div class="stat"><small>INTEGRITY</small><b>${receipt.integrity?.after ?? receipt.prerequisites?.integrity ?? 'FROZEN'}</b></div></div>
@@ -1004,7 +1033,16 @@ function handlePanelClick(event) {
   const target = event.target.closest('button');
   if (!target) return;
   audio.click();
-  if (target.dataset.districtArcResident) {
+  if (target.dataset.debtAftermathRoute) {
+    const result = startStarspiteDebtAftermath(state,target.dataset.debtAftermathRoute);
+    result.ok ? audio.success() : audio.click(); showToast(result.text,result.ok ? 7600 : 5000); save(); render();
+  } else if (target.hasAttribute('data-debt-aftermath-active-receipt')) {
+    activeReceipt = state.starspite.aftermath?.active?.startReceipt || null;
+    activePanel = 'receipt'; renderPanel(); elements.panelContent.scrollTop = 0;
+  } else if (target.dataset.debtAftermathReceiptIndex != null) {
+    activeReceipt = state.starspite.aftermath?.history?.[Number(target.dataset.debtAftermathReceiptIndex)]?.receipt || null;
+    activePanel = 'receipt'; renderPanel(); elements.panelContent.scrollTop = 0;
+  } else if (target.dataset.districtArcResident) {
     const result = resolveDistrictArcChoice(state,target.dataset.districtArcResident,target.dataset.districtArcChoice);
     result.ok ? audio.success() : audio.click();
     showToast(result.text,result.ok ? 7000 : 4400); save(); render();

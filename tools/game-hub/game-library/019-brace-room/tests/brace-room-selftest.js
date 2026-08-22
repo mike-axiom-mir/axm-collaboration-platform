@@ -192,6 +192,76 @@ test('letting a false-alarm fault expire is the correct play and costs nothing',
   assert.strictEqual(state.currentStreak, 0, 'ignoring a false alarm is not a scoring event either way');
 });
 
+test('a well-timed rhythm tapper resolves a Radio fault via realistic per-frame simulation', () => {
+  // Radio's rhythm verb had only ever been exercised through direct
+  // effort-math checks — never through something that actually steps the
+  // simulation in small increments like the real browser's animation-frame
+  // loop and sends a discrete press-and-release tap once per beat, the way
+  // a human genuinely would. This closes that gap (see KNOWN_LIMITS.md,
+  // "Rhythm-tap feel is unverified outside unit tests").
+  const state = Core.createInitialState({ seed: 17, sessionMinutes: 9, playerCount: 1 });
+  const station = Core.STATIONS.find(s => s.id === 'radio');
+  const pos = Core.stationPosition(station);
+  state.players.p1.x = pos.x;
+  state.players.p1.y = pos.y;
+  const beatAnchorMs = state.elapsedMs;
+  state.faults = [{ id: 50, stationId: 'radio', verb: 'rhythm', kind: 'real', effort: 0, spawnedAt: state.elapsedMs, ringMs: 5000, beatAnchorMs }];
+
+  const FRAME_MS = 16; // ~60fps, matching a real requestAnimationFrame cadence
+  let tappedThisWindow = false;
+  let ticks = 0;
+  while (state.faults.length > 0 && ticks < Math.ceil(5000 / FRAME_MS)) {
+    const sinceAnchor = state.elapsedMs - beatAnchorMs;
+    const onBeat = Core.nearestBeatDelta(sinceAnchor) <= Core.RHYTHM_WINDOW_MS;
+    const tapNow = onBeat && !tappedThisWindow;
+    tappedThisWindow = onBeat; // one discrete edge per beat window, not one per frame
+    Core.tick(state, FRAME_MS, { p1: { moveX: 0, moveY: 0, action: tapNow, actionEdge: tapNow } });
+    ticks += 1;
+  }
+  assert.strictEqual(state.faults.length, 0, 'a well-timed tapper should resolve the rhythm fault before it expires');
+  assert.strictEqual(state.stats.resolved, 1);
+});
+
+test('an off-beat tapper cannot resolve a Radio fault (rhythm timing is real, not decorative)', () => {
+  // Same frame-stepped harness as the test above, but every tap lands
+  // deliberately at the anti-phase point (exactly half a beat off), which
+  // sits 325ms from the nearest beat — well outside the 190ms window — so
+  // this should behave like someone tapping confidently but consistently
+  // out of time: never resolves, effort never builds meaningfully.
+  const state = Core.createInitialState({ seed: 17, sessionMinutes: 9, playerCount: 1 });
+  const station = Core.STATIONS.find(s => s.id === 'radio');
+  const pos = Core.stationPosition(station);
+  state.players.p1.x = pos.x;
+  state.players.p1.y = pos.y;
+  const beatAnchorMs = state.elapsedMs;
+  state.faults = [{ id: 51, stationId: 'radio', verb: 'rhythm', kind: 'real', effort: 0, spawnedAt: state.elapsedMs, ringMs: 5000, beatAnchorMs }];
+
+  const FRAME_MS = 16;
+  let lastCycle = -1;
+  let ticks = 0;
+  let maxEffortSeen = 0;
+  // The fault is expected to time out (missed), not sit around forever, so
+  // "still in state.faults after the loop" isn't the right signal here —
+  // both a resolve and an expiry remove it from the array. Track the
+  // highest effort it ever reached instead, and check the actual outcome
+  // via state.stats, which distinguishes "resolved" from "missed".
+  while (state.faults.length > 0 && ticks < Math.ceil(5000 / FRAME_MS)) {
+    const sinceAnchor = state.elapsedMs - beatAnchorMs;
+    const cycle = Math.floor(sinceAnchor / Core.RHYTHM_BEAT_MS);
+    const phase = sinceAnchor - cycle * Core.RHYTHM_BEAT_MS;
+    const nearAntiPhase = Math.abs(phase - Core.RHYTHM_BEAT_MS / 2) < FRAME_MS;
+    const tapNow = nearAntiPhase && cycle !== lastCycle;
+    if (tapNow) lastCycle = cycle;
+    const fault = state.faults.find(f => f.id === 51);
+    if (fault) maxEffortSeen = Math.max(maxEffortSeen, fault.effort);
+    Core.tick(state, FRAME_MS, { p1: { moveX: 0, moveY: 0, action: tapNow, actionEdge: tapNow } });
+    ticks += 1;
+  }
+  assert.strictEqual(state.stats.resolved, 0, 'a consistently off-beat tapper should never resolve a rhythm fault');
+  assert.strictEqual(state.stats.missed, 1, 'it should time out as a miss instead');
+  assert.ok(maxEffortSeen < 50, 'off-beat taps should not meaningfully build effort, since each miss also triggers decay');
+});
+
 test('session ends in "won" once elapsed time reaches the chosen length with hull remaining', () => {
   const state = Core.createInitialState({ seed: 11, sessionMinutes: 6, playerCount: 1 });
   Core.tick(state, state.sessionLengthMs + 100, {});

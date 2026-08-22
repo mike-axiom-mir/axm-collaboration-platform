@@ -21,6 +21,7 @@ function stageFiles() {
   fs.mkdirSync(path.join(STAGE_HUB, "game-library"), { recursive: true });
   fs.copyFileSync(path.join(SOURCE_HUB, "game-hub-server.js"), path.join(STAGE_HUB, "game-hub-server.js"));
   fs.copyFileSync(path.join(SOURCE_HUB, "asset-handoff.js"), path.join(STAGE_HUB, "asset-handoff.js"));
+  fs.copyFileSync(path.join(SOURCE_HUB, "universal-control-policy.js"), path.join(STAGE_HUB, "universal-control-policy.js"));
   fs.cpSync(path.join(SOURCE_HUB, "game-engine"), path.join(STAGE_HUB, "game-engine"), { recursive: true });
   fs.cpSync(GAME_ROOT, path.join(STAGE_HUB, "game-library", "007-casino-alpha"), {
     recursive: true,

@@ -25,6 +25,7 @@ export class Hud {
     this.renderTerritory(world.territory, mission);
     const justice = world.justice || {};
     this.$('justice-status').textContent = `JUSTICE: ${(justice.stage || 'calm').toUpperCase()}${justice.voluntaryChaos ? ' · VOLUNTARY CHAOS' : ''}`;
+    this.$('justice-status').textContent += ` - HEAT ${Math.round(Number(justice.heat) || 0)} - CAR THEFTS ${Number(justice.vehicleThefts) || 0}`;
     const rules = world.combatRules || {}, friendly = rules.partyFriendlyFire || {};
     const ffText = this.partyId === 'all'
       ? `A ALLY DAMAGE ${friendly.party_a ? 'ON' : 'OFF'} · B ${friendly.party_b ? 'ON' : 'OFF'}`
@@ -33,6 +34,7 @@ export class Hud {
     const actors = (world.actors || [])
       .filter((actor) => this.partyId === 'all' || actor.partyId === this.partyId)
       .sort((a, b) => Number(a.slot) - Number(b.slot));
+    this.renderCityLife(world.cityLife, actors, stateMeta?.tick ?? 0);
     const byQuarter = groupActorsByCorner(actors);
     for (let quarter = 1; quarter <= 4; quarter += 1) {
       const quarterActors = byQuarter.get(quarter) || [];
@@ -53,6 +55,62 @@ export class Hud {
       if (mission.mode === 'district_dominion') this.renderTerritoryResults(mission);
       else this.renderResults(mission, summary, fastest);
     }
+  }
+
+  renderCityLife(cityLife, actors, tick) {
+    const pulse = this.$('city-pulse');
+    const event = cityLife?.streetEvent;
+    const activity = cityLife?.activity;
+    const clock = cityLife?.clock;
+    const routines = cityLife?.routineSummary || {};
+    const eventSeconds = event?.endsAtTick ? Math.max(0, Math.ceil((event.endsAtTick - tick) / 30)) : 0;
+    pulse.textContent = cityLife?.enabled
+      ? `CITY DAY ${clock?.day || 1} - ${clock?.label || '--:--'} ${clock?.period || ''} - ${routines.duty || 0} ON DUTY - ${routines.commute || 0} COMMUTING - ${event?.label || 'STREETS ACTIVE'} ${eventSeconds}s - CACHE ${activity?.available ? 'LIVE' : 'RESETTING'}`
+      : 'CITY PULSE · territory match rules active';
+
+    const contractParty = this.partyId === 'all' ? actors[0]?.partyId : this.partyId;
+    const activeContract = cityLife?.contracts?.[contractParty];
+    if (activeContract?.status === 'active') {
+      const target = activeContract.checkpoints?.[activeContract.stepIndex];
+      const seconds = Math.max(0, Math.ceil((activeContract.endsAtTick - tick) / 30));
+      pulse.textContent += ` - JOB ${activeContract.stepIndex + 1}/${activeContract.checkpoints.length} ${activeContract.phase === 'clear' ? 'CLEAR RIVALS' : target?.label || activeContract.label} ${seconds}s`;
+    } else if (activeContract?.status === 'complete') pulse.textContent += ` - ${activeContract.label} COMPLETE`;
+    else if (activeContract?.status === 'failed') pulse.textContent += ` - ${activeContract.label} EXPIRED`;
+
+    const interaction = this.$('city-interaction');
+    const prompted = actors.find((actor) => actor.interactionPrompt);
+    interaction.classList.toggle('hidden', !prompted);
+    if (prompted) interaction.textContent = `P${prompted.slot || '?'} · ${prompted.interactionPrompt}`;
+
+    const actorIds = new Set(actors.map((actor) => actor.id));
+    const menu = Object.values(cityLife?.menus || {}).find((entry) => actorIds.has(entry.actorId));
+    const overlay = this.$('city-venue-menu');
+    overlay.classList.toggle('hidden', !menu);
+    if (!menu) return;
+    this.$('city-venue-kind').textContent = `CITY VENUE · ${String(menu.venueKind || 'optional').toUpperCase()} · OPTIONAL`;
+    this.$('city-venue-title').textContent = menu.label || 'CITY VENUE';
+    this.$('city-venue-copy').textContent = menu.subtitle || 'Choose an upgrade or activity.';
+    this.$('city-venue-message').textContent = menu.message || 'Move up/down and press ACTION.';
+    const vehicleBuild = this.$('city-vehicle-build');
+    vehicleBuild.classList.toggle('hidden', !menu.vehicleBuild);
+    if (menu.vehicleBuild) {
+      const build = menu.vehicleBuild;
+      vehicleBuild.replaceChildren(
+        text('strong', '', `${build.vehicleId} - ${String(build.vehicleClass || 'street car').toUpperCase()}`),
+        text('span', '', `TOP ${build.stats.topSpeed} - ACCEL ${build.stats.acceleration} - STEER ${build.stats.steering} - HP ${build.stats.health}`),
+        text('span', '', `ENGINE ${build.engineTier}/${build.engineMaximum} - TIRES ${build.tireTier}/${build.tireMaximum} - BRAKES ${build.brakeTier}/${build.brakeMaximum} - ARMOR ${build.armorTier}/1`),
+        text('span', 'vehicle-build-visual', `${build.presetLabel} SETUP - ${build.bodyKitLabel} - ${build.paintLabel}`),
+      );
+    } else vehicleBuild.replaceChildren();
+    this.$('city-venue-options').replaceChildren(...(menu.options || []).map((option, index) => {
+      const row = node('div', `city-venue-option${index === menu.selectedIndex ? ' selected' : ''}`);
+      row.append(
+        text('strong', '', option.label),
+        text('span', '', option.priceCents > 0 ? formatCredits(option.priceCents) : 'FREE'),
+        text('small', '', option.detail || ''),
+      );
+      return row;
+    }));
   }
 
   renderTerritory(territory, mission) {
@@ -158,6 +216,9 @@ export class Hud {
     const resources = node('div', 'player-resources');
     resources.append(metricLine('SHIELD', `${shield}/${maxShield}`, 'shield-value'));
     resources.append(metricLine('AMMO · LOADED/TOTAL', ammoDisplay(actor.ammoSummary), 'ammo-value'));
+    const loadout = metricLine('LOADOUT', `${actor.gearSummary?.weapon?.name || 'Pulse Sidearm'}${actor.gearSummary?.body ? ` + ${actor.gearSummary.body.name}` : ''}`, 'loadout-value');
+    loadout.classList.add('loadout-line');
+    resources.append(loadout);
     const money = metricLine('PLAYER FUND', formatCredits(actor.walletCents), 'money-value');
     money.classList.add('money-line');
     resources.append(money);
@@ -183,6 +244,9 @@ export class Hud {
     const resources = node('div', 'player-resources');
     resources.append(metricLine('SHIELD', '—', 'shield-value'));
     resources.append(metricLine('AMMO · LOADED/TOTAL', '—', 'ammo-value'));
+    const loadout = metricLine('LOADOUT', '—', 'loadout-value');
+    loadout.classList.add('loadout-line');
+    resources.append(loadout);
     const money = metricLine('PLAYER FUND', '—', 'money-value');
     money.classList.add('money-line');
     resources.append(money);

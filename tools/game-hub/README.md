@@ -206,6 +206,19 @@ apply play-or-skip ready rule
 launch one test game module
 ```
 
+## Verification
+
+Run the bounded module-level promotion suite from the Workshop root:
+
+```powershell
+node tools/game-hub/selftest.js
+```
+
+The entrypoint composes the Game Night, package verifier, reviewed asset
+handoff, runtime-port, idle-lifecycle, universal-control, and experience
+recovery suites. It is deterministic module evidence, not a physical-phone or
+human playtest substitute.
+
 ## AXM rule
 
 Game Hub is the shared local place.

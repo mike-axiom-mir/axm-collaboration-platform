@@ -80,7 +80,7 @@ function createRuntime() {
           minPlayers: 1,
           maxPlayers: 1,
           renderer: 'Three.js r160 WebGL',
-          version: '0.25.0-beta',
+          version: '0.26.0-beta',
           uptimeSeconds: Math.floor((Date.now() - startedAt) / 1000)
         });
       }

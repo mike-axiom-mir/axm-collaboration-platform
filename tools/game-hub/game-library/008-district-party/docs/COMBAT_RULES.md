@@ -21,10 +21,11 @@ Default player rules:
 
 | Source | HP | Damage | Notes |
 | --- | ---: | ---: | --- |
-| Player | 100 + 1 shield | 5 | Pulse projectile, 10-tick cooldown |
-| Rival Rusher | 10 | 2 | Melee, 9-tick visible windup |
-| Rival Skirmisher | 10 | 2 | Slow 155 px/s projectile |
-| Rival Blocker | 20 | 3 | Slower melee, 9-tick windup |
+| Player | 100 + gear + 1 shield | 5–10 | Unlimited fallback pulse or finite Armory weapon profile |
+| Rival Charger | 10 | 2 | Visible charge line followed by a bounded dash |
+| Rival Strafer | 10 | 2 | Side movement and a telegraphed two-bolt burst |
+| Rival Shield | 20 | 3 | Visible slam ring; front plate reduces damage while braced |
+| Rival Sapper | 14 | 2 | Slow purple orb with a marked target and temporary movement slow |
 | Party crew | 10 (Rusher/Skirmisher) | 2 | Paid competitive reinforcement; same central party rules |
 | Citizen | 20–50 | none | Flee/down/respawn |
 | Car | 50 | 80 on occupant explosion | Full-health default-shield actor survives at 21 HP |
@@ -37,4 +38,4 @@ Safe zones block player/NPC combat damage. District Dominion uses mirrored party
 
 Shield absorbs before HP. Health regenerates at 1 HP/s normally or 10 HP/s in the Party House, capped at 100. Shield does not regenerate by default.
 
-Inventory-backed ranged items consume compatible equipped ammunition. Depletion automatically equips the lowest-index compatible stack in the 12-slot bag. The provisional pulse sidearm has no designed ammo item yet and displays **∞**.
+Inventory-backed ranged items consume compatible equipped ammunition. Depletion automatically equips the lowest-index compatible stack in the 12-slot bag. The three current guns have distinct damage, cadence, speed, spread or piercing profiles. Street Weave and Riot Plate increase maximum health and reduce incoming damage through the host path. The provisional pulse sidearm remains an unlimited fallback and displays **∞**.

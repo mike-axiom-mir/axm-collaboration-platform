@@ -1,0 +1,52 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "buddyfarm-3d-visual-pass",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.render.browser-3d",
+        "visual.capture.live",
+        "visual.compare.frames",
+        "interaction.keyboard.browser",
+        "interaction.pointer.browser",
+        "interaction.semantic-action-api"
+      ],
+      "degraded": ["interaction.keyboard-held-action"],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.render.browser-3d": ["Chromium WebGL render observed through the in-app Browser"],
+        "visual.capture.live": ["Fresh full-tab screenshots at a 1265x720 viewport"],
+        "visual.compare.frames": ["Repeated screenshots and SHA-256 comparison"],
+        "interaction.keyboard.browser": ["Movement and Work were exercised with Browser CUA keypress"],
+        "interaction.pointer.browser": ["Full-map open and close recovery were exercised"],
+        "interaction.semantic-action-api": ["Existing server action contract exercised 320 ms farm/house travel holds"],
+        "interaction.keyboard-held-action": ["Active Browser CUA exposes keypress but no separate keydown/keyup method"]
+      }
+    },
+    {
+      "id": "buddyfarm-exact-motion-cadence",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["visual.capture.ephemeral-rolling-buffer/v1"],
+      "declaredConstraints": {
+        "visual.capture.ephemeral-rolling-buffer/v1": ["No rolling-frame buffer was exposed by the active Browser capability"]
+      }
+    }
+  ],
+  "missingCapabilities": ["visual.capture.ephemeral-rolling-buffer/v1"],
+  "proposedHands": [
+    {
+      "capabilityId": "visual.capture.ephemeral-rolling-buffer/v1",
+      "requiredBy": ["buddyfarm-exact-motion-cadence"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

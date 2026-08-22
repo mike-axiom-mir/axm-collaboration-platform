@@ -6,6 +6,7 @@
   const mirrorEchoVault = mirrorEchoCore.createMirrorEchoVault();
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
+  const depthCanvas = document.getElementById('depthCanvas');
   const lobby = document.getElementById('lobby');
   const countdown = document.getElementById('countdown');
   const countdownNumber = document.getElementById('countdownNumber');
@@ -44,7 +45,13 @@
     if (KEYBOARD_LAYOUTS[savedLayout]) keyboardLayout = savedLayout;
   } catch (_) {}
   const touch = { left: false, right: false, gas: false, brake: false };
-  const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reducedMotion = Boolean(
+    (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+    new URLSearchParams(window.location.search).get('motion') === 'reduced'
+  );
+  const depthRenderer = window.MirrorShiftDepth && depthCanvas
+    ? window.MirrorShiftDepth.create({ canvas: depthCanvas, host: gameFrame, reducedMotion: reducedMotion })
+    : null;
   let actionSequence = 1;
   let actionSessionId = null;
   try { actionSessionId = window.sessionStorage.getItem('mirrorshift-screen-session'); } catch (_) {}
@@ -72,7 +79,7 @@
   let frameCount = 0;
 
   window.__MIRRORSHIFT_DIAGNOSTICS__ = {
-    renderer: 'canvas-2d',
+    renderer: depthRenderer ? 'canvas-2d+webgl-depth' : 'canvas-2d',
     reducedMotion: reducedMotion,
     targetFrameMs: 16.7,
     sampleCount: 0,
@@ -2073,6 +2080,7 @@
     const state = stateView.state;
     if (!state) {
       ctx.fillStyle = '#090b22'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (depthRenderer) depthRenderer.clear();
       requestAnimationFrame(draw);
       return;
     }
@@ -2107,6 +2115,13 @@
     if (frameSnapped) stateView.poseSnapFrames += 1;
     drawMirrorEcho(state, frameNow);
     visualRacers.sort(function (a, b) { return a.y - b.y; }).forEach(function (racer) { drawKart(racer, frameNow, state.now); });
+    if (depthRenderer) depthRenderer.render(state, {
+      scale: scale,
+      offsetX: offsetX,
+      offsetY: offsetY,
+      frameNow: frameNow,
+      racers: visualRacers
+    });
     const effectsStart = performance.now();
     drawEffects(state, frameNow);
     drawScreenFx(state, frameNow);

@@ -1,8 +1,8 @@
 # Inventory System
 
-Status: **IMPLEMENTED AND INTEGRATED ON THE AUTHORITATIVE HOST · ITEM CATALOGUE/WORLD PICKUPS NOT IMPLEMENTED**
+Status: **IMPLEMENTED AND INTEGRATED ON THE AUTHORITATIVE HOST · COMBAT CATALOGUE AND RIVAL DROPS ACTIVE**
 
-`server/inventory-system.js` supplies the bounded inventory rules for each player actor. World creation gives every selected player—human, adapter or AI—an independent host-owned inventory. Civilian NPCs do not receive player inventories. It deliberately does not define an equipment catalogue or apply equipment abilities yet.
+`server/inventory-system.js` supplies the bounded inventory rules for each player actor. World creation gives every selected player—human, adapter or AI—an independent host-owned inventory. Civilian NPCs do not receive player inventories. `server/combat-gear-system.js` adds the first bounded catalogue and interprets only its declared weapon, armor and movement modifiers.
 
 ## Fixed layout
 
@@ -49,11 +49,11 @@ The machine-readable contract is `data/item-schema.json`. A minimum item instanc
 }
 ```
 
-`abilities` and `statModifiers` are validated extension seams for later work. This module stores those declarations but does not interpret or apply them. `metadata` is descriptive only and must never silently cause a gameplay effect.
+`abilities` and `statModifiers` remain validated extension seams. The combat-gear system applies only its known numeric fields; unknown modifiers remain inert. `metadata` provides identity and low-graphics visual styling but never bypasses a host rule.
 
 Ranged weapons require an `ammoType`. Ammo requires the same kind of `ammoType` plus an integer `quantity` from 1 through 9999. A ranged weapon and equipped ammo stack may coexist only when their ammo types match.
 
-There is intentionally no built-in item catalogue in v0.1.7.
+The v0.7 catalogue contains Pulse Repeater MK II, Lantern Scatter Blaster, Undercity Arc Carbine, Street Weave Armor, Rivalbreaker Riot Plate, recovered Rival Guard Vest, Kinetic Street Boots and matched finite ammunition.
 
 ## Pickup rule
 
@@ -67,7 +67,7 @@ Call `pickupItem(inventory, item)` on the authoritative host.
 
 An ammo pickup will not auto-equip beside an incompatible ranged weapon. It safely enters the bag instead.
 
-The automatic pickup/equip rule is integrated and exercised with synthetic host-side items in tests. There are no equipment objects placed in the city yet, so normal v0.1.7 play does not currently produce a world gear pickup. A later world-item system must call this host API; a phone must never submit an item definition.
+The Armory sells host-created equipment instances. Downed rival roles also create short-lived authoritative drops: quick charges, matched ammunition, recoverable armor and sapper tech. ACTION collects a nearby drop; a phone never submits an item definition.
 
 ## Manual inventory API
 
@@ -122,7 +122,7 @@ For a designed ranged item:
 - `total` is `loaded + reserve`;
 - ammo with another `ammoType` is excluded.
 
-The HUD renders this as `loaded/total`, so `4/13` means four currently equipped rounds and thirteen compatible rounds in total, including those four. The provisional built-in pulse sidearm has no equipped ranged item and is reported as `provisional-unlimited`; its player card displays **∞**. This is a compatibility rule, not a future balance decision.
+The HUD renders this as `loaded/total`, so `4/13` means four currently equipped rounds and thirteen compatible rounds in total, including those four. The provisional built-in pulse sidearm has no equipped ranged item and is reported as `provisional-unlimited`; its player card displays **∞**. Armory weapons use finite matched ammunition and expose their loadout name on the shared HUD.
 
 ## Ammo consumption and automatic reload
 
@@ -138,7 +138,7 @@ Call `consumeEquippedAmmo(inventory, amount)` only after the host validates an a
 
 Projectile creation now calls this operation when the actor has an equipped ranged item. When a shot consumes the final round, the lowest-index compatible ammunition stack in the pack is equipped automatically before the next shot. If no compatible stack exists, the host emits a dry-fire effect and does not create a projectile.
 
-The provisional built-in pulse sidearm is deliberately ammunition-free until the real equipment catalogue and world gear pickups are designed. This preserves the existing playable proof without pretending that placeholder test items are finished content, and the shared HUD explicitly displays **∞** for it.
+The provisional built-in pulse sidearm remains an unlimited fallback so a player can never be permanently disarmed. Buying an Armory weapon replaces it with a finite-ammo loadout; depleted matching stacks still auto-reload from the pack.
 
 The phone may request an inventory operation, but it cannot manufacture an item, directly change a slot, set ammunition quantity or apply an ability.
 
@@ -149,3 +149,5 @@ The phone may request an inventory operation, but it cannot manufacture an item,
 `tests/inventory-integration.test.js` covers independent inventories for all eight simulated seat actors, authenticated per-seat open/navigation/equip behavior, movement suppression, host projectile ammunition consumption, automatic replacement, dry fire, the provisional ammo-free sidearm, and the exact controller/quarter-screen UI contract.
 
 `tests/ammo-summary-state.test.js` verifies that display serialization derives fresh, compatible totals without adding HUD-only mutable state to the actor, including an eight-actor world. `tests/shared-hud.test.js` verifies **∞** and loaded/total formatting, fixed four-corner markup, centered mission status, Party B relative corners and combined-view stacking.
+
+`tests/combat-gear-system.test.js` verifies real weapon profiles, armor mitigation, movement gear, deterministic drops, mixed-role drills, save restoration and the code-drawn visual contract.

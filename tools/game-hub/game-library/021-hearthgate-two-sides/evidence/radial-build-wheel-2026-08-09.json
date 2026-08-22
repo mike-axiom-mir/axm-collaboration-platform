@@ -1,0 +1,44 @@
+{
+  "schema": "axm.gameplay-input-evidence/v1",
+  "game_id": "021-hearthgate-two-sides",
+  "version": "0.5.0-radial-build",
+  "claim": "Building choice and upgrades use one thumb-friendly nearby-plot interaction without blueprint cycling.",
+  "mapping": {
+    "empty_plot": "hold RB, point left stick, release RB",
+    "existing_building": "tap RB to upgrade",
+    "wheel": {
+      "up": "Forge / metal income",
+      "right": "Ballista Yard / lane attack",
+      "down": "Moon Market / gold income",
+      "left": "Ember Lab / breach splash"
+    },
+    "left_bumper": "fortify shared gate"
+  },
+  "transport": {
+    "phone_field": "buildHeld",
+    "selection_axes": ["moveX", "moveY"],
+    "commit": "held true to false",
+    "disconnect_behavior": "cancel without purchase"
+  },
+  "automated_checks": {
+    "direction_mapping": "PASS / five deterministic assertions including deadzone retention",
+    "held_state_http_relay": "PASS / buildHeld plus build and fortify edges round-trip through the real local HTTP server",
+    "controller_script_syntax": "PASS / one inline controller script compiled"
+  },
+  "live_visual_check": {
+    "backend": "BROWSER_PRIMARY",
+    "game_viewport": "1280x720",
+    "phone_viewport": "844x390 landscape",
+    "observed_sequence": [
+      "empty North plot opened wheel as 2:forge with build modal hidden",
+      "right selection changed visible highlight and diagnostic to 2:ballista",
+      "release created ballista:W1:L1 and spent only North metal",
+      "next RB action upgraded the same building to level 2 without opening a wheel",
+      "phone RB HOLD WHEEL and LB GATE labels fit with zero page overflow"
+    ],
+    "phone_targets_px": { "rb": "59x59", "lb": "127x54" },
+    "browser_logs": "zero warnings or errors on game and phone pages",
+    "verdict": "PASS"
+  },
+  "physical_phone_two_player_check": "pending Mike + Errol playtest"
+}

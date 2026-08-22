@@ -15,6 +15,7 @@
       </div>
       <div class="day-card"><span id="weather">SOFT SUN</span><strong>DAY <b id="day">1</b></strong></div>
       <button class="map-toggle" id="map-toggle" type="button" aria-pressed="false">Full map</button>
+      <button class="map-toggle" id="controls-toggle" type="button" aria-expanded="false">Controls</button>
       <a class="export" href="/api/export" download>Export farm save</a>
     </header>
 
@@ -30,13 +31,51 @@
     <section id="views" class="views" aria-label="One shared BuddyFarm world"></section>
 
     <footer class="helpbar">
-      <div class="one-action"><kbd>WASD</kbd><span>move</span><kbd>E</kbd><span>Action · hold 0.2 sec travel</span><kbd>F</kbd><span>Work</span><kbd>M</kbd><span>map</span><kbd>A</kbd><span>pad Action</span><kbd>X</kbd><span>pad Work</span><span id="gamepads" class="pad-status">Pair a Bluetooth pad, then press a button</span></div>
+      <div class="one-action"><kbd>WASD</kbd><span>move</span><kbd>E</kbd><span>Action · hold 0.2 sec travel</span><kbd>F</kbd><span>Work</span><kbd>M</kbd><span>map</span><kbd>A/RT</kbd><span>pad Action</span><kbd>X</kbd><span>pad Work</span><kbd>VIEW</kbd><span>map</span><kbd>MENU</kbd><span>controls</span><span id="gamepads" class="pad-status">NO PADS · KEYBOARD + PHONE READY</span></div>
       <p><strong>Two intent lanes:</strong> Action resolves story → travel → fishing/combat later. Work resolves farming and gathering. Neither silently becomes the other.</p>
       <button id="reset" type="button">Restart safe slice</button>
     </footer>
+
+    <section id="controls-menu" class="controls-menu" aria-label="Controls menu" hidden>
+      <div class="controls-card">
+        <small>STANDARD GAMEPAD · <span>axm-universal-xbox-brawl-v0.2.1</span></small>
+        <h2>Farm controls</h2>
+        <div class="control-grid">
+          <p><kbd>LEFT STICK / D-PAD</kbd><strong>Move assigned buddy</strong></p>
+          <p><kbd>A / RT</kbd><strong>Action · hold 0.2 sec to travel</strong></p>
+          <p><kbd>X</kbd><strong>Context-aware field Work</strong></p>
+          <p><kbd>VIEW</kbd><strong>Open or close full map</strong></p>
+          <p><kbd>MENU</kbd><strong>Open or close this guide</strong></p>
+        </div>
+        <p>Only standard-mapping pads receive a seat. Keyboard and phone controls stay available.</p>
+        <button id="close-controls" type="button">Return to farm</button>
+      </div>
+    </section>
   </main>
+  <aside id="gamepad-qa-panel" class="gamepad-qa-panel" aria-label="Test gamepad simulation" hidden>
+    <strong>TEST GAMEPAD SIMULATION</strong>
+    <span>SIMULATED STANDARD PADS</span>
+    <p>Logic/browser QA only · not physical-device evidence</p>
+    <div>
+      <button type="button" data-qa="connect2">CONNECT P1 + P2</button>
+      <button type="button" data-qa="connect3">CONNECT 3 PADS</button>
+      <button type="button" data-qa="unsupported">P1 UNSUPPORTED</button>
+      <button type="button" data-qa="p1-right">P1 RIGHT</button>
+      <button type="button" data-qa="p2-left">P2 LEFT</button>
+      <button type="button" data-qa="p3-down">P3 DOWN</button>
+      <button type="button" data-qa="p1-action">P1 A TAP</button>
+      <button type="button" data-qa="p1-hold">P1 A HOLD</button>
+      <button type="button" data-qa="p1-work">P1 X</button>
+      <button type="button" data-qa="map">VIEW</button>
+      <button type="button" data-qa="menu">MENU</button>
+      <button type="button" data-qa="disconnect">DISCONNECT</button>
+    </div>
+    <output id="gamepad-qa-status">GAMEPADS · NO PADS · LAST NONE</output>
+  </aside>
   <script src="game-core.js"></script>
   <script src="farm-motion.js"></script>
+  <script src="buddyfarm-three.js"></script>
+  <script src="universal-gamepad.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

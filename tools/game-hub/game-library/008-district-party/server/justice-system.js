@@ -34,6 +34,37 @@ function recordCivilianHarm(world, civilian, damage, downed = false) {
   return { heat: world.justice.heat, stage: world.justice.stage };
 }
 
+function recordVehicleTheft(world, actor, vehicle, moving = false) {
+  if (!world?.justice || !actor || !vehicle) return null;
+  const witnesses = Object.values(world.npcs || {}).filter((npc) => (
+    npc.alive && npc.kind === 'civilian'
+    && Math.hypot(npc.position.x - vehicle.position.x, npc.position.y - vehicle.position.y) <= 220
+  ));
+  const heatAdded = 24 + (moving ? 8 : 0) + Math.min(12, witnesses.length * 2);
+  world.justice.vehicleThefts = (world.justice.vehicleThefts || 0) + 1;
+  world.justice.lastVehicleTheft = {
+    actorId: actor.id,
+    vehicleId: vehicle.id,
+    moving: moving === true,
+    witnessCount: witnesses.length,
+    tick: world.tick,
+  };
+  world.justice.lastOffenseTick = world.tick;
+  world.justice.heat = Math.min(JUSTICE_THRESHOLDS.maximum, world.justice.heat + heatAdded);
+  witnesses.forEach((npc) => {
+    npc.state = 'flee';
+    npc.stateUntilTick = world.tick + 90;
+    npc.routineEscapeTarget = {
+      x: npc.position.x + (npc.position.x - vehicle.position.x) * 2,
+      y: npc.position.y + (npc.position.y - vehicle.position.y) * 2,
+    };
+  });
+  refreshStage(world);
+  actor.cityMessage = `${moving ? 'TRAFFIC HIJACK' : 'CAR THEFT'} - ${witnesses.length} witness${witnesses.length === 1 ? '' : 'es'} - JUSTICE ${world.justice.stage.toUpperCase()}`;
+  actor.cityMessageUntilTick = world.tick + 240;
+  return { heat: world.justice.heat, heatAdded, stage: world.justice.stage, witnessCount: witnesses.length };
+}
+
 function triggerVoluntaryChaos(world) {
   world.justice.voluntaryChaos = true;
   world.justice.lastOffenseTick = world.tick;
@@ -121,6 +152,7 @@ module.exports = {
   clearVoluntaryChaos,
   justiceStageForHeat,
   recordCivilianHarm,
+  recordVehicleTheft,
   triggerVoluntaryChaos,
   updateJustice,
 };

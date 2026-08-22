@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const childProcess = require('child_process');
+const UniversalControls = require('./universal-control-policy');
 
 const LIBRARY_DIR = __dirname + path.sep + 'game-library';
 const ALLOWED_SEAT_TYPES = new Set(['human', 'adapter', 'ai', 'spectator']);
@@ -81,6 +82,15 @@ function validateGameNightSeams(manifest, context) {
   const controls = manifest && manifest.controls || {};
   const join = manifest && manifest.join || {};
   const seam = manifest && manifest.verification && manifest.verification.game_night;
+  const universalGamepad = UniversalControls.evaluateUniversalGamepad(manifest);
+
+  if (universalGamepad.status === 'opted-out' && !universalGamepad.opt_out_reason) {
+    errors.push('shared-screen party co-op universal gamepad opt-out requires controls.universal_gamepad_opt_out_reason');
+  } else if (universalGamepad.status === 'mapping-required') {
+    warnings.push('universal gamepad is the default but this game still needs a gamepad mapping');
+  } else if (universalGamepad.status === 'adapter-migration-required') {
+    warnings.push('gamepad exists but still needs migration to ' + UniversalControls.DEFAULT_INPUT_PROFILE);
+  }
 
   if (!seam || typeof seam !== 'object') {
     errors.push('verification.game_night contract is required');
@@ -96,6 +106,24 @@ function validateGameNightSeams(manifest, context) {
     if (!EVIDENCE_STATES.has(seam[field])) errors.push('verification.game_night.' + field + ' must be verified, pending, or not-applicable');
     else if (seam[field] === 'pending') warnings.push(field.replace(/_/g, ' ') + ' is pending');
   });
+
+  const physicalPhoneScope = String(seam.physical_phone_qa_scope || '').trim();
+  if (seam.physical_phone_qa === 'not-applicable') {
+    if (controls.phone_controller === true || controls.touch === true) {
+      errors.push('verification.game_night.physical_phone_qa cannot be not-applicable while phone-controller or touch input is advertised');
+    }
+    if (!physicalPhoneScope) errors.push('not-applicable physical phone QA requires verification.game_night.physical_phone_qa_scope');
+  }
+  if (seam.physical_phone_qa === 'verified') {
+    if (!physicalPhoneScope) errors.push('verified physical phone QA requires verification.game_night.physical_phone_qa_scope');
+    if (!Array.isArray(seam.physical_phone_qa_evidence) || !seam.physical_phone_qa_evidence.length) {
+      errors.push('verified physical phone QA requires verification.game_night.physical_phone_qa_evidence');
+    } else seam.physical_phone_qa_evidence.forEach(rel => {
+      const abs = path.resolve(gameDir, String(rel || ''));
+      if (!inside(gameDir, abs)) errors.push('physical phone QA evidence escapes the game folder: ' + rel);
+      else if (!exists(abs)) errors.push('physical phone QA evidence missing: ' + rel);
+    });
+  }
 
   const hasExternalAdapter = Array.isArray(manifest && manifest.allowed_seat_types)
     && manifest.allowed_seat_types.includes('adapter');
@@ -150,7 +178,13 @@ function validateGameNightSeams(manifest, context) {
 
 function verifyGameDir(gameDir) {
   const manifestPath = path.join(gameDir, 'game.manifest.json');
-  if (!fs.existsSync(manifestPath)) return { game: path.basename(gameDir), manifest: manifestPath, errors: ['game.manifest.json is missing'] };
+  if (!fs.existsSync(manifestPath)) return {
+    game: path.basename(gameDir),
+    manifest: manifestPath,
+    errors: [],
+    warnings: ['construction folder ignored until game.manifest.json exists'],
+    incomplete: true
+  };
   let manifest;
   try { manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')); }
   catch (e) { return { game: path.basename(gameDir), manifest: manifestPath, errors: ['manifest JSON is invalid: ' + e.message] }; }
@@ -170,7 +204,9 @@ function validateRecoveryRegressions(libraryDir) {
   const hub = require('./game-hub-server');
   const manifests = fs.readdirSync(libraryDir, { withFileTypes: true })
     .filter(entry => entry.isDirectory() && entry.name.charAt(0) !== '_')
-    .map(entry => json(path.join(libraryDir, entry.name, 'game.manifest.json')));
+    .map(entry => path.join(libraryDir, entry.name, 'game.manifest.json'))
+    .filter(manifestPath => fs.existsSync(manifestPath))
+    .map(manifestPath => json(manifestPath));
   const byId = new Map(manifests.map(manifest => [manifest.game_id, manifest]));
   (contract.featuredGames || []).forEach(id => { if (!byId.has(id)) errors.push('featured game id is stale or missing: ' + id); });
   if (!ui.includes('id="openGame"') || !ui.includes('Open shared TV screen')) errors.push('playable game and shared display actions are not visibly separate');
@@ -211,7 +247,7 @@ function verifyLibrary(libraryDir) {
   const games = dirs.map(x => verifyGameDir(path.join(libraryDir, x.name)));
   const ports = new Map();
   games.forEach(result => {
-    if (result.errors.length) return;
+    if (result.errors.length || result.incomplete) return;
     const manifest = JSON.parse(fs.readFileSync(result.manifest, 'utf8'));
     const port = manifest.launch.port;
     if (ports.has(port)) {

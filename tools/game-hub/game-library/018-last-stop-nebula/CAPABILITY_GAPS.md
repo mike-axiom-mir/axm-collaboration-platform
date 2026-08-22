@@ -29,6 +29,8 @@ READY for a polished local single-player 3D beta. The workspace provides a local
 - `game.event.reveal-projection` / `visual.event.consequence-reveal-3d`: only the real new-choice path starts the bounded artifact assembly; semantic phase/progress receipts, a compact responsive scale, and a static Reduced Motion branch are live-verified without replaying restored history.
 - `game.debt.liberation-projection` / `visual.debt.lien-3d`: authoritative debt drives four deterministic HUD/world stages, zero to six physical claim links, the station lock, and a responsive HUD-only placard fallback without state mutation.
 - `visual.debt.payment-release`: the real existing service path carries before/after debt receipts and triggers the final ownership confirmation; full and static Reduced Motion branches are live-verified.
+- `game.dispatch.repeatable` / `visual.dispatch.board-3d`: four deterministic objectives rotate across the existing contracts, persist in local saves, score through isolated marks, and drive matching HUD/roof-board states without changing the survival economy.
+- `visual.dispatch.real-completion`: a real manual Bay service completed the held three-lane circuit, moved the physical board into its captured state, and rotated to the next objective under the normal live tick.
 - `game.launch.local`: dedicated health-checked launcher and Game Hub manifest.
 - `ui.dialog.keyboard`: semantic blocking dialogs with initial focus, bidirectional Tab wrapping, Escape paths, and focus restoration.
 
@@ -37,7 +39,7 @@ READY for a polished local single-player 3D beta. The workspace provides a local
 - `balance.human.representative`: deterministic policy smoke test exists; multi-person human data does not.
 - `performance.gpu.representative`: live development machine only until representative device telemetry exists.
 - `visual.capture.ephemeral-rolling-buffer`: unavailable; bounded repeated screenshots are the declared fallback.
-- `visual.mobile.physical`: responsive viewport can be tested; physical phone observation remains pending.
+- `visual.mobile.physical`: prior responsive routes exist, but this pass's browser exposed no true portrait viewport override for the new dispatch board; physical phone observation remains pending.
 - `accessibility.screenreader.physical`: browser semantics and keyboard behavior are verified; physical assistive-technology behavior is not.
 
 ## Missing for future scope

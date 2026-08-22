@@ -1,11 +1,57 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
+const Gamepad = require('./runtime/universal-gamepad');
 
 const runtime = path.join(__dirname, 'runtime');
 const serverFile = path.join(runtime, 'neon-pong-cross-server.cjs');
+
+function standardPad(options = {}) {
+  const buttons = Array.from({ length: 16 }, () => ({ pressed: false, value: 0 }));
+  for (const index of options.buttons || []) buttons[index] = { pressed: true, value: 1 };
+  return { id: 'TEST XBOX PAD', mapping: options.mapping || 'standard', axes: options.axes || [0, 0, 0, 0], buttons };
+}
+
+assert.equal(Gamepad.PROFILE_ID, 'axm-universal-xbox-brawl-v0.2.1');
+assert.deepEqual(Gamepad.sampleCrossGamepad(null, 0), { connected: false, supported: false, id: '', axis: 0, negative: false, positive: false, primary: false, primaryEdge: false, pause: false, pauseEdge: false });
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ axes: [0.9, 0, 0, 0] }), 0).positive, true, 'P1 uses horizontal left-stick movement');
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ axes: [-0.9, 0, 0, 0] }), 1).negative, true, 'P2 also uses horizontal left-stick movement');
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ axes: [0, 0.9, 0, 0] }), 2).positive, true, 'P3 uses vertical left-stick movement');
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ axes: [0, -0.9, 0, 0] }), 3).negative, true, 'P4 also uses vertical left-stick movement');
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ buttons: [15] }), 0).positive, true, 'horizontal seats accept D-pad right');
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ buttons: [13] }), 2).positive, true, 'vertical seats accept D-pad down');
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ axes: [0.1, 0.1, 0, 0] }), 0).axis, 0, 'dead zone suppresses stick drift');
+let gamepadSample = Gamepad.sampleCrossGamepad(standardPad({ buttons: [0] }), 0);
+assert.equal(gamepadSample.primaryEdge, true, 'first A frame emits a primary edge');
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ buttons: [0] }), 0, gamepadSample).primaryEdge, false, 'held A does not repeat primary edges');
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ buttons: [7] }), 0).primary, true, 'right trigger also maps to primary action');
+gamepadSample = Gamepad.sampleCrossGamepad(standardPad({ buttons: [9] }), 0);
+assert.equal(gamepadSample.pauseEdge, true, 'Menu emits a pause edge');
+assert.equal(Gamepad.sampleCrossGamepad(standardPad({ mapping: 'nonstandard' }), 0).supported, false, 'non-standard mappings fail visibly instead of guessing');
+
+const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'game.manifest.json'), 'utf8'));
+const clientHtml = fs.readFileSync(path.join(runtime, 'neon-pong-cross-client.html'), 'utf8');
+const clientJs = fs.readFileSync(path.join(runtime, 'neon-pong-cross.js'), 'utf8');
+const depthJs = fs.readFileSync(path.join(runtime, 'neon-pong-cross-depth.js'), 'utf8');
+const serverJs = fs.readFileSync(serverFile, 'utf8');
+assert.equal(manifest.controls.gamepad, true);
+assert.equal(manifest.controls.gamepad_profile, Gamepad.PROFILE_ID);
+assert.match(clientHtml, /id="gamepadStatus"/);
+assert.ok(clientHtml.indexOf('universal-gamepad.js') < clientHtml.indexOf('neon-pong-cross.js'), 'gamepad adapter loads before the game client');
+assert.match(clientHtml, /TEST GAMEPAD SIMULATION/);
+assert.match(clientJs, /seatAcceptsGamepad/);
+assert.match(clientJs, /setInterval\(function \(\) \{\s*if \(player !== 'screen'\) return;/, 'shared-screen gamepads renew the server input lease');
+assert.match(clientJs, /gamepadQa = 'simulated-not-physical'/, 'QA mode is explicitly labeled non-physical');
+assert.ok(clientHtml.includes('id="game3d"') && clientHtml.indexOf('neon-pong-cross-depth.js') < clientHtml.indexOf('neon-pong-cross.js'), 'shared screen loads a registered 3D canvas before game authority');
+assert.ok(depthJs.includes("getContext('webgl'") && depthJs.includes('gl.enable(gl.DEPTH_TEST)'), 'four-edge relief uses a depth-tested WebGL context');
+assert.ok(depthJs.includes('var OCTAHEDRON=facetedVertices(') && depthJs.includes('floor(clamp(lit,0.0,1.0)*15.0+0.5)/15.0'), 'relief uses faceted geometry and a sixteen-step color shader');
+assert.ok(depthJs.includes("canvas.dataset.modelProfile='cross-relief-v1'") && depthJs.includes('canvas.dataset.triangles=String(triangles)'), 'live renderer discloses model profile and triangle submission');
+assert.ok(clientJs.includes("canvas.dataset.visualAuthority = depthStage.available ? 'hybrid-webgl-canvas' : 'canvas-fallback'"), 'Canvas gameplay authority keeps an explicit no-WebGL fallback');
+assert.ok(serverJs.includes("url.pathname === '/neon-pong-cross-depth.js'"), 'the local server delivers the WebGL module');
+assert.ok(manifest.package.required_paths.includes('runtime/neon-pong-cross-depth.js'), 'the package requires its WebGL presentation module');
 
 async function rawRequest(port, route, body, headers) {
   const response = await fetch(`http://127.0.0.1:${port}${route}`, body === undefined ? { headers: headers || {} } : {
@@ -54,8 +100,12 @@ const three = [
 (async () => {
   await withServer(18944, 'cross_coop', three, async () => {
     const health = await request(18944, '/health');
+    assert.equal(health.version, '2.2.0-neon-cross-gamepad');
     assert.equal(health.playMode, 'coop');
     assert.equal(health.seatCount, 3);
+    const gamepadAsset = await fetch('http://127.0.0.1:18944/universal-gamepad.js');
+    assert.equal(gamepadAsset.status, 200);
+    assert.match(await gamepadAsset.text(), /axm-universal-xbox-brawl-v0\.2\.1/);
     let state = await request(18944, '/state');
     assert.equal(state.players.p4.role, 'warden');
     assert.equal(state.players.p4.kind, 'ai', 'the three-seat Warden is game-local AI, never an external adapter');

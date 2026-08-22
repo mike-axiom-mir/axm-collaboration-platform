@@ -97,6 +97,20 @@ Repeat routes must reuse lived state. The public rota needs the saved returned a
 
 The Long Table conflict is authored calendar pressure, not simulated luck. A due service date temporarily replaces the base three-order work calendar with one public valve-jig order that uses the same disclosed tool wear, literal pet labor, wage, standing, and rivalry math. Whichever service path resolves writes exact household/institution/home/resident consequences and schedules the next date. Missing the grace window creates one repairable authored consequence, never a repeat penalty loop.
 
+## Neighborhood Debt Aftermath - realized loss-to-life layer
+
+A casino loss is final at the table but may become a social fact outside it. Eligibility requires an unhandled saved losing receipt that replays to the same published outcome from its seed and still passes stake, winning-set, insurance, and net arithmetic checks. Cash balance, emotional framing, later luck, malformed imports, and authored artifacts cannot substitute.
+
+The three first responses deliberately use institutions the player already knows. The Lane can publish a solidarity rota, the Long Table and Crooked Kettle can file a transparent recovery job, and Hushglass can record breathing room. All gates remain visible. Time, energy, due day, payment cap, return effect, and visual mark freeze before time moves. Each return restores at most the source loss and accounts that payment separately from storefront income; it does not erase or mutate Starspite's net ledger.
+
+This is the intended long-tail grammar for risky play: consequences create authored work, household accommodation, social memory, and changed places instead of adaptive odds, invisible punishment, or a grindy debt meter. Additional routes should deepen named institutions and object histories before adding generic debt currencies.
+
+## Hybrid low-poly world - realized 3D baseline
+
+Every established location now owns an original WebGL low-poly spatial layer beneath the Canvas interaction art. The layer renders at 480x270, scales with deliberate pixelation, uses depth-tested authored cube/pyramid forms, and quantizes lighting to 16 steps. Pip, buildings, rooms, tables, stalls, the Glimmer, and durable aftermath markers have actual 3D transforms and depth.
+
+Canvas remains the simulation and interaction authority. WebGL may enrich place, camera, silhouette, and memory but cannot hide a control or become required to continue a save. If WebGL fails, the authoritative Canvas renderer takes full opacity. Future production art should replace forms gradually while preserving this authority/fallback boundary and the 16-bit-minimum readability target.
+
 ## Stewardship rules
 
 - Preserve save compatibility through versioned migration.

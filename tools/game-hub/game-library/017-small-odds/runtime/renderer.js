@@ -64,7 +64,7 @@ function workPressureBand(state) {
 export class WorldRenderer {
   constructor(canvas, getView) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d', { alpha: false });
+    this.ctx = canvas.getContext('2d', { alpha: true });
     this.getView = getView;
     this.width = 1;
     this.height = 1;
@@ -131,11 +131,14 @@ export class WorldRenderer {
   }
 
   backdrop(ctx, top, bottom) {
+    ctx.save();
+    ctx.globalAlpha = .52;
     const gradient = ctx.createLinearGradient(0, 0, 0, this.height);
     gradient.addColorStop(0, top);
     gradient.addColorStop(1, bottom);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, this.width, this.height);
+    ctx.restore();
   }
 
   drawStars(ctx, t, amount = 34) {

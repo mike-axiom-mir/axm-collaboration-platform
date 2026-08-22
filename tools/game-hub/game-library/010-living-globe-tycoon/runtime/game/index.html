@@ -43,7 +43,8 @@
   .start p{max-width:720px;font:700 12px/2 ui-monospace,monospace;letter-spacing:.04em;opacity:.9}
   .start .k{color:#ffe184}
   .start .go{margin-top:20px;color:#17383b;background:linear-gradient(180deg,#ffd978,#e8a93f);border:1px solid #ffe9ae;border-radius:999px;
-    padding:10px 18px;font-size:11px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;box-shadow:0 8px 18px rgba(0,0,0,.22)}
+    padding:10px 18px;font:900 11px inherit;letter-spacing:.13em;text-transform:uppercase;box-shadow:0 8px 18px rgba(0,0,0,.22);cursor:pointer}
+  .start .go:focus-visible{outline:3px solid #70d29b;outline-offset:5px}
   .start #ctlSwitch,.start #seasonSwitch,.start #newWorld{color:#f7e7b8;background:rgba(2,36,43,.5);border-color:rgba(255,232,177,.22);box-shadow:none}
   .bar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:8px;justify-content:center;
     padding:24px 12px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(2,25,32,.82) 42%,rgba(2,23,30,.94))}
@@ -119,6 +120,18 @@
     body.ai-focus .ai-seat-panel{width:min(190px,48vw)}
   }
   @media(prefers-reduced-motion:reduce){.slot,.cross,.mission-progress i{transition:none}.journal .row{animation:none;opacity:.92}.mission-card.reward{animation:none}}
+  #scene{filter:saturate(1.08) contrast(1.035)}
+  body:after{content:"";position:fixed;inset:0;z-index:6;pointer-events:none;opacity:.045;
+    background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,244,206,.16) 3px 4px);mix-blend-mode:overlay}
+  .start{align-items:flex-start;text-align:left;padding-left:clamp(42px,8vw,118px);
+    background:radial-gradient(circle at 72% 22%,rgba(255,197,89,.14),transparent 27rem),
+      linear-gradient(90deg,rgba(3,35,42,.98) 0%,rgba(3,41,47,.9) 40%,rgba(3,31,38,.35) 72%,rgba(2,22,29,.16) 100%);
+    backdrop-filter:blur(2px)}
+  .start:before{width:66px;height:66px;margin-bottom:14px;font-size:31px;border-radius:18px;transform:rotate(-5deg)}
+  .start h2:before{content:"LIVING GLOBE TYCOON · ISLAND STEWARD";display:block;margin-bottom:11px;color:#75d6ad;
+    font:900 10px/1 ui-monospace,monospace;letter-spacing:.22em;text-shadow:none}
+  .start p{text-align:left}.start .go{min-width:220px;text-align:center}
+  @media(max-width:760px){.start{align-items:center;text-align:center;padding:28px;background:radial-gradient(circle at 50% 24%,rgba(255,197,89,.2),transparent 24rem),linear-gradient(145deg,rgba(5,73,80,.94),rgba(3,31,42,.95))}.start p{text-align:center}}
 </style></head>
 <body>
 <canvas id="scene"></canvas>
@@ -129,10 +142,10 @@
   <span class="d">mode</span> <b id="modeLabel">chop</b><br>
   <span class="d">two shores</span> <b id="coopHud">waiting for both</b>
 </div>
-<section class="mission-card waiting" id="missionCard" aria-label="Timed island mission">
-  <div class="mission-kicker"><span>Palace errand</span><b id="missionTimer">ready</b></div>
-  <div class="mission-title" id="missionTitle" aria-live="polite">First mission on arrival</div>
-  <div class="mission-brief" id="missionBrief">Then one mission every 10 active minutes · 5 minutes to finish.</div>
+<section class="mission-card waiting" id="missionCard" aria-label="Timed island stewardship tour">
+  <div class="mission-kicker"><span>Stewardship tour</span><b id="missionTimer">ready</b></div>
+  <div class="mission-title" id="missionTitle" aria-live="polite">First errand on arrival</div>
+  <div class="mission-brief" id="missionBrief">Complete four errands for a tour · new errands every 4 active minutes.</div>
   <div class="mission-progress"><i id="missionBar"></i></div>
   <div class="mission-meta"><strong id="missionProgress">waiting</strong><span id="missionContrib"></span></div>
   <div class="mission-meta"><span id="missionMode">solo unless AI is connected at mission start</span><strong id="laurelHud">✦ 0</strong></div>
@@ -156,13 +169,13 @@
   <div class="ai-seat-readout" id="aiSeatReadout">opposite hemisphere · awaiting an explicit connector</div>
 </section>
 <div class="ai-focus-hud" id="aiFocusHud"></div>
-<div class="start" id="start">
-  <h2>WELCOME TO GRAFTHOLD</h2>
+<div class="start" id="start" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+  <h2 id="startTitle">WELCOME TO GRAFTHOLD</h2>
   <p id="helpDesk"><span class="k">W A S D</span> — walk the world &nbsp;·&nbsp; <span class="k">mouse</span> — look<br>
-     <span class="k">click</span> — use tool &nbsp;·&nbsp; <span class="k">1–5</span> — choose tool &nbsp;·&nbsp; <span class="k">Esc</span> — free mouse</p>
+     <span class="k">click</span> — use tool &nbsp;·&nbsp; <span class="k">1–5</span> — choose tool &nbsp;·&nbsp; <span class="k">Esc</span> — enter / free mouse</p>
   <p id="helpTouch" style="display:none"><span class="k">left half</span> — drag to look &nbsp;·&nbsp; <span class="k">right half</span> — drag to walk<br>
      <span class="k">tap</span> — chop / plant / build</p>
-  <div class="go">step onto the island</div>
+  <button class="go" id="enterWorld" type="button" autofocus>step onto the island</button>
   <div class="go" id="ctlSwitch" style="margin-top:8px;font-size:10px;opacity:.75"></div>
   <div class="go" id="seasonSwitch" style="margin-top:6px;font-size:10px;opacity:.75"></div>
   <div class="go" id="newWorld" style="margin-top:8px;font-size:10px;opacity:.75;display:none"><u>new world</u></div>
@@ -180,6 +193,7 @@
 <script src="core/walkable-missions.js"></script>
 <script src="core/steward-metrics.js"></script>
 <script src="core/steward-infographics.js"></script>
+<script src="core/island-visual-polish.js"></script>
 <script type="module">
 /* ============================================================
  * GRAFTHOLD GLOBE v0 — 2026-07-14 (Claude, Route Guardian seat)
@@ -523,6 +537,7 @@ sun.shadow.camera.far=140;
 sun.shadow.camera.left=-40; sun.shadow.camera.right=40; sun.shadow.camera.top=40; sun.shadow.camera.bottom=-40;
 scene.add(sun); scene.add(sun.target);
 const moon=new THREE.DirectionalLight('#7d9ac9',0); scene.add(moon); scene.add(moon.target);
+const visualPolish=window.AXMIslandVisualPolishFactory(THREE,scene,renderer,{canvas,radius:TUNE.R});
 
 let planet=null, stars=null;
 function buildPlanet(seed){
@@ -557,6 +572,7 @@ function buildPlanet(seed){
   geo.setAttribute('color',new THREE.BufferAttribute(colors,3));
   planet=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,flatShading:true}));
   planet.receiveShadow=true; scene.add(planet);
+  visualPolish.setPlanet(planet);
   /* seeded stars — this world's own constellations */
   const sp=new Float32Array(TUNE.starCount*3);
   const rs=rng(seed^0x57a125);
@@ -1592,7 +1608,7 @@ function resetMissionTravelPositions(){
 }
 function renderMissionCard(){
   const card=document.getElementById('missionCard'); if(!card)return;
-  const summary=window.AXMWalkableMissions.summary(missionState),active=summary.active;
+  const summary=window.AXMWalkableMissions.summary(missionState),active=summary.active,tour=summary.progression;
   document.getElementById('laurelHud').textContent=summary.currency.symbol+' '+summary.currency.balance;
   card.classList.toggle('active',!!active); card.classList.toggle('waiting',!active);
   if(active){
@@ -1601,16 +1617,17 @@ function renderMissionCard(){
     document.getElementById('missionTimer').textContent='LEFT '+missionTime(active.secondsRemaining);
     document.getElementById('missionProgress').textContent=(Math.round(active.progress*10)/10)+' / '+active.goal+' '+active.unit;
     document.getElementById('missionBar').style.width=Math.min(100,(active.progress/active.goal)*100)+'%';
-    document.getElementById('missionMode').textContent=active.cooperative?'CO-OP ×2 GOAL · BOTH PLAYERS COUNT':'SOLO GOAL';
+    document.getElementById('missionMode').textContent='TOUR '+active.tourSlot+'/'+tour.missionsPerTour+' · '+(active.cooperative?'CO-OP ×2 · BOTH PLAYERS COUNT':'SOLO GOAL');
     document.getElementById('missionContrib').textContent=active.cooperative?'you '+(Math.round(active.contributions.human*10)/10)+' · AI '+(Math.round(active.contributions.ai*10)/10):'';
   }else{
     const last=summary.lastResult;
-    document.getElementById('missionTitle').textContent=last&&last.status==='COMPLETED'?'Errand complete':'Next palace errand';
-    document.getElementById('missionBrief').textContent='A random mission arrives every 10 active minutes and remains open for 5.';
+    const tourJustCompleted=last&&last.status==='COMPLETED'&&last.tourBonusGranted>0;
+    document.getElementById('missionTitle').textContent=tourJustCompleted?'Stewardship tour '+last.tourCompleted+' complete':last&&last.status==='COMPLETED'?'Errand complete':'Next island errand';
+    document.getElementById('missionBrief').textContent='Twelve seeded errands · four complete a repeatable tour · six active minutes to finish each.';
     document.getElementById('missionTimer').textContent=summary.nextMissionIn<=0?'READY':'NEXT '+missionTime(summary.nextMissionIn);
     document.getElementById('missionProgress').textContent=last?(last.label+' · '+last.status.toLowerCase()):'waiting for the island';
     document.getElementById('missionBar').style.width='0%';
-    document.getElementById('missionMode').textContent='Festival Laurels are ceremonial · no spending connected yet';
+    document.getElementById('missionMode').textContent='TOUR '+tour.completedInTour+'/'+tour.missionsPerTour+' · '+(summary.catalog.expandedUnlocked?'EXPANDED CATALOG OPEN':'EXPANDED CATALOG OPENS AFTER 2 WINS');
     document.getElementById('missionContrib').textContent='';
   }
 }
@@ -1619,7 +1636,7 @@ function announceMissionEvents(events){
   (events||[]).forEach(event=>{
     if(event.type==='MISSION_STARTED'){
       const m=event.mission;
-      addJournal('new mission · '+m.label+' · '+m.goal+' '+m.unit+' in 5 minutes'+(m.cooperative?' · co-op ×2':' '));
+      addJournal('tour '+m.tourSlot+'/4 · '+m.label+' · '+m.goal+' '+m.unit+' in 6 minutes'+(m.cooperative?' · co-op ×2':' '));
       resetMissionTravelPositions(); important=true;
     }else if(event.type==='MISSION_FAILED'){
       addJournal('mission expired · '+event.mission.label+' · no penalty'); important=true;
@@ -1627,6 +1644,8 @@ function announceMissionEvents(events){
       addJournal('mission complete · +'+event.mission.rewardGranted+' Festival Laurel'+(event.mission.rewardGranted===1?'':'s'));
       const card=document.getElementById('missionCard'); if(card){card.classList.remove('reward');void card.offsetWidth;card.classList.add('reward');setTimeout(()=>card.classList.remove('reward'),750);}
       important=true;
+    }else if(event.type==='MISSION_TOUR_COMPLETED'){
+      addJournal('stewardship tour '+event.tourNumber+' complete · +'+event.bonus+' ceremonial Laurel bonus'); important=true;
     }
   });
   if(important){
@@ -1901,7 +1920,7 @@ function requestHumanPointerLock(){
   if(isTouchDevice||controlsMode==='axm'||!humanControlsEnabled()||!canvas.requestPointerLock)return;
   const p=canvas.requestPointerLock(); if(p&&p.catch)p.catch(()=>{});
 }
-function enter(){ entered=true; startEl.style.display='none';
+function enter(){ if(entered)return; entered=true; startEl.style.display='none'; startEl.setAttribute('aria-hidden','true');
   initAudio();                                      /* v0.6: needs a gesture */
   if(!humanControlsEnabled())return;
   if(controlsMode==='axm'){ buildAxmControls(); return; }
@@ -1971,7 +1990,8 @@ function endPointer(e){
 canvas.addEventListener('pointerup',endPointer);
 canvas.addEventListener('pointercancel',e=>{ const p=pointers.get(e.pointerId);
   if(p&&p.role==='walk'){walkId=null;clearStick();} if(p&&p.role==='look')lookId=null; pointers.delete(e.pointerId); });
-addEventListener('keydown',e=>{ if(e.target&&e.target.closest&&e.target.closest('input,select,textarea,button,.axm-steward-panel'))return;
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&!entered){ e.preventDefault(); enter(); return; }
+  if(e.target&&e.target.closest&&e.target.closest('input,select,textarea,button,.axm-steward-panel'))return;
   if(!humanControlsEnabled())return; player.keys[e.code]=true;
   if(e.code==='Digit1')pickTool('chop'); if(e.code==='Digit2')pickTool('plant');
   if(e.code==='Digit4')pickTool('fish');
@@ -2314,6 +2334,7 @@ function dayTick(dt){
   moon.position.copy(sunDir).multiplyScalar(-90); moon.target.position.set(0,0,0);
   moon.intensity=isNight(dayPhase)?0.22:0;
   hemi.intensity=k.hemiI;
+  visualPolish.updateSky(player.p,k.sky,dayPhase,sun.position,camera,k.sunI);
   if(stars) stars.material.opacity=k.star;
   const w=isNight(dayPhase)?'night':dayPhase<0.3?'dawn':dayPhase<0.7?'day':'dusk';
   const el=document.getElementById('daypart'); if(el.textContent!==w) el.textContent=w;
@@ -2894,7 +2915,8 @@ window.AXMLivingWorld=Object.freeze({
     describe:()=>({schema:window.AXMWalkableMissions.STATE_SCHEMA,intervalActiveSeconds:window.AXMWalkableMissions.INTERVAL_SECONDS,
       durationActiveSeconds:window.AXMWalkableMissions.DURATION_SECONDS,currency:JSON.parse(JSON.stringify(window.AXMWalkableMissions.CURRENCY)),
       cooperativeGoalMultiplier:2,cooperativeRewardMultiplier:2,bothSeatsContribute:true,modeLockedAtStart:true,
-      failurePenalty:false,strategicAuthority:false,spendingConnected:false}),
+      catalogSize:window.AXMWalkableMissions.MISSION_ORDER.length,expandedCatalogUnlockWins:2,tourMissions:window.AXMWalkableMissions.TOUR_MISSIONS,
+      tourBonusLaurels:window.AXMWalkableMissions.TOUR_BONUS,failurePenalty:false,strategicAuthority:false,spendingConnected:false}),
     observe:()=>window.AXMWalkableMissions.summary(missionState),
     history:()=>JSON.parse(JSON.stringify(missionState.history))
   }),
@@ -2932,6 +2954,7 @@ stewardPanelHandle=window.AXMGlobeStewardPanel.mount({bridge:stewardBridge});
 stewardInfographicsHandle=window.AXMStewardInfographics.mount({provider:currentStewardMetricReport});
 addEventListener('axm-infographics-open',()=>{ if(stewardPanelHandle)stewardPanelHandle.close(); });
 addEventListener('axm-infographics-open',()=>{ player.keys={}; player.touchFwd=player.touchStrafe=player.vFwd=player.vStr=0; if(document.pointerLockElement&&document.exitPointerLock)document.exitPointerLock(); });
+addEventListener('axm-palace-open',()=>{ player.keys={}; player.touchFwd=player.touchStrafe=player.vFwd=player.vStr=0; if(document.pointerLockElement&&document.exitPointerLock)document.exitPointerLock(); });
 refreshStewardMetricSurfaces(true);
 updateHUD();
 requestAnimationFrame(frame);

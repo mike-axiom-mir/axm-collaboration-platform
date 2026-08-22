@@ -2,9 +2,9 @@
   "slot": "004",
   "game_id": "004-relaybound",
   "name": "Relaybound",
-  "status": "VERTICAL SLICE",
-  "description": "A human-and-AI co-op action adventure where every upgrade forces the upgrader into the opposite role and hands the improved role to their partner.",
-  "version": "0.1.0-role-relay",
+  "status": "TEST · ECHO CHAMBER EXPANSION",
+  "description": "A two-seat 3D co-op action adventure with selectable human, connected-AI, or in-game-AI partners, two combat chambers, three forced role relays, and optional two-person bond beacons.",
+  "version": "0.4.0-echo-chamber",
   "min_players": 2,
   "max_players": 2,
   "allowed_seat_types": ["human", "adapter", "ai"],
@@ -18,15 +18,24 @@
     "local_only_default": true
   },
   "join": {"supports_qr": true, "supports_lan_link": true, "supports_room_code": true, "room_code": "AXM1"},
-  "controls": {"phone_controller": true, "keyboard": true, "mouse": false, "touch": true},
-  "session": {"passes_seat_map": true, "returns_result_summary": true, "drop_in_out_later": false},
+  "controls": {"phone_controller": true, "gamepad": true, "keyboard": true, "mouse": false, "touch": true, "shared_screen": true, "intent_protocol": "axm-semantic-input-v1", "adapter_observation": "axm-seat-screen-semantics-v1", "gamepad_profile": "axm-universal-xbox-brawl-v0.2.1", "second_seat_choices": ["human", "adapter", "ai"]},
+  "session": {"passes_seat_map": true, "returns_result_summary": true, "drop_in_out_later": false, "target_minutes": 8},
   "post_match": {"bondfire": true, "mode": "default-for-this-game", "route": "/games/004/debrief", "auto_promote_wisdom": false},
   "rules": {
     "no_hidden_players": true,
     "host_launch_required": true,
     "game_does_not_override_hub_seats": true,
-    "intended_pair": "one-human-one-ai",
-    "upgrade_forces_opposite_role": true
+    "human_and_adapter_same_input_gate": true,
+    "adapter_observation_is_seat_visible_only": true,
+    "intended_pair": "human-plus-selectable-partner",
+    "second_seat_choices": ["human", "adapter", "ai"],
+    "default_second_seat_type": "ai",
+    "upgrade_forces_opposite_role": true,
+    "combat_chambers": 2,
+    "forced_role_relays": 3,
+    "optional_shared_objectives": true,
+    "explicit_start_gate": true,
+    "post_match_replay": true
   },
   "verification": {
     "game_night": {
@@ -36,10 +45,17 @@
       "state_authority": "server",
       "host_reload_recovery": "game-hub-active-launch",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
-      "blocking_overlay_escape": "pending",
+      "disconnect_recovery": "verified",
+      "disconnect_recovery_scope": "1280x720 desktop shared-screen browser with two human seats: a local fault proxy severed and restored live transport while the production server stayed authoritative; the client visibly recovered at the ready gate and during active combat, and recovered controls started the run",
+      "disconnect_recovery_evidence": ["runtime/relaybound-client.html", "tests/disconnect-recovery-browser-harness.js", "tests/disconnect-recovery.test.js", "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"],
+      "blocking_overlay_escape": "verified",
+      "blocking_overlay_escape_scope": "1280x720 desktop browser: the shared-screen ready gate and player-one forced relay-choice blocker bridge to a reversible session menu; a second focused Escape restores the authoritative blocker, and Escape is inert after the choice resolves",
+      "blocking_overlay_escape_evidence": ["runtime/relaybound-client.html", "tests/blocking-overlay-escape.test.js", "evidence/2026-08-16-blocking-overlay-escape/RECEIPT.md"],
       "physical_phone_qa": "pending",
-      "adapter_state_interface": "pending"
+      "controller_transport": "software-verified",
+      "controller_transport_evidence": ["runtime/relaybound-client.html", "tests/movement-pressure-http.test.js"],
+      "adapter_state_interface": "verified",
+      "adapter_state_evidence": ["runtime/relaybound-server.cjs", "tests/partner-choice-http.test.js"]
     }
   },
   "package": {
@@ -48,10 +64,15 @@
       "README.md",
       "ASSET_LICENSES.md",
       "runtime/relaybound-server.cjs",
+      "tests/partner-choice-http.test.js",
+      "tests/movement-pressure-http.test.js",
+      "tests/echo-chamber-http.test.js",
+      "tests/visual-assets.test.js",
       "runtime/relaybound-client.html",
       "runtime/relaybound-debrief.html",
       "runtime/assets/characters/Warrior.gltf",
-      "runtime/assets/characters/Wizard.gltf"
+      "runtime/assets/characters/Wizard.gltf",
+      "runtime/assets/world/Textures/colormap.png"
     ]
   }
 }

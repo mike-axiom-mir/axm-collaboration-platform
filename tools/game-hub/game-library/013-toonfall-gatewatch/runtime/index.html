@@ -29,6 +29,7 @@
     </section>
 
     <section class="stage" id="stage" aria-label="Bloomvale defense arena">
+      <canvas id="world3d" width="640" height="360" aria-hidden="true"></canvas>
       <canvas id="world" width="1600" height="900" tabindex="0" aria-describedby="threatAnnouncer" aria-label="Top-down animated shooter arena. Use WASD to move, mouse to aim, click or Space to fire, F to interact, M for the map, and Escape to pause."></canvas>
       <div class="stage-vignette" aria-hidden="true"></div>
       <div class="aim-note" id="aimNote">WASD MOVE · MOUSE AIM · CLICK FIRE</div>
@@ -69,7 +70,7 @@
         <div class="overlay-card briefing-card">
           <span class="mode-chip">HUMAN + AI CO-OP DEFEND</span>
           <h2 id="briefingTitle">HOLD THE<br><em>HEARTLIGHT</em></h2>
-          <p>Explore five districts between three defense waves. Meet Bloomvale’s neighbors, finish local activities, and unlock upgrades before choosing when to defend.</p>
+          <p>Explore five districts between five named defense watches. Meet Bloomvale’s neighbors, finish local activities, and unlock upgrades before facing the Ink Crown.</p>
           <div class="control-grid">
             <div><kbd>WASD</kbd><b>MOVE</b><small>Circle the beacon</small></div>
             <div><kbd>MOUSE</kbd><b>AIM + FIRE</b><small>Hold click to paint</small></div>
@@ -79,7 +80,7 @@
             <div><kbd>M</kbd><b>FIELD MAP</b><small>Unlocked by Maribel</small></div>
           </div>
           <button class="primary primary-button start" id="startButton" type="button">ENTER BLOOMVALE</button>
-          <small class="truth-line">One local human seat // one server-owned AI companion // no internet required</small>
+          <small class="truth-line" id="teamTruth">Seat 1 human // Seat 2 selectable // no internet required for built-in AI</small>
         </div>
       </section>
 
@@ -118,9 +119,9 @@
         <button class="close" id="closeHelp" type="button" aria-label="Close how to play">×</button>
         <span class="eyebrow">FIELD MANUAL</span>
         <h2 id="helpTitle">Protect the center. Keep moving.</h2>
-        <p>Smudges choose the closest defender when you get in their way; otherwise they drain the Heartlight. Evade a telegraphed hit to arm a 2.4-second Prism Counter: your next shot deals double damage. Moxie automatically finds the nearest threat and returns after a reboot.</p>
+        <p>Smudges choose the closest defender when you get in their way; otherwise they drain the Heartlight. Evade a telegraphed hit to arm a 2.4-second Prism Counter: your next shot deals double damage. The second defender follows the Human, Connected AI, or In-game AI choice made in the Hub.</p>
         <div class="help-keys"><span><kbd>WASD</kbd> move</span><span><kbd>CLICK</kbd> fire</span><span><kbd>SHIFT</kbd> dash</span><span><kbd>E</kbd> burst</span><span><kbd>F</kbd> interact</span><span><kbd>M</kbd> map</span><span><kbd>H</kbd> manual</span><span><kbd>ESC</kbd> pause / close</span></div>
-        <p class="gamepad-help"><b>GAMEPAD</b> Left/right sticks move and aim · RT/A paint · B dash · X Heartburst · Y interact · View map · Menu pause.</p>
+        <p class="gamepad-help"><b>GAMEPAD</b> Left stick/D-pad move · right stick aims and fires on release · RT/A paint · B dash · X Heartburst · Y interact · View map · Menu pause. On the shared screen, pad 2 controls a Human second seat.</p>
       </section>
     </section>
 
@@ -132,7 +133,7 @@
       </article>
       <article class="team-card moxie" id="allyCard">
         <div class="portrait"><span></span></div>
-        <div class="team-copy"><small>AI · DEFENSE COMPANION</small><div class="team-name-row"><strong>Moxie</strong><span class="team-state" id="allyState" aria-hidden="true" hidden>REBOOT 5s</span></div><div class="health" id="allyHealthMeter" role="progressbar" aria-label="Moxie health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="allyHealth"></i></div></div>
+        <div class="team-copy"><small id="allyKind">IN-GAME AI · DEFENSE COMPANION</small><div class="team-name-row"><strong id="allyName">Moxie</strong><span class="team-state" id="allyState" aria-hidden="true" hidden>REBOOT 5s</span></div><div class="health" id="allyHealthMeter" role="progressbar" aria-label="Moxie health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="allyHealth"></i></div></div>
         <b id="allyHealthText">100</b>
       </article>
       <div class="footer-actions">
@@ -147,6 +148,7 @@
   <div class="sr-only" id="beaconAnnouncer" role="status" aria-live="polite" aria-atomic="true"></div>
   <div class="sr-only" id="threatAnnouncer" role="status" aria-live="polite" aria-atomic="true"></div>
   <script src="game-core.js"></script>
+  <script src="bloomvale-three.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

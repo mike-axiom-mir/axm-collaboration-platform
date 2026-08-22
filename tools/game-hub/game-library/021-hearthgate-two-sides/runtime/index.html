@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#201a2b">
+  <title>Hearthgate: Two Sides</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game-shell" id="gameShell">
+    <section class="stage" aria-label="Hearthgate battlefield">
+      <canvas id="game3d" width="480" height="270" aria-hidden="true"></canvas>
+      <canvas id="game" width="960" height="540" tabindex="0" aria-label="Hearthgate defense battlefield. Use the surrounding controls or a gamepad to play."></canvas>
+
+      <header class="topbar">
+        <div class="crest" aria-label="Hearthgate Two Sides">
+          <span class="crest-mark" aria-hidden="true">HG</span>
+          <span><b>HEARTHGATE</b><small>TWO SIDES · SPOT 021</small></span>
+        </div>
+        <div class="run-status">
+          <span><small>NIGHT</small><b id="waveValue">1</b></span>
+          <span><small>HELD</small><b id="timeValue">0:00</b></span>
+          <span class="oath-status"><small>OATH</small><b id="chapterValue">EMBER MUSTER</b></span>
+          <span><small>SCORE</small><b id="scoreValue">0</b></span>
+        </div>
+        <div class="resources" aria-label="Warden wallets">
+          <div class="wallet wallet-north" id="northWallet"><strong id="northWalletLabel">W1 NORTH</strong><span class="gold"><i aria-hidden="true"></i><b id="northGoldValue">105</b><small id="northGoldRate">GOLD</small></span><span class="metal"><i aria-hidden="true"></i><b id="northMetalValue">170</b><small id="northMetalRate">METAL</small></span></div>
+          <div class="wallet wallet-south" id="southWallet"><strong>W2 SOUTH</strong><span class="gold"><i aria-hidden="true"></i><b id="southGoldValue">105</b><small id="southGoldRate">GOLD</small></span><span class="metal"><i aria-hidden="true"></i><b id="southMetalValue">170</b><small id="southMetalRate">METAL</small></span></div>
+        </div>
+      </header>
+
+      <aside class="tower-card tower-north" id="northCard" aria-label="North gate tower">
+        <div class="tower-title"><span><small>NORTH SIDE</small><b>ROWAN TOWER</b></span><em id="northLevel">DMG 1</em></div>
+        <div class="health"><i id="northHealth"></i></div>
+        <div class="tower-meta"><span id="northHp">170 / 170</span><span id="northPower">VOLLEY READY</span></div>
+        <div class="tower-actions">
+          <button type="button" data-action="upgrade" data-side="north"><kbd>X/Q</kbd> Upgrade <span id="northUpgradeCost">62 G</span></button>
+          <button type="button" data-action="repair" data-side="north"><kbd>Y/E</kbd> Repair <span id="northRepairCost">FULL</span></button>
+          <button type="button" class="volley" data-action="volley" data-side="north"><kbd>LT</kbd> Volley</button>
+        </div>
+      </aside>
+
+      <aside class="tower-card tower-south" id="southCard" aria-label="South gate tower">
+        <div class="tower-title"><span><small>SOUTH SIDE</small><b>BRAMBLE TOWER</b></span><em id="southLevel">DMG 1</em></div>
+        <div class="health"><i id="southHealth"></i></div>
+        <div class="tower-meta"><span id="southHp">170 / 170</span><span id="southPower">VOLLEY READY</span></div>
+        <div class="tower-actions">
+          <button type="button" data-action="upgrade" data-side="south"><kbd>X/U</kbd> Upgrade <span id="southUpgradeCost">62 G</span></button>
+          <button type="button" data-action="repair" data-side="south"><kbd>Y/O</kbd> Repair <span id="southRepairCost">FULL</span></button>
+          <button type="button" class="volley" data-action="volley" data-side="south"><kbd>LT</kbd> Volley</button>
+        </div>
+      </aside>
+
+      <section class="hearth-meter" aria-label="Inner hearth integrity">
+        <span><small>INNER HEARTH</small><b id="hearthValue">260 / 260</b></span>
+        <div><i id="hearthHealth"></i></div>
+      </section>
+
+      <section class="build-dock" aria-label="Gate and building controls">
+        <button type="button" id="fortifyButton" class="fortify"><span class="icon">▣</span><span><small>SHARED GATE</small><b>Fortify · Lv <i id="gateLevel">1</i></b></span><em id="gateCost">105 M</em></button>
+        <div class="blueprint wheel-guide">
+          <span><small><kbd>RB</kbd> BUILD WHEEL · HOLD + LEFT STICK</small><b id="blueprintName">Forge</b><em id="blueprintEffect">LAST PICK · METAL INCOME · 70 M</em></span>
+        </div>
+        <button type="button" id="helpButton" class="small-button" aria-label="Show help">?</button>
+        <button type="button" id="soundButton" class="small-button" aria-label="Toggle sound">♪</button>
+        <button type="button" id="pauseButton" class="small-button" aria-label="Pause game">Ⅱ</button>
+      </section>
+
+      <div class="warden-status" id="wardenStatus" aria-live="polite"></div>
+      <div class="control-ribbon">PAD · LS MOVE / CHOOSE · RS AIM · RT/A FIRE · RB BUILD WHEEL / UPGRADE · LB GATE</div>
+      <div class="prep-banner" id="prepBanner" hidden aria-live="assertive"></div>
+      <div class="rebuild-banner" id="rebuildBanner" hidden aria-live="assertive"></div>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="overlay title-overlay" id="titleOverlay">
+      <div class="title-card">
+        <div class="pixel-gate" aria-hidden="true"><i></i><b></b><i></i></div>
+        <small class="eyebrow">AXM GAME NIGHT · SPOT 021</small>
+        <h1>HEARTHGATE</h1>
+        <h2>TWO SIDES OF ONE GATE</h2>
+        <p>Seal five changing siege oaths across six authored minutes, then carry the same gate into an endless vigil. Build inside the ward; if one side falls, rebuild fast—anything inside spreads out and hits twice as hard.</p>
+        <div class="mode-actions">
+          <button type="button" id="singleButton" class="primary"><span>ONE WARDEN</span><small>Solo · command both sides</small></button>
+          <button type="button" id="coopButton"><span>TWO WARDENS</span><small>Local co-op · one side each</small></button>
+        </div>
+        <div class="pad-readiness" id="padReadiness">No gamepads detected · keyboard fallback ready</div>
+        <div class="title-rules"><span>5 OATHS · 6 MINUTES</span><span>THEN ENDLESS VIGIL</span><span>HEXER WARDS · WARLORD COMMANDS</span><span>GOLD → TOWERS</span><span>METAL → BUILDINGS</span></div>
+        <p class="pad-hint">Phone/gamepad: A start · LS move · RS aim · hold RB near an empty plot, point LS, release to build · tap RB on a building to upgrade</p>
+      </div>
+    </section>
+
+    <section class="overlay panel-overlay" id="buildOverlay" hidden>
+      <div class="modal-card build-modal" role="dialog" aria-modal="true" aria-labelledby="buildTitle">
+        <button type="button" class="close" data-close aria-label="Close">×</button>
+        <small class="eyebrow">POINTER / TOUCH FALLBACK · CONTROLLERS USE RB WHEEL</small>
+        <h2 id="buildTitle">Choose a building</h2>
+        <p id="buildDescription">Metal raises buildings. Attack buildings protect the inner ward; income buildings strengthen the next decision.</p>
+        <div class="building-grid" id="buildingGrid"></div>
+      </div>
+    </section>
+
+    <section class="overlay panel-overlay" id="helpOverlay" hidden>
+      <div class="modal-card help-card" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <button type="button" class="close" data-close aria-label="Close">×</button>
+        <small class="eyebrow">WARDEN FIELD CARD</small>
+        <h2 id="helpTitle">Defend together</h2>
+        <div class="help-columns">
+          <article><b>XBOX / STANDARD PAD</b><p>Left stick or D-pad moves. Right stick aims; RT/A or aim-release fires. Near an empty plot, hold RB, point the left stick, then release to build. Tap RB at a building to upgrade it. LB fortifies the shared gate; X upgrades your tower; Y repairs/rebuilds; LT volleys.</p></article>
+          <article><b>KEYBOARD + POINTER</b><p>Solo: WASD move, pointer aim/click, arrows aim, Space fire. Co-op: P1 uses WASD + pointer/Space; P2 uses arrows to move, IJKL aim, Enter fire. Q/E manage north; U/O manage south.</p></article>
+          <article><b>THE BREACH</b><p>Attackers march straight to their side. A fallen tower opens that half. Inside, enemies spread over three paths and their damage doubles. The bright rebuild timer gives a cheaper, stronger reconstruction.</p></article>
+          <article><b>BUILDING PLAN</b><p>Each side owns four plots and a separate wallet. Forge makes your metal. Moon Market makes your gold. Ballista Yard attacks your lane. Ember Lab splash-burns breaches on your side. Build cards show exact current and next-level output.</p></article>
+          <article><b>THE FIVE OATHS</b><p>Every 72 seconds a named siege changes the enemy mix and opens with a formation. Hexers ward nearby ordinary troops, so break their teal rings first. Warlords accelerate nearby troops, so split the red command ring. Each sealed oath pays both active wardens; after oath five, endless scaling continues.</p></article>
+        </div>
+        <p class="access-note">Esc/B closes overlays · M toggles reduced motion · H opens this card · sound can be muted from the bottom dock.</p>
+      </div>
+    </section>
+
+    <section class="overlay panel-overlay pause-overlay" id="pauseOverlay" hidden>
+      <div class="modal-card pause-card" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+        <small class="eyebrow">THE NIGHT WAITS</small>
+        <h2 id="pauseTitle">Paused</h2>
+        <p>Your gate, enemies, and rebuild timers are frozen.</p>
+        <button type="button" id="resumeButton" class="primary">Return to the wall</button>
+        <button type="button" id="restartButton">Restart at the title</button>
+      </div>
+    </section>
+
+    <section class="overlay panel-overlay" id="gameOverOverlay" hidden>
+      <div class="modal-card result-card">
+        <small class="eyebrow">THE INNER FIRE DIMMED</small>
+        <h2>Hearthgate fell</h2>
+        <p id="resultLine">You held the gate for 0:00.</p>
+        <div class="result-stats" id="resultStats"></div>
+        <button type="button" id="againButton" class="primary">Defend again</button>
+        <button type="button" id="titleButton">Change mode</button>
+      </div>
+    </section>
+  </main>
+  <script src="game-core.js"></script>
+  <script src="hearthgate-three.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

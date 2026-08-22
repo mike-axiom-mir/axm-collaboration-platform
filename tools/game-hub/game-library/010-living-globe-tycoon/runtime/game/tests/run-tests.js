@@ -514,15 +514,58 @@ test('mission selection and state transitions replay deterministically', 'missio
   assert.equal(a.active.status, 'ACTIVE'); assert.equal(a.active.startedAt, 0); assert.equal(Missions.validate(a).ok, true);
 });
 
-test('a mission lasts five active minutes and the next starts on the ten-minute schedule', 'mission timing', () => {
+test('missions remain open six active minutes and completed errands keep the four-minute start cadence', 'mission timing', () => {
   let state = startMission('mission-clock', false);
-  let result = Missions.advance(state, 299, missionContext(false)); state = result.state;
+  let result = Missions.advance(state, 359, missionContext(false)); state = result.state;
   assert(state.active); assert.equal(result.events.length, 0);
   result = Missions.advance(state, 1, missionContext(false)); state = result.state;
-  assert.equal(state.active, null); assert.equal(result.events[0].type, 'MISSION_FAILED'); assert.equal(state.currency.balance, 0);
-  state = Missions.advance(state, 299, missionContext(false)).state; assert.equal(state.active, null);
+  assert.deepEqual(result.events.map(event => event.type), ['MISSION_FAILED', 'MISSION_STARTED']);
+  assert.equal(state.active.startedAt, 360); assert.equal(state.currency.balance, 0);
+
+  state = startMission('mission-early-finish', false);
+  state = Missions.record(state, { eventKind: state.active.eventKind, amount: state.active.goal, side: 'human' }).state;
+  state = Missions.advance(state, 239, missionContext(false)).state; assert.equal(state.active, null);
   result = Missions.advance(state, 1, missionContext(false));
-  assert.equal(result.events[0].type, 'MISSION_STARTED'); assert.equal(result.state.active.startedAt, 600);
+  assert.equal(result.events[0].type, 'MISSION_STARTED'); assert.equal(result.state.active.startedAt, 240);
+});
+
+test('two completed starter errands unlock six expanded mission variants', 'mission content progression', () => {
+  let state = startMission('expanded-catalog', false), summary = Missions.summary(state);
+  assert.equal(Missions.MISSION_ORDER.length, 12); assert.equal(summary.catalog.unlocked, 6); assert.equal(summary.catalog.expandedUnlocked, false);
+  for (let i = 0; i < 2; i += 1) {
+    state = Missions.record(state, { eventKind: state.active.eventKind, amount: state.active.goal, side: 'human' }).state;
+    if (i === 0) state = Missions.advance(state, Missions.INTERVAL_SECONDS, missionContext(false)).state;
+  }
+  summary = Missions.summary(state);
+  assert.equal(summary.catalog.unlocked, 12); assert.equal(summary.catalog.expandedUnlocked, true);
+  assert.deepEqual(Missions.MISSION_ORDER.filter(id => Missions.DEFINITIONS[id].tier === 'EXPANDED'), ['SHORELINE_SURVEY', 'NURSERY_PROMISE', 'WINDBREAK_WORKS', 'LAKE_RECOVERY', 'BEACON_CHAIN', 'FESTIVAL_TABLE']);
+});
+
+test('four completed errands finish a repeatable stewardship tour and grant one bounded bonus', 'longer mission route', () => {
+  let state = startMission('four-errand-tour', false), ordinaryRewards = 0, finalEvents = [];
+  for (let i = 0; i < Missions.TOUR_MISSIONS; i += 1) {
+    ordinaryRewards += state.active.reward.amount;
+    const result = Missions.record(state, { eventKind: state.active.eventKind, amount: state.active.goal, side: 'human' });
+    state = result.state; finalEvents = result.events;
+    if (i < Missions.TOUR_MISSIONS - 1) state = Missions.advance(state, Missions.INTERVAL_SECONDS, missionContext(false)).state;
+  }
+  assert.deepEqual(finalEvents.map(event => event.type), ['MISSION_PROGRESS', 'MISSION_COMPLETED', 'MISSION_TOUR_COMPLETED']);
+  assert.equal(state.currency.balance, ordinaryRewards + Missions.TOUR_BONUS);
+  assert.equal(state.progression.toursCompleted, 1); assert.equal(state.progression.tourNumber, 2);
+  assert.equal(state.progression.completedInTour, 0); assert.equal(state.progression.totalCompleted, 4);
+  assert.equal(state.progression.currentStreak, 4); assert.equal(state.progression.bestStreak, 4);
+  assert.equal(Missions.validate(state).ok, true);
+});
+
+test('v0.1 mission saves preserve Laurels and bounded history while gaining tour progression', 'mission save migration', () => {
+  const legacy = Missions.createState('legacy-missions');
+  legacy.schema = Missions.LEGACY_STATE_SCHEMA; legacy.version = '0.1.0'; legacy.currency.balance = 7;
+  legacy.history = [{ id: 'legacy-complete', status: 'COMPLETED' }]; delete legacy.progression;
+  const migrated = Missions.migrate(legacy, 'legacy-missions');
+  assert.equal(migrated.schema, Missions.STATE_SCHEMA); assert.equal(migrated.version, Missions.VERSION);
+  assert.equal(migrated.currency.balance, 7); assert.equal(migrated.history.length, 1);
+  assert.equal(migrated.progression.totalCompleted, 1); assert.equal(migrated.progression.completedInTour, 1);
+  assert.equal(migrated.boundaries.tourBonusIsCeremonial, true); assert.equal(Missions.validate(migrated).ok, true);
 });
 
 test('co-op snapshots twice the solo goal and reward for the same mission', 'cooperative missions', () => {
@@ -795,6 +838,7 @@ test('walkable missions are wired to both seats, real actions, saves and the pub
   assert(/advanceMissionClock\(dt\)/.test(html)); assert(/missionMovementTick\(\)/.test(html));
   ['PLANT_LIFE','CATCH_FISH','GATHER_WOOD','COOK_FISH','BUILD_FIRE','TRAVEL'].forEach(kind => assert(new RegExp("recordMissionEvent\\('" + kind).test(html)));
   assert(/mission:window\.AXMWalkableMissions\.summary\(missionState\)/.test(html)); assert(/mission: compact\(context\.mission/.test(ai));
+  assert(/MISSION_TOUR_COMPLETED/.test(html)); assert(/catalogSize:window\.AXMWalkableMissions\.MISSION_ORDER\.length/.test(html));
   assert(/missions:Object\.freeze/.test(html)); assert(/selected-snapshot\/v10/.test(html));
   assert(!/Math\.random\s*\(|Date\.now\s*\(|fetch\s*\(|https?:\/\//.test(missions));
 });
@@ -839,6 +883,20 @@ test('included Tycoon UI has an explicit file-based host proposal round trip', '
   assert(/new window\.AXMTycoonGlobeAdapter\.GlobeAdapter/.test(app)); assert(/PROPOSAL_ONLY|proposal_only/.test(app));
   assert(/steward-bridge\/v0\.4/.test(app));
   assert(!/fetch\s*\(/.test(app));
+});
+
+test('walkable globe visual polish stays local, faceted and presentation-only', 'visual presentation', () => {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const polish = fs.readFileSync(path.join(ROOT, 'core', 'island-visual-polish.js'), 'utf8');
+  assert(/core\/island-visual-polish\.js/.test(html));
+  assert(/AXMIslandVisualPolishFactory/.test(html));
+  assert(/visualPolish\.setPlanet\(planet\)/.test(html));
+  assert(/visualPolish\.updateSky/.test(html));
+  assert(/IcosahedronGeometry/.test(polish));
+  assert(/EdgesGeometry/.test(polish));
+  assert(/BasicShadowMap/.test(polish));
+  assert(/presentation-only/.test(polish));
+  assert(!/Math\.random\s*\(|fetch\s*\(|https?:\/\//.test(polish));
 });
 
 console.log('\nAXM LIVING GLOBE STEWARD vNEXT HONEST EXAM — ' + pass + ' PASS · ' + fail + ' FAIL');

@@ -53,7 +53,7 @@ function validateState(state, expectedFingerprint) {
   if (!players.length || players.length > 4) return 'state-player-count';
   if (players.some(player => !player || typeof player !== 'object' || !player.id || !finite(player.lastSequence))) return 'state-player-shape';
   if (rosterFingerprint(rosterFromState(state)) !== expectedFingerprint) return 'roster-mismatch';
-  if (!state.show || state.show.schema !== SHOW_SCHEMA || !Array.isArray(state.show.history) || state.show.history.length > 6) return 'state-show';
+  if (!state.show || state.show.schema !== SHOW_SCHEMA || !Array.isArray(state.show.history) || state.show.history.length > 10) return 'state-show';
   if (!state.setlist || state.setlist.schema !== 'axm.pulse-choir-live-setlist/v1' || !Array.isArray(state.setlist.acts)) return 'state-setlist';
   if (!Array.isArray(state.beats) || !Array.isArray(state.events) || !Array.isArray(state.inputLedger) || !Array.isArray(state.pulseLedger)) return 'state-lists';
   return null;

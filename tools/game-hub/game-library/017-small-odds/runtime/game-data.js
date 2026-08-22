@@ -1,4 +1,4 @@
-export const GAME_VERSION = 10;
+export const GAME_VERSION = 11;
 export const SAVE_KEY = 'axm.small-odds.save.v1';
 export const MONEY = '₡';
 
@@ -705,6 +705,36 @@ export const CASINO_LOTS = Object.freeze([
     subtitle:'FIXED-PROVENANCE DOOR · LEGAL', description:'An emergency exit jointly owned by both sides of the wall. Neither side accepts maintenance liability.',
     provenance:'Posted-price lot from the Starspite honesty auction.', drawback:'May open into a meeting about exits.', tags:['casino','travel','legal','home'], effect:{ energy:10, knowledge:7, home:4 },
     triggerName:'during legally complicated travel', triggerTags:['travel','legal'], triggerBonus:2.6, baseValue:900, durability:9, installable:true
+  }
+]);
+
+// A losing table receipt remains final. These authored neighborhood routes use
+// that saved fact as a life-sim prerequisite; they never replay, soften, or feed
+// the casino roll. Recovery is capped by the exact loss named on the receipt.
+export const STARSPITE_DEBT_ROUTES = Object.freeze([
+  {
+    id:'lane-solidarity-rota', label:'Publish a lane solidarity rota', institution:'Lopsided Lane public schedule', glyph:'≋', color:'#7fe3b1',
+    description:'Tavi and Oola post two small paid repair rounds where everybody can see the loss, the cap, and the hours.',
+    gate:{ kind:'district-visits', minimum:1, label:'visit Lopsided Lane once' },
+    hours:2, energyCost:5, dueDays:2, recoveryCap:20, visual:'solidarity-ribbons',
+    returnEffect:{ supplierStanding:1, home:1, relationships:{ tavi:1, oola:1 } },
+    returnText:'The lane rota closed with every shift signed. Nobody called the payment luck.'
+  },
+  {
+    id:'long-table-repayment', label:'File a transparent Long Table repayment job', institution:'Long Table Works + Crooked Kettle', glyph:'▥', color:'#f2bd67',
+    description:'One disclosed production shift turns earlier paid-work standing into a fast recovery contract with visible pressure.',
+    gate:{ kind:'work-completed', minimum:1, label:'complete one Long Table order' },
+    hours:3, energyCost:8, dueDays:1, recoveryCap:48, visual:'repayment-stamp',
+    returnEffect:{ supplierStanding:1, workStanding:1, workPressure:1, businessRating:1 },
+    returnText:'The Long Table stamped the contract paid and the Kettle copied the arithmetic into its public ledger.'
+  },
+  {
+    id:'hushglass-breathing-room', label:'Ask Hushglass for breathing room', institution:'Hushglass Commons household', glyph:'◉', color:'#8bd9ef',
+    description:'Sumi records a household accommodation that restores time and warmth without pretending the wager disappeared.',
+    gate:{ kind:'hushglass', minimumTrust:3, minimumAgreements:1, label:'Hushglass trust 3 and one completed agreement' },
+    hours:1, energyCost:3, dueDays:2, recoveryCap:28, visual:'breathing-room-lamp',
+    returnEffect:{ warmth:1, trust:2, home:2, relationships:{ sumi:2 } },
+    returnText:'Hushglass lit the accommodation lamp and returned the agreed breathing-room payment with Sumi’s signature.'
   }
 ]);
 

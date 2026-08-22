@@ -16,6 +16,11 @@ const { interactWithGroupSaveComputer, isGroupSaveMenuOpen } = require('./group-
 const { collidesObstacle } = require('./spatial-index');
 const { interactWithTerritory } = require('./territory-system');
 const { claimVehicleSeat, exitVehicle, nearestEnterableVehicle } = require('./vehicle-system');
+const {
+  interactWithCityLife,
+  isCityLifeMenuOpen,
+  updateCityLifeActorInput,
+} = require('./city-life-system');
 
 function partyCentre(world, partyId, excludedActorId = null) {
   const members = Object.values(world.actors).filter((actor) => (
@@ -61,7 +66,8 @@ function applyPartyTether(world, actor, movement) {
 }
 
 function moveActor(world, actor, deltaSeconds) {
-  if (actor.currentVehicleId || !actor.alive || isMissionInputLocked(world) || isGroupSaveMenuOpen(world)) {
+  if (actor.currentVehicleId || !actor.alive || isMissionInputLocked(world) || isGroupSaveMenuOpen(world)
+    || isCityLifeMenuOpen(world, actor.id)) {
     actor.velocity = { x: 0, y: 0 };
     return;
   }
@@ -77,7 +83,9 @@ function moveActor(world, actor, deltaSeconds) {
   }
   if (aimMagnitude > 0.12) actor.facing = { x: aimX / aimMagnitude, y: aimY / aimMagnitude };
   else if (magnitude > 0.001) actor.facing = { x: movement.x, y: movement.y };
-  const speed = actor.input.sprint ? 158 : 112;
+  const gearSpeed = Math.max(0.75, Math.min(1.35, Number(actor.gearSummary?.moveSpeedMultiplier) || 1));
+  const slowMultiplier = world.tick < (actor.slowedUntilTick || 0) ? 0.58 : 1;
+  const speed = (actor.input.sprint ? 158 : 112) * gearSpeed * slowMultiplier;
   actor.velocity = { x: movement.x * speed, y: movement.y * speed };
   const previous = { ...actor.position };
 
@@ -91,7 +99,10 @@ function processActorAction(world, actor) {
   if (!actor.input.action || !actor.alive) return null;
   actor.input.action = false;
   if (actor.pendingPulses) actor.pendingPulses.action = false;
+  if (actor.inventoryOpen) return { ok: false, kind: 'inventory', reason: 'inventory-owns-action' };
 
+  const cityLifeResult = interactWithCityLife(world, actor);
+  if (cityLifeResult.ok || cityLifeResult.kind === 'city-purchase') return cityLifeResult;
   const territoryResult = interactWithTerritory(world, actor);
   if (territoryResult.ok) return { kind: 'territory', ...territoryResult };
   if (world.territory?.status === 'results') return { ok: false, kind: 'territory', reason: 'territory-results-active' };
@@ -232,6 +243,7 @@ function updatePlayers(world, deltaSeconds, now = Date.now()) {
     }
     refreshExternalInputState(actor, now);
     processMapToggle(world, actor);
+    updateCityLifeActorInput(world, actor);
     if (isMissionInputLocked(world)) {
       actor.inventoryOpen = false;
       clearInventoryPulses(actor);

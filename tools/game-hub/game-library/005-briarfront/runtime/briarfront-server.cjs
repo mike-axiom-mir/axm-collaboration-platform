@@ -2,13 +2,17 @@
 'use strict';
 
 const http = require('http');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const SeatInterface = require('./seat-interface.cjs');
 
 const HOST = process.env.AXM_FOREST_HOST || '0.0.0.0';
 const PORT = Number(process.env.PORT || 8795);
+const SESSION_ID = process.env.AXM_SESSION_ID || crypto.randomUUID();
 const CLIENT_FILE = path.join(__dirname, 'briarfront-client.html');
 const SOURCE_FILE = path.join(__dirname, 'grafthold-source.html');
+const THREE_VENDOR_FILE = path.resolve(__dirname, '../../../../../shared/vendor/three-r160/three.module.js');
 const WORLD_SIZE = 120;
 const DIVIDER_X = WORLD_SIZE / 2, DIVIDER_HALF = 4.5, BRIDGES = [{ z: 34, half: 5.5 }, { z: 86, half: 5.5 }];
 const TEAM_TARGET = 30;
@@ -24,14 +28,27 @@ function cleanName(value, fallback) {
   const text = String(value || '').replace(/[^a-z0-9 _-]/gi, '').trim().slice(0, 20);
   return text || fallback;
 }
+function seatKind(value, fallback) {
+  const kind = String(value || '').toLowerCase();
+  return kind === 'human' || kind === 'adapter' || kind === 'ai' ? kind : fallback;
+}
 function loadSeats() {
   let raw = [];
   try { raw = JSON.parse(process.env.AXM_PLAYERS_JSON || '[]'); } catch (e) {}
-  if (!raw.length) raw = [{ display_name: 'Explorer', type: 'human' }];
-  return raw.slice(0, 4).map((seat, i) => ({
-    id: 'p' + (i + 1), name: cleanName(seat.display_name, 'Explorer ' + (i + 1)),
-    kind: seat.type === 'human' ? 'human' : 'adapter', color: COLORS[i]
-  }));
+  const defaults = ['Explorer', 'Grove Bot', 'Ember Bot', 'Thorn Bot'];
+  return Array.from({ length: 4 }, (_, i) => {
+    const seat = raw[i] || {};
+    const kind = seatKind(seat.type, i === 0 ? 'human' : 'ai');
+    return {
+      id: 'p' + (i + 1),
+      slot: Number(seat.slot || i + 1),
+      seatId: String(seat.seat_id || seat.seat || 'seat_' + (i + 1)),
+      adapterId: kind === 'adapter' ? String(seat.adapter_id || seat.adapterId || 'adapter-seat-' + (i + 1)) : null,
+      name: cleanName(seat.display_name, defaults[i]),
+      kind,
+      color: COLORS[i]
+    };
+  });
 }
 function seeded(seed) { let value = seed >>> 0; return () => ((value = (value * 1664525 + 1013904223) >>> 0) / 4294967296); }
 function makeTrees() {
@@ -57,10 +74,11 @@ const seats = loadSeats();
 const players = {}, inputs = {};
 seats.forEach((seat, i) => {
   const west = i < 2, lane = i % 2;
-  players[seat.id] = { id: seat.id, name: seat.name, kind: seat.kind, color: seat.color, territory: west ? 'west' : 'east', spawnLane: lane, x: west ? 25 : WORLD_SIZE - 25, z: lane ? 76 : 44, yaw: west ? Math.PI / 2 : -Math.PI / 2, pitch: 0, wood: 0, woodProgress: 0, alive: true, health: 100, maxHealth: 100, ammo: MAX_ARROWS, lastReloadAt: Date.now(), abilityReadyAt: 0, kills: 0, deaths: 0, respawnAt: 0, respawnHealth: 0, lastFireAt: 0, lastBuyAt: 0, actionUntil: 0 };
-  inputs[seat.id] = { moveX: 0, moveY: 0, lookX: 0, lookY: 0, updatedAt: 0 };
+  players[seat.id] = { id: seat.id, slot: seat.slot, seatId: seat.seatId, adapterId: seat.adapterId, name: seat.name, kind: seat.kind, color: seat.color, territory: west ? 'west' : 'east', spawnLane: lane, x: west ? 25 : WORLD_SIZE - 25, z: lane ? 76 : 44, yaw: west ? Math.PI / 2 : -Math.PI / 2, pitch: 0, wood: 0, woodProgress: 0, alive: true, health: 100, maxHealth: 100, ammo: MAX_ARROWS, lastReloadAt: Date.now(), abilityReadyAt: 0, kills: 0, deaths: 0, respawnAt: 0, respawnHealth: 0, lastFireAt: 0, lastBuyAt: 0, actionUntil: 0, controllerConnected: seat.kind === 'ai' ? null : false, adapterConsent: seat.kind === 'adapter' ? true : null };
+  inputs[seat.id] = { moveX: 0, moveY: 0, lookX: 0, lookY: 0, updatedAt: 0, sequence: -1, rateWindow: [] };
 });
-const world = { game_id: '005-briarfront', version: '0.6-bow-experiment', phase: 'running', mode: '2v2-bow', size: WORLD_SIZE, divider: { x: DIVIDER_X, halfWidth: DIVIDER_HALF, bridges: BRIDGES }, woodTarget: TEAM_TARGET, teamScore: { west: 0, east: 0 }, combatScore: { west: 0, east: 0 }, healthJar: { west: 550, east: 550 }, waveQueue: { west: [], east: [] }, waveEndsAt: Date.now() + WAVE_MS, nextMob: 100, gifts: [], nextGift: 1, giftEndsAt: Date.now() + GIFT_MS, winner: null, age: 0, trees: makeTrees(), mobs: makeMobs(), arrows: [], nextArrow: 1, players, event: 'WEST 2v2 EAST · SHARED HEALTH JARS 550', eventAt: Date.now(), chopped: 0 };
+const world = { room: 'AXM1', game_id: '005-briarfront', version: '0.6.1-semantic-seat', phase: 'running', mode: '2v2-bow', tick: 0, size: WORLD_SIZE, divider: { x: DIVIDER_X, halfWidth: DIVIDER_HALF, bridges: BRIDGES }, woodTarget: TEAM_TARGET, teamScore: { west: 0, east: 0 }, combatScore: { west: 0, east: 0 }, healthJar: { west: 550, east: 550 }, waveQueue: { west: [], east: [] }, waveEndsAt: Date.now() + WAVE_MS, nextMob: 100, gifts: [], nextGift: 1, giftEndsAt: Date.now() + GIFT_MS, winner: null, age: 0, trees: makeTrees(), mobs: makeMobs(), arrows: [], nextArrow: 1, players, inputs, event: 'WEST 2v2 EAST · SHARED HEALTH JARS 550', eventAt: Date.now(), chopped: 0 };
+const seatBindings = SeatInterface.createSeatBindings(world);
 const streams = new Set();
 let lastTick = Date.now();
 
@@ -167,14 +185,17 @@ function movePlayer(player, input, dt, now) {
   if (player.ammo < MAX_ARROWS && now - player.lastReloadAt >= ARROW_RELOAD_MS) { const restored = Math.floor((now - player.lastReloadAt) / ARROW_RELOAD_MS); player.ammo = Math.min(MAX_ARROWS, player.ammo + restored); player.lastReloadAt += restored * ARROW_RELOAD_MS; }
   else if (player.ammo === MAX_ARROWS) player.lastReloadAt = now;
   if (!player.alive) { if (world.phase === 'running' && player.respawnAt > 0 && now >= player.respawnAt) respawn(player); else return; }
-  if (player.kind !== 'human') {
+  if (player.kind === 'ai') {
     const seed = Number(player.id.slice(1)), seconds = now / 1000;
     input.lookX = clamp(Math.sin(seconds * 0.47 + seed * 2.1) * 0.48 + Math.sin(seconds * 1.13 + seed) * 0.16, -1, 1); input.lookY = Math.sin(seconds * 0.31 + seed * 1.7) * 0.18;
     input.moveX = Math.sin(seconds * 0.59 + seed * 2.4) * 0.56; input.moveY = 0.38 + Math.sin(seconds * 0.37 + seed) * 0.34;
     const visible = Object.keys(players).map(id => players[id]).filter(other => other.alive && other.territory !== player.territory).map(other => ({ other, distance: Math.hypot(other.x-player.x,other.z-player.z), angle: Math.abs(wrapAngle(Math.atan2(other.x-player.x,other.z-player.z)-player.yaw)) })).filter(view => view.distance < 46 && view.angle < 0.11);
     if (visible.length && Math.random() < 0.14) fireArrow(player, now, now >= player.abilityReadyAt && player.ammo >= 4 && Math.random() < 0.16);
     if (now - player.lastBuyAt > 8500) { if (world.teamScore[player.territory] >= 25 && Math.random() < 0.28) buyMob(player, 'big', now); else if (world.teamScore[player.territory] >= 5) buyMob(player, 'small', now); }
-  } else if (now - input.updatedAt > 420) { input.moveX = 0; input.moveY = 0; input.lookX = 0; input.lookY = 0; }
+  } else if (now - input.updatedAt > 420) {
+    input.moveX = 0; input.moveY = 0; input.lookX = 0; input.lookY = 0;
+    if (now - input.updatedAt > 1200) player.controllerConnected = false;
+  }
   player.yaw = wrapAngle(player.yaw - input.lookX * 2.35 * dt);
   player.pitch = clamp(player.pitch - input.lookY * 1.7 * dt, -0.62, 0.62);
   const length = Math.min(1, Math.hypot(input.moveX, input.moveY)), speed = 8.4 * length;
@@ -193,29 +214,66 @@ function movePlayer(player, input, dt, now) {
 }
 function tick() {
   const now = Date.now(), dt = Math.min(0.06, Math.max(0.001, (now - lastTick) / 1000)); lastTick = now; world.age += dt;
+  world.tick += 1;
   Object.keys(players).forEach(id => movePlayer(players[id], inputs[id], dt, now));
   if (world.phase === 'running') { updateArrows(dt, now); updateMobs(dt); if (now >= world.waveEndsAt) spawnWaves(now); if (now >= world.giftEndsAt) spawnGifts(now); }
 }
-function publicState() { const now = Date.now(), publicPlayers = {}; Object.keys(world.players).forEach(id => { const player = world.players[id]; publicPlayers[id] = Object.assign({}, player, { abilityIn: Math.max(0, player.abilityReadyAt - now) }); }); return { game_id: world.game_id, version: world.version, phase: world.phase, mode: world.mode, size: world.size, divider: world.divider, woodTarget: world.woodTarget, teamScore: world.teamScore, combatScore: world.combatScore, healthJar: world.healthJar, waveQueue: world.waveQueue, waveIn: Math.max(0, world.waveEndsAt - now), gifts: world.gifts, giftIn: Math.max(0, world.giftEndsAt - now), winner: world.winner, age: Number(world.age.toFixed(2)), trees: world.trees, mobs: world.mobs, arrows: world.arrows, players: publicPlayers, event: world.event, eventAt: world.eventAt, chopped: world.chopped }; }
-function sendJson(res, code, value) { const body = JSON.stringify(value); res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'content-length': Buffer.byteLength(body), 'access-control-allow-origin': '*' }); res.end(body); }
+function publicState() {
+  const now = Date.now(), publicPlayers = {};
+  Object.keys(world.players).forEach(id => {
+    const player = world.players[id];
+    publicPlayers[id] = {
+      id: player.id, slot: player.slot, seatId: player.seatId, name: player.name, kind: player.kind, color: player.color,
+      territory: player.territory, spawnLane: player.spawnLane, x: player.x, z: player.z, yaw: player.yaw, pitch: player.pitch,
+      wood: player.wood, alive: player.alive, health: player.health, maxHealth: player.maxHealth, ammo: player.ammo,
+      abilityIn: Math.max(0, player.abilityReadyAt - now), kills: player.kills, deaths: player.deaths,
+      controllerConnected: player.controllerConnected
+    };
+  });
+  return { room: world.room, game_id: world.game_id, version: world.version, phase: world.phase, mode: world.mode, tick: world.tick, size: world.size, divider: world.divider, woodTarget: world.woodTarget, teamScore: world.teamScore, combatScore: world.combatScore, healthJar: world.healthJar, waveQueue: world.waveQueue, waveIn: Math.max(0, world.waveEndsAt - now), gifts: world.gifts, giftIn: Math.max(0, world.giftEndsAt - now), winner: world.winner, age: Number(world.age.toFixed(2)), trees: world.trees, mobs: world.mobs, arrows: world.arrows, players: publicPlayers, event: world.event, eventAt: world.eventAt, chopped: world.chopped };
+}
+function sendJson(res, code, value) { const body = JSON.stringify(value); res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'content-length': Buffer.byteLength(body), 'cache-control': 'no-store', 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type,x-axm-seat-token,authorization' }); res.end(body); }
 function readJson(req) { return new Promise((resolve, reject) => { let raw = ''; req.on('data', chunk => { raw += chunk; if (raw.length > 20000) req.destroy(); }); req.on('end', () => { try { resolve(raw ? JSON.parse(raw) : {}); } catch (e) { reject(e); } }); req.on('error', reject); }); }
+function isLoopback(req) { const remote = String(req.socket && req.socket.remoteAddress || ''); return /^(?:127\.|::1$|::ffff:127\.)/.test(remote); }
+function bearer(req) { return String(req.headers['x-axm-seat-token'] || req.headers.authorization || '').replace(/^Bearer\s+/i, ''); }
+function hostBootstrap() {
+  return {
+    ok: true,
+    launch: {
+      controllers: Object.values(world.players).filter(player => player.kind === 'human').map(player => ({ seatId: player.seatId, slot: player.slot, displayName: player.name, url: '/?player=' + player.id })),
+      adapterBindings: Object.values(seatBindings),
+      partyScreens: [{ partyId: 'A', url: '/?player=screen' }]
+    }
+  };
+}
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://local.axm');
   try {
-    if (req.method === 'OPTIONS') { res.writeHead(204, { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type' }); res.end(); return; }
+    if (req.method === 'OPTIONS') { res.writeHead(204, { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type,x-axm-seat-token,authorization' }); res.end(); return; }
     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }); fs.createReadStream(CLIENT_FILE).pipe(res); return; }
     if (req.method === 'GET' && url.pathname === '/source') { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }); fs.createReadStream(SOURCE_FILE).pipe(res); return; }
+    if (req.method === 'GET' && url.pathname === '/vendor/three.module.js') { res.writeHead(200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' }); fs.createReadStream(THREE_VENDOR_FILE).pipe(res); return; }
+    if (req.method === 'GET' && url.pathname === '/api/host/bootstrap') {
+      if (!isLoopback(req)) { sendJson(res, 403, { ok: false, error: 'host-bootstrap-loopback-only' }); return; }
+      sendJson(res, 200, hostBootstrap()); return;
+    }
+    if (req.method === 'GET' && url.pathname === '/api/adapter-observation') {
+      const result = SeatInterface.buildAdapterObservation(world, { roomCode: url.searchParams.get('room'), seatId: url.searchParams.get('seat'), token: bearer(req) }, { bindings: seatBindings, publicState, sessionId: SESSION_ID });
+      sendJson(res, result.statusCode || (result.ok ? 200 : 400), result); return;
+    }
     if (req.method === 'GET' && (url.pathname === '/state' || url.pathname === '/health')) { sendJson(res, 200, publicState()); return; }
     if (req.method === 'GET' && url.pathname === '/events') { res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache', connection: 'keep-alive', 'access-control-allow-origin': '*' }); res.write('retry: 1000\n\n'); streams.add(res); req.on('close', () => streams.delete(res)); return; }
+    if (req.method === 'POST' && url.pathname === '/api/input') {
+      const packet = await readJson(req);
+      const result = SeatInterface.routeSemanticInput(world, Object.assign({}, packet, { token: packet.token || bearer(req) }), { bindings: seatBindings, requireToken: true, fireArrow, buyMob });
+      sendJson(res, result.statusCode || (result.ok ? 200 : 400), result.ok ? result : Object.assign({ error: result.reason }, result)); return;
+    }
     if (req.method === 'POST' && url.pathname === '/input') {
       const id = /^p[1-4]$/.test(url.searchParams.get('player') || '') ? url.searchParams.get('player') : '';
-      if (!players[id] || players[id].kind !== 'human') { sendJson(res, 403, { ok: false, error: 'seat is not a human controller' }); return; }
-      const body = await readJson(req), input = inputs[id];
-      input.moveX = clamp(Number(body.moveX) || 0, -1, 1); input.moveY = clamp(Number(body.moveY) || 0, -1, 1); input.lookX = clamp(Number(body.lookX) || 0, -1, 1); input.lookY = clamp(Number(body.lookY) || 0, -1, 1); input.updatedAt = Date.now();
-      if (body.fire) fireArrow(players[id], Date.now(), !!body.special);
-      if (body.buy) buyMob(players[id], String(body.buy), Date.now());
-      sendJson(res, 200, { ok: true }); return;
+      const body = await readJson(req);
+      const result = SeatInterface.routeSemanticInput(world, { intent: { moveX: Number(body.moveX) || 0, moveY: Number(body.moveY) || 0, lookX: Number(body.lookX) || 0, lookY: Number(body.lookY) || 0, fire: body.fire === true, special: body.special === true, buy: body.buy == null ? null : String(body.buy) } }, { playerId: id, requireToken: false, fireArrow, buyMob });
+      sendJson(res, result.statusCode || (result.ok ? 200 : 400), result.ok ? result : Object.assign({ error: result.reason }, result)); return;
     }
     sendJson(res, 404, { ok: false, error: 'not found' });
   } catch (error) { sendJson(res, 400, { ok: false, error: error.message }); }

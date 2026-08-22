@@ -1,0 +1,90 @@
+{
+  "schema": "axm.game-visual-pass-receipt/v1",
+  "gameId": "021-hearthgate-two-sides",
+  "gameName": "Hearthgate: Two Sides",
+  "checkedAt": "2026-08-16T10:38:00+02:00",
+  "status": "WORKING",
+  "packageStatus": "TEST",
+  "canon": false,
+  "scope": "Bounded low-poly actor and building silhouette improvement; gameplay authority unchanged.",
+  "sourceChanges": [
+    "runtime/hearthgate-three.js",
+    "runtime/app.js",
+    "tests/hearthgate-3d-selftest.js"
+  ],
+  "visualBackend": "BROWSER_PRIMARY",
+  "browserRoute": "http://127.0.0.1:8121/?qa=oath",
+  "viewport": "1280x720",
+  "observations": {
+    "renderer": "webgl-low-poly",
+    "modelProfile": "faceted-models-v1",
+    "paletteSteps": 16,
+    "threatScene": {
+      "enemyCount": 4,
+      "drawCalls": 60,
+      "submittedTriangles": 674,
+      "frameBefore": 7923,
+      "frameAfter420ms": 7988
+    },
+    "reducedMotion": "reduced-static",
+    "highContrastWithReducedMotion": true,
+    "builtBallistaScene": {
+      "drawCalls": 43,
+      "submittedTriangles": 480,
+      "authorityData": "ballista:W1:L1"
+    },
+    "browserLogs": []
+  },
+  "tests": {
+    "package": {
+      "command": "npm test",
+      "result": "PASS",
+      "checks": [
+        "hearthgate-selftest",
+        "oathbound-semantic-playtest",
+        "hearthgate-3d-selftest",
+        "server-http"
+      ]
+    },
+    "workshop": {
+      "result": "PASS",
+      "verifySummary": "0 FAIL · 38 warn",
+      "checks": [
+        "node verify.js",
+        "node hub/hub-selftest.js",
+        "node hub/route-selftest.js",
+        "node hub/graft-selftest.js",
+        "node hub/skin-selftest.js",
+        "node hub/verify-plus.js",
+        "node tests/html-script-syntax-test.js",
+        "node tests/tool-forge-package-test.js",
+        "node tools/agent-tool-forge/selftest.js",
+        "node tools/evidence-desk/selftest.js"
+      ]
+    }
+  },
+  "screenshots": [
+    {"path":"baseline/01-title.png","bytes":43226,"sha256":"736E20432E68A0FCEC26824403FE6FE7CA44B612C52E2627442DC8F12E5F770D"},
+    {"path":"baseline/02-opening-play.png","bytes":79099,"sha256":"C6B86CC54DF0F7D70E5C383996AF249095BAE4B0948AAB841AFEE5C81B917517"},
+    {"path":"baseline/03-authored-threats.png","bytes":77463,"sha256":"D4705A0F984559DFA4718B03C6207DFE2B3334B267F79BD67C88EC93CDB99F47"},
+    {"path":"baseline/04-threat-models.png","bytes":80946,"sha256":"A679EAAA784F624167F6473589A5A7ED172A938BAE0223AC533B56D5536B31A7"},
+    {"path":"final/01-faceted-threats.png","bytes":78758,"sha256":"EFAB639A715CBB4C8B09F814507FA668FFB7799EB7DBB4F2D6DE5E0B81C45D86"},
+    {"path":"final/02-reduced-motion.png","bytes":77980,"sha256":"4A04B1BFCB66CD55B1D293280DC6E43B03121E5C6D882C89C95CC582A6CFF461"},
+    {"path":"final/03-high-contrast-reduced.png","bytes":78969,"sha256":"DEC0CF6D710E7ECEB5E14C0456E0D105B9B78AFB16925CA826BA9E0AB3B8BAEC"},
+    {"path":"final/04-built-station.png","bytes":81717,"sha256":"7628FDEDB2DB506A5682DC2DCCFACE473112F4B53195A40053118F0B3FDDD825"}
+  ],
+  "finalSourceHashes": [
+    {"path":"runtime/app.js","sha256":"6C60ED6C7A2CCFB7769F11D0CEDF38A9A4F0A44A1753D258903920FFE771C73D"},
+    {"path":"runtime/hearthgate-three.js","sha256":"9D4AB7A9AA768FB3076832819F42B7CEA4365DCE6F7DB7DDC971F42AF786DCB0"},
+    {"path":"tests/hearthgate-3d-selftest.js","sha256":"A85C5E864F20F4CE97753601B6A4EB8AAB379A5299269F5A83E1D0D4BFF8C400"},
+    {"path":"game.manifest.json","sha256":"4A4B8C5DBD506C30D25CAE3566B723FDADADECA6065EED4D1BFB186143A78EDA"},
+    {"path":"package.json","sha256":"4663A5F289071A8E1F3DC695A2DDD3CB84A78F094FB3B9A8FDA9284465305BD5"}
+  ],
+  "openBoundaries": [
+    "PHYSICAL_DEVICE_QA_PENDING",
+    "COMPACT_VIEWPORT_RECHECK_PENDING",
+    "STEAM_PACKAGING_PENDING",
+    "HUMAN_BALANCE_PENDING",
+    "MIKE_TOBI_REVIEW_PENDING"
+  ]
+}

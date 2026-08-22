@@ -346,3 +346,39 @@ later move to the larger 5 TB drive without path rewrites.
 ## Retention note
 
 This checkpoint preserves design invariants, exact last-known verdicts, sealed code seams, next actions, boundaries, and known gaps. It intentionally excludes raw logs, temporary captures, repeated retries, private conversation detail, and speculative completion claims. The game files and fresh verification remain authoritative while stewardship continues.
+
+## Current unsealed TEST — Lantern route expansion (2026-08-16)
+
+- `1.1.0-relay-test` adds a sixth independent non-combat adventure instead of
+  copying the four authored fights or named cook-off gate.
+- Its first ordered route unlocks three permanent rehearsals: compact meadow,
+  two-town and five-region. Each owns eight authored world positions, one bright
+  current gate, dim future gates, a walking lantern, a non-failing clock and
+  saved attempts/completions/bests.
+- Active identity, checkpoint and clock normalize and resume. Starting another
+  route cannot replace an active one. Ending an attempt increments an exit count
+  but preserves every completion and best; slower runs cannot overwrite a faster
+  record.
+- `wide-gates` multiplies current-gate geometry and acceptance radius by `1.3`.
+  `quiet-practice` activates an ordinary-enemy sanctuary only while a route is
+  active. The choice does not grant both effects.
+- Mile-0 is the sixth named adventure witness, so `robot-street-news` now states
+  and enforces six exact regions. This also makes the central meadow inhabited
+  during ordinary routines.
+- Live proof completed the Meadow course, reopened a board listing all three
+  courses and its `2:00` best, advanced the Two-Town route to checkpoint 2, and
+  retained course/checkpoint/hero position through two reloads. The full long
+  courses remain human-pacing work, not claimed completions.
+- Reduced motion freezes gate drift, relay-board motion and lantern bounce while
+  preserving required following and the honest route clock.
+- Current deterministic verdicts: motion/camera/rig `25/25`, systems `253`,
+  package `126`, HTTP `4/4`, focused verifier `0 errors / 1 pre-existing gamepad
+  profile warning`. Final Workshop gates were `10/10 PASS` after a foreign
+  `challenge-arena` repair landed concurrently.
+- Status remains TEST. No seal, commit, promotion or canonization was performed.
+
+Next content rule: prefer a distinct authored interaction plus a persistent
+world consequence or bounded mastery loop. Do not add generic fetch counts,
+reward-mail volume, secret routes or timers that punish slow travel. The next
+Bonk & Bolt depth pass should first human-play both long routes on the intended
+controller, then tune landmarks from observed clarity and enjoyment.

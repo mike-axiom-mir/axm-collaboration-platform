@@ -4,6 +4,13 @@ This is deliberately called a **First Edition**, not an alpha or beta. It is a
 complete, winnable local game shape, but it is not falsely described as a
 commercial-scale finished RPG.
 
+The current `1.1.1-universal-gamepad-test` package contains the unsealed
+`1.1.0-relay-test` expansion plus the universal controller readiness seam.
+Three route rehearsals and one sixth adventure are implemented and locally
+verified; their long-course pacing, physical target-controller feel and replay
+value still require Mike's human taste review before any WORKING or release
+claim.
+
 - The open world is a dense 320 × 320 handcrafted/procedural valley, not dozens
   of square kilometers or hundreds of authored story hours.
 - The Human hero now has one licensed CC0 skinned production model with authored
@@ -31,6 +38,10 @@ commercial-scale finished RPG.
   been run.
 - Keyboard and mouse behavior is part of the live browser check. Physical
   gamepad feel still needs a person holding the target controller.
+- The Meadow Curfew Circuit was completed through visible keyboard play, and a
+  Two-Town Nightline checkpoint survived two reloads. The full Two-Town and Vale
+  Companion courses have deterministic contracts and rendered gates but have
+  not yet received end-to-end human completion/pacing passes.
 - Sound is synthesized from Web Audio. There is no authored soundtrack, voice
   performance, foley library, or final mix.
 - Final balance, humor, pacing, camera comfort, long-session save reliability,

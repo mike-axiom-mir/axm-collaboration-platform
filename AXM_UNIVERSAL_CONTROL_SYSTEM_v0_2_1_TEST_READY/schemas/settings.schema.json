@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/settings.schema.json",
+  "title": "AXM Control Settings",
+  "type": "object",
+  "required": ["version", "global", "devices", "games"],
+  "$defs": {
+    "preferenceSet": {
+      "type": "object",
+      "properties": {
+        "leftHanded": {"type": "boolean"},
+        "oneHandedMode": {"enum": ["off", "left", "right"]},
+        "reducedMotion": {"type": "boolean"},
+        "highContrast": {"type": "boolean"},
+        "vibrationEnabled": {"type": "boolean"},
+        "vibrationStrength": {"type": "number", "minimum": 0, "maximum": 1},
+        "holdToggleMode": {"enum": ["game-default", "hold-to-toggle", "toggle-to-hold"]},
+        "stickSize": {"type": "number", "minimum": 100, "maximum": 230},
+        "buttonSize": {"type": "number", "minimum": 48, "maximum": 100},
+        "opacity": {"type": "number", "minimum": 0.25, "maximum": 1},
+        "sensitivity": {"type": "number", "minimum": 0.35, "maximum": 2},
+        "deadZone": {"type": "number", "minimum": 0, "maximum": 0.45},
+        "floatingSticks": {"type": "boolean"},
+        "snapDirections": {"enum": [0, 4, 8]},
+        "layout": {"type": "object"},
+        "bindings": {"type": "object"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "properties": {
+    "version": {"type": "string"},
+    "global": {"$ref": "#/$defs/preferenceSet"},
+    "devices": {"type": "object", "additionalProperties": {"$ref": "#/$defs/preferenceSet"}},
+    "games": {"type": "object", "additionalProperties": {"$ref": "#/$defs/preferenceSet"}}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "pulse-choir-dynamic-3d-polish",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.render.browser-webgl",
+        "visual.capture.live",
+        "visual.compare.frames",
+        "interaction.keyboard.browser",
+        "interaction.pointer.browser",
+        "state.runtime.observe"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.render.browser-webgl": ["Custom WebGL venue plus dynamic gameplay geometry observed through the in-app Browser"],
+        "visual.capture.live": ["Fresh full-tab screenshots at a 1265x720 viewport"],
+        "visual.compare.frames": ["Repeated screenshots and SHA-256 comparison"],
+        "interaction.keyboard.browser": ["Start, movement, pulse, help, Escape and reduced-motion input exercised"],
+        "interaction.pointer.browser": ["Start, accessibility toggle and replay controls exercised"],
+        "state.runtime.observe": ["Authoritative coordinates, sequences, phase, venue and glitch state observed through the local runtime API"]
+      }
+    },
+    {
+      "id": "pulse-choir-exact-motion-cadence",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["visual.capture.ephemeral-rolling-buffer/v1"],
+      "declaredConstraints": {
+        "visual.capture.ephemeral-rolling-buffer/v1": ["No rolling-frame buffer was exposed by the active Browser capability"]
+      }
+    },
+    {
+      "id": "pulse-choir-physical-and-human-proof",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": ["judgment.human-game-night"],
+      "missing": ["visual.physical-phone", "performance.low-end-gpu"],
+      "declaredConstraints": {
+        "visual.physical-phone": ["No physical phone was connected to this task"],
+        "performance.low-end-gpu": ["Browser-reported frame cost on the current machine is not representative hardware proof"],
+        "judgment.human-game-night": ["Requires Mike and representative players"]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "visual.capture.ephemeral-rolling-buffer/v1",
+    "visual.physical-phone",
+    "performance.low-end-gpu"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "visual.capture.ephemeral-rolling-buffer/v1",
+      "requiredBy": ["pulse-choir-exact-motion-cadence"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

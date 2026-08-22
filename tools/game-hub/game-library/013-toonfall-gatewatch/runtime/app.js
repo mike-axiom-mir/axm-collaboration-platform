@@ -5,6 +5,7 @@
   const $ = id => document.getElementById(id);
   const canvas = $('world');
   const ctx = canvas.getContext('2d');
+  const stage3d = window.BloomvaleStage3D || { available: false, render: function () {} };
   const stage = $('stage');
   const query = new URLSearchParams(location.search);
   const actorId = query.get('player') === 'screen' ? 'screen' : 'p1';
@@ -19,7 +20,9 @@
   let connected = false;
   let connectionKnown = false;
   let inputSeq = 0;
+  let partnerInputSeq = 0;
   let inputSending = false;
+  let partnerInputSending = false;
   let fireRequested = false;
   let dashRequested = false;
   let pulseRequested = false;
@@ -31,6 +34,10 @@
   let pulsePadHeld = false;
   let firePadHeld = false;
   let pausePadHeld = false;
+  let aimPadHeld = false;
+  let partnerAimPadHeld = false;
+  let partnerDashPadHeld = false;
+  let partnerPulsePadHeld = false;
   let helpReturnFocus = null;
   let mapReturnFocus = null;
   let autoPausedAway = false;
@@ -184,6 +191,8 @@
     state = next.state;
     const acceptedInputSeq = Number(state.lastInputSeq) || 0;
     inputSeq = sessionRestarted ? acceptedInputSeq : Math.max(inputSeq, acceptedInputSeq);
+    const acceptedPartnerSeq = Number(state.lastInputSeqByActor && state.lastInputSeqByActor.p2) || 0;
+    partnerInputSeq = sessionRestarted ? acceptedPartnerSeq : Math.max(partnerInputSeq, acceptedPartnerSeq);
     lastServerEventSeq = nextEventSeq;
     setConnection(true);
     if (firstPacket) (state.events || []).forEach(event => seenEvents.add(event.id));
@@ -381,9 +390,10 @@
       if (allyReboot > 0) return 'Moxie rebooting · ' + Math.ceil(allyReboot / 1000) + 's · Heartlight ' + percent + '%';
       if (percent <= 40) return 'Heartlight critical · ' + percent + '% · ' + current.enemies.length + ' threats';
       if (percent <= 65) return 'Heartlight under attack · ' + percent + '% · ' + current.enemies.length + ' threats';
-      return 'Clear wave ' + current.wave + ' · ' + current.enemies.length + ' in the arena';
+      const watch = Core.WAVE_CHRONICLE[current.wave - 1];
+      return 'Clear ' + watch.title + ' · ' + current.enemies.length + ' in the arena';
     }
-    if (current.phase === Core.PHASES.INTERMISSION) return 'Regroup · next wave incoming';
+    if (current.phase === Core.PHASES.INTERMISSION) return 'Regroup · next watch incoming';
     return current.result ? current.result.title : 'Mission complete';
   }
 
@@ -501,8 +511,9 @@
     document.body.dataset.phase = state.phase;
     stage.dataset.phase = state.phase;
     $('objective').textContent = objectiveFor(state);
-    $('waveValue').textContent = state.phase === Core.PHASES.WAVE || state.phase === Core.PHASES.INTERMISSION ? state.wave + ' / 3' : state.phase === Core.PHASES.EXPLORE ? 'OPEN' : state.phase.toUpperCase();
-    $('enemyValue').textContent = state.phase === Core.PHASES.EXPLORE ? state.exploration.visitedDistrictIds.length + ' / ' + Core.DISTRICTS.length + ' places' : state.enemies.length + (state.enemies.length === 1 ? ' threat' : ' threats');
+    const activeWatch = Core.WAVE_CHRONICLE[Math.max(0, Math.min(Core.WAVE_CHRONICLE.length - 1, state.phase === Core.PHASES.EXPLORE ? state.wave : state.wave - 1))];
+    $('waveValue').textContent = state.phase === Core.PHASES.WAVE || state.phase === Core.PHASES.INTERMISSION ? state.wave + ' / ' + Core.WAVE_CHRONICLE.length : state.phase === Core.PHASES.EXPLORE ? 'OPEN' : state.phase.toUpperCase();
+    $('enemyValue').textContent = state.phase === Core.PHASES.EXPLORE ? 'Next · ' + activeWatch.title : state.phase === Core.PHASES.WAVE ? activeWatch.title + ' · ' + state.enemies.length + (state.enemies.length === 1 ? ' threat' : ' threats') : state.enemies.length + (state.enemies.length === 1 ? ' threat' : ' threats');
     const beaconPercent = Math.round(state.beacon.health / state.beacon.maxHealth * 100);
     const beaconBand = beaconPercent <= 40 ? 'critical' : beaconPercent <= 65 ? 'danger' : 'stable';
     const beaconCard = $('beaconCard');
@@ -528,6 +539,9 @@
     $('scoreValue').textContent = String(state.score).padStart(6, '0');
     $('comboValue').textContent = state.combo > 1 ? '×' + state.combo + ' color combo' : 'combo ready';
     $('playerName').textContent = state.player.name;
+    $('allyName').textContent = state.ally.name;
+    $('allyKind').textContent = (state.ally.kind === 'human' ? 'HUMAN' : state.ally.kind === 'adapter' ? 'CONNECTED AI' : 'IN-GAME AI') + ' · DEFENSE PARTNER';
+    $('teamTruth').textContent = 'Seat 1 Human // Seat 2 ' + (state.truth.partnerMode === 'connected-ai' ? 'Connected AI' : state.truth.partnerMode === 'human' ? 'Human' : 'In-game AI') + ' // shared local screen';
     renderHealth(state.player, 'playerHealth', 'playerHealthMeter', 'playerHealthText', 'playerCard', 'playerState', state.player.name);
     renderHealth(state.ally, 'allyHealth', 'allyHealthMeter', 'allyHealthText', 'allyCard', 'allyState', state.ally.name);
     const dashSeconds = Math.max(0, (state.dashReadyAt - state.now) / 1000);
@@ -568,7 +582,7 @@
       $('resultCopy').textContent = victory ? 'Pippa and Moxie kept the page alive—and brought home everything they discovered.' : 'The Game Night run is recoverable. Explore, unlock upgrades, and return stronger.';
       $('resultOverlay').querySelector('.result-card').classList.toggle('defeat', !victory);
       $('resultStats').innerHTML = [
-        [state.result.score, 'SCORE'],[state.result.kills, 'SMUDGES'],[(state.result.districts || 0) + '/' + Core.DISTRICTS.length, 'PLACES'],[(state.result.unlocks || 0) + '/' + Object.keys(Core.UNLOCKS).length, 'UNLOCKS']
+        [state.result.score, 'SCORE'],[state.result.kills, 'SMUDGES'],[(state.result.chronicle && state.result.chronicle.clearedWatchIds.length || 0) + '/' + Core.WAVE_CHRONICLE.length, 'WATCHES'],[(state.result.unlocks || 0) + '/' + Object.keys(Core.UNLOCKS).length, 'UNLOCKS']
       ].map(value => '<div><b>' + value[0] + '</b><small>' + value[1] + '</small></div>').join('');
     }
     if (previousPhase !== state.phase) {
@@ -647,7 +661,11 @@
 
   function drawBackground(time) {
     const gradient = ctx.createLinearGradient(0, 0, 0, Core.CONFIG.worldHeight);
-    gradient.addColorStop(0, '#91e5c2'); gradient.addColorStop(.5, '#66cb91'); gradient.addColorStop(1, '#3ea67b');
+    if (stage3d.available) {
+      gradient.addColorStop(0, 'rgba(145,229,194,.48)'); gradient.addColorStop(.5, 'rgba(102,203,145,.42)'); gradient.addColorStop(1, 'rgba(62,166,123,.48)');
+    } else {
+      gradient.addColorStop(0, '#91e5c2'); gradient.addColorStop(.5, '#66cb91'); gradient.addColorStop(1, '#3ea67b');
+    }
     ctx.fillStyle = gradient; ctx.fillRect(0, 0, Core.CONFIG.worldWidth, Core.CONFIG.worldHeight);
     Core.DISTRICTS.forEach(district => {
       ctx.save(); ctx.globalAlpha = .24; ctx.fillStyle = district.color; ctx.beginPath(); ctx.ellipse(district.x, district.y, district.radius * 1.12, district.radius * .78, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
@@ -764,7 +782,7 @@
   function enemyWindupTarget(enemy) {
     if (!state) return null;
     if (enemy.windupTargetId === 'p1') return state.player;
-    if (enemy.windupTargetId === 'moxie') return state.ally;
+    if (enemy.windupTargetId === 'moxie' || enemy.windupTargetId === 'p2') return state.ally;
     if (enemy.windupTargetId === 'heartlight') return state.beacon;
     return null;
   }
@@ -783,7 +801,7 @@
     const angle = Math.atan2(direction.y, direction.x);
     const targetRadius = target && target.radius || 24;
     const reach = enemy.radius + targetRadius + 14;
-    const color = enemy.kind === 'sprinter' ? '#ffd078' : enemy.kind === 'bruiser' ? '#ff667f' : '#ff8fc0';
+    const color = enemy.kind === 'crown' ? '#fff073' : enemy.kind === 'siphon' ? '#68f0dd' : enemy.kind === 'sprinter' ? '#ffd078' : enemy.kind === 'bruiser' ? '#ff667f' : '#ff8fc0';
     const pulse = reducedMotion ? 1 : .96 + Math.sin(time / 70) * .04;
     ctx.save();
     ctx.translate(enemy.x, enemy.y);
@@ -793,7 +811,7 @@
     ctx.lineWidth = 3;
     ctx.shadowColor = color;
     ctx.shadowBlur = (10 + progress * 16) * pulse;
-    if (enemy.kind === 'bruiser') {
+    if (enemy.kind === 'bruiser' || enemy.kind === 'crown') {
       const radius = (reach + progress * 12) * pulse;
       ctx.globalAlpha *= .6;
       ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.fill();
@@ -803,7 +821,7 @@
       ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.stroke();
     } else {
       ctx.rotate(angle);
-      if (enemy.kind === 'sprinter') {
+      if (enemy.kind === 'sprinter' || enemy.kind === 'siphon') {
         ctx.beginPath();
         ctx.moveTo(enemy.radius * .25, -7); ctx.lineTo(reach + 22, -16);
         ctx.lineTo(reach + 22, 16); ctx.lineTo(enemy.radius * .25, 7); ctx.closePath();
@@ -832,14 +850,14 @@
     const winding = enemyWindupActive(enemy);
     const startedAt = winding ? Number(enemy.windupStartedAt) || enemy.windupUntil - spec.windupMs : 0;
     const windupProgress = winding ? Math.max(0, Math.min(1, (state.now - startedAt) / Math.max(1, spec.windupMs))) : 0;
-    const wobble = reducedMotion ? 0 : Math.sin(time / 90 + enemy.wobble) * (enemy.kind === 'bruiser' ? 3 : 6);
+    const wobble = reducedMotion ? 0 : Math.sin(time / 90 + enemy.wobble) * (enemy.kind === 'crown' ? 2 : enemy.kind === 'bruiser' ? 3 : 6);
     drawEnemyTelegraph(enemy, time);
     ellipse(enemy.x + 8, enemy.y + enemy.radius * .75, enemy.radius * 1.05, enemy.radius * .45, '#171739', .27);
     ctx.save(); ctx.translate(enemy.x, enemy.y + wobble); ctx.rotate(Math.atan2(enemy.facingY, enemy.facingX) + Math.PI / 2);
     if (winding && !reducedMotion) ctx.scale(1 + windupProgress * .14, 1 - windupProgress * .09);
     const gradient = ctx.createLinearGradient(-enemy.radius, -enemy.radius, enemy.radius, enemy.radius);
-    gradient.addColorStop(0, enemy.kind === 'bruiser' ? '#772d78' : '#7644b8'); gradient.addColorStop(1, '#251747');
-    ctx.fillStyle = gradient; ctx.strokeStyle = '#271844'; ctx.lineWidth = enemy.kind === 'bruiser' ? 8 : 6;
+    gradient.addColorStop(0, enemy.kind === 'crown' ? '#a92d62' : enemy.kind === 'siphon' ? '#267f83' : enemy.kind === 'bruiser' ? '#772d78' : '#7644b8'); gradient.addColorStop(1, '#251747');
+    ctx.fillStyle = gradient; ctx.strokeStyle = '#271844'; ctx.lineWidth = enemy.kind === 'crown' ? 10 : enemy.kind === 'bruiser' ? 8 : 6;
     ctx.beginPath();
     for (let point = 0; point < 10; point++) {
       const angle = Math.PI * 2 * point / 10;
@@ -1209,21 +1227,26 @@
 
   function render(time) {
     resizeCanvas();
+    stage3d.render(time, state, reducedMotion);
     ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,canvas.width,canvas.height);
-    const backdrop = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    backdrop.addColorStop(0, '#102d35'); backdrop.addColorStop(.58, '#0d2730'); backdrop.addColorStop(1, '#071721');
-    ctx.fillStyle = backdrop; ctx.fillRect(0,0,canvas.width,canvas.height);
+    if (!stage3d.available) {
+      const backdrop = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      backdrop.addColorStop(0, '#102d35'); backdrop.addColorStop(.58, '#0d2730'); backdrop.addColorStop(1, '#071721');
+      ctx.fillStyle = backdrop; ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
     ctx.setTransform(view.scale,0,0,view.scale,view.x,view.y);
     let shakeX = 0, shakeY = 0;
     if (state && !reducedMotion && state.now - state.beacon.lastHitAt < 220) { shakeX = Math.sin(time) * 5; shakeY = Math.cos(time * .7) * 4; ctx.translate(shakeX, shakeY); }
     drawBackground(time);
     if (state) {
-      drawBeacon(state.beacon, time);
       drawExplorationObjects(time);
-      state.pickups.forEach(pickup => drawPickup(pickup, time));
-      state.projectiles.forEach(drawProjectile);
-      state.enemies.slice().sort((a,b) => a.y - b.y).forEach(enemy => drawEnemy(enemy, time));
-      [state.player, state.ally].sort((a,b) => a.y - b.y).forEach(entity => entity.id === 'p1' ? drawPippa(entity, time) : drawMoxie(entity, time));
+      if (!stage3d.available) {
+        drawBeacon(state.beacon, time);
+        state.pickups.forEach(pickup => drawPickup(pickup, time));
+        state.projectiles.forEach(drawProjectile);
+        state.enemies.slice().sort((a,b) => a.y - b.y).forEach(enemy => drawEnemy(enemy, time));
+        [state.player, state.ally].sort((a,b) => a.y - b.y).forEach(entity => entity.id === 'p1' ? drawPippa(entity, time) : drawMoxie(entity, time));
+      }
       drawEffects(time);
       drawAim();
     }
@@ -1233,15 +1256,16 @@
     requestAnimationFrame(render);
   }
 
-  function activeGamepad() {
+  function activeGamepad(index) {
     const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    if (Number.isInteger(index)) return gamepads && gamepads[index] || null;
     return Array.from(gamepads || []).find(Boolean) || null;
   }
 
   function pollGamepadControls() {
-    const pad = activeGamepad();
+    const pad = activeGamepad(0);
     if (!pad) {
-      firePadHeld = false; dashPadHeld = false; pulsePadHeld = false; interactPadHeld = false; mapPadHeld = false; pausePadHeld = false;
+      firePadHeld = false; dashPadHeld = false; pulsePadHeld = false; interactPadHeld = false; mapPadHeld = false; pausePadHeld = false; aimPadHeld = false;
       return;
     }
     const firePressed = !!(pad.buttons[7] && pad.buttons[7].pressed) || !!(pad.buttons[0] && pad.buttons[0].pressed);
@@ -1250,8 +1274,10 @@
     const interactPressed = !!(pad.buttons[3] && pad.buttons[3].pressed);
     const mapPressed = !!(pad.buttons[8] && pad.buttons[8].pressed);
     const pausePressed = !!(pad.buttons[9] && pad.buttons[9].pressed);
+    const aimPressed = Math.abs(pad.axes[2] || 0) > .24 || Math.abs(pad.axes[3] || 0) > .24;
     const gameplayActive = playerControlsOnline(state);
     if (firePressed && !firePadHeld && gameplayActive) fireRequested = true;
+    if (aimPadHeld && !aimPressed && gameplayActive) fireRequested = true;
     if (dashPressed && !dashPadHeld && gameplayActive) dashRequested = true;
     if (pulsePressed && !pulsePadHeld && gameplayActive) pulseRequested = true;
     if (interactPressed && !interactPadHeld && gameplayActive && state.phase === Core.PHASES.EXPLORE) void action({ type: 'interact' });
@@ -1263,6 +1289,7 @@
     interactPadHeld = interactPressed;
     mapPadHeld = mapPressed;
     pausePadHeld = pausePressed;
+    aimPadHeld = aimPressed;
   }
 
   function currentInput() {
@@ -1272,9 +1299,11 @@
     let aimX = state ? pointer.x - state.player.x : 1;
     let aimY = state ? pointer.y - state.player.y : 0;
     let firing = pointer.firing || keys.has('Space') || fireRequested;
-    const pad = activeGamepad();
+    const pad = activeGamepad(0);
     if (pad) {
-      if (Math.abs(pad.axes[0] || 0) > .18 || Math.abs(pad.axes[1] || 0) > .18) { moveX = pad.axes[0] || 0; moveY = pad.axes[1] || 0; }
+      const dpadX = (pad.buttons[15] && pad.buttons[15].pressed ? 1 : 0) - (pad.buttons[14] && pad.buttons[14].pressed ? 1 : 0);
+      const dpadY = (pad.buttons[13] && pad.buttons[13].pressed ? 1 : 0) - (pad.buttons[12] && pad.buttons[12].pressed ? 1 : 0);
+      if (Math.abs(pad.axes[0] || 0) > .18 || Math.abs(pad.axes[1] || 0) > .18 || dpadX || dpadY) { moveX = Math.abs(pad.axes[0] || 0) > .18 ? pad.axes[0] : dpadX; moveY = Math.abs(pad.axes[1] || 0) > .18 ? pad.axes[1] : dpadY; }
       if (Math.abs(pad.axes[2] || 0) > .2 || Math.abs(pad.axes[3] || 0) > .2) { aimX = pad.axes[2] || 0; aimY = pad.axes[3] || 0; }
       firing = firing || !!(pad.buttons[7] && pad.buttons[7].pressed) || !!(pad.buttons[0] && pad.buttons[0].pressed);
     }
@@ -1309,6 +1338,30 @@
         dashRequested = false; pulseRequested = false;
       }
     } finally { inputSending = false; }
+  }
+
+  async function sendPartnerGamepadInput() {
+    if (partnerInputSending || !connected || !state || actorId !== 'screen' || state.ally.kind !== 'human') return;
+    const pad = activeGamepad(1);
+    if (!pad) { partnerAimPadHeld = false; partnerDashPadHeld = false; partnerPulsePadHeld = false; return; }
+    const dead = (value, threshold) => Math.abs(value || 0) > threshold ? Number(value) : 0;
+    const dpadX = (pad.buttons[15] && pad.buttons[15].pressed ? 1 : 0) - (pad.buttons[14] && pad.buttons[14].pressed ? 1 : 0);
+    const dpadY = (pad.buttons[13] && pad.buttons[13].pressed ? 1 : 0) - (pad.buttons[12] && pad.buttons[12].pressed ? 1 : 0);
+    const moveX = dead(pad.axes[0], .18) || dpadX, moveY = dead(pad.axes[1], .18) || dpadY;
+    const rawAimX = dead(pad.axes[2], .24), rawAimY = dead(pad.axes[3], .24), aiming = !!(rawAimX || rawAimY);
+    const aimX = aiming ? rawAimX : state.ally.facingX, aimY = aiming ? rawAimY : state.ally.facingY;
+    const aimSize = Math.hypot(aimX, aimY) || 1;
+    const dashPressed = !!(pad.buttons[1] && pad.buttons[1].pressed), pulsePressed = !!(pad.buttons[2] && pad.buttons[2].pressed);
+    const firing = !!(pad.buttons[7] && pad.buttons[7].pressed) || !!(pad.buttons[0] && pad.buttons[0].pressed) || (partnerAimPadHeld && !aiming);
+    partnerAimPadHeld = aiming;
+    partnerInputSending = true;
+    partnerInputSeq += 1;
+    try {
+      const response = await api('/api/action', { method: 'POST', body: JSON.stringify({ player: 'p2', action: { type: 'input', seq: partnerInputSeq, moveX, moveY, aimX: aimX / aimSize, aimY: aimY / aimSize, firing, dash: dashPressed && !partnerDashPadHeld, pulse: pulsePressed && !partnerPulsePadHeld } }) });
+      const result = response.actionResult || {};
+      if (['stale-sequence', 'invalid-sequence', 'sequence-gap-too-large'].includes(result.reason)) partnerInputSeq = Number(state.lastInputSeqByActor && state.lastInputSeqByActor.p2) || 0;
+    } catch (_) { setConnection(false); }
+    finally { partnerDashPadHeld = dashPressed; partnerPulsePadHeld = pulsePressed; partnerInputSending = false; }
   }
 
   async function togglePause(manageFocus) {
@@ -1487,6 +1540,7 @@
   setInterval(poll, 100);
   setInterval(pollGamepadControls, Core.CONFIG.tickMs);
   setInterval(sendInput, Core.CONFIG.tickMs);
+  setInterval(sendPartnerGamepadInput, Core.CONFIG.tickMs);
   requestAnimationFrame(render);
   poll();
 
@@ -1496,10 +1550,11 @@
     action,
     poll,
     claims: {
-      renderer: 'canvas-2d-live',
+      renderer: stage3d.available ? 'hybrid-webgl-low-poly-plus-canvas-2d-authority' : 'canvas-2d-fallback',
+      palette: '16-step-channel-quantized',
       stateAuthority: 'managed-local-server',
-      humanSeats: 1,
-      aiCompanions: 1,
+      partnerChoice: ['human', 'connected-ai', 'in-game-ai'],
+      gamepadProfile: 'axm-universal-xbox-brawl-v0.2.1',
       splitScreen: false
     }
   };

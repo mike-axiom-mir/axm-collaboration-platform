@@ -1,0 +1,32 @@
+--- a/games/002-robo-pong/runtime/neon-pong-duet-server.cjs
++++ b/games/002-robo-pong/runtime/neon-pong-duet-server.cjs
+@@
+ const path = require('path');
++const { createRoboPongSemanticBridge } = require('./legacy-robo-pong-bridge.cjs');
+@@
+ const room = newRoom();
++const semanticInput = createRoboPongSemanticBridge({ room, usePower });
+ const streams = new Set();
+@@
+     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) return sendFile(res, CLIENT_FILE, 'text/html; charset=utf-8', 'no-store');
++    if (req.method === 'GET' && url.pathname === '/semantic-controller') {
++      return sendFile(res, path.join(__dirname, 'robo-pong-semantic-phone.html'), 'text/html; charset=utf-8', 'no-store');
++    }
+@@
+     if (req.method === 'POST' && url.pathname === '/input') {
++      // Legacy route preserved during migration. Do not remove until real-device proof is complete.
+       const player = url.searchParams.get('player') === 'p2' ? 'p2' : 'p1';
+@@
+       return sendJson(res, 200, { ok: true, player });
+     }
++    if (req.method === 'POST' && url.pathname === '/axm/input') {
++      const player = url.searchParams.get('player') === 'p2' ? 'p2' : 'p1';
++      if (room.players[player].kind !== 'human') return sendJson(res, 409, { ok: false, error: player + ' is adapter-controlled' });
++      const frame = await readJson(req);
++      const result = semanticInput.applyFrame(player, frame);
++      if (result.pauseRequested) {
++        if (room.phase === 'running') { room.phase = 'paused'; announce('PAUSED'); }
++        else if (room.phase === 'paused') { room.phase = 'running'; announce('LIGHT LIVE'); }
++      }
++      return sendJson(res, 200, { ok: true, result });
++    }

@@ -1,6 +1,7 @@
 'use strict';
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const V = require('./game-package-verifier');
 const gameDir = path.join(__dirname, 'game-library', '002-robo-pong');
 const base = JSON.parse(fs.readFileSync(path.join(gameDir, 'game.manifest.json'), 'utf8'));
@@ -29,9 +30,24 @@ ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('evide
 bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.controller_delivery = 'runtime-issued'; delete bad.verification.game_night.runtime_metadata_endpoint;
 ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('runtime_metadata_endpoint')), 'runtime-issued controls require a metadata endpoint');
 ok(V.validateGameNightSeams(base, { gameDir }).warnings.some(x => x.includes('physical phone qa')), 'pending physical phone QA remains visible');
-ok(V.validateGameNightSeams(base, { gameDir }).warnings.some(x => x.includes('external collaborator')), 'legacy adapter state seam remains visibly pending');
-bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.adapter_state_interface = 'verified';
+bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.physical_phone_qa = 'not-applicable'; bad.verification.game_night.physical_phone_qa_scope = 'Synthetic exemption';
+ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('cannot be not-applicable')), 'phone-controller package cannot hide physical phone QA as not-applicable');
+bad = JSON.parse(JSON.stringify(base)); bad.controls.phone_controller = false; bad.join.supports_qr = false; bad.join.supports_lan_link = false; bad.verification.game_night.physical_phone_qa = 'not-applicable'; bad.verification.game_night.physical_phone_qa_scope = 'Synthetic touch-only exemption';
+ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('cannot be not-applicable')), 'touch-capable package cannot hide physical phone QA as not-applicable');
+bad = JSON.parse(JSON.stringify(base)); bad.controls.phone_controller = false; bad.controls.touch = false; bad.join.supports_qr = false; bad.join.supports_lan_link = false; bad.verification.game_night.physical_phone_qa = 'not-applicable'; delete bad.verification.game_night.physical_phone_qa_scope;
+ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('physical_phone_qa_scope')), 'physical phone exemption requires a visible rationale');
+bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.physical_phone_qa = 'verified'; delete bad.verification.game_night.physical_phone_qa_scope; delete bad.verification.game_night.physical_phone_qa_evidence;
+const ungroundedPhoneClaim = V.validateGameNightSeams(bad, { gameDir }).errors;
+ok(ungroundedPhoneClaim.some(x => x.includes('physical_phone_qa_scope')) && ungroundedPhoneClaim.some(x => x.includes('physical_phone_qa_evidence')), 'verified physical phone claim requires scoped package-local evidence');
+bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.adapter_state_interface = 'pending'; delete bad.verification.game_night.adapter_state_evidence;
+ok(V.validateGameNightSeams(bad, { gameDir }).warnings.some(x => x.includes('external collaborator')), 'pending adapter state seam remains visibly warned');
+bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.adapter_state_interface = 'verified'; delete bad.controls.intent_protocol;
 ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('intent_protocol')), 'verified external collaborator cannot omit its semantic input contract');
+const constructionDir = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-game-construction-'));
+try {
+  const construction = V.verifyGameDir(constructionDir);
+  ok(construction.incomplete === true && construction.errors.length === 0 && construction.warnings.some(x => x.includes('construction folder')), 'in-progress game folders remain visible without disabling the complete Game Night library');
+} finally { fs.rmSync(constructionDir, { recursive: true, force: true }); }
 const libraryDir = path.join(__dirname, 'game-library');
 ok(!V.validateRecoveryRegressions(libraryDir).some(x => x.includes('Casino title/setup route')), 'Casino setup exposes both manifest-declared modes and its start action');
 console.log('PASS game package verifier: ' + pass + ' assertions');

@@ -128,10 +128,20 @@ function createServer() {
     if (pathname === '/api/input' && request.method === 'GET') {
       const now = Date.now();
       const fresh = {};
+      // phoneStatus covers every player id that has EVER posted phone
+      // input this session (inputs[player] is never deleted, only judged
+      // fresh/stale by age here), so the client can tell "never had a
+      // phone" (id absent entirely) apart from "had one, it just dropped"
+      // (present, status 'disconnected') — the earlier version only ever
+      // reported fresh entries, so a dropped phone silently vanished with
+      // no way for the shared screen to say so.
+      const phoneStatus = {};
       for (const player of Object.keys(inputs)) {
-        if (now - inputs[player].updatedAt <= INPUT_TTL_MS) fresh[player] = inputs[player];
+        const isFresh = now - inputs[player].updatedAt <= INPUT_TTL_MS;
+        if (isFresh) fresh[player] = inputs[player];
+        phoneStatus[player] = isFresh ? 'fresh' : 'disconnected';
       }
-      sendJson(response, 200, { inputs: fresh, ttlMs: INPUT_TTL_MS });
+      sendJson(response, 200, { inputs: fresh, ttlMs: INPUT_TTL_MS, phoneStatus });
       return;
     }
 

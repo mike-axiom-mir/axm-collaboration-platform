@@ -18,13 +18,26 @@ import {
   resolveDueLifeConsequences, commonsMaintenanceProfile, commonsMaintenanceOptions,
   commonsMaintenanceAssets, startCommonsMaintenance, resolveCommonsMaintenanceReturns,
   resolveCommonsMaintenanceOverdue, activateCommonsMaintenanceFault, commonsGovernanceOptions,
-  chooseCommonsGovernance, SYSTEM_CONSTANTS
+  chooseCommonsGovernance, starspiteDebtProfile, startStarspiteDebtAftermath,
+  resolveStarspiteDebtReturns, SYSTEM_CONSTANTS
 } from '../runtime/systems.js';
-import { LIFE_THREADS, DISTRICT_RESIDENTS, DISTRICT_CONTEXT_REACTIONS, DISTRICT_ARCS, DISTRICT_SUPPLIER, NEIGHBORHOOD_WORKS, NEIGHBORHOOD_COMMONS, PET_TRAITS, GAME_VERSION } from '../runtime/game-data.js';
+import { LIFE_THREADS, DISTRICT_RESIDENTS, DISTRICT_CONTEXT_REACTIONS, DISTRICT_ARCS, DISTRICT_SUPPLIER, NEIGHBORHOOD_WORKS, NEIGHBORHOOD_COMMONS, STARSPITE_DEBT_ROUTES, PET_TRAITS, GAME_VERSION } from '../runtime/game-data.js';
 
 const WINNING_TICKET_SEED = '000000000000000000000000000000000000000000000000000000003e3f8dc3';
 
 const seed = value => Number(value).toString(16).padStart(64, '0').slice(-64);
+
+function debtReadyState(stake = 10) {
+  const state = createInitialState('Receipt holder');
+  state.starspite.access = 'member';
+  state.world.locations.push('starspite');
+  state.location = 'starspite';
+  state.money = 500;
+  const loss = playCasinoGame(state,'truth-coin',stake,{ entropyFactory:() => seed(1) });
+  assert.equal(loss.won,false);
+  assert.equal(travelTo(state,'district').ok,true);
+  return { state, loss };
+}
 
 test('published weight tables total exactly one million and combinations are honestly separated', () => {
   assert.equal(SYSTEM_CONSTANTS.rarityWeightTotal, 1_000_000);
@@ -32,6 +45,7 @@ test('published weight tables total exactly one million and combinations are hon
   assert.ok(SYSTEM_CONSTANTS.mechanicalCombinations >= 300_000_000);
   assert.ok(SYSTEM_CONSTANTS.namedCombinationsIncludingStyleFamilies >= 3_000_000_000);
   assert.equal(SYSTEM_CONSTANTS.namedCombinationsIncludingStyleFamilies / SYSTEM_CONSTANTS.mechanicalCombinations, 10);
+  assert.equal(SYSTEM_CONSTANTS.starspiteDebtRoutes,3);
 });
 
 test('rarity boundaries match the visible fixed table exactly', () => {
@@ -155,6 +169,130 @@ test('Starspite auction artifacts have fixed authored provenance instead of fake
   assert.equal(play.reactions.length, 1);
   assert.ok(result.item.baseValue > beforeReaction);
   assert.equal(play.receipt.insuranceChangesOutcome, false);
+});
+
+test('debt aftermath derives only from a replay-valid saved casino loss', () => {
+  const state = createInitialState();
+  state.location = 'district';
+  state.district.visits = 1;
+  state.starspite.history.unshift({ schema:'small-odds.casino-play/v1', won:false, net:-50, gameId:'truth-coin', seedHex:seed(1) });
+  assert.equal(starspiteDebtProfile(state).eligibleReceipt,null);
+  state.starspite.access = 'member';
+  state.location = 'starspite';
+  state.money = 100;
+  const win = playCasinoGame(state,'truth-coin',10,{ entropyFactory:() => seed(2) });
+  assert.equal(win.won,true);
+  state.location = 'district';
+  assert.equal(starspiteDebtProfile(state).eligibleReceipt,null);
+  state.location = 'starspite';
+  const loss = playCasinoGame(state,'truth-coin',10,{ entropyFactory:() => seed(1) });
+  state.location = 'district';
+  const profile = starspiteDebtProfile(state);
+  assert.equal(profile.eligibleReceipt.seedHex,loss.receipt.seedHex);
+  assert.equal(profile.recoveryTarget,10);
+  assert.equal(profile.random,false);
+  assert.equal(profile.casinoOddsChanged,false);
+});
+
+test('all three debt routes stay visible with exact saved-world gates', () => {
+  const { state } = debtReadyState();
+  let profile = starspiteDebtProfile(state);
+  assert.equal(profile.routes.length,STARSPITE_DEBT_ROUTES.length);
+  assert.equal(profile.routes.find(route => route.id === 'lane-solidarity-rota').open,true);
+  assert.match(profile.routes.find(route => route.id === 'long-table-repayment').reason,/orders 0\/1/);
+  assert.match(profile.routes.find(route => route.id === 'hushglass-breathing-room').reason,/trust 0\/3/);
+  state.work.completed = 1;
+  state.district.households[NEIGHBORHOOD_COMMONS.id].trust = 3;
+  state.district.households[NEIGHBORHOOD_COMMONS.id].agreements = 1;
+  profile = starspiteDebtProfile(state);
+  assert.equal(profile.routes.every(route => route.open),true);
+  assert.equal(profile.routes.every(route => route.recoveryPayment === 10),true);
+});
+
+test('solidarity aftermath freezes one receipt, returns exactly once, and leaves a durable mark', () => {
+  const { state, loss } = debtReadyState();
+  const casinoNet = state.starspite.netCredits;
+  const beforeMoney = state.money;
+  const started = startStarspiteDebtAftermath(state,'lane-solidarity-rota');
+  assert.equal(started.ok,true);
+  assert.equal(started.receipt.sourceCasinoReceipt.seedHex,loss.receipt.seedHex);
+  assert.equal(started.receipt.recoveryPayment,10);
+  assert.equal(started.receipt.casinoOddsChanged,false);
+  assert.equal(startStarspiteDebtAftermath(state,'lane-solidarity-rota').ok,false);
+  state.day = started.receipt.dueDay;
+  const first = resolveStarspiteDebtReturns(state);
+  const second = resolveStarspiteDebtReturns(state);
+  assert.equal(first.length,1);
+  assert.equal(second.length,0);
+  assert.equal(state.money,beforeMoney + 10);
+  assert.equal(state.starspite.netCredits,casinoNet);
+  assert.equal(state.district.supplier.standing,1);
+  assert.equal(state.relationships.tavi,1);
+  assert.equal(state.relationships.oola,1);
+  assert.equal(state.district.houseMarks[0].visual,'solidarity-ribbons');
+  assert.equal(state.stats.debtAftermathStarts,1);
+  assert.equal(state.stats.debtAftermathReturns,1);
+});
+
+test('Long Table recovery stays separate from same-day storefront income', () => {
+  const { state } = debtReadyState();
+  state.work.completed = 1;
+  state.money = 1000;
+  assert.equal(startBusiness(state,'repair').ok,true);
+  state.location = 'district';
+  const started = startStarspiteDebtAftermath(state,'long-table-repayment');
+  assert.equal(started.ok,true);
+  const dueDay = started.receipt.dueDay;
+  advanceTime(state,24);
+  assert.ok(state.day >= dueDay);
+  const returned = state.starspite.aftermath.history[0].receipt;
+  assert.equal(returned.routeId,'long-table-repayment');
+  assert.equal(returned.moneySeparation.category,'neighborhood-recovery');
+  assert.equal(returned.moneySeparation.storefrontDailyIncomeExcluded,true);
+  assert.equal(returned.moneySeparation.storefrontIncomeSameDay,state.business.lastDailyReceipt.income);
+  assert.equal(returned.recoveryPayment,10);
+  assert.deepEqual(Object.keys(returned.before.household).sort(),['agreements','trust','warmth']);
+  assert.equal(state.work.standing,1);
+  assert.equal(state.work.pressure,1);
+  assert.equal(state.business.rating,2);
+  assert.equal(state.district.houseMarks[0].visual,'repayment-stamp');
+});
+
+test('Hushglass breathing room applies only its frozen household consequences', () => {
+  const { state } = debtReadyState();
+  const household = state.district.households[NEIGHBORHOOD_COMMONS.id];
+  household.trust = 3;
+  household.agreements = 1;
+  const started = startStarspiteDebtAftermath(state,'hushglass-breathing-room');
+  assert.equal(started.ok,true);
+  state.day = started.receipt.dueDay;
+  const [returned] = resolveStarspiteDebtReturns(state);
+  assert.equal(returned.receipt.frozenReturnEffect.warmth,1);
+  assert.equal(household.warmth,1);
+  assert.equal(household.trust,5);
+  assert.equal(state.home.score,2);
+  assert.equal(state.relationships.sumi,2);
+  assert.equal(state.work.pressure,0);
+  assert.equal(state.district.houseMarks[0].visual,'breathing-room-lamp');
+});
+
+test('debt aftermath never enters a later casino roll', () => {
+  const prepared = debtReadyState();
+  const started = startStarspiteDebtAftermath(prepared.state,'lane-solidarity-rota');
+  prepared.state.day = started.receipt.dueDay;
+  resolveStarspiteDebtReturns(prepared.state);
+  prepared.state.location = 'starspite';
+  prepared.state.money = 100;
+
+  const control = createInitialState('Control');
+  control.starspite.access = 'member';
+  control.location = 'starspite';
+  control.money = 100;
+  const after = playCasinoGame(prepared.state,'mobius-twelve',5,{ entropyFactory:() => seed(77) });
+  const plain = playCasinoGame(control,'mobius-twelve',5,{ entropyFactory:() => seed(77) });
+  assert.equal(after.receipt.rawOutcomeRoll,plain.receipt.rawOutcomeRoll);
+  assert.equal(after.receipt.seedHex,plain.receipt.seedHex);
+  assert.equal(after.receipt.won,plain.receipt.won);
 });
 
 test('portal draw consumes declared charge and preserves an inspectable receipt', () => {
@@ -1494,4 +1632,21 @@ test('version-nine saves gain neutral civic continuity without fabricated choice
   assert.deepEqual(migratedMaintenance.faultHistory,[]);
   assert.equal(migrated.stats.commonsGovernanceChoices,0);
   assert.equal(migrated.stats.commonsFaultsActivated,0);
+});
+
+test('version-ten saves gain neutral debt-aftermath continuity without invented recovery', () => {
+  const old = createInitialState('Before aftermath');
+  old.version = 10;
+  delete old.starspite.aftermath;
+  delete old.stats.debtAftermathStarts;
+  delete old.stats.debtAftermathReturns;
+  delete old.stats.debtSolidarityRoutes;
+  delete old.stats.debtWorkRoutes;
+  delete old.stats.debtHouseholdRoutes;
+  const migrated = migrateState(old);
+  assert.equal(migrated.version,GAME_VERSION);
+  assert.equal(migrated.starspite.aftermath.active,null);
+  assert.deepEqual(migrated.starspite.aftermath.history,[]);
+  assert.equal(migrated.stats.debtAftermathStarts,0);
+  assert.equal(migrated.stats.debtAftermathReturns,0);
 });

@@ -1,0 +1,35 @@
+AXM UNIVERSAL CONTROL SYSTEM v0.2.1 TEST-READY
+FINAL TEST REPORT
+Generated: 2026-08-05T16:31:18.345022+00:00
+
+STATUS
+- Working reference build / migration foundation / not yet universal.
+- 32 automated tests passed; 0 failed.
+- Three consecutive complete `npm run verify` runs passed at the final 32-test state.
+- Static validation passed with all required Saturday test files present.
+
+HIGH-RISK CONNECTION PROOF
+PASS — queued full-state input is coalesced so only the newest state survives reconnect.
+PASS — deliberate real WebSocket silence triggers the host watchdog.
+PASS — the host emits a neutral input frame after the stale timeout.
+PASS — the controller reconnects using its private token and keeps the same player seat.
+PASS — the old held direction is not replayed after recovery.
+PASS — malformed, duplicated, oversized, non-finite, and unknown actions are rejected.
+PASS — host, phone TEST panel, session, health, and diagnostics surfaces are locally served.
+
+SATURDAY TEST SUPPORT
+- One-click Windows launcher: tools/START_SATURDAY_TEST_WINDOWS.cmd
+- Two-person test card: docs/16_SATURDAY_LIVE_TEST_CARD.md
+- Phone TEST panel: send neutral, force reconnect, simulate 5-second stall, view transport diagnostics.
+- Host evidence: connected phone count, seat resumes, watchdog recoveries, event log, downloadable JSON test report.
+
+MEASUREMENT HONESTY
+- RTT is measured; synchronized one-way input latency is not claimed.
+- Real phone battery, accidental-touch, router, browser-background, and multi-device results remain pending.
+- Chromium visual smoke remains blocked by this environment's organization policy and is not marked passed.
+
+MERGE GATE
+Repository modified: NO
+Legacy Robo Pong route preserved: YES
+Real-device Saturday proof complete: NO
+Universal claim allowed: NO

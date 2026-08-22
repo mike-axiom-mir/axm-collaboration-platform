@@ -203,6 +203,26 @@ button:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
 .mission-panel[data-tone="danger"] .pressure-action small { color: var(--red); }
 .mission-panel[data-tone="warning"] .pressure-action small { color: var(--amber); }
 .mission-panel[data-tone="opportunity"] .pressure-action small { color: #91a8ff; }
+.dispatch-line { margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(80,244,220,.22); }
+.dispatch-line > div:first-child { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.dispatch-line > div:first-child span { color: var(--faint); font-size: 6px; font-weight: 900; letter-spacing: .1em; }
+.dispatch-line > div:first-child span i { display: inline-block; width: 5px; height: 5px; margin-right: 5px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 9px var(--teal); vertical-align: 1px; animation: signal .8s ease-in-out infinite alternate; }
+.dispatch-line > div:first-child strong { color: var(--teal); font-size: 6.5px; letter-spacing: .08em; }
+.dispatch-line > b { display: block; margin-top: 5px; color: var(--white); font-size: 9px; letter-spacing: .035em; }
+.dispatch-line > p { margin: 3px 0 0; color: var(--muted); font-size: 7.5px; line-height: 1.35; }
+.dispatch-track { height: 3px; margin-top: 7px; overflow: hidden; border-radius: 3px; background: rgba(255,255,255,.09); }
+.dispatch-track i { display: block; width: 0; height: 100%; background: linear-gradient(90deg, #557dff, var(--teal)); box-shadow: 0 0 9px rgba(80,244,220,.55); transition: width .18s linear; }
+.dispatch-line footer { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; margin-top: 5px; font-size: 6.5px; font-weight: 900; letter-spacing: .07em; }
+.dispatch-line footer span { color: var(--white); }
+.dispatch-line footer small { color: var(--amber); }
+.dispatch-line footer em { color: var(--teal); font-style: normal; }
+.dispatch-line[data-status="completed"] { border-color: rgba(80,244,220,.5); }
+.dispatch-line[data-status="completed"] > div:first-child strong { color: var(--white); text-shadow: 0 0 12px var(--teal); }
+.dispatch-line[data-status="completed"] .dispatch-track i { background: var(--teal); }
+.dispatch-line[data-status="failed"] { border-color: rgba(255,93,120,.42); }
+.dispatch-line[data-status="failed"] > div:first-child strong, .dispatch-line[data-status="failed"] footer small { color: var(--red); }
+.dispatch-line[data-status="failed"] > div:first-child span i { background: var(--red); box-shadow: 0 0 9px var(--red); }
+.dispatch-line[data-status="failed"] .dispatch-track i { background: var(--red); }
 .debt-line { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; align-items: center; margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(244,196,91,.22); }
 .debt-line > span { display: flex; align-items: center; gap: 5px; color: var(--faint); font-size: 6px; font-weight: 900; letter-spacing: .1em; }
 .debt-line > span i { width: 5px; height: 5px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 9px var(--amber); }
@@ -504,6 +524,11 @@ kbd { font-family: inherit; }
   .mission-panel h2, .mission-panel > p, .mission-panel .demand-line, .mission-panel .queue-total { display: none; }
   .mission-panel .panel-kicker { font-size: 6px; }
   .mission-panel .pressure-action { min-height: 34px; margin-top: 7px; padding-inline: 9px; font-size: 7px; }
+  .mission-panel .dispatch-line { margin-top: 7px; padding-top: 7px; }
+  .mission-panel .dispatch-line > p { display: none; }
+  .mission-panel .dispatch-line > b { max-width: 100%; overflow: hidden; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+  .mission-panel .dispatch-line footer { gap: 5px; font-size: 5.5px; }
+  .mission-panel .dispatch-line footer em { max-width: 55px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .mission-panel .debt-line { gap: 3px 6px; margin-top: 7px; padding-top: 7px; }
   .mission-panel .debt-line > span { font-size: 5.5px; letter-spacing: .07em; }
   .mission-panel .debt-line > strong { font-size: 6px; }
@@ -620,6 +645,7 @@ kbd { font-family: inherit; }
 #game-shell.reduced-motion .lane-card.feedback::before { animation: none !important; opacity: .96; transform: none; }
 #game-shell.reduced-motion .advice-target { animation: none !important; outline-color: var(--teal); box-shadow: inset 3px 0 rgba(80,244,220,.38); }
 #game-shell.reduced-motion .arrival-line > span > i { animation: none !important; opacity: 1; }
+#game-shell.reduced-motion .dispatch-line > div:first-child span i { animation: none !important; opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

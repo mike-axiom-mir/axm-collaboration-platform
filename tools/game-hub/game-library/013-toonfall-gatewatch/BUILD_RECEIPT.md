@@ -1,15 +1,55 @@
 # Bloomvale: Gatewatch — build receipt
 
 - Artifact: `013-toonfall-gatewatch`
-- Version: `0.3.1-bloomvale-steward`
-- Last stewarded: 2026-07-28 16:00 CEST
-- Status: **PLAYABLE BETA — STEWARDED GAME NIGHT BUILD — LOCALLY VERIFIED**
+- Version: `0.5.0-chronicle-3d`
+- Last stewarded: 2026-08-16 09:10 CEST
+- Status: **WORKING — STEWARDED GAME NIGHT BUILD — NEEDS MIKE'S REVIEW**
 - Approval: Mike review required; this receipt does not declare canon or a public release.
+
+## Continued stewardship — 2026-08-16 09:10 CEST
+
+- Expanded the server-owned defense arc from three generic waves / 37 slots to
+  five named watches / 83 slots: Petal Breach, Ripple Rush, Bruiser Bloom,
+  Lantern Siege, and Crown of Ink. Each profile owns its count, cadence, cue,
+  accent, and enemy mix.
+- Added the Heartlight-focused Siphon and one forced final Ink Crown. Siphons
+  demonstrably ignore a nearby Scout to continue toward the beacon; the Crown
+  has 560 health and can only occupy the final authored spawn.
+- Every cleared watch seals one bounded run receipt with id, title, score,
+  cumulative kills, Heartlight health, and elapsed authority time. Victory
+  returns a detached five-receipt chronicle; no profile persistence is claimed.
+- Added a local low-resolution WebGL presentation with depth testing,
+  16-step-per-channel fragment quantization, raised district geometry, gates,
+  roads, Heartlight forms, defenders, all enemy families, projectiles, pickups,
+  NPCs, wisps, and range targets. Canvas remains authoritative for gameplay
+  presentation, input, collision, aim, and effects.
+- The first live polish frame exposed a doubled translucent island because the
+  new dynamic WebGL geometry composited above the Canvas ink. The final layer
+  order places WebGL beneath the translucent Canvas terrain wash, retaining 3D
+  depth without obscuring combat silhouettes.
+- Focused verification passes: 43/43 core/client/package checks, 30/30 dedicated
+  3D-polish checks, server HTTP, partner-choice HTTP, and JavaScript syntax.
+- A fresh semantic controller completed all 83 slots in 71.418 seconds: victory,
+  five receipts, 83 result kills = Pippa 65 + Moxie 18, 276 human shots, 67%
+  accuracy, score 25,800, and Heartlight 360.
+- Live browser evidence covers current-source exploration and combat at
+  1280×720 and 390×844 with exact viewport fit, dynamic 3D actor/enemy/
+  projectile/pickup diagnostics, 4,350 exploration vertices, reduced-motion
+  locked camera, reload recovery, and the 5/5 victory surface. Repeated frames
+  do not prove between-frame cadence because no rolling buffer was available.
+- All ten AGENTS.md root checks pass. `node verify.js` reports 0 failures and 41
+  repository warnings; the warnings are retained as shared backlog, including a
+  stale tools index. Passing checks do not canonize or release the game.
+- The isolated verifier was stopped and port 19813 was confirmed closed after
+  `/api/reset` restored story step zero, wave zero, and score zero.
+- Steam packaging, store integration, achievements, physical-controller
+  certification, broad hardware performance, and final human balance remain
+  unbuilt or unverified.
 
 ## Delivered
 
-- One human Scout Pippa and one visible server-owned AI companion, Moxie; no second human focus owner and no split screen.
-- Three illustrated story scenes, an explicit briefing, five explorable districts, three player-triggered defense waves, exploration returns between waves, defeat, victory, and restart.
+- One human Scout Pippa plus one visible selectable Human, Connected AI, or built-in Moxie partner on a shared camera; no split screen.
+- Three illustrated story scenes, an explicit briefing, five explorable districts, five player-triggered named watches, exploration returns between watches, defeat, victory, and restart.
 - Five named neighbors, ten collectible color wisps, six range blooms, four optional activities, and six run-local unlocks with material gameplay effects.
 - A live directional wayfinder points to the next useful route, while the field map highlights one route target and shows exact progress toward every upgrade.
 - The top live objective now mirrors that route with an action, destination, and distance; the wayfinder exposes its cardinal direction to assistive technology.
@@ -26,7 +66,7 @@
 - Authoritative return events now hold a short `ONLINE` world ring and `BACK ONLINE` team-card state while the health meter explicitly reports `back online`; reduced-motion retains the information while collapsing decorative animation.
 - Downed fire, Dash, and Heartburst input is rejected at authority intake and scrubbed again during simulation, so no stale edge can move, heal, shoot, or consume cooldowns on reboot; the Scout Kit visibly reports both abilities offline and the observation contract exposes only wait-for-reboot and pause.
 - WASD movement, mouse aim/click fire, Space fire, Shift dash, E Heartburst, F interact/start wave, M field map, H field manual, Escape pause, muted-by-default local Web Audio, reduced-motion control, and edge-latched gamepad mappings.
-- Animated native Canvas 2D storybook color world beneath a full-bleed modern interface: luminous glass HUD, compact team/ability clusters, clean system typography, cinematic story/briefing/pause/result overlays, health/cooldown feedback, enemies, projectiles, pickups, effects, score, combo, and result statistics.
+- Hybrid low-poly WebGL plus authoritative Canvas storybook color world beneath a full-bleed modern interface: luminous glass HUD, compact team/ability clusters, clean system typography, cinematic story/briefing/pause/result overlays, health/cooldown feedback, enemies, projectiles, pickups, effects, score, combo, and result statistics.
 - Labeled modal dialogs, deterministic entry/return focus, progressbar semantics, forced-colors fallbacks, and automatic system reduced-motion initialization.
 - Keyboard Tab and Shift+Tab stay contained inside whichever story, briefing, pause, map, manual, or result dialog is active.
 - Active dialogs also make every background stage layer and the footer inert, preventing pointer or programmatic focus from leaking into canvas and settings controls behind the modal.
@@ -44,20 +84,23 @@
 | Check | Result |
 |---|---|
 | JavaScript syntax, runtime and test files | PASS |
-| `tests/toonfall-selftest.js` | PASS — 39 checks, including progression, multi-seed stress, sequence/time hardening, perfect-dodge reward/expiry/reboot clearing, ×2 shot and impact, pause-clock integrity, lethal-Heartburst attribution, reconnect feedback, reload resync, queued input, downed-edge rejection, authoritative damage-source bearing, attack windup/dodge cancellation, modal focus and pointer isolation, wayfinding, responsive HUD, off-screen threat, Heartlight urgency, accessibility, gamepad, and package contracts |
+| `tests/toonfall-selftest.js` | PASS — 43 checks, including five-watch receipts, Siphon/Crown behavior, hybrid WebGL contract, progression, multi-seed stress, sequence/time hardening, mastery, pause, reconnect, modal focus, responsive HUD, accessibility, gamepad, and package contracts |
+| `tests/toonfall-3d-polish-selftest.js` | PASS — 30 checks covering local WebGL, transparent composition, geometry primitives, dynamic actors/enemies/projectiles/pickups/exploration, live diagnostics, quantized palette, and no remote dependencies |
 | `tests/server-http.test.js` | PASS — 15 route/authority checks, including transported windup target/resolve timing, pause-frozen windups/mastery windows/latent input, raw exponent-form sequence rejection, structured malformed/oversized request recovery, and same-origin browser enforcement |
-| `tests/live-semantic-driver.js` against a freshly restarted isolated port 8804 | PASS — current `0.3.1` core, victory, 37 reconciled kills, Pippa 33 / Moxie 4, 114 human shots, 29.992 s, 48% accuracy, score 7390, Heartlight 360; reload sequence and terminal-frame races handled |
+| `tests/live-semantic-driver.js` against isolated port 19813 | PASS — current `0.5.0` core, five receipts, 83 reconciled kills, Pippa 65 / Moxie 18, 276 human shots, 71.418 s, 67% accuracy, score 25,800, Heartlight 360 |
 | Shared game-package verifier | PASS — slot 013 has 0 errors and 0 warnings |
-| Game Night self-test | FOREIGN-LANE FAIL — slot 016 currently has 9 hard manifest/seam errors; slot 013 remains clean |
+| Required AGENTS.md root checks | PASS — 10/10 |
 | Game experience recovery self-test | PASS |
 | Game Night discovery seam review | PASS — 22 seams, 0 open |
 | Asset handoff self-test | PASS — 24 assertions |
 | Hub self-test | PASS — 0 failures |
 | Tool-index generation and parallel verification | PASS — 187 tools, 1,363 capabilities, 86 promotion self-tests |
 | Public discovery generation/self-test | PASS — 187 modules, 1,363 declared capabilities |
-| `node verify.js` | FOREIGN-LANE FAIL — 9 failures, all from slot 016's current manifest; 40 repository warnings |
+| `node verify.js` | PASS — 0 failures; 41 retained repository warnings |
 
-The broad verifier's nine failures all name the separately built `016-hexbound-rooftops` manifest. The 40 warnings are older cross-repository package/lifecycle backlogs. Slot 013 has zero package errors and zero package warnings; no foreign game lane was modified during this stewardship pass.
+The broad verifier is green. Its 41 warnings remain cross-repository package,
+manifest-kind, and generated-index backlog. Slot 013 has zero package errors;
+passing tests do not make this build CANON or Steam-ready.
 
 ## Continued stewardship - 2026-07-28 16:00 CEST
 

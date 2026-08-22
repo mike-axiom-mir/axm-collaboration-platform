@@ -1,4 +1,4 @@
-# AXM BuddyFarm · large blank-world working test
+# AXM BuddyFarm · large blank-world universal-gamepad working test
 
 BuddyFarm is game **011**: a local-first 1–3 player cooperative farm with one
 server-owned world and one shared host camera.
@@ -17,6 +17,12 @@ server-owned world and one shared host camera.
   separate BuddyFarm layer above the blank substrate.
 - One shared farm state and camera for keyboard, phone, gamepad and optional AI
   seats.
+- Standard-only `axm-universal-xbox-brawl-v0.2.1` gamepads with stable pad
+  index 0–2 ownership of ordered human seats. Unsupported and unassigned pads
+  remain visible and cannot control an AI seat.
+- Left stick/D-pad movement, A or right trigger for Action, X for Work, View for
+  the full map and Menu for the controls guide. Keyboard and phone routes remain
+  available after disconnect.
 - Two permanent input lanes:
   - **Action** for story and 200 ms hold-to-travel;
   - **Work** for contextual prepare, plant, water and harvest through one field
@@ -41,8 +47,10 @@ separate reversible game layers.
 ## Start
 
 Use Game Hub, choose **AXM BuddyFarm**, ready one to three seats and start.
-The first human uses WASD, E and F. Other human seats can use standard gamepads
-or the dedicated phone controller.
+The first human uses WASD, E and F or standard gamepad 1. Additional human
+seats use their matching standard gamepad or the dedicated phone controller.
+Gamepad simulation is exposed only by the labeled `?gamepadQa=1` test route and
+does not count as physical-device evidence.
 
 Direct developer start:
 

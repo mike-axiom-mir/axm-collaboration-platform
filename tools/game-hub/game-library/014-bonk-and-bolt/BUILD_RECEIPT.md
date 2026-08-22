@@ -340,3 +340,99 @@ Other builders changed separate game packages while this game was built. A
 workspace-wide verifier encountered another builder's incomplete slot during
 that moving window. Bonk & Bolt's focused verifier and tests remained clean; no
 foreign files or shared registries were edited to conceal that external state.
+
+## 2026-08-16 unsealed TEST content-expansion receipt
+
+- Version: `1.1.0-relay-test`
+- Status: `TEST · FIRST EDITION CONTENT EXPANSION`
+- Promotion: none. This receipt is unsealed, uncommitted and not CANON.
+- Scope: slot 014 only. No other game, Foundation file, shared registry or
+  foreign module was changed.
+
+Implemented:
+
+- Added the sixth independent adventure, **The Lantern That Missed Curfew**.
+  It begins at a physical Central Meadow relay board, completes through one
+  ordered non-combat route and ends in one of two explicit mechanical world
+  choices.
+- Added three replayable 3D route courses with eight authored gates each:
+  Meadow Curfew Circuit, Two-Town Nightline and Vale Companion Tour.
+- Added migration-safe saved route state: active course, checkpoint, elapsed
+  clock, attempts, completions, non-failure exits, last time and personal best.
+  Finishing or improving a route may enter the journal; repeating one creates no
+  currency, equipment, consumable, XP or progression farm.
+- Added a walking Lantern-8 companion, visible current/later gate hierarchy,
+  active HUD/map state, three-course selection with saved records, and static
+  reduced-motion presentation.
+- Added two mutually exclusive consequences: 30% wider visible route gates, or
+  ordinary nuisance sanctuary for the duration of an active rehearsal.
+- Added Mile-0 as a fourteenth ambient citizen and sixth outcome-specific robot
+  witness. The explicit public-report challenge is now six named regions.
+- Corrected the focused QA hook so active routes and hero position survive
+  repeated reloads, and separated the relay board, route memory and Mile-0
+  report labels on the central world map.
+
+Focused verification:
+
+- JavaScript syntax: PASS.
+- Hero motion + co-op camera + hero rig: `25/25 PASS`.
+- Systems: `253 checks PASS`.
+- Package self-test: `126 checks PASS`.
+- HTTP: `4/4 PASS`.
+- Focused package verifier: `0 errors`; one pre-existing warning remains for
+  migration to `axm-universal-xbox-brawl-v0.2.1`.
+- Live 1280×720 WebGL: active route rendered; visible keyboard movement advanced
+  Meadow gate 1 to gate 5; the Meadow course then completed at `2:00` and saved
+  its first personal best; the board exposed all three courses and the saved
+  best; Two-Town Nightline checkpoint 2 plus exact hero position survived two
+  reloads; active map marker and separated central labels rendered; repeated
+  reduced-motion frames held route/companion presentation static while the
+  world clock continued.
+- Browser tabs finalized and isolated port `19814` cleaned.
+
+Workshop verification:
+
+- Required gates: `10/10 PASS` at the final snapshot.
+- During the first pass, `verify.js` and `verify-plus.js` observed three
+  unsupported lifecycle fields in foreign `tools/challenge-arena`. Its owner
+  repaired that module while this pass continued; both gates were rerun and
+  finished at `0 FAIL`. Slot 014 did not alter that foreign lane.
+
+Still unrun / not proved:
+
+- End-to-end human completion and pacing of Two-Town Nightline and Vale
+  Companion Tour.
+- Physical controller feel and target-hardware coverage.
+- Literal 24-hour soak, Steam depot/store packaging, signing and release review.
+- Mike's taste, humor, balance and promotion decision.
+
+## 2026-08-16 universal gamepad Steam-readiness receipt
+
+- Version: `1.1.1-universal-gamepad-test`.
+- Status: `TEST · LOGIC + LIVE SIMULATION PASS · PHYSICAL DEVICE HOLD`.
+- Added the standard-only `axm-universal-xbox-brawl-v0.2.1` mapper for stable P1
+  and P2 pad indices, two-axis stick/D-pad movement, attack, dodge, class special,
+  interaction, partner action, map and Menu semantics.
+- Kept keyboard/mouse paths intact and made ready, unsupported, unassigned and
+  disconnected controller states visible in the HUD and accessibility guide.
+- Added a visible query-only simulated-pad harness. It is explicitly labeled as
+  browser/logic QA and cannot satisfy the physical controller gate.
+- Focused rerun: `138 package checks PASS`, `253 systems checks PASS`, `31/31
+  Node tests PASS` (including `25` visual-polish checks), package verifier
+  `19 games / 0 failures / 38 warnings`, and
+  universal control policy selftest PASS.
+- Live 1280×720 browser pass: independent P1/P2 movement, both primary attacks,
+  P1 dodge/special, Menu pause/resume, unsupported mapping, disconnect fallback,
+  solo P2 ownership refusal, query-free hiding and unclipped controller guidance
+  all passed. Browser warning/error logs were `[]`.
+- The first live title frame exposed the labeled test panel behind the screen
+  layer; the panel z-order was corrected and replayed. The first unsupported-pad
+  sentence also contradicted its connected state; the copy was corrected and
+  replayed.
+- After the concurrent low-poly visual pass settled, a combined live replay
+  booted `patchwork-vale-dressing-01` with 1,048 terrain-detail instances, moved
+  P1 from x `0.000` to `4.134`, entered attack impact, paused through Menu, hid
+  the simulator on the query-free route, and produced no browser warnings or
+  errors.
+- Physical controller feel and target hardware remain unrun. No promotion or
+  CANON claim was made.

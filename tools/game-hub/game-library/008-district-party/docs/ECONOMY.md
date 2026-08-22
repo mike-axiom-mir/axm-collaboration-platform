@@ -4,7 +4,7 @@
 
 Every successful mission reward is a gross amount per selected actor. The authoritative host splits each actor's gross reward into:
 
-- **40% personal fund** — reserved for that actor's future weapons, equipment and personal bodyguard.
+- **40% personal fund** — used for that actor's city weapons, protection, bodyguards, gang cars, roadblocks and optional casino play.
 - **60% party fund** — credited to that actor's party treasury for future territory, squads, defence and other collective decisions.
 
 The split uses integer cents and always preserves the gross total. Party A and Party B have completely separate treasuries. Slots 1–4 can only contribute to `party_a`; slots 5–8 can only contribute to `party_b`.
@@ -27,7 +27,7 @@ The shared screen shows each actor's personal fund in their existing corner and 
 ## Current limits
 
 - Funds remain session-only until the local profile/save layer exists.
-- No weapon shop, bodyguard purchase, squad purchase or territory purchase UI exists yet.
+- Free-roam now has an Armory and Crew Garage UI for weapon/protection upgrades, bodyguards, armored gang cars and roadblocks. District Dominion keeps its separate party-funded reinforcement purchase. A complete buy/sell catalogue and persistent upgrade format do not exist yet.
 - The spending operations are implemented and tested as host seams, but no gameplay feature calls them yet.
 - Territory-mode match fairness still needs a host choice between persistent campaign funds and an equal temporary war chest.
 - Party-fund proposals or teammate approval voting are not implemented yet.

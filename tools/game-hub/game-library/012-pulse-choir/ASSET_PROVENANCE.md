@@ -1,8 +1,9 @@
 # Asset provenance
 
-Pulse Choir uses no downloaded or third-party art, audio, fonts, shaders, or runtime services.
+Pulse Choir uses no downloaded third-party art, audio, fonts, shaders, or runtime services.
 
 - Players, beats, hazards, particles, stage lighting, and UI marks are procedural Canvas/CSS shapes authored for this prototype.
+- `runtime/arena-3d.js` is a project-authored WebGL renderer: its mesh builder, matrix math, vertex/fragment shaders, five venue layouts, low-resolution pixel treatment, and diagnostics are local source with no runtime dependency.
 - Audio cues are local Web Audio oscillators generated at runtime after user interaction.
 - The visual contract uses color plus shape, label, motion, and position so color is not the only gameplay signal.
 - The deterministic simulation seed is declared in `game.manifest.json` and the runtime state.

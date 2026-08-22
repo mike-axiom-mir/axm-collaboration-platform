@@ -120,9 +120,9 @@ test('live server serves static clients and completes start/input/state/settings
     total: null,
   });
   assert.equal(state.json.world.actors[0].regeneration.healthAccumulator, undefined, 'private fractional regeneration state is not broadcast');
-  assert.equal(state.json.world.npcs.filter((npc) => npc.kind === 'civilian').length, 8);
+  assert.equal(state.json.world.npcs.filter((npc) => npc.kind === 'civilian').length, 20);
   assert.equal(state.json.world.npcs.filter((npc) => npc.kind === 'rival').length, 3);
-  assert.equal(state.json.world.vehicles.length, 6);
+  assert.equal(state.json.world.vehicles.length, 10);
   assert.ok(state.json.world.vehicles.every((vehicle) => vehicle.health === 50 && vehicle.maxHealth === 50));
   assert.equal(state.json.world.actors[0].walletCents, 10000);
   assert.equal(state.json.world.actors[0].personalFundCents, 10000);

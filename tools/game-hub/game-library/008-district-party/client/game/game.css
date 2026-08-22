@@ -12,6 +12,21 @@
 html,
 body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #07110e; }
 canvas { position: fixed; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
+#city-depth-canvas { z-index: 0; }
+#city-canvas {
+  z-index: 1;
+  opacity: .34;
+  mix-blend-mode: screen;
+  filter: saturate(1.12) contrast(1.06);
+}
+.depth-stage-unavailable #city-depth-canvas { display: none; }
+.depth-stage-unavailable #city-canvas,
+.map-open #city-canvas {
+  opacity: 1;
+  mix-blend-mode: normal;
+  filter: none;
+}
+.map-open #city-depth-canvas { opacity: 0; }
 
 .mission-hud,
 .player-card {
@@ -54,6 +69,8 @@ canvas { position: fixed; inset: 0; width: 100%; height: 100%; image-rendering: 
 .combat-rule.on { color: #ffd8dc; border-color: #ff7482; }
 .combat-rule.off { color: #bff8e7; border-color: #59e0b8; }
 .justice-status { display: inline-block; margin: 7px 0 0 5px; color: #ffe3a8; font-size: .62rem; font-weight: 900; letter-spacing: .08em; }
+.gamepad-status { display: inline-block; margin: 7px 0 0 5px; color: #8fe9ff; font-size: .62rem; font-weight: 900; letter-spacing: .08em; }
+.gamepad-help { margin-top: 4px; color: #9ab5ad; font-size: .48rem; font-weight: 800; letter-spacing: .04em; }
 .mission-progress { height: 5px; margin-top: 9px; overflow: hidden; background: #1f3b32; border-radius: 99px; }
 .mission-progress i { display: block; width: 0; height: 100%; background: var(--mint); box-shadow: 0 0 10px var(--mint); transition: width .2s; }
 .stat { display: grid; }
@@ -106,6 +123,8 @@ canvas { position: fixed; inset: 0; width: 100%; height: 100%; image-rendering: 
 .is-downed .health-fill { background: #ff7381; }
 .player-resources { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
 .player-resources .money-line { grid-column: 1 / -1; }
+.player-resources .loadout-line { grid-column: 1 / -1; min-width: 0; }
+.loadout-value { max-width: 72%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #9fffe2 !important; }
 .money-value { color: #c8ff8c !important; }
 .shield-value { color: #8dd3ff !important; }
 .ammo-value { color: var(--amber) !important; }
@@ -130,6 +149,29 @@ canvas { position: fixed; inset: 0; width: 100%; height: 100%; image-rendering: 
 
 .results,
 .mission-menu { position: fixed; inset: 0; z-index: 8; display: grid; place-items: center; background: #03100dcc; }
+.city-venue-menu { position: fixed; inset: 0; z-index: 8; display: grid; place-items: center; padding: 18px; background: #030b09df; }
+.city-venue-card { width: min(760px, 92vw); max-height: 92vh; overflow: auto; padding: clamp(18px, 3vw, 32px); text-align: center; background: #0b1c17f7; border: 2px solid var(--mint); border-radius: 18px; box-shadow: 0 0 90px #59e0b82d; }
+.city-venue-card h1 { margin: .2em 0; color: #effff9; font-size: clamp(1.7rem, 4vw, 3rem); }
+.city-venue-card > p { margin: 5px auto 16px; color: var(--muted); }
+.city-vehicle-build { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 2fr); gap: 8px 16px; margin: 10px 0 14px; padding: 12px 14px; text-align: left; color: #d8fff3; background: #06110edb; border: 1px solid #ff766f88; border-radius: 10px; }
+.city-vehicle-build strong { color: #ffaaa4; letter-spacing: .04em; }
+.city-vehicle-build span { color: #9ebbb2; font-size: .82rem; font-weight: 800; }
+.city-vehicle-build .vehicle-build-visual { grid-column: 1 / -1; color: #ffd27e; }
+.city-venue-options { display: grid; gap: 8px; margin: 16px 0; }
+.city-venue-option { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 12px 14px; text-align: left; color: #b9d0c8; background: #06110e; border: 1px solid #34574d; border-radius: 9px; }
+.city-venue-option strong { color: #f0fff9; }
+.city-venue-option span { grid-row: span 2; align-self: center; color: #ffd27e; font-weight: 1000; }
+.city-venue-option small { color: #7f9a91; }
+.city-venue-option.selected { color: #07110e; background: var(--mint); border-color: #d5fff1; box-shadow: 0 0 0 3px #59e0b83d; }
+.city-venue-option.selected strong,
+.city-venue-option.selected span,
+.city-venue-option.selected small { color: #07110e; }
+.city-venue-message { min-height: 1.5em; margin: 12px 0 8px; color: #ffd27e; font-weight: 900; }
+.city-venue-card > small { color: #78978d; }
+@media (max-height: 720px) { .city-venue-option { padding: 8px 11px; } .city-venue-options { gap: 5px; margin: 10px 0; } }
+@media (max-width: 640px) { .city-vehicle-build { grid-template-columns: 1fr; } .city-vehicle-build .vehicle-build-visual { grid-column: auto; } }
+.city-pulse { margin-top: 5px; color: #8fe9ff; font-size: .57rem; font-weight: 900; letter-spacing: .055em; }
+.city-interaction { position: fixed; left: 50%; bottom: 78px; z-index: 7; max-width: min(720px, 78vw); padding: 8px 16px; color: #07110e; text-align: center; font-size: .72rem; font-weight: 1000; letter-spacing: .06em; background: #ffd27eee; border: 2px solid #fff2c7; border-radius: 999px; box-shadow: 0 8px 28px #000a; transform: translateX(-50%); }
 .save-computer { position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; padding: 18px; background: #020a08ed; }
 .save-computer-card { width: min(940px, 96vw); max-height: 96vh; overflow: auto; padding: clamp(18px, 3vw, 34px); text-align: center; background: #0b1c17f7; border: 2px solid #8fe9ff; border-radius: 18px; box-shadow: 0 0 90px #59d4ff28; }
 .save-computer-card h1 { margin: .2em 0; color: #dffaff; font-size: clamp(1.5rem, 4vw, 3rem); }
@@ -165,6 +207,13 @@ canvas { position: fixed; inset: 0; width: 100%; height: 100%; image-rendering: 
 .results-card p { color: var(--muted); }
 .mission-menu-card h1 { margin: .25em; }
 .mission-menu-card p { color: var(--muted); }
+.session-menu { position: fixed; inset: 0; z-index: 11; display: grid; place-items: center; padding: 18px; background: #020806ed; backdrop-filter: blur(10px); }
+.session-menu-card { width: min(620px, 90vw); padding: clamp(26px, 4vw, 44px); text-align: center; color: #effff9; background: linear-gradient(150deg, #10241dfb, #07110efb); border: 2px solid var(--mint); border-radius: 20px; box-shadow: 0 24px 90px #000e, inset 0 0 42px #59e0b80b; }
+.session-menu-card h1 { margin: .3em 0 .2em; font-size: clamp(2rem, 5vw, 3.8rem); letter-spacing: .08em; }
+.session-menu-card p { max-width: 520px; margin: 0 auto 20px; color: #b7cec6; line-height: 1.55; }
+.session-menu-card button { padding: 12px 18px; color: #07110e; font: 1000 .78rem ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .08em; background: var(--mint); border: 2px solid #caffef; border-radius: 10px; cursor: pointer; }
+.session-menu-card button:focus-visible { outline: 3px solid var(--amber); outline-offset: 4px; }
+.session-menu-card small { display: block; margin-top: 18px; color: #829f95; font: 900 .58rem ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .1em; line-height: 1.5; }
 .menu-options { display: grid; gap: 7px; margin: 18px auto; max-width: 420px; }
 .menu-option { padding: 9px 12px; text-align: left; color: var(--muted); background: #08130f; border: 1px solid #36564c; border-radius: 8px; }
 .menu-option.selected { color: #07110e; font-weight: 900; background: var(--mint); border-color: var(--mint); }
@@ -221,6 +270,8 @@ canvas { position: fixed; inset: 0; width: 100%; height: 100%; image-rendering: 
   .territory-chip { padding: 2px 4px; font-size: .42rem; }
   .combat-rule { margin-top: 4px; padding: 2px 4px; font-size: .45rem; }
   .justice-status { margin-top: 4px; font-size: .45rem; }
+  .gamepad-status { margin-top: 4px; font-size: .45rem; }
+  .gamepad-help { display: none; }
   .mission-progress { margin-top: 5px; }
   .stat span { font-size: .42rem; }
   .stat strong { font-size: .75rem; }

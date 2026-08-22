@@ -65,6 +65,41 @@ export function collectCityMapMarkers(map, world = {}, partyId = 'party_a') {
   for (const zone of layers.interior_zones || []) {
     markers.push({ id: zone.id, kind: 'venue', label: zone.name || 'Open venue', ...centreOf(zone) });
   }
+  for (const [index, venue] of (world.cityLife?.venues || []).entries()) {
+    markers.push({
+      id: venue.id,
+      kind: 'venue',
+      label: venue.label || 'Open venue',
+      x: Number(venue.position?.x) || 0,
+      y: Number(venue.position?.y) || 0,
+      labelSide: index === 0 ? 'left' : 'right',
+      labelOffsetY: [-12, 1, 15][index] || 0,
+    });
+  }
+  if (world.cityLife?.activity?.available) {
+    const activity = world.cityLife.activity;
+    markers.push({ id: activity.id, kind: 'city_activity', label: activity.label || 'Optional street cache', x: Number(activity.position?.x) || 0, y: Number(activity.position?.y) || 0 });
+  }
+  const visibleContracts = partyId === 'all'
+    ? Object.values(world.cityLife?.contracts || {})
+    : [world.cityLife?.contracts?.[partyId]];
+  for (const contract of visibleContracts.filter((entry) => entry?.status === 'active')) {
+    const target = contract.checkpoints?.[contract.stepIndex];
+    if (!target) continue;
+    markers.push({
+      id: `${contract.id}-target`,
+      kind: 'city_contract',
+      label: `${contract.label}: ${target.label}`,
+      x: Number(target.position?.x) || 0,
+      y: Number(target.position?.y) || 0,
+      partyId: contract.partyId,
+      clearing: contract.phase === 'clear',
+    });
+  }
+  if (world.cityLife?.roadblock?.active) {
+    const roadblock = world.cityLife.roadblock;
+    markers.push({ id: 'city-roadblock', kind: 'roadblock', label: roadblock.label || 'Party roadblock', x: Number(roadblock.position?.x) || 0, y: Number(roadblock.position?.y) || 0 });
+  }
   for (const terminal of layers.save_terminals || []) {
     markers.push({ id: terminal.id, kind: 'save_terminal', label: terminal.name || 'Group Save', ...centreOf(terminal) });
   }
@@ -135,25 +170,26 @@ function drawNetwork(ctx, layout, map, cityArt, full) {
     ctx.beginPath(); ctx.moveTo(layout.x, lineY); ctx.lineTo(layout.x + layout.width, lineY); ctx.stroke();
   }
   for (const water of cityArt?.overview?.waterways || []) {
-    ctx.strokeStyle = full ? '#62c9e2d6' : '#62bfd4aa';
-    ctx.lineWidth = Math.max(full ? 3 : 2, Number(water.width) || 3);
+    const waterWidth = Math.max(full ? 3 : 2, Number(water.width) || 3);
     ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.beginPath();
     (water.points || []).forEach((point, index) => {
       const p = project(layout, { x: point[0], y: point[1] });
       if (!index) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
     });
-    ctx.stroke();
+    ctx.strokeStyle = '#07171fcc'; ctx.lineWidth = waterWidth + (full ? 5 : 3); ctx.stroke();
+    ctx.strokeStyle = full ? '#62c9e2d6' : '#62bfd4aa'; ctx.lineWidth = waterWidth; ctx.stroke();
   }
   for (const route of cityArt?.overview?.arterials || []) {
-    ctx.strokeStyle = route.kind === 'ring' ? (full ? '#f1de9cc7' : '#e2d59b7a') : (full ? '#d4ded9a0' : '#b8c3be68');
-    ctx.lineWidth = route.kind === 'ring' ? (full ? 3.2 : 1.8) : (full ? 2.2 : 1.2);
+    const routeColour = route.kind === 'ring' ? (full ? '#f1de9cc7' : '#e2d59b7a') : (full ? '#d4ded9a0' : '#b8c3be68');
+    const routeWidth = route.kind === 'ring' ? (full ? 3.2 : 1.8) : (full ? 2.2 : 1.2);
     ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.beginPath();
     (route.points || []).forEach((point, index) => {
       const p = project(layout, { x: point[0], y: point[1] });
       if (!index) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
     });
     if (route.closed) ctx.closePath();
-    ctx.stroke();
+    if (full) { ctx.strokeStyle = route.kind === 'ring' ? '#ffd86f25' : '#d9fff218'; ctx.lineWidth = routeWidth + 5; ctx.stroke(); }
+    ctx.strokeStyle = routeColour; ctx.lineWidth = routeWidth; ctx.stroke();
   }
   ctx.restore();
 }
@@ -164,7 +200,8 @@ function drawDistrictsAndLandmarks(ctx, layout, cityArt, full) {
     ctx.fillStyle = landmark.accent || '#ffcd70';
     ctx.globalAlpha = 0.9;
     const size = full ? 6 : 3.2;
-    ctx.fillRect(point.x - size / 2, point.y - size / 2, size, size);
+    if (full) { ctx.globalAlpha = .15; ctx.beginPath(); ctx.arc(point.x, point.y, 15, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = .9; }
+    ctx.save(); ctx.translate(point.x, point.y); ctx.rotate(Math.PI / 4); ctx.fillRect(-size / 2, -size / 2, size, size); ctx.restore();
   }
   ctx.globalAlpha = 1;
   if (!full) return;
@@ -172,6 +209,8 @@ function drawDistrictsAndLandmarks(ctx, layout, cityArt, full) {
   for (const district of cityArt?.districts || []) {
     const point = project(layout, district);
     const labelY = point.y + (Number(district.labelOffsetY) || -72) * layout.scaleY;
+    ctx.fillStyle = `${district.accent || '#d9fff2'}12`; ctx.beginPath(); ctx.arc(point.x, point.y, Math.max(13, Number(district.radius || 38) * Math.max(layout.scaleX, layout.scaleY) * 2.4), 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = `${district.accent || '#d9fff2'}50`; ctx.lineWidth = 1; ctx.setLineDash([3, 4]); ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle = '#06100dcc';
     const label = String(district.label || district.id || '').toUpperCase();
     ctx.font = '900 10px system-ui';
@@ -179,6 +218,22 @@ function drawDistrictsAndLandmarks(ctx, layout, cityArt, full) {
     ctx.fillRect(point.x - textWidth / 2 - 5, labelY - 12, textWidth + 10, 17);
     ctx.fillStyle = district.accent || '#d9fff2';
     ctx.fillText(label, point.x, labelY);
+  }
+}
+
+function drawAdventureRoutes(ctx, layout, markers, full) {
+  if (!full) return;
+  const destinations = markers.filter((marker) => marker.kind === 'city_contract');
+  if (!destinations.length) destinations.push(...markers.filter((marker) => marker.kind === 'city_activity').slice(0, 1));
+  if (!destinations.length) return;
+  const motion = (performance.now() / 24) % 22;
+  for (const actor of markers.filter((marker) => marker.kind === 'actor')) {
+    const destination = destinations.find((marker) => !marker.partyId || marker.partyId === actor.partyId) || destinations[0];
+    if (!destination) continue;
+    const a = project(layout, actor), b = project(layout, destination);
+    ctx.save(); ctx.strokeStyle = destination.kind === 'city_contract' ? partyColour(actor.partyId) : '#ffd27e'; ctx.globalAlpha = .72; ctx.lineWidth = 2; ctx.setLineDash([5, 7]); ctx.lineDashOffset = -motion;
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo((a.x + b.x) / 2, Math.min(a.y, b.y) - 18, b.x, b.y); ctx.stroke();
+    ctx.setLineDash([]); ctx.restore();
   }
 }
 
@@ -215,6 +270,22 @@ function drawMarker(ctx, layout, marker, full) {
   } else if (marker.kind === 'venue') {
     ctx.fillStyle = '#ffd27e'; ctx.fillRect(point.x - size / 2, point.y - size / 2, size, size);
     ctx.strokeStyle = '#fff2cb'; ctx.lineWidth = 1; ctx.strokeRect(point.x - size / 2, point.y - size / 2, size, size);
+    if (full) {
+      ctx.fillStyle = '#fff2cb'; ctx.font = '800 8px system-ui';
+      ctx.textAlign = marker.labelSide === 'left' ? 'right' : 'left';
+      ctx.fillText(marker.label, point.x + (marker.labelSide === 'left' ? -7 : 7), point.y + 3 + (Number(marker.labelOffsetY) || 0));
+    }
+  } else if (marker.kind === 'city_activity') {
+    ctx.fillStyle = '#ffd27e'; ctx.beginPath(); ctx.arc(point.x, point.y, full ? 6 : 3, 0, Math.PI * 2); ctx.fill();
+    if (full) { ctx.fillStyle = '#fff2cb'; ctx.font = '800 8px system-ui'; ctx.textAlign = 'left'; ctx.fillText(marker.label, point.x + 8, point.y + 3); }
+  } else if (marker.kind === 'city_contract') {
+    ctx.fillStyle = marker.clearing ? '#ff766f' : partyColour(marker.partyId);
+    ctx.beginPath(); ctx.moveTo(point.x, point.y - size); ctx.lineTo(point.x + size, point.y); ctx.lineTo(point.x, point.y + size); ctx.lineTo(point.x - size, point.y); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+    if (full) { ctx.fillStyle = '#eafff8'; ctx.font = '800 8px system-ui'; ctx.textAlign = 'left'; ctx.fillText(marker.label, point.x + 10, point.y + 3); }
+  } else if (marker.kind === 'roadblock') {
+    ctx.fillStyle = '#ff9d4a'; ctx.fillRect(point.x - size, point.y - 2, size * 2, 4);
+    if (full) { ctx.fillStyle = '#ffd8b0'; ctx.font = '800 8px system-ui'; ctx.textAlign = 'left'; ctx.fillText(marker.label, point.x + 10, point.y + 3); }
   } else if (marker.kind === 'save_terminal') {
     ctx.fillStyle = '#8fe9ff'; ctx.fillRect(point.x - size / 2, point.y - size / 2, size, size);
     ctx.strokeStyle = '#e2faff'; ctx.lineWidth = 1; ctx.strokeRect(point.x - size / 2, point.y - size / 2, size, size);
@@ -289,6 +360,7 @@ export function drawCityMap(ctx, viewport, map, world, camera, partyId, requeste
   }
   drawNetwork(ctx, layout, map, cityArt, full);
   drawDistrictsAndLandmarks(ctx, layout, cityArt, full);
+  drawAdventureRoutes(ctx, layout, markers, full);
   for (const marker of markers) drawMarker(ctx, layout, marker, full);
   drawCameraBounds(ctx, layout, camera, viewport);
   ctx.fillStyle = '#d9fff2'; ctx.font = `900 ${full ? 11 : 8}px system-ui`; ctx.textAlign = 'center';

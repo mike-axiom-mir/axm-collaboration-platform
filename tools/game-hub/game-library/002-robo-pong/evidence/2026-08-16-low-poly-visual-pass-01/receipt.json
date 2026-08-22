@@ -1,0 +1,70 @@
+{
+  "schema": "axm.game-visual-pass-receipt/v1",
+  "gameId": "002-robo-pong",
+  "gameName": "AXM Pong: Duet",
+  "checkedAt": "2026-08-16T11:06:00+02:00",
+  "status": "WORKING",
+  "packageStatus": "TEST",
+  "canon": false,
+  "scope": "Transparent registered WebGL relief for the active neon runtime; gameplay and server authority unchanged.",
+  "visualBackend": "BROWSER_PRIMARY",
+  "browserRoute": "http://127.0.0.1:8122/?room=AXM1&player=screen",
+  "viewport": "1280x720",
+  "observations": {
+    "renderer": "webgl-low-poly",
+    "modelProfile": "duet-relief-v1",
+    "paletteSteps": 16,
+    "authority": "hybrid-webgl-canvas",
+    "coop": {"drawCalls":23,"submittedTriangles":236,"frameBefore":666,"frameAfter420ms":692},
+    "versus": {"drawCalls":18,"submittedTriangles":184},
+    "browserLogs": []
+  },
+  "tests": {
+    "focused": [
+      {"command":"node --check runtime/neon-pong-duet-depth.js","result":"PASS"},
+      {"command":"node neon-duet-selftest.cjs","result":"PASS"}
+    ],
+    "workshop": {
+      "result": "PASS",
+      "verifySummary": "0 FAIL · 38 warn",
+      "checks": [
+        "node verify.js",
+        "node hub/hub-selftest.js",
+        "node hub/route-selftest.js",
+        "node hub/graft-selftest.js",
+        "node hub/skin-selftest.js",
+        "node hub/verify-plus.js",
+        "node tests/html-script-syntax-test.js",
+        "node tests/tool-forge-package-test.js",
+        "node tools/agent-tool-forge/selftest.js",
+        "node tools/evidence-desk/selftest.js"
+      ]
+    }
+  },
+  "screenshots": [
+    {"path":"baseline/01-ready.png","bytes":73144,"sha256":"CCA32250B3A01A20A3DAC4915E65CA16817C5CA37D244DE81FD9D352AD2990A1"},
+    {"path":"baseline/02-running.png","bytes":58462,"sha256":"14CD0919C3F4DB4480B08B565302D57C670852957DB92071FEEB76296BFE6831"},
+    {"path":"final/01-coop-ready.png","bytes":74854,"sha256":"96696F9B59BD8DF2404AA2C50A5D0037C2A812E7EAEAAC1F956C0FEA6D1CA9DA"},
+    {"path":"final/02-coop-running.png","bytes":60158,"sha256":"80C85716BCB35632C442517A4AD6224F1A2581151C3FA1ECAF9AAC5E3E0B9891"},
+    {"path":"final/03-versus-ready.png","bytes":74042,"sha256":"EE17E0B122BC4FDA89C1F933F4814E879AE00709F643107B165D70318913DE96"},
+    {"path":"final/04-versus-running.png","bytes":63920,"sha256":"DC35C92E4099E0EEC4DC4B050C6BDBA6729588B2BA9A19455BBC0E14F9014BF5"}
+  ],
+  "finalSourceHashes": [
+    {"path":"runtime/neon-pong-duet-client.html","sha256":"855DD901E86B18F638452BDFE3CCEB5066AE4A565FF5747DD51688F78EFA4A6D"},
+    {"path":"runtime/neon-pong-duet.css","sha256":"E4E26959FD3AA4DF6914F3D0086C79AC4039E419DF3E1DA272582B3B7B23E71E"},
+    {"path":"runtime/neon-pong-duet.js","sha256":"B77463D84F8E8B307359CBDF6CE94B00932F28A239827D7B9DA7A483BBFAE4D0"},
+    {"path":"runtime/neon-pong-duet-depth.js","sha256":"AB1BE770933C9179BAA5552DB3D946C1BEC6899D106C85316E89FD37B7027DB0"},
+    {"path":"runtime/neon-pong-duet-server.cjs","sha256":"CA48B519F4390A30B030829637A53A80661F4F158DFBB9CA760937C3D5DC63C8"},
+    {"path":"neon-duet-selftest.cjs","sha256":"4B743542D555ECEFF93180B3652D6AF4812ACAF253806CC44943B336005C693A"},
+    {"path":"game.manifest.json","sha256":"819F32CFD0712C7B83D8CB9386A91133FCACE5FEA860E612290057A71922D2D6"},
+    {"path":"README.md","sha256":"678B0899EB2CF00A53E77C9648B413B4BE74FD23A49C434265B055954C3F57C1"}
+  ],
+  "openBoundaries": [
+    "PHYSICAL_PHONE_QA_PENDING",
+    "PHYSICAL_GAMEPAD_QA_PENDING",
+    "REDUCED_MOTION_LIVE_SCREENSHOT_PENDING",
+    "STEAM_PACKAGING_PENDING",
+    "HUMAN_FEEL_QA_PENDING",
+    "MIKE_TOBI_REVIEW_PENDING"
+  ]
+}

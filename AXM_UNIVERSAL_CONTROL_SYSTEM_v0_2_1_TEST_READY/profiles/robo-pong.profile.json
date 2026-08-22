@@ -1,0 +1,65 @@
+{
+  "id": "axm.robo-pong.compat.v1",
+  "version": "0.2.0",
+  "gameId": "002-robo-pong",
+  "actions": [
+    {
+      "id": "MOVE",
+      "required": true,
+      "label": "Move paddle"
+    },
+    {
+      "id": "PRIMARY_ACTION",
+      "required": false,
+      "label": "Special"
+    },
+    {
+      "id": "PAUSE",
+      "required": false,
+      "label": "Pause"
+    }
+  ],
+  "phoneLayout": {
+    "mode": "simple",
+    "twinStick": false,
+    "preferredOrientation": "either",
+    "controls": [
+      {
+        "id": "leftStick",
+        "action": "MOVE",
+        "axis": "x",
+        "zone": "left"
+      },
+      {
+        "id": "A",
+        "action": "PRIMARY_ACTION",
+        "label": "Special"
+      },
+      {
+        "id": "Menu",
+        "action": "PAUSE"
+      }
+    ]
+  },
+  "controllerLayout": {
+    "MOVE": "leftStickX",
+    "PRIMARY_ACTION": "button0",
+    "PAUSE": "button9"
+  },
+  "contexts": [
+    {
+      "id": "gameplay",
+      "visibleLabel": "Paddle controls",
+      "allowedActions": [
+        "MOVE",
+        "PRIMARY_ACTION",
+        "PAUSE"
+      ]
+    }
+  ],
+  "aimAssist": {
+    "allowed": false,
+    "defaultStrength": 0
+  },
+  "cameraAimSeparate": false
+}

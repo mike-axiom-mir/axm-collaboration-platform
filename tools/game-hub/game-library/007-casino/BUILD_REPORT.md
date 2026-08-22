@@ -30,8 +30,9 @@ The package name remains a temporary alpha identifier, not a final game title.
 - A new private session seed reshuffles the master order and all style maps.
 - Humans, adapters/AI seats, NPCs, and earned free spins advance the same cursor.
 - No client/save receives the seed, master order, mappings, or future rows.
-- Neutral ticket grouping supplies exactly 500 human jackpot hits (1%) and 25
-  NPC jackpot hits (0.05%) in every complete 50K epoch.
+- Neutral ticket grouping supplies exactly 500 human jackpot tickets (1%) and
+  25 NPC jackpot tickets (0.05%) in every complete 50K epoch. Human payment
+  also requires a visible shared 30-paid-spin heat meter to be ready.
 - Wager, bankroll, actor, owner, location, quest state, and ability state are
   absent from the outcome interface.
 

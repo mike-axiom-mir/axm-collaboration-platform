@@ -48,6 +48,43 @@ test('same seed and roster produce the same authoritative starting state', () =>
   assert.equal(a.show.next.conductor.schema, core.CONDUCTOR_SCHEMA);
 });
 
+test('Constellation Circuit is a deterministic five-venue show with distinct mechanical tuning', () => {
+  assert.equal(core.METRICS.showArcRounds, 5);
+  assert.equal(core.VENUE_CIRCUIT.length, 5);
+  assert.equal(new Set(core.VENUE_CIRCUIT.map(venue => venue.id)).size, 5);
+  assert(core.VENUE_CIRCUIT.every(venue => venue.beatCount >= 14 && venue.glitchCadenceMs >= 4000 && venue.rule.length > 24));
+  assert.deepEqual(core.venueForRound(1), core.venueForRound(6));
+  assert.equal(core.showPosition(5).roundInShow, 5);
+  assert.deepEqual(core.showPosition(6), { showNumber: 2, roundInShow: 1 });
+  const prism = core.createInitialState([], { seed: 12027, roundNumber: 2, show: { roundNumber: 2, completedRounds: 1 }, now: 0 });
+  assert.equal(prism.venue.id, 'prism-causeway');
+  assert.equal(prism.beats.length, 16);
+  assert.equal(prism.show.next.venue.id, 'prism-causeway');
+});
+
+test('venue visits and mastery stamps migrate safely and persist across the full circuit', () => {
+  const show = core.createShowMemory(12026);
+  const receipts = {
+    'moonwell-atrium': { actsCleared: 1 },
+    'prism-causeway': { bestStreak: 3 },
+    'static-garden': { totalGlitchHits: 0 },
+    'twin-comet-bridge': { perfectSurges: 1 },
+    'dawn-archive': { actsCleared: 3 }
+  };
+  core.VENUE_CIRCUIT.forEach((venue, index) => {
+    assert.equal(core.recordVenueVisit(show, venue, Object.assign({ roundNumber: index + 1, score: 1000 + index }, receipts[venue.id])), true);
+  });
+  assert.equal(show.tour.schema, core.TOUR_SCHEMA);
+  assert.equal(Object.keys(show.tour.visits).length, 5);
+  assert.equal(Object.keys(show.tour.masteries).length, 5);
+  const migrated = core.createShowMemory(12026, JSON.parse(JSON.stringify(show)));
+  assert.deepEqual(migrated.tour, show.tour);
+  const failed = core.recordVenueVisit(migrated, core.VENUE_CIRCUIT[4], { roundNumber: 6, score: 12, actsCleared: 2 });
+  assert.equal(failed, false);
+  assert.equal(migrated.tour.visits['dawn-archive'].count, 2);
+  assert.equal(migrated.tour.masteries['dawn-archive'].count, 1);
+});
+
 test('Live Setlist is deterministic per seed while still varying future rounds', () => {
   const players = { p1: {}, p2: {}, p3: {} };
   const a = core.createSetlist(1, players);
@@ -432,6 +469,8 @@ test('shared-screen and controller surfaces expose the promised controls and acc
   const app = fs.readFileSync(path.join(ROOT, 'runtime', 'app.js'), 'utf8');
   const controller = fs.readFileSync(path.join(ROOT, 'runtime', 'controller.html'), 'utf8');
   const checkpoint = fs.readFileSync(path.join(ROOT, 'runtime', 'checkpoint-store.js'), 'utf8');
+  const stage3d = fs.readFileSync(path.join(ROOT, 'runtime', 'arena-3d.js'), 'utf8');
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'game.manifest.json'), 'utf8'));
   assert(html.includes('id="startButton"'));
   assert(html.includes('id="returnButton"'));
   assert(html.includes('id="motionToggle"'));
@@ -440,10 +479,18 @@ test('shared-screen and controller surfaces expose the promised controls and acc
   assert(html.includes('id="setlistPanel"') && html.includes('id="resultSetlist"'));
   assert(html.includes('id="showArc"') && html.includes('id="resultShowMemory"'));
   assert(html.includes('id="conductorPlan"') && html.includes('id="conductorReason"'));
+  assert(html.includes('id="arena3d"') && html.includes('id="venueBadge"') && html.includes('id="tourStamps"'));
+  assert(stage3d.includes("getContext('webgl'") && stage3d.includes("renderer: gl ? 'webgl' : 'fallback'"));
+  assert(stage3d.includes('gl.DEPTH_TEST') && stage3d.includes('gl.drawArrays(gl.TRIANGLES'));
+  assert(stage3d.includes("canvas.dataset.motion = motion ? 'full' : 'reduced'") && stage3d.includes('canvas.dataset.cameraDrift'));
+  new Function(stage3d);
   assert(app.includes("state.phase === core.PHASES.LOBBY") && app.includes('Start when the room is ready.'));
   assert(html.includes('aria-live="assertive"'));
   assert(app.includes("code==='Escape'"));
   assert(app.includes("type:'pulse'"));
+  assert.equal(manifest.controls.gamepad_profile, 'axm-universal-xbox-brawl-v0.2.1');
+  assert(app.includes('pad.buttons[15]') && app.includes('pad.buttons[12]'), 'D-pad movement is mapped');
+  assert(app.includes('pad.buttons[9]') && app.includes("api('/api/start'"), 'Menu starts or replays');
   assert(app.includes('function replayChallenge') && app.includes('function renderResultDebrief'));
   assert(app.includes('HOST RESTORED') && app.includes("'/api/new-show'"));
   assert(app.includes("'/api/finish-show'") && app.includes('CONFIRM RETURN'));
@@ -456,6 +503,7 @@ test('shared-screen and controller surfaces expose the promised controls and acc
   assert(controller.includes('ROUND \'') && controller.includes('o.show'));
   assert(controller.includes('REJOINED') && controller.includes('value.recovery'));
   assert(controller.includes('CONDUCTOR · ') && controller.includes('conductor.reason'));
+  assert(controller.includes("venue=(['lobby','results'].includes(o.phase)&&next.venue)||o.venue"));
   assert(controller.includes('id="roomSignal"') && controller.includes("'/api/room-signal'"));
   assert(controller.includes('data-room-signal="together"') && controller.includes('data-room-signal="bold"') && controller.includes('data-room-signal="flow"'));
   assert(checkpoint.includes('axm.pulse-choir-checkpoint/v1') && checkpoint.includes('fs.renameSync'));

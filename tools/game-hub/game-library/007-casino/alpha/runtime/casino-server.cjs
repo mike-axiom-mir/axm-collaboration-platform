@@ -6,11 +6,13 @@ var fs = require("fs");
 var path = require("path");
 var Core = require("./casino-core.js");
 var Adapter = require("./game-hub-adapter.js");
+var SeatInterface = require("./seat-interface.js");
 
 var HOST = process.env.CASINO_ALPHA_HOST || "0.0.0.0";
 var PORT = Number(process.env.PORT || process.env.CASINO_ALPHA_PORT || 8797);
 var ROOT = path.resolve(__dirname, "..");
 var CLIENT_ROOT = path.join(ROOT, "client");
+var THREE_VENDOR = path.resolve(ROOT, "../../../../../shared/vendor/three-r160/three.module.js");
 
 function defaultStatePath() {
   var workshopRoot = path.resolve(ROOT, "../../../../..");
@@ -33,6 +35,7 @@ var STATIC_FILES = new Map([
   ["/", ["index.html", "text/html; charset=utf-8"]],
   ["/index.html", ["index.html", "text/html; charset=utf-8"]],
   ["/app.js", ["app.js", "text/javascript; charset=utf-8"]],
+  ["/casino-three.js", ["casino-three.js", "text/javascript; charset=utf-8"]],
   ["/styles.css", ["styles.css", "text/css; charset=utf-8"]]
 ]);
 
@@ -179,6 +182,12 @@ function playerToken(request, url, body) {
   return String(request.headers["x-axm-seat-token"] || url.searchParams.get("token") || body && body.token || "");
 }
 
+function launchInfo(active, baseUrl) {
+  var launch = active.launchInfo(active.hostToken, baseUrl);
+  launch.adapterBindings = SeatInterface.publicAdapterBindings(active);
+  return launch;
+}
+
 function publicConfig() {
   return {
     ok: true,
@@ -208,6 +217,9 @@ var server = http.createServer(async function (request, response) {
       item = STATIC_FILES.get(url.pathname);
       return sendFile(response, path.join(CLIENT_ROOT, item[0]), item[1]);
     }
+    if (request.method === "GET" && url.pathname === "/vendor/three.module.js") {
+      return sendFile(response, THREE_VENDOR, "text/javascript; charset=utf-8");
+    }
     if (request.method === "GET" && (url.pathname === "/health" || url.pathname === "/state" || url.pathname === "/config")) {
       var status = launchError && url.pathname === "/state" ? 503 : 200;
       return sendJson(response, status, publicConfig());
@@ -218,7 +230,7 @@ var server = http.createServer(async function (request, response) {
       return sendJson(response, 200, {
         ok: true,
         phase: session.status,
-        launch: session.launchInfo(session.hostToken, "."),
+        launch: launchInfo(session, "."),
         state: session.observeHost(session.hostToken),
         persistenceError: persistenceError
       });
@@ -235,7 +247,7 @@ var server = http.createServer(async function (request, response) {
         names: body.names,
         allowUneven: false
       });
-      return sendJson(response, 201, { ok: true, launch: active.launchInfo(active.hostToken, "."), state: active.observeHost(active.hostToken) });
+      return sendJson(response, 201, { ok: true, launch: launchInfo(active, "."), state: active.observeHost(active.hostToken) });
     }
     if (request.method === "GET" && url.pathname === "/api/host/state") {
       active = requireSession();
@@ -252,16 +264,29 @@ var server = http.createServer(async function (request, response) {
       active = requireSession();
       return sendJson(response, 200, active.observePlayer(String(url.searchParams.get("seat") || ""), playerToken(request, url)));
     }
+    if (request.method === "GET" && url.pathname === "/api/adapter/state") {
+      active = requireSession();
+      return sendJson(response, 200, SeatInterface.buildAdapterObservation(active, {
+        sessionId: String(url.searchParams.get("session") || ""),
+        seatId: String(url.searchParams.get("seat") || ""),
+        token: playerToken(request, url)
+      }));
+    }
+    if (request.method === "POST" && url.pathname === "/api/adapter/intent") {
+      active = requireSession();
+      body = await readJson(request);
+      var adapterReceipt = SeatInterface.routeIntent(active, Object.assign({}, body, {
+        token: playerToken(request, url, body)
+      }), { requireAdapter: true, requireSessionId: true });
+      saveState(false);
+      return sendJson(response, 200, adapterReceipt);
+    }
     if (request.method === "POST" && url.pathname === "/api/player/command") {
       active = requireSession();
       body = await readJson(request);
-      var receipt = active.command({
-        seatId: body.seatId,
-        token: playerToken(request, url, body),
-        sequence: body.sequence,
-        requestId: body.requestId,
-        command: body.command
-      });
+      var receipt = SeatInterface.routeIntent(active, Object.assign({}, body, {
+        token: playerToken(request, url, body)
+      }));
       saveState(false);
       return sendJson(response, 200, receipt);
     }

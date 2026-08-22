@@ -4,6 +4,7 @@
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
+const crypto = require('crypto');
 const core = require('./game-core');
 
 const HOST = process.env.HOST || '127.0.0.1';
@@ -96,7 +97,17 @@ function createRuntime(options) {
   const settings = options || {};
   const env = settings.env || process.env;
   const clock = typeof settings.clock === 'function' ? settings.clock : () => Date.now();
-  const roster = settings.roster || parseRoster(env);
+  const roster = core.normalizeRoster(settings.roster || parseRoster(env));
+  const adapterBindings = roster.filter(seat => seat.type === 'adapter').map(seat => ({
+    seatId: seat.seatId,
+    actorId: seat.id,
+    adapterId: seat.adapterId || 'connected-ai',
+    token: 'seat-' + crypto.randomBytes(18).toString('hex'),
+    protocol: 'axm-semantic-input-v1',
+    inputEndpoint: '/api/input',
+    observationEndpoint: '/api/adapter-observation',
+    controllerProfile: 'axm-universal-xbox-brawl-v0.2.1'
+  }));
   const seed = Number(env.TOONFALL_SEED || 13013);
   let state = core.createInitialState(roster, { seed, now: clock() });
   let timer = null;
@@ -121,11 +132,18 @@ function createRuntime(options) {
       playablePath: GAME_PREFIX + '?room=AXM1&player=p1',
       controllerLinks: [],
       partyScreenLinks: { all: GAME_PREFIX + '?room=AXM1&player=screen' },
-      team: { humanSeats: 1, aiCompanions: 1, splitScreen: false },
+      team: { humanSeats: state.truth.humanSeats, connectedAiSeats: state.truth.connectedAiSeats, inGameAiSeats: state.truth.inGameAiSeats, partnerMode: state.truth.partnerMode, splitScreen: false },
+      adapterBindings: adapterBindings.map(binding => Object.assign({}, binding)),
       authority: { session: 'managed-server', world: 'managed-server', combat: 'managed-server', score: 'managed-server' },
       inputSchema: core.INPUT_SCHEMA,
       localOnly: true
     };
+  }
+
+  function boundAdapter(request, url, body) {
+    const seatId = String((body && (body.seatId || body.seat_id)) || url.searchParams.get('seat') || '');
+    const token = String((body && body.token) || request.headers['x-axm-seat-token'] || '').replace(/^Bearer\s+/i, '');
+    return adapterBindings.find(binding => binding.seatId === seatId && binding.token === token) || null;
   }
 
   function advance(now) {
@@ -163,8 +181,10 @@ function createRuntime(options) {
           status: 'PLAYABLE BETA',
           localOnly: true,
           stateAuthority: 'managed-local-server',
-          humanSeats: 1,
-          aiCompanions: 1,
+          humanSeats: state.truth.humanSeats,
+          connectedAiSeats: state.truth.connectedAiSeats,
+          inGameAiSeats: state.truth.inGameAiSeats,
+          partnerMode: state.truth.partnerMode,
           splitScreen: false,
           phase: state.phase,
           wave: state.wave
@@ -173,6 +193,15 @@ function createRuntime(options) {
       if (request.method === 'GET' && pathname === '/api/launcher-state') return sendJson(response, 200, launcherState());
       if (request.method === 'GET' && pathname === '/api/state') return sendJson(response, 200, statePacket());
       if (request.method === 'GET' && pathname === '/api/observe') return sendJson(response, 200, { ok: true, observation: core.observe(state) });
+      if (request.method === 'GET' && pathname === '/api/adapter-observation') {
+        const binding = boundAdapter(request, url, null);
+        if (!binding) return sendJson(response, 403, { ok: false, code: 'invalid-adapter-binding', error: 'invalid connected-AI seat binding' });
+        const observation = core.observe(state);
+        observation.seatId = binding.seatId;
+        observation.actorId = binding.actorId;
+        observation.controls = { protocol: binding.protocol, inputEndpoint: binding.inputEndpoint, nextSequenceMinimum: state.lastInputSeqByActor[binding.actorId] + 1, intents: ['move', 'aim', 'fire', 'dash', 'heartburst'] };
+        return sendJson(response, 200, { ok: true, observation });
+      }
       if (request.method === 'GET' && pathname === '/api/telemetry') {
         const sorted = tickSamples.slice().sort((a, b) => a - b);
         return sendJson(response, 200, {
@@ -195,6 +224,19 @@ function createRuntime(options) {
         const body = await readJson(request);
         const result = core.applyAction(state, String(body.player || body.actorId || 'p1'), body.action || {}, clock());
         return sendJson(response, result.ok ? 200 : 409, Object.assign(statePacket(), { actionResult: result }));
+      }
+      if (request.method === 'POST' && pathname === '/api/input') {
+        const body = await readJson(request);
+        const binding = boundAdapter(request, url, body);
+        if (!binding) return sendJson(response, 403, { ok: false, code: 'invalid-adapter-binding', error: 'invalid connected-AI seat binding' });
+        const semantic = body.input && typeof body.input === 'object' ? body.input : {};
+        const result = core.applyAction(state, binding.actorId, {
+          type: 'input', seq: Number(body.seq), moveX: semantic.moveX, moveY: semantic.moveY,
+          aimX: semantic.aimX, aimY: semantic.aimY,
+          firing: !!(semantic.firing || semantic.fire || semantic.attack),
+          dash: !!semantic.dash, pulse: !!(semantic.pulse || semantic.heartburst)
+        }, clock());
+        return sendJson(response, result.ok ? 200 : 409, Object.assign({ ok: result.ok, actionResult: result }, result.ok ? {} : { code: result.reason }));
       }
       if (request.method === 'POST' && pathname === '/api/reset') {
         state = core.createInitialState(roster, { seed, now: clock() });

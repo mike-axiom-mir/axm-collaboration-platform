@@ -5,6 +5,19 @@ Schema direction: `axm-buddyfarm-two-lane/v1`.
 Humans, phone seats, adapter seats and AI helpers submit the same named intents.
 The server resolves the target; clients never claim that an action succeeded.
 
+## Universal gamepad adapter
+
+The host uses `axm-universal-xbox-brawl-v0.2.1` and accepts only browser pads
+whose mapping is exactly `standard`. Pad index 0, 1 and 2 bind to the first,
+second and third ordered human seats; gaps do not shift ownership and AI seats
+are never assigned. Left stick/D-pad submit movement, A or right trigger owns
+Action, X owns Work, View toggles the full map and Menu toggles the controls
+guide. Unsupported, unassigned and disconnected states stay visible while
+keyboard and phone input remain available.
+
+The query-only simulated-pad harness is labeled logic/browser QA and cannot be
+used as evidence for physical Bluetooth/USB behavior or control feel.
+
 ## Lane 1 · Action
 
 One button, strict target precedence:

@@ -10,4 +10,6 @@
 
 ## Runtime visuals
 
-All animated world rendering, item glyphs, interface shapes, particles, characters, and effects are original project-local HTML, CSS, and Canvas code. System fonts are used; the package makes no network requests and ships no third-party runtime assets.
+All animated world rendering, item glyphs, interface shapes, particles, characters, and effects are original project-local HTML, CSS, Canvas, and WebGL code. `runtime/world-three.js` builds its low-poly geometry, Pip, architecture, route markers, 16-step lighting shader, and location palettes from project-local source at runtime. It uses no downloaded engine, model, texture, material, font, or third-party runtime asset. System fonts are used; the package makes no network requests.
+
+The WebGL layer is a deliberately bounded visual baseline, not a production character/model/rig/animation asset library.

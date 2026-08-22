@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>AXM Robo Pong Semantic Controller</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{height:100%;margin:0;overflow:hidden;touch-action:none;background:#050811;color:#fff;font-family:system-ui}
+body{display:grid;grid-template-rows:auto 1fr;padding:max(10px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:center;font:800 12px ui-monospace,monospace;color:#35e6ff}
+main{position:relative}
+.stick{position:absolute;left:8%;bottom:10%;width:min(44vw,220px);aspect-ratio:1;border-radius:50%;border:2px solid #35e6ff;background:radial-gradient(circle,#14314b,#07101c);opacity:.86}
+.knob{position:absolute;left:50%;top:50%;width:44%;height:44%;border-radius:50%;transform:translate(-50%,-50%);background:#dffaff;border:3px solid #35e6ff;box-shadow:0 0 28px #35e6ff}
+.special{position:absolute;right:10%;bottom:18%;width:min(28vw,150px);aspect-ratio:1;border-radius:50%;border:2px solid #ff4fc8;background:#191023;color:#fff;font-weight:900;font-size:18px}
+.special.pressed{background:#6d1d5b;box-shadow:0 0 35px #ff4fc8}
+.left-handed .stick{left:auto;right:8%}.left-handed .special{right:auto;left:10%}
+.settings{position:absolute;right:0;top:8px;border:1px solid #fff;border-radius:999px;background:#0b1726;color:#fff;padding:9px 12px}
+</style>
+</head>
+<body>
+<header><span>AXM ROBO PONG · SEMANTIC BRIDGE</span><span id="status">READY</span></header>
+<main id="main">
+  <button class="settings" id="hand">LEFT-HANDED: OFF</button>
+  <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
+  <button class="special" id="special">SPECIAL</button>
+</main>
+<script>
+(function(){
+'use strict';
+const params=new URLSearchParams(location.search);
+const player=params.get('player')==='p2'?'p2':'p1';
+const status=document.querySelector('#status'),stick=document.querySelector('#stick'),knob=document.querySelector('#knob'),special=document.querySelector('#special'),main=document.querySelector('#main');
+let pointer=null,moveX=0,primary=0,sequence=0,dirty=true,leftHanded=localStorage.getItem('axm.robo.leftHanded')==='1';
+main.classList.toggle('left-handed',leftHanded);document.querySelector('#hand').textContent='LEFT-HANDED: '+(leftHanded?'ON':'OFF');
+document.querySelector('#hand').onclick=function(){leftHanded=!leftHanded;localStorage.setItem('axm.robo.leftHanded',leftHanded?'1':'0');main.classList.toggle('left-handed',leftHanded);this.textContent='LEFT-HANDED: '+(leftHanded?'ON':'OFF')};
+function updateStick(e){const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,dx=e.clientX-cx,radius=r.width*.36;moveX=Math.max(-1,Math.min(1,dx/radius));if(Math.abs(moveX)<.12)moveX=0;knob.style.transform='translate(calc(-50% + '+(moveX*radius)+'px),-50%)';dirty=true}
+stick.addEventListener('pointerdown',e=>{e.preventDefault();pointer=e.pointerId;stick.setPointerCapture(pointer);updateStick(e)});
+stick.addEventListener('pointermove',e=>{if(e.pointerId===pointer){e.preventDefault();updateStick(e)}});
+function release(e){if(e.pointerId!==pointer)return;pointer=null;moveX=0;knob.style.transform='translate(-50%,-50%)';dirty=true}
+stick.addEventListener('pointerup',release);stick.addEventListener('pointercancel',release);
+special.addEventListener('pointerdown',e=>{e.preventDefault();primary=1;dirty=true;special.classList.add('pressed');special.setPointerCapture(e.pointerId);navigator.vibrate&&navigator.vibrate(18)});
+function releaseSpecial(e){e.preventDefault();primary=0;dirty=true;special.classList.remove('pressed')}
+special.addEventListener('pointerup',releaseSpecial);special.addEventListener('pointercancel',releaseSpecial);
+function frame(){return{protocol:'axm-input/0.1',type:'input_frame',deviceId:'robo-phone-'+player,playerId:player,sequence:sequence++,clientSentAt:Date.now(),fullState:true,context:'gameplay',actions:[{id:'MOVE',value:{x:moveX,y:0}},{id:'PRIMARY_ACTION',value:primary}]}}
+async function send(force){if(!dirty&&!force)return;try{const r=await fetch('/axm/input?player='+player,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(frame())});if(!r.ok)throw new Error('HTTP '+r.status);status.textContent='LIVE · '+player.toUpperCase();status.style.color='#65e69a';dirty=false}catch(e){status.textContent='RECONNECTING';status.style.color='#ffc85a'}}
+setInterval(()=>send(false),1000/30);setInterval(()=>send(true),400);
+addEventListener('blur',()=>{moveX=0;primary=0;dirty=true;send(true)});document.addEventListener('visibilitychange',()=>{if(document.hidden){moveX=0;primary=0;dirty=true;send(true)}});
+})();
+</script>
+</body>
+</html>

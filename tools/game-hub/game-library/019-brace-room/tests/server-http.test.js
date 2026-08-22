@@ -40,6 +40,10 @@ async function main() {
     result = await request(base, '/app.js');
     assert.strictEqual(result.response.status, 200);
 
+    result = await request(base, '/universal-gamepad.js');
+    assert.strictEqual(result.response.status, 200);
+    assert.ok(String(result.value).includes('axm-universal-xbox-brawl-v0.2.1'));
+
     result = await request(base, '/controller.html');
     assert.strictEqual(result.response.status, 200);
     assert.ok(String(result.value).includes('Brace Room'));
@@ -71,6 +75,19 @@ async function main() {
     assert.strictEqual(result.value.inputs.p2.moveX, 1);
     assert.strictEqual(result.value.inputs.p2.moveY, -1);
     assert.strictEqual(result.value.inputs.p2.action, true);
+    assert.strictEqual(result.value.phoneStatus.p2, 'fresh', 'a seat that just posted should read as fresh');
+    assert.strictEqual(result.value.phoneStatus.p1, undefined, 'a seat that never posted should be absent, not "disconnected"');
+
+    // A seat that posted once and then goes quiet past the TTL must be
+    // reported as 'disconnected' (not silently dropped from phoneStatus
+    // the way it already correctly drops from `inputs`) — this is the
+    // signal the shared-screen client uses to show a real "P2 lost
+    // connection" toast instead of a teammate just mysteriously freezing.
+    await new Promise(resolve => setTimeout(resolve, 450));
+    result = await request(base, '/api/input');
+    assert.strictEqual(result.response.status, 200);
+    assert.strictEqual(result.value.inputs.p2, undefined, 'a stale phone must not appear in inputs (unchanged behavior)');
+    assert.strictEqual(result.value.phoneStatus.p2, 'disconnected', 'but it must still be reported as disconnected, not absent');
 
     result = await request(base, '/api/input', {
       method: 'POST',
@@ -111,7 +128,7 @@ async function main() {
     result = await request(base, '/api/adapter-observation?seat=not-a-seat');
     assert.strictEqual(result.response.status, 400, 'an unknown seat id must be rejected on the observation channel too');
 
-    console.log('  PASS  server-http.test.js (19 checks)');
+    console.log('  PASS  server-http.test.js (25 checks)');
   } finally {
     server.close();
   }

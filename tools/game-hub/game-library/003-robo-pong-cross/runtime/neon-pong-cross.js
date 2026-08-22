@@ -1,6 +1,7 @@
 (function () {
   'use strict';
 
+  var Gamepad = window.AXMPongCrossGamepad;
   var params = new URLSearchParams(location.search);
   var bindingParams = new URLSearchParams(location.hash.replace(/^#/, ''));
   var rawPlayer = params.get('player') || '';
@@ -12,6 +13,8 @@
   var base = location.pathname.indexOf('/games/003') === 0 ? '/games/003' : '';
   var canvas = document.getElementById('game');
   var ctx = canvas.getContext('2d');
+  var depthCanvas = document.getElementById('game3d');
+  var depthStage = window.NeonPongCrossDepth && depthCanvas ? window.NeonPongCrossDepth.create(depthCanvas) : { available: false, render: function () {} };
   var state = null;
   var lastPacket = 0;
   var lastEventAt = 0;
@@ -21,6 +24,14 @@
   var visuals = null;
   var lighting = null;
   var toastTimer = null;
+  var PLAYER_IDS = ['p1', 'p2', 'p3', 'p4'];
+  var gamepadFrames = {
+    p1: Gamepad.sampleCrossGamepad(null, 0),
+    p2: Gamepad.sampleCrossGamepad(null, 1),
+    p3: Gamepad.sampleCrossGamepad(null, 2),
+    p4: Gamepad.sampleCrossGamepad(null, 3)
+  };
+  var gamepadStatusKey = '';
 
   var connection = document.getElementById('connection');
   var modeLabel = document.getElementById('modeLabel');
@@ -52,6 +63,28 @@
   var powerName = document.getElementById('powerName');
   var powerState = document.getElementById('powerState');
   var directionHint = document.getElementById('directionHint');
+  var gamepadStatus = document.getElementById('gamepadStatus');
+  var gamepadQaPanel = document.getElementById('gamepadQaPanel');
+  var gamepadQaEnabled = player === 'screen' && params.get('gamepadQa') === '1';
+
+  function newQaPad() {
+    return {
+      connected: false,
+      id: 'SIMULATED STANDARD GAMEPAD — LOGIC QA ONLY',
+      mapping: 'standard',
+      axes: [0, 0, 0, 0],
+      buttons: Array.from({ length: 16 }, function () { return { pressed: false, value: 0 }; })
+    };
+  }
+  var gamepadQaPads = [newQaPad(), newQaPad(), newQaPad(), newQaPad()];
+  document.body.dataset.gamepadProfile = Gamepad.PROFILE_ID;
+  document.body.dataset.gamepadsReady = '0';
+  document.body.dataset.gamepadsUnsupported = '0';
+  document.body.dataset.gamepadsBlocked = '0';
+  if (gamepadQaEnabled) {
+    gamepadQaPanel.hidden = false;
+    document.body.dataset.gamepadQa = 'simulated-not-physical';
+  }
 
   if (player !== 'screen') {
     document.body.classList.add('player-view');
@@ -171,6 +204,7 @@
     launchCopy.textContent = coop ? (state.phase === 'gameover' ? (state.outcome === 'victory' ? 'The team broke the Warden. Run it again or choose a new arena.' : 'The light escaped the perimeter. Rebuild the relay and try again.') : 'Pass the light between different players to arm the relay, then strike the central Warden core.') : (state.phase === 'gameover' ? 'The arena is sealed. Rematch with the same seats or choose another map.' : 'Every active edge is a seat. Missing the light costs a life; the final player standing owns the arena.');
     startButton.textContent = state.phase === 'gameover' ? 'REMATCH' : 'START CROSS MATCH';
     renderArenaPicker();
+    updateGamepadStatus();
     if (player !== 'screen') updateController(coop);
   }
   function updateController(coop) {
@@ -245,8 +279,120 @@
   bindHold(leftButton, 'left');
   bindHold(rightButton, 'right');
   powerButton.onclick = function () { sendInput(player, { power: true }); };
-  startButton.onclick = function () { startButton.disabled = true; post(state && state.phase === 'gameover' ? '/reset' : '/start').then(function (result) { accept(result.state); }).catch(function (error) { connection.textContent = error.message; }).finally(function () { startButton.disabled = false; }); };
+  function beginStart() {
+    if (!state || startButton.disabled || (state.phase !== 'ready' && state.phase !== 'gameover')) return;
+    startButton.disabled = true;
+    post(state.phase === 'gameover' ? '/reset' : '/start').then(function (result) { accept(result.state); }).catch(function (error) { connection.textContent = error.message; }).finally(function () { startButton.disabled = false; });
+  }
+  startButton.onclick = beginStart;
   pauseButton.onclick = function () { post('/pause').then(function (result) { accept(result.state); }).catch(function (error) { connection.textContent = error.message; }); };
+
+  function qaPressButton(padIndex, buttonIndex) {
+    gamepadQaPads[padIndex].buttons[buttonIndex] = { pressed: true, value: 1 };
+    setTimeout(function () { gamepadQaPads[padIndex].buttons[buttonIndex] = { pressed: false, value: 0 }; }, 100);
+  }
+
+  if (gamepadQaEnabled) {
+    gamepadQaPanel.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-gamepad-qa]');
+      if (!button) return;
+      var action = button.dataset.gamepadQa;
+      if (action === 'connect') {
+        gamepadQaPads.forEach(function (pad, index) {
+          pad.connected = index === 0 || index === 2;
+          pad.mapping = 'standard';
+          pad.axes[0] = 0;
+          pad.axes[1] = 0;
+        });
+        gamepadQaPanel.querySelectorAll('.active').forEach(function (item) { item.classList.remove('active'); });
+      } else if (action === 'unsupported') {
+        gamepadQaPads.forEach(function (pad, index) { pad.connected = index === 0; });
+        gamepadQaPads[0].mapping = 'nonstandard';
+      } else if (action === 'p1-positive') {
+        gamepadQaPads[0].axes[0] = gamepadQaPads[0].axes[0] > 0 ? 0 : 0.9;
+        button.classList.toggle('active', gamepadQaPads[0].axes[0] > 0);
+      } else if (action === 'p3-positive') {
+        gamepadQaPads[2].axes[1] = gamepadQaPads[2].axes[1] > 0 ? 0 : 0.9;
+        button.classList.toggle('active', gamepadQaPads[2].axes[1] > 0);
+      } else if (action === 'action') {
+        qaPressButton(0, 0);
+      } else if (action === 'menu') {
+        qaPressButton(0, 9);
+      } else if (action === 'disconnect') {
+        gamepadQaPads.forEach(function (pad) { pad.connected = false; pad.axes[0] = 0; pad.axes[1] = 0; });
+        gamepadQaPanel.querySelectorAll('.active').forEach(function (item) { item.classList.remove('active'); });
+      }
+    });
+  }
+
+  function availableGamepads() {
+    if (gamepadQaEnabled) return gamepadQaPads.map(function (pad) { return pad.connected ? pad : null; });
+    try { return Array.from(navigator.getGamepads ? navigator.getGamepads() : []); } catch (_) { return []; }
+  }
+
+  function seatAcceptsGamepad(id) {
+    var seat = state && state.players && state.players[id];
+    return Boolean(seat && seat.participant && seat.kind === 'human');
+  }
+
+  function updateGamepadStatus() {
+    var readySeats = PLAYER_IDS.filter(function (id) { return gamepadFrames[id].supported && seatAcceptsGamepad(id); });
+    var unsupported = PLAYER_IDS.filter(function (id) { return gamepadFrames[id].connected && !gamepadFrames[id].supported; }).length;
+    var blockedSeats = PLAYER_IDS.filter(function (id) { return gamepadFrames[id].supported && !seatAcceptsGamepad(id); });
+    var nextKey = readySeats.join(',') + '|' + unsupported + '|' + blockedSeats.join(',');
+    if (nextKey === gamepadStatusKey) return;
+    gamepadStatusKey = nextKey;
+    document.body.dataset.gamepadsReady = String(readySeats.length);
+    document.body.dataset.gamepadsUnsupported = String(unsupported);
+    document.body.dataset.gamepadsBlocked = String(blockedSeats.length);
+    gamepadStatus.classList.toggle('ready', readySeats.length > 0);
+    gamepadStatus.classList.toggle('unsupported', unsupported > 0 || blockedSeats.length > 0);
+    var parts = [];
+    if (readySeats.length) parts.push(readySeats.length + ' gamepad' + (readySeats.length === 1 ? '' : 's') + ' ready · ' + readySeats.map(function (id) { return id.toUpperCase(); }).join(' / '));
+    if (unsupported) parts.push(unsupported + ' gamepad' + (unsupported === 1 ? ' needs' : 's need') + ' standard mapping');
+    if (blockedSeats.length) parts.push(blockedSeats.map(function (id) { return id.toUpperCase(); }).join(' / ') + ' not assigned to human seats');
+    gamepadStatus.textContent = parts.length ? parts.join(' · ') : 'No gamepads detected · keyboard/phones ready';
+  }
+
+  function rememberGamepadActivity(id, input) {
+    document.body.dataset.lastGamepadSeat = id;
+    document.body.dataset.lastGamepadInput = input;
+  }
+
+  function pollGamepads() {
+    var pads = availableGamepads();
+    PLAYER_IDS.forEach(function (id, index) {
+      var previous = gamepadFrames[id];
+      var sample = Gamepad.sampleCrossGamepad(pads[index] || null, index, previous);
+      gamepadFrames[id] = sample;
+      if (sample.supported && seatAcceptsGamepad(id)) {
+        setHeld(id, 'left', sample.negative);
+        setHeld(id, 'right', sample.positive);
+        if (sample.negative || sample.positive) rememberGamepadActivity(id, sample.negative ? 'negative' : 'positive');
+        if (sample.primaryEdge) {
+          rememberGamepadActivity(id, 'primary');
+          if (state.phase === 'ready' || state.phase === 'gameover') beginStart();
+          else if (state.phase === 'running') sendInput(id, { power: true });
+        }
+        if (sample.pauseEdge && (state.phase === 'running' || state.phase === 'paused')) {
+          rememberGamepadActivity(id, 'menu');
+          pauseButton.click();
+        }
+      } else if (previous.supported) {
+        setHeld(id, 'left', false);
+        setHeld(id, 'right', false);
+      }
+    });
+    updateGamepadStatus();
+    requestAnimationFrame(pollGamepads);
+  }
+
+  setInterval(function () {
+    if (player !== 'screen') return;
+    PLAYER_IDS.forEach(function (id) {
+      if (gamepadFrames[id].supported && seatAcceptsGamepad(id)) sendInput(id);
+    });
+  }, 750);
 
   function keyRoute(key) {
     var routes = {
@@ -404,10 +550,13 @@
       ctx.font = '700 18px "Cascadia Mono", Consolas, monospace';
       ctx.fillText('CONNECTING TO CROSS ARENA', 500, 500);
     }
+    depthStage.render(performance.now(), state);
+    canvas.dataset.visualAuthority = depthStage.available ? 'hybrid-webgl-canvas' : 'canvas-fallback';
     requestAnimationFrame(render);
   }
 
   mountAetherglass();
   connect();
+  if (player === 'screen') pollGamepads();
   render();
 })();

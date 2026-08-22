@@ -1,0 +1,48 @@
+{
+  "schema": "axm.live-controller-verification/v1",
+  "game_id": "021-hearthgate-two-sides",
+  "date": "2026-08-09",
+  "status": "software-path-verified-physical-phones-pending",
+  "checks": {
+    "http_relay": {
+      "result": "pass",
+      "evidence": [
+        "POST /api/input accepted p1 semantic vectors and button edges",
+        "GET /api/input returned a fresh p1 packet and rejected unknown p3",
+        "X/Upgrade produced upgrade edge count 1",
+        "right-stick committed aim followed by release produced fire edge count 1"
+      ]
+    },
+    "managed_lan_binding": {
+      "result": "pass",
+      "evidence": "Managed Game Hub launch resolves the runtime host to 0.0.0.0 for same-Wi-Fi QR access; manual launch remains 127.0.0.1 and an explicit HOST override still wins."
+    },
+    "landscape_phone_layout": {
+      "result": "pass",
+      "viewport": "844x390",
+      "evidence": [
+        "document scroll size matched viewport at 844x390",
+        "both virtual sticks rendered at 150x150 pixels",
+        "all eight center action targets were at least 54 pixels tall",
+        "P1 rendered NORTH in orange and P2 rendered SOUTH in green"
+      ]
+    },
+    "two_phone_gameplay_integration": {
+      "result": "pass",
+      "evidence": [
+        "simultaneous p1 and p2 controller pages both reported LINK LIVE",
+        "shared title reported 2 controllers ready",
+        "two-warden mode labeled NORTH as PHONE 1 and SOUTH as PHONE 2",
+        "pressing X on the p1 page upgraded the live North tower to DMG 2 and raised the matching game toast"
+      ]
+    },
+    "browser_console": {
+      "result": "pass",
+      "evidence": "No warning or error entries on the shared game, P1 controller, or P2 controller pages."
+    },
+    "physical_phone_qa": {
+      "result": "pending",
+      "scope": "Mike and Errol should scan the Game Hub QR links on two real landscape phones over the local Wi-Fi and check multi-touch feel, haptics, sleep prevention, and reconnect behavior."
+    }
+  }
+}

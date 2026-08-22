@@ -19,13 +19,29 @@
   #status { text-align: center; padding: 8px; font-size: 0.85rem; color: #93a4c2; }
   #status.warn { color: #f5c542; }
   #layout { flex: 1; display: flex; align-items: stretch; justify-content: space-between; padding: 16px; gap: 16px; }
-  #dpad { display: grid; grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); gap: 6px; align-self: center; }
-  .dbtn { background: #131c2c; border: 1px solid #2c3c56; border-radius: 12px; }
-  .dbtn:active, .dbtn.pressed { background: #4f8bff; border-color: #4f8bff; }
-  #up { grid-column: 2; grid-row: 1; }
-  #left { grid-column: 1; grid-row: 2; }
-  #right { grid-column: 3; grid-row: 2; }
-  #down { grid-column: 2; grid-row: 3; }
+  /* Analog joystick: a fixed base circle plus a knob that follows the
+     finger, clamped to the base radius. DESIGN_BIBLE.md originally called
+     for "touch joystick + one large ACTION button" — the first build
+     shipped a 4-button d-pad instead as a known, flagged shortcut (see
+     KNOWN_LIMITS.md). game-core.js's applyMovement() already normalizes
+     input magnitude only when it exceeds 1, so partial deflection was
+     always going to give proportionally slower movement once something
+     actually sent a fractional moveX/moveY — this UI is the only piece
+     that was missing. */
+  #joystick {
+    align-self: center;
+    width: 168px; height: 168px; border-radius: 50%;
+    background: #0d1420; border: 2px solid #2c3c56;
+    position: relative; touch-action: none;
+  }
+  #joy-knob {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: #131c2c; border: 2px solid #4f8bff;
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    transition: background-color 0.1s, border-color 0.1s;
+  }
+  #joystick.active #joy-knob { background: #4f8bff; border-color: #7cb3ff; }
   #action {
     align-self: center;
     width: 140px; height: 140px; border-radius: 50%;
@@ -38,12 +54,7 @@
 <body>
   <div id="status">Connecting…</div>
   <div id="layout">
-    <div id="dpad">
-      <button class="dbtn" id="up">&#9650;</button>
-      <button class="dbtn" id="left">&#9664;</button>
-      <button class="dbtn" id="right">&#9654;</button>
-      <button class="dbtn" id="down">&#9660;</button>
-    </div>
+    <div id="joystick"><div id="joy-knob"></div></div>
     <button id="action">ACTION</button>
   </div>
 
@@ -90,8 +101,59 @@
     if (navigator.vibrate) { try { navigator.vibrate(ms); } catch (e) { /* unsupported, ignore */ } }
   }
 
-  var held = { up: false, down: false, left: false, right: false, action: false };
+  var held = { action: false };
   var actionWasHeld = false;
+  var joyVec = { x: 0, y: 0 };
+
+  // Analog joystick: track one pointer from down to up, compute an offset
+  // from the base's own center (not the pointerdown point) so a thumb that
+  // lands slightly off-center still reads a correct direction, clamp that
+  // offset to the base's radius, and convert it to a -1..1 vector. A small
+  // dead zone near center absorbs finger jitter when the player means to
+  // stand still.
+  var joyBase = document.getElementById('joystick');
+  var joyKnob = document.getElementById('joy-knob');
+  var joyPointerId = null;
+  var joyDeadZone = 6;
+
+  function setJoyVisual(dx, dy) {
+    joyKnob.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px))';
+  }
+  function resetJoy() {
+    joyPointerId = null;
+    joyVec.x = 0; joyVec.y = 0;
+    joyBase.classList.remove('active');
+    setJoyVisual(0, 0);
+  }
+  function updateJoyFromPointer(e) {
+    var rect = joyBase.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top + rect.height / 2;
+    var dx = e.clientX - cx;
+    var dy = e.clientY - cy;
+    var maxR = rect.width / 2 - 34; // leave the knob's own radius inside the base
+    var dist = Math.hypot(dx, dy);
+    if (dist > maxR) { dx = dx / dist * maxR; dy = dy / dist * maxR; dist = maxR; }
+    setJoyVisual(dx, dy);
+    if (dist < joyDeadZone) { joyVec.x = 0; joyVec.y = 0; return; }
+    joyVec.x = dx / maxR;
+    joyVec.y = dy / maxR;
+  }
+  joyBase.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    joyPointerId = e.pointerId;
+    joyBase.setPointerCapture(e.pointerId);
+    joyBase.classList.add('active');
+    updateJoyFromPointer(e);
+  });
+  joyBase.addEventListener('pointermove', function (e) {
+    if (e.pointerId !== joyPointerId) return;
+    e.preventDefault();
+    updateJoyFromPointer(e);
+  });
+  joyBase.addEventListener('pointerup', function (e) { if (e.pointerId === joyPointerId) resetJoy(); });
+  joyBase.addEventListener('pointercancel', function (e) { if (e.pointerId === joyPointerId) resetJoy(); });
+  joyBase.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
   function bindHold(id, key, hapticMs) {
     var el = document.getElementById(id);
@@ -105,10 +167,6 @@
     el.addEventListener('pointercancel', function () { setHeld(false); });
     el.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   }
-  bindHold('up', 'up');
-  bindHold('down', 'down');
-  bindHold('left', 'left');
-  bindHold('right', 'right');
   // A short tap buzz on the action button only — it's the button that
   // actually resolves faults, so it's the one press worth confirming by
   // feel, not just by sight, especially for a mash verb where a player's
@@ -120,8 +178,8 @@
     actionWasHeld = held.action;
     var body = {
       player: player,
-      moveX: (held.right ? 1 : 0) - (held.left ? 1 : 0),
-      moveY: (held.down ? 1 : 0) - (held.up ? 1 : 0),
+      moveX: joyVec.x,
+      moveY: joyVec.y,
       action: held.action,
       actionEdge: actionEdge
     };
@@ -138,7 +196,7 @@
     });
   }
 
-  // 20Hz is plenty for a d-pad + one button; keeps battery/network light.
+  // 20Hz is plenty for an analog stick + one button; keeps battery/network light.
   setInterval(send, 50);
   send();
 })();

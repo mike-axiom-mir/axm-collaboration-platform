@@ -39,6 +39,16 @@ so a game night doesn't require re-learning controls between titles):
 - `H` help, `M` reduced motion, `C` high contrast, `Esc` pause / close overlay
 - Speaker icon (top-right of the HUD) mutes/unmutes procedural sound — all synthesized, no audio files
 
+Standard-mapped Xbox/Brawl-style gamepads work on the shared screen too.
+Gamepad index 1-4 owns the matching P1-P4 seat: left stick or D-pad moves,
+`A` or right trigger starts the shift, performs the station action, and
+replays after a result; Menu pauses/resumes. A live HUD label says which
+seat pads are ready and flags non-standard mappings instead of guessing.
+Keyboard and joined-phone controls remain active as fallbacks. The mapping
+logic and browser integration are tested, but a physical controller has not
+yet been available; that feel/reconnect check remains pending in
+`KNOWN_LIMITS.md`.
+
 Session length is chosen at the start screen: 6, 9, or 12 minutes, split
 into three time-based waves (see `DESIGN_BIBLE.md` §6 for the exact spawn
 and difficulty table). Crew size is 1-4; solo play is legitimate (fewer
@@ -50,7 +60,7 @@ shape drawn directly on canvas (see `ASSET_PROVENANCE.md`).
 
 A joined phone can also play a seat: use Game Hub's existing QR/lobby join,
 and once launched that phone gets redirected to `runtime/controller.html`
-with a d-pad and one ACTION button for its assigned seat, instead of the
+with an analog joystick and one ACTION button for its assigned seat, instead of the
 shared-screen keyboard cluster. This isn't a separate networked game mode —
 the shared screen still owns the whole simulation; the phone just feeds
 input into it. See `KNOWN_LIMITS.md` for what's still unverified about that
@@ -58,6 +68,6 @@ path (no real device has tested it yet).
 
 This is a first playable build, not a claim of finished balance. Its
 deterministic simulation, server health check, static file serving,
-phone-input relay, and core game-loop math are unit tested (`npm test`,
-27 checks). Human playtest judgment on the wave-table numbers is the next
+phone-input relay, universal-gamepad adapter, and core game-loop math are
+tested (`npm test`). Human playtest judgment on the wave-table numbers is the next
 gate — see `KNOWN_LIMITS.md` for exactly what hasn't been proven yet.

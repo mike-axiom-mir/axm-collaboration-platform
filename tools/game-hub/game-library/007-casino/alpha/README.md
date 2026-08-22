@@ -1,7 +1,7 @@
 # Casino Alpha · Local Playtest
 
 Status: **WORKING / TEST**  
-Version: `0.3.3-alpha`  
+Version: `0.3.4-alpha`  
 Publication: local workbench only
 
 This is the ten-slot gameplay alpha. One authoritative Node.js runtime serves:
@@ -38,7 +38,8 @@ silently adding seats.
 - Exact 96% base finite-book audits for all nine new style books, plus the
   original solved LUX-5 math and full-book audit.
 - Human 5% and NPC 1% progressive contributions.
-- Exact full-epoch jackpot frequencies of 1% human and 0.05% NPC.
+- Exact full-epoch jackpot ticket frequencies of 1% human and 0.05% NPC; a
+  human matching ticket pays only after the shared 30-paid-spin heat meter is ready.
 - Jackpot payment capped at 100× wager with the remainder retained.
 - Integer-microcredit ledger conservation across wallets, houses, district
   reserve, NPC entry/exit, and progressive.
@@ -51,9 +52,16 @@ silently adding seats.
   future outcomes.
 - Idempotent seat commands and filtered player/party observations.
 - Responsive host, party, and light controller routes with a ten-cabinet picker.
+- Stable polling that patches wallet, house, jackpot, and heat numbers without
+  rebuilding the controller or interrupting a tap.
+- Integrated cabinet wager/spin controls, a reel-rush delay before settlement,
+  and a prominent free-spin award theater.
 - Ten original inline vector emblems, cabinet-specific robot silhouettes,
   animated settled-win feedback, a richer neon district, and a swipeable
   phone cabinet rail with readable labels.
+- A first true low-poly Three.js layer on the registered GameHub route: the
+  shared district is a faceted neon tabletop and each controller cabinet gains
+  a style-aware 3D robot stage behind its readable outcome board and controls.
 - A receipt-driven Overdrive Theater where the robot transforms into the actual
   six-face bonus result or progressive spinner; payout tiers, optional low-key
   synthesized arcade cues, recent-result history, and next-bet exposure feedback.
@@ -89,8 +97,9 @@ alpha/tests/package-selftest.js
 
 - Real visual browser/click QA and physical-phone LAN QA.
 - Physical eight-seat 4v4 and long game-night balance tests.
-- Final 3D/multilayer art, recorded audio, accessibility, or mobile/PWA pass;
-  the current visual and synthesized-audio theater still needs human playtest.
+- Final 3D art direction, recorded audio, accessibility, or mobile/PWA pass;
+  the first low-poly renderer and synthesized-audio theater still need human
+  playtest and broader device/GPU coverage.
 - Continuous avatar movement or internet matchmaking.
 - The first non-outcome-changing interference ability.
 

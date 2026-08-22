@@ -1,0 +1,62 @@
+{
+  "schema": "axm.live-visual-verification/v1",
+  "gameId": "021-hearthgate-two-sides",
+  "checkedAt": "2026-08-09",
+  "visualBackend": "BROWSER_PRIMARY",
+  "route": "http://127.0.0.1:8821/",
+  "captureMode": "bounded repeated screenshots; no rolling-video capability used",
+  "temporaryCapturePaths": [],
+  "cleanupComplete": true,
+  "claims": [
+    {
+      "claim": "The title communicates the premise and exposes usable solo and co-op starts.",
+      "viewport": "1440x900",
+      "action": "Open route, then click One Warden.",
+      "observed": "Centered warm-dusk title card, premise, currency rules, controller hint, and two distinct mode buttons were fully visible; One Warden transitioned to the battlefield.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The active battlefield visually distinguishes the two gate halves, inner ward, resources, and threats.",
+      "viewport": "1440x900 · solo",
+      "action": "Observe the opening wave and settled active state.",
+      "observed": "Enemies marched in two straight outside formations; north/south tower cards, shared resource counters, four plots, inner paths, hearth integrity, and the controllable warden remained readable. No browser warnings or errors were recorded.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Building and upgrading give visible and numerical feedback.",
+      "viewport": "1440x900 · solo",
+      "action": "Click an empty plot, choose Forge, then upgrade Rowan Tower.",
+      "observed": "The four-choice building modal opened without clipping. Forge appeared on the chosen plot, metal fell by its cost, and +1.9/s appeared. The tower changed from DMG 1 to DMG 2, its next gold cost rose, and gold decreased.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A fallen side creates a readable breach and changes enemy behavior inside.",
+      "viewport": "1440x900 · solo",
+      "action": "Allow gate pressure to destroy both tower halves.",
+      "observed": "A red quick-rebuild banner showed side, countdown, and metal cost. Fallen towers rendered as rubble. Breached enemies visibly fanned onto separate inner paths and displayed ×2 markers while advancing toward the hearth.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Pause, outcome, replay routing, and local co-op setup recover visibly.",
+      "viewport": "1440x900",
+      "action": "Reach game over, return to mode select, start Two Wardens, pause, wait, and resume.",
+      "observed": "Game over showed time, night, defeats, breaches, special count, and score plus replay/mode actions. Co-op displayed two differently colored wardens and two status chips. Pause held the timer at 0:08 across an 800 ms observation, then resume advanced it to 0:09.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The compact shared-screen layout avoids viewport overflow.",
+      "viewport": "900x600 · co-op",
+      "action": "Resize during active co-op.",
+      "observed": "Stage measured 880x495 within a 900x600 document; document scroll width/height stayed exactly 900x600. Both tower cards, wardens, hearth, plots, resources, and bottom dock remained visible.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A physical Xbox controller feels correct and reconnects cleanly.",
+      "viewport": "not observed",
+      "action": "No physical controller was exposed to the browser session.",
+      "observed": "The portable control profile and semantic core mapping passed automated checks, but hardware feel, right-stick release timing, and unplug/replug recovery cannot be inferred from those checks.",
+      "verdict": "UNKNOWN",
+      "namedSeam": "PHYSICAL_GAMEPAD_QA_PENDING"
+    }
+  ]
+}

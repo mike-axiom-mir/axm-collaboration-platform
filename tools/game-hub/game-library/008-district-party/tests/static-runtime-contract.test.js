@@ -23,7 +23,7 @@ test('required launcher, controller, party receiver, and game controls exist', (
     'client/party-screen/party-screen.html': ['waiting', 'game-frame', 'party-title'],
     'client/game/game.html': [
       'city-canvas', 'connection-banner', 'tether-warning', 'friendly-fire', 'debug',
-      'base-regen', 'inventory-overlays', 'map-toggle', 'mission-menu', 'results', 'justice-status', 'territory-zones',
+      'base-regen', 'inventory-overlays', 'map-toggle', 'mission-menu', 'results', 'justice-status', 'gamepad-status', 'territory-zones', 'city-vehicle-build',
     ],
   };
   for (const [relative, ids] of Object.entries(expectedIds)) {

@@ -24,6 +24,16 @@
 - Primary: `tests/balance.test.mjs`.
 - Cannot prove: human fun, fairness, or final difficulty.
 
+## `signal-dispatches-repeat`
+
+- Claim: four optional skill objectives repeat across all existing contracts, persist through player-facing pause/reload, and add score without changing the survival economy or contract timer.
+- Kind: deterministic behavior / persistence / interaction / visual; risk: medium.
+- Automated pass: core tests cover manual three-lane completion, clean-sweep failure, rotation, migration, and the 30-point-per-mark score seam; package tests bind the HUD, save projection, QA route, and 3D board; full slot suite is 52/52.
+- Live desktop pass: held `lane-circuit 2/3 / 7 marks`, real Serve Bay completion to `3/3 / 10 marks`, captured board/announcement, rotation to `early-clear 0/4`, exact normal pause/reload restore at `0:48`, and Reduced Motion completed `clean-sweep 7/7` with CSS animation `none`.
+- Primary: `runtime/game-core.mjs`, `runtime/app.mjs`, `runtime/scene.mjs`, `tests/core.test.mjs`, `tests/package-selftest.cjs`, and bounded in-app-browser observations at 1280×720 on 2026-08-16.
+- Counterevidence: dispatch progress changing from non-service presentation, lost marks across reload, mismatched HUD/world receipts, mark rewards changing cash/reviews/resources, stalled rotation, hidden board, runtime errors, or horizontal overflow.
+- Cannot prove: human comprehension/fun, final objective timing or mark value, fresh portrait layout for this feature, physical-phone feel, exact animation cadence, representative GPU cost, gamepad behavior, or Steam readiness.
+
 ## `visual-3d-quality`
 
 - Claim: title, multiple camera scenes, customers, upgraded station, overlays, and results visibly render without critical obstruction.

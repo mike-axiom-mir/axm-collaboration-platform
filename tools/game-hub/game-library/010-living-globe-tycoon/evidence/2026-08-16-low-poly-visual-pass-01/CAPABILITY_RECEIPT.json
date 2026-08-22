@@ -1,0 +1,41 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "living-globe-3d-visual-polish",
+      "required": true,
+      "status": "READY",
+      "available": ["visual.render.browser-3d", "visual.capture.live", "visual.compare.frames", "interaction.keyboard.browser", "interaction.pointer.browser"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.render.browser-3d": ["Chromium WebGL render observed through the in-app Browser"],
+        "visual.capture.live": ["Full-tab screenshots at a 1280x720 viewport"],
+        "visual.compare.frames": ["Repeated screenshots and SHA-256 comparison"],
+        "interaction.keyboard.browser": ["Approach movement exposed the CHOP TREE prompt"],
+        "interaction.pointer.browser": ["Entry and Island Brief open/close recovery were exercised"]
+      }
+    },
+    {
+      "id": "living-globe-exact-motion-cadence",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["visual.capture.ephemeral-rolling-buffer/v1"],
+      "declaredConstraints": {"visual.capture.ephemeral-rolling-buffer/v1":["No rolling-frame buffer was exposed by the active Browser capability"]}
+    }
+  ],
+  "missingCapabilities": ["visual.capture.ephemeral-rolling-buffer/v1"],
+  "proposedHands": [
+    {
+      "capabilityId": "visual.capture.ephemeral-rolling-buffer/v1",
+      "requiredBy": ["living-globe-exact-motion-cadence"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

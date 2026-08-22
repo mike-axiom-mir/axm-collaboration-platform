@@ -2,9 +2,9 @@
   "slot": "019",
   "game_id": "019-brace-room",
   "name": "Brace Room",
-  "status": "PLAYABLE - BALANCE VERIFIED, VISUAL/AUDIO POLISH DONE, AI-ADAPTER-VERIFIED LIVE IN A REAL BROWSER - HUMAN PLAYTEST AND PHYSICAL PHONE QA STILL PENDING",
+  "status": "TEST · UNIVERSAL GAMEPAD MAPPING INTEGRATED · HUMAN PLAYTEST AND PHYSICAL DEVICE QA PENDING",
   "description": "A 1-4 player station-tag emergency co-op: faults spawn around a six-station ring, crew must run to the right station and resolve the right action before Hull Integrity hits zero. Fail together, survive together.",
-  "version": "0.5.1",
+  "version": "0.7.0",
   "min_players": 1,
   "max_players": 4,
   "default_visible_seats": 4,
@@ -30,7 +30,10 @@
     "profile_id": "brace-room-station-tag-v1",
     "intent_protocol": "local-direct-input-v1",
     "phone_controller": true,
-    "gamepad": false,
+    "gamepad": true,
+    "gamepad_profile": "axm-universal-xbox-brawl-v0.2.1",
+    "gamepad_actions": ["MOVE", "PRIMARY_ACTION", "OPEN_MENU"],
+    "unused_gamepad_inputs_allowed": true,
     "keyboard": true,
     "mouse": false,
     "touch": true,
@@ -40,8 +43,9 @@
       "P2: Arrow keys + Enter",
       "P3: IJKL + O",
       "P4: Numpad 8456 + Numpad 0",
+      "Gamepads 1-4: Left stick or D-pad move, A or right trigger starts/acts/replays, Menu pauses",
       "H help, M reduced motion, C high contrast, Esc pause / close overlay",
-      "A joined phone (via Game Hub's QR lobby) plays its seat with a d-pad + ACTION button instead of the keyboard cluster"
+      "A joined phone (via Game Hub's QR lobby) plays its seat with an analog joystick + ACTION button instead of the keyboard cluster"
     ]
   },
   "session": {
@@ -73,10 +77,11 @@
       "host_reload_recovery": "native-resume",
       "host_reload_recovery_scope": "Reload restores the managed route, setup screen, and relay connection; an in-progress browser-local run does not survive host reload.",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
-      "disconnect_recovery_scope": "Relay input expires safely after 400 ms, but physical phone reconnect behavior is not yet verified.",
+      "disconnect_recovery": "verified",
+      "disconnect_recovery_scope": "Relay input expires safely after 400 ms and the shared screen now shows a real toast on drop/reconnect (server reports per-seat phoneStatus, app.js announces the transition). Physical phone reconnect behavior on a real device is still not verified.",
       "blocking_overlay_escape": "verified",
-      "physical_phone_qa": "pending"
+      "physical_phone_qa": "pending",
+      "physical_gamepad_qa": "pending"
     }
   },
   "package": {
@@ -98,9 +103,13 @@
       "runtime/index.html",
       "runtime/styles.css",
       "runtime/app.js",
+      "runtime/brace-depth.js",
+      "runtime/universal-gamepad.js",
       "runtime/controller.html",
       "docs/AI_NATIVE_SEAT_CONTRACT.md",
       "tests/brace-room-selftest.js",
+      "tests/brace-depth.test.js",
+      "tests/universal-gamepad.test.js",
       "tests/server-http.test.js"
     ]
   }

@@ -6,6 +6,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const Runtime = require('../runtime/server');
+const packageRoot = path.resolve(__dirname, '..');
+const manifest = JSON.parse(fs.readFileSync(path.join(packageRoot, 'game.manifest.json'), 'utf8'));
+const adapterStatus = fs.readFileSync(path.join(packageRoot, 'docs', 'AI_NATIVE_SEAT_CONTRACT.md'), 'utf8');
 
 function request(port, route) {
   return new Promise((resolve, reject) => {
@@ -27,6 +30,10 @@ function request(port, route) {
   assert.equal(Runtime.safeFile('/games/010/../../server.js'), null);
   assert.ok(fs.existsSync(path.join(Runtime.GAME_ROOT, 'index.html')));
   assert.ok(fs.existsSync(path.join(Runtime.GAME_ROOT, 'game', 'tycoon-steward', 'index.html')));
+  assert.equal(manifest.max_players, 1, 'Game Hub does not count the same-browser AI screen as a second networked player');
+  assert.deepEqual(manifest.allowed_seat_types, ['human'], 'Game Hub advertises only the seat its wrapper can actually transport');
+  assert.equal(manifest.verification.game_night.adapter_state_interface, 'not-applicable');
+  assert.match(adapterStatus, /not exposed as a Game Hub seat/);
 
   const server = Runtime.createServer({env: {}});
   await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });

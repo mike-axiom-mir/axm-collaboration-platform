@@ -9,6 +9,8 @@ const { createInventory } = require('./inventory-system');
 const { createHostileNpc } = require('./npc-factory');
 const { createEconomyState } = require('./economy-system');
 const { resolveMapSelection } = require('./map-catalog');
+const { initializeCityLife } = require('./city-life-system');
+const { initializeCombatGear } = require('./combat-gear-system');
 
 const STATIC_MAP_CACHE = new Map();
 
@@ -286,6 +288,9 @@ function createActor(player, spawn) {
     carryingPackageId: null,
     walletCents: 10000,
     career: { deliveries: 0, missionsCompleted: 0 },
+    cityUpgrades: { weaponTier: 0, armorTier: 0, vipPass: false },
+    cityMenuOpen: false,
+    interactionPrompt: null,
     tether: { level: 'ok', distance: 0, returnToParty: false, movementBlocked: false },
     aiState: player.controllerType === 'ai' ? 'follow_party' : null,
     aiPath: [],
@@ -557,6 +562,7 @@ function createWorldState({ players, settings = {}, projectRoot }) {
     npcs,
     vehicles,
     projectiles: {},
+    gearDrops: {},
     effects: [],
     economy,
     mission: territory.enabled ? createTerritoryMissionState(territory) : createMissionState(staticMap, 0, 'base'),
@@ -569,6 +575,8 @@ function createWorldState({ players, settings = {}, projectRoot }) {
       lastOffenseTick: null,
       civilianDamage: 0,
       civilianDowns: 0,
+      vehicleThefts: 0,
+      lastVehicleTheft: null,
       warnings: 0,
     },
     rivalGang: {
@@ -603,6 +611,8 @@ function createWorldState({ players, settings = {}, projectRoot }) {
       totalRuns: 0,
     },
   };
+  initializeCityLife(world);
+  initializeCombatGear(world);
   return world;
 }
 

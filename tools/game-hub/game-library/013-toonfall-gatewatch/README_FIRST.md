@@ -1,12 +1,13 @@
 # Bloomvale: Gatewatch
 
-Status: **PLAYABLE BETA · STEWARDED GAME NIGHT BUILD · NEEDS MIKE'S REVIEW**
+Status: **WORKING · STEWARDED GAME NIGHT BUILD · NEEDS MIKE'S REVIEW**
 
 Bloomvale: Gatewatch is a full-screen storybook exploration-and-defense shooter.
-After a three-scene introduction, one human Scout and one server-owned AI
-companion can roam five named districts, meet five neighbors, gather ten color
+After a three-scene introduction, one human Scout and a selectable human,
+connected-AI, or built-in Moxie partner can roam five named districts, meet five neighbors, gather ten color
 wisps, clear Patch's six-target range, unlock six upgrades, and choose when to
-start each of three Heartlight defense waves.
+start each of five named Heartlight watches. The last watch adds a Heartlight-
+focused Siphon guard and the high-health Ink Crown.
 
 ## Play
 
@@ -29,6 +30,10 @@ Physical gamepad behavior remains a separate hardware check.
 
 - one human and one visible AI companion share a single camera;
 - deterministic server authority owns waves, combat, score, health, and result;
+- five authored watches—Petal Breach, Ripple Rush, Bruiser Bloom, Lantern Siege,
+  and Crown of Ink—use distinct enemy mixes and seal bounded run receipts;
+- Siphons ignore nearby defenders to pressure the Heartlight, while the final
+  Ink Crown is forced exactly once as the eighty-third and last authored slot;
 - the local authority accepts only same-origin browser access, byte-bounds JSON
   bodies, and returns structured 400/413 errors without dropping the session;
 - deterministic server authority also owns district discovery, meetings,
@@ -82,8 +87,11 @@ Physical gamepad behavior remains a separate hardware check.
   restarted-session counters realign without permanently locking input;
 - health meters stay normalized when Heart Pocket raises Pippa to 125 maximum
   health, and system reduced-motion preference is honored by default;
-- the browser renders a native animated Canvas 2D color world with no external
-  assets or network dependency;
+- the browser renders a dependency-free, low-resolution WebGL terrain layer
+  with raised district mesas, roads, gates, Heartlight tower, and Crown marker;
+  its fragment color is quantized to 16 steps per channel and the authoritative
+  Canvas gameplay layer remains visible above it;
+- reduced motion locks the 3D camera while retaining every gameplay cue;
 - reload reconnects to the still-running server state;
 - intro, briefing, exploration, combat, map, pause/help, victory/defeat, and
   restart are explicit states.

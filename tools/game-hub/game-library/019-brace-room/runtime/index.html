@@ -20,11 +20,28 @@
     </div>
     <div class="hud-right">
       <span id="timer-value" class="hud-value">09:00</span>
-      <button type="button" id="sound-toggle" class="icon-button" aria-pressed="false" title="Mute sound">&#128266;</button>
+      <span id="gamepad-status" class="gamepad-status" role="status" aria-live="polite">No gamepads detected &middot; keyboard/phone ready</span>
+      <button type="button" id="sound-toggle" class="icon-button" aria-pressed="false" aria-label="Mute sound" title="Mute sound">&#128266;</button>
     </div>
   </header>
 
-  <canvas id="scene" width="640" height="640" aria-label="Brace Room play field"></canvas>
+  <aside id="gamepad-qa-panel" class="gamepad-qa-panel" hidden aria-label="Simulated gamepad QA controls">
+    <strong>TEST GAMEPAD SIMULATION</strong>
+    <span>Logic/browser QA only &middot; not physical-device evidence</span>
+    <div>
+      <button type="button" data-gamepad-qa="connect">Connect standard</button>
+      <button type="button" data-gamepad-qa="unsupported">Connect unsupported</button>
+      <button type="button" data-gamepad-qa="right">Toggle LS right</button>
+      <button type="button" data-gamepad-qa="action">Press A</button>
+      <button type="button" data-gamepad-qa="menu">Press Menu</button>
+      <button type="button" data-gamepad-qa="disconnect">Disconnect</button>
+    </div>
+  </aside>
+
+  <div id="scene-stack">
+    <canvas id="scene" width="640" height="640" aria-label="Brace Room play field"></canvas>
+    <canvas id="scene-depth" width="640" height="640" aria-hidden="true"></canvas>
+  </div>
 
   <div id="toast-layer" aria-live="polite"></div>
 
@@ -33,21 +50,21 @@
     <p class="tagline">One hull. Four crew. Nothing fixes itself.</p>
 
     <div class="setup-row">
-      <label for="player-count">Crew size</label>
+      <label>Crew size</label>
       <div id="player-count" class="chip-row" role="radiogroup" aria-label="Crew size">
-        <button type="button" class="chip" data-players="1">1</button>
-        <button type="button" class="chip" data-players="2">2</button>
-        <button type="button" class="chip" data-players="3">3</button>
-        <button type="button" class="chip active" data-players="4">4</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-players="1">1</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-players="2">2</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-players="3">3</button>
+        <button type="button" class="chip active" role="radio" aria-checked="true" data-players="4">4</button>
       </div>
     </div>
 
     <div class="setup-row">
-      <label for="session-length">Shift length</label>
+      <label>Shift length</label>
       <div id="session-length" class="chip-row" role="radiogroup" aria-label="Shift length">
-        <button type="button" class="chip" data-minutes="6">6 min</button>
-        <button type="button" class="chip active" data-minutes="9">9 min</button>
-        <button type="button" class="chip" data-minutes="12">12 min</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-minutes="6">6 min</button>
+        <button type="button" class="chip active" role="radio" aria-checked="true" data-minutes="9">9 min</button>
+        <button type="button" class="chip" role="radio" aria-checked="false" data-minutes="12">12 min</button>
       </div>
     </div>
 
@@ -56,11 +73,12 @@
       <div><strong>P2</strong> Arrow keys + Enter</div>
       <div><strong>P3</strong> IJKL + O</div>
       <div><strong>P4</strong> Numpad 8456 + Numpad 0</div>
+      <div class="legend-note"><strong>Gamepads 1&ndash;4</strong> Left stick/D-pad move &middot; A/RT start, act, replay &middot; Menu pause</div>
       <div class="legend-note">H help &middot; M reduced motion &middot; C high contrast &middot; Esc pause</div>
     </div>
 
     <button type="button" id="start-button" class="primary-button">Start shift</button>
-    <p class="fine-print">Shared screen, shared keyboard by default. Join through Game Hub's QR lobby to control a seat from your phone instead — see KNOWN_LIMITS.md for what's still rough about that.</p>
+    <p class="fine-print">Each standard-mapped gamepad owns its matching seat; keyboard and joined-phone fallbacks stay live. See KNOWN_LIMITS.md for the remaining physical-device QA.</p>
   </section>
 
   <section id="pause-screen" class="overlay hidden">
@@ -94,6 +112,8 @@
 </div>
 
 <script src="game-core.js"></script>
+<script src="universal-gamepad.js"></script>
+<script src="brace-depth.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
