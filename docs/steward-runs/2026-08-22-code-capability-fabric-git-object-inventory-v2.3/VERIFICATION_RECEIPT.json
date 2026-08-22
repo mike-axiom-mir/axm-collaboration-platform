@@ -1,0 +1,94 @@
+{
+  "schema": "axm.code-capability-fabric-git-object-inventory-verification/v1",
+  "testedImplementationCommit": "ef5d865e10a95e52f2854eb2df721635bfe083d1",
+  "completedAt": "2026-08-22T19:36:08.459Z",
+  "status": "PASS_WITH_EXISTING_WARNINGS_AND_OPEN_GAPS",
+  "requiredChecks": [
+    {"command": "node verify.js", "status": "PASS", "failures": 0, "observedWarnings": 41},
+    {"command": "node hub/hub-selftest.js", "status": "PASS", "failures": 0},
+    {"command": "node hub/route-selftest.js", "status": "PASS", "failures": 0},
+    {"command": "node hub/graft-selftest.js", "status": "PASS", "failures": 0},
+    {"command": "node hub/skin-selftest.js", "status": "PASS", "failures": 0},
+    {"command": "node hub/verify-plus.js", "status": "PASS", "failures": 0},
+    {"command": "node tests/html-script-syntax-test.js", "status": "PASS", "checksPassed": 55, "failures": 0},
+    {"command": "node tests/tool-forge-package-test.js", "status": "PASS", "installed": false},
+    {"command": "node tools/agent-tool-forge/selftest.js", "status": "PASS", "checksPassed": 17, "failures": 0},
+    {"command": "node tools/evidence-desk/selftest.js", "status": "PASS", "checksPassed": 36, "failures": 0}
+  ],
+  "focusedChecks": [
+    {"command": "node shared/code-capability-fabric/selftest.js", "status": "PASS", "checksPassed": 18},
+    {"command": "node shared/code-capability-fabric/selftest-v2.js", "status": "PASS", "checksPassed": 74},
+    {"command": "node shared/code-capability-fabric/selftest-readiness-v1.js", "status": "PASS", "checksPassed": 46},
+    {"command": "node shared/code-capability-fabric/selftest-independent-assurance-v1.js", "status": "PASS", "checksPassed": 46},
+    {"command": "node shared/code-capability-fabric/selftest-policy-bound-assurance-v1.js", "status": "PASS", "checksPassed": 46},
+    {"command": "node shared/code-capability-fabric/selftest-grounded-consent-scope-v1.js", "status": "PASS", "checksPassed": 73},
+    {"command": "node shared/code-capability-fabric/selftest-slow-creation-pilot-v1.js", "status": "PASS", "checksPassed": 40},
+    {"command": "node shared/code-capability-fabric/selftest-declarative-blueprint-composer-v1.js", "status": "PASS", "checksPassed": 62},
+    {"command": "node shared/code-capability-fabric/selftest-blueprint-schema-compiler-v1.js", "status": "PASS", "checksPassed": 83},
+    {"command": "node shared/code-capability-fabric/selftest-schema-packet-mirror-verifier-v1.js", "status": "PASS", "checksPassed": 130},
+    {"command": "node shared/code-capability-fabric/selftest-git-object-inventory-comparator-v1.js", "status": "PASS", "checksPassed": 174},
+    {"command": "node tools/deterministic-json-core/selftest.js", "status": "PASS"},
+    {"command": "node tools/module-lineage-comparator/selftest.js", "status": "PASS", "checksPassed": 28},
+    {"command": "node shared/workshop-updater/selftest.js", "status": "PASS"},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-intake/selftest.js", "status": "PASS_AFTER_CONTINUITY_CORRECTION"},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-schema-packet-mirror-verification-v2.2/selftest.js", "status": "PASS"}
+  ],
+  "warningBoundary": {
+    "baseline": 41,
+    "observed": 41,
+    "delta": 0,
+    "failures": 0,
+    "disposition": "Existing game QA, manifest-kind migration, promotion-reverification, and stale tools-index warnings were neither suppressed nor relabelled."
+  },
+  "developmentCorrectionsPreserved": [
+    {
+      "finding": "The first signature verifier passed a normalized attestation including signatureBase64 into the strict signed-payload builder.",
+      "resolution": "The verifier now reconstructs and verifies only the four exact signed core fields."
+    },
+    {
+      "finding": "The first metadata-delta normalizer bounded only the mirror size.",
+      "resolution": "Both source and mirror contradiction records now pass the same strict object-record normalizer."
+    },
+    {
+      "finding": "The first implementation commit changed the intake-pinned README bytes.",
+      "resolution": "The intake evidence selftest exposed the drift; corrected tip ef5d865e restores the historical file exactly."
+    }
+  ],
+  "browser": {
+    "applicable": false,
+    "status": "NOT_RUN",
+    "reason": "No visual surface changed; this run adds a pure data contract and selftests."
+  },
+  "unrun": [
+    "Any supplied experimental runtime or uploaded/generated package code.",
+    "The unfinished EXPERIMENTAL mirror-code-clone component.",
+    "Any Git repository open, cat-file, rev-list, ref enumeration, fetch, push, remote transport, full clone, or recovery replay through the comparator.",
+    "Any real or private workspace inventory through the comparator.",
+    "Independent proof that a host enumeration is complete or that object ids match object bytes.",
+    "Cross-invocation duration, memory, or attempt enforcement by an external runtime governor.",
+    "Cryptographic natural-person authentication, declaration replay prevention, live revocation, or trusted-clock observation.",
+    "Any repaired executor or disposable-sandbox runtime.",
+    "Any browser render/click test.",
+    "Any merge, push, install, publish, promotion, machine-default activation, persistent-learning admission, or CANON change.",
+    "Public generated-source direct-reuse rights determination."
+  ],
+  "truth": {
+    "signedSyntheticMatchObserved": true,
+    "signedSyntheticDriftObserved": true,
+    "hostEnumerationCompletenessVerified": false,
+    "actualRepositoryObjectSetEqualityProven": false,
+    "GitRepositoryOpenedByComparator": false,
+    "GitCommandExecutedByComparator": false,
+    "objectBytesReadByComparator": false,
+    "networkUsedByComparator": false,
+    "mirrorRuntimeExecuted": false,
+    "humanAuthenticationVerified": false,
+    "browserClaimed": false,
+    "mergePerformed": false,
+    "pushPerformed": false,
+    "installed": false,
+    "published": false,
+    "promoted": false,
+    "canonChanged": false
+  }
+}

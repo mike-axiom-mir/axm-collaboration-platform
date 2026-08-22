@@ -1,0 +1,41 @@
+{
+  "schema": "axm.code-capability-fabric-git-object-inventory-target-drift-recheck/v1",
+  "observedAt": "2026-08-22T19:41:32.707Z",
+  "source": {
+    "branch": "codex/code-capability-fabric-git-object-inventory-v2.3",
+    "reviewedTipBeforeThisAppendOnlyAddendum": "421dec85d62044dfb4664049b41eb6d30d0ff890",
+    "baseCommit": "a580f6496fa57c84f994447d03e9569119796b49",
+    "changedPathsFromBase": 19
+  },
+  "target": {
+    "path": "<AXM_WORKSHOP>",
+    "branch": "codex/workshop-recovery-fabric-integration-20260822",
+    "previousObservedHead": "07d8510ac085fc7acc847efe14674abf48455adb",
+    "currentObservedHead": "f36b96cebde91dbc92ff3a5a9c1efdf4e0f34be1",
+    "headChanged": true,
+    "previousDirty": true,
+    "currentDirty": false,
+    "baseIsAncestor": true,
+    "commitsAheadOfBase": 11,
+    "committedExactPathOverlap": 0,
+    "dirtyExactPathOverlap": 0
+  },
+  "conclusion": "The separate recovery task advanced and cleaned the canonical checkout. The current target contains the v2.2 base and has no exact path overlap with this v2.3 branch, but Mike remains the merge gate and target state must be rechecked once more immediately before any integration command.",
+  "exactSafeReviewCommands": [
+    "git -C <AXM_WORKSHOP> status --short --branch",
+    "git -C <AXM_WORKSHOP> merge-base --is-ancestor a580f6496fa57c84f994447d03e9569119796b49 HEAD",
+    "git -C <AXM_WORKSHOP> worktree add -b codex/review-code-capability-fabric-git-object-inventory-v2.3 <AXM_WORKSHOP_V23_REVIEW> f36b96cebde91dbc92ff3a5a9c1efdf4e0f34be1",
+    "git -C <AXM_WORKSHOP_V23_REVIEW> merge --no-ff --no-commit codex/code-capability-fabric-git-object-inventory-v2.3"
+  ],
+  "reviewInstruction": "Inspect the pending merge diff and rerun every required and focused check in the clean review worktree. Mike may then commit the merge or abort it. Do not push as part of this local review route.",
+  "authority": {
+    "canonicalCheckoutModifiedByThisFabricRun": false,
+    "mergePerformed": false,
+    "pushPerformed": false,
+    "installed": false,
+    "published": false,
+    "promoted": false,
+    "canonChanged": false,
+    "humanGitGate": "Mike Tobi"
+  }
+}

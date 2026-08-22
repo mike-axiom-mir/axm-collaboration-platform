@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-object-inventory-comparison-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "comparisonMeaning", "requestRef", "consentEvaluationRef", "instructionRef", "comparatorProfileRef", "subjectRef", "source", "mirror", "delta", "issues", "resourceObservation", "limitations", "nextImprovementGaps", "truth", "authority", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.git-object-inventory-comparison-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"enum": ["MATCH", "DRIFT"]},
+    "comparisonMeaning": {"const": "Equality or drift inside two exact signed host-supplied Git object inventory observations only."},
+    "requestRef": {"$ref": "#/$defs/reference"},
+    "consentEvaluationRef": {"$ref": "#/$defs/reference"},
+    "instructionRef": {"$ref": "#/$defs/reference"},
+    "comparatorProfileRef": {"$ref": "#/$defs/reference"},
+    "subjectRef": {"$ref": "#/$defs/reference"},
+    "source": {"$ref": "#/$defs/inventorySummary"},
+    "mirror": {"$ref": "#/$defs/inventorySummary"},
+    "delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["added", "removed", "metadataChanged", "unchangedObjectCount", "unchangedDeclaredBytes"],
+      "properties": {
+        "added": {"type": "array", "maxItems": 2048, "uniqueItems": true, "items": {"$ref": "#/$defs/objectRecord"}},
+        "removed": {"type": "array", "maxItems": 2048, "uniqueItems": true, "items": {"$ref": "#/$defs/objectRecord"}},
+        "metadataChanged": {"type": "array", "maxItems": 2048, "uniqueItems": true, "items": {"$ref": "#/$defs/metadataChange"}},
+        "unchangedObjectCount": {"type": "integer", "minimum": 0, "maximum": 2048},
+        "unchangedDeclaredBytes": {"type": "integer", "minimum": 0, "maximum": 1099511627776}
+      }
+    },
+    "issues": {
+      "type": "array",
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"enum": ["OBJECTS_ADDED", "OBJECTS_REMOVED", "OBJECT_METADATA_CONTRADICTION"]}
+    },
+    "resourceObservation": {"$ref": "#/$defs/resourceObservation"},
+    "limitations": {"type": "array", "minItems": 21, "maxItems": 21, "uniqueItems": true, "items": {"type": "string"}},
+    "nextImprovementGaps": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"type": "string"}},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 220},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256", "byteLength"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 220},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 1048576}
+      }
+    },
+    "objectRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["oid", "type", "size"],
+      "properties": {
+        "oid": {"type": "string", "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"},
+        "type": {"enum": ["blob", "commit", "tag", "tree"]},
+        "size": {"type": "integer", "minimum": 0, "maximum": 1099511627776}
+      }
+    },
+    "metadataChange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["oid", "sourceType", "mirrorType", "sourceSize", "mirrorSize"],
+      "properties": {
+        "oid": {"type": "string", "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"},
+        "sourceType": {"enum": ["blob", "commit", "tag", "tree"]},
+        "mirrorType": {"enum": ["blob", "commit", "tag", "tree"]},
+        "sourceSize": {"type": "integer", "minimum": 0, "maximum": 1099511627776},
+        "mirrorSize": {"type": "integer", "minimum": 0, "maximum": 1099511627776}
+      }
+    },
+    "inventorySummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventoryRef", "attestationRef", "observerRef", "objectFormat", "objectSetFingerprint", "objectCount", "totalDeclaredObjectBytes", "observedAt", "expiresAt", "signatureVerified"],
+      "properties": {
+        "inventoryRef": {"$ref": "#/$defs/artifactReference"},
+        "attestationRef": {"$ref": "#/$defs/artifactReference"},
+        "observerRef": {"$ref": "#/$defs/reference"},
+        "objectFormat": {"enum": ["SHA1", "SHA256"]},
+        "objectSetFingerprint": {"$ref": "#/$defs/digest"},
+        "objectCount": {"type": "integer", "minimum": 0, "maximum": 2048},
+        "totalDeclaredObjectBytes": {"type": "integer", "minimum": 0, "maximum": 1099511627776},
+        "observedAt": {"$ref": "#/$defs/timestamp"},
+        "expiresAt": {"$ref": "#/$defs/timestamp"},
+        "signatureVerified": {"const": true}
+      }
+    },
+    "resourceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verifierInputBytes", "sourceInventoryRecords", "mirrorInventoryRecords", "deltaRecords", "writtenFiles", "inputByteCeilingEnforced", "outputByteCeilingEnforced", "recordCountEnforced", "declaredObjectByteCeilingEnforced", "attemptCountEnforced", "durationEnforced", "memoryEnforced", "receiptBytes"],
+      "properties": {
+        "verifierInputBytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "sourceInventoryRecords": {"type": "integer", "minimum": 0, "maximum": 2048},
+        "mirrorInventoryRecords": {"type": "integer", "minimum": 0, "maximum": 2048},
+        "deltaRecords": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "writtenFiles": {"const": 0},
+        "inputByteCeilingEnforced": {"const": true},
+        "outputByteCeilingEnforced": {"const": true},
+        "recordCountEnforced": {"const": true},
+        "declaredObjectByteCeilingEnforced": {"const": true},
+        "attemptCountEnforced": {"const": false},
+        "durationEnforced": {"const": false},
+        "memoryEnforced": {"const": false},
+        "receiptBytes": {"type": "integer", "minimum": 1, "maximum": 524288}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fabricFirstGateApplied", "groundedConsentScopeVerified", "interactiveDeclarationSupplied", "interactiveDeclarationReplayPrevented", "cryptographicHumanAuthenticationVerified", "trustedClockObserved", "liveRevocationChecked", "sourceObservationSignatureVerified", "mirrorObservationSignatureVerified", "logicalSubjectMatched", "objectFormatMatched", "objectIdsCompared", "declaredObjectMetadataCompared", "objectSetEqualityWithinSignedObservationsProven", "objectSetDriftWithinSignedObservationsObserved", "hostEnumerationCompletenessVerified", "actualRepositoryObjectSetEqualityProven", "GitRepositoryOpened", "GitCommandExecuted", "objectBytesRead", "objectContentIntegrityRecomputed", "networkUsed", "childProcessSpawned", "fileContentRetainedInReceipt", "mirrorCodeCloneConnected", "mirrorCodeCloneExecuted", "sourceMutationPerformed", "mirrorMutationPerformed", "automaticMergePerformed", "machineDefaultActivated", "persistentLearningAdmitted", "installed", "published", "promoted", "canonChanged"],
+      "properties": {
+        "fabricFirstGateApplied": {"const": true},
+        "groundedConsentScopeVerified": {"const": true},
+        "interactiveDeclarationSupplied": {"const": true},
+        "interactiveDeclarationReplayPrevented": {"const": false},
+        "cryptographicHumanAuthenticationVerified": {"const": false},
+        "trustedClockObserved": {"const": false},
+        "liveRevocationChecked": {"const": false},
+        "sourceObservationSignatureVerified": {"const": true},
+        "mirrorObservationSignatureVerified": {"const": true},
+        "logicalSubjectMatched": {"const": true},
+        "objectFormatMatched": {"const": true},
+        "objectIdsCompared": {"const": true},
+        "declaredObjectMetadataCompared": {"const": true},
+        "objectSetEqualityWithinSignedObservationsProven": {"type": "boolean"},
+        "objectSetDriftWithinSignedObservationsObserved": {"type": "boolean"},
+        "hostEnumerationCompletenessVerified": {"const": false},
+        "actualRepositoryObjectSetEqualityProven": {"const": false},
+        "GitRepositoryOpened": {"const": false},
+        "GitCommandExecuted": {"const": false},
+        "objectBytesRead": {"const": false},
+        "objectContentIntegrityRecomputed": {"const": false},
+        "networkUsed": {"const": false},
+        "childProcessSpawned": {"const": false},
+        "fileContentRetainedInReceipt": {"const": false},
+        "mirrorCodeCloneConnected": {"const": false},
+        "mirrorCodeCloneExecuted": {"const": false},
+        "sourceMutationPerformed": {"const": false},
+        "mirrorMutationPerformed": {"const": false},
+        "automaticMergePerformed": {"const": false},
+        "machineDefaultActivated": {"const": false},
+        "persistentLearningAdmitted": {"const": false},
+        "installed": {"const": false},
+        "published": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

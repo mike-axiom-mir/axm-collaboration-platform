@@ -1,0 +1,67 @@
+{
+  "schema": "axm.code-capability-fabric-git-object-inventory-integration-handoff/v1",
+  "observedAt": "2026-08-22T19:36:08.459Z",
+  "source": {
+    "worktree": "<AXM_WORKSHOP_V15_REVIEW>",
+    "branch": "codex/code-capability-fabric-git-object-inventory-v2.3",
+    "baseCommit": "a580f6496fa57c84f994447d03e9569119796b49",
+    "firstImplementationCommit": "b897fec07452b6b6ded5e9b5a85fbd559d27a802",
+    "correctedTestedImplementationTip": "ef5d865e10a95e52f2854eb2df721635bfe083d1",
+    "registeredInCanonicalCommonGitDirectory": true,
+    "sourceCheckoutUnderActiveDrive": true,
+    "networkPushRequiredForLocalReview": false
+  },
+  "implementationChangedPaths": [
+    "shared/code-capability-fabric/README-git-object-inventory-comparator-v1.md",
+    "shared/code-capability-fabric/git-object-inventory-comparator-profile.schema.json",
+    "shared/code-capability-fabric/git-object-inventory-comparator-v1.js",
+    "shared/code-capability-fabric/git-object-inventory-comparison-receipt.schema.json",
+    "shared/code-capability-fabric/git-object-inventory-comparison-request.schema.json",
+    "shared/code-capability-fabric/git-object-inventory-observation.schema.json",
+    "shared/code-capability-fabric/module-git-object-inventory-comparator-v1.contract.json",
+    "shared/code-capability-fabric/selftest-git-object-inventory-comparator-v1.js"
+  ],
+  "receiptPath": "docs/steward-runs/2026-08-22-code-capability-fabric-git-object-inventory-v2.3/",
+  "observedCanonicalCheckout": {
+    "path": "<AXM_WORKSHOP>",
+    "branch": "codex/workshop-recovery-fabric-integration-20260822",
+    "head": "07d8510ac085fc7acc847efe14674abf48455adb",
+    "dirty": true,
+    "expandedStatusEntries": 174,
+    "baseIsAncestor": true,
+    "commitsAheadOfBase": 8,
+    "implementationCommittedPathOverlap": 0,
+    "implementationDirtyPathOverlap": 0,
+    "conclusion": "The canonical checkout contains the v2.2 base but is busy and owned by the separate recovery task. It must not be merged, switched, overwritten, or cleaned in place."
+  },
+  "targetAssumption": "The review target must still descend from a580f6496fa57c84f994447d03e9569119796b49 and must be re-observed after the recovery task finishes. The recorded 07d8510 target is an observation, not a frozen integration authorization.",
+  "exactReadOnlyReviewActionsFromCanonicalRepository": [
+    "git show --stat --oneline codex/code-capability-fabric-git-object-inventory-v2.3",
+    "git diff --check a580f6496fa57c84f994447d03e9569119796b49...codex/code-capability-fabric-git-object-inventory-v2.3",
+    "git diff --stat a580f6496fa57c84f994447d03e9569119796b49...codex/code-capability-fabric-git-object-inventory-v2.3",
+    "git diff a580f6496fa57c84f994447d03e9569119796b49...codex/code-capability-fabric-git-object-inventory-v2.3 -- shared/code-capability-fabric docs/steward-runs/2026-08-22-code-capability-fabric-git-object-inventory-v2.3"
+  ],
+  "exactSafeReviewRouteAfterTargetDriftRecheck": [
+    "git merge-base --is-ancestor a580f6496fa57c84f994447d03e9569119796b49 HEAD",
+    "git worktree add -b codex/review-code-capability-fabric-git-object-inventory-v2.3 <AXM_WORKSHOP_V23_REVIEW> HEAD",
+    "git -C <AXM_WORKSHOP_V23_REVIEW> merge --no-ff --no-commit codex/code-capability-fabric-git-object-inventory-v2.3"
+  ],
+  "reviewStopConditions": [
+    "Stop if the selected target does not descend from the recorded base.",
+    "Stop if the selected target or new review worktree has uncommitted changes.",
+    "Stop and inspect if any of the eight implementation paths or receipt path overlaps target-side changes.",
+    "Rerun all required and focused checks in the clean review worktree.",
+    "Let Mike decide whether to create the merge commit; do not push as part of this local route."
+  ],
+  "authority": {
+    "fourRootsTechnicalGateFirst": true,
+    "humanGitGate": "Mike Tobi",
+    "canonicalCheckoutModified": false,
+    "mergePerformed": false,
+    "pushPerformed": false,
+    "installed": false,
+    "published": false,
+    "promoted": false,
+    "canonChanged": false
+  }
+}
