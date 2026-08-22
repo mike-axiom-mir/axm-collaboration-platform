@@ -47,3 +47,17 @@ Run:
 ```powershell
 node shared/code-capability-fabric/selftest.js
 ```
+
+## Semantic candidate generation
+
+The later `TEST` semantic generator adds a native-only default, one optional
+host-supplied AI challenger lane, detached candidate packets, an unranked
+alternative comparison, and Creation Review Card data. It remains a pure data
+transform and executes no generated source.
+
+See [README-semantic-candidate-generator-v1.md](README-semantic-candidate-generator-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-semantic-candidate-generator-v1.js
+```
