@@ -1,0 +1,390 @@
+/*
+ * AXM Luminous Architecture v7.1.0
+ * Optional surface composition, portal geometry, spatial depth, transition veils,
+ * and choreography primitives. Local-only, dependency-free, no telemetry.
+ */
+
+:root,
+.axm-visual-root {
+  --axm-local-surface-alpha: var(--axm-surface-alpha-effective, var(--axm-surface-alpha));
+  --axm-local-surface-alpha-strong: var(--axm-surface-alpha-strong);
+  --axm-local-border-alpha: var(--axm-border-alpha);
+  --axm-local-highlight-alpha: var(--axm-highlight-alpha);
+  --axm-local-blur: var(--axm-blur-effective, var(--axm-blur));
+  --axm-local-saturation: var(--axm-saturation-effective, var(--axm-saturation));
+  --axm-local-glow: .16;
+  --axm-local-accent: var(--axm-accent-1);
+  --axm-local-secondary: var(--axm-accent-2);
+  --axm-local-radius: var(--axm-radius-surface);
+  --axm-local-sheen-angle: 118deg;
+  --axm-transition-duration: 900ms;
+  --axm-transition-fade-duration: 420ms;
+}
+
+/* Local surface recipes never require a global theme change. */
+.axm-surface-composed {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
+  border-radius: var(--axm-local-radius);
+  border: 1px solid color-mix(in srgb, var(--axm-local-accent) calc(var(--axm-local-border-alpha) * 100%), rgba(255,255,255,.08));
+  background:
+    linear-gradient(var(--axm-local-sheen-angle), color-mix(in srgb, var(--axm-local-accent) 10%, transparent), transparent 34% 68%, color-mix(in srgb, var(--axm-local-secondary) 8%, transparent)),
+    linear-gradient(150deg, rgba(255,255,255,var(--axm-local-highlight-alpha)), transparent 24%),
+    rgb(var(--axm-surface-tint) / var(--axm-local-surface-alpha));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,calc(var(--axm-local-highlight-alpha) * .82)),
+    inset 0 -1px 0 rgba(255,255,255,.018),
+    0 24px 82px rgba(0,0,0,.42),
+    0 0 62px color-mix(in srgb, var(--axm-local-accent) calc(var(--axm-local-glow) * 100%), transparent);
+  backdrop-filter: blur(var(--axm-local-blur)) saturate(var(--axm-local-saturation));
+  -webkit-backdrop-filter: blur(var(--axm-local-blur)) saturate(var(--axm-local-saturation));
+}
+
+.axm-surface-composed::before,
+.axm-surface-composed::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  padding: 0;
+  -webkit-mask: none;
+  mask: none;
+}
+
+.axm-surface-composed::before {
+  inset: -45%;
+  background:
+    conic-gradient(from var(--axm-border-angle), transparent 0 17%, color-mix(in srgb, var(--axm-local-accent) 32%, transparent) 24%, transparent 34% 59%, color-mix(in srgb, var(--axm-local-secondary) 26%, transparent) 67%, transparent 78%),
+    radial-gradient(circle at var(--axm-panel-x) var(--axm-panel-y), color-mix(in srgb, var(--axm-local-accent) 22%, transparent), transparent 25%);
+  opacity: .58;
+  filter: blur(20px);
+  transform: translate3d(var(--axm-parallax-x), var(--axm-parallax-y), 0);
+}
+
+.axm-surface-composed::after {
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(105deg, transparent 15%, rgba(255,255,255,.13) 27%, transparent 38%),
+    repeating-linear-gradient(115deg, transparent 0 18px, rgba(255,255,255,.015) 19px 20px);
+  opacity: .46;
+  mix-blend-mode: screen;
+  transform: translateX(-110%);
+  transition: transform 900ms cubic-bezier(.2,.75,.2,1);
+}
+
+.axm-surface-composed:is(:hover, :focus-within)::after,
+.axm-surface-composed[data-axm-awake="true"]::after {
+  transform: translateX(110%);
+}
+
+.axm-surface-composed > * {
+  position: relative;
+  z-index: 1;
+}
+
+[data-axm-surface-recipe="black-diamond"] {
+  --axm-local-surface-alpha: .17;
+  --axm-local-surface-alpha-strong: .25;
+  --axm-local-border-alpha: .13;
+  --axm-local-highlight-alpha: .10;
+  --axm-local-blur: 24px;
+  --axm-local-saturation: 1.08;
+  --axm-local-glow: .12;
+  --axm-local-accent: var(--axm-lux);
+  --axm-local-secondary: var(--axm-accent-2);
+}
+
+[data-axm-surface-recipe="moonstone"] {
+  --axm-local-surface-alpha: .075;
+  --axm-local-border-alpha: .28;
+  --axm-local-highlight-alpha: .38;
+  --axm-local-blur: 36px;
+  --axm-local-saturation: 1.35;
+  --axm-local-glow: .14;
+  --axm-local-accent: #e8fbff;
+  --axm-local-secondary: #a7b9ff;
+}
+
+[data-axm-surface-recipe="liquid-neon"] {
+  --axm-local-surface-alpha: .045;
+  --axm-local-border-alpha: .27;
+  --axm-local-highlight-alpha: .30;
+  --axm-local-blur: 34px;
+  --axm-local-saturation: 1.62;
+  --axm-local-glow: .24;
+  --axm-local-radius: 30px;
+}
+
+[data-axm-surface-recipe="auric-glass"] {
+  --axm-local-surface-alpha: .072;
+  --axm-local-border-alpha: .30;
+  --axm-local-highlight-alpha: .34;
+  --axm-local-blur: 29px;
+  --axm-local-saturation: 1.24;
+  --axm-local-glow: .18;
+  --axm-local-accent: var(--axm-lux);
+  --axm-local-secondary: #fff2c2;
+}
+
+[data-axm-surface-recipe="phantom-silk"] {
+  --axm-local-surface-alpha: .050;
+  --axm-local-border-alpha: .18;
+  --axm-local-highlight-alpha: .22;
+  --axm-local-blur: 42px;
+  --axm-local-saturation: 1.18;
+  --axm-local-glow: .10;
+  --axm-local-radius: 34px;
+}
+
+[data-axm-surface-recipe="prism-vault"] {
+  --axm-local-surface-alpha: .055;
+  --axm-local-border-alpha: .33;
+  --axm-local-highlight-alpha: .36;
+  --axm-local-blur: 27px;
+  --axm-local-saturation: 1.72;
+  --axm-local-glow: .22;
+  --axm-local-sheen-angle: 132deg;
+}
+
+[data-axm-surface-recipe="clean-room"] {
+  --axm-local-surface-alpha: .12;
+  --axm-local-border-alpha: .16;
+  --axm-local-highlight-alpha: .15;
+  --axm-local-blur: 14px;
+  --axm-local-saturation: 1.02;
+  --axm-local-glow: .035;
+  --axm-local-radius: 14px;
+}
+
+/* Portal and orbital primitives can be placed inside any normal platform layout. */
+.axm-portal-frame {
+  position: relative;
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: clamp(22px, 4vw, 48px);
+}
+
+.axm-portal-frame::before,
+.axm-portal-frame::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(72vw, 430px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+.axm-portal-frame::before {
+  border: 1px solid color-mix(in srgb, var(--axm-accent-1) 48%, transparent);
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--axm-accent-1) 55%, transparent),
+    0 0 54px color-mix(in srgb, var(--axm-accent-2) 40%, transparent),
+    inset 0 0 42px color-mix(in srgb, var(--axm-accent-1) 24%, transparent);
+  background:
+    radial-gradient(circle, transparent 46%, color-mix(in srgb, var(--axm-accent-2) 10%, transparent) 53%, transparent 60%),
+    conic-gradient(from var(--axm-orbit-angle), transparent 0 9%, var(--axm-accent-1) 10% 11%, transparent 12% 29%, var(--axm-lux) 30% 31%, transparent 32% 62%, var(--axm-accent-2) 63% 64%, transparent 65%);
+  animation: axm-orbit-turn 18s linear infinite;
+}
+
+.axm-portal-frame::after {
+  width: min(54vw, 320px);
+  background:
+    radial-gradient(circle at 42% 36%, rgba(255,255,255,.15), transparent 12%),
+    radial-gradient(circle, color-mix(in srgb, var(--axm-accent-1) 18%, transparent), color-mix(in srgb, var(--axm-accent-2) 9%, transparent) 45%, transparent 72%);
+  filter: blur(12px);
+  box-shadow: inset 0 0 80px rgba(0,0,0,.52), 0 0 80px color-mix(in srgb, var(--axm-accent-1) 26%, transparent);
+}
+
+.axm-portal-core {
+  position: relative;
+  z-index: 1;
+  width: min(34vw, 190px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 40% 32%, rgba(255,255,255,.28), color-mix(in srgb, var(--axm-accent-1) 26%, transparent) 18%, color-mix(in srgb, var(--axm-accent-2) 18%, #050713) 56%, #010208 78%);
+  border: 1px solid rgba(255,255,255,.25);
+  box-shadow: 0 0 64px color-mix(in srgb, var(--axm-accent-1) 36%, transparent), inset 0 0 44px rgba(255,255,255,.08);
+}
+
+.axm-orbit-system {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 280px;
+}
+
+.axm-orbit-ring {
+  position: absolute;
+  width: var(--axm-orbit-size, 220px);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--axm-orbit-color, var(--axm-accent-1)) 38%, transparent);
+  border-radius: 50%;
+  transform: rotateX(var(--axm-orbit-tilt, 68deg)) rotateZ(var(--axm-orbit-angle));
+  box-shadow: 0 0 18px color-mix(in srgb, var(--axm-orbit-color, var(--axm-accent-1)) 18%, transparent);
+  animation: axm-orbit-turn var(--axm-orbit-speed, 15s) linear infinite;
+}
+
+.axm-orbit-ring::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  aspect-ratio: 1;
+  top: -4px;
+  left: 50%;
+  border-radius: 50%;
+  background: var(--axm-orbit-color, var(--axm-accent-1));
+  box-shadow: 0 0 18px 4px var(--axm-orbit-color, var(--axm-accent-1));
+}
+
+/* Finite, explicit transition stage. It never intercepts input or navigation. */
+.axm-transition-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  contain: strict;
+}
+
+.axm-transition-stage[data-axm-transition-active="true"] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.axm-transition-layer {
+  position: absolute;
+  inset: -8%;
+  opacity: 0;
+  transform: scale(1.08);
+  transition:
+    opacity var(--axm-transition-fade-duration) ease,
+    transform var(--axm-transition-duration) cubic-bezier(.16,.74,.2,1),
+    clip-path var(--axm-transition-duration) cubic-bezier(.16,.74,.2,1);
+  will-change: opacity, transform, clip-path;
+}
+
+.axm-transition-stage[data-axm-transition-phase="cover"] .axm-transition-layer {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.axm-transition-stage[data-axm-transition-phase="reveal"] .axm-transition-layer {
+  opacity: 0;
+  transform: scale(.96);
+}
+
+.axm-transition-stage[data-axm-transition="veil"] .axm-transition-layer {
+  background:
+    radial-gradient(circle at 50% 44%, color-mix(in srgb, var(--axm-accent-1) 24%, transparent), transparent 34%),
+    linear-gradient(135deg, #010207 0%, color-mix(in srgb, var(--axm-accent-2) 18%, #02030b) 52%, #010207 100%);
+  backdrop-filter: blur(20px);
+}
+
+.axm-transition-stage[data-axm-transition="prism"] .axm-transition-layer {
+  background:
+    conic-gradient(from 210deg at 50% 50%, #02030a, color-mix(in srgb, var(--axm-accent-1) 32%, #03040c), color-mix(in srgb, var(--axm-accent-3) 28%, #03040c), color-mix(in srgb, var(--axm-lux) 20%, #03040c), #02030a),
+    radial-gradient(circle, rgba(255,255,255,.16), transparent 34%);
+  filter: saturate(1.4);
+}
+
+.axm-transition-stage[data-axm-transition="eclipse"] .axm-transition-layer {
+  background: radial-gradient(circle at 50% 50%, transparent 0 8%, rgba(0,0,0,.96) 20% 100%);
+  clip-path: circle(0% at 50% 50%);
+}
+.axm-transition-stage[data-axm-transition="eclipse"][data-axm-transition-phase="cover"] .axm-transition-layer {
+  clip-path: circle(80% at 50% 50%);
+}
+.axm-transition-stage[data-axm-transition="eclipse"][data-axm-transition-phase="reveal"] .axm-transition-layer {
+  clip-path: circle(0% at 50% 50%);
+}
+
+.axm-transition-stage[data-axm-transition="gate"] .axm-transition-layer {
+  background:
+    linear-gradient(90deg, #02030a 0 49.6%, color-mix(in srgb, var(--axm-accent-1) 55%, white) 49.8% 50.2%, #02030a 50.4% 100%);
+  clip-path: inset(0 50% 0 50%);
+}
+.axm-transition-stage[data-axm-transition="gate"][data-axm-transition-phase="cover"] .axm-transition-layer {
+  clip-path: inset(0 0 0 0);
+}
+.axm-transition-stage[data-axm-transition="gate"][data-axm-transition-phase="reveal"] .axm-transition-layer {
+  clip-path: inset(0 50% 0 50%);
+}
+
+.axm-transition-stage[data-axm-transition="bloom"] .axm-transition-layer {
+  background: radial-gradient(circle at 50% 50%, #fff 0%, color-mix(in srgb, var(--axm-accent-1) 72%, white) 5%, color-mix(in srgb, var(--axm-accent-2) 38%, transparent) 19%, transparent 54%);
+  mix-blend-mode: screen;
+  transform: scale(.35);
+}
+.axm-transition-stage[data-axm-transition="bloom"][data-axm-transition-phase="cover"] .axm-transition-layer {
+  transform: scale(2.4);
+}
+
+.axm-transition-stage[data-axm-transition="silence"] .axm-transition-layer {
+  background: rgba(1,2,7,.92);
+  backdrop-filter: blur(42px) saturate(.65);
+}
+
+.axm-choreography-active .axm-atmosphere__aurora,
+.axm-choreography-active .axm-atmosphere__beams {
+  transition: opacity 420ms ease, filter 420ms ease;
+  filter: saturate(1.18) brightness(1.1);
+}
+
+@keyframes axm-orbit-turn {
+  to { --axm-orbit-angle: 360deg; }
+}
+
+[data-axm-motion="reduced"] .axm-portal-frame::before,
+[data-axm-motion="reduced"] .axm-orbit-ring {
+  animation-duration: 48s;
+}
+
+[data-axm-motion="off"] .axm-portal-frame::before,
+[data-axm-motion="off"] .axm-orbit-ring,
+[data-axm-motion="off"] .axm-surface-composed::after {
+  animation: none;
+  transition: none;
+}
+
+[data-axm-transparency="off"] .axm-surface-composed {
+  background: color-mix(in srgb, var(--axm-void-2) 94%, var(--axm-local-accent) 6%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+@media (max-width: 640px) {
+  .axm-portal-frame { min-height: 210px; }
+  .axm-portal-frame::before { width: min(86vw, 340px); }
+  .axm-portal-frame::after { width: min(64vw, 250px); }
+  .axm-portal-core { width: min(42vw, 150px); }
+  .axm-transition-layer { inset: -14%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axm-portal-frame::before,
+  .axm-orbit-ring { animation-duration: 60s; }
+  .axm-transition-layer { transition-duration: 90ms !important; }
+}
+
+@media (forced-colors: active) {
+  .axm-surface-composed,
+  .axm-portal-core { background: Canvas; color: CanvasText; border: 1px solid CanvasText; box-shadow: none; }
+  .axm-portal-frame::before,
+  .axm-portal-frame::after,
+  .axm-orbit-ring,
+  .axm-transition-stage { display: none; }
+}

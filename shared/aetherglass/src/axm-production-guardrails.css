@@ -1,0 +1,221 @@
+/* AXM Aetherglass Production Guardrails v7.1.0 */
+
+:root {
+  --axm-safe-top: env(safe-area-inset-top, 0px);
+  --axm-safe-right: env(safe-area-inset-right, 0px);
+  --axm-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --axm-safe-left: env(safe-area-inset-left, 0px);
+  --axm-touch-min: 44px;
+}
+
+/* Readability Guardian: only activated by explicit JS ownership. */
+.axm-readability-guard {
+  --axm-readability-ink: #f8faff;
+  --axm-readability-shield: rgba(3,5,11,.82);
+  color: var(--axm-readability-ink) !important;
+  -webkit-text-fill-color: var(--axm-readability-ink);
+  text-rendering: optimizeLegibility;
+}
+.axm-readability-guard--text {
+  text-shadow: 0 1px 2px rgba(0,0,0,.88), 0 0 12px rgba(0,0,0,.45);
+}
+.axm-readability-guard--shield {
+  position: relative;
+  isolation: isolate;
+  border-radius: .38em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  background: linear-gradient(var(--axm-readability-shield), var(--axm-readability-shield));
+  box-shadow: 0 0 0 .18em var(--axm-readability-shield), 0 2px 12px rgba(0,0,0,.34);
+  text-shadow: 0 1px 2px rgba(0,0,0,.72);
+}
+button.axm-readability-guard--shield,
+input.axm-readability-guard--shield,
+select.axm-readability-guard--shield,
+textarea.axm-readability-guard--shield {
+  box-shadow: inset 0 0 0 999px color-mix(in srgb, var(--axm-readability-shield) 72%, transparent), 0 2px 14px rgba(0,0,0,.32);
+}
+
+/* Safe repairs used by the Consistency Auditor. */
+.axm-touch-safe {
+  min-inline-size: var(--axm-touch-min);
+  min-block-size: var(--axm-touch-min);
+}
+.axm-overflow-contained {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+.axm-virtual-surface {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 420px;
+}
+.axm-platform-safe-area {
+  padding-top: max(var(--axm-safe-top), var(--axm-platform-padding-top, 0px));
+  padding-right: max(var(--axm-safe-right), var(--axm-platform-padding-right, 0px));
+  padding-bottom: max(var(--axm-safe-bottom), var(--axm-platform-padding-bottom, 0px));
+  padding-left: max(var(--axm-safe-left), var(--axm-platform-padding-left, 0px));
+}
+
+/* Production budgets. They preserve identity while constraining cost. */
+[data-axm-budget="balanced"] .axm-glass,
+[data-axm-budget="balanced"] .axm-surface-composed {
+  --axm-blur-effective: min(var(--axm-blur, 22px), 22px);
+  --axm-saturation-effective: min(var(--axm-saturation, 1.35), 1.35);
+}
+[data-axm-budget="workspace"] .axm-glass,
+[data-axm-budget="workspace"] .axm-surface-composed {
+  --axm-blur-effective: 14px;
+  --axm-saturation-effective: 1.12;
+  --axm-glow-strength-effective: min(var(--axm-glow-strength, .65), .65);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 14px 42px rgba(0,0,0,.30);
+}
+[data-axm-budget="workspace"] .axm-glass--prismatic::after,
+[data-axm-budget="workspace"] .axm-glass--luminous::after,
+[data-axm-budget="workspace"] [data-axm-awake="true"]::after {
+  opacity: .34;
+}
+[data-axm-budget="workspace"] .axm-atmosphere__grain,
+[data-axm-budget="workspace"] .axm-atmosphere__caustics,
+[data-axm-budget="workspace"] .axm-atmosphere__nebula {
+  opacity: calc(var(--axm-atmosphere-strength, 1) * .34);
+}
+[data-axm-budget="workspace"] .axm-light-emitter:nth-child(n+7) {
+  display: none !important;
+}
+
+[data-axm-budget="low-power"] *,
+[data-axm-budget="low-power"] *::before,
+[data-axm-budget="low-power"] *::after {
+  animation-duration: .001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .001ms !important;
+  scroll-behavior: auto !important;
+}
+[data-axm-budget="low-power"] .axm-glass,
+[data-axm-budget="low-power"] .axm-surface-composed {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background: rgba(8,11,18,.96) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.065), 0 10px 28px rgba(0,0,0,.32) !important;
+}
+[data-axm-budget="low-power"] .axm-aetherfield,
+[data-axm-budget="low-power"] .axm-atmosphere__stars,
+[data-axm-budget="low-power"] .axm-atmosphere__nebula,
+[data-axm-budget="low-power"] .axm-atmosphere__caustics,
+[data-axm-budget="low-power"] .axm-atmosphere__grain,
+[data-axm-budget="low-power"] .axm-atmosphere__beams,
+[data-axm-budget="low-power"] .axm-atmosphere__mist,
+[data-axm-budget="low-power"] .axm-light-emitter,
+[data-axm-budget="low-power"] .axm-light-pulse,
+[data-axm-budget="low-power"] .axm-light-sweep {
+  display: none !important;
+}
+[data-axm-budget="low-power"] .axm-atmosphere__base,
+[data-axm-budget="low-power"] .axm-atmosphere__vignette {
+  opacity: .72;
+}
+
+[data-axm-budget="accessibility"] .axm-glass,
+[data-axm-budget="accessibility"] .axm-surface-composed {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background: rgba(7,10,17,.97) !important;
+  border-color: rgba(255,255,255,.22) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.36) !important;
+}
+[data-axm-budget="accessibility"] .axm-aetherfield,
+[data-axm-budget="accessibility"] .axm-atmosphere__grain,
+[data-axm-budget="accessibility"] .axm-atmosphere__caustics,
+[data-axm-budget="accessibility"] .axm-light-emitter:nth-child(n+4) {
+  display: none !important;
+}
+[data-axm-budget="accessibility"] :focus-visible {
+  outline: 3px solid var(--axm-accent-1, #79f7ff) !important;
+  outline-offset: 4px !important;
+}
+
+/* Coarse pointers and small screens get larger controls without changing desktop density. */
+@media (pointer: coarse) {
+  .axm-button,
+  .axm-tab,
+  .axm-icon-tile,
+  .axm-input,
+  .axm-select,
+  .axm-textarea,
+  [role="button"],
+  [role="tab"] {
+    min-block-size: var(--axm-touch-min);
+  }
+}
+
+@media (max-width: 680px) {
+  :root { --axm-touch-min: 46px; }
+  .axm-platform-safe-area { padding-inline: max(12px, var(--axm-safe-left)) max(12px, var(--axm-safe-right)); }
+  .axm-tooltip::after { display: none; }
+  .axm-modal-backdrop { padding: max(12px, var(--axm-safe-top)) max(12px, var(--axm-safe-right)) max(12px, var(--axm-safe-bottom)) max(12px, var(--axm-safe-left)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axm-visual-root *,
+  .axm-visual-root *::before,
+  .axm-visual-root *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .axm-glass,
+  .axm-surface-composed {
+    border-color: rgba(255,255,255,.24);
+  }
+  .axm-muted,
+  .axm-card-head__copy,
+  .axm-timeline__meta {
+    color: color-mix(in srgb, var(--axm-text, #f4f7ff) 78%, transparent);
+  }
+}
+
+@media (forced-colors: active) {
+  .axm-atmosphere,
+  .axm-aetherfield,
+  .axm-light-emitter,
+  .axm-light-pulse,
+  .axm-light-sweep,
+  .axm-transition-stage {
+    display: none !important;
+  }
+  .axm-glass,
+  .axm-surface-composed,
+  .axm-button,
+  .axm-input,
+  .axm-select,
+  .axm-textarea {
+    color: CanvasText !important;
+    background: Canvas !important;
+    border: 1px solid CanvasText !important;
+    box-shadow: none !important;
+    forced-color-adjust: auto;
+  }
+}
+
+@media print {
+  .axm-atmosphere,
+  .axm-aetherfield,
+  .axm-light-emitter,
+  .axm-transition-stage,
+  .axm-navigation,
+  .axm-toast {
+    display: none !important;
+  }
+  .axm-glass,
+  .axm-surface-composed {
+    color: #111 !important;
+    background: #fff !important;
+    border: 1px solid #bbb !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}

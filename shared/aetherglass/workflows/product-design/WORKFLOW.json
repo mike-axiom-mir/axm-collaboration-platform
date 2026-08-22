@@ -1,0 +1,23 @@
+{
+  "workflow": "axm.local.product-design",
+  "version": "1.0.0",
+  "localOnly": true,
+  "networkAccess": false,
+  "automaticRewrite": false,
+  "approvalModel": "explicit-sequential-gates",
+  "stages": [
+    { "id": "context", "artifact": "01_BRIEF.md", "purpose": "Fix the product, user outcome, preserved roots, and scope." },
+    { "id": "visual-target", "artifact": "02_VISUAL_TARGET.md", "purpose": "Fix the visible reference, state, viewport, and acceptance criteria." },
+    { "id": "build", "artifact": "03_BUILD_PLAN.md", "purpose": "Record rollback, bounded implementation, changed files, and verification." },
+    { "id": "visual-qa", "artifact": "04_VISUAL_QA.md", "purpose": "Compare matching states and require a local evidence file." },
+    { "id": "handoff", "artifact": "05_HANDOFF.md", "purpose": "Report outcome, gaps, rollback, and next action honestly." }
+  ],
+  "reopenPolicy": "Reopening any stage preserves history and invalidates that stage plus every downstream approval.",
+  "boundaries": [
+    "No automatic target mutation",
+    "No invented visual evidence",
+    "No silent scope expansion",
+    "No network or telemetry",
+    "No completion claim without explicit gates"
+  ]
+}

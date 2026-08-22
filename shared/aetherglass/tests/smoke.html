@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM_V7_SMOKE_RUNNING</title>
+  <link rel="stylesheet" href="../src/axm-aetherglass.css">
+  <link rel="stylesheet" href="../src/axm-components.css">
+  <link rel="stylesheet" href="../src/axm-luminous-architecture.css">
+  <link rel="stylesheet" href="../src/axm-luminous-layer-forge.css">
+  <link rel="stylesheet" href="../src/axm-production-guardrails.css">
+  <style>
+    body { min-width: 320px; margin: 0; padding: 24px; font: 14px/1.5 system-ui, sans-serif; }
+    main { position: relative; z-index: 1; max-width: 980px; margin: auto; }
+    #panel, #dynamicHost, #rollbackHost { margin-top: 14px; padding: 18px; }
+    #results { display: grid; gap: 6px; padding-left: 24px; }
+    .pass { color: #7dffc7; } .fail { color: #ff7d9f; }
+    .legacy-button { margin-right: 8px; }
+    .summary { margin: 18px 0; padding: 14px 16px; border: 1px solid rgba(255,255,255,.14); border-radius: 14px; }
+    #productionSandbox { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; padding:12px; background:rgb(18,21,29); }
+    #productionSandbox .legacy-toolbar { grid-column:1/-1; display:flex; gap:6px; align-items:center; }
+    #productionSandbox button { width:34px; height:30px; }
+    #productionSandbox input { min-height:34px; }
+    #productionSandbox .legacy-panel, #productionSandbox .legacy-sidebar { padding:10px; background:rgb(39,42,50); }
+    #lowContrast { color:rgb(58,61,69); background:rgb(48,51,59); }
+  </style>
+</head>
+<body class="platform-original">
+  <main>
+    <h1>AXM Aetherglass 7.1 smoke test</h1>
+    <p>This page exercises public APIs, coordinated scenes, ownership-safe rollback, and responsive containment.</p>
+    <button class="legacy-button existing-button-class">Legacy button</button>
+    <button class="legacy-primary">Legacy primary</button>
+    <section id="panel" class="platform-panel">Legacy panel</section>
+    <section id="dynamicHost"></section>
+    <section id="rollbackHost" class="host-before" data-axm-theme="legacy-theme" style="--axm-intensity:.33">Rollback sandbox</section>
+    <section id="productionSandbox">
+      <div class="legacy-toolbar"><strong>Legacy toolbar</strong><button class="primary action axm-button" type="button">P</button><button class="secondary action" type="button">S</button></div>
+      <div class="legacy-panel featured-card"><label for="productionInput">Legacy input</label><input id="productionInput" type="text" value="local"><p id="lowContrast" data-axm-readable>Low contrast sample</p></div>
+      <aside class="legacy-sidebar panel quiet"><span>Legacy side panel</span><button id="tinyButton" type="button">T</button></aside>
+    </section>
+    <div class="summary" id="summary">Running…</div>
+    <ol id="results"></ol>
+  </main>
+
+  <script src="../src/axm-aetherglass.js"></script>
+  <script src="../src/axm-lighting-director.js"></script>
+  <script src="../src/axm-luminous-layer-forge.js"></script>
+  <script src="../src/axm-aetherfield.js"></script>
+  <script src="../src/axm-scene-director.js"></script>
+  <script src="../src/axm-interaction-fx.js"></script>
+  <script src="../src/axm-performance-governor.js"></script>
+  <script src="../src/axm-visual-state-bridge.js"></script>
+  <script src="../src/axm-visual-adapter.js"></script>
+  <script src="../src/axm-surface-composer.js"></script>
+  <script src="../src/axm-transition-director.js"></script>
+  <script src="../src/axm-cue-sequencer.js"></script>
+  <script src="../src/axm-production-adapter.js"></script>
+  <script src="../src/axm-readability-guardian.js"></script>
+  <script src="../src/axm-consistency-auditor.js"></script>
+  <script src="../src/axm-preset-vault.js"></script>
+  <script src="../src/axm-runtime-supervisor.js"></script>
+  <script>
+    (async () => {
+      "use strict";
+      const list = document.getElementById("results");
+      const summary = document.getElementById("summary");
+      const checks = [];
+      const teardownErrors = [];
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      function assert(name, condition, detail = "") {
+        const passed = Boolean(condition);
+        checks.push({ name, passed, detail: detail ? String(detail) : "" });
+        const item = document.createElement("li");
+        item.className = passed ? "pass" : "fail";
+        item.textContent = `${passed ? "PASS" : "FAIL"}: ${name}${detail ? ` — ${detail}` : ""}`;
+        list.appendChild(item);
+        return passed;
+      }
+
+      function throws(name, fn) {
+        let didThrow = false;
+        try { fn(); } catch (_) { didThrow = true; }
+        assert(name, didThrow);
+      }
+
+      let engine, field, lighting, lightLayers, scenes, interactions, governor, bridge, adapter, surfaces, transitions, cues;
+      let productionAdapter, guardian, auditor, vault, supervisor;
+      try {
+        assert("core engine global exported", typeof AXMVisualEngine === "function");
+        assert("lighting director global exported", typeof AXMLightingDirector === "function");
+        assert("Luminous Layer Forge global exported", typeof AXMLuminousLayerForge === "function");
+        assert("Luminous Layer Forge declares six compositable planes", AXMLuminousLayerForge.layers.length === 6 && AXMLuminousLayerForge.presets.includes("prismatic-cathedral"));
+        assert("Aetherfield global exported", typeof AXMAetherfield === "function");
+        assert("scene director global exported", typeof AXMSceneDirector === "function");
+        assert("interaction FX global exported", typeof AXMInteractionFX === "function");
+        assert("performance governor global exported", typeof AXMPerformanceGovernor === "function");
+        assert("visual state bridge global exported", typeof AXMVisualStateBridge === "function");
+        assert("visual adapter global exported", typeof AXMVisualAdapter === "function");
+        assert("surface composer global exported", typeof AXMSurfaceComposer === "function");
+        assert("transition director global exported", typeof AXMTransitionDirector === "function");
+        assert("cue sequencer global exported", typeof AXMCueSequencer === "function");
+        assert("production adapter global exported", typeof AXMProductionAdapter === "function");
+        assert("readability guardian global exported", typeof AXMReadabilityGuardian === "function");
+        assert("consistency auditor global exported", typeof AXMConsistencyAuditor === "function");
+        assert("production preset vault global exported", typeof AXMPresetVault === "function");
+        assert("runtime supervisor global exported", typeof AXMRuntimeSupervisor === "function");
+
+        engine = AXMVisualEngine.mount({
+          theme: "aether", atmosphere: "cosmos", material: "crystal", depth: "deep",
+          quality: "high", motion: "full", transparency: "full", contrast: "normal",
+          intensity: 1, persist: false
+        });
+        assert("engine mounted", engine.getState().mounted === true);
+        assert("engine reports v7", engine.getState().version === "7.1.0");
+        assert("atmosphere stage injected", Boolean(document.querySelector('.axm-atmosphere[data-axm-owned="aetherglass"]')));
+        assert("all atmosphere layers injected", document.querySelectorAll(".axm-atmosphere > [data-axm-layer]").length === 12);
+        assert("root visual class applied", document.body.classList.contains("axm-visual-root"));
+        assert("local/no-network state declared", engine.getState().localOnly === true && engine.getState().networkAccess === false);
+        assert("duplicate mount reuses instance", AXMVisualEngine.mount({ theme: "solar" }) === engine);
+        assert("registry returns mounted instance", AXMVisualEngine.getMounted(document.body) === engine);
+
+        const capabilities = engine.getCapabilities();
+        assert("fifteen theme worlds available", capabilities.themes.length === 15 && capabilities.themes.includes("ultraviolet"));
+        assert("fifteen atmosphere architectures available", capabilities.atmospheres.length === 15 && capabilities.atmospheres.includes("portal"));
+        assert("ten glass materials available", capabilities.materials.length === 10 && capabilities.materials.includes("mirror"));
+        assert("four depth modes available", capabilities.depths.length === 4);
+        assert("accessibility routing available", capabilities.transparencies.includes("off") && capabilities.motions.includes("reduced") && capabilities.contrasts.includes("high"));
+
+        engine
+          .setTheme("arcane", false)
+          .setAtmosphere("dream", false)
+          .setMaterial("holographic", false)
+          .setDepth("cinematic", false)
+          .setLuminosity("radiant", false)
+          .setDensity("airy", false)
+          .setShape("soft", false)
+          .setIntensity(.82, false)
+          .setAtmosphereStrength(1.22, false)
+          .setGlowStrength(1.34, false);
+        let state = engine.getState();
+        assert("theme/atmosphere/material axes apply", state.theme === "arcane" && state.atmosphere === "dream" && state.material === "holographic");
+        assert("depth/luminosity/density/shape axes apply", state.depth === "cinematic" && state.luminosity === "radiant" && state.density === "airy" && state.shape === "soft");
+        assert("intensity clamps and applies", state.intensity === .82);
+        assert("independent atmosphere and glow gains apply", state.atmosphereStrength === 1.22 && state.glowStrength === 1.34);
+
+        engine.setTransparency("off", false).setContrast("high", false).setMotion("reduced", false).setQuality("low", false);
+        state = engine.getState();
+        assert("opaque fallback applies", state.transparency === "off");
+        assert("high-contrast route applies", state.contrast === "high");
+        assert("reduced-motion route applies", state.motion === "reduced");
+        assert("low-quality route applies", state.quality === "low");
+
+        const configReport = engine.applyConfig({
+          theme: "royal", atmosphere: "cathedral", material: "obsidian", quality: "high",
+          motion: "full", transparency: "full", unknownSilentPower: true
+        }, { persist: false });
+        assert("config applies known keys", engine.getState().theme === "royal" && engine.getState().atmosphere === "cathedral");
+        assert("config reports unknown keys instead of applying them", configReport.rejected.includes("unknownSilentPower"));
+
+        engine.setPalette({ accent1: "#77f7ff", accent2: "oklch(72% .18 292)", accent3: "rgb(255 100 210)", lux: "#f1d48f" });
+        assert("local palette values apply", document.body.style.getPropertyValue("--axm-accent-1") === "#77f7ff");
+        throws("unsafe palette URL is rejected", () => engine.setAccent("accent-1", "url(javascript:alert(1))"));
+        throws("unknown palette slot is rejected", () => engine.setAccent("unknown", "#fff"));
+
+        const exported = engine.exportConfig();
+        const parsedExport = JSON.parse(exported);
+        assert("configuration export is valid JSON", parsedExport.module === "axm.visual.aetherglass" && parsedExport.version === "7.1.0");
+        engine.setTheme("solar", false);
+        engine.importConfig(exported, { persist: false });
+        assert("configuration import restores exported state", engine.getState().theme === "royal");
+        throws("invalid configuration JSON is rejected", () => engine.importConfig("{broken"));
+
+        field = AXMAetherfield.mount(engine, { preset: "constellation", density: .42, energy: .68, speed: .5, seed: "smoke-v7" });
+        assert("Aetherfield canvas mounted", Boolean(document.querySelector('.axm-aetherfield[data-axm-owned="aetherfield"]')));
+        assert("Aetherfield starts locally", field.getState().mounted && field.getState().running);
+        field.setPreset("fireflies").setDensity(.55).setEnergy(.8).setSpeed(.4).setInteractive(true);
+        assert("Aetherfield public controls apply", field.getState().preset === "fireflies" && field.getState().density === .55 && field.getState().interactive === true);
+        assert("Aetherfield burst creates requested particles", field.burstAt("#panel", { count: 12, strength: .8 }) === 12);
+        field.setPreset("off");
+        assert("Aetherfield off preset stops animation", field.getState().running === false);
+        field.setPreset("stardust");
+        assert("Aetherfield can restart", field.getState().running === true);
+        field.setPreset("orbitals");
+        assert("new orbital field preset is available", field.getState().preset === "orbitals" && AXMAetherfield.presets.includes("warp"));
+        field.setPreset("motes");
+        assert("new motes field preset is available", field.getState().preset === "motes");
+        field.setPreset("stardust");
+
+        lighting = new AXMLightingDirector(engine, { maxLights: 6, overflow: "reject" });
+        const bound = lighting.bind("#panel", { group: "interface", strength: .22, scaleToTarget: true });
+        const fixed = lighting.addAt(75, 28, { group: "interface", strength: .18, color: "var(--axm-accent-2)" });
+        assert("bound and fixed lights created", Boolean(bound && fixed) && lighting.getState().lights === 2);
+        lighting.update(fixed, { strength: .4, kind: "spotlight" });
+        assert("light update applies", document.querySelector(`[data-axm-light-id="${fixed}"]`)?.dataset.axmLightKind === "spotlight");
+        lighting.setGroupEnabled("interface", false);
+        assert("light groups can be disabled", document.querySelector(`[data-axm-light-id="${bound}"]`)?.style.display === "none");
+        lighting.setGroupEnabled("interface", true);
+        assert("light groups can be re-enabled", document.querySelector(`[data-axm-light-id="${bound}"]`)?.style.display === "");
+
+        const extras = [0, 1, 2, 3].map((index) => lighting.addAt(10 + index * 10, 80, { group: "limit-test", strength: .05 }));
+        assert("lighting limit accepts up to declared maximum", extras.every(Boolean) && lighting.getState().lights === 6);
+        assert("lighting limit rejects hidden overflow", lighting.addAt(90, 90, { group: "limit-test" }) === null);
+        assert("group clear removes only selected lights", lighting.clear("limit-test") === 4 && lighting.getState().lights === 2);
+        assert("light pulse can target a real element", Boolean(lighting.pulseAt("#panel", { duration: 260 })));
+        assert("light sweep can be emitted", Boolean(lighting.sweep({ duration: 280 })));
+
+        const beforeLightingScene = engine.getConfig();
+        assert("lighting scene applies", lighting.setScene("forge", { applyEngine: true }) === true && engine.getState().theme === "ember");
+        assert("lighting scene records active scene", lighting.getState().scene === "forge");
+        assert("lighting scene restores prior engine state", lighting.restoreScene() === true && engine.getState().theme === beforeLightingScene.theme);
+        assert("unknown lighting scene is rejected", lighting.setScene("not-a-scene") === false);
+
+        lightLayers = AXMLuminousLayerForge.mount(engine, { preset: "sovereign-aurora", reactive: true });
+        assert("Luminous Layer Forge mounts with an adaptive preset", lightLayers.getState().mounted === true && lightLayers.getState().preset === "sovereign-aurora");
+        assert("Luminous Layer Forge owns exactly six persistent layer nodes", document.querySelectorAll('[data-axm-owned="luminous-layer-forge"][data-axm-light-layer]').length === 6);
+        const lightPreview = lightLayers.previewPreset("prismatic-cathedral");
+        assert("light preset preview is non-mutating and inspectable", lightPreview.valid && lightPreview.mutations === 0 && lightPreview.requestedLayers.length === 6);
+        assert("unknown light preset is rejected without mutation", lightLayers.setPreset("unknown-light-stack") === false && lightLayers.getState().preset === "sovereign-aurora");
+        assert("full prismatic light stack activates all six planes", lightLayers.setPreset("prismatic-cathedral") === true && lightLayers.getState().effectiveLayers.length === 6);
+        engine.setQuality("low", false);
+        assert("low quality automatically sheds expensive light planes", lightLayers.getState().effectiveLayers.length === 3 && !lightLayers.getState().effectiveLayers.includes("caustics"));
+        engine.setQuality("high", false);
+        lightLayers.setLayer("caustics", false);
+        assert("individual light planes can be disabled reversibly", lightLayers.getState().preset === "custom" && !lightLayers.getState().layers.includes("caustics"));
+        lightLayers.setIntensity(9).setDepth(-2);
+        assert("light layer gains are bounded", lightLayers.getState().intensity === 1.5 && lightLayers.getState().depth === 0);
+        lightLayers.setPreset("sovereign-aurora");
+        assert("finite focal radiance is owned and tracked", lightLayers.radianceAt("#panel", { duration: 220 }) === true && lightLayers.getState().transients === 1);
+
+        engine.applyConfig({ theme: "arcane", atmosphere: "dream", material: "holographic", quality: "high", motion: "full", transparency: "full", intensity: .9 }, { persist: false });
+        field.setPreset("nebula").setDensity(.47).setEnergy(.71).setSpeed(.33);
+        scenes = new AXMSceneDirector(engine, { field, lighting, transitionDuration: 0 });
+        assert("scene director exposes eighteen built-in scenes", scenes.list().length === 18);
+        assert("coordinated scene applies", scenes.apply("aether-command", { transitionDuration: 0 }) && engine.getState().theme === "aether" && field.getState().preset === "constellation" && lighting.getState().scene === "aether");
+        scenes.register("smoke-custom", {
+          label: "Smoke Custom",
+          engine: { theme: "pearl", atmosphere: "quiet", material: "pearl", intensity: .6 },
+          field: { preset: "crystal", density: .2, energy: .3, speed: .2 },
+          lighting: "sanctuary"
+        });
+        assert("custom scene registers", scenes.get("smoke-custom")?.engine.theme === "pearl");
+        assert("scene export is valid", JSON.parse(scenes.export("smoke-custom")).name === "smoke-custom");
+        assert("built-in scenes cannot be unregistered", scenes.unregister("aether-command") === false);
+        assert("new luminous scene applies", scenes.apply("phantom-portal", { transitionDuration: 0 }) === true && engine.getState().theme === "phantom" && field.getState().preset === "warp");
+        assert("new scene gain controls apply", engine.getState().atmosphereStrength === 1.12 && engine.getState().glowStrength === 1.18);
+        scenes.apply("aether-command", { transitionDuration: 0 });
+
+        assert("temporary scene starts", scenes.applyTemporary("royal-void", 280, { transitionDuration: 0 }) === true && scenes.getState().active === "royal-void");
+        await wait(360);
+        assert("temporary scene restores exact previous active scene", scenes.getState().active === "aether-command" && engine.getState().theme === "aether");
+        assert("temporary scene restores prior field and lighting", field.getState().preset === "constellation" && lighting.getState().scene === "aether");
+        assert("scene restore returns pre-scene composition", scenes.restore({ transitionDuration: 0 }) === true && engine.getState().theme === "arcane" && engine.getState().atmosphere === "dream" && field.getState().preset === "nebula");
+
+        interactions = AXMInteractionFX.mount(engine, { lighting, field, disableOnCoarsePointer: false });
+        assert("interaction FX mounted", interactions.getState().mounted === true);
+        assert("interaction FX connects lighting and field", interactions.getState().lightingConnected && interactions.getState().fieldConnected);
+        assert("attention effect targets a component", interactions.attention("#panel", { duration: 260, particles: 8 }) === true);
+        assert("scan effect routes through lighting", interactions.scan({ duration: 260 }) === interactions);
+        assert("missing interaction target is rejected", interactions.attention("#missing") === false);
+
+        bridge = AXMVisualStateBridge.mount(engine, { scenes, lighting, interactions, field });
+        assert("visual state bridge starts only through explicit mount", bridge.getState().started === true);
+        assert("visual state bridge exposes expanded semantic defaults", bridge.list().length === 15 && AXMVisualStateBridge.defaults.includes("portal"));
+        assert("semantic focus state maps to a coordinated scene", bridge.apply("focus", { target: "#panel" }).applied === true && scenes.getState().active === "eclipse-focus");
+        bridge.dispatch("create", { target: "#panel" });
+        await wait(20);
+        assert("semantic DOM event maps to visual state", scenes.getState().active === "solar-forge" && bridge.getState().lastState === "create");
+        bridge.register("smoke-pulse", { pulse: { duration: 260, color: "var(--axm-positive)" } });
+        assert("custom semantic state registers and applies", bridge.apply("smoke-pulse", { target: "#panel" }).applied === true);
+        assert("unknown semantic state is safely rejected", bridge.apply("unknown-state").reason === "unknown-state");
+        assert("semantic restore returns pre-bridge composition", bridge.apply("restore").applied === true && engine.getState().theme === "arcane");
+
+        surfaces = new AXMSurfaceComposer({ root: document });
+        assert("surface composer exposes seven built-in recipes", surfaces.list().length === 7 && AXMSurfaceComposer.recipes.includes("black-diamond"));
+        assert("surface preview is non-mutating", surfaces.preview("#panel", "moonstone").valid === true && !document.getElementById("panel").classList.contains("axm-surface-composed"));
+        const surfaceApply = surfaces.apply("#panel", "moonstone", { "--axm-local-glow": ".21" });
+        assert("surface recipe applies to explicit target", surfaceApply.applied === 1 && document.getElementById("panel").getAttribute("data-axm-surface-recipe") === "moonstone");
+        surfaces.wake("#panel", true);
+        document.getElementById("panel").setAttribute("data-axm-awake", "platform-owned");
+        surfaces.apply("#panel", "black-diamond");
+        assert("changing surface recipe clears stale owned variables", document.getElementById("panel").style.getPropertyValue("--axm-local-glow") === "");
+        document.getElementById("panel").style.setProperty("--axm-local-glow", ".77");
+        const surfaceRestore = surfaces.restore("#panel");
+        assert("surface restore removes only owned class and attribute", surfaceRestore.restored === 1 && !document.getElementById("panel").classList.contains("axm-surface-composed") && !document.getElementById("panel").hasAttribute("data-axm-surface-recipe"));
+        assert("surface restore preserves externally changed local token", document.getElementById("panel").style.getPropertyValue("--axm-local-glow") === ".77");
+        assert("surface restore does not erase separately changed wake attribute", document.getElementById("panel").getAttribute("data-axm-awake") === "platform-owned");
+        surfaces.register("smoke-local", { variables: { "--axm-local-radius": "19px", "--axm-local-accent": "#77f7ff" } });
+        assert("custom surface recipe registers", surfaces.list().some((item) => item.name === "smoke-local"));
+        throws("unsafe surface recipe value is rejected", () => surfaces.register("unsafe-local", { variables: { "--axm-local-accent": "url(javascript:1)" } }));
+
+        transitions = AXMTransitionDirector.mount(engine, { duration: 90 });
+        assert("transition director mounts a finite pointer-safe stage", transitions.getState().mounted === true && document.querySelector(".axm-transition-stage")?.style.pointerEvents !== "auto");
+        let transitionAction = 0;
+        const transitionResult = await transitions.run("prism", () => { transitionAction += 1; return "done"; }, { duration: 90 });
+        assert("cinematic transition completes and runs action once", transitionResult.completed === true && transitionAction === 1 && transitionResult.actionResult === "done");
+        assert("transition stage returns inactive", transitions.getState().active === null && document.querySelector(".axm-transition-stage")?.dataset.axmTransitionActive === "false");
+        const sceneMorph = await transitions.transitionScene("auric-throne", scenes, { transition: "gate", duration: 80 });
+        assert("transition director can morph a named scene", sceneMorph.completed === true && engine.getState().theme === "auric");
+        const cancelledTransitionPromise = transitions.run("veil", null, { duration: 220 });
+        await wait(20);
+        transitions.cancel("smoke-cancel");
+        const cancelledTransition = await cancelledTransitionPromise;
+        assert("transition cancellation resolves explicitly", cancelledTransition.completed === false && cancelledTransition.reason === "cancelled" && transitions.getState().active === null);
+
+        cues = new AXMCueSequencer(engine, { field, lighting, scenes, interactions });
+        assert("cue sequencer exposes finite built-ins", cues.list().length === 5 && AXMCueSequencer.sequences.includes("verification"));
+        const pulseCountBeforeCue = document.querySelectorAll(".axm-light-pulse").length;
+        const cueResult = await cues.play("verification", { target: "#panel", speed: 4 });
+        assert("finite cue sequence completes and clears timers", cueResult.completed === true && cues.getState().active === null && cues.getState().timers === 0);
+        assert("cue pulse action reaches Lighting Director", document.querySelectorAll(".axm-light-pulse").length > pulseCountBeforeCue);
+        cues.register("smoke-cue", { duration: 120, cues: [{ at: 0, action: "engine", config: { theme: "oceanic" } }, { at: 30, action: "field", preset: "motes" }] });
+        assert("custom cue sequence registers", cues.list().some((item) => item.name === "smoke-cue"));
+        const cancelledCuePromise = cues.play("smoke-cue", { target: "#panel" });
+        await wait(18);
+        cues.stop("smoke-cancel");
+        const cancelledCue = await cancelledCuePromise;
+        assert("cue cancellation resolves and clears timers", cancelledCue.completed === false && cancelledCue.reason === "smoke-cancel" && cues.getState().active === null && cues.getState().timers === 0);
+        throws("unsupported cue action is rejected", () => cues.register("unsafe-cue", { cues: [{ at: 0, action: "eval" }] }));
+
+        document.querySelector(".legacy-button").classList.add("axm-button");
+        adapter = new AXMVisualAdapter({
+          root: document,
+          observe: true,
+          map: {
+            panels: ["#panel", ".dynamic-panel"],
+            primaryButtons: [".legacy-primary"],
+            buttons: [".legacy-button"]
+          }
+        });
+        const preview = adapter.preview();
+        assert("adapter dry-run reports matches without changing DOM", preview.matchedElements === 3 && !document.getElementById("panel").classList.contains("axm-glass"));
+        const applied = adapter.apply();
+        assert("adapter decorates only explicit selectors", applied.matchedElements === 2 && document.getElementById("panel").classList.contains("axm-glass"));
+        assert("adapter preserves pre-existing target class ownership", document.querySelector(".legacy-button").classList.contains("axm-button"));
+        document.getElementById("panel").classList.add("platform-added-after-adapter");
+        const dynamic = document.createElement("div");
+        dynamic.className = "dynamic-panel";
+        dynamic.textContent = "Dynamically inserted platform panel";
+        document.getElementById("dynamicHost").appendChild(dynamic);
+        await wait(40);
+        assert("adapter observer decorates later matching nodes", dynamic.classList.contains("axm-glass"));
+        const rollback = adapter.rollback();
+        assert("adapter rollback removes only adapter-owned classes", rollback.rolledBack && !document.getElementById("panel").classList.contains("axm-glass") && document.getElementById("panel").classList.contains("platform-added-after-adapter"));
+        assert("adapter rollback preserves classes that pre-existed adapter", document.querySelector(".legacy-button").classList.contains("axm-button"));
+        assert("adapter rollback also cleans observed nodes", !dynamic.classList.contains("axm-glass"));
+
+        governor = new AXMPerformanceGovernor(engine, { mode: "recommend", field, targetFps: 45, minimumFps: 28 });
+        assert("performance governor defaults to recommendation only", governor.getState().mode === "recommend");
+        assert("empty performance sample is explicit", governor.getReport().recommendation.action === "insufficient-data");
+        governor.frames = Array.from({ length: 60 }, () => 50);
+        const performanceReport = governor.getReport();
+        assert("slow local sample recommends reduction", performanceReport.recommendation.action === "reduce" && performanceReport.recommendation.quality === "low");
+        const preGovernorQuality = engine.getConfig().quality;
+        assert("recommendation changes nothing until explicitly applied", engine.getConfig().quality === preGovernorQuality && governor.getState().recommendationApplied === false);
+        assert("explicit recommendation can be applied", governor.applyRecommendation() === true && engine.getState().quality === "low");
+        assert("applied recommendation can be restored", governor.restoreApplied() === true && engine.getConfig().quality === preGovernorQuality);
+        assert("performance report declares no telemetry", performanceReport.localOnly === true && performanceReport.telemetry === false);
+        assert("performance governor exposes five explicit profiles", AXMPerformanceGovernor.profiles.length === 5 && AXMPerformanceGovernor.profiles.includes("accessibility"));
+        const profileFieldBefore = field.getState().preset;
+        assert("explicit workspace profile applies", governor.applyProfile("workspace") === true && engine.root.getAttribute("data-axm-budget") === "workspace");
+        assert("performance profile cannot stack silently", governor.applyProfile("showcase") === false);
+        assert("performance profile restores field and budget", governor.restoreApplied() === true && field.getState().preset === profileFieldBefore && engine.root.getAttribute("data-axm-budget") === null);
+        assert("device profile recommendation is explainable", Boolean(governor.recommendDeviceProfile().profile && governor.recommendDeviceProfile().reason));
+
+        const productionRoot = document.getElementById("productionSandbox");
+        productionAdapter = new AXMProductionAdapter({ root: productionRoot, includeStructuralPanels: true, minimumConfidence: .68 });
+        const productionPreview = productionAdapter.analyze();
+        assert("production mapper preview is read-only", productionPreview.mutations === 0 && !productionRoot.querySelector(".legacy-panel").classList.contains("axm-glass"));
+        assert("production mapper finds structural controls and surfaces", productionPreview.candidates >= 7 && productionPreview.applicable >= 6);
+        assert("production mapper declares no content-meaning inspection", productionPreview.contentMeaningRead === false);
+        const productionApplied = productionAdapter.apply({ minimumConfidence: .68 });
+        assert("approved production mapping decorates candidates", productionApplied.applied >= 6 && productionRoot.querySelector(".legacy-panel").classList.contains("axm-glass"));
+        assert("production mapping preserves pre-existing AXM class ownership", productionRoot.querySelector(".primary.action").classList.contains("axm-button"));
+        productionRoot.querySelector(".legacy-panel").classList.add("platform-after-production-map");
+        productionRoot.querySelector(".legacy-panel").setAttribute("data-axm-production-type", "platform-external");
+        productionAdapter.startObserving({ autoApprove: false });
+        const observedButton = document.createElement("button");
+        observedButton.type = "button";
+        observedButton.textContent = "Observed";
+        productionRoot.appendChild(observedButton);
+        await wait(40);
+        assert("production observer queues without silent decoration", !observedButton.classList.contains("axm-button") && productionAdapter.getState().pending >= 1);
+        const pendingReport = productionAdapter.analyzePending();
+        assert("pending production nodes can be reviewed", pendingReport.candidates >= 1 && !observedButton.classList.contains("axm-button"));
+        const pendingId = pendingReport.plan.find((item) => item.tag === "button")?.id;
+        const pendingApply = productionAdapter.apply({ ids: [pendingId], minimumConfidence: 0 });
+        assert("reviewed pending node can be approved alone", pendingApply.applied === 1 && observedButton.classList.contains("axm-button"));
+
+        guardian = new AXMReadabilityGuardian({ root: productionRoot });
+        const readabilityBefore = guardian.audit();
+        assert("readability audit detects weak contrast", readabilityBefore.issueCount >= 1 && readabilityBefore.mutations !== 1);
+        const readabilityApplied = guardian.apply();
+        assert("readability protection applies explicitly", readabilityApplied.applied >= 1 && document.getElementById("lowContrast").classList.contains("axm-readability-guard"));
+        document.getElementById("lowContrast").style.setProperty("--axm-readability-ink", "#ff00ff");
+        guardian.restore(document.getElementById("lowContrast"));
+        assert("readability rollback preserves later platform style", document.getElementById("lowContrast").style.getPropertyValue("--axm-readability-ink") === "#ff00ff" && !document.getElementById("lowContrast").classList.contains("axm-readability-guard"));
+        guardian.ensure();
+        assert("readability guardian reports visual-style-only inspection", guardian.getState().contentMeaningRead === false);
+
+        auditor = new AXMConsistencyAuditor({ root: productionRoot, guardian, adapter: productionAdapter, maxGlowSources: 4, minimumTouchSize: 40 });
+        const auditBefore = auditor.audit();
+        assert("consistency auditor produces score and grade", Number.isFinite(auditBefore.score) && /^[A-E]$/.test(auditBefore.grade));
+        assert("consistency audit is read-only", auditBefore.mutations === 0);
+        assert("consistency auditor identifies touch-size risk", (auditBefore.byCode["small-touch-target"] || 0) >= 1);
+        const repairPlan = auditor.createRepairPlan();
+        assert("consistency auditor separates safe and review repairs", repairPlan.safeCount >= 1 && repairPlan.automatic === false);
+        const safeRepair = auditor.applySafeRepairs({ decorate: true, readability: true });
+        assert("safe consistency repairs require explicit call", safeRepair.applied >= 1 && document.getElementById("tinyButton").classList.contains("axm-touch-safe"));
+        const auditAfter = auditor.audit();
+        assert("consistency repairs do not worsen issue count", auditAfter.issueCount <= auditBefore.issueCount);
+        assert("consistency repair rollback is ownership scoped", auditor.rollback().rolledBack && !document.getElementById("tinyButton").classList.contains("axm-touch-safe"));
+
+        vault = new AXMPresetVault(engine, { field, lighting, scenes, transitions, surfaces, cues });
+        assert("preset vault exposes eight production presets", vault.list().length === 8 && AXMPresetVault.builtIns.includes("low-power"));
+        assert("custom code-free preset registers", vault.register("smoke-custom", { label: "Smoke", engine: { theme: "pearl", intensity: .55 }, field: { preset: "off" }, budget: "workspace" }) === true);
+        throws("preset vault rejects arbitrary executable keys", () => vault.register("unsafe-custom", { label: "Unsafe", run: "alert(1)" }));
+        assert("built-in preset cannot be overwritten", vault.register("low-power", { label: "Replace" }, { replace: true }) === false);
+        const vaultExport = vault.export("smoke-custom");
+        assert("preset export is valid and code-free", JSON.parse(vaultExport).preset.engine.theme === "pearl" && vault.getState().codeFreeDefinitions === true);
+        const prePreset = { engine: engine.getConfig(), field: field.getState().preset, scene: scenes.getState().active };
+        const lowPowerResult = await vault.apply("low-power", { transition: false, cue: false });
+        assert("low-power production preset applies", lowPowerResult.applied && engine.getState().quality === "low" && field.getState().preset === "off" && engine.root.getAttribute("data-axm-budget") === "low-power");
+        engine.root.setAttribute("data-axm-budget", "platform-external-budget");
+        assert("preset restore returns visual state", vault.restore() === true && engine.getConfig().theme === prePreset.engine.theme && field.getState().preset === prePreset.field);
+        assert("preset restore preserves later platform budget", engine.root.getAttribute("data-axm-budget") === "platform-external-budget");
+        engine.root.removeAttribute("data-axm-budget");
+
+        supervisor = new AXMRuntimeSupervisor(engine, { field, lighting, lightLayers, scenes, interactions, governor, bridge, surfaces, transitions, cues, productionAdapter, guardian, auditor, vault });
+        const healthBefore = supervisor.health();
+        assert("runtime supervisor observes the light-layer organ", healthBefore.moduleStates.lightLayers?.preset === "sovereign-aurora");
+        assert("runtime supervisor reports observable local health", healthBefore.observableSignalsOnly && healthBefore.memorySafetyProven === false && healthBefore.localOnly === true);
+        assert("runtime supervisor detects no duplicate core stages", healthBefore.duplicates.atmospheres === 0 && healthBefore.duplicates.fields === 0 && healthBefore.duplicates.transitionStages === 0);
+        const stressStart = engine.getConfig();
+        const stressResult = await supervisor.stress({ iterations: 12, presets: ["daily-workspace", "deep-focus", "creation-flow", "review-proof"], restore: true });
+        assert("finite production stress completes", stressResult.completed && stressResult.completedIterations === 12 && stressResult.errors.length === 0);
+        assert("finite stress leaves no owned-DOM growth signals", stressResult.leakSignals.length === 0);
+        assert("finite stress restores starting engine state", engine.getConfig().theme === stressStart.theme && engine.getConfig().quality === stressStart.quality);
+        assert("runtime watch is explicit and stoppable", supervisor.startWatch({ interval: 1000 }) === true && supervisor.getState().watching && supervisor.stopWatch() === true);
+        assert("runtime history export is valid JSON", JSON.parse(supervisor.exportHistory()).version === "7.1.0");
+
+        const productionRollback = productionAdapter.rollback();
+        assert("production rollback removes only owned decoration", productionRollback.rolledBack && !productionRoot.querySelector(".legacy-panel").classList.contains("axm-glass") && productionRoot.querySelector(".legacy-panel").classList.contains("platform-after-production-map"));
+        assert("production rollback preserves externally changed ownership attribute", productionRoot.querySelector(".legacy-panel").getAttribute("data-axm-production-type") === "platform-external");
+        assert("production rollback preserves pre-existing AXM class", productionRoot.querySelector(".primary.action").classList.contains("axm-button"));
+
+        const rollbackHost = document.getElementById("rollbackHost");
+        const scopedEngine = AXMVisualEngine.mount({
+          root: rollbackHost, applyToDocument: false, theme: "frost", atmosphere: "sanctuary",
+          quality: "low", motion: "off", transparency: "off", intensity: .7, persist: false
+        });
+        assert("engine can mount on a scoped platform region", scopedEngine.root === rollbackHost && scopedEngine.getState().mounted);
+        scopedEngine.destroy();
+        assert("scoped destroy restores original attribute", rollbackHost.getAttribute("data-axm-theme") === "legacy-theme");
+        assert("scoped destroy restores original inline token", rollbackHost.style.getPropertyValue("--axm-intensity") === ".33");
+        assert("scoped destroy preserves original classes", rollbackHost.classList.contains("host-before") && !rollbackHost.classList.contains("axm-visual-root"));
+        assert("scoped destroy removes its own atmosphere", !rollbackHost.querySelector(".axm-atmosphere"));
+
+        await wait(320);
+        supervisor.destroy();
+        vault.destroy({ restore: true });
+        auditor.destroy();
+        guardian.destroy();
+        productionAdapter.destroy();
+        governor.destroy({ restore: true });
+        cues.destroy();
+        transitions.destroy();
+        surfaces.destroy();
+        bridge.destroy();
+        interactions.destroy();
+        scenes.destroy({ restore: false });
+        field.destroy();
+        lightLayers.destroy();
+        lighting.destroy();
+
+        document.body.classList.add("platform-added-after-mount");
+        document.body.setAttribute("data-axm-theme", "platform-external-theme");
+        document.body.style.setProperty("--axm-intensity", ".77");
+        engine.destroy();
+        assert("engine destroy removes atmosphere", !document.querySelector("body > .axm-atmosphere"));
+        assert("engine destroy removes only engine-owned root classes", !document.body.classList.contains("axm-visual-root") && document.body.classList.contains("platform-original"));
+        assert("engine destroy preserves class added by platform after mount", document.body.classList.contains("platform-added-after-mount"));
+        assert("engine destroy does not overwrite externally changed data", document.body.getAttribute("data-axm-theme") === "platform-external-theme");
+        assert("engine destroy does not overwrite externally changed inline style", document.body.style.getPropertyValue("--axm-intensity") === ".77");
+        assert("engine registry releases destroyed root", AXMVisualEngine.getMounted(document.body) === null);
+        assert("Aetherfield canvas removed on destroy", !document.querySelector(".axm-aetherfield"));
+        assert("lighting emitters removed on destroy", !document.querySelector(".axm-light-emitter"));
+      } catch (error) {
+        assert("unhandled smoke-test exception", false, error?.stack || error?.message || String(error));
+      } finally {
+        const teardown = (name, action) => {
+          try { action(); } catch (error) { teardownErrors.push({ name, message: error?.message || String(error) }); }
+        };
+        teardown("supervisor", () => supervisor?.destroy?.());
+        teardown("vault", () => vault?.destroy?.({ restore: true }));
+        teardown("auditor", () => auditor?.destroy?.());
+        teardown("guardian", () => guardian?.destroy?.());
+        teardown("productionAdapter", () => productionAdapter?.destroy?.());
+        teardown("governor", () => governor?.destroy?.({ restore: true }));
+        teardown("cues", () => cues?.destroy?.());
+        teardown("transitions", () => transitions?.destroy?.());
+        teardown("surfaces", () => surfaces?.destroy?.());
+        teardown("bridge", () => bridge?.destroy?.());
+        teardown("interactions", () => interactions?.destroy?.());
+        teardown("scenes", () => scenes?.destroy?.({ restore: false }));
+        teardown("field", () => field?.destroy?.());
+        teardown("lightLayers", () => lightLayers?.destroy?.());
+        teardown("lighting", () => lighting?.destroy?.());
+        teardown("adapter", () => adapter?.rollback?.());
+        teardown("engine", () => engine?.destroy?.());
+      }
+
+      const passed = checks.filter((check) => check.passed).length;
+      const failed = checks.length - passed;
+      window.__AXM_TEST_RESULT__ = {
+        version: "7.1.0",
+        passed,
+        failed,
+        total: checks.length,
+        checks,
+        teardownErrors,
+        completed: true,
+        localOnly: true
+      };
+      document.title = failed ? `AXM_V7_SMOKE_FAIL_${failed}` : `AXM_V7_SMOKE_PASS_${passed}`;
+      document.body.dataset.testStatus = failed ? "fail" : "pass";
+      summary.className = `summary ${failed ? "fail" : "pass"}`;
+      summary.textContent = failed ? `${passed}/${checks.length} passed; ${failed} failed.` : `${passed}/${checks.length} assertions passed.`;
+    })();
+  </script>
+</body>
+</html>

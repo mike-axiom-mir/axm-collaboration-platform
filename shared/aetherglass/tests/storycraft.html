@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM_V7_STORYCRAFT_RUNNING</title>
+  <link rel="stylesheet" href="../src/axm-aetherglass.css">
+  <link rel="stylesheet" href="../src/axm-components.css">
+  <link rel="stylesheet" href="../src/axm-luminous-architecture.css">
+  <link rel="stylesheet" href="../src/axm-storycraft.css">
+  <style>
+    body{min-width:320px;margin:0;padding:24px;font:14px/1.5 system-ui,sans-serif}main{position:relative;z-index:1;max-width:1080px;margin:auto}.test-panel{margin-top:14px;padding:18px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgb(18,22,31)}#results{display:grid;gap:5px}.pass{color:#7dffc7}.fail{color:#ff7d9f}#authoringSandbox{display:grid;grid-template-columns:1fr 1fr;gap:10px}.authoring-primary,.authoring-secondary{min-height:100px;padding:16px;background:rgb(18,22,31)}.demo-network,#portalTarget,.demo-command-panel{min-height:90px}.hide-me{display:block}
+  </style>
+</head>
+<body>
+<main>
+  <h1>AXM Aetherglass 7.1 Storycraft test</h1>
+  <section class="demo-hero-copy test-panel">Hero target content must not be read.</section>
+  <section class="demo-conductor test-panel">Conductor target</section>
+  <section id="networkTarget" class="demo-network test-panel">Network target</section>
+  <section id="portalTarget" class="test-panel">Portal target</section>
+  <section id="authoringLab" class="test-panel">Authoring lab</section>
+  <section id="productionLab" class="test-panel">Production lab</section>
+  <section id="productionSandbox" class="test-panel">Production sandbox</section>
+  <section id="authoringSandbox" class="test-panel"><article class="authoring-primary">Primary</article><aside class="authoring-secondary">Secondary</aside></section>
+  <section class="demo-command-panel test-panel">Command panel</section>
+  <aside class="hide-me test-panel">Capture-hidden target</aside>
+  <div id="summary">Running…</div><ol id="results"></ol>
+</main>
+<script src="../src/axm-aetherglass.js"></script>
+<script src="../src/axm-lighting-director.js"></script>
+<script src="../src/axm-aetherfield.js"></script>
+<script src="../src/axm-scene-director.js"></script>
+<script src="../src/axm-interaction-fx.js"></script>
+<script src="../src/axm-surface-composer.js"></script>
+<script src="../src/axm-transition-director.js"></script>
+<script src="../src/axm-cue-sequencer.js"></script>
+<script src="../src/axm-design-token-forge.js"></script>
+<script src="../src/axm-visual-contract.js"></script>
+<script src="../src/axm-composition-workbench.js"></script>
+<script src="../src/axm-focus-director.js"></script>
+<script src="../src/axm-capture-studio.js"></script>
+<script src="../src/axm-journey-director.js"></script>
+<script>
+(async () => {
+  "use strict";
+  const checks=[]; const teardownErrors=[]; const list=document.getElementById("results"); const summary=document.getElementById("summary");
+  function assert(name,condition,detail=""){const passed=Boolean(condition);checks.push({name,passed,detail:passed?"":String(detail||"")});const li=document.createElement("li");li.className=passed?"pass":"fail";li.textContent=`${passed?"PASS":"FAIL"} — ${name}${!passed&&detail?`: ${detail}`:""}`;list.appendChild(li);}
+  function throws(name,fn){let okay=false;try{fn();}catch(_){okay=true}assert(name,okay);}
+  const wait=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
+  let engine,lighting,field,scenes,interactions,surfaces,cues,tokens,contracts,workbench,focus,capture,journeys;
+  try {
+    engine=AXMVisualEngine.mount({theme:"aether",atmosphere:"cosmos",material:"crystal",quality:"auto",motion:"full",persist:false});
+    lighting=new AXMLightingDirector(engine,{maxLights:8});
+    field=AXMAetherfield.mount(engine,{preset:"constellation",density:.4,energy:.5,speed:.45,interactive:true});
+    scenes=new AXMSceneDirector(engine,{field,lighting,transitionDuration:0});
+    interactions=AXMInteractionFX.mount(engine,{lighting,field});
+    surfaces=new AXMSurfaceComposer({root:document});
+    cues=new AXMCueSequencer(engine,{field,lighting,scenes,interactions});
+    tokens=new AXMDesignTokenForge({root:document,target:engine.root});
+    contracts=new AXMVisualContract({root:document,engine});
+    workbench=new AXMCompositionWorkbench(engine,{root:document,field,scenes,surfaces,tokens,contracts,cues});
+    focus=new AXMFocusDirector(engine,{root:document,padding:12});
+    capture=new AXMCaptureStudio(engine,{root:document,field,cues,focus});
+    journeys=new AXMJourneyDirector(engine,{root:document,focus,workbench,cues,capture});
+
+    assert("Storycraft modules expose v7",[AXMFocusDirector.version,AXMCaptureStudio.version,AXMJourneyDirector.version].every(v=>v==="7.1.0"));
+    assert("Focus Director exposes five visual styles",AXMFocusDirector.styles.length===5&&AXMFocusDirector.styles.includes("proof"));
+    const target=document.querySelector(".demo-hero-copy");
+    const beforeTarget=target.outerHTML;
+    const focusPreview=focus.preview(target,{title:"Orientation",copy:"Provided copy",style:"portal"});
+    assert("focus preview is mutation-free",focusPreview.valid&&focusPreview.mutations===0&&focusPreview.targetMutations===0&&target.outerHTML===beforeTarget);
+    assert("focus preview reads no target content",focusPreview.contentRead===false&&focusPreview.semanticInference===false);
+    assert("focus requires explicit approval",focus.focus(target,{title:"Blocked"}).reason==="approval-required");
+    assert("focus rejects an unknown target",focus.focus("#missing-target",{approved:true}).reason==="target-not-found");
+    const focused=focus.focus(target,{approved:true,title:"Orientation first",copy:"Supplied story copy",eyebrow:"Step 1",step:"1 / 3",style:"luxury",align:"bottom"});
+    assert("approved focus creates its owned overlay",focused.focused&&document.querySelectorAll(".axm-focus-director").length===1&&focus.getState().overlayMounted);
+    assert("focus displays only supplied narrative text",document.querySelector(".axm-focus-title").textContent==="Orientation first"&&document.querySelector(".axm-focus-copy").textContent==="Supplied story copy");
+    assert("focus never mutates the target element",target.outerHTML===beforeTarget&&focus.getState().targetMutations===0);
+    assert("focus style routes to the overlay",document.querySelector(".axm-focus-director").dataset.axmFocusStyle==="luxury");
+    assert("focus pulse is finite",focus.pulse({duration:90})===true);
+    await wait(120);
+    assert("focus pulse class clears",!document.querySelector(".axm-focus-director").classList.contains("axm-focus-pulse"));
+    assert("focus clear removes only its overlay",focus.clear("test")===true&&!document.querySelector(".axm-focus-director")&&target.outerHTML===beforeTarget);
+
+    assert("Capture Studio exposes five profiles",capture.list().length===5&&AXMCaptureStudio.profiles.includes("proof-record"));
+    const capturePreview=capture.preview("proof-record",{hide:[".hide-me"]});
+    assert("capture preview is mutation-free",capturePreview.valid&&capturePreview.mutations===0&&!engine.root.classList.contains("axm-capture-active"));
+    assert("capture preview reports hidden selector impact",capturePreview.totalHiddenTargets===1&&capturePreview.hiddenImpact[0].matched===1);
+    assert("capture preview promises no screenshot",capturePreview.screenshotTaken===false&&capturePreview.contentRead===false);
+    assert("capture requires explicit approval",capture.enter("documentation").reason==="approval-required");
+    assert("capture rejects unknown profiles",capture.enter("unknown",{approved:true}).reason==="unknown-profile");
+    const beforeEngine=engine.getConfig(); const beforeField={...field.getState()};
+    const entered=capture.enter("proof-record",{approved:true,hide:[".hide-me"],label:"Proof frame"});
+    assert("approved capture mode enters",entered.entered&&capture.getState().active==="proof-record");
+    assert("capture mode applies deterministic root state",engine.root.classList.contains("axm-capture-active")&&engine.root.classList.contains("axm-capture-freeze")&&engine.root.dataset.axmCaptureProfile==="proof-record");
+    assert("proof capture routes accessibility settings",engine.getState().motion==="off"&&engine.getState().transparency==="off"&&engine.getState().contrast==="high");
+    assert("proof capture quiets the particle field",field.getState().preset==="off"&&field.getState().speed===0&&!field.getState().interactive);
+    assert("capture hides only explicitly approved targets",document.querySelector(".hide-me").getAttribute("data-axm-capture-hidden").startsWith("axm-capture-"));
+    assert("capture guides mount for proof profile",capture.getState().overlayMounted&&Boolean(document.querySelector(".axm-capture-guides")));
+    const readiness=capture.ready();
+    assert("capture readiness is local and honest",readiness.contentRead===false&&readiness.screenshotTaken===false&&readiness.gpuDeterminismProven===false&&readiness.horizontalOverflow===0);
+    const manifest=JSON.parse(capture.exportManifest());
+    assert("capture exports a code-free manifest",manifest.module==="axm.visual.capture-manifest"&&manifest.version==="7.1.0"&&manifest.boundaries.upload===false);
+    engine.setTheme("ember",false);
+    document.querySelector(".hide-me").setAttribute("data-axm-capture-hidden","platform-owned");
+    assert("capture exit restores its owned state",capture.exit({reason:"test"})===true&&!engine.root.classList.contains("axm-capture-active")&&!document.querySelector(".axm-capture-guides"));
+    assert("capture restores prior field state",field.getState().preset===beforeField.preset&&field.getState().speed===beforeField.speed&&field.getState().interactive===beforeField.interactive);
+    assert("capture restores prior engine settings it still owns",engine.getConfig().motion===beforeEngine.motion&&engine.getConfig().transparency===beforeEngine.transparency&&engine.getConfig().contrast===beforeEngine.contrast);
+    assert("capture preserves later platform engine changes",engine.getState().theme==="ember");
+    assert("capture preserves later platform target attributes",document.querySelector(".hide-me").getAttribute("data-axm-capture-hidden")==="platform-owned");
+    document.querySelector(".hide-me").removeAttribute("data-axm-capture-hidden");
+    assert("capture state declares no upload or screenshot",capture.getState().upload===false&&capture.getState().screenshotTaken===false&&capture.getState().contentRead===false);
+
+    assert("Journey Director exposes five built-in journeys",journeys.list().length===5&&AXMJourneyDirector.builtIns.length===5);
+    const journeyPreview=journeys.preview("axiom-awakening");
+    assert("journey preview is valid and mutation-free",journeyPreview.valid&&journeyPreview.mutations===0&&journeyPreview.targetMutations===0&&journeyPreview.steps===6);
+    assert("journey preview reports every target",journeyPreview.stepImpact.every(step=>step.matched>=1&&step.selectorValid));
+    assert("journey preview validates dependencies",journeyPreview.stepImpact.every(step=>step.blueprintAvailable&&step.cueAvailable));
+    assert("journey preview reads no content",journeyPreview.contentRead===false&&journeyPreview.semanticInference===false&&journeyPreview.codeFree);
+    assert("journey requires explicit approval",(await journeys.start("proof-path")).reason==="approval-required");
+    const journeyInitialEngine=engine.getConfig(); const journeyInitialField={...field.getState()};
+    const started=await journeys.start("proof-path",{approved:true,autoplay:false});
+    assert("approved journey starts on its first step",started.started&&journeys.getState().active==="proof-path"&&journeys.getState().index===0);
+    assert("journey coordinates its composition workbench",workbench.getState().active==="quiet-proof");
+    assert("journey coordinates the target-safe focus overlay",focus.getState().active&&document.querySelector(".axm-focus-title").textContent==="Preview before mutation");
+    const next=await journeys.next();
+    assert("journey advances explicitly",next.entered&&journeys.getState().index===1&&workbench.getState().active==="accessible-night");
+    const previous=await journeys.previous();
+    assert("journey can return to a prior step",previous.entered&&journeys.getState().index===0&&workbench.getState().active==="quiet-proof");
+    assert("journey pause is explicit",journeys.pause()===true&&journeys.getState().paused);
+    assert("journey resume is explicit",journeys.resume()===true&&!journeys.getState().paused&&journeys.getState().playing);
+    journeys.pause();
+    assert("journey stop restores its coordinated composition",journeys.stop("test",{restore:true})===true&&workbench.getState().active===null&&!focus.getState().active);
+    assert("journey restores prior engine world",engine.getConfig().theme===journeyInitialEngine.theme&&engine.getConfig().intensity===journeyInitialEngine.intensity);
+    assert("journey restores prior field",field.getState().preset===journeyInitialField.preset&&field.getState().speed===journeyInitialField.speed);
+    const exported=JSON.parse(journeys.export("quiet-onboarding"));
+    assert("journey export is portable code-free JSON",exported.module==="axm.visual.journey"&&exported.version==="7.1.0"&&exported.journey.steps.length===3);
+    exported.name="quiet-onboarding-copy";
+    assert("journey import registers a reviewed copy",journeys.import(exported)===true&&Boolean(journeys.get("quiet-onboarding-copy")));
+    throws("journey registration rejects arbitrary top-level keys",()=>journeys.register("bad-top",{label:"Bad",execute:"no",steps:[{target:"#authoringLab"}]}));
+    throws("journey registration rejects arbitrary step actions",()=>journeys.register("bad-step",{label:"Bad",steps:[{target:"#authoringLab",run:"code"}]}));
+    journeys.register("invalid-selector",{label:"Invalid selector",steps:[{target:"[[broken",title:"Blocked"}]});
+    assert("journey preview blocks invalid selectors",!journeys.preview("invalid-selector").valid&&journeys.preview("invalid-selector").errors.some(error=>error.includes("invalid selector")));
+    journeys.register("missing-target",{label:"Missing",steps:[{target:"#nothing-here",title:"Blocked"}]});
+    assert("journey preview blocks missing targets",!journeys.preview("missing-target").valid&&journeys.preview("missing-target").errors.some(error=>error.includes("matches no elements")));
+    journeys.register("tiny-autoplay",{label:"Tiny autoplay",steps:[{target:"#authoringLab",title:"One",blueprint:"quiet-proof",duration:120},{target:"#productionLab",title:"Two",blueprint:"accessible-night",duration:120}]});
+    const auto=await journeys.start("tiny-autoplay",{approved:true,autoplay:true,speed:20});
+    const completed=await Promise.race([auto.completion,wait(1800).then(()=>({timeout:true}))]);
+    assert("finite autoplay completes",completed.completed===true&&!completed.timeout&&journeys.getState().active===null);
+    assert("finite autoplay restores the workbench",workbench.getState().active===null&&!focus.getState().active);
+    assert("journey state denies navigation control",journeys.getState().navigationControl===false&&journeys.getState().targetMutations===0);
+
+    assert("all Storycraft organs are local-only",[focus.getState(),capture.getState(),journeys.getState()].every(state=>state.localOnly&&state.telemetry===false));
+    assert("Storycraft organs make no semantic inference",focus.getState().semanticInference===false&&journeys.getState().semanticInference===false);
+  } catch (error) {
+    assert("unhandled Storycraft test exception",false,error?.stack||error?.message||String(error));
+  } finally {
+    const teardown=(name,action)=>{try{action();}catch(error){teardownErrors.push({name,message:error?.message||String(error)});}};
+    teardown("journeys",()=>journeys?.destroy?.({restore:true}));
+    teardown("capture",()=>capture?.destroy?.({restore:true}));
+    teardown("focus",()=>focus?.destroy?.());
+    teardown("workbench",()=>workbench?.destroy?.({restore:true}));
+    teardown("tokens",()=>tokens?.destroy?.({restore:true}));
+    teardown("cues",()=>cues?.destroy?.());
+    teardown("surfaces",()=>surfaces?.destroy?.());
+    teardown("interactions",()=>interactions?.destroy?.());
+    teardown("scenes",()=>scenes?.destroy?.({restore:false}));
+    teardown("field",()=>field?.destroy?.());
+    teardown("lighting",()=>lighting?.destroy?.());
+    teardown("engine",()=>engine?.destroy?.());
+  }
+  const passed=checks.filter(x=>x.passed).length,failed=checks.length-passed;
+  window.__AXM_STORYCRAFT_TEST_RESULT__={version:"7.1.0",passed,failed,total:checks.length,checks,teardownErrors,completed:true,localOnly:true};
+  document.title=failed?`AXM_V7_STORYCRAFT_FAIL_${failed}`:`AXM_V7_STORYCRAFT_PASS_${passed}`;
+  document.body.dataset.testStatus=failed?"fail":"pass"; summary.className=failed?"fail":"pass"; summary.textContent=failed?`${passed}/${checks.length} passed; ${failed} failed.`:`${passed}/${checks.length} Storycraft assertions passed.`;
+})();
+</script>
+</body>
+</html>

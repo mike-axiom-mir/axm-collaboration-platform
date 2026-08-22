@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Aetherglass 7.1 — Visual Studio</title>
+  <link rel="stylesheet" href="../src/axm-aetherglass.css">
+  <link rel="stylesheet" href="../src/axm-components.css">
+  <link rel="stylesheet" href="../src/axm-luminous-architecture.css">
+  <link rel="stylesheet" href="../src/axm-luminous-layer-forge.css">
+  <link rel="stylesheet" href="../src/axm-production-guardrails.css">
+  <link rel="stylesheet" href="../src/axm-authoring-studio.css">
+  <link rel="stylesheet" href="../src/axm-storycraft.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div class="demo-shell">
+    <header class="demo-nav axm-glass axm-glass--quiet axm-navigation" data-axm-reactive>
+      <a class="axm-brand" href="#top" aria-label="AXM Aetherglass home">
+        <span class="axm-brand__mark">AΞ</span>
+        <span>
+          <span class="axm-brand__name">Aetherglass</span>
+          <span class="axm-brand__meta">Visual Engine · 7.1</span>
+        </span>
+      </a>
+
+      <nav class="axm-tabs demo-tabs" aria-label="Demo sections">
+        <a class="axm-tab is-active" href="#top" aria-current="page">World</a>
+        <a class="axm-tab" href="#systemsLab">Systems</a>
+        <a class="axm-tab" href="#authoringLab">Author</a>
+        <a class="axm-tab" href="#storycraftLab">Story</a>
+        <a class="axm-tab" href="#productionLab">Proof</a>
+      </nav>
+
+      <div class="demo-nav-actions">
+        <span class="axm-chip demo-desktop-only">Local · no telemetry</span>
+        <button class="axm-button axm-button--ghost axm-button--icon axm-tooltip" data-axm-tooltip="Export current visual configuration" id="exportTop" aria-label="Export configuration" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v12m0-12 4 4m-4-4L8 7M5 13v6h14v-6"/></svg>
+        </button>
+        <button class="axm-button axm-button--lux axm-button--magnetic" id="igniteTop" type="button">Ignite world</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="demo-hero">
+        <div class="demo-hero-copy axm-glass axm-glass--luminous axm-glass--prismatic axm-tilt" data-axm-tilt="2.6">
+          <div class="demo-hero-light-rail axm-light-rail" aria-hidden="true"></div>
+          <span class="axm-kicker">Professional fantasy interface architecture</span>
+          <h1><span class="axm-title-gradient">Darkness, taught to hold light.</span></h1>
+          <p>
+            A modular visual direction for AXM: cinematic void, spectral illumination, crystal depth,
+            meaningful movement, and glass that stays readable. Every strong effect is optional,
+            performance-aware, and reversible.
+          </p>
+          <div class="demo-hero-actions">
+            <button class="axm-button axm-button--primary axm-button--magnetic" id="enterScene" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m8 5 8 7-8 7V5Z"/></svg>
+              Enter Auric Throne
+            </button>
+            <button class="axm-button axm-button--ghost" id="scanWorld" type="button">Run light sweep</button>
+          </div>
+          <div class="demo-trust-row">
+            <span class="axm-chip">15 visual worlds</span>
+            <span class="axm-chip" style="--axm-chip-accent:var(--axm-lux)">6 authored blueprints</span>
+            <span class="axm-chip" style="--axm-chip-accent:var(--axm-accent-3)">5 guided journeys</span>
+            <span class="axm-chip" style="--axm-chip-accent:var(--axm-positive)">Audited rollback</span>
+          </div>
+          <div class="demo-signature">Mike · Axiom/Mir</div>
+        </div>
+
+        <div class="demo-portal-panel axm-glass axm-glass--luminous" data-axm-reactive>
+          <div class="demo-orbit-label demo-orbit-label--north"><span>ATMOSPHERE</span><strong id="atmosphereReadout">COSMOS</strong></div>
+          <div class="demo-orbit-label demo-orbit-label--south"><span>FIELD</span><strong id="fieldReadout">CONSTELLATION</strong></div>
+          <div class="axm-portal-ring demo-portal" id="portalTarget">
+            <div class="axm-energy-orb demo-orb">
+              <div class="demo-orb-center">
+                <div class="axm-crystal-core" aria-hidden="true"></div>
+                <strong id="intensityOrb">1.00</strong>
+                <span>world intensity</span>
+              </div>
+            </div>
+          </div>
+          <div class="demo-orbit-marks" aria-hidden="true"></div>
+          <div class="demo-portal-footer">
+            <div><span class="axm-status-dot"></span> Engine coherent</div>
+            <div id="fpsReadout">Quality: HIGH</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="axm-bento demo-bento" id="systemsLab">
+        <aside class="axm-glass axm-glass--quiet demo-conductor axm-span-4" data-axm-reactive>
+          <div class="axm-card-head">
+            <div>
+              <span class="axm-kicker">Live conductor</span>
+              <h2 class="axm-card-head__title">Shape the visual world</h2>
+              <p class="axm-card-head__copy">All controls update the same modular runtime the platform can call from code.</p>
+            </div>
+            <span class="axm-badge">Live</span>
+          </div>
+
+          <div class="demo-control-grid">
+            <label class="demo-control demo-control--wide">
+              <span>Composed scene</span>
+              <select class="axm-select" id="sceneSelect"></select>
+            </label>
+
+            <label class="demo-control"><span>Theme</span><select class="axm-select" id="themeSelect"></select></label>
+            <label class="demo-control"><span>Atmosphere</span><select class="axm-select" id="atmosphereSelect"></select></label>
+            <label class="demo-control"><span>Material</span><select class="axm-select" id="materialSelect"></select></label>
+            <label class="demo-control"><span>Particle field</span><select class="axm-select" id="fieldSelect"></select></label>
+            <label class="demo-control"><span>Depth</span><select class="axm-select" id="depthSelect"></select></label>
+            <label class="demo-control"><span>Motion</span><select class="axm-select" id="motionSelect"></select></label>
+            <label class="demo-control"><span>Quality</span><select class="axm-select" id="qualitySelect"></select></label>
+            <label class="demo-control"><span>Transparency</span><select class="axm-select" id="transparencySelect"></select></label>
+
+            <label class="demo-control demo-control--wide">
+              <span class="demo-control-split"><span>Intensity</span><output id="intensityValue">1.00</output></span>
+              <input class="demo-range" id="intensityRange" type="range" min="0" max="1.8" value="1" step="0.05">
+            </label>
+            <label class="demo-control">
+              <span class="demo-control-split"><span>Atmosphere gain</span><output id="atmosphereGainValue">1.00</output></span>
+              <input class="demo-range" id="atmosphereGainRange" type="range" min="0" max="1.6" value="1" step="0.05">
+            </label>
+            <label class="demo-control">
+              <span class="demo-control-split"><span>Glow gain</span><output id="glowGainValue">1.00</output></span>
+              <input class="demo-range" id="glowGainRange" type="range" min="0" max="2" value="1" step="0.05">
+            </label>
+          </div>
+
+          <div class="demo-luminous-lab axm-surface-composed" data-axm-surface-recipe="clean-room">
+            <span class="axm-kicker">Luminous architecture lab</span>
+            <div class="demo-control-grid demo-control-grid--lab">
+              <label class="demo-control"><span>Local surface recipe</span><select class="axm-select" id="surfaceRecipeSelect"></select></label>
+              <label class="demo-control"><span>Scene transition</span><select class="axm-select" id="transitionSelect"></select></label>
+              <label class="demo-control demo-control--wide"><span>Finite light choreography</span><select class="axm-select" id="cueSelect"></select></label>
+              <label class="demo-control demo-control--wide"><span>Cinematic light stack</span><select class="axm-select" id="lightLayerPresetSelect"></select></label>
+              <label class="demo-control">
+                <span class="demo-control-split"><span>Layer intensity</span><output id="lightLayerIntensityValue">0.74</output></span>
+                <input class="demo-range" id="lightLayerIntensityRange" type="range" min="0" max="1.5" value="0.74" step="0.05">
+              </label>
+              <label class="demo-control">
+                <span class="demo-control-split"><span>Layer depth</span><output id="lightLayerDepthValue">0.82</output></span>
+                <input class="demo-range" id="lightLayerDepthRange" type="range" min="0" max="1.5" value="0.82" step="0.05">
+              </label>
+            </div>
+            <div class="demo-control-actions">
+              <button class="axm-button axm-button--ghost" id="applySurfaceRecipe" type="button">Apply recipe</button>
+              <button class="axm-button axm-button--primary" id="morphScene" type="button">Morph scene</button>
+              <button class="axm-button axm-button--lux" id="playCue" type="button">Play cue</button>
+              <button class="axm-button axm-button--primary" id="applyLightLayerPreset" type="button">Forge light stack</button>
+              <button class="axm-button axm-button--ghost" id="focusRadiance" type="button">Focus radiance</button>
+            </div>
+          </div>
+
+          <div class="demo-switches">
+            <label class="axm-switch"><input id="pointerToggle" type="checkbox" checked><span class="axm-switch__track"></span><span>Pointer light</span></label>
+            <label class="axm-switch"><input id="parallaxToggle" type="checkbox" checked><span class="axm-switch__track"></span><span>Layer parallax</span></label>
+            <label class="axm-switch"><input id="fieldToggle" type="checkbox" checked><span class="axm-switch__track"></span><span>Living field</span></label>
+            <label class="axm-switch"><input id="lightReactiveToggle" type="checkbox" checked><span class="axm-switch__track"></span><span>Reactive focal glow</span></label>
+          </div>
+
+          <div class="demo-state-bridge" aria-label="Semantic visual state examples">
+            <span class="axm-kicker">Platform state bridge</span>
+            <div class="demo-state-actions">
+              <button class="axm-button axm-button--ghost" type="button" data-visual-state="focus">Focus</button>
+              <button class="axm-button axm-button--ghost" type="button" data-visual-state="create">Create</button>
+              <button class="axm-button axm-button--ghost" type="button" data-visual-state="review">Review</button>
+              <button class="axm-button axm-button--lux" type="button" data-visual-state="success">Success</button>
+            </div>
+          </div>
+
+          <div class="demo-control-actions">
+            <button class="axm-button axm-button--primary" id="exportConfig" type="button">Export config</button>
+            <button class="axm-button axm-button--ghost" id="restoreScene" type="button">Restore</button>
+          </div>
+        </aside>
+
+        <section class="axm-glass demo-system-map axm-span-8 axm-tilt" data-axm-tilt="1.7">
+          <div class="axm-card-head">
+            <div>
+              <span class="axm-kicker">Meaningful illumination</span>
+              <h2 class="axm-card-head__title">Platform light graph</h2>
+              <p class="axm-card-head__copy">Selected systems can cast light across the whole interface instead of glowing in isolation.</p>
+            </div>
+            <button class="axm-button axm-button--ghost axm-button--icon" id="pulseMap" aria-label="Pulse system map" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h3l2-6 4 12 2-6h5"/></svg>
+            </button>
+          </div>
+
+          <div class="demo-network" id="networkTarget" aria-label="Illustrative system network">
+            <div class="demo-network-ring demo-network-ring--one"></div>
+            <div class="demo-network-ring demo-network-ring--two"></div>
+            <div class="demo-network-core axm-glass axm-glass--luminous">
+              <span>AΞM</span><strong>ORIENTATION</strong><small>coherent</small>
+            </div>
+            <div class="demo-node demo-node--one"><span class="axm-icon-tile">A</span><div><strong>Axiom</strong><small>truth · structure</small></div></div>
+            <div class="demo-node demo-node--two"><span class="axm-icon-tile" style="--axm-icon-accent:var(--axm-accent-3)">M</span><div><strong>Mir</strong><small>meaning · value</small></div></div>
+            <div class="demo-node demo-node--three"><span class="axm-icon-tile" style="--axm-icon-accent:var(--axm-lux)">G</span><div><strong>Merge gate</strong><small>consent · proof</small></div></div>
+            <div class="demo-node demo-node--four"><span class="axm-icon-tile" style="--axm-icon-accent:var(--axm-positive)">L</span><div><strong>Local runtime</strong><small>private · rooted</small></div></div>
+          </div>
+        </section>
+
+        <article class="axm-glass axm-glass--quiet axm-span-3 demo-stat-card">
+          <div class="axm-stat"><span class="axm-stat__label">Visual dimensions</span><strong class="axm-stat__value">15×15</strong><span class="axm-stat__delta">theme × atmosphere</span></div>
+          <div class="axm-progress" style="--axm-progress:84%"></div>
+        </article>
+        <article class="axm-glass axm-glass--quiet axm-span-3 demo-stat-card">
+          <div class="axm-stat"><span class="axm-stat__label">Material states</span><strong class="axm-stat__value">10</strong><span class="axm-stat__delta">clear → mirror</span></div>
+          <div class="axm-progress" style="--axm-progress:68%"></div>
+        </article>
+        <article class="axm-glass axm-glass--quiet axm-span-3 demo-stat-card">
+          <div class="axm-stat"><span class="axm-stat__label">Field modes</span><strong class="axm-stat__value">12</strong><span class="axm-stat__delta">adaptive Canvas 2D</span></div>
+          <div class="axm-progress" style="--axm-progress:76%"></div>
+        </article>
+        <article class="axm-glass axm-glass--quiet axm-span-3 demo-stat-card">
+          <div class="axm-stat"><span class="axm-stat__label">Behavior checks</span><strong class="axm-stat__value" id="behaviorCount">320</strong><span class="axm-stat__delta">runtime + authoring + storycraft</span></div>
+          <div class="axm-progress" style="--axm-progress:100%"></div>
+        </article>
+
+        <section class="axm-glass axm-span-12 demo-module-table">
+          <div class="axm-card-head">
+            <div>
+              <span class="axm-kicker">Modular visual organs</span>
+              <h2 class="axm-card-head__title">Runtime composition</h2>
+              <p class="axm-card-head__copy">Use only the layers a screen needs; the core remains usable without any optional module.</p>
+            </div>
+            <span class="axm-chip" style="--axm-chip-accent:var(--axm-positive)">All local</span>
+          </div>
+          <div class="axm-table-wrap">
+            <table class="axm-table">
+              <thead><tr><th>Organ</th><th>Purpose</th><th>Default</th><th>State</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Core engine</strong></td><td>World, glass, depth, accessibility</td><td>Required</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Lighting director</strong></td><td>Element-bound global illumination</td><td>Optional</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Luminous Layer Forge</strong></td><td>Six adaptive glow, aurora, prism, caustic, crown, and refraction planes</td><td>Optional</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Aetherfield</strong></td><td>Adaptive fantasy particle field</td><td>Optional</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Scene director</strong></td><td>Coordinated reversible visual moods</td><td>Optional</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Surface composer</strong></td><td>Per-element material recipes with scoped rollback</td><td>Optional</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Transition director</strong></td><td>Finite cinematic scene morphs</td><td>Optional</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Cue sequencer</strong></td><td>Explicit light, field, and scene choreography</td><td>Optional</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Performance governor</strong></td><td>Local measurement and recommendation</td><td>Recommend</td><td><span class="axm-badge" style="--axm-badge-accent:var(--axm-warning)">Ready</span></td></tr>
+                <tr><td><strong>Production adapter</strong></td><td>Preview-first legacy structure mapping</td><td>Analyze</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Readability guardian</strong></td><td>Computed-style contrast protection</td><td>Audit</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Consistency auditor</strong></td><td>Read-only integration quality report</td><td>Audit</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Preset vault</strong></td><td>Eight reversible operating states</td><td>In memory</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Runtime supervisor</strong></td><td>Finite health and stress observation</td><td>Finite</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Design Token Forge</strong></td><td>Portable palettes, radii, spacing and material variables</td><td>Approval</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Visual Contract</strong></td><td>Read-only schema, policy and fingerprint validation</td><td>Validate</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Composition Workbench</strong></td><td>Preview-first code-free visual blueprint application</td><td>Preview</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Adaptive Orchestrator</strong></td><td>Transparent device and intent recommendations</td><td>Recommend</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Drift Monitor</strong></td><td>Read-only computed-style regression signatures</td><td>Baseline</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Focus Director</strong></td><td>Target-safe cinematic emphasis with supplied narrative text</td><td>Approval</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Journey Director</strong></td><td>Finite code-free guided demonstrations and onboarding routes</td><td>Finite</td><td><span class="axm-badge">Active</span></td></tr>
+                <tr><td><strong>Capture Studio</strong></td><td>Deterministic screenshot, proof and print preparation</td><td>Explicit</td><td><span class="axm-badge">Active</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+
+
+
+        <section class="axm-glass axm-glass--luminous axm-span-12 axm-authoring-lab" id="authoringLab" data-axm-reactive>
+          <div class="axm-card-head">
+            <div>
+              <span class="axm-kicker">Visual intelligence authoring</span>
+              <h2 class="axm-card-head__title">Build a language, not a pile of effects</h2>
+              <p class="axm-card-head__copy">Forge portable tokens, validate policy contracts, preview selector impact, approve a complete composition, ask for an explainable device recommendation, and detect later visual drift without reading content.</p>
+            </div>
+            <span class="axm-chip" style="--axm-chip-accent:var(--axm-lux)">Code-free contracts</span>
+          </div>
+
+          <div class="axm-authoring-grid">
+            <div class="axm-authoring-card" data-flow-step="01 · Token draft">
+              <span class="axm-kicker">Token forge</span>
+              <h3>Design DNA</h3>
+              <p>One pack can carry color hierarchy, glass density, radius, focus and spacing across the platform.</p>
+              <div class="axm-authoring-controls">
+                <label class="demo-control demo-control--wide"><span>Token pack</span><select class="axm-select" id="tokenPackSelect"></select></label>
+              </div>
+              <div class="axm-authoring-colors">
+                <label class="axm-authoring-color">Primary<input id="tokenPrimary" type="color" value="#79f7ff"></label>
+                <label class="axm-authoring-color">Secondary<input id="tokenSecondary" type="color" value="#a88cff"></label>
+                <label class="axm-authoring-color">Luxury<input id="tokenLuxury" type="color" value="#ffd98a"></label>
+              </div>
+              <div class="axm-authoring-actions">
+                <button class="axm-button axm-button--secondary" id="deriveTokenPack" type="button">Forge local pack</button>
+                <button class="axm-button axm-button--ghost" id="applyTokenPack" type="button">Apply approved pack</button>
+              </div>
+            </div>
+
+            <div class="axm-authoring-card axm-authoring-card--primary" data-flow-step="02 · Preview + approve">
+              <span class="axm-kicker">Composition workbench</span>
+              <h3>Portable visual blueprint</h3>
+              <p>The preview exposes policy, selector reach, compatibility and risk before any visual mutation is allowed.</p>
+              <div class="axm-authoring-controls">
+                <label class="demo-control"><span>Blueprint</span><select class="axm-select" id="blueprintSelect"></select></label>
+                <label class="demo-control"><span>Policy</span><select class="axm-select" id="contractPolicySelect"></select></label>
+              </div>
+              <div class="axm-contract-gauge">
+                <div class="axm-contract-ring"><strong id="contractScore">—</strong><span id="contractGrade">NOT RUN</span></div>
+                <div class="axm-contract-copy">
+                  <p id="contractSummary">No contract has been inspected. Preview is read-only.</p>
+                  <code class="axm-contract-fingerprint" id="contractFingerprint">fingerprint: —</code>
+                </div>
+              </div>
+              <div class="axm-authoring-actions">
+                <button class="axm-button axm-button--ghost" id="previewBlueprint" type="button">Preview contract</button>
+                <button class="axm-button axm-button--primary" id="applyBlueprint" type="button">Approve composition</button>
+                <button class="axm-button axm-button--ghost" id="restoreBlueprint" type="button">Restore prior world</button>
+              </div>
+            </div>
+
+            <div class="axm-authoring-card" data-flow-step="03 · Verify drift">
+              <span class="axm-kicker">Orientation + proof</span>
+              <h3>Recommend, then verify</h3>
+              <p>Observable device signals and explicit intent produce a reasoned recommendation. Drift comparison remains read-only.</p>
+              <div class="axm-authoring-controls">
+                <label class="demo-control demo-control--wide"><span>Current intent</span><select class="axm-select" id="intentSelect"></select></label>
+              </div>
+              <div class="axm-authoring-actions">
+                <button class="axm-button axm-button--secondary" id="recommendComposition" type="button">Recommend route</button>
+                <button class="axm-button axm-button--ghost" id="captureVisualBaseline" type="button">Capture baseline</button>
+                <button class="axm-button axm-button--lux" id="compareVisualDrift" type="button">Compare drift</button>
+              </div>
+              <div class="axm-recommendation-trace" id="recommendationTrace"><div>No hidden adaptation. A recommendation appears only when requested.</div></div>
+            </div>
+          </div>
+
+          <div class="axm-authoring-sandbox" id="authoringSandbox" aria-label="Contained authoring composition sandbox">
+            <article class="authoring-primary">
+              <span class="axm-kicker">Primary platform surface</span>
+              <h4>Composition target</h4>
+              <p>This local surface demonstrates token inheritance, material recipes, wake states and exact rollback.</p>
+              <div class="axm-authoring-metrics">
+                <div class="axm-authoring-metric"><strong id="authoringTokenMetric">0</strong><span>tokens</span></div>
+                <div class="axm-authoring-metric"><strong id="authoringSurfaceMetric">0</strong><span>surfaces</span></div>
+                <div class="axm-authoring-metric"><strong id="authoringDriftMetric">0</strong><span>drift</span></div>
+              </div>
+            </article>
+            <aside class="authoring-secondary">
+              <span class="axm-kicker">Secondary platform surface</span>
+              <h4>Constraint mirror</h4>
+              <p>Different blueprints may treat this surface differently, but the contract always reports what will be touched first.</p>
+              <div class="axm-authoring-status" id="authoringStatus" aria-live="polite">Authoring organs are idle. No composition has been applied automatically.</div>
+            </aside>
+          </div>
+        </section>
+
+
+        <section class="axm-glass axm-glass--luminous axm-span-12 axm-storycraft-lab" id="storycraftLab" data-axm-reactive>
+          <div class="axm-card-head">
+            <div>
+              <span class="axm-kicker">Visual storytelling + deterministic capture</span>
+              <h2 class="axm-card-head__title">Let the platform explain itself beautifully</h2>
+              <p class="axm-card-head__copy">Guide a person through meaningful systems with finite, reversible focus—then prepare a stable documentation, proof, showcase, device, or print frame without reading content or taking control of navigation.</p>
+            </div>
+            <span class="axm-chip" style="--axm-chip-accent:var(--axm-accent-3)">Storycraft · explicit</span>
+          </div>
+
+          <div class="axm-storycraft-grid">
+            <div class="axm-storycraft-controls axm-surface-composed" data-axm-surface-recipe="black-diamond">
+              <span class="axm-kicker">Journey conductor</span>
+              <label class="demo-control demo-control--wide"><span>Guided journey</span><select class="axm-select" id="journeySelect"></select></label>
+              <div class="axm-storycraft-actions">
+                <button class="axm-button axm-button--ghost" id="previewJourney" type="button">Preview route</button>
+                <button class="axm-button axm-button--primary" id="startJourney" type="button">Begin journey</button>
+              </div>
+              <label class="axm-switch axm-storycraft-autoplay"><input id="journeyAutoplay" type="checkbox"><span class="axm-switch__track"></span><span>Autoplay step dwell</span></label>
+              <div class="axm-storycraft-actions">
+                <button class="axm-button axm-button--ghost" id="previousJourneyStep" type="button">Previous</button>
+                <button class="axm-button axm-button--secondary" id="pauseJourney" type="button">Pause</button>
+                <button class="axm-button axm-button--ghost" id="nextJourneyStep" type="button">Next</button>
+                <button class="axm-button axm-button--ghost" id="stopJourney" type="button">Restore</button>
+              </div>
+
+              <span class="axm-kicker">Capture preparation</span>
+              <label class="demo-control demo-control--wide"><span>Capture profile</span><select class="axm-select" id="captureProfileSelect"></select></label>
+              <div class="axm-storycraft-actions">
+                <button class="axm-button axm-button--lux" id="enterCaptureMode" type="button">Prepare frame</button>
+                <button class="axm-button axm-button--ghost" id="exitCaptureMode" type="button">Restore live world</button>
+              </div>
+              <div class="axm-storycraft-status" id="storycraftStatus" aria-live="polite">Storycraft is idle. Journeys, focus and capture require an explicit action.</div>
+            </div>
+
+            <div class="axm-storycraft-stage axm-surface-composed" data-axm-surface-recipe="prism-vault">
+              <div class="axm-storycraft-progress-head">
+                <div><span class="axm-kicker">Current route</span><strong id="storyJourneyTitle">Axiom Awakening</strong></div>
+                <span id="storyProgressLabel">0 / 6</span>
+              </div>
+              <div class="axm-storycraft-progress">
+                <div class="axm-storycraft-step-preview">
+                  <span class="axm-kicker" id="storyStepEyebrow">01 · Orientation</span>
+                  <strong id="storyStepTitle">Begin with direction, not decoration</strong>
+                  <p id="storyStepCopy">The world opens from a disciplined void so every later light has meaning.</p>
+                </div>
+                <div class="axm-storycraft-rail" aria-hidden="true"><span id="storyProgressBar"></span></div>
+                <div class="axm-storycraft-map" id="storyStepMap" aria-label="Journey steps"></div>
+              </div>
+              <div class="axm-storycraft-boundaries">
+                <div class="axm-storycraft-boundary"><strong>Content-blind</strong><span>Uses supplied story copy only</span></div>
+                <div class="axm-storycraft-boundary"><strong>Target-safe</strong><span>Focus overlay; no element rewrite</span></div>
+                <div class="axm-storycraft-boundary"><strong>Finite</strong><span>No background journey loop</span></div>
+                <div class="axm-storycraft-boundary"><strong>Restorable</strong><span>Returns the prior visual world</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="axm-glass axm-glass--luminous axm-span-12 demo-production-lab" id="productionLab" data-axm-reactive>
+          <div class="axm-card-head">
+            <div>
+              <span class="axm-kicker">Production stewardship</span>
+              <h2 class="axm-card-head__title">Adopt beauty without surrendering reliability</h2>
+              <p class="axm-card-head__copy">Preview legacy mappings, approve changes deliberately, protect readability, audit consistency, choose an operating budget, and stress the runtime before intake.</p>
+            </div>
+            <span class="axm-chip" style="--axm-chip-accent:var(--axm-positive)">No silent rewrite</span>
+          </div>
+
+          <div class="demo-production-grid">
+            <div class="demo-production-control axm-surface-composed" data-axm-surface-recipe="black-diamond">
+              <span class="axm-kicker">Operating state</span>
+              <label class="demo-control demo-control--wide"><span>Production preset</span><select class="axm-select" id="productionPresetSelect"></select></label>
+              <div class="demo-control-actions">
+                <button class="axm-button axm-button--primary" id="applyProductionPreset" type="button">Apply preset</button>
+                <button class="axm-button axm-button--ghost" id="restoreProductionPreset" type="button">Restore prior state</button>
+              </div>
+              <div class="demo-production-meta"><span>Budget</span><strong id="budgetReadout">BALANCED</strong></div>
+            </div>
+
+            <div class="demo-audit-orb axm-surface-composed" data-axm-surface-recipe="moonstone">
+              <span class="axm-kicker">Consistency score</span>
+              <div class="demo-score-ring" id="auditRing"><strong id="auditScore">—</strong><span id="auditGrade">NOT RUN</span></div>
+              <p id="auditSummary">The auditor is read-only until a repair action is explicitly approved.</p>
+            </div>
+
+            <div class="demo-production-actions">
+              <button class="axm-button axm-button--ghost" id="analyzePlatform" type="button">Preview platform map</button>
+              <button class="axm-button axm-button--secondary" id="applyApprovedMap" type="button">Approve mapped styles</button>
+              <button class="axm-button axm-button--ghost" id="guardReadability" type="button">Protect readability</button>
+              <button class="axm-button axm-button--lux" id="runConsistencyAudit" type="button">Run consistency audit</button>
+              <button class="axm-button axm-button--primary" id="runStress" type="button">Run 24-switch stress</button>
+              <div class="demo-production-status" id="productionStatus" aria-live="polite">Production tools are idle. Nothing has been changed automatically.</div>
+            </div>
+          </div>
+
+          <div class="demo-legacy-stage" id="productionSandbox" aria-label="Contained legacy platform integration sandbox">
+            <div class="legacy-toolbar">
+              <strong>Legacy platform sample</strong>
+              <button class="primary action" type="button">Create</button>
+              <button class="secondary action" type="button">Review</button>
+            </div>
+            <div class="legacy-panel featured-card">
+              <label for="legacyInput">Unmapped command</label>
+              <input id="legacyInput" type="text" value="Local platform input">
+              <p class="legacy-low-contrast" data-axm-readable>Intentionally weak contrast demonstrates explainable readability protection.</p>
+            </div>
+            <aside class="legacy-sidebar panel quiet">
+              <span>Untreated navigation surface</span>
+              <button type="button">Open</button>
+            </aside>
+          </div>
+        </section>
+
+        <aside class="axm-glass axm-glass--quiet axm-span-12 demo-timeline-panel">
+          <div class="axm-card-head">
+            <div><span class="axm-kicker">Scene logic</span><h2 class="axm-card-head__title">Restraint creates luxury</h2></div>
+          </div>
+          <div class="axm-timeline">
+            <div class="axm-timeline__item"><div class="axm-timeline__title">Void establishes weight</div><div class="axm-timeline__meta">Dark space is preserved so important light can remain valuable.</div></div>
+            <div class="axm-timeline__item"><div class="axm-timeline__title">Light expresses meaning</div><div class="axm-timeline__meta">Focus, live systems, creation, warning, and completion can each own distinct illumination.</div></div>
+            <div class="axm-timeline__item"><div class="axm-timeline__title">Glass keeps continuity</div><div class="axm-timeline__meta">Information planes remain connected to the world without losing hierarchy.</div></div>
+            <div class="axm-timeline__item"><div class="axm-timeline__title">Fallbacks preserve use</div><div class="axm-timeline__meta">Reduced motion, opaque surfaces, and low quality retain the platform’s identity.</div></div>
+          </div>
+        </aside>
+
+        <section class="axm-glass axm-glass--prismatic axm-span-12 demo-command-panel">
+          <div>
+            <span class="axm-kicker">Direct API control</span>
+            <h2>One scene call can coordinate the full visual world.</h2>
+          </div>
+          <div class="axm-command"><span class="axm-command__prompt">›</span><span id="commandReadout">scenes.apply("aether-command")</span><kbd class="axm-command__key">local</kbd></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="demo-footer">
+      <span>AXM Aetherglass Visual Engine 7.1 · luminous · authored · local-first · reversible</span>
+      <span>Mike — Axiom/Mir</span>
+    </footer>
+  </div>
+
+  <dialog class="demo-dialog axm-glass axm-glass--solid" id="configDialog">
+    <form method="dialog" class="demo-dialog-head"><div><span class="axm-kicker">Portable configuration</span><h2>Current visual state</h2></div><button class="axm-button axm-button--ghost axm-button--icon" aria-label="Close" value="close">×</button></form>
+    <p class="axm-muted">This JSON contains visual choices only. It does not include content, platform data, or telemetry.</p>
+    <textarea class="axm-textarea demo-config-output" id="configOutput" spellcheck="false"></textarea>
+    <div class="demo-dialog-actions"><button class="axm-button axm-button--primary" id="copyConfig" type="button">Copy JSON</button><button class="axm-button axm-button--ghost" id="downloadConfig" type="button">Save JSON</button></div>
+  </dialog>
+
+  <div class="demo-toast-stack" aria-live="polite" id="toastStack"></div>
+
+  <script src="../src/axm-aetherglass.js"></script>
+  <script src="../src/axm-lighting-director.js"></script>
+  <script src="../src/axm-luminous-layer-forge.js"></script>
+  <script src="../src/axm-aetherfield.js"></script>
+  <script src="../src/axm-scene-director.js"></script>
+  <script src="../src/axm-interaction-fx.js"></script>
+  <script src="../src/axm-performance-governor.js"></script>
+  <script src="../src/axm-visual-state-bridge.js"></script>
+  <script src="../src/axm-surface-composer.js"></script>
+  <script src="../src/axm-transition-director.js"></script>
+  <script src="../src/axm-cue-sequencer.js"></script>
+  <script src="../src/axm-production-adapter.js"></script>
+  <script src="../src/axm-readability-guardian.js"></script>
+  <script src="../src/axm-consistency-auditor.js"></script>
+  <script src="../src/axm-preset-vault.js"></script>
+  <script src="../src/axm-runtime-supervisor.js"></script>
+  <script src="../src/axm-design-token-forge.js"></script>
+  <script src="../src/axm-visual-contract.js"></script>
+  <script src="../src/axm-composition-workbench.js"></script>
+  <script src="../src/axm-adaptive-orchestrator.js"></script>
+  <script src="../src/axm-visual-drift-monitor.js"></script>
+  <script src="../src/axm-focus-director.js"></script>
+  <script src="../src/axm-capture-studio.js"></script>
+  <script src="../src/axm-journey-director.js"></script>
+  <script src="demo.js"></script>
+</body>
+</html>

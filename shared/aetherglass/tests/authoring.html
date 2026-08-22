@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM_V7_AUTHORING_RUNNING</title>
+  <link rel="stylesheet" href="../src/axm-aetherglass.css">
+  <link rel="stylesheet" href="../src/axm-components.css">
+  <link rel="stylesheet" href="../src/axm-luminous-architecture.css">
+  <link rel="stylesheet" href="../src/axm-production-guardrails.css">
+  <link rel="stylesheet" href="../src/axm-authoring-studio.css">
+  <style>
+    body{min-width:320px;margin:0;padding:24px;font:14px/1.5 system-ui,sans-serif}main{position:relative;z-index:1;max-width:980px;margin:auto}.test-panel{margin-top:14px;padding:18px}#results{display:grid;gap:5px}.pass{color:#7dffc7}.fail{color:#ff7d9f}#authoringSandbox{display:grid;grid-template-columns:1fr 1fr;gap:10px}.authoring-primary,.authoring-secondary{min-height:120px;padding:16px;background:rgb(18,22,31)}
+  </style>
+</head>
+<body>
+<main>
+  <h1>AXM Aetherglass 7.1 authoring test</h1>
+  <section id="authoringSandbox" class="test-panel">
+    <article class="authoring-primary">Primary surface</article>
+    <aside class="authoring-secondary">Secondary surface</aside>
+  </section>
+  <section id="tokenTarget" class="test-panel" style="--axm-accent-1:#010203">Token target</section>
+  <section id="tokenTargetTwo" class="test-panel">Second token target</section>
+  <div id="summary">Running…</div><ol id="results"></ol>
+</main>
+<script src="../src/axm-aetherglass.js"></script>
+<script src="../src/axm-lighting-director.js"></script>
+<script src="../src/axm-aetherfield.js"></script>
+<script src="../src/axm-scene-director.js"></script>
+<script src="../src/axm-interaction-fx.js"></script>
+<script src="../src/axm-surface-composer.js"></script>
+<script src="../src/axm-transition-director.js"></script>
+<script src="../src/axm-cue-sequencer.js"></script>
+<script src="../src/axm-preset-vault.js"></script>
+<script src="../src/axm-design-token-forge.js"></script>
+<script src="../src/axm-visual-contract.js"></script>
+<script src="../src/axm-composition-workbench.js"></script>
+<script src="../src/axm-adaptive-orchestrator.js"></script>
+<script src="../src/axm-visual-drift-monitor.js"></script>
+<script>
+(async () => {
+  "use strict";
+  const checks=[]; const teardownErrors=[]; const list=document.getElementById("results"); const summary=document.getElementById("summary");
+  function assert(name,condition,detail=""){const passed=Boolean(condition);checks.push({name,passed,detail:passed?"":String(detail||"")});const li=document.createElement("li");li.className=passed?"pass":"fail";li.textContent=`${passed?"PASS":"FAIL"} — ${name}${!passed&&detail?`: ${detail}`:""}`;list.appendChild(li);}
+  function throws(name,fn){let okay=false;try{fn();}catch(_){okay=true}assert(name,okay);}
+  let engine,lighting,field,scenes,interactions,surfaces,transitions,cues,vault,tokens,contracts,workbench,orchestrator,drift;
+  try {
+    engine=AXMVisualEngine.mount({theme:"aether",atmosphere:"cosmos",material:"crystal",quality:"auto",motion:"auto",persist:false});
+    lighting=new AXMLightingDirector(engine,{maxLights:8});
+    field=AXMAetherfield.mount(engine,{preset:"off",density:0,energy:0,speed:0});
+    scenes=new AXMSceneDirector(engine,{field,lighting,transitionDuration:0});
+    interactions=AXMInteractionFX.mount(engine,{lighting,field});
+    surfaces=new AXMSurfaceComposer({root:document});
+    transitions=AXMTransitionDirector.mount(engine,{duration:50,policy:"replace"});
+    cues=new AXMCueSequencer(engine,{field,lighting,scenes,interactions});
+    vault=new AXMPresetVault(engine,{field,lighting,scenes,transitions,surfaces,cues});
+    tokens=new AXMDesignTokenForge({root:document,target:engine.root});
+    contracts=new AXMVisualContract({root:document,engine});
+    workbench=new AXMCompositionWorkbench(engine,{root:document,field,scenes,transitions,surfaces,tokens,contracts,cues});
+    orchestrator=new AXMAdaptiveOrchestrator({engine,workbench,vault,mode:"recommend"});
+    drift=new AXMVisualDriftMonitor({root:document});
+
+    assert("authoring modules expose v7",[AXMDesignTokenForge.version,AXMVisualContract.version,AXMCompositionWorkbench.version,AXMAdaptiveOrchestrator.version,AXMVisualDriftMonitor.version].every(v=>v==="7.1.0"));
+    assert("token forge exposes six built-ins",tokens.list().length===6&&AXMDesignTokenForge.builtIns.length===6);
+    const tokenTarget=document.getElementById("tokenTarget"); const tokenTargetTwo=document.getElementById("tokenTargetTwo");
+    const tokenPreview=tokens.preview("sovereign-aurora",tokenTarget);
+    assert("token preview is mutation-free",tokenPreview.valid&&tokenPreview.mutations===0&&tokenTarget.getAttribute("data-axm-token-pack")===null);
+    assert("token apply requires explicit approval",tokens.apply("sovereign-aurora",tokenTarget).rejected==="approval-required");
+    const tokenApply=tokens.apply("sovereign-aurora",tokenTarget,{approved:true});
+    assert("approved token pack applies",tokenApply.applied===1&&tokenTarget.getAttribute("data-axm-token-pack")==="sovereign-aurora");
+    assert("approved token values reach CSS variables",tokenTarget.style.getPropertyValue("--axm-accent-1")==="#79f7ff");
+    const derived=tokens.derive("smoke-forged",{primary:"#12dffc",secondary:"#904dff",luxury:"#ffd36f"});
+    assert("three anchors derive a complete local pack",derived&&derived.tokens.accentTertiary.startsWith("#")&&derived.tags.includes("derived"));
+    assert("derived pack enters the registry",tokens.list().some(item=>item.name==="smoke-forged"));
+    throws("token forge rejects unsafe CSS values",()=>tokens.register("unsafe-pack",{tokens:{accentPrimary:"url(x)",accentSecondary:"#fff",text:"#fff"}}));
+    throws("token forge rejects unknown token names",()=>tokens.register("unknown-token",{tokens:{accentPrimary:"#fff",accentSecondary:"#eee",text:"#fff",secretPower:"1"}}));
+    const tokenExport=JSON.parse(tokens.export("smoke-forged"));
+    assert("token pack export is code-free JSON",tokenExport.module==="axm.visual.token-pack"&&tokenExport.pack.tokens.accentPrimary==="#12dffc");
+    assert("token pack import registers a copy",tokens.import(JSON.stringify({...tokenExport,name:"smoke-imported"}))===true&&Boolean(tokens.get("smoke-imported")));
+    const cleanApply=tokens.apply("quiet-crystal",tokenTargetTwo,{approved:true});
+    assert("second target receives token ownership",cleanApply.applied===1&&tokenTargetTwo.getAttribute("data-axm-token-pack")==="quiet-crystal");
+    assert("token restore returns an untouched target",tokens.restore(tokenTargetTwo).restored===1&&tokenTargetTwo.getAttribute("data-axm-token-pack")===null&&!tokenTargetTwo.style.getPropertyValue("--axm-accent-1"));
+    tokenTarget.style.setProperty("--axm-accent-1","#abcdef");
+    tokens.restore(tokenTarget);
+    assert("token rollback preserves later platform changes",tokenTarget.style.getPropertyValue("--axm-accent-1")==="#abcdef");
+    const tokenSnapshot=tokens.capture(tokenTargetTwo); tokens.apply("ember-forge",tokenTargetTwo,{approved:true});
+    assert("token snapshot restoration returns exact prior state",tokens.restoreSnapshot(tokenSnapshot).restored===1&&!tokenTargetTwo.style.getPropertyValue("--axm-accent-1"));
+
+    const baseContract={module:"axm.visual.composition",version:"7.1.0",label:"Contract",policy:"production-safe",tokenPack:"sovereign-aurora",scene:"aether-command",budget:"balanced",engine:{intensity:1,glowStrength:.9},field:{preset:"off",density:0},surfaces:[{target:"#authoringSandbox .authoring-primary",recipe:"clean-room"}]};
+    const validReport=contracts.validate(baseContract);
+    assert("visual contract validates a safe blueprint",validReport.valid&&validReport.grade==="A");
+    assert("contract validation is read-only",validReport.mutations===0&&document.querySelector(".authoring-primary").getAttribute("data-axm-surface-recipe")===null);
+    assert("contract fingerprint is deterministic",validReport.fingerprint===contracts.fingerprint(baseContract));
+    const changedContract=JSON.parse(JSON.stringify(baseContract));changedContract.engine.intensity=.8;
+    assert("contract fingerprint changes with visual intent",contracts.fingerprint(baseContract)!==contracts.fingerprint(changedContract));
+    const comparison=contracts.compare(baseContract,changedContract);
+    assert("contract comparison identifies exact changed path",comparison.changed&&comparison.changes.some(item=>item.path==="engine.intensity"));
+    const unknown={...baseContract,execute:"bad"};
+    assert("contract rejects arbitrary top-level keys",!contracts.validate(unknown).valid&&contracts.validate(unknown).errors.some(e=>e.code==="unknown-key"));
+    const range={...baseContract,engine:{intensity:9}};
+    assert("contract rejects unbounded visual values",!contracts.validate(range).valid&&contracts.validate(range).errors.some(e=>e.code==="range"));
+    const lowPower={...baseContract,policy:"low-power",budget:"low-power",engine:{quality:"high",motion:"full"},field:{preset:"embers",density:.5}};
+    assert("low-power policy catches conflicting spectacle",!contracts.validate(lowPower).valid&&contracts.validate(lowPower).errors.length>=2);
+    const access={...baseContract,policy:"accessibility",budget:"accessibility",engine:{motion:"full",transparency:"full",contrast:"auto"},field:{preset:"stars"}};
+    assert("accessibility policy catches motion transparency and field conflicts",!contracts.validate(access).valid&&contracts.validate(access).errors.length>=3);
+    const invalidSelector={...baseContract,surfaces:[{target:"[[broken",recipe:"clean-room"}]};
+    assert("contract rejects invalid local selectors",!contracts.validate(invalidSelector).valid&&contracts.validate(invalidSelector).errors.some(e=>e.code==="invalid-selector"));
+    assert("contract state declares read-only code-free operation",contracts.getState().readOnly&&contracts.getState().codeFree);
+
+    assert("workbench exposes six authored blueprints",workbench.list().length===6&&AXMCompositionWorkbench.builtIns.length===6);
+    const wbPreview=workbench.preview("sovereign-command");
+    assert("workbench preview is valid and mutation-free",wbPreview.valid&&wbPreview.mutations===0&&wbPreview.approvalRequired);
+    assert("workbench preview reports selector impact",wbPreview.totalMatchedSurfaces===2&&wbPreview.surfaceImpact.every(item=>item.matched===1));
+    assert("workbench apply rejects missing approval",(await workbench.apply("sovereign-command")).reason==="approval-required");
+    const beforeEngine=engine.getConfig(); const beforeField=field.getState().preset; const beforeScene=scenes.getState().active;
+    const wbApply=await workbench.apply("sovereign-command",{approved:true,transition:false,cue:false});
+    assert("approved blueprint applies",wbApply.applied&&workbench.getState().active==="sovereign-command");
+    assert("blueprint coordinates token pack",engine.root.getAttribute("data-axm-token-pack")==="sovereign-aurora");
+    assert("blueprint coordinates scene",scenes.getState().active==="aether-command");
+    assert("blueprint coordinates field",field.getState().preset==="constellation");
+    assert("blueprint coordinates performance budget",engine.root.getAttribute("data-axm-budget")==="balanced");
+    assert("blueprint coordinates local surfaces",document.querySelectorAll("#authoringSandbox .axm-surface-composed").length===2);
+    engine.root.setAttribute("data-axm-budget","platform-external-budget");
+    assert("workbench restore executes",workbench.restore({reason:"smoke"})===true);
+    assert("workbench restores prior engine state",engine.getConfig().theme===beforeEngine.theme&&engine.getConfig().intensity===beforeEngine.intensity);
+    assert("workbench restores prior field",field.getState().preset===beforeField);
+    assert("workbench restores prior scene",scenes.getState().active===beforeScene);
+    assert("workbench restores its local surfaces",document.querySelectorAll("#authoringSandbox .axm-surface-composed").length===0);
+    assert("workbench preserves later platform budget change",engine.root.getAttribute("data-axm-budget")==="platform-external-budget");
+    engine.root.removeAttribute("data-axm-budget");
+    const wbExport=JSON.parse(workbench.export("quiet-proof"));
+    assert("workbench exports a portable blueprint",wbExport.module==="axm.visual.composition"&&wbExport.blueprint.policy==="workspace");
+    wbExport.name="quiet-proof-copy"; assert("workbench imports validated custom blueprint",workbench.import(wbExport)===true&&Boolean(workbench.get("quiet-proof-copy")));
+    surfaces.apply(".authoring-primary","clean-room");
+    const blocked=await workbench.apply("quiet-proof",{approved:true,transition:false,cue:false});
+    assert("workbench blocks replacing precomposed surfaces without review",blocked.reason==="precomposed-surface-review-required");
+    surfaces.restoreAll();
+    throws("workbench rejects policy-invalid registration",()=>workbench.register("invalid-blueprint",access));
+
+    assert("adaptive orchestrator exposes eight explicit intents",AXMAdaptiveOrchestrator.intents.length===8);
+    const normal=orchestrator.recommend({intent:"work",signals:{viewportWidth:1200,coarsePointer:false,reducedMotion:false,highContrast:false,forcedColors:false,deviceMemory:8,hardwareConcurrency:8,saveData:false,visibility:"visible"}});
+    assert("normal recommendation remains calm workspace",normal.valid&&normal.budget==="workspace"&&normal.blueprint==="quiet-proof");
+    assert("recommendation never applies automatically",normal.automaticApply===false&&workbench.getState().active===null);
+    const reduced=orchestrator.recommend({intent:"present",signals:{viewportWidth:1200,reducedMotion:true,deviceMemory:8,hardwareConcurrency:8}});
+    assert("reduced-motion signal restrains showcase",reduced.budget==="balanced"&&reduced.blueprint==="quiet-proof"&&reduced.reasons.some(r=>r.code==="reduced-motion"));
+    const constrained=orchestrator.recommend({intent:"create",signals:{viewportWidth:900,deviceMemory:2,hardwareConcurrency:2,saveData:true}});
+    assert("resource restraint recommends low power",constrained.budget==="low-power"&&constrained.preset==="low-power");
+    const accessible=orchestrator.recommend({intent:"accessible",signals:{viewportWidth:900,forcedColors:true}});
+    assert("accessibility intent takes priority",accessible.budget==="accessibility"&&accessible.blueprint==="accessible-night");
+    const compact=orchestrator.recommend({intent:"present",signals:{viewportWidth:390,coarsePointer:true,deviceMemory:8,hardwareConcurrency:8}});
+    assert("compact interface reduces showcase budget",compact.budget==="balanced"&&compact.reasons.some(r=>r.code==="compact-interface"));
+    assert("recommendation apply requires explicit approval",(await orchestrator.applyRecommendation(normal)).reason==="approval-required");
+    const appliedRecommendation=await orchestrator.applyRecommendation(normal,{approved:true,transition:false,cue:false});
+    assert("approved recommendation routes through workbench",appliedRecommendation.applied&&appliedRecommendation.route==="blueprint");
+    assert("orchestrator restores its approved route",orchestrator.restore()===true&&workbench.getState().active===null);
+    assert("orchestrator reads no content meaning",orchestrator.getState().contentMeaningRead===false&&orchestrator.getState().semanticInference===false);
+
+    const baseline=drift.setBaseline("surface-baseline","#authoringSandbox > *");
+    assert("drift monitor captures a baseline",baseline.saved&&baseline.count===2);
+    assert("drift capture reads no content",drift.capture("#authoringSandbox > *").contentRead===false);
+    const noDrift=drift.compare("surface-baseline");
+    assert("unchanged baseline has no drift",noDrift.compared&&!noDrift.drifted&&noDrift.score===100);
+    assert("drift comparison is read-only",noDrift.mutations===0);
+    document.querySelector(".authoring-primary").style.backgroundColor="rgb(80,20,90)";
+    const changed=drift.compare("surface-baseline");
+    assert("computed-style change produces drift",changed.drifted&&changed.changeCount>=1);
+    assert("drift score falls after a meaningful change",changed.score<100&&changed.counts.high>=1);
+    document.querySelector(".authoring-primary").style.transform="translateX(2px)";
+    const ignoredDynamic=drift.compare("surface-baseline",{ignoreDynamic:true});
+    assert("dynamic transform can be ignored",!ignoredDynamic.changes.flatMap(x=>x.changes).some(x=>x.property==="transform"));
+    const driftExport=JSON.parse(drift.exportBaseline("surface-baseline"));
+    assert("drift baseline exports as local JSON",driftExport.module==="axm.visual.drift-baseline"&&driftExport.baseline.contentRead===false);
+    drift.removeBaseline("surface-baseline");
+    assert("drift baseline imports after removal",drift.importBaseline({...driftExport,name:"surface-imported"})===true&&drift.getState().baselines===1);
+    assert("drift monitor declares zero mutations",drift.getState().readOnly&&drift.getState().mutations===0);
+
+    assert("all authoring organs declare local-only boundaries",[tokens.getState(),contracts.getState(),workbench.getState(),orchestrator.getState(),drift.getState()].every(state=>state.localOnly&&state.telemetry===false));
+    assert("token and workbench definitions are code-free",tokens.getState().codeFreeDefinitions&&workbench.getState().codeFreeBlueprints);
+  } catch (error) {
+    assert("unhandled authoring-test exception",false,error?.stack||error?.message||String(error));
+  } finally {
+    const teardown=(name,action)=>{try{action();}catch(error){teardownErrors.push({name,message:error?.message||String(error)});}};
+    teardown("orchestrator",()=>orchestrator?.destroy?.({restore:true}));
+    teardown("workbench",()=>workbench?.destroy?.({restore:true}));
+    teardown("tokens",()=>tokens?.destroy?.({restore:true}));
+    teardown("drift",()=>drift?.clear?.());
+    teardown("vault",()=>vault?.destroy?.({restore:true}));
+    teardown("cues",()=>cues?.destroy?.());
+    teardown("transitions",()=>transitions?.destroy?.());
+    teardown("surfaces",()=>surfaces?.destroy?.());
+    teardown("interactions",()=>interactions?.destroy?.());
+    teardown("scenes",()=>scenes?.destroy?.({restore:false}));
+    teardown("field",()=>field?.destroy?.());
+    teardown("lighting",()=>lighting?.destroy?.());
+    teardown("engine",()=>engine?.destroy?.());
+  }
+  const passed=checks.filter(x=>x.passed).length,failed=checks.length-passed;
+  window.__AXM_AUTHORING_TEST_RESULT__={version:"7.1.0",passed,failed,total:checks.length,checks,teardownErrors,completed:true,localOnly:true};
+  document.title=failed?`AXM_V7_AUTHORING_FAIL_${failed}`:`AXM_V7_AUTHORING_PASS_${passed}`;
+  document.body.dataset.testStatus=failed?"fail":"pass"; summary.className=failed?"fail":"pass"; summary.textContent=failed?`${passed}/${checks.length} passed; ${failed} failed.`:`${passed}/${checks.length} authoring assertions passed.`;
+})();
+</script>
+</body>
+</html>

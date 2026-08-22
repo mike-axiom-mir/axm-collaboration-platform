@@ -1,0 +1,264 @@
+/* AXM Aetherglass Storycraft v7.1.0 — focus, journey and deterministic capture presentation layer. */
+
+.axm-focus-director {
+  --axm-focus-x: 12px;
+  --axm-focus-y: 12px;
+  --axm-focus-w: 120px;
+  --axm-focus-h: 80px;
+  --axm-focus-color: var(--axm-accent-1, #79f7ff);
+  position: fixed;
+  inset: 0;
+  z-index: 2147483200;
+  pointer-events: none;
+  contain: layout style;
+}
+
+.axm-focus-announcer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.axm-focus-frame {
+  position: fixed;
+  left: var(--axm-focus-x);
+  top: var(--axm-focus-y);
+  width: var(--axm-focus-w);
+  height: var(--axm-focus-h);
+  border: var(--axm-focus-width, 3px) solid color-mix(in srgb, var(--axm-focus-color) 84%, white 16%);
+  border-radius: clamp(18px, 2vw, 32px);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--axm-focus-color) 10%, transparent), transparent 38%),
+    linear-gradient(315deg, color-mix(in srgb, var(--axm-lux, #ffd98a) 7%, transparent), transparent 42%);
+  box-shadow:
+    0 0 0 9999px rgba(2, 4, 11, .72),
+    0 0 0 1px rgba(255, 255, 255, .1) inset,
+    0 0 34px color-mix(in srgb, var(--axm-focus-color) 40%, transparent),
+    0 22px 90px rgba(0, 0, 0, .52);
+  backdrop-filter: saturate(1.12) brightness(1.05);
+  transition: left .36s cubic-bezier(.2,.8,.2,1), top .36s cubic-bezier(.2,.8,.2,1), width .36s cubic-bezier(.2,.8,.2,1), height .36s cubic-bezier(.2,.8,.2,1);
+}
+
+.axm-focus-frame::before,
+.axm-focus-frame::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.axm-focus-frame::before {
+  border: 1px solid color-mix(in srgb, var(--axm-focus-color) 26%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--axm-focus-color) 18%, transparent) inset;
+}
+
+.axm-focus-frame::after {
+  inset: -9px;
+  border: 1px solid color-mix(in srgb, var(--axm-focus-color) 16%, transparent);
+  filter: blur(.2px);
+}
+
+.axm-focus-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: color-mix(in srgb, var(--axm-focus-color) 88%, white 12%);
+  filter: drop-shadow(0 0 8px var(--axm-focus-color));
+}
+.axm-focus-corner--a { left: -3px; top: -3px; border-left: 2px solid; border-top: 2px solid; border-radius: 10px 0 0; }
+.axm-focus-corner--b { right: -3px; top: -3px; border-right: 2px solid; border-top: 2px solid; border-radius: 0 10px 0 0; }
+.axm-focus-corner--c { right: -3px; bottom: -3px; border-right: 2px solid; border-bottom: 2px solid; border-radius: 0 0 10px; }
+.axm-focus-corner--d { left: -3px; bottom: -3px; border-left: 2px solid; border-bottom: 2px solid; border-radius: 0 0 0 10px; }
+
+.axm-focus-callout {
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 17px 18px 16px;
+  border: 1px solid color-mix(in srgb, var(--axm-focus-color) 34%, rgba(255,255,255,.12));
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(19, 26, 48, .92), rgba(7, 10, 22, .9)),
+    radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--axm-focus-color) 16%, transparent), transparent 50%);
+  box-shadow: 0 22px 80px rgba(0,0,0,.48), 0 0 28px color-mix(in srgb, var(--axm-focus-color) 12%, transparent), inset 0 1px rgba(255,255,255,.1);
+  backdrop-filter: blur(22px) saturate(1.35);
+  transform: translate3d(16px, 16px, 0);
+  transition: transform .36s cubic-bezier(.2,.8,.2,1);
+  color: var(--axm-text, #edf7ff);
+}
+
+.axm-focus-callout::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(120deg, rgba(255,255,255,.09), transparent 24%, transparent 70%, color-mix(in srgb, var(--axm-focus-color) 8%, transparent));
+  pointer-events: none;
+}
+
+.axm-focus-eyebrow,
+.axm-focus-step {
+  position: relative;
+  display: block;
+  color: color-mix(in srgb, var(--axm-focus-color) 82%, white 18%);
+  font: 700 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.axm-focus-title { position: relative; display: block; margin-top: 8px; font: 650 clamp(18px, 2vw, 25px)/1.08 system-ui, sans-serif; letter-spacing: -.035em; }
+.axm-focus-copy { position: relative; margin: 9px 0 0; color: color-mix(in srgb, var(--axm-text, #edf7ff) 72%, transparent); font: 430 13px/1.55 system-ui, sans-serif; }
+.axm-focus-step { margin-top: 13px; color: color-mix(in srgb, var(--axm-text, #edf7ff) 48%, transparent); }
+
+.axm-focus-director[data-axm-focus-style="proof"] { --axm-focus-color: var(--axm-positive, #75ffc0); }
+.axm-focus-director[data-axm-focus-style="quiet"] { --axm-focus-color: #a9bed3; }
+.axm-focus-director[data-axm-focus-style="luxury"] { --axm-focus-color: var(--axm-lux, #ffd98a); }
+.axm-focus-director[data-axm-focus-style="warning"] { --axm-focus-color: var(--axm-warning, #ffb861); }
+
+.axm-focus-pulse .axm-focus-frame { animation: axm-focus-pulse .64s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes axm-focus-pulse {
+  0% { filter: brightness(1); }
+  35% { filter: brightness(1.35); box-shadow: 0 0 0 9999px rgba(2,4,11,.72), 0 0 0 1px rgba(255,255,255,.14) inset, 0 0 72px color-mix(in srgb, var(--axm-focus-color) 68%, transparent), 0 22px 90px rgba(0,0,0,.52); }
+  100% { filter: brightness(1); }
+}
+
+.axm-capture-active { isolation: isolate; }
+.axm-capture-freeze,
+.axm-capture-freeze * {
+  scroll-behavior: auto !important;
+  caret-color: transparent !important;
+}
+.axm-capture-freeze *:not(video):not(audio) {
+  animation-play-state: paused !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+[data-axm-capture-hidden^="axm-capture-"] { visibility: hidden !important; }
+
+.axm-capture-guides {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483400;
+  pointer-events: none;
+  border: max(1px, .08vw) solid color-mix(in srgb, var(--axm-accent-1, #79f7ff) 34%, transparent);
+  box-shadow: inset 0 0 0 10px rgba(5, 9, 18, .14), inset 0 0 80px rgba(0,0,0,.24);
+}
+.axm-capture-guides::before,
+.axm-capture-guides::after {
+  content: "";
+  position: absolute;
+  inset: 7.5%;
+  border: 1px dashed color-mix(in srgb, var(--axm-accent-1, #79f7ff) 22%, transparent);
+  border-radius: 18px;
+}
+.axm-capture-guides::after { inset: 12.5%; border-color: color-mix(in srgb, var(--axm-lux, #ffd98a) 16%, transparent); }
+.axm-capture-guide { position: absolute; opacity: .35; background: linear-gradient(90deg, transparent, var(--axm-accent-1, #79f7ff), transparent); }
+.axm-capture-guide--h { left: 0; right: 0; top: 50%; height: 1px; }
+.axm-capture-guide--v { top: 0; bottom: 0; left: 50%; width: 1px; background: linear-gradient(180deg, transparent, var(--axm-accent-1, #79f7ff), transparent); }
+.axm-capture-mark {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  max-width: min(70vw, 420px);
+  padding: 7px 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  background: rgba(5, 9, 18, .74);
+  color: rgba(235,248,255,.7);
+  font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(12px);
+}
+
+.axm-storycraft-lab {
+  position: relative;
+  overflow: clip;
+  padding: clamp(22px, 3vw, 38px);
+}
+.axm-storycraft-lab::before {
+  content: "";
+  position: absolute;
+  inset: -30% 40% 20% -20%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--axm-accent-3, #ff72d8) 18%, transparent), transparent 66%);
+  filter: blur(30px);
+  pointer-events: none;
+}
+.axm-storycraft-grid { position: relative; display: grid; grid-template-columns: minmax(260px, .8fr) minmax(360px, 1.2fr); gap: 18px; margin-top: 22px; }
+.axm-storycraft-controls,
+.axm-storycraft-stage { position: relative; min-width: 0; padding: 20px; border-radius: 26px; }
+.axm-storycraft-controls { display: grid; align-content: start; gap: 14px; }
+.axm-storycraft-stage {
+  min-height: 410px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--axm-accent-2, #a88cff) 16%, transparent), transparent 42%),
+    linear-gradient(150deg, rgba(14,20,40,.82), rgba(6,9,20,.92));
+}
+.axm-storycraft-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.026) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.026) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(to bottom, black, transparent 90%);
+  pointer-events: none;
+}
+.axm-storycraft-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.axm-storycraft-actions .axm-button { flex: 1 1 130px; }
+.axm-storycraft-status { min-height: 48px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; color: color-mix(in srgb, var(--axm-text, #edf7ff) 64%, transparent); background: rgba(0,0,0,.16); font-size: 12px; line-height: 1.45; }
+.axm-storycraft-progress { display: grid; gap: 10px; align-content: center; position: relative; z-index: 1; }
+.axm-storycraft-progress-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+.axm-storycraft-progress-head strong { display: block; margin-top: 7px; font-size: clamp(23px, 4vw, 44px); line-height: .98; letter-spacing: -.05em; }
+.axm-storycraft-progress-head span { font: 700 10px/1 ui-monospace, monospace; letter-spacing: .12em; color: color-mix(in srgb, var(--axm-accent-1, #79f7ff) 72%, white 28%); }
+.axm-storycraft-rail { position: relative; height: 8px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; }
+.axm-storycraft-rail span { display: block; height: 100%; width: var(--axm-story-progress, 0%); border-radius: inherit; background: linear-gradient(90deg, var(--axm-accent-1, #79f7ff), var(--axm-accent-2, #a88cff), var(--axm-lux, #ffd98a)); box-shadow: 0 0 20px color-mix(in srgb, var(--axm-accent-1, #79f7ff) 44%, transparent); transition: width .45s cubic-bezier(.2,.8,.2,1); }
+.axm-storycraft-step-preview { align-self: center; max-width: 680px; padding: clamp(18px, 3vw, 30px); border-left: 1px solid color-mix(in srgb, var(--axm-accent-1, #79f7ff) 34%, transparent); background: linear-gradient(90deg, color-mix(in srgb, var(--axm-accent-1, #79f7ff) 6%, transparent), transparent 76%); }
+.axm-storycraft-step-preview strong { display: block; margin-top: 10px; font-size: clamp(22px, 3vw, 38px); line-height: 1.02; letter-spacing: -.045em; }
+.axm-storycraft-step-preview p { max-width: 650px; margin: 12px 0 0; color: color-mix(in srgb, var(--axm-text, #edf7ff) 62%, transparent); font-size: 13px; line-height: 1.55; }
+.axm-storycraft-map { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; align-self: end; position: relative; z-index: 1; }
+.axm-storycraft-map button { min-width: 0; min-height: 68px; padding: 10px 9px; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; background: rgba(255,255,255,.025); color: rgba(235,248,255,.65); text-align: left; font: 700 11px/1.3 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; transition: border-color .2s ease, background .2s ease, color .2s ease, transform .2s ease; }
+.axm-storycraft-map button:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--axm-accent-1, #79f7ff) 36%, transparent); color: var(--axm-text, #edf7ff); }
+.axm-storycraft-map button[aria-current="step"] { color: white; border-color: color-mix(in srgb, var(--axm-accent-1, #79f7ff) 54%, transparent); background: linear-gradient(135deg, color-mix(in srgb, var(--axm-accent-1, #79f7ff) 14%, transparent), rgba(255,255,255,.04)); box-shadow: 0 0 20px color-mix(in srgb, var(--axm-accent-1, #79f7ff) 13%, transparent); }
+.axm-storycraft-map button span { display: block; margin-top: 5px; color: rgba(235,248,255,.48); font-size: 10px; }
+.axm-storycraft-autoplay { margin-top: -2px; }
+.axm-storycraft-boundaries { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; margin-top: 18px; }
+.axm-storycraft-boundary { padding: 12px; border: 1px solid rgba(255,255,255,.07); border-radius: 15px; background: rgba(0,0,0,.14); }
+.axm-storycraft-boundary strong { display: block; font-size: 11px; }
+.axm-storycraft-boundary span { display: block; margin-top: 3px; color: rgba(235,248,255,.45); font-size: 10px; }
+
+@media (max-width: 900px) {
+  .axm-storycraft-grid { grid-template-columns: 1fr; }
+  .axm-storycraft-stage { min-height: 360px; }
+}
+@media (max-width: 620px) {
+  .axm-focus-callout { padding: 14px 15px; border-radius: 18px; }
+  .axm-focus-title { font-size: 18px; }
+  .axm-focus-copy { font-size: 12px; }
+  .axm-storycraft-lab { padding: 18px; }
+  .axm-storycraft-controls, .axm-storycraft-stage { padding: 16px; border-radius: 21px; }
+  .axm-storycraft-map { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .axm-storycraft-boundaries { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axm-focus-frame, .axm-focus-callout, .axm-storycraft-rail span, .axm-storycraft-map button { transition-duration: 0s !important; animation: none !important; }
+}
+
+@media (forced-colors: active) {
+  .axm-focus-frame, .axm-focus-callout, .axm-storycraft-controls, .axm-storycraft-stage { forced-color-adjust: auto; border: 2px solid CanvasText; background: Canvas; color: CanvasText; box-shadow: none; backdrop-filter: none; }
+  .axm-focus-frame { box-shadow: 0 0 0 9999px rgba(0,0,0,.75); }
+}
+
+@media print {
+  .axm-focus-director, .axm-capture-guides, .axm-storycraft-actions { display: none !important; }
+  .axm-capture-active { background: white !important; color: black !important; }
+}

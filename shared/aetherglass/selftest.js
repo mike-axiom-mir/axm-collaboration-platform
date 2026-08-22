@@ -25,6 +25,11 @@ Object.keys(expected).forEach(function (relative) {
   test(actual === expected[relative], relative + ' matches the verified v7.1.0 release');
 });
 
+const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'MODULE_MANIFEST.json'), 'utf8'));
+Object.entries(manifest.entrypoints || {}).forEach(function ([name, relative]) {
+  test(fs.existsSync(path.join(__dirname, relative)), 'declared entrypoint exists: ' + name);
+});
+
 const skin = Skin.newSkin('Bridge proof', 'axm');
 skin.tokens = { '--cy':'#12d6ee', '--purple':'#ab78ff', '--blue':'#356fff', '--gold':'#efbd57' };
 skin.visuals = { enabled:true, theme:'royal', lightPreset:'quiet-aura' };
@@ -37,4 +42,3 @@ test(typeof Bridge.apply === 'function' && typeof Bridge.destroy === 'function',
 
 if (failures) process.exit(1);
 console.log('Aetherglass skin bridge selftest: PASS');
-
