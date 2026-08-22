@@ -1,0 +1,43 @@
+{
+  "schema": "axm.capability-gap-scout-receipt/v1",
+  "requestedOutcome": "Reduce repeated reasoning around several concurrent deterministic PRs by selecting at most one exact next platform-review candidate and typing every refresh or evidence hold.",
+  "initialRoute": "BLOCKED",
+  "satisfied": [
+    "github.pr.receiver-state.read",
+    "github.merge.refuse"
+  ],
+  "degraded": [
+    "git.pr.platform-handoff.verify"
+  ],
+  "missing": [
+    { "capabilityId": "github.pr.sequence.single-next-plan", "gapType": "HAND" },
+    { "capabilityId": "github.pr.next-action-handoff", "gapType": "CONTRACT" }
+  ],
+  "cheapestHonestRoute": "Add a separate read-only adapter that composes existing checkpoint and publisher handoffs with host-authenticated GitHub reads; do not expand the network-writing publisher or add merge authority.",
+  "newHand": {
+    "capability_id": "git.pr.deterministic-sequence-next",
+    "purpose": "Bind an ordered PR set to current main, exact heads, handoff evidence, named checks, and GitHub receiver state, then emit zero or one next action.",
+    "inputs_and_schemas": [
+      "axm.git-pr-sequence-policy/v1",
+      "axm.chatgpt-platform-merge-handoff/v1",
+      "host/github-cli-authenticated-session"
+    ],
+    "outputs_and_schemas": [
+      "axm.git-pr-sequence-plan/v1",
+      "axm.git-pr-next-action-handoff/v1"
+    ],
+    "side_effects": [
+      "read current GitHub main and pull-request state",
+      "optional explicit create-new output outside repository"
+    ],
+    "permissions_and_consent": [
+      "host-authenticated GitHub read session",
+      "explicit candidate order policy"
+    ],
+    "resource_budget": "One main-ref read, one bounded open-PR inventory, targeted reads only for declared candidates absent from that inventory, and local deterministic computation.",
+    "failure_and_recovery": "Hold with typed evidence; never skip a blocked predecessor or mutate GitHub. Discard every plan after any external action and reprobe.",
+    "compatibility_version_contract": "Consumes checkpoint/platform handoff v1 and GitHub CLI JSON fields; emits sequencer v0.1 packets.",
+    "verification_contract": "Pure deterministic cases, drift and authority refusals, mocked GitHub command trace, real read-only plan over all current open PRs, and full Workshop regression.",
+    "promotion_gate": "Remain EXPERIMENTAL; technical NEXT_READY is not review acceptance, merge authority, promotion, roots, or CANON."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-base-refresh-receipt/v1",
+  "type": "object",
+  "required": ["schema", "state", "attempted", "checks", "authority", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-base-refresh-receipt/v1" },
+    "state": { "enum": ["PASS", "ROLLED_BACK", "REFUSED", "RECOVERY_REQUIRED"] },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": true
+}

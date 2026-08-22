@@ -1,0 +1,18 @@
+{
+  "schema": "axm.git-pr-review-metadata/v1",
+  "title": "feat: add deterministic PR sequencer",
+  "summary": "Adds a read-only multi-PR sequencer that selects at most one exact next platform-review candidate and holds stale concurrent work.",
+  "changeNotes": [
+    "Composes explicit sequence policy, deterministic handoff receipts, and live GitHub receiver state.",
+    "Requires exact head, exact current checkpoint base, green named checks, CLEAN merge state, and non-draft status.",
+    "Emits one compact next-action handoff and requires a full reprobe after any external action."
+  ],
+  "riskNotes": [
+    "Technical NEXT_READY is evidence for review ordering, not approval or merge authority.",
+    "GitHub state can change after observation, so platform must recheck the exact receiver state before action."
+  ],
+  "followUps": [
+    "Publish only after the prerequisite checkpoint and publisher PRs are merged and the branch is rebased.",
+    "Platform Axiom/Mir independently reviews; local Keel does not merge or change CANON."
+  ]
+}
