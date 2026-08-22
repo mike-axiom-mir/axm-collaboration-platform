@@ -62,9 +62,10 @@ function truth() {
     oxygenConsumptionClosureRequired: true,
     aerobicProcess: true,
     minimumDissolvedOxygenReserveRequired: true,
-    surfaceTemperatureProxyResponsive: true,
+    surfaceTemperatureProxyResponsive: false,
     q10TemperatureResponseParameterized: true,
-    persistentFloodplainWaterTemperatureState: false,
+    persistentFloodplainWaterTemperatureState: true,
+    floodplainThermalReceiptBindingRequired: true,
     ammoniumToNitrateOneStepApproximation: true,
     nitriteIntermediateResolved: false,
     alkalinityDemandDiagnostic: false,
@@ -100,6 +101,7 @@ export function emptyFloodplainNitrificationState(options = {}) {
       optimalDissolvedOxygenMgL: 0,
       oxygenResponseFactor: 0,
       waterTemperatureC: NITRIFICATION_REFERENCE_TEMPERATURE_C,
+      floodplainThermalReceiptDigest: null,
       referenceTemperatureC: NITRIFICATION_REFERENCE_TEMPERATURE_C,
       temperatureQ10: NITRIFICATION_DEFAULT_Q10,
       unclampedTemperatureResponseFactor: 1,
@@ -169,6 +171,10 @@ export function normalizeFloodplainNitrificationState(source,
     waterTemperatureC: clamp(finite(
       source.lastActivity?.waterTemperatureC,
       NITRIFICATION_REFERENCE_TEMPERATURE_C), -80, 80),
+    floodplainThermalReceiptDigest:
+      typeof source.lastActivity?.floodplainThermalReceiptDigest ===
+        'string'
+        ? source.lastActivity.floodplainThermalReceiptDigest : null,
     referenceTemperatureC: clamp(finite(
       source.lastActivity?.referenceTemperatureC,
       NITRIFICATION_REFERENCE_TEMPERATURE_C), -20, 40),
@@ -259,6 +265,9 @@ export function floodplainNitrificationPlan(source, floodplainSource,
     (optimalDissolvedOxygenMgL - minimumDissolvedOxygenMgL));
   const waterTemperatureC = clamp(finite(context.waterTemperatureC,
     NITRIFICATION_REFERENCE_TEMPERATURE_C), -80, 80);
+  const floodplainThermalReceiptDigest =
+    typeof context.floodplainThermalReceiptDigest === 'string'
+      ? context.floodplainThermalReceiptDigest : null;
   const referenceTemperatureC = clamp(finite(
     context.referenceTemperatureC,
     NITRIFICATION_REFERENCE_TEMPERATURE_C), -20, 40);
@@ -313,6 +322,7 @@ export function floodplainNitrificationPlan(source, floodplainSource,
       optimalDissolvedOxygenMgL: round(optimalDissolvedOxygenMgL, 9),
       oxygenResponseFactor: round(oxygenResponseFactor, 9),
       waterTemperatureC: round(waterTemperatureC, 9),
+      floodplainThermalReceiptDigest,
       referenceTemperatureC: round(referenceTemperatureC, 9),
       temperatureQ10: round(temperatureQ10, 9),
       unclampedTemperatureResponseFactor: round(

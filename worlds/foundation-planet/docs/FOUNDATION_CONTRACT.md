@@ -1341,9 +1341,93 @@ erosion or sediment-transport calibration, arbitrary-precision conservation,
 resolved morphodynamics, a global sediment-network proof or an exhaustive
 planet-state proof.
 
+## Rung 65 channel–floodplain exchange numeric-closure addendum
+
+Every loaded channel/floodplain transfer must preserve twelve measured
+material-owner residuals: water; total carbon and nitrogen; nitrate and
+ammonium; phosphorus, oxygen and alkalinity; and clay, silt, sand and gravel.
+Current evidence uses
+`axm.foundation-planet.floodplain-exchange-receipt/v4` with nested
+`axm.foundation-planet.floodplain-exchange-mass-closure/v1` under the typed
+`axm.foundation-planet.floodplain-exchange-mass-closure-policy/v1`.
+
+Water retains its one-kilogram material floor. Each chemistry and grain identity
+retains its 0.000001 kg floor. The actual numerical bound is the greater of that
+identity's floor and eight times `Number.EPSILON` times the sum of the absolute
+unrounded signed operands for that identity alone. Water records final channel,
+final floodplain, negative initial channel and negative initial floodplain
+owners. Each dissolved identity records the same four owner positions. Each
+grain records final channel suspended, channel bed, floodplain suspended and
+floodplain deposited owners followed by their four negative initial owners. A
+receipt may not erase a measured residue, borrow another identity's scale or
+choose a larger free-form bound.
+
+System audit v15 independently reconstructs the exact identity set, operand
+counts, signed sums, policy bounds, compatibility residual projections,
+aggregate maximum residual, maximum bound and maximum utilization. Altering one
+recorded operand or one receipt-supplied tolerance fails the dedicated
+`floodplain-exchange-receipts` check even when green truth flags remain. Basin
+engine v31 accepts v30 state, preserves its material owners and clocks, and
+discards step-v29 evidence instead of promoting the old exchange contract.
+Floodplain state normalization likewise preserves current material and
+cumulative history but drops a stored v3 exchange receipt; it does not invent a
+new migration transfer.
+
+The held 150-case representation sweep covered all twelve operand shapes. All
+150 mathematically zero sums exceeded their former fixed floors, while none
+failed the derived policy. Maximum measured residue was 3.25 kg, maximum bound
+was 32,768 kg and maximum bound utilization was 2.5390625%. This is a bounded
+binary floating-point accounting test, not arbitrary-precision conservation,
+resolved inundation hydraulics, scientific flood calibration or an exhaustive
+planet-state proof.
+
+## Rung 66 floodplain thermal-owner addendum
+
+Every persisted reach owns one
+`axm.foundation-planet.floodplain-thermal-state/v1` beside its floodplain
+material owner. The state carries liquid-water temperature, the water mass to
+which that temperature applies, sensible heat, observed wet and dry time,
+cumulative net-advected heat, cumulative parameterized external-boundary heat
+and the latest typed transition. Denitrification, nitrification and
+floodplain-atmosphere gas exchange must read the same final temperature and
+record the exact digest of that reach's thermal transition. A same-step direct
+surface-temperature proxy is no longer sufficient evidence.
+
+Current thermal evidence is
+`axm.foundation-planet.floodplain-thermal-receipt/v1` with nested
+`axm.foundation-planet.floodplain-thermal-energy-closure/v1` under
+`axm.foundation-planet.floodplain-thermal-energy-closure-policy/v1`. For an
+observed transition the signed energy operands are final sensible heat,
+negative initial heat, negative inflow heat, positive outflow heat and negative
+external-boundary heat. The numerical decision bound is the greater of one
+joule or eight times `Number.EPSILON` times the sum of those absolute unrounded
+operands. The measured residual and utilization remain evidence and may not be
+clamped, replaced or hidden by a receipt-supplied tolerance.
+
+Basin engine v32 accepts v31 state. A reach without the R66 owner receives an
+empty one-shot thermal checkpoint while every pre-existing material,
+chemistry, biological, clock and cumulative owner remains unchanged. The first
+step initializes current sensible heat from current water and the declared
+incoming-temperature boundary, records that pre-R66 heat history is
+unobserved, and makes no historical closure claim. Step-v30 receipts are not
+promoted to step v31.
+
+System audit v16 independently reconstructs water change, the five energy
+terms, signed operands, policy bound, residual, utilization, aggregate maxima
+and the exact digest/temperature binding of all three consumer processes. It
+must fail tolerance inflation, altered energy operands or altered consumer
+digests even when receipt truth flags remain green. API v62 exposes the owner,
+policy, receipts and live mean-temperature/residual/bound/utilization
+diagnostics read-only.
+
+This contract does not claim a resolved channel-water temperature, an
+atmosphere or soil debit for the parameterized external heat boundary,
+freeze–thaw phase ownership, latent heat, scientific calibration, arbitrary
+precision, exhaustive planet-state proof, promotion or canonization.
+
 ## Runtime integrity and handoff
 
-`axm.foundation-planet.system-audit/v14` is a read-only report over the currently selected Earth-system
+`axm.foundation-planet.system-audit/v16` is a read-only report over the currently selected Earth-system
 column plus the latest loaded transport and basin receipts when those optional seams have run. It
 routes each claim to evidence that can prove it: current schema lineage; the eight-level/seven-interface
 pressure shape; the native phase thermal envelope and per-layer latent ledger; requested, applied and envelope-reconciled atmosphere boundary energy; water, surface-energy and moist-enthalpy residuals; atmosphere-owned gas state and gas
@@ -1351,7 +1435,7 @@ receipt; nested native-layer CO2-radiation schema, eight-layer shape, longwave a
 boundary; exact land/ocean compatibility mirrors; deep-ocean lineage and mixed/deep alkalinity closure; bounded mixed-layer carbonate source binding, species closure, alkalinity residual and typed refusals; carbonate-informed air-sea wet-air fugacity, direction, sender bound, paired owner application and carbon closure; loaded gas-domain receipt and
 area-weighted C/O2/N2 residuals; transport truth boundaries; scale-aware
 land-subgrid and per-channel floodplain plant-matter, plant-resource and
-detrital-return, reaction-receiver and per-grain geomorphic-sediment numeric closure; and
+detrital-return, reaction-receiver, channel/floodplain exchange, floodplain sensible-heat closure and exact shared-temperature receipt binding, and per-grain geomorphic-sediment numeric closure; and
 finite surface/runoff sediment ownership, paired land/river/coast sediment receipts, independently
 recomputed scale-aware coupled basin water, chemistry, plant-matter and
 per-grain basin material residuals, and typed channel/floodplain exchange receipts. A required failure makes the verdict `FAIL`. An optional seam with no

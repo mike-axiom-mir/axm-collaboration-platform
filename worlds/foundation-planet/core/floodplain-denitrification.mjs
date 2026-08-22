@@ -70,9 +70,10 @@ function truth() {
     pairedOwnerReceiptsRequiredWhenAtmosphereLoaded: true,
     oxygenGated: true,
     nitrogenLimited: true,
-    surfaceTemperatureProxyResponsive: true,
+    surfaceTemperatureProxyResponsive: false,
     q10TemperatureResponseParameterized: true,
-    persistentFloodplainWaterTemperatureState: false,
+    persistentFloodplainWaterTemperatureState: true,
+    floodplainThermalReceiptBindingRequired: true,
     resolvedFloodplainFreezeThawState: false,
     arrheniusKineticsResolved: false,
     reactiveNitrateEquivalentFractionParameterized: false,
@@ -113,6 +114,7 @@ export function emptyFloodplainDenitrificationState(options = {}) {
       anoxicThresholdMgL: 0,
       anoxiaFactor: 0,
       waterTemperatureC: DENITRIFICATION_REFERENCE_TEMPERATURE_C,
+      floodplainThermalReceiptDigest: null,
       referenceTemperatureC: DENITRIFICATION_REFERENCE_TEMPERATURE_C,
       temperatureQ10: DENITRIFICATION_DEFAULT_Q10,
       unclampedTemperatureResponseFactor: 1,
@@ -166,6 +168,10 @@ export function normalizeFloodplainDenitrificationState(source,
     waterTemperatureC: clamp(finite(
       source.lastActivity?.waterTemperatureC,
       DENITRIFICATION_REFERENCE_TEMPERATURE_C), -80, 80),
+    floodplainThermalReceiptDigest:
+      typeof source.lastActivity?.floodplainThermalReceiptDigest ===
+        'string'
+        ? source.lastActivity.floodplainThermalReceiptDigest : null,
     referenceTemperatureC: clamp(finite(
       source.lastActivity?.referenceTemperatureC,
       DENITRIFICATION_REFERENCE_TEMPERATURE_C), -20, 40),
@@ -253,6 +259,9 @@ export function floodplainDenitrificationPlan(source, floodplainSource,
     ? clamp(.2 + .8 * Math.sqrt(clamp(floodplain.inundatedFraction))) : 0;
   const waterTemperatureC = clamp(finite(context.waterTemperatureC,
     DENITRIFICATION_REFERENCE_TEMPERATURE_C), -80, 80);
+  const floodplainThermalReceiptDigest =
+    typeof context.floodplainThermalReceiptDigest === 'string'
+      ? context.floodplainThermalReceiptDigest : null;
   const referenceTemperatureC = clamp(finite(
     context.referenceTemperatureC,
     DENITRIFICATION_REFERENCE_TEMPERATURE_C), -20, 40);
@@ -299,6 +308,7 @@ export function floodplainDenitrificationPlan(source, floodplainSource,
       anoxicThresholdMgL: round(anoxicThresholdMgL, 9),
       anoxiaFactor: round(anoxiaFactor, 9),
       waterTemperatureC: round(waterTemperatureC, 9),
+      floodplainThermalReceiptDigest,
       referenceTemperatureC: round(referenceTemperatureC, 9),
       temperatureQ10: round(temperatureQ10, 9),
       unclampedTemperatureResponseFactor: round(
@@ -335,7 +345,9 @@ export function floodplainDenitrificationPlan(source, floodplainSource,
     truth: {
       ...truth(),
       localFloodplainChemistryOnlyInPlan: true,
-      surfaceTemperatureForcingUsedAsWaterTemperatureProxy: true,
+      surfaceTemperatureForcingUsedAsWaterTemperatureProxy: false,
+      persistentFloodplainThermalStateUsed:
+        typeof floodplainThermalReceiptDigest === 'string',
       atmosphereLoaded: atmosphereAvailable,
       migrationHasZeroReaction: state.migrationCheckpoint
         ? carbonConsumedKgC + nitrogenConsumedKgN <= 1e-12 : true,
@@ -495,7 +507,9 @@ export function advanceFloodplainDenitrification(source, plan,
     },
     truth: {
       ...truth(),
-      surfaceTemperatureForcingUsedAsWaterTemperatureProxy: true,
+      surfaceTemperatureForcingUsedAsWaterTemperatureProxy: false,
+      persistentFloodplainThermalStateUsed:
+        typeof plan?.activity?.floodplainThermalReceiptDigest === 'string',
       pairedOwnerReceiptsPresent: atmosphereAvailable
         ? Boolean(reactionReceipt && atmosphereReceipt) : true,
       exactTransferIdentity: atmosphereAvailable

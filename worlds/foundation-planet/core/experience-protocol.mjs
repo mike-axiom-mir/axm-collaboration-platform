@@ -165,6 +165,19 @@ function normalizeHydrology(hydrology = {}) {
       totalSedimentKg: reach.floodplain.totalSedimentKg,
       inundatedFraction: reach.floodplain.inundatedFraction
     }) : null,
+    floodplainThermal: reach.floodplainThermal ? stableValue({
+      migrationCheckpoint: reach.floodplainThermal.migrationCheckpoint,
+      waterTemperatureC: reach.floodplainThermal.waterTemperatureC,
+      trackedWaterKg: reach.floodplainThermal.trackedWaterKg,
+      sensibleHeatJ: reach.floodplainThermal.sensibleHeatJ,
+      observedThermalDays: reach.floodplainThermal.observedThermalDays,
+      dryDays: reach.floodplainThermal.dryDays,
+      cumulativeNetAdvectedHeatJ:
+        reach.floodplainThermal.cumulativeNetAdvectedHeatJ,
+      cumulativeBoundaryHeatJ:
+        reach.floodplainThermal.cumulativeBoundaryHeatJ,
+      truth: reach.floodplainThermal.truth
+    }) : null,
     floodplainHabitat: reach.floodplainHabitat ? stableValue({
       observedDays: reach.floodplainHabitat.observedDays,
       inundatedExposureDays:
@@ -493,6 +506,7 @@ export function createExperienceSectorCapsule(source, options = {}) {
       observerCanProposeWorldActions: false,
       playerCanProposeWorldActions: true,
       playerCanApplyWorldActions: false,
+      floodplainThermalStateProjected: true,
       floodplainPlantMatterProjected: true,
       floodplainPlantResourcesProjected: true,
       floodplainDecompositionProjected: true,
@@ -529,6 +543,7 @@ export function validateExperienceSectorCapsule(capsule) {
     capsule?.authority?.capsuleCanApplyWorldActions !== false) errors.push('authority');
   if (capsule?.truth?.rendererIndependent !== true ||
     capsule?.truth?.rendererObjectsIncluded !== false ||
+    capsule?.truth?.floodplainThermalStateProjected !== true ||
     capsule?.truth?.floodplainPlantMatterProjected !== true ||
     capsule?.truth?.floodplainPlantResourcesProjected !== true ||
     capsule?.truth?.floodplainDecompositionProjected !== true ||

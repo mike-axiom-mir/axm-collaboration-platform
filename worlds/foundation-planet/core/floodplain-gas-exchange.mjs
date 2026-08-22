@@ -74,6 +74,9 @@ function truth() {
     oxygenReaerationParameterized: true,
     physicalExchangeContinuesWithLifeOff: true,
     nativeAtmosphereSurfaceLayerRequired: true,
+    surfaceTemperatureProxyResponsive: false,
+    persistentFloodplainWaterTemperatureState: true,
+    floodplainThermalReceiptBindingRequired: true,
     bidirectionalHenryLawSolved: false,
     resolvedAirWaterTurbulence: false,
     globallyMixedAtmosphere: false,
@@ -94,6 +97,7 @@ export function emptyFloodplainGasExchangeState(options = {}) {
       surfaceContactFactor: 0,
       equilibrationFraction: 0,
       waterTemperatureC: 0,
+      floodplainThermalReceiptDigest: null,
       oxygenSaturationMgL: 0,
       oxygenSaturationTargetKgO2: 0,
       oxygenDeficitKgO2: 0,
@@ -136,6 +140,10 @@ export function normalizeFloodplainGasExchangeState(source, options = {}) {
       source.lastActivity?.equilibrationFraction)),
     waterTemperatureC: clamp(finite(
       source.lastActivity?.waterTemperatureC), -80, 80),
+    floodplainThermalReceiptDigest:
+      typeof source.lastActivity?.floodplainThermalReceiptDigest ===
+        'string'
+        ? source.lastActivity.floodplainThermalReceiptDigest : null,
     oxygenSaturationMgL: Math.max(0, finite(
       source.lastActivity?.oxygenSaturationMgL)),
     oxygenSaturationTargetKgO2: Math.max(0, finite(
@@ -200,6 +208,9 @@ export function floodplainGasExchangePlan(source, floodplainSource,
   const receivingAreaM2 = Math.max(1, finite(context.receivingAreaM2, 1));
   const waterTemperatureC = clamp(finite(context.waterTemperatureC, 15),
     -2, 40);
+  const floodplainThermalReceiptDigest =
+    typeof context.floodplainThermalReceiptDigest === 'string'
+      ? context.floodplainThermalReceiptDigest : null;
   const saturationMgL = oxygenSaturationMgL(waterTemperatureC);
   const oxygenSaturationTargetKgO2 = floodplain.waterKg *
     saturationMgL * 1e-6;
@@ -253,6 +264,7 @@ export function floodplainGasExchangePlan(source, floodplainSource,
       surfaceContactFactor: round(surfaceContactFactor, 9),
       equilibrationFraction: round(equilibrationFraction, 9),
       waterTemperatureC: round(waterTemperatureC, 6),
+      floodplainThermalReceiptDigest,
       oxygenSaturationMgL: round(saturationMgL, 9),
       oxygenSaturationTargetKgO2: round(
         oxygenSaturationTargetKgO2, 9),

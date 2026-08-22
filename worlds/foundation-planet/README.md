@@ -1474,6 +1474,83 @@ R64 does not claim arbitrary-precision accounting, proof over every planet
 state, a continuously active global basin network, scientific calibration,
 promotion or canonization.
 
+## Rung 65: scale-aware channel–floodplain exchange closure
+
+R65 repairs the immediate material-owner boundary between each loaded river
+reach and its persistent floodplain reservoir. The earlier exchange receipt
+decided water closure with a fixed one-kilogram cutoff and every dissolved
+chemistry and grain-sediment identity with a fixed 0.000001 kg cutoff. At
+planetary owner scales, an exactly conservative exchange could therefore leave
+an ordinary binary floating-point residue beyond its fixed floor and falsely
+open the floodplain and basin truth boundaries.
+
+`axm.foundation-planet.floodplain-exchange-receipt/v4` now carries
+`axm.foundation-planet.floodplain-exchange-mass-closure/v1` under the typed
+`axm.foundation-planet.floodplain-exchange-mass-closure-policy/v1`. Exactly
+twelve identities are retained: water; total carbon and nitrogen; nitrate and
+ammonium; phosphorus, oxygen and alkalinity; and clay, silt, sand and gravel.
+Each identity records its unrounded signed channel/floodplain owner operands,
+measured residual, derived bound and utilization. The bound is the greater of
+the former identity-specific floor or eight IEEE-754 epsilon steps at the sum
+of that identity's absolute operands. It cannot borrow scale from another
+identity or choose a larger free-form tolerance.
+
+Basin engine v31 and step v30 require current exchange evidence while preserving
+all v30 material owners and clocks and discarding old step-v29 receipts. Current
+floodplain state retains its water, chemistry, mineral reservoirs and cumulative
+history while normalization drops a stored v3 exchange receipt without
+inventing a transfer checkpoint. System audit v15 independently reconstructs
+all twelve signed sums, bounds and aggregate maxima and rejects either tolerance
+inflation or an altered recorded operand. API v61 exposes the policy plus live
+maximum residual, bound, utilization and visible River-routing diagnostics.
+
+The repair is **WORKING** within this numeric scope. A deterministic 150-case
+representation sweep across all twelve operand shapes changed from 150
+fixed-floor false failures to no derived-bound failures. It preserved a largest
+measured residue of 3.25 kg; the largest derived bound was 32,768 kg and maximum
+utilization was 2.5390625%. R65 does not claim arbitrary-precision accounting,
+proof over every planet state, resolved inundation hydraulics, scientific flood
+calibration, promotion or canonization.
+
+## Rung 66: persistent floodplain water temperature and sensible heat
+
+R66 replaces three independent same-step surface-temperature proxies with one
+persistent per-reach floodplain thermal owner. Each reach now retains water
+temperature, tracked water mass, sensible heat, observed wet/dry time,
+cumulative net-advected heat and cumulative parameterized boundary heat. The
+same exact transition-receipt digest and final temperature feed floodplain
+denitrification, nitrification and bidirectional gas exchange.
+
+`axm.foundation-planet.floodplain-thermal-receipt/v1` carries
+`axm.foundation-planet.floodplain-thermal-energy-closure/v1` under the typed
+`axm.foundation-planet.floodplain-thermal-energy-closure-policy/v1`. The
+receipt reconciles net water-owner change into modeled inflow or proportional
+outflow sensible heat, applies the explicit surface-boundary relaxation term,
+and records the five signed joule operands, measured residual, derived bound
+and utilization. The bound is the greater of one joule or eight IEEE-754
+epsilon steps at the sum of the absolute unrounded operands; it cannot be
+inflated by the receipt.
+
+Basin engine v32 and step v31 preserve every v31 material, chemistry,
+biological, clock and cumulative owner while adding only an empty one-shot
+thermal checkpoint. The first R66 step observes current floodplain water and
+initializes current heat, but explicitly refuses to reconstruct historical
+heat or claim historical closure. Old step-v30 evidence is discarded rather
+than relabelled. System audit v16 independently reconstructs water change,
+energy terms, signed operands, policy bound, summary maxima and the exact
+thermal receipt binding of all three consumers. API v62 and the Floodplain
+thermal owner diagnostic expose water-weighted mean temperature, receipt count,
+maximum residual, maximum bound and maximum bound utilization.
+
+The repair is **WORKING** within this declared scope. Direct tests cover wet
+thermal inertia, net inflow and outflow heat, dry persistence, migration and
+150 planetary-scale floating-point fixtures that the old fixed one-joule
+decision would reject. Adversarial tests reject tolerance inflation, altered
+energy operands and altered consumer digests. R66 still does not resolve
+channel-water temperature, debit the atmosphere or soil energy owner for the
+parameterized external boundary term, model freeze–thaw or latent heat, claim
+scientific calibration, promote itself or canonize the branch.
+
 ## Why there are two render scales
 
 A real-scale planet cannot render individual trees and a globe-sized continent mesh in one stable coordinate space. Caelus keeps one global latitude/longitude truth and renders it through two views:

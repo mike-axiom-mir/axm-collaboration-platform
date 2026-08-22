@@ -15,7 +15,7 @@ import {
   BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA,
   BasinRoutingEngine,
   basinRoutingDescription
-} from './core/basin-routing.mjs?v=0.65.0-r65.1';
+} from './core/basin-routing.mjs?v=0.66.0-r66.2';
 import {
   ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA
 } from './core/atmosphere-biogeochemistry.mjs?v=0.62.0-r62.1';
@@ -25,6 +25,10 @@ import {
   FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA,
   floodplainDescription
 } from './core/floodplain.mjs?v=0.65.0-r65.1';
+import {
+  FLOODPLAIN_THERMAL_ENERGY_CLOSURE_POLICY_SCHEMA,
+  floodplainThermalDescription
+} from './core/floodplain-thermal.mjs?v=0.66.0-r66.2';
 import { floodplainHabitatDescription } from './core/floodplain-habitat.mjs?v=0.61.0-r61.1';
 import { floodEventHistoryDescription } from './core/flood-event-history.mjs?v=0.61.0-r61.1';
 import { floodplainSuccessionDescription } from './core/floodplain-succession.mjs';
@@ -58,7 +62,7 @@ import {
 } from './core/surface-controls.mjs';
 import {
   auditFoundationSystem, foundationSystemAuditDescription
-} from './core/system-audit.mjs?v=0.65.0-r65.1';
+} from './core/system-audit.mjs?v=0.66.0-r66.2';
 import {
   EXPERIENCE_SOURCE_SCHEMA,
   auditExperienceProtocol,
@@ -81,7 +85,7 @@ const WORLD_CONTRACT = Object.freeze({
   replaceable_conditions: true,
   living_layers_independently_controllable: true,
   physics_connection: 'floating-origin-sector-frame-v1',
-  earth_system_connection: 'audited-native-pressure-radiative-cryosphere-atmosphere-soil-runoff-river-flood-event-habitat-succession-scale-aware-plant-matter-resources-detrital-return-and-geomorphic-sediment-coast-carbonate-air-sea-carbon-biogeochemistry-v25',
+  earth_system_connection: 'audited-native-pressure-radiative-cryosphere-atmosphere-soil-runoff-river-floodplain-thermal-event-habitat-succession-scale-aware-plant-matter-resources-detrital-return-and-geomorphic-sediment-coast-carbonate-air-sea-carbon-biogeochemistry-v26',
   authoritative_shared_state: false,
   authoritative_host_seam: 'named-world-host-v1',
   multiplayer_input_seam: 'axm.controller-input/v1',
@@ -195,7 +199,7 @@ const ui = Object.fromEntries([
   'profileSelect','layerList','lifeMaster',
   'sectorSize','vegetationCount','faunaCount','riverCount','lakeCount','riverHandoffs','physicsFrame','persistenceRevision','hostAuthority','earthCell','soilWater','groundwaterDepth','runoffFlux','waterBudget','energyBudget','radiationBudget','co2RadiativeFeedback','cryospherePhase','seaIce','canopyPhysiology','carbonFlux','carbonPools','nitrogenCycle','marineProductivity','marineCarbon','marineNutrients','marineCarbonate','marineAirSeaCarbon','marineOxygen','marineDeepOcean','regionalAnimals','activeRealms','aquaticSpecies','keystoneSpecies','foodWebBalance',
   'transportDomain','transportWater','transportClosure','airMassRoute','momentumClosure','rotationDeflection','kineticClosure','cloudPhaseChange','verticalAtmosphere','pressureColumn','convectiveExchange','buoyancyConversion','upperAirTransport','layerWindShear','geopotentialClosure','moistEnthalpyClosure',
-  'atmosphereWater','atmosphereBiogeochemistry','atmosphereGasProfile','atmosphereGasTransport','integrityAudit','experienceSeam','runoffQueue','runoffBiogeochemistry','mineralSediment','runoffDestination','channelStorage','floodplainStorage','floodplainHabitat','floodEvents','floodplainSuccession','floodplainPlantMatter','floodplainPlantResources','floodplainDecomposition','floodplainRespiration','floodplainDenitrification','floodplainNitrification','floodplainGasExchange','channelChemistry','estuaryStorage','channelClosure','riverMouth',
+  'atmosphereWater','atmosphereBiogeochemistry','atmosphereGasProfile','atmosphereGasTransport','integrityAudit','experienceSeam','runoffQueue','runoffBiogeochemistry','mineralSediment','runoffDestination','channelStorage','floodplainStorage','floodplainThermal','floodplainHabitat','floodEvents','floodplainSuccession','floodplainPlantMatter','floodplainPlantResources','floodplainDecomposition','floodplainRespiration','floodplainDenitrification','floodplainNitrification','floodplainGasExchange','channelChemistry','estuaryStorage','channelClosure','riverMouth',
   'populationChange','ageCohorts','migrationNet','activeFire','fps','speciesCount','speciesList','modeLabel',
   'modeHelp','randomLand','freshwater','marineSurvey','resetView','scaleLabel','heading','loading','loadingStatus','loadingBar'
 ].map(id => [id, document.getElementById(id)]));
@@ -1064,6 +1068,8 @@ function updateDiagnostics() {
     item.id === 'floodplain-decomposition-receipts');
   const respirationAudit = integrityAudit?.checks.find(item =>
     item.id === 'floodplain-respiration-receipts');
+  const thermalAudit = integrityAudit?.checks.find(item =>
+    item.id === 'floodplain-thermal-receipts');
   const denitrificationAudit = integrityAudit?.checks.find(item =>
     item.id === 'floodplain-denitrification-receipts');
   const nitrificationAudit = integrityAudit?.checks.find(item =>
@@ -1071,6 +1077,49 @@ function updateDiagnostics() {
   const gasExchangeAudit = integrityAudit?.checks.find(item =>
     item.id === 'floodplain-atmosphere-gas-exchange-receipts');
   document.body.dataset.integrityFailureActive = integrityFailure?.id || '';
+  const floodplainThermalReceipts =
+    lastBasinRoutingReceipt?.floodplainThermalReceipts || [];
+  const applicableFloodplainThermalReceipts =
+    floodplainThermalReceipts.filter(receipt =>
+      receipt.energyClosure?.applicable === true &&
+      receipt.energyClosure?.sensibleHeat);
+  const floodplainThermalMaximumResidualJ =
+    applicableFloodplainThermalReceipts.reduce((maximum, receipt) => Math.max(
+      maximum,
+      Math.abs(Number(receipt.energyClosure?.sensibleHeat?.residualJ || 0))
+    ), 0);
+  const floodplainThermalMaximumToleranceJ =
+    applicableFloodplainThermalReceipts.reduce((maximum, receipt) => Math.max(
+      maximum,
+      Number(receipt.energyClosure?.sensibleHeat?.numericToleranceJ || 0)
+    ), 0);
+  const floodplainThermalMaximumToleranceUtilization =
+    applicableFloodplainThermalReceipts.reduce((maximum, receipt) => Math.max(
+      maximum,
+      Number(receipt.energyClosure?.sensibleHeat?.toleranceUtilization || 0)
+    ), 0);
+  document.body.dataset.floodplainThermalAudit =
+    thermalAudit?.status || 'NOT_APPLICABLE';
+  document.body.dataset.floodplainThermalReceiptCount =
+    String(floodplainThermalReceipts.length);
+  document.body.dataset.floodplainThermalApplicableClosureCount =
+    String(applicableFloodplainThermalReceipts.length);
+  document.body.dataset.floodplainThermalMaximumResidualJ =
+    applicableFloodplainThermalReceipts.length
+      ? String(floodplainThermalMaximumResidualJ) : 'unobserved';
+  document.body.dataset.floodplainThermalMaximumToleranceJ =
+    applicableFloodplainThermalReceipts.length
+      ? String(floodplainThermalMaximumToleranceJ) : 'unobserved';
+  document.body.dataset.floodplainThermalMaximumToleranceUtilization =
+    applicableFloodplainThermalReceipts.length
+      ? String(floodplainThermalMaximumToleranceUtilization) :
+      'unobserved';
+  document.body.dataset.floodplainThermalScaleAwareNumericClosure = String(
+    lastBasinRoutingReceipt?.truth
+      ?.floodplainThermalScaleAwareNumericClosure === true);
+  document.body.dataset.floodplainReactionTemperatureEvidenceBound = String(
+    lastBasinRoutingReceipt?.truth
+      ?.floodplainThermalReactionTemperatureEvidenceBound === true);
   document.body.dataset.floodplainPlantMatterAudit =
     plantMatterAudit?.status || 'NOT_APPLICABLE';
   document.body.dataset.floodplainPlantMatterTransferIds =
@@ -1469,7 +1518,11 @@ function updateDiagnostics() {
   document.body.dataset.floodplainDenitrificationTemperatureResponsive =
     String(lastBasinRoutingReceipt?.truth
       ?.floodplainDenitrificationSurfaceTemperatureProxyResponsive ===
-        true);
+        false && lastBasinRoutingReceipt?.truth
+      ?.floodplainDenitrificationPersistentWaterTemperatureState === true &&
+      lastBasinRoutingReceipt?.truth
+        ?.floodplainDenitrificationQ10TemperatureResponseParameterized ===
+          true);
   document.body.dataset.riverFloodplainNitrateAmmonium = String(
     lastBasinRoutingReceipt?.truth
       ?.persistentRiverAndFloodplainNitrateAmmoniumPools === true);
@@ -1677,6 +1730,11 @@ function updateDiagnostics() {
   ui.floodplainStorage.textContent = floodplainStorage
     ? `${(floodplainStorage.waterKg / 1e9).toFixed(3)} Gkg water / ${(floodplainStorage.totalSedimentKg / 1000).toFixed(2)} t sediment / ${floodplainStorage.chemistry.alkalinityKgCaCO3Eq.toFixed(3)} kg CaCO3-eq / ${floodplainStorage.activeReachCount}/${floodplainStorage.reachCount} reaches`
     : '--';
+  const floodplainThermal = basinStatus.activeProfileFloodplainThermal;
+  ui.floodplainThermal.textContent = floodplainThermal &&
+    floodplainThermal.reachCount > 0
+    ? `${floodplainThermal.meanWaterTemperatureC.toFixed(2)} °C water-weighted / ${(floodplainThermal.sensibleHeatJ / 1e12).toFixed(3)} TJ sensible / ${floodplainThermalReceipts.length} receipts / ${applicableFloodplainThermalReceipts.length ? `${floodplainThermalMaximumResidualJ.toExponential(2)} ≤ ${floodplainThermalMaximumToleranceJ.toExponential(2)} J / ${(floodplainThermalMaximumToleranceUtilization * 100).toFixed(2)}% bound` : 'migration initialization · closure n/a'}`
+    : 'no thermal reach memory yet';
   const floodplainHabitat = basinStatus.activeProfileFloodplainHabitat;
   ui.floodplainHabitat.textContent = floodplainHabitat &&
     floodplainHabitat.reachCount > 0
@@ -1722,7 +1780,7 @@ function updateDiagnostics() {
     basinStatus.activeProfileFloodplainDenitrification;
   ui.floodplainDenitrification.textContent = denitrification &&
     denitrification.reachCount > 0
-    ? `${plantMassLabel(denitrification.cumulativeReaction.dissolvedOrganicCarbonConsumedKgC, 'C')} DOC / ${plantMassLabel(denitrification.cumulativeReaction.dissolvedNitrateNitrogenConsumedKgN, 'NO3-N')} nitrate to N2 / ${plantMassLabel(denitrification.cumulativeReaction.alkalinityGeneratedKgCaCO3Eq, ' CaCO3-eq')} generated / ${denitrification.meanWaterTemperatureC.toFixed(1)} C proxy / ${denitrification.temperatureConstrainedReachCount} temperature-constrained / ${denitrification.oxicConstrainedReachCount} O2-constrained / ${denitrification.activeReachCount}/${denitrification.reachCount} active / numeric ${(denitrificationReactionNumeric.maximumResidualKg * 1e6).toFixed(3)} ≤ ${(denitrificationReactionNumeric.maximumToleranceKg * 1e6).toFixed(3)} mg`
+    ? `${plantMassLabel(denitrification.cumulativeReaction.dissolvedOrganicCarbonConsumedKgC, 'C')} DOC / ${plantMassLabel(denitrification.cumulativeReaction.dissolvedNitrateNitrogenConsumedKgN, 'NO3-N')} nitrate to N2 / ${plantMassLabel(denitrification.cumulativeReaction.alkalinityGeneratedKgCaCO3Eq, ' CaCO3-eq')} generated / ${denitrification.meanWaterTemperatureC.toFixed(1)} °C persistent water / ${denitrification.temperatureConstrainedReachCount} temperature-constrained / ${denitrification.oxicConstrainedReachCount} O2-constrained / ${denitrification.activeReachCount}/${denitrification.reachCount} active / numeric ${(denitrificationReactionNumeric.maximumResidualKg * 1e6).toFixed(3)} ≤ ${(denitrificationReactionNumeric.maximumToleranceKg * 1e6).toFixed(3)} mg`
     : 'no nitrate-only temperature-responsive floodplain denitrification yet';
   const nitrification =
     basinStatus.activeProfileFloodplainNitrification;
@@ -2278,6 +2336,7 @@ function installWorldAPI() {
       basinRouting: basinRoutingDescription(),
       geomorphicSediment: geomorphicSedimentDescription(),
       floodplain: floodplainDescription(),
+      floodplainThermal: floodplainThermalDescription(),
       floodplainHabitat: floodplainHabitatDescription(),
       floodEventHistory: floodEventHistoryDescription(),
       floodplainSuccession: floodplainSuccessionDescription(),
@@ -2351,6 +2410,8 @@ function installWorldAPI() {
           loadedReachCount: lastBasinRoutingReceipt.loadedReachCount,
           inletReceipts: lastBasinRoutingReceipt.inletReceipts,
           floodplainReceipts: lastBasinRoutingReceipt.floodplainReceipts,
+          floodplainThermalReceipts:
+            lastBasinRoutingReceipt.floodplainThermalReceipts,
           floodplainHabitatReceipts:
             lastBasinRoutingReceipt.floodplainHabitatReceipts,
           floodEventReceipts:
@@ -2491,8 +2552,8 @@ function installWorldAPI() {
     }),
     refreshHostStatus: () => refreshSharedHost().then(status => JSON.parse(JSON.stringify(status)))
   });
-  document.body.dataset.api = 'AXMFoundationPlanet/v61';
-  document.body.dataset.previousApi = 'AXMFoundationPlanet/v60';
+  document.body.dataset.api = 'AXMFoundationPlanet/v62';
+  document.body.dataset.previousApi = 'AXMFoundationPlanet/v61';
   document.body.dataset.basinAggregateMassClosurePolicy =
     BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA;
   document.body.dataset.landEcologyMassClosurePolicy =
@@ -2505,6 +2566,8 @@ function installWorldAPI() {
     FLOODPLAIN_DETRITAL_RETURN_MASS_CLOSURE_POLICY_SCHEMA;
   document.body.dataset.floodplainExchangeMassClosurePolicy =
     FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA;
+  document.body.dataset.floodplainThermalEnergyClosurePolicy =
+    FLOODPLAIN_THERMAL_ENERGY_CLOSURE_POLICY_SCHEMA;
   document.body.dataset.floodplainReactionMassClosurePolicy =
     FLOODPLAIN_REACTION_MASS_CLOSURE_POLICY_SCHEMA;
   document.body.dataset.atmosphereFloodplainGasExchangeMassClosurePolicy =
@@ -2525,6 +2588,8 @@ function installWorldAPI() {
     'axm.foundation-planet.coastal-sediment-state/v2';
   document.body.dataset.floodplain =
     'axm.foundation-planet.floodplain-state/v5';
+  document.body.dataset.floodplainThermal =
+    'axm.foundation-planet.floodplain-thermal-state/v1';
   document.body.dataset.floodplainHabitat =
     'axm.foundation-planet.floodplain-habitat-state/v1';
   document.body.dataset.floodEventHistory =

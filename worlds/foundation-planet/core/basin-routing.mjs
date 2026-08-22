@@ -55,6 +55,10 @@ import {
 } from './geomorphic-sediment.mjs?v=0.63.0-r63.1';
 import {
   FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
+  FLOODPLAIN_EXCHANGE_MASS_CLOSURE_SCHEMA,
+  FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+  FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG,
+  FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
   FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
   FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
   FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
@@ -78,6 +82,17 @@ import {
   floodplainTotals,
   normalizeFloodplainState
 } from './floodplain.mjs?v=0.65.0-r65.1';
+import {
+  FLOODPLAIN_THERMAL_STATE_SCHEMA,
+  FLOODPLAIN_THERMAL_RECEIPT_SCHEMA,
+  FLOODPLAIN_THERMAL_ENERGY_CLOSURE_SCHEMA,
+  FLOODPLAIN_THERMAL_ENERGY_CLOSURE_POLICY_SCHEMA,
+  advanceFloodplainThermal,
+  emptyFloodplainThermalState,
+  floodplainThermalDescription,
+  floodplainThermalSummary,
+  normalizeFloodplainThermalState
+} from './floodplain-thermal.mjs?v=0.66.0-r66.2';
 import {
   FLOODPLAIN_HABITAT_RECEIPT_SCHEMA,
   FLOODPLAIN_HABITAT_STATE_SCHEMA,
@@ -188,12 +203,12 @@ import {
   normalizeFloodplainGasExchangeState
 } from './floodplain-gas-exchange.mjs?v=0.62.0-r62.1';
 
-export const BASIN_ROUTING_ENGINE_SCHEMA = 'axm.foundation-planet.basin-routing-engine/v31';
+export const BASIN_ROUTING_ENGINE_SCHEMA = 'axm.foundation-planet.basin-routing-engine/v32';
 export const PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA =
-  'axm.foundation-planet.basin-routing-engine/v30';
-export const BASIN_ROUTING_STEP_SCHEMA = 'axm.foundation-planet.basin-routing-step/v30';
+  'axm.foundation-planet.basin-routing-engine/v31';
+export const BASIN_ROUTING_STEP_SCHEMA = 'axm.foundation-planet.basin-routing-step/v31';
 export const PREVIOUS_BASIN_ROUTING_STEP_SCHEMA =
-  'axm.foundation-planet.basin-routing-step/v29';
+  'axm.foundation-planet.basin-routing-step/v30';
 export const BASIN_AGGREGATE_MASS_CLOSURE_SCHEMA =
   'axm.foundation-planet.basin-aggregate-mass-closure/v1';
 export const BASIN_AGGREGATE_MASS_CLOSURE_POLICY_SCHEMA =
@@ -321,6 +336,7 @@ function emptyReachState(reachId, day) {
     chemistry: emptyRiverChemistry(),
     sediment: emptyRiverSediment(),
     floodplain: emptyFloodplainState(),
+    floodplainThermal: emptyFloodplainThermalState(),
     floodplainHabitat: emptyFloodplainHabitatState(),
     floodEvents: emptyFloodEventHistoryState(),
     floodplainSuccession: emptyFloodplainSuccessionState(),
@@ -345,6 +361,10 @@ function normalizedReachState(source) {
     chemistry: normalizeRiverChemistry(source.chemistry),
     sediment: normalizeRiverSediment(source.sediment),
     floodplain: normalizeFloodplainState(source.floodplain),
+    floodplainThermal: normalizeFloodplainThermalState(
+      source.floodplainThermal, {
+        migrationCheckpoint: !source.floodplainThermal
+      }),
     floodplainHabitat: normalizeFloodplainHabitatState(
       source.floodplainHabitat),
     floodEvents: normalizeFloodEventHistoryState(source.floodEvents),
@@ -475,6 +495,72 @@ function profileFloodplain(profile) {
     }
   }
   return totals;
+}
+
+function profileFloodplainThermal(profile) {
+  const totals = {
+    reachCount: 0,
+    observedReachCount: 0,
+    wetReachCount: 0,
+    migrationCheckpointReachCount: 0,
+    trackedWaterKg: 0,
+    sensibleHeatJ: 0,
+    observedThermalDays: 0,
+    dryDays: 0,
+    cumulativeNetAdvectedHeatJ: 0,
+    cumulativeBoundaryHeatJ: 0,
+    waterWeightedTemperatureC: 0,
+    maximumEnergyResidualJ: 0,
+    maximumEnergyToleranceJ: 0,
+    maximumEnergyToleranceUtilization: 0
+  };
+  for (const reach of [...profile.reaches.values()].sort((a, b) =>
+    String(a.reachId).localeCompare(String(b.reachId)))) {
+    const thermal = floodplainThermalSummary(reach.floodplainThermal);
+    totals.reachCount += 1;
+    totals.observedReachCount += thermal.observedThermalDays > 0 ? 1 : 0;
+    totals.wetReachCount += thermal.trackedWaterKg > 1e-12 ? 1 : 0;
+    totals.migrationCheckpointReachCount +=
+      thermal.migrationCheckpoint ? 1 : 0;
+    totals.trackedWaterKg += thermal.trackedWaterKg;
+    totals.sensibleHeatJ += thermal.sensibleHeatJ;
+    totals.observedThermalDays += thermal.observedThermalDays;
+    totals.dryDays += thermal.dryDays;
+    totals.cumulativeNetAdvectedHeatJ +=
+      thermal.cumulativeNetAdvectedHeatJ;
+    totals.cumulativeBoundaryHeatJ += thermal.cumulativeBoundaryHeatJ;
+    totals.waterWeightedTemperatureC +=
+      thermal.waterTemperatureC * thermal.trackedWaterKg;
+    totals.maximumEnergyResidualJ = Math.max(
+      totals.maximumEnergyResidualJ,
+      Math.abs(finite(thermal.lastEnergyResidualJ)));
+    totals.maximumEnergyToleranceJ = Math.max(
+      totals.maximumEnergyToleranceJ,
+      Math.max(0, finite(thermal.lastEnergyToleranceJ)));
+    totals.maximumEnergyToleranceUtilization = Math.max(
+      totals.maximumEnergyToleranceUtilization,
+      Math.max(0, finite(thermal.lastEnergyToleranceUtilization)));
+  }
+  return {
+    reachCount: totals.reachCount,
+    observedReachCount: totals.observedReachCount,
+    wetReachCount: totals.wetReachCount,
+    migrationCheckpointReachCount:
+      totals.migrationCheckpointReachCount,
+    trackedWaterKg: round(totals.trackedWaterKg, 6),
+    sensibleHeatJ: round(totals.sensibleHeatJ, 3),
+    observedThermalDays: round(totals.observedThermalDays, 8),
+    dryDays: round(totals.dryDays, 8),
+    cumulativeNetAdvectedHeatJ: round(
+      totals.cumulativeNetAdvectedHeatJ, 3),
+    cumulativeBoundaryHeatJ: round(totals.cumulativeBoundaryHeatJ, 3),
+    meanWaterTemperatureC: round(totals.trackedWaterKg > 1e-12
+      ? totals.waterWeightedTemperatureC / totals.trackedWaterKg : 0, 9),
+    maximumEnergyResidualJ: Number(totals.maximumEnergyResidualJ),
+    maximumEnergyToleranceJ: Number(totals.maximumEnergyToleranceJ),
+    maximumEnergyToleranceUtilization:
+      round(totals.maximumEnergyToleranceUtilization, 12)
+  };
 }
 
 function profileFloodplainHabitat(profile) {
@@ -1455,6 +1541,7 @@ export class BasinRoutingEngine {
     const initialRiverNitrogenSpecies = profileNitrogenSpecies(working);
     const initialRiverSediment = profileSediment(working);
     const initialFloodplain = profileFloodplain(working);
+    const initialFloodplainThermal = profileFloodplainThermal(working);
     const initialFloodplainHabitat = profileFloodplainHabitat(working);
     const initialFloodEvents = profileFloodEvents(working);
     const initialFloodplainSuccession =
@@ -1476,6 +1563,7 @@ export class BasinRoutingEngine {
     const initialEstuaryStorage = profileEstuaryStorage(working);
     const reachById = new Map(reaches.map(reach => [reach.id, reach]));
     const floodplainReceipts = [];
+    const floodplainThermalReceipts = [];
     const floodplainHabitatReceipts = [];
     const floodEventReceipts = [];
     const floodplainSuccessionReceipts = [];
@@ -1508,6 +1596,10 @@ export class BasinRoutingEngine {
     for (const reach of reaches) {
       const state = working.reaches.get(reach.id);
       if (!state) continue;
+      const donorCellId = reachDonorCellId(reach,
+        columns[0].resolutionDeg);
+      const atmosphereColumn = atmosphereColumnsById.get(
+        donorCellId) || null;
       const exchange = advanceFloodplainExchange(
         state.floodplain,
         {
@@ -1527,6 +1619,22 @@ export class BasinRoutingEngine {
       state.chemistry = exchange.channel.chemistry;
       state.sediment = exchange.channel.sediment;
       state.floodplain = exchange.state;
+      const thermal = advanceFloodplainThermal(
+        state.floodplainThermal,
+        state.floodplain,
+        {
+          reachId: reach.id,
+          startDay,
+          durationDays,
+          surfaceBoundaryTemperatureC: finite(
+            atmosphereColumn?.surface?.temperatureC, 15),
+          incomingWaterTemperatureC: finite(
+            atmosphereColumn?.surface?.temperatureC, 15),
+          relaxationTimescaleDays: finite(
+            options.floodplainThermalRelaxationTimescaleDays, 3)
+        }
+      );
+      state.floodplainThermal = thermal.state;
       const floodEvents = advanceFloodEventHistory(
         state.floodEvents,
         state.floodplain,
@@ -1563,8 +1671,6 @@ export class BasinRoutingEngine {
         }
       );
       const areaM2 = reachFloodplainAreaM2(reach);
-      const donorCellId = reachDonorCellId(reach,
-        columns[0].resolutionDeg);
       pendingPlantMatter.push({
         reach, state, habitatReceipt: habitat.receipt,
         floodEventReceipt: floodEvents.receipt,
@@ -1575,6 +1681,7 @@ export class BasinRoutingEngine {
           successionProposal.receipt, areaM2)
       });
       floodplainReceipts.push(exchange.receipt);
+      floodplainThermalReceipts.push(thermal.receipt);
       floodEventReceipts.push(floodEvents.receipt);
       floodplainHabitatReceipts.push(habitat.receipt);
     }
@@ -1877,8 +1984,10 @@ export class BasinRoutingEngine {
             options.floodplainDenitrificationAnoxicThresholdMgL, 2),
           maximumDailyDocFraction: finite(
             options.maximumFloodplainDailyDenitrificationDocFraction, .015),
-          waterTemperatureC: finite(
-            atmosphereColumn?.surface?.temperatureC, 20),
+          waterTemperatureC: pending.state.floodplainThermal
+            .waterTemperatureC,
+          floodplainThermalReceiptDigest:
+            pending.state.floodplainThermal.lastTransitionReceipt?.digest,
           referenceTemperatureC: finite(
             options.floodplainDenitrificationReferenceTemperatureC, 20),
           temperatureQ10: finite(
@@ -1955,8 +2064,10 @@ export class BasinRoutingEngine {
           atmosphereAvailable,
           receivingAreaM2: atmosphereAreaM2,
           pressureColumn: atmosphereColumn?.atmosphere?.pressureColumn,
-          waterTemperatureC: finite(
-            atmosphereColumn?.surface?.temperatureC, 15),
+          waterTemperatureC: pending.state.floodplainThermal
+            .waterTemperatureC,
+          floodplainThermalReceiptDigest:
+            pending.state.floodplainThermal.lastTransitionReceipt?.digest,
           maximumDailyEquilibrationFraction: finite(
             options.maximumFloodplainDailyGasEquilibrationFraction, .35),
           exchangeableDicFraction: finite(
@@ -2034,8 +2145,10 @@ export class BasinRoutingEngine {
           maximumDailyAmmoniumFraction: finite(
             options.maximumFloodplainDailyNitrificationAmmoniumFraction,
             .02),
-          waterTemperatureC: finite(
-            atmosphereColumn?.surface?.temperatureC, 20),
+          waterTemperatureC: pending.state.floodplainThermal
+            .waterTemperatureC,
+          floodplainThermalReceiptDigest:
+            pending.state.floodplainThermal.lastTransitionReceipt?.digest,
           referenceTemperatureC: finite(
             options.floodplainNitrificationReferenceTemperatureC, 20),
           temperatureQ10: finite(
@@ -2220,6 +2333,8 @@ export class BasinRoutingEngine {
     for (const [reachId, stored] of [...preRouteStorage.entries()].sort(([a], [b]) => a.localeCompare(b))) {
       const storedKg = stored.storageKg;
       const storedFloodplain = floodplainTotals(stored.floodplain);
+      const storedFloodplainThermal = floodplainThermalSummary(
+        stored.floodplainThermal);
       const storedSuccession = floodplainSuccessionSummary(
         stored.floodplainSuccession);
       const storedPlantMatter = floodplainPlantMatterSummary(
@@ -2244,6 +2359,12 @@ export class BasinRoutingEngine {
         storedPlantMatter.total.nitrogenKgN <= 1e-9 &&
         storedPlantResources.total.phosphorusKgP <= 1e-12 &&
         storedPlantResources.total.liveWaterKg <= 1e-9 &&
+        storedFloodplainThermal.observedThermalDays <= 1e-12 &&
+        storedFloodplainThermal.dryDays <= 1e-12 &&
+        Math.abs(storedFloodplainThermal
+          .cumulativeNetAdvectedHeatJ) <= 1e-6 &&
+        Math.abs(storedFloodplainThermal.cumulativeBoundaryHeatJ) <=
+          1e-6 &&
         storedDecomposition.cumulativeFloodplainReturn.carbonKgC <= 1e-9 &&
         storedDecomposition.cumulativeFloodplainReturn.nitrogenKgN <= 1e-9 &&
         storedDecomposition.cumulativeFloodplainReturn.phosphorusKgP <=
@@ -2283,6 +2404,16 @@ export class BasinRoutingEngine {
           reason: 'reach-not-in-loaded-sector',
           retainedWaterKg: round(storedKg, 3),
           retainedFloodplainWaterKg: round(storedFloodplain.waterKg, 3),
+          retainedFloodplainWaterTemperatureC: round(
+            storedFloodplainThermal.waterTemperatureC, 9),
+          retainedFloodplainTrackedThermalWaterKg: round(
+            storedFloodplainThermal.trackedWaterKg, 6),
+          retainedFloodplainSensibleHeatJ: round(
+            storedFloodplainThermal.sensibleHeatJ, 3),
+          retainedFloodplainThermalObservedDays: round(
+            storedFloodplainThermal.observedThermalDays, 8),
+          retainedFloodplainCumulativeBoundaryHeatJ: round(
+            storedFloodplainThermal.cumulativeBoundaryHeatJ, 3),
           retainedFloodplainHabitatObservedDays: round(
             floodplainHabitatSummary(stored.floodplainHabitat)
               .observedDays, 8),
@@ -2402,6 +2533,16 @@ export class BasinRoutingEngine {
             reason: 'ocean-mouth-cell-not-loaded',
             retainedWaterKg: round(storedKg, 3),
             retainedFloodplainWaterKg: round(storedFloodplain.waterKg, 3),
+            retainedFloodplainWaterTemperatureC: round(
+              storedFloodplainThermal.waterTemperatureC, 9),
+            retainedFloodplainTrackedThermalWaterKg: round(
+              storedFloodplainThermal.trackedWaterKg, 6),
+            retainedFloodplainSensibleHeatJ: round(
+              storedFloodplainThermal.sensibleHeatJ, 3),
+            retainedFloodplainThermalObservedDays: round(
+              storedFloodplainThermal.observedThermalDays, 8),
+            retainedFloodplainCumulativeBoundaryHeatJ: round(
+              storedFloodplainThermal.cumulativeBoundaryHeatJ, 3),
             retainedFloodplainPlantCarbonKgC: round(
               storedPlantMatter.total.carbonKgC, 9),
             retainedFloodplainPlantNitrogenKgN: round(
@@ -2437,6 +2578,16 @@ export class BasinRoutingEngine {
         reason: reach.downstreamReachId ? 'downstream-reach-not-loaded' : 'no-canonical-downstream',
         retainedWaterKg: round(storedKg, 3),
         retainedFloodplainWaterKg: round(storedFloodplain.waterKg, 3),
+        retainedFloodplainWaterTemperatureC: round(
+          storedFloodplainThermal.waterTemperatureC, 9),
+        retainedFloodplainTrackedThermalWaterKg: round(
+          storedFloodplainThermal.trackedWaterKg, 6),
+        retainedFloodplainSensibleHeatJ: round(
+          storedFloodplainThermal.sensibleHeatJ, 3),
+        retainedFloodplainThermalObservedDays: round(
+          storedFloodplainThermal.observedThermalDays, 8),
+        retainedFloodplainCumulativeBoundaryHeatJ: round(
+          storedFloodplainThermal.cumulativeBoundaryHeatJ, 3),
         retainedFloodplainPlantCarbonKgC: round(
           storedPlantMatter.total.carbonKgC, 9),
         retainedFloodplainPlantNitrogenKgN: round(
@@ -2670,6 +2821,8 @@ export class BasinRoutingEngine {
       state.chemistry = normalizeRiverChemistry(state.chemistry);
       state.sediment = normalizeRiverSediment(state.sediment);
       state.floodplain = normalizeFloodplainState(state.floodplain);
+      state.floodplainThermal = normalizeFloodplainThermalState(
+        state.floodplainThermal);
       state.floodplainPlantMatter = normalizeFloodplainPlantMatterState(
         state.floodplainPlantMatter);
       state.floodplainPlantResources =
@@ -2696,6 +2849,7 @@ export class BasinRoutingEngine {
     const finalRiverNitrogenSpecies = profileNitrogenSpecies(working);
     const finalRiverSediment = profileSediment(working);
     const finalFloodplain = profileFloodplain(working);
+    const finalFloodplainThermal = profileFloodplainThermal(working);
     const finalFloodplainHabitat = profileFloodplainHabitat(working);
     const finalFloodEvents = profileFloodEvents(working);
     const finalFloodplainSuccession =
@@ -3238,6 +3392,8 @@ export class BasinRoutingEngine {
     inletReceipts.sort((a, b) => a.sender.earthCellId.localeCompare(b.sender.earthCellId));
     floodplainReceipts.sort((a, b) => String(a.reachId)
       .localeCompare(String(b.reachId)));
+    floodplainThermalReceipts.sort((a, b) => String(a.reachId)
+      .localeCompare(String(b.reachId)));
     floodplainHabitatReceipts.sort((a, b) => String(a.reachId)
       .localeCompare(String(b.reachId)));
     floodEventReceipts.sort((a, b) => String(a.reachId)
@@ -3304,6 +3460,7 @@ export class BasinRoutingEngine {
       persistedReachStateCount: working.reaches.size,
       inletReceipts,
       floodplainReceipts,
+      floodplainThermalReceipts,
       floodplainHabitatReceipts,
       floodEventReceipts,
       floodplainSuccessionReceipts,
@@ -3449,6 +3606,8 @@ export class BasinRoutingEngine {
           .map(([key, value]) => [key, round(value, 9)])),
         initialFloodplain: clone(initialFloodplain),
         finalFloodplain: clone(finalFloodplain),
+        initialFloodplainThermal: clone(initialFloodplainThermal),
+        finalFloodplainThermal: clone(finalFloodplainThermal),
         initialFloodplainHabitat: clone(initialFloodplainHabitat),
         finalFloodplainHabitat: clone(finalFloodplainHabitat),
         initialFloodEvents: clone(initialFloodEvents),
@@ -3593,6 +3752,56 @@ export class BasinRoutingEngine {
             entry.truth?.measuredResidualsPreserved === true &&
             entry.massClosure?.measuredResidualsPreserved === true),
         floodplainExchangeFixedAbsoluteToleranceOnly: false,
+        persistentFloodplainWaterTemperatureState:
+          floodplainThermalReceipts.every(entry =>
+            entry.schema === FLOODPLAIN_THERMAL_RECEIPT_SCHEMA &&
+            entry.truth?.persistentFloodplainWaterTemperatureState ===
+              true),
+        persistentFloodplainSensibleHeatOwner:
+          floodplainThermalReceipts.every(entry =>
+            entry.truth?.persistentFloodplainSensibleHeatOwner === true),
+        floodplainThermalEnergyClosure:
+          floodplainThermalReceipts.every(entry =>
+            entry.energyClosure?.schema ===
+              FLOODPLAIN_THERMAL_ENERGY_CLOSURE_SCHEMA &&
+            (entry.energyClosure.applicable === false
+              ? entry.status ===
+                  'initialized-after-migration-no-historical-heat' &&
+                entry.truth?.migrationInventedHistoricalHeat === false
+              : entry.energyClosure.conservationClosed === true &&
+                entry.truth?.energyClosureClosed === true)),
+        floodplainThermalScaleAwareNumericClosure:
+          floodplainThermalReceipts.every(entry =>
+            entry.energyClosure?.policy?.schema ===
+              FLOODPLAIN_THERMAL_ENERGY_CLOSURE_POLICY_SCHEMA &&
+            (entry.energyClosure.applicable === false ||
+              entry.truth?.scaleAwareNumericEnergyClosure === true)),
+        floodplainThermalMeasuredResidualsPreserved:
+          floodplainThermalReceipts.every(entry =>
+            entry.energyClosure?.applicable === false ||
+            entry.truth?.measuredEnergyResidualPreserved === true),
+        floodplainThermalFixedAbsoluteToleranceOnly: false,
+        floodplainThermalReactionTemperatureEvidenceBound:
+          floodplainThermalReceipts.every(thermal => {
+            const temperatureC = finite(
+              thermal.temperatures?.finalWaterTemperatureC);
+            const consumers = [
+              floodplainDenitrificationProcessReceipts.find(entry =>
+                entry.reachId === thermal.reachId),
+              floodplainNitrificationProcessReceipts.find(entry =>
+                entry.reachId === thermal.reachId),
+              floodplainGasExchangeProcessReceipts.find(entry =>
+                entry.reachId === thermal.reachId)
+            ].filter(Boolean);
+            return consumers.every(entry =>
+              entry.activity?.floodplainThermalReceiptDigest ===
+                thermal.digest &&
+              Math.abs(finite(entry.activity?.waterTemperatureC) -
+                temperatureC) <= 1e-6);
+          }),
+        floodplainThermalChannelWaterTemperatureResolved: false,
+        floodplainThermalExternalBoundaryOwnerDebited: false,
+        resolvedFloodplainFreezeThawState: false,
         persistentFloodplainHabitatMemory: true,
         floodplainHabitatPotentialOnly: true,
         floodplainHabitatMaterialObserverReadOnly:
@@ -3895,9 +4104,9 @@ export class BasinRoutingEngine {
             Math.abs(value) < 1),
         floodplainDenitrificationOxygenGated: true,
         floodplainDenitrificationNitrogenLimited: true,
-        floodplainDenitrificationSurfaceTemperatureProxyResponsive: true,
+        floodplainDenitrificationSurfaceTemperatureProxyResponsive: false,
         floodplainDenitrificationQ10TemperatureResponseParameterized: true,
-        floodplainDenitrificationPersistentWaterTemperatureState: false,
+        floodplainDenitrificationPersistentWaterTemperatureState: true,
         floodplainDenitrificationArrheniusKineticsResolved: false,
         floodplainDenitrificationReactiveNitrateEquivalentParameterized:
           false,
@@ -3956,8 +4165,9 @@ export class BasinRoutingEngine {
             finite(entry.reaction?.alkalinityDemandKgCaCO3) <=
               finite(entry.activity?.availableAlkalinityKgCaCO3Eq) +
                 1e-7),
-        floodplainNitrificationSurfaceTemperatureProxyResponsive: true,
+        floodplainNitrificationSurfaceTemperatureProxyResponsive: false,
         floodplainNitrificationQ10TemperatureResponseParameterized: true,
+        floodplainNitrificationPersistentWaterTemperatureState: true,
         floodplainNitrificationNitriteIntermediateResolved: false,
         floodplainNitrificationAlkalinityDemandDiagnostic: false,
         floodplainNitrificationAlkalinityMaterialOwnerDebited: true,
@@ -4071,6 +4281,7 @@ export class BasinRoutingEngine {
         unresolvedReachWaterRetained: true,
         unresolvedReachSedimentRetained: true,
         unresolvedReachFloodplainRetained: true,
+        unresolvedReachFloodplainThermalRetained: true,
         unresolvedReachFloodplainPlantMatterRetained: true,
         unresolvedReachFloodplainPlantResourcesRetained: true,
         unresolvedReachFloodplainDecompositionRetained: true,
@@ -4131,6 +4342,12 @@ export class BasinRoutingEngine {
           floodplainTotals(emptyFloodplainState()),
         floodplainLastExchange: state?.floodplain?.lastExchangeReceipt ?
           clone(state.floodplain.lastExchangeReceipt) : null,
+        floodplainThermal: state ? floodplainThermalSummary(
+          state.floodplainThermal) : floodplainThermalSummary(
+          emptyFloodplainThermalState()),
+        floodplainThermalLastTransition:
+          state?.floodplainThermal?.lastTransitionReceipt
+            ? clone(state.floodplainThermal.lastTransitionReceipt) : null,
         floodplainHabitat: state ? floodplainHabitatSummary(
           state.floodplainHabitat) : floodplainHabitatSummary(
           emptyFloodplainHabitatState()),
@@ -4228,6 +4445,8 @@ export class BasinRoutingEngine {
           emptySedimentTotals(),
         floodplain: profile ? profileFloodplain(profile) :
           profileFloodplain({ reaches: new Map() }),
+        floodplainThermal: profile ? profileFloodplainThermal(profile) :
+          profileFloodplainThermal({ reaches: new Map() }),
         floodplainHabitat: profile ? profileFloodplainHabitat(profile) :
           profileFloodplainHabitat({ reaches: new Map() }),
         floodEvents: profile ? profileFloodEvents(profile) :
@@ -4272,6 +4491,12 @@ export class BasinRoutingEngine {
         persistentFloodplainStorage: true,
         bankfullOverbankAndReturnFlow: true,
         grainSelectiveFloodplainDeposition: true,
+        persistentFloodplainWaterTemperatureState: true,
+        persistentFloodplainSensibleHeatOwner: true,
+        floodplainReactionTemperatureSourceShared: true,
+        floodplainChannelWaterTemperatureResolved: false,
+        floodplainExternalThermalBoundaryOwnerDebited: false,
+        resolvedFloodplainFreezeThawState: false,
         persistentFloodplainHabitatMemory: true,
         floodplainHabitatPotentialOnly: true,
         floodplainHabitatReadsMaterialWithoutMutation: true,
@@ -4302,9 +4527,8 @@ export class BasinRoutingEngine {
         pairedFloodplainAtmosphereDenitrificationOwnership: true,
         oxygenGatedFloodplainDenitrification: true,
         nitrogenLimitedFloodplainDenitrification: true,
-        surfaceTemperatureProxyResponsiveFloodplainDenitrification: true,
+        surfaceTemperatureProxyResponsiveFloodplainDenitrification: false,
         q10TemperatureResponseParameterized: true,
-        persistentFloodplainWaterTemperatureState: false,
         floodplainDenitrificationArrheniusKineticsResolved: false,
         floodplainDenitrificationNitrateSpeciationResolved: true,
         persistentRiverAndFloodplainNitrateAmmoniumPools: true,
@@ -4362,6 +4586,9 @@ export class BasinRoutingEngine {
         emptySedimentTotals(),
       storedFloodplain: profile ? clone(profileFloodplain(profile)) :
         profileFloodplain({ reaches: new Map() }),
+      storedFloodplainThermal: profile ?
+        clone(profileFloodplainThermal(profile)) :
+        profileFloodplainThermal({ reaches: new Map() }),
       storedFloodplainHabitat: profile ?
         clone(profileFloodplainHabitat(profile)) :
         profileFloodplainHabitat({ reaches: new Map() }),
@@ -4468,6 +4695,11 @@ export class BasinRoutingEngine {
         }
         if (migratedFromLegacy && !reach.floodplain) {
           normalized.floodplain = emptyFloodplainState({
+            migrationCheckpoint: true
+          });
+        }
+        if (!reach.floodplainThermal) {
+          normalized.floodplainThermal = emptyFloodplainThermalState({
             migrationCheckpoint: true
           });
         }
@@ -4581,6 +4813,9 @@ export class BasinRoutingEngine {
         emptySedimentTotals(),
       activeProfileFloodplain: profile ? clone(profileFloodplain(profile)) :
         profileFloodplain({ reaches: new Map() }),
+      activeProfileFloodplainThermal: profile ?
+        clone(profileFloodplainThermal(profile)) :
+        profileFloodplainThermal({ reaches: new Map() }),
       activeProfileFloodplainHabitat: profile ?
         clone(profileFloodplainHabitat(profile)) :
         profileFloodplainHabitat({ reaches: new Map() }),
@@ -4642,6 +4877,22 @@ export function basinRoutingDescription() {
     boundaryReceiptSchema: RIVER_BOUNDARY_RECEIPT_SCHEMA,
     floodplainStateSchema: FLOODPLAIN_STATE_SCHEMA,
     floodplainExchangeReceiptSchema: FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
+    floodplainExchangeMassClosureSchema:
+      FLOODPLAIN_EXCHANGE_MASS_CLOSURE_SCHEMA,
+    floodplainExchangeMassClosurePolicy: {
+      schema: FLOODPLAIN_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA,
+      absoluteFloorsKg: {
+        ...FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ABSOLUTE_FLOORS_KG
+      },
+      ulpFactor: FLOODPLAIN_EXCHANGE_MASS_CLOSURE_ULP_FACTOR,
+      scaleBasis: 'sum-of-absolute-unrounded-signed-operands-kg'
+    },
+    floodplainThermalStateSchema: FLOODPLAIN_THERMAL_STATE_SCHEMA,
+    floodplainThermalReceiptSchema: FLOODPLAIN_THERMAL_RECEIPT_SCHEMA,
+    floodplainThermalEnergyClosureSchema:
+      FLOODPLAIN_THERMAL_ENERGY_CLOSURE_SCHEMA,
+    floodplainThermalEnergyClosurePolicySchema:
+      FLOODPLAIN_THERMAL_ENERGY_CLOSURE_POLICY_SCHEMA,
     floodplainHabitatStateSchema: FLOODPLAIN_HABITAT_STATE_SCHEMA,
     floodplainHabitatReceiptSchema: FLOODPLAIN_HABITAT_RECEIPT_SCHEMA,
     floodEventHistoryStateSchema: FLOOD_EVENT_HISTORY_STATE_SCHEMA,
@@ -4710,6 +4961,7 @@ export function basinRoutingDescription() {
     estuaryReactor: estuaryReactorDescription(),
     geomorphicSediment: geomorphicSedimentDescription(),
     floodplain: floodplainDescription(),
+    floodplainThermal: floodplainThermalDescription(),
     floodplainHabitat: floodplainHabitatDescription(),
     floodEventHistory: floodEventHistoryDescription(),
     floodplainSuccession: floodplainSuccessionDescription(),
@@ -4721,12 +4973,22 @@ export function basinRoutingDescription() {
     floodplainNitrification: floodplainNitrificationDescription(),
     floodplainGasExchange: floodplainGasExchangeDescription(),
     topology: 'loaded canonical hydrology reaches bridged from canonical Earth-system cells',
-    processes: ['earth-cell-to-main-reach-capture', 'persistent-land-runoff-queue-sender-debit', 'parameterized-runoff-din-to-nitrate-ammonium-receiver-credit', 'exact-runoff-queue-to-river-chemistry-and-alkalinity-credit', 'exact-runoff-sediment-queue-to-river-suspended-load-credit', 'geometry-derived-bankfull-overbank-exchange', 'finite-channel-to-floodplain-nitrate-ammonium-alkalinity-transfer', 'finite-floodplain-to-channel-nitrate-ammonium-alkalinity-return', 'grain-selective-floodplain-deposition', 'read-only-bounded-flood-event-chronicle', 'read-only-flood-pulse-and-habitat-potential-observation', 'persistent-functional-guild-seed-juvenile-mature-succession', 'flood-disturbance-mortality-and-post-flood-recovery', 'paired-land-ecology-subgrid-to-floodplain-plant-carbon-nitrogen-partition', 'joint-carbon-nitrogen-phosphorus-water-limited-growth', 'paired-floodplain-to-plant-water-phosphorus-uptake', 'mortality-tissue-water-return-to-local-floodplain', 'live-plant-to-standing-dead-to-litter-transfer', 'resource-backed-standing-dead-and-litter-decomposition', 'paired-plant-detritus-to-local-floodplain-ammonium-return', 'oxygen-limited-local-floodplain-doc-to-dic-aerobic-mineralization', 'surface-temperature-responsive-oxygen-gated-nitrate-only-floodplain-denitrification-with-alkalinity-generation', 'paired-floodplain-atmosphere-nitrogen-gas-transfer', 'bidirectional-floodplain-atmosphere-carbon-and-oxygen-exchange', 'surface-temperature-responsive-oxygen-and-alkalinity-limited-ammonium-to-nitrate-floodplain-nitrification', 'nitrification-alkalinity-owner-debit', 'simultaneous-reach-water-nitrate-ammonium-alkalinity-chemistry-and-sediment-routing', 'grain-selective-river-bed-deposition', 'persistent-estuary-reaction-organic-sediment-retention-and-alkalinity-transmission', 'grain-selective-coastal-mineral-sediment-deposition', 'estuary-denitrification-alkalinity-generation-and-local-atmosphere-nitrogen-transfer', 'loaded-coastal-ocean-delivery-after-estuary-processing'],
+    processes: ['earth-cell-to-main-reach-capture', 'persistent-land-runoff-queue-sender-debit', 'parameterized-runoff-din-to-nitrate-ammonium-receiver-credit', 'exact-runoff-queue-to-river-chemistry-and-alkalinity-credit', 'exact-runoff-sediment-queue-to-river-suspended-load-credit', 'geometry-derived-bankfull-overbank-exchange', 'finite-channel-to-floodplain-nitrate-ammonium-alkalinity-transfer', 'finite-floodplain-to-channel-nitrate-ammonium-alkalinity-return', 'grain-selective-floodplain-deposition', 'persistent-floodplain-water-temperature-and-sensible-heat', 'net-water-owner-change-thermal-reconciliation', 'parameterized-external-floodplain-heat-boundary', 'shared-floodplain-reaction-temperature-state', 'read-only-bounded-flood-event-chronicle', 'read-only-flood-pulse-and-habitat-potential-observation', 'persistent-functional-guild-seed-juvenile-mature-succession', 'flood-disturbance-mortality-and-post-flood-recovery', 'paired-land-ecology-subgrid-to-floodplain-plant-carbon-nitrogen-partition', 'joint-carbon-nitrogen-phosphorus-water-limited-growth', 'paired-floodplain-to-plant-water-phosphorus-uptake', 'mortality-tissue-water-return-to-local-floodplain', 'live-plant-to-standing-dead-to-litter-transfer', 'resource-backed-standing-dead-and-litter-decomposition', 'paired-plant-detritus-to-local-floodplain-ammonium-return', 'oxygen-limited-local-floodplain-doc-to-dic-aerobic-mineralization', 'persistent-water-temperature-responsive-oxygen-gated-nitrate-only-floodplain-denitrification-with-alkalinity-generation', 'paired-floodplain-atmosphere-nitrogen-gas-transfer', 'persistent-water-temperature-responsive-bidirectional-floodplain-atmosphere-carbon-and-oxygen-exchange', 'persistent-water-temperature-responsive-oxygen-and-alkalinity-limited-ammonium-to-nitrate-floodplain-nitrification', 'nitrification-alkalinity-owner-debit', 'simultaneous-reach-water-nitrate-ammonium-alkalinity-chemistry-and-sediment-routing', 'grain-selective-river-bed-deposition', 'persistent-estuary-reaction-organic-sediment-retention-and-alkalinity-transmission', 'grain-selective-coastal-mineral-sediment-deposition', 'estuary-denitrification-alkalinity-generation-and-local-atmosphere-nitrogen-transfer', 'loaded-coastal-ocean-delivery-after-estuary-processing'],
     persistentReachStorage: true,
     persistentRiverSediment: true,
     persistentCoastalSediment: true,
     persistentFloodplainStorage: true,
     floodplainWaterChemistryAndSedimentConservationChecked: true,
+    persistentFloodplainWaterTemperatureState: true,
+    persistentFloodplainSensibleHeatOwner: true,
+    floodplainThermalEnergyConservationChecked: true,
+    floodplainThermalScaleAwareNumericClosure: true,
+    floodplainThermalMeasuredResidualsPreserved: true,
+    floodplainThermalFixedAbsoluteToleranceOnly: false,
+    floodplainReactionTemperatureSourceShared: true,
+    floodplainChannelWaterTemperatureResolved: false,
+    floodplainExternalThermalBoundaryOwnerDebited: false,
+    resolvedFloodplainFreezeThawState: false,
     persistentFloodplainHabitatMemory: true,
     floodplainHabitatPotentialOnly: true,
     floodplainHabitatMaterialObserverReadOnly: true,
@@ -4759,9 +5021,9 @@ export function basinRoutingDescription() {
     pairedFloodplainAtmosphereDenitrificationOwnership: true,
     floodplainDenitrificationOxygenGated: true,
     floodplainDenitrificationNitrogenLimited: true,
-    floodplainDenitrificationSurfaceTemperatureProxyResponsive: true,
+    floodplainDenitrificationSurfaceTemperatureProxyResponsive: false,
     floodplainDenitrificationQ10TemperatureResponseParameterized: true,
-    floodplainDenitrificationPersistentWaterTemperatureState: false,
+    floodplainDenitrificationPersistentWaterTemperatureState: true,
     floodplainDenitrificationArrheniusKineticsResolved: false,
     floodplainDenitrificationReactiveNitrateEquivalentParameterized: false,
     floodplainDenitrificationNitrateSpeciationResolved: true,
@@ -4776,7 +5038,8 @@ export function basinRoutingDescription() {
     floodplainNitrificationAmmoniumToNitrate: true,
     floodplainNitrificationDissolvedOxygenConsumed: true,
     floodplainNitrificationMinimumOxygenReserveHonored: true,
-    floodplainNitrificationSurfaceTemperatureProxyResponsive: true,
+    floodplainNitrificationSurfaceTemperatureProxyResponsive: false,
+    floodplainNitrificationPersistentWaterTemperatureState: true,
     floodplainNitrificationQ10TemperatureResponseParameterized: true,
     floodplainNitrificationNitriteIntermediateResolved: false,
     floodplainNitrificationAlkalinityDemandDiagnostic: false,

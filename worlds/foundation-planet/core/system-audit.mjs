@@ -89,7 +89,7 @@ import {
   PREVIOUS_BASIN_ROUTING_STEP_SCHEMA,
   RIVER_REACH_TRANSFER_SCHEMA,
   OCEAN_MOUTH_RECEIPT_SCHEMA
-} from './basin-routing.mjs?v=0.65.0-r65.1';
+} from './basin-routing.mjs?v=0.66.0-r66.2';
 import {
   RIVER_CHEMISTRY_INPUT_SCHEMA
 } from './river-chemistry.mjs';
@@ -115,6 +115,14 @@ import {
   FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
   FLOODPLAIN_PLANT_WATER_RETURN_SCHEMA
 } from './floodplain.mjs?v=0.65.0-r65.1';
+import {
+  FLOODPLAIN_THERMAL_RECEIPT_SCHEMA,
+  FLOODPLAIN_THERMAL_ENERGY_CLOSURE_SCHEMA,
+  FLOODPLAIN_THERMAL_ENERGY_CLOSURE_POLICY_SCHEMA,
+  FLOODPLAIN_THERMAL_ENERGY_ABSOLUTE_FLOOR_J,
+  FLOODPLAIN_THERMAL_ENERGY_ULP_FACTOR,
+  WATER_SPECIFIC_HEAT_J_KG_K
+} from './floodplain-thermal.mjs?v=0.66.0-r66.2';
 import {
   FLOODPLAIN_HABITAT_RECEIPT_SCHEMA,
   FLOODPLAIN_HABITAT_TYPES
@@ -168,13 +176,30 @@ import {
 } from './atmosphere-co2-radiation.mjs?v=0.62.0-r62.1';
 
 export const FOUNDATION_SYSTEM_AUDIT_SCHEMA =
-  'axm.foundation-planet.system-audit/v15';
+  'axm.foundation-planet.system-audit/v16';
 
 const finite = value => Number.isFinite(Number(value));
 const close = (value, tolerance) => finite(value) &&
   Math.abs(Number(value)) <= tolerance;
 const same = (a, b, tolerance = 1e-12) => finite(a) && finite(b) &&
   Math.abs(Number(a) - Number(b)) <= tolerance;
+
+function auditStableDigest(value) {
+  const text = JSON.stringify(value);
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < text.length; index++) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return `fnv1a32:${(hash >>> 0).toString(16).padStart(8, '0')}`;
+}
+
+function receiptDigestValid(receipt) {
+  if (!receipt || typeof receipt.digest !== 'string') return false;
+  const unsigned = JSON.parse(JSON.stringify(receipt));
+  delete unsigned.digest;
+  return auditStableDigest(unsigned) === receipt.digest;
+}
 
 function check(id, status, claim, evidence, options = {}) {
   return {
@@ -1462,13 +1487,13 @@ function basinCheck(receipt) {
     receipt.truth?.floodplainDenitrificationNitrogenLimited === true &&
     receipt.truth
       ?.floodplainDenitrificationSurfaceTemperatureProxyResponsive ===
-      true &&
+      false &&
     receipt.truth
       ?.floodplainDenitrificationQ10TemperatureResponseParameterized ===
       true &&
     receipt.truth
       ?.floodplainDenitrificationPersistentWaterTemperatureState ===
-      false &&
+      true &&
     receipt.truth?.floodplainDenitrificationArrheniusKineticsResolved ===
       false &&
     receipt.truth
@@ -1496,9 +1521,11 @@ function basinCheck(receipt) {
     receipt.truth?.floodplainNitrificationAmmoniumToNitrate === true &&
     receipt.truth?.floodplainNitrificationDissolvedOxygenConsumed === true &&
     receipt.truth
-      ?.floodplainNitrificationSurfaceTemperatureProxyResponsive === true &&
+      ?.floodplainNitrificationSurfaceTemperatureProxyResponsive === false &&
     receipt.truth
       ?.floodplainNitrificationQ10TemperatureResponseParameterized === true &&
+    receipt.truth
+      ?.floodplainNitrificationPersistentWaterTemperatureState === true &&
     receipt.truth?.floodplainNitrificationNitriteIntermediateResolved ===
       false &&
     receipt.truth?.floodplainNitrificationAlkalinityDemandDiagnostic ===
@@ -3347,9 +3374,10 @@ function floodplainDenitrificationCheck(receipt) {
     entry.truth?.oxygenGated === true &&
     entry.truth?.nitrogenLimited === true &&
     entry.truth?.alkalinityGenerationClosureRequired === true &&
-    entry.truth?.surfaceTemperatureProxyResponsive === true &&
+    entry.truth?.surfaceTemperatureProxyResponsive === false &&
     entry.truth?.q10TemperatureResponseParameterized === true &&
-    entry.truth?.persistentFloodplainWaterTemperatureState === false &&
+    entry.truth?.persistentFloodplainWaterTemperatureState === true &&
+    entry.truth?.floodplainThermalReceiptBindingRequired === true &&
     entry.truth?.resolvedFloodplainFreezeThawState === false &&
     entry.truth?.arrheniusKineticsResolved === false &&
     entry.truth?.reactiveNitrateEquivalentFractionParameterized === false &&
@@ -3363,7 +3391,9 @@ function floodplainDenitrificationCheck(receipt) {
     entry.truth?.microbialPopulationsResolved === false &&
     entry.truth?.mechanisticRedoxModel === false &&
     entry.truth
-      ?.surfaceTemperatureForcingUsedAsWaterTemperatureProxy === true &&
+      ?.surfaceTemperatureForcingUsedAsWaterTemperatureProxy === false &&
+    entry.truth?.persistentFloodplainThermalStateUsed === true &&
+    typeof entry.activity?.floodplainThermalReceiptDigest === 'string' &&
     finite(entry.activity?.waterTemperatureC) &&
     finite(entry.activity?.referenceTemperatureC) &&
     Number(entry.activity?.temperatureQ10) >= .5 &&
@@ -3457,13 +3487,13 @@ function floodplainDenitrificationCheck(receipt) {
     receipt.truth?.floodplainDenitrificationNitrogenLimited === true &&
     receipt.truth
       ?.floodplainDenitrificationSurfaceTemperatureProxyResponsive ===
-      true &&
+      false &&
     receipt.truth
       ?.floodplainDenitrificationQ10TemperatureResponseParameterized ===
       true &&
     receipt.truth
       ?.floodplainDenitrificationPersistentWaterTemperatureState ===
-      false &&
+      true &&
     receipt.truth?.floodplainDenitrificationArrheniusKineticsResolved ===
       false &&
     receipt.truth
@@ -3592,9 +3622,10 @@ function floodplainNitrificationCheck(receipt) {
     entry.truth?.localAlkalinitySenderRequired === true &&
     entry.truth?.aerobicProcess === true &&
     entry.truth?.minimumDissolvedOxygenReserveRequired === true &&
-    entry.truth?.surfaceTemperatureProxyResponsive === true &&
+    entry.truth?.surfaceTemperatureProxyResponsive === false &&
     entry.truth?.q10TemperatureResponseParameterized === true &&
-    entry.truth?.persistentFloodplainWaterTemperatureState === false &&
+    entry.truth?.persistentFloodplainWaterTemperatureState === true &&
+    entry.truth?.floodplainThermalReceiptBindingRequired === true &&
     entry.truth?.ammoniumToNitrateOneStepApproximation === true &&
     entry.truth?.nitriteIntermediateResolved === false &&
     entry.truth?.alkalinityDemandDiagnostic === false &&
@@ -3692,9 +3723,11 @@ function floodplainNitrificationCheck(receipt) {
     receipt.truth
       ?.floodplainNitrificationAlkalinityCapacityHonored === true &&
     receipt.truth
-      ?.floodplainNitrificationSurfaceTemperatureProxyResponsive === true &&
+      ?.floodplainNitrificationSurfaceTemperatureProxyResponsive === false &&
     receipt.truth
       ?.floodplainNitrificationQ10TemperatureResponseParameterized === true &&
+    receipt.truth
+      ?.floodplainNitrificationPersistentWaterTemperatureState === true &&
     receipt.truth?.floodplainNitrificationNitriteIntermediateResolved ===
       false &&
     receipt.truth?.floodplainNitrificationAlkalinityDemandDiagnostic ===
@@ -3838,6 +3871,10 @@ function floodplainGasExchangeCheck(receipt) {
     entry.truth?.bidirectionalCarbonDioxideGradientExchange === true &&
     entry.truth?.oxygenReaerationParameterized === true &&
     entry.truth?.nativeAtmosphereSurfaceLayerRequired === true &&
+    entry.truth?.surfaceTemperatureProxyResponsive === false &&
+    entry.truth?.persistentFloodplainWaterTemperatureState === true &&
+    entry.truth?.floodplainThermalReceiptBindingRequired === true &&
+    typeof entry.activity?.floodplainThermalReceiptDigest === 'string' &&
     entry.truth?.bidirectionalHenryLawSolved === false &&
     entry.truth?.resolvedAirWaterTurbulence === false &&
     entry.truth?.globallyMixedAtmosphere === false &&
@@ -4180,6 +4217,370 @@ function floodplainCheck(receipt) {
         aggregateValid: entry.aggregateValid
       })).filter(entry => entry.identityFailures.length > 0 ||
         !entry.policyValid || !entry.aggregateValid),
+      receiptDigest: receipt.digest || null
+    });
+}
+
+function auditFloodplainThermalReceipt(entry) {
+  const closure = entry?.energyClosure || {};
+  const digestValid = receiptDigestValid(entry);
+  const policyValid = closure.schema ===
+      FLOODPLAIN_THERMAL_ENERGY_CLOSURE_SCHEMA &&
+    closure.policy?.schema ===
+      FLOODPLAIN_THERMAL_ENERGY_CLOSURE_POLICY_SCHEMA &&
+    Number(closure.policy?.absoluteFloorJ) ===
+      FLOODPLAIN_THERMAL_ENERGY_ABSOLUTE_FLOOR_J &&
+    closure.policy?.ulpFactor ===
+      FLOODPLAIN_THERMAL_ENERGY_ULP_FACTOR &&
+    closure.policy?.scaleBasis ===
+      'sum-of-absolute-unrounded-signed-operands-joules';
+  const temperatures = entry?.temperatures || {};
+  const water = entry?.water || {};
+  const energy = entry?.energy || {};
+  const sharedTruthValid = entry?.schema ===
+      FLOODPLAIN_THERMAL_RECEIPT_SCHEMA &&
+    typeof entry.reachId === 'string' &&
+    entry.truth?.persistentFloodplainWaterTemperatureState === true &&
+    entry.truth?.persistentFloodplainSensibleHeatOwner === true &&
+    entry.truth?.netWaterOwnerChangeThermallyReconciled === true &&
+    entry.truth?.channelWaterTemperatureResolved === false &&
+    entry.truth?.externalThermalBoundaryOwnerDebited === false &&
+    entry.truth?.resolvedFreezeThawState === false &&
+    entry.truth?.latentHeatModeled === false &&
+    entry.truth?.scientificCalibrationClaimed === false;
+  if (closure.applicable === false) {
+    const finalWaterKg = Number(water.finalTrackedKg);
+    const finalTemperatureC = Number(
+      temperatures.finalWaterTemperatureC);
+    const expectedInitializationHeatJ = finalWaterKg *
+      WATER_SPECIFIC_HEAT_J_KG_K * finalTemperatureC;
+    const migrationValid =
+      entry.status === 'initialized-after-migration-no-historical-heat' &&
+      entry.truth?.migrationInventedHistoricalHeat === false &&
+      entry.truth?.energyClosureApplicable === false &&
+      closure.reason === 'pre-r66-floodplain-heat-history-unobserved' &&
+      closure.sensibleHeat === null &&
+      closure.identityCount === 0 &&
+      closure.maximumResidualJ === null &&
+      closure.maximumToleranceJ === null &&
+      closure.maximumToleranceUtilization === null &&
+      closure.conservationClosed === null &&
+      closure.measuredResidualPreserved === false &&
+      finite(finalWaterKg) && finalWaterKg >= 0 &&
+      finite(finalTemperatureC) && finalTemperatureC >= -2 &&
+      finalTemperatureC <= 45 &&
+      Number(energy.finalSensibleHeatJ) ===
+        expectedInitializationHeatJ &&
+      Number(closure.initializationHeatJ) ===
+        expectedInitializationHeatJ &&
+      water.initialTrackedKg === null &&
+      water.netOwnerChangeKg === null &&
+      water.modeledInflowKg === null &&
+      water.modeledOutflowKg === null &&
+      temperatures.initialWaterTemperatureC === null &&
+      energy.initialSensibleHeatJ === null &&
+      energy.inflowHeatJ === null && energy.outflowHeatJ === null &&
+      energy.externalBoundaryHeatJ === null;
+    return {
+      valid: policyValid && sharedTruthValid && digestValid &&
+        migrationValid,
+      applicable: false,
+      policyValid,
+      digestValid,
+      sharedTruthValid,
+      migrationValid,
+      recomputedResidualJ: null,
+      expectedToleranceJ: null,
+      expectedUtilization: null,
+      namedFailure: !digestValid ? 'receipt-digest' :
+        migrationValid ? null : 'migration-shape'
+    };
+  }
+
+  const initialWaterKg = Number(water.initialTrackedKg);
+  const finalWaterKg = Number(water.finalTrackedKg);
+  const netOwnerChangeKg = Number(water.netOwnerChangeKg);
+  const modeledInflowKg = Number(water.modeledInflowKg);
+  const modeledOutflowKg = Number(water.modeledOutflowKg);
+  const initialTemperatureC = Number(
+    temperatures.initialWaterTemperatureC);
+  const incomingTemperatureC = Number(
+    temperatures.incomingWaterTemperatureC);
+  const surfaceBoundaryTemperatureC = Number(
+    temperatures.surfaceBoundaryTemperatureC);
+  const mixedTemperatureC = Number(
+    temperatures.mixedWaterTemperatureC);
+  const finalTemperatureC = Number(
+    temperatures.finalWaterTemperatureC);
+  const relaxationFraction = Number(
+    entry.controls?.relaxationFraction);
+  const numericInputsValid = [initialWaterKg, finalWaterKg,
+    netOwnerChangeKg, modeledInflowKg, modeledOutflowKg,
+    initialTemperatureC, incomingTemperatureC,
+    surfaceBoundaryTemperatureC, mixedTemperatureC,
+    finalTemperatureC, relaxationFraction].every(finite) &&
+    initialWaterKg >= 0 && finalWaterKg >= 0 &&
+    modeledInflowKg >= 0 && modeledOutflowKg >= 0 &&
+    relaxationFraction >= 0 && relaxationFraction <= 1 &&
+    entry.controls?.specificHeatJkgK === WATER_SPECIFIC_HEAT_J_KG_K &&
+    [initialTemperatureC, incomingTemperatureC,
+      surfaceBoundaryTemperatureC, mixedTemperatureC,
+      finalTemperatureC].every(value => value >= -2 && value <= 45);
+  const expectedNetOwnerChangeKg = finalWaterKg - initialWaterKg;
+  const expectedInflowKg = Math.max(0, expectedNetOwnerChangeKg);
+  const expectedOutflowKg = Math.max(0, -expectedNetOwnerChangeKg);
+  const waterValid = numericInputsValid &&
+    netOwnerChangeKg === expectedNetOwnerChangeKg &&
+    modeledInflowKg === expectedInflowKg &&
+    modeledOutflowKg === expectedOutflowKg &&
+    Math.abs(initialWaterKg + modeledInflowKg - modeledOutflowKg -
+      finalWaterKg) <= 1e-6 &&
+    entry.truth?.waterOwnerChangeClosed === true;
+  const expectedInitialHeatJ = initialWaterKg *
+    WATER_SPECIFIC_HEAT_J_KG_K * initialTemperatureC;
+  const expectedInflowHeatJ = modeledInflowKg *
+    WATER_SPECIFIC_HEAT_J_KG_K * incomingTemperatureC;
+  const expectedOutflowHeatJ = initialWaterKg > 1e-12
+    ? expectedInitialHeatJ * modeledOutflowKg / initialWaterKg : 0;
+  const expectedPreBoundaryHeatJ = expectedInitialHeatJ +
+    expectedInflowHeatJ - expectedOutflowHeatJ;
+  const expectedMixedTemperatureC = finalWaterKg > 1e-12
+    ? Math.max(-2, Math.min(45, expectedPreBoundaryHeatJ /
+      (finalWaterKg * WATER_SPECIFIC_HEAT_J_KG_K)))
+    : surfaceBoundaryTemperatureC;
+  const expectedBoundaryHeatJ = finalWaterKg *
+    WATER_SPECIFIC_HEAT_J_KG_K *
+    (surfaceBoundaryTemperatureC - expectedMixedTemperatureC) *
+    relaxationFraction;
+  const expectedFinalTemperatureC = finalWaterKg > 1e-12
+    ? Math.max(-2, Math.min(45, (expectedPreBoundaryHeatJ +
+      expectedBoundaryHeatJ) /
+      (finalWaterKg * WATER_SPECIFIC_HEAT_J_KG_K)))
+    : surfaceBoundaryTemperatureC;
+  const expectedFinalHeatJ = finalWaterKg *
+    WATER_SPECIFIC_HEAT_J_KG_K * expectedFinalTemperatureC;
+  const energyTermToleranceJ = Math.max(
+    FLOODPLAIN_THERMAL_ENERGY_ABSOLUTE_FLOOR_J,
+    [expectedInitialHeatJ, expectedInflowHeatJ, expectedOutflowHeatJ,
+      expectedBoundaryHeatJ, expectedFinalHeatJ].reduce((sum, value) =>
+      sum + Math.abs(value), 0) * Number.EPSILON *
+        FLOODPLAIN_THERMAL_ENERGY_ULP_FACTOR);
+  const energyTermDiagnostics = {
+    toleranceJ: energyTermToleranceJ,
+    initialSensibleHeatJ: {
+      actual: Number(energy.initialSensibleHeatJ),
+      expected: expectedInitialHeatJ,
+      difference: Number(energy.initialSensibleHeatJ) -
+        expectedInitialHeatJ
+    },
+    inflowHeatJ: {
+      actual: Number(energy.inflowHeatJ),
+      expected: expectedInflowHeatJ,
+      difference: Number(energy.inflowHeatJ) - expectedInflowHeatJ
+    },
+    outflowHeatJ: {
+      actual: Number(energy.outflowHeatJ),
+      expected: expectedOutflowHeatJ,
+      difference: Number(energy.outflowHeatJ) - expectedOutflowHeatJ
+    },
+    externalBoundaryHeatJ: {
+      actual: Number(energy.externalBoundaryHeatJ),
+      expected: expectedBoundaryHeatJ,
+      difference: Number(energy.externalBoundaryHeatJ) -
+        expectedBoundaryHeatJ
+    },
+    finalSensibleHeatJ: {
+      actual: Number(energy.finalSensibleHeatJ),
+      expected: expectedFinalHeatJ,
+      difference: Number(energy.finalSensibleHeatJ) - expectedFinalHeatJ
+    },
+    mixedTemperatureDifferenceC:
+      mixedTemperatureC - expectedMixedTemperatureC,
+    finalTemperatureDifferenceC:
+      finalTemperatureC - expectedFinalTemperatureC
+  };
+  const energyTermsValid = waterValid &&
+    same(energy.initialSensibleHeatJ, expectedInitialHeatJ,
+      energyTermToleranceJ) &&
+    same(energy.inflowHeatJ, expectedInflowHeatJ,
+      energyTermToleranceJ) &&
+    same(energy.outflowHeatJ, expectedOutflowHeatJ,
+      energyTermToleranceJ) &&
+    same(energy.externalBoundaryHeatJ, expectedBoundaryHeatJ,
+      energyTermToleranceJ) &&
+    same(energy.finalSensibleHeatJ, expectedFinalHeatJ,
+      energyTermToleranceJ) &&
+    same(mixedTemperatureC, expectedMixedTemperatureC, 1e-12) &&
+    same(finalTemperatureC, expectedFinalTemperatureC, 1e-12);
+  const expectedSignedOperandsJ = [
+    expectedFinalHeatJ,
+    -expectedInitialHeatJ,
+    -expectedInflowHeatJ,
+    expectedOutflowHeatJ,
+    -expectedBoundaryHeatJ
+  ];
+  const signedOperandsJ = closure.sensibleHeat?.signedOperandsJ;
+  const operandsValid = Array.isArray(signedOperandsJ) &&
+    signedOperandsJ.length === expectedSignedOperandsJ.length &&
+    signedOperandsJ.every((operand, index) =>
+      same(operand, expectedSignedOperandsJ[index], energyTermToleranceJ));
+  const recomputedResidualJ = operandsValid
+    ? signedOperandsJ.reduce((sum, operand) => sum + Number(operand), 0)
+    : NaN;
+  const absoluteOperandSumJ = operandsValid
+    ? signedOperandsJ.reduce((sum, operand) =>
+      sum + Math.abs(Number(operand)), 0) : NaN;
+  const expectedToleranceJ = operandsValid ? roundAudit(Math.max(
+    FLOODPLAIN_THERMAL_ENERGY_ABSOLUTE_FLOOR_J,
+    absoluteOperandSumJ * Number.EPSILON *
+      FLOODPLAIN_THERMAL_ENERGY_ULP_FACTOR), 12) : NaN;
+  const expectedUtilization = operandsValid ? roundAudit(
+    Math.abs(recomputedResidualJ) / expectedToleranceJ, 12) : NaN;
+  const expectedClosed = operandsValid &&
+    Math.abs(recomputedResidualJ) <= expectedToleranceJ;
+  const closureValid = operandsValid &&
+    Number(closure.sensibleHeat?.residualJ) === recomputedResidualJ &&
+    Number(closure.sensibleHeat?.numericToleranceJ) ===
+      expectedToleranceJ &&
+    Number(closure.sensibleHeat?.toleranceUtilization) ===
+      expectedUtilization &&
+    closure.sensibleHeat?.closed === expectedClosed &&
+    closure.identityCount === 1 &&
+    Number(closure.maximumResidualJ) === Math.abs(recomputedResidualJ) &&
+    Number(closure.maximumToleranceJ) === expectedToleranceJ &&
+    Number(closure.maximumToleranceUtilization) === expectedUtilization &&
+    closure.conservationClosed === expectedClosed &&
+    closure.measuredResidualPreserved === true &&
+    entry.truth?.energyClosureApplicable === true &&
+    entry.truth?.energyClosureClosed === expectedClosed &&
+    entry.truth?.scaleAwareNumericEnergyClosure === true &&
+    entry.truth?.measuredEnergyResidualPreserved === true &&
+    entry.truth?.fixedAbsoluteEnergyToleranceOnly === false;
+  const valid = policyValid && sharedTruthValid && digestValid &&
+    numericInputsValid &&
+    waterValid && energyTermsValid && closureValid;
+  return {
+    valid,
+    applicable: true,
+    policyValid,
+    digestValid,
+    sharedTruthValid,
+    numericInputsValid,
+    waterValid,
+    energyTermsValid,
+    energyTermDiagnostics,
+    closureValid,
+    recomputedResidualJ: finite(recomputedResidualJ)
+      ? recomputedResidualJ : null,
+    expectedToleranceJ: finite(expectedToleranceJ)
+      ? expectedToleranceJ : null,
+    expectedUtilization: finite(expectedUtilization)
+      ? expectedUtilization : null,
+    namedFailure: valid ? null : !digestValid ? 'receipt-digest'
+      : !waterValid ? 'water-owner-change'
+      : !energyTermsValid ? 'energy-terms' : !closureValid
+        ? 'energy-closure' : 'receipt-shape'
+  };
+}
+
+function floodplainThermalCheck(receipt) {
+  const claim = 'Every loaded reach persists one shared floodplain water temperature and independently closes its net-advected plus explicit external-boundary sensible-heat ledger.';
+  if (!receipt) {
+    return check('floodplain-thermal-receipts', 'NOT_APPLICABLE', claim,
+      { reason: 'no basin receipt supplied' }, { required: false });
+  }
+  if (receipt.schema === PREVIOUS_BASIN_ROUTING_STEP_SCHEMA) {
+    return check('floodplain-thermal-receipts', 'NOT_APPLICABLE', claim, {
+      reason: 'legacy basin receipt predates persistent floodplain thermal ownership',
+      expectedSchema: BASIN_ROUTING_STEP_SCHEMA,
+      actualSchema: receipt.schema
+    }, { required: false });
+  }
+  const entries = receipt.floodplainThermalReceipts;
+  const receiptShapeValid = Array.isArray(entries) &&
+    Array.isArray(receipt.floodplainReceipts) &&
+    entries.length === receipt.floodplainReceipts.length;
+  const audits = receiptShapeValid
+    ? entries.map(auditFloodplainThermalReceipt) : [];
+  const uniqueReachIds = receiptShapeValid
+    ? new Set(entries.map(entry => entry.reachId)) : new Set();
+  const uniqueReachBindingValid = receiptShapeValid &&
+    uniqueReachIds.size === entries.length &&
+    receipt.floodplainReceipts.every(entry =>
+      uniqueReachIds.has(entry.reachId));
+  const thermalByReach = new Map((entries || []).map(entry =>
+    [entry.reachId, entry]));
+  const consumers = [
+    ...(receipt.floodplainDenitrificationProcessReceipts || []),
+    ...(receipt.floodplainNitrificationProcessReceipts || []),
+    ...(receipt.floodplainGasExchangeProcessReceipts || [])
+  ];
+  const reactionBindingValid = receiptShapeValid &&
+    consumers.every(entry => {
+      const thermal = thermalByReach.get(entry.reachId);
+      return thermal &&
+        entry.activity?.floodplainThermalReceiptDigest ===
+          thermal.digest &&
+        same(entry.activity?.waterTemperatureC,
+          thermal.temperatures?.finalWaterTemperatureC, 1e-6);
+    });
+  const basinTruthValid =
+    receipt.truth?.persistentFloodplainWaterTemperatureState === true &&
+    receipt.truth?.persistentFloodplainSensibleHeatOwner === true &&
+    receipt.truth?.floodplainThermalEnergyClosure === true &&
+    receipt.truth?.floodplainThermalScaleAwareNumericClosure === true &&
+    receipt.truth?.floodplainThermalMeasuredResidualsPreserved === true &&
+    receipt.truth?.floodplainThermalFixedAbsoluteToleranceOnly === false &&
+    receipt.truth?.floodplainThermalReactionTemperatureEvidenceBound ===
+      true &&
+    receipt.truth?.floodplainThermalChannelWaterTemperatureResolved ===
+      false &&
+    receipt.truth?.floodplainThermalExternalBoundaryOwnerDebited ===
+      false &&
+    receipt.truth?.resolvedFloodplainFreezeThawState === false &&
+    receipt.truth?.unresolvedReachFloodplainThermalRetained === true;
+  const auditFailures = audits.map((audit, index) => ({ index, ...audit }))
+    .filter(audit => !audit.valid);
+  const valid = receipt.schema === BASIN_ROUTING_STEP_SCHEMA &&
+    receiptShapeValid && uniqueReachBindingValid && reactionBindingValid &&
+    basinTruthValid && auditFailures.length === 0;
+  return check('floodplain-thermal-receipts', valid ? 'PASS' : 'FAIL',
+    claim, {
+      expectedBasinSchema: BASIN_ROUTING_STEP_SCHEMA,
+      actualBasinSchema: receipt.schema || null,
+      expectedReceiptSchema: FLOODPLAIN_THERMAL_RECEIPT_SCHEMA,
+      expectedEnergyClosureSchema:
+        FLOODPLAIN_THERMAL_ENERGY_CLOSURE_SCHEMA,
+      expectedPolicySchema:
+        FLOODPLAIN_THERMAL_ENERGY_CLOSURE_POLICY_SCHEMA,
+      receiptCount: Array.isArray(entries) ? entries.length : null,
+      applicableClosureCount: audits.filter(entry => entry.applicable)
+        .length,
+      migrationCheckpointCount: audits.filter(entry =>
+        entry.applicable === false).length,
+      maximumRecomputedResidualJ: Math.max(0, ...audits.map(entry =>
+        Math.abs(Number(entry.recomputedResidualJ || 0)))),
+      maximumExpectedToleranceJ: Math.max(0, ...audits.map(entry =>
+        Number(entry.expectedToleranceJ || 0))),
+      maximumExpectedToleranceUtilization: Math.max(0, ...audits.map(
+        entry => Number(entry.expectedUtilization || 0))),
+      criteria: {
+        receiptShapeValid,
+        uniqueReachBindingValid,
+        reactionBindingValid,
+        basinTruthValid
+      },
+      auditFailures: auditFailures.slice(0, 12).map(entry => ({
+        index: entry.index,
+        namedFailure: entry.namedFailure,
+        policyValid: entry.policyValid,
+        digestValid: entry.digestValid,
+        waterValid: entry.waterValid ?? null,
+        energyTermsValid: entry.energyTermsValid ?? null,
+        energyTermDiagnostics: entry.energyTermDiagnostics ?? null,
+        closureValid: entry.closureValid ?? null,
+        migrationValid: entry.migrationValid ?? null
+      })),
       receiptDigest: receipt.digest || null
     });
 }
@@ -4569,6 +4970,7 @@ export function auditFoundationSystem(options = {}) {
     basinCheck(options.basinRoutingReceipt),
     alkalinityLedgerCheck(options.basinRoutingReceipt),
     floodplainCheck(options.basinRoutingReceipt),
+    floodplainThermalCheck(options.basinRoutingReceipt),
     floodplainHabitatCheck(options.basinRoutingReceipt),
     floodEventHistoryCheck(options.basinRoutingReceipt),
     floodplainSuccessionCheck(options.basinRoutingReceipt),
@@ -4622,6 +5024,15 @@ export function auditFoundationSystem(options = {}) {
       persistentRunoffSedimentQueue: true,
       persistentRiverAndCoastalSediment: true,
       persistentFloodplainWaterChemistryAndSediment: true,
+      persistentFloodplainWaterTemperatureState: true,
+      persistentFloodplainSensibleHeatOwner: true,
+      floodplainThermalEnergyClosure: true,
+      floodplainThermalScaleAwareNumericClosure: true,
+      floodplainThermalMeasuredResidualsPreserved: true,
+      floodplainThermalFixedAbsoluteToleranceOnly: false,
+      floodplainReactionTemperatureSourceShared: true,
+      floodplainChannelWaterTemperatureResolved: false,
+      floodplainExternalThermalBoundaryOwnerDebited: false,
       persistentFloodplainHabitatMemory: true,
       floodplainHabitatPotentialOnly: true,
       floodplainHabitatMaterialObserverReadOnly: true,
@@ -4661,9 +5072,8 @@ export function auditFoundationSystem(options = {}) {
       pairedFloodplainAtmosphereDenitrificationOwnerReceipts: true,
       floodplainDenitrificationOxygenGated: true,
       floodplainDenitrificationNitrogenLimited: true,
-      floodplainDenitrificationSurfaceTemperatureProxyResponsive: true,
+      floodplainDenitrificationSurfaceTemperatureProxyResponsive: false,
       floodplainDenitrificationQ10TemperatureResponseParameterized: true,
-      persistentFloodplainWaterTemperatureState: false,
       resolvedFloodplainFreezeThawState: false,
       floodplainDenitrificationArrheniusKineticsResolved: false,
       floodplainDenitrificationReactiveNitrateEquivalentParameterized: false,
@@ -4679,7 +5089,7 @@ export function auditFoundationSystem(options = {}) {
       floodplainNitrificationReactionModeled: true,
       floodplainNitrificationAmmoniumToNitrate: true,
       floodplainNitrificationDissolvedOxygenConsumed: true,
-      floodplainNitrificationSurfaceTemperatureProxyResponsive: true,
+      floodplainNitrificationSurfaceTemperatureProxyResponsive: false,
       floodplainNitrificationQ10TemperatureResponseParameterized: true,
       floodplainNitrificationNitriteIntermediateResolved: false,
       floodplainNitrificationAlkalinityDemandDiagnostic: false,
@@ -4753,6 +5163,7 @@ export function foundationSystemAuditDescription() {
       'loaded-transport-receipt',
       'basin-routing-receipt', 'end-to-end-alkalinity-ledger',
       'floodplain-exchange-receipts',
+      'floodplain-thermal-receipts',
       'floodplain-habitat-receipts', 'flood-event-history-receipts',
       'floodplain-succession-receipts',
       'floodplain-plant-matter-receipts',
@@ -4760,6 +5171,7 @@ export function foundationSystemAuditDescription() {
       'floodplain-decomposition-receipts',
       'floodplain-respiration-receipts',
       'floodplain-denitrification-receipts',
+      'floodplain-nitrification-receipts',
       'floodplain-atmosphere-gas-exchange-receipts'
     ],
     mutatesWorld: false,
