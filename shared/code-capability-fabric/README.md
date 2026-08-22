@@ -61,3 +61,18 @@ and run:
 ```powershell
 node shared/code-capability-fabric/selftest-semantic-candidate-generator-v1.js
 ```
+
+## First deterministic game candidate
+
+The next `TEST` rung adds one native, typed game recipe and a byte-bound game
+candidate packet. It composes the existing Game Capability Atlas, Game Forge,
+Sandbox, playtester, Review Inbox, Evidence Desk, Detached Candidate Nursery,
+and deterministic JSON contracts. It is not a general game engine or executor.
+
+See [README-deterministic-game-candidate-generator-v1.md](README-deterministic-game-candidate-generator-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-deterministic-game-candidate-generator-v1.js
+node tools/sandbox/selftest-disposable-candidate-sandbox-v1.js
+```

@@ -56,7 +56,12 @@ test('modern manifest and contract identity align',()=>{
 test('filesystem authority is declared without inventing a Hub permission token',()=>{
   assert.deepStrictEqual(manifest.permissions,[]);
   assert.equal(manifest.risk,'MEDIUM');
-  assert(contract.boundaries.writes.every(item=>item.startsWith('tools/sandbox/projects/')));
+  assert(contract.boundaries.writes.every(item=>
+    item.startsWith('tools/sandbox/projects/') ||
+    item.startsWith('state/disposable-candidate-sandboxes/')
+  ));
+  assert(contract.boundaries.writes.some(item=>item.startsWith('tools/sandbox/projects/')));
+  assert(contract.boundaries.writes.some(item=>item.startsWith('state/disposable-candidate-sandboxes/')));
   assert(contract.boundaries.refuses.includes('arbitrary-filesystem-write'));
   assert(contract.boundaries.refuses.includes('external-browser-origin'));
 });
