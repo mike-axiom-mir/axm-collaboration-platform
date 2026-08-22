@@ -40,23 +40,23 @@ check('page has one primary heading', (html.match(/<h1\b/gi) || []).length === 1
 check('page declares the local-runtime boundary', /website is a doorway/i.test(html) && /Workshop lives with you/i.test(html));
 check('release pointer uses the split v3 schema', packageFacts.schema === 'axm.public-release-pointer/v3');
 check('latest source is the exact current tag',
-  latest.release_tag === 'v0.6.0-experimental' &&
-  latest.source_ref === 'refs/tags/v0.6.0-experimental' &&
-  latest.target_commit === '22ec2abb09e9c17088133c0518da74a12fcce8be');
+  latest.release_tag === 'v0.7.0-experimental' &&
+  latest.source_ref === 'refs/tags/v0.7.0-experimental' &&
+  latest.target_commit === '15870d0c2ea866f6c9d1c88d98e63157397b06f2');
 check('latest source archive is exact and GitHub-generated',
-  /\/archive\/refs\/tags\/v0\.6\.0-experimental\.zip$/.test(latestArchive.url || '') &&
+  /\/archive\/refs\/tags\/v0\.7\.0-experimental\.zip$/.test(latestArchive.url || '') &&
   latestArchive.provider === 'github-generated' &&
   latestArchive.separate_axm_checksum === false);
-check('older packaged Windows build stays explicit',
-  packaged.status === 'OLDER_PACKAGED_BUILD' &&
-  packaged.release_tag === 'v0.3.0-experimental' &&
-  packaged.recommended_for_latest_source === false &&
+check('current packaged Windows build stays explicit',
+  packaged.status === 'CURRENT_PACKAGED_BUILD' &&
+  packaged.release_tag === 'v0.7.0-experimental' &&
+  packaged.recommended_for_latest_source === true &&
   /\.sha256$/.test(packagedArchive.sha256_url || ''));
 check('HTML exposes both truthful routes',
   html.includes(latestArchive.url) &&
   html.includes(packagedArchive.url) &&
   /latest reviewed source/i.test(html) &&
-  /last separately packaged Windows build/i.test(html));
+  /current packaged Windows build/i.test(html));
 check('runtime config exposes both truthful routes',
   config.includes(latest.release_url) &&
   config.includes(latestArchive.url) &&
@@ -73,7 +73,9 @@ check('release boundaries remain honest',
   packageFacts.status === 'EXPERIMENTAL' &&
   packageFacts.evidence.release_receiver === 'verified' &&
   packageFacts.evidence.warnings_remain_visible === true &&
-  packageFacts.evidence.open_repairbuddy_warning_count === 43);
+  packageFacts.evidence.packaged_windows_restore_test === 'passed' &&
+  packageFacts.evidence.packaged_windows_clean_launch === 'passed' &&
+  packageFacts.evidence.open_repairbuddy_warning_count === 44);
 check('site and manifest do not imply an ungranted license',
   !/\bFree software\b|\bUse it freely\b/.test(html) &&
   !/\bfree,\s*local-first\b/i.test(manifest.description || ''));
@@ -85,7 +87,7 @@ check('social metadata names the reviewed image',
   html.includes('axm-workshop-social-v4.jpg'));
 check('responsive rules are present', /@media\s*\(/.test(css));
 check('sitemap dates the repaired public routes',
-  (sitemap.match(/<lastmod>2026-08-16<\/lastmod>/g) || []).length === 2);
+  (sitemap.match(/<lastmod>2026-08-22<\/lastmod>/g) || []).length === 2);
 check('Pages deploys only from main', /branches:\s*\[main\]/.test(workflow));
 check('Pages artifact is limited to the static site', /path:\s*site\b/.test(workflow));
 check('official Pages actions are used', [

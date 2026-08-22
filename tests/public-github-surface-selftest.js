@@ -22,7 +22,8 @@ const documents = [
   'docs/releases/v0.3.0-experimental.md',
   'docs/releases/v0.4.1-experimental.md',
   'docs/releases/v0.5.0-experimental.md',
-  'docs/releases/v0.6.0-experimental.md'
+  'docs/releases/v0.6.0-experimental.md',
+  'docs/releases/v0.7.0-experimental.md'
 ];
 
 for (const relative of documents) {
@@ -39,9 +40,9 @@ for (const relative of documents) {
 
 const readme = read('README.md');
 assert(readme.includes('site/assets/axm-workshop-social-v4.jpg'), 'README must present the reviewed AXM hero');
-assert(readme.includes('v0.6.0-experimental'), 'README must route visitors to the latest reviewed source');
-assert(readme.includes('v0.3.0-experimental') && /older than the current source checkpoint/i.test(readme),
-  'README must distinguish the older packaged Windows build');
+assert(readme.includes('v0.7.0-experimental'), 'README must route visitors to the latest reviewed source');
+assert(readme.includes('AXM-Workshop-v0.7.0-experimental-Windows-source.zip') && /current packaged Windows build/i.test(readme),
+  'README must route visitors to the current verified Windows package');
 assert(readme.includes('OPEN_AXM_WORKSHOP.cmd'), 'README must keep the Windows beginner door visible');
 assert(!readme.includes('177 tool modules') && !readme.includes('1,183 declared capabilities'),
   'README must not freeze obsolete discovery totals');
@@ -52,16 +53,17 @@ assert(readme.includes('registry/modules.json') &&
 assert(readme.includes('not automatic redistribution'), 'README must disclose the license boundary');
 
 const status = read('STATUS.md');
-assert(status.includes('v0.6.0-experimental'), 'STATUS must name the latest reviewed source');
-assert(status.includes('v0.3.0-experimental') && /Last separately packaged Windows build/i.test(status),
-  'STATUS must preserve the source/package distinction');
-assert(status.includes('43 warnings remain open'), 'STATUS must keep the warning baseline visible');
+assert(status.includes('v0.7.0-experimental'), 'STATUS must name the latest reviewed source');
+assert(/Current separately packaged Windows build/i.test(status) && /restore receipt/i.test(status),
+  'STATUS must preserve current package evidence');
+assert(status.includes('44 warnings remain open'), 'STATUS must keep the warning baseline visible');
 
 const docs = read('docs/README.md');
-assert(docs.includes('releases/v0.6.0-experimental.md'), 'documentation index must point to the current release');
+assert(docs.includes('releases/v0.7.0-experimental.md'), 'documentation index must point to the current release');
 assert(docs.includes('releases/v0.5.0-experimental.md') &&
   docs.includes('releases/v0.4.1-experimental.md') &&
-  docs.includes('releases/v0.3.0-experimental.md'),
+  docs.includes('releases/v0.3.0-experimental.md') &&
+  docs.includes('releases/v0.6.0-experimental.md'),
   'documentation index must preserve release history');
 
 const collaboration = read('COLLABORATION.md');
@@ -71,7 +73,7 @@ assert(collaboration.includes('/discussions') &&
   'collaboration page must route people to current public and private doors');
 
 const bugTemplate = read('.github/ISSUE_TEMPLATE/bug_report.yml');
-assert(bugTemplate.includes('v0.6.0-experimental tagged source ZIP'),
+assert(bugTemplate.includes('v0.7.0-experimental Windows source package'),
   'bug template must use the current source example');
 assert(bugTemplate.includes('source/package route'),
   'bug template must identify which public route was tested');
@@ -79,7 +81,7 @@ assert(bugTemplate.includes('source/package route'),
 const site = read('site/index.html');
 assert(!/\bFree software\b|\bUse it freely\b/.test(site), 'public doorway must not imply a license that is not granted');
 assert(site.includes('public experimental Workshop') && site.includes('current license boundary remains explicit'));
-assert(site.includes('CURRENT RELEASE TRUTH') && site.includes('v0.6.0-experimental'));
+assert(site.includes('CURRENT RELEASE TRUTH') && site.includes('v0.7.0-experimental'));
 
 for (const relative of [
   '.github/ISSUE_TEMPLATE/config.yml',

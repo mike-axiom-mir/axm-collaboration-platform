@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.6.0-experimental"><img alt="Release v0.6.0 experimental" src="https://img.shields.io/badge/release-v0.6.0--experimental-8b5cf6"></a>
+  <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.7.0-experimental"><img alt="Release v0.7.0 experimental" src="https://img.shields.io/badge/release-v0.7.0--experimental-8b5cf6"></a>
   <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform/actions/workflows/public-launch.yml"><img alt="Public launch checks" src="https://github.com/mike-axiom-mir/axm-collaboration-platform/actions/workflows/public-launch.yml/badge.svg?branch=main"></a>
   <img alt="Local first" src="https://img.shields.io/badge/local--first-yes-16a085">
   <img alt="Status experimental" src="https://img.shields.io/badge/status-experimental-f59e0b">
@@ -29,23 +29,22 @@
 | I want to… | Best route |
 |---|---|
 | Try a small browser workroom | [Open the public doorway](https://mike-axiom-mir.github.io/axm-collaboration-platform/) |
-| Get the latest reviewed source | [Download the exact v0.6.0 tagged source ZIP](https://github.com/mike-axiom-mir/axm-collaboration-platform/archive/refs/tags/v0.6.0-experimental.zip) |
-| Read what changed in v0.6.0 | [Open the current prerelease](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.6.0-experimental) |
-| Use the last separately packaged Windows build | [Download v0.3.0 Windows source package](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.3.0-experimental/AXM-Workshop-v0.3.0-experimental-Windows-source.zip) — older than the current source checkpoint |
+| Get the latest reviewed source | [Download the exact v0.7.0 tagged source ZIP](https://github.com/mike-axiom-mir/axm-collaboration-platform/archive/refs/tags/v0.7.0-experimental.zip) |
+| Read what changed in v0.7.0 | [Open the current prerelease](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.7.0-experimental) |
+| Use the current packaged Windows build | [Download the v0.7.0 Windows source package](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.7.0-experimental/AXM-Workshop-v0.7.0-experimental-Windows-source.zip) and its [SHA-256 file](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.7.0-experimental/AXM-Workshop-v0.7.0-experimental-Windows-source.zip.sha256) |
 | Understand what is inside | Read the [Discovery Root](AXM_DISCOVERY_ROOT.md) |
 | Inspect current limitations | Read [Public Status](STATUS.md) |
 | Help improve AXM | Read [Contributing](CONTRIBUTING.md) |
 | Orient an AI collaborator | Begin with [AI Start Here](AI_START_HERE.md) |
 
-> **Release truth:** `v0.6.0-experimental` is the newest reviewed source
-> checkpoint. GitHub provides its exact tagged source archives. The older
-> `v0.3.0-experimental` release remains the last AXM-created Windows ZIP with a
-> separate checksum; it is preserved as a convenience package, not presented as
-> the newest code.
+> **Release truth:** `v0.7.0-experimental` is the newest reviewed source
+> checkpoint. GitHub provides its exact tagged source archives and the release
+> also carries an AXM-created Windows source ZIP, SHA-256 file, and verification
+> receipts bound to the same reviewed commit.
 
 ## Windows: open the current source
 
-1. Download the exact v0.6.0 tagged source ZIP above.
+1. Download the v0.7.0 Windows source package above, or the exact tagged source ZIP.
 2. Right-click the ZIP and select **Extract All**.
 3. Open the extracted folder.
 4. Double-click **`OPEN_AXM_WORKSHOP.cmd`**.
@@ -55,9 +54,9 @@ If GitHub shows its code instead of opening AXM, nothing broke. GitHub previews 
 but cannot run a local application; download and extract the complete folder
 first.
 
-The older v0.3.0 convenience package is still available for people who need the
-previous separately named archive and checksum. It does not contain the newer
-v0.6.0 integrations.
+The release page preserves the package checksum, restore receipt, clean-launch
+receipt, source-gate receipt, asset inventory, and receiver receipt beside the
+Windows ZIP.
 
 ### First-launch trust boundary
 
@@ -108,15 +107,15 @@ are navigation data—not blanket runtime proof or authority grants. Explore the
 
 | Gate | State |
 |---|---|
-| Latest reviewed source | `v0.6.0-experimental`, published from the reviewed merge commit |
+| Latest reviewed source | `v0.7.0-experimental`, published from reviewed merge `15870d0c` |
 | Deterministic public-safety scan | Pass for the published snapshot |
 | Fresh Windows source launch with no Node.js on `PATH` | Pass |
-| v0.6.0 archive type | GitHub-generated tagged source archives; no separate AXM package or checksum |
-| Last AXM-packaged Windows ZIP | `v0.3.0-experimental` — preserved, but older |
+| v0.7.0 archive types | GitHub-generated tagged source archives plus an AXM Windows source ZIP and SHA-256 file |
+| Current AXM-packaged Windows ZIP | `v0.7.0-experimental` — restore-tested and clean-launched before publication |
 | Offline first launch | Not claimed |
 | Clean macOS/Linux first launch | Not yet independently proven |
 | Independent first-time-human comprehension test | Not yet run |
-| Open RepairBuddy warning baseline | 43 warnings remain visible |
+| Open RepairBuddy warning baseline | 44 warnings remain visible |
 | Production security certification | Not claimed |
 
 The exact evidence and limitations live in [STATUS.md](STATUS.md) and

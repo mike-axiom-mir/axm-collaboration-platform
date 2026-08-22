@@ -3,25 +3,24 @@
 AXM Workshop is an **experimental public test**. Public-safe, runnable,
 understandable, licensed, packaged, and production-ready are independent gates.
 
-Latest reviewed source: [v0.6.0-experimental](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.6.0-experimental)
+Latest reviewed source: [v0.7.0-experimental](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.7.0-experimental)
 
-Last separately packaged Windows build:
-[v0.3.0-experimental](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.3.0-experimental) — preserved for convenience, but older
-than the current source checkpoint.
+Current separately packaged Windows build:
+[v0.7.0-experimental](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.7.0-experimental) — bound to the same reviewed source checkpoint.
 
 | Gate | Current state | Evidence or limitation |
 |---|---|---|
 | Public-safe publication | **Pass for each published digest** | The deterministic inventory and configured secret/private-path scanner must pass before the exact branch push. |
-| Latest reviewed source | **Published** | `v0.6.0-experimental` targets the reviewed merge commit and was verified after GitHub created the prerelease. |
-| Tagged source archives | **Available** | GitHub provides ZIP and TAR archives for the exact v0.6.0 tag. AXM did not attach a separate custom package or checksum to this release. |
-| Windows source launch | **Pass** | GitHub Actions launched the exact combined source from a path with spaces, removed system Node.js from `PATH`, bootstrapped the private runtime, and polled `/api/health`. |
-| Separately packaged Windows archive | **Older build available** | v0.3.0 carries an AXM-named Windows source ZIP and SHA-256 file. It is not the newest source. |
-| Bundled runtime | **Not included** | Neither the current tagged source nor the older source package carries Node binaries. |
+| Latest reviewed source | **Published** | `v0.7.0-experimental` targets reviewed merge `15870d0c2ea866f6c9d1c88d98e63157397b06f2`; the receiver verified the prerelease and its assets. |
+| Tagged source archives | **Available** | GitHub provides ZIP and TAR archives for the exact v0.7.0 tag. |
+| Windows source launch | **Pass** | GitHub Actions launched the exact extracted v0.7.0 Windows package after its restore verifier passed. |
+| Separately packaged Windows archive | **Current build available** | v0.7.0 carries an AXM-named Windows source ZIP, SHA-256 file, restore receipt, launch receipt, inventory, and receiver receipt. |
+| Bundled runtime | **Not included** | Neither the current tagged source nor the current Windows source package carries Node binaries. |
 | Offline first launch | **Not claimed** | First Windows launch needs the network when compatible Node.js is absent. |
 | macOS/Linux clean launch | **Not yet independently proven** | A compatible Node.js installation is currently required. |
 | First-time-human comprehension | **Not run** | Documentation has been steward-reviewed; an independent beginner trial is still required. |
 | Guided Proof One | **Planned** | A narrow creation, verification, controlled-failure, and rollback demonstration is not yet the public default. |
-| RepairBuddy warning baseline | **43 warnings remain open** | The complete-warning delta adds orientation; it does not acknowledge, suppress, or automatically repair the warnings. |
+| RepairBuddy warning baseline | **44 warnings remain open** | The complete-warning delta adds orientation; it does not acknowledge, suppress, or automatically repair the warnings. |
 | Production security | **Not claimed** | Localhost binding and public-safety scanning are not a security certification. |
 | Broad open-source license | **Not granted** | See [License Status](LICENSE_STATUS.md). |
 
