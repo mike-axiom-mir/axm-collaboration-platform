@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.resource-grounded-capability-gate-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "gateId", "evaluatedAt", "state", "capabilityId",
+    "candidateDigest", "baselineDigest", "capabilityCycleRef", "policy",
+    "baselineObservation", "candidateObservation", "freshness", "results",
+    "summary", "recommendation", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.resource-grounded-capability-gate-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "gateId": {"$ref": "#/$defs/id"},
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "state": {"enum": [
+      "BASELINE_OBSERVATION_REQUIRED", "CANDIDATE_OBSERVATION_REQUIRED",
+      "OBSERVATION_STALE", "RESOURCE_EVIDENCE_HOLD", "RESOURCE_BUDGET_EXCEEDED",
+      "RESOURCE_REGRESSION_HOLD", "RESOURCE_EVIDENCE_ALIGNED"
+    ]},
+    "capabilityId": {"$ref": "#/$defs/id"},
+    "candidateDigest": {"$ref": "#/$defs/digest"},
+    "baselineDigest": {"$ref": "#/$defs/digest"},
+    "capabilityCycleRef": {"$ref": "#/$defs/reference"},
+    "policy": {"$ref": "resource-grounded-capability-policy.schema.json"},
+    "baselineObservation": {"oneOf": [{"$ref": "resource-observation.schema.json"}, {"type": "null"}]},
+    "candidateObservation": {"oneOf": [{"$ref": "resource-observation.schema.json"}, {"type": "null"}]},
+    "freshness": {
+      "type": "object", "additionalProperties": false,
+      "required": ["baseline", "candidate"],
+      "properties": {
+        "baseline": {"enum": ["CURRENT", "STALE", "NOT_AVAILABLE"]},
+        "candidate": {"enum": ["CURRENT", "STALE", "NOT_AVAILABLE"]}
+      }
+    },
+    "results": {"type": "array", "maxItems": 16, "items": {"$ref": "#/$defs/result"}},
+    "summary": {"$ref": "#/$defs/summary"},
+    "recommendation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verdict", "reason"],
+      "properties": {
+        "verdict": {"enum": ["HOLD", "READY_FOR_HUMAN_REVIEW"]},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 300}
+      }
+    },
+    "truth": {"$ref": "#/$defs/truth"},
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$", "maxLength": 180},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "id", "unit", "required", "baselineValue", "candidateValue", "absoluteMax",
+        "maxRegressionBps", "baselineCoverage", "candidateCoverage", "definitionAligned",
+        "verdict", "reason"
+      ],
+      "properties": {
+        "id": {"type": "string"},
+        "unit": {"type": "string"},
+        "required": {"type": "boolean"},
+        "baselineValue": {"type": ["integer", "null"]},
+        "candidateValue": {"type": ["integer", "null"]},
+        "absoluteMax": {"type": ["integer", "null"]},
+        "maxRegressionBps": {"type": ["integer", "null"]},
+        "baselineCoverage": {"enum": ["COMPLETE", "PARTIAL", "UNKNOWN"]},
+        "candidateCoverage": {"enum": ["COMPLETE", "PARTIAL", "UNKNOWN"]},
+        "definitionAligned": {"type": "boolean"},
+        "verdict": {"enum": [
+          "PASS", "EVIDENCE_HOLD", "OPTIONAL_UNKNOWN", "BUDGET_EXCEEDED",
+          "ADVISORY_EXCEEDED", "REGRESSION_EXCEEDED", "ADVISORY_REGRESSION"
+        ]},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 180}
+      }
+    },
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "dimensions", "requiredDimensions", "requiredPassed", "requiredHeld",
+        "requiredBudgetExceeded", "requiredRegressionExceeded", "optionalUnknown",
+        "optionalAdvisories"
+      ],
+      "properties": {
+        "dimensions": {"type": "integer", "minimum": 0},
+        "requiredDimensions": {"type": "integer", "minimum": 1},
+        "requiredPassed": {"type": "integer", "minimum": 0},
+        "requiredHeld": {"type": "integer", "minimum": 0},
+        "requiredBudgetExceeded": {"type": "integer", "minimum": 0},
+        "requiredRegressionExceeded": {"type": "integer", "minimum": 0},
+        "optionalUnknown": {"type": "integer", "minimum": 0},
+        "optionalAdvisories": {"type": "integer", "minimum": 0}
+      }
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "gateAuthority", "measurementPerformed", "measurementEvidenceBytesVerified",
+        "observationAuthorityAuthenticated", "functionalVerificationReperformed",
+        "unknownTreatedAsUnlimited",
+        "improvementEstablished", "hardwareSafetyProved", "longTermSafetyProved",
+        "automaticExecution", "automaticPermissionGrant", "automaticInstall",
+        "automaticPromotion", "automaticCanon", "automaticRootMutation",
+        "humanStewardDecisionRequired"
+      ],
+      "properties": {
+        "gateAuthority": {"const": "RESOURCE_EVIDENCE_COMPARISON_ONLY"},
+        "measurementPerformed": {"const": false},
+        "measurementEvidenceBytesVerified": {"const": false},
+        "observationAuthorityAuthenticated": {"const": false},
+        "functionalVerificationReperformed": {"const": false},
+        "unknownTreatedAsUnlimited": {"const": false},
+        "improvementEstablished": {"const": false},
+        "hardwareSafetyProved": {"const": false},
+        "longTermSafetyProved": {"const": false},
+        "automaticExecution": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticCanon": {"const": false},
+        "automaticRootMutation": {"const": false},
+        "humanStewardDecisionRequired": {"const": true}
+      }
+    }
+  }
+}

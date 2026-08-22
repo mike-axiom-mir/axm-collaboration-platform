@@ -31,6 +31,12 @@ candidate digest. Existing organs keep their authority:
 The machine-readable receipt shape is
 `verified-capability-cycle-receipt.schema.json`.
 
+When a candidate also needs a declared compute, memory, storage, network, time,
+energy, or carbon envelope, the optional
+`../resource-grounded-capability-gate/` companion can compare sealed baseline
+and candidate observations while this cycle is still `AWAITING_STEWARD`. It
+does not change this loop's state or replace the human decision.
+
 `PASS` is not enough to make a capability available. A `CONTINUE` decision must
 be human, exact-confirmed and bound to the candidate digest. Even then the cycle
 reports `READY_FOR_GOVERNED_INTAKE` until a separate availability authority

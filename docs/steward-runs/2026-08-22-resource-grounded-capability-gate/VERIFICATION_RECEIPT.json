@@ -1,0 +1,61 @@
+{
+  "schema": "axm.steward-verification-receipt/v1",
+  "date": "2026-08-22",
+  "candidate": "shared/resource-grounded-capability-gate",
+  "status": "TEST",
+  "focusedChecks": [
+    {
+      "command": "node shared/resource-grounded-capability-gate/selftest.js",
+      "result": "PASS",
+      "assertions": 43
+    },
+    {
+      "command": "node shared/verified-capability-loop/selftest.js",
+      "result": "PASS",
+      "assertions": 24
+    },
+    {
+      "command": "node --check shared/resource-grounded-capability-gate/resource-grounded-capability-gate.js",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "requiredChecks": [
+    { "command": "node verify.js", "result": "PASS_WITH_WARNINGS", "failures": 0, "warnings": 41 },
+    { "command": "node hub/hub-selftest.js", "result": "PASS" },
+    { "command": "node hub/route-selftest.js", "result": "PASS" },
+    { "command": "node hub/graft-selftest.js", "result": "PASS" },
+    { "command": "node hub/skin-selftest.js", "result": "PASS" },
+    { "command": "node hub/verify-plus.js", "result": "PASS_WITH_WARNINGS", "failures": 0, "warnings": 41 },
+    { "command": "node tests/html-script-syntax-test.js", "result": "PASS", "documents": 55, "failures": 0 },
+    { "command": "node tests/tool-forge-package-test.js", "result": "PASS" },
+    { "command": "node tools/agent-tool-forge/selftest.js", "result": "PASS", "assertions": 17, "failures": 0 },
+    { "command": "node tools/evidence-desk/selftest.js", "result": "PASS", "assertions": 36, "failures": 0 }
+  ],
+  "warningsPreserved": [
+    "The repository verifier reported 41 warnings and zero failures.",
+    "Warning categories included legacy manifest-kind backlog, missing current promotion selftest receipts, and a stale tools index.",
+    "This run did not classify those warnings as fixed or caused by this candidate."
+  ],
+  "notRun": [
+    "Live workload resource measurement",
+    "Observation issuer authentication",
+    "Referenced telemetry byte retrieval and verification",
+    "Browser render/click verification because no UI exists",
+    "Install, promotion, merge, or CANON decision"
+  ],
+  "truth": {
+    "scriptedChecksPassed": true,
+    "realWorldResourceImprovementEstablished": false,
+    "observerAuthenticated": false,
+    "browserClaimed": false,
+    "installed": false,
+    "promoted": false,
+    "merged": false,
+    "canon": false,
+    "humanDecisionRequired": true
+  }
+}
