@@ -1,0 +1,78 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "compare-two-signed-host-git-object-inventories",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "deterministic-json-core",
+        "grounded-consent-scope",
+        "ed25519-host-observation-attestation",
+        "git-object-inventory.strict-record.validate",
+        "git-object-inventory.signature-and-freshness.verify",
+        "git-object-inventory.object-set.compare",
+        "git-object-inventory.typed-drift.report",
+        "git-object-inventory.byte-bound-lineage.emit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git-object-inventory.object-set.compare": [
+          "pure comparison of at most 2048 canonical host-supplied records per inventory",
+          "MATCH proves equality only inside the two exact signed observations"
+        ],
+        "git-object-inventory.signature-and-freshness.verify": [
+          "one to four exact consent-bound Ed25519 trust keys",
+          "caller-supplied evaluation time is not a trusted clock"
+        ],
+        "git-object-inventory.byte-bound-lineage.emit": [
+          "inventory and attestation artifact digests and byte lengths only; no object content"
+        ]
+      }
+    },
+    {
+      "id": "preserve-pure-no-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "authority.filesystem.disabled",
+        "authority.git-command.disabled",
+        "authority.network.disabled",
+        "authority.child-process.disabled",
+        "authority.lifecycle-effects.disabled"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "future-complete-mirror-reliability",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "inventory.host-enumerator.verify",
+        "mirror.git-ref-set.compare",
+        "mirror.transport.sender-receipt.verify",
+        "mirror.transport.receiver-receipt.verify",
+        "mirror.clone-completeness.verify",
+        "mirror.recovery.replay-test"
+      ],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "inventory.host-enumerator.verify",
+    "mirror.clone-completeness.verify",
+    "mirror.git-ref-set.compare",
+    "mirror.recovery.replay-test",
+    "mirror.transport.receiver-receipt.verify",
+    "mirror.transport.sender-receipt.verify"
+  ]
+}

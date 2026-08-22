@@ -1,0 +1,36 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "run": "code-capability-fabric-git-object-inventory-v2.3",
+  "claims": [
+    {
+      "claim": "The pure comparator accepts valid exact signed inventory observations and deterministically emits MATCH or typed DRIFT.",
+      "evidenceClass": "behavioral-native",
+      "evidence": [
+        "shared/code-capability-fabric/selftest-git-object-inventory-comparator-v1.js",
+        "RETAINED_COMPARISONS.json",
+        "selftest.js"
+      ]
+    },
+    {
+      "claim": "The module has no filesystem, Git command, network, child-process, execution, lifecycle, merge, promotion, or CANON authority.",
+      "evidenceClass": "authority-contract-plus-static-scan",
+      "evidence": [
+        "shared/code-capability-fabric/module-git-object-inventory-comparator-v1.contract.json",
+        "shared/code-capability-fabric/selftest-git-object-inventory-comparator-v1.js"
+      ]
+    },
+    {
+      "claim": "The repository-required regression checks pass with the existing 41-warning baseline.",
+      "evidenceClass": "command-receipt",
+      "evidence": ["VERIFICATION_RECEIPT.json"]
+    },
+    {
+      "claim": "The comparator proves actual repository enumeration completeness or full clone reliability.",
+      "evidenceClass": "unsupported-and-explicitly-denied",
+      "evidence": [
+        "shared/code-capability-fabric/README-git-object-inventory-comparator-v1.md",
+        "shared/code-capability-fabric/git-object-inventory-comparator-v1.js"
+      ]
+    }
+  ]
+}

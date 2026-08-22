@@ -1,0 +1,57 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "compare-two-signed-host-git-object-inventories",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "deterministic-json-core",
+        "grounded-consent-scope",
+        "ed25519-host-observation-attestation",
+        "schema-packet.exact-bytes.compare"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "git-object-inventory.strict-record.validate",
+        "git-object-inventory.signature-and-freshness.verify",
+        "git-object-inventory.object-set.compare",
+        "git-object-inventory.typed-drift.report",
+        "git-object-inventory.byte-bound-lineage.emit"
+      ],
+      "declaredConstraints": {
+        "ed25519-host-observation-attestation": [
+          "authenticates an exact observer key and digest, not enumeration completeness"
+        ],
+        "grounded-consent-scope": [
+          "declarative scope only; human authentication, replay prevention, live revocation, and trusted time remain absent"
+        ]
+      }
+    },
+    {
+      "id": "preserve-pure-no-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "authority.filesystem.disabled",
+        "authority.git-command.disabled",
+        "authority.network.disabled",
+        "authority.child-process.disabled",
+        "authority.lifecycle-effects.disabled"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "git-object-inventory.byte-bound-lineage.emit",
+    "git-object-inventory.object-set.compare",
+    "git-object-inventory.signature-and-freshness.verify",
+    "git-object-inventory.strict-record.validate",
+    "git-object-inventory.typed-drift.report"
+  ]
+}
