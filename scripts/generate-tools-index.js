@@ -12,10 +12,35 @@ const args = process.argv.slice(2);
 const verify = args.includes('--verify');
 const workersArg = args.find(value => value.startsWith('--workers='));
 const timeoutArg = args.find(value => value.startsWith('--timeout-ms='));
+const asOfArg = args.find(value => value.startsWith('--as-of='));
+const refreshClock = args.includes('--refresh-clock');
 const workers = Math.max(1, Math.min(4, Number(workersArg && workersArg.split('=')[1] || 2)));
 const timeoutMs = Math.max(1000, Math.min(120000, Number(timeoutArg && timeoutArg.split('=')[1] || 45000)));
 const outputFile = path.join(ROOT, 'tools-index.json');
 const receiptFile = path.join(ROOT, 'state', 'tool-readiness', 'latest-selftests.json');
+
+function validClock(value, source) {
+  const parsed = Date.parse(value);
+  if (!Number.isFinite(parsed)) throw new Error(source + ' must be a valid date/time');
+  return new Date(parsed).toISOString();
+}
+
+function indexClock() {
+  if (refreshClock && (asOfArg || process.env.AXM_INDEX_AS_OF)) {
+    throw new Error('--refresh-clock cannot be combined with --as-of or AXM_INDEX_AS_OF');
+  }
+  if (asOfArg) return validClock(asOfArg.slice('--as-of='.length), '--as-of');
+  if (process.env.AXM_INDEX_AS_OF) return validClock(process.env.AXM_INDEX_AS_OF, 'AXM_INDEX_AS_OF');
+  if (!refreshClock) {
+    try {
+      const previous = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
+      if (previous && previous.generatedAt) return validClock(previous.generatedAt, 'tools-index.json generatedAt');
+    } catch (error) {
+      if (error && /must be a valid date\/time/.test(error.message || '')) throw error;
+    }
+  }
+  return new Date().toISOString();
+}
 
 function digest(value) {
   return crypto.createHash('sha256').update(String(value || '')).digest('hex');
@@ -86,7 +111,8 @@ async function runBounded(tools) {
 
 async function main() {
   let verificationResults = null;
-  const preliminary = Readiness.buildIndex(ROOT);
+  const asOf = indexClock();
+  const preliminary = Readiness.buildIndex(ROOT, { now: asOf });
   if (verify) {
     const targets = preliminary.tools.filter(Readiness.isVerificationTarget);
     const results = await runBounded(targets);
@@ -103,7 +129,7 @@ async function main() {
     try { verificationResults = JSON.parse(fs.readFileSync(receiptFile, 'utf8')); }
     catch (error) { verificationResults = null; }
   }
-  const index = preserveGeneratedAt(Readiness.buildIndex(ROOT, { verificationResults }));
+  const index = preserveGeneratedAt(Readiness.buildIndex(ROOT, { verificationResults, now: asOf }));
   const checked = Readiness.validateIndex(index);
   if (!checked.pass) throw new Error(checked.errors.join('; '));
   fs.writeFileSync(outputFile, JSON.stringify(index, null, 2) + '\n');

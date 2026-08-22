@@ -91,4 +91,22 @@ These observations are not permission to mutate that state.
 - The receiver verifies asset names and nonzero sizes but does not download the published assets and compare their remote hashes with the local package receipt.
 - The local Windows aggregate-test parity defect above remains open.
 
+## 2026-08-22 deterministic clock repair
+
+A fresh PR run proved that all functional and package gates passed but the final
+generated-drift gate failed because `tools-index.json` recalculated
+`freshness.ageDays` from the current wall clock. The index is now an explicit
+as-of snapshot: ordinary generation reuses its committed `generatedAt`, while
+`npm run index:tools:refresh` deliberately advances the clock. The corrective
+workflow runs `tests/tools-index-clock-selftest.js` before the aggregate suite.
+
+That repair also exposed platform-dependent source hashes. The readiness index
+previously hashed raw checkout bytes, so Git's LF checkout on Linux and CRLF
+checkout on Windows described identical source with different digests. Its
+manifest, contract, and promotion-selftest hashes now use the explicit
+`sha256-canonical-text-lf-v1` contract: CRLF is normalized to LF, while lone
+carriage returns and every non-newline byte remain significant. The index and
+public discovery registries include a one-time rebaseline for the older mixed-
+newline `geographic-market-map` manifest and selftest.
+
 Review these separately before calling the release path WORKING. Only Mike's explicit merge decision can canonize any part of this material.
