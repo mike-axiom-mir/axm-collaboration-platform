@@ -1,0 +1,52 @@
+{
+  "schema": "axm.code-capability-fabric-independent-assurance-integration-handoff/v1",
+  "observedAt": "2026-08-22T00:29:54.996Z",
+  "source": {
+    "branch": "codex/code-capability-fabric-independent-assurance-v1.6",
+    "implementationCommit": "ba5af784b5322284d0f6da8a5f272648745053f9",
+    "priorReceiptTip": "89bc241caa8fa03fb9fd41fb9adceeb2b1eaf5b6",
+    "intakeBaseCommit": "d9066284e45eaedb07d8e7998b7c6a972e67c0c1"
+  },
+  "changedPaths": [
+    "shared/code-capability-fabric/README-independent-assurance-v1.md",
+    "shared/code-capability-fabric/code-assurance-attestation.schema.json",
+    "shared/code-capability-fabric/code-assurance-trust-policy.schema.json",
+    "shared/code-capability-fabric/code-independent-assurance-review-v1.js",
+    "shared/code-capability-fabric/code-independent-assurance-review.schema.json",
+    "shared/code-capability-fabric/module-independent-assurance-v1.contract.json",
+    "shared/code-capability-fabric/selftest-independent-assurance-v1.js"
+  ],
+  "observedCanonicalCheckout": {
+    "branch": "local-visual-fabric-20260728",
+    "head": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "dirty": true,
+    "trackedChangeEntries": 3599,
+    "untrackedEntriesExpanded": 9462,
+    "priorReceiptTipIsAncestor": false,
+    "implementationCommitIsAncestor": false,
+    "taskRelevantStatusEntries": 0
+  },
+  "targetAssumption": "Mike has not selected an integration target. Any selected target must be clean and must contain or intentionally reconcile prior receipt tip 89bc241caa8fa03fb9fd41fb9adceeb2b1eaf5b6. The observed canonical checkout is not a safe merge surface and must not be switched, overwritten, or merged in place.",
+  "exactReadOnlyReviewActions": [
+    "git show --stat --oneline ba5af784b5322284d0f6da8a5f272648745053f9",
+    "git diff --check 89bc241caa8fa03fb9fd41fb9adceeb2b1eaf5b6...ba5af784b5322284d0f6da8a5f272648745053f9",
+    "git diff --stat 89bc241caa8fa03fb9fd41fb9adceeb2b1eaf5b6...ba5af784b5322284d0f6da8a5f272648745053f9",
+    "git diff 89bc241caa8fa03fb9fd41fb9adceeb2b1eaf5b6...ba5af784b5322284d0f6da8a5f272648745053f9 -- shared/code-capability-fabric"
+  ],
+  "exactImplementationIntegrationCommandAfterCleanTargetAndAncestryChecks": "git merge --no-ff --no-commit ba5af784b5322284d0f6da8a5f272648745053f9",
+  "safeIntegrationConditions": [
+    "Re-check the selected target HEAD and worktree status immediately before integration.",
+    "Run git merge-base --is-ancestor 89bc241caa8fa03fb9fd41fb9adceeb2b1eaf5b6 HEAD; stop and review if it returns nonzero.",
+    "Use a new clean review worktree from the Mike-selected target ref; do not reuse the busy canonical checkout.",
+    "Run the exact no-commit merge command, inspect the complete staged diff, rerun required and focused checks, then let Mike decide whether to create a merge commit."
+  ],
+  "authority": {
+    "fourRootsTechnicalGateFirst": true,
+    "mergePerformed": false,
+    "canonicalCheckoutModified": false,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false,
+    "humanGitGate": "Mike Tobi"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "schema": "axm.code-capability-fabric-independent-assurance-audit/v1",
+  "auditedImplementationCommit": "ba5af784b5322284d0f6da8a5f272648745053f9",
+  "status": "TEST",
+  "rootPrecedence": [
+    {
+      "root": "truth",
+      "technicalGate": "Cryptographic key separation is reported only as key separation; organizational independence, competence, and honest measurement remain unproven."
+    },
+    {
+      "root": "agency-non-domination",
+      "technicalGate": "The host observer and aliases of its public-key bytes cannot count toward assurance quorums; duplicate public-key material cannot create extra votes."
+    },
+    {
+      "root": "continuity",
+      "technicalGate": "The layer is additive and the historical v1, v2, readiness, and steward-receipt selftests remain passing."
+    },
+    {
+      "root": "wisdom-over-speed",
+      "technicalGate": "A complete quorum stops for exact human policy acceptance because the v2 request did not bind the trust-policy digest."
+    }
+  ],
+  "closedSeams": [
+    {
+      "id": "assurance-trust-policy-integrity",
+      "result": "Every assurance schema has one exact rule, bounded trusted verifier references, a bounded quorum, an active time window, authority REVIEW_ONLY, and a self-digest."
+    },
+    {
+      "id": "observer-verifier-separation",
+      "result": "The host observer is excluded by exact reference and by exact Ed25519 public-key bytes, including renamed key aliases."
+    },
+    {
+      "id": "quorum-key-material-uniqueness",
+      "result": "Distinct key references backed by duplicate public-key bytes are rejected before any signature can count."
+    },
+    {
+      "id": "assurance-attestation-lineage",
+      "result": "Each signature binds the exact readiness digest, trust-policy digest, assurance-record reference, verifier-key reference, identifier, and bounded signing time."
+    },
+    {
+      "id": "deterministic-review-record",
+      "result": "Strict normalized output is independently rebuildable, order-invariant, digest-bound, and fixed at authority NONE."
+    },
+    {
+      "id": "historical-intake-continuity",
+      "result": "A proposed edit to the original component README was removed after the intake receipt detected byte drift; discovery remains in the additive TEST README."
+    }
+  ],
+  "openSeams": [
+    {
+      "id": "request-bound-assurance-policy",
+      "gapType": "CONTRACT+AUTHORITY",
+      "status": "BLOCKED",
+      "truth": "The v2 request does not bind the independent assurance trust-policy digest; software cannot infer requester acceptance."
+    },
+    {
+      "id": "organizational-independence-and-competence",
+      "gapType": "EVIDENCE+GOVERNANCE",
+      "status": "UNKNOWN",
+      "truth": "Distinct valid keys do not prove distinct organizations, absence of collusion, competence, or measurement quality."
+    },
+    {
+      "id": "live-resource-enforcement-and-output-lineage",
+      "gapType": "HAND+SUBSTRATE+EVIDENCE",
+      "status": "BLOCKED",
+      "truth": "Resource budgets remain declarations and signed assurance content; no live executor, enforcement trace, or output bytes were observed."
+    },
+    {
+      "id": "repaired-disposable-sandbox-executor",
+      "gapType": "HAND+AUTHORITY+SUBSTRATE+EVIDENCE",
+      "status": "BLOCKED",
+      "decisionOwner": "Mike Tobi",
+      "default": "not authorized"
+    },
+    {
+      "id": "generated-source-direct-reuse-rights",
+      "gapType": "AUTHORITY+CONTRACT",
+      "status": "UNKNOWN",
+      "decisionOwner": "Mike Tobi",
+      "default": "research-only and direct-reuse hold"
+    }
+  ],
+  "authority": {
+    "providerExecuted": false,
+    "executorAuthorized": false,
+    "workspaceRead": false,
+    "networkUsed": false,
+    "mergePerformed": false,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false
+  }
+}
