@@ -1,0 +1,42 @@
+{
+  "schema": "axm.readiness-diagnostic-redaction-aggregate-probes/v1",
+  "status": "PASS_WITH_FOREIGN_FAILURE",
+  "readiness": {
+    "command": "npm run test:readiness",
+    "exitCode": 0,
+    "verdict": "PASS",
+    "directRedactionSuitePassed": true,
+    "derivedIndexPrivacySuitePassed": true
+  },
+  "operations": {
+    "command": "npm run test:operations",
+    "exitCode": 1,
+    "verdict": "FOREIGN_FAILURE",
+    "reachedLeaseRecoverySuitePass": true,
+    "errorCode": "CURATED_VERIFICATION_INTAKE_MISSING",
+    "exactMessageObserved": true
+  },
+  "baselineComparison": {
+    "baselineCommit": "f9558a2cb1427167c1cf7cc5e42f9fe35f086884",
+    "productCommit": "0533987856b321d67ede5f6d8a3fd8867f9cfbfb",
+    "baselineServiceSha256": "sha256:859ef3ab88bf92a2cf1ffa98d1bc7f8c30ee0c4f6953cd60e3eba7269b1036f8",
+    "productServiceSha256": "sha256:859ef3ab88bf92a2cf1ffa98d1bc7f8c30ee0c4f6953cd60e3eba7269b1036f8",
+    "serviceBlobUnchanged": true,
+    "operationsPackageScriptUnchanged": true,
+    "intakeDirectoryTrackedAtBaseline": false,
+    "intakeDirectoryTrackedAtProduct": false,
+    "intakeDirectoryPresentInWorkspace": false,
+    "productTouchedVerificationProofLane": false
+  },
+  "classification": {
+    "result": "FOREIGN_FAILURE",
+    "v46RegressionProven": false,
+    "convertedToPass": false,
+    "substituteIntakeCreated": false
+  },
+  "retention": {
+    "rawCommandLogsRetained": false,
+    "rawMachinePathsRetained": false,
+    "specialistPackagesInspected": false
+  }
+}

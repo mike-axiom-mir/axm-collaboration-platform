@@ -1,0 +1,396 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-pairwise-transition-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-pairwise-transition-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-pairwise-transition-exact-rebuild": [
+          "Every attempted local append exact-rebuilds its v0.7 transition package before inspecting or writing the local ledger."
+        ]
+      }
+    },
+    {
+      "id": "forward-only-local-append",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-forward-only-local-append"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-forward-only-local-append": [
+          "Only CANDIDATE_EXTENDS_PRESENTED_CHAIN with forwardTransitionAdmissible true and reviewRequired false can append."
+        ]
+      }
+    },
+    {
+      "id": "manifest-log-and-genesis-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-manifest-log-genesis-binding"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-manifest-log-genesis-binding": [
+          "An immutable exclusive-created, file-synced manifest binds one caller log id and exact genesis separated-witness reference to the namespace."
+        ]
+      }
+    },
+    {
+      "id": "exact-current-local-head-match",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-exact-local-head-match"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-exact-local-head-match": [
+          "The presented previous separated-witness reference must exactly equal the head derived from the preserved local chain."
+        ]
+      }
+    },
+    {
+      "id": "contiguous-local-sequence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-contiguous-local-sequence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-contiguous-local-sequence": [
+          "Entries reload only as a contiguous sequence of exact 12-digit filenames beginning at one."
+        ]
+      }
+    },
+    {
+      "id": "local-entry-digest-chain",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-local-digest-chain"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-local-digest-chain": [
+          "Every entry binds the immutable manifest, preceding entry reference, preceding local head, candidate head, fixed truth boundary, and its own digest."
+        ]
+      }
+    },
+    {
+      "id": "local-concurrent-fork-exclusion",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-local-concurrent-fork-exclusion"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-local-concurrent-fork-exclusion": [
+          "Two fresh processes contending to extend one preserved local head yield one exclusive-create winner and one typed loser."
+        ]
+      }
+    },
+    {
+      "id": "local-corruption-fail-closed",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-local-corruption-fail-closed"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-local-corruption-fail-closed": [
+          "Truncated entries, sequence gaps, missing manifest with existing state, and truth-boundary tampering fail closed and remain for steward inspection."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-local-reload",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-fresh-process-reload"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-fresh-process-reload": [
+          "A fresh Node process validates the manifest, contiguous entries, local digest chain, and exact derived head."
+        ]
+      }
+    },
+    {
+      "id": "caller-package-persisted-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-caller-package-persisted-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-caller-package-persisted-exact-rebuild": [
+          "When the caller re-presents the signature-bearing v0.7 package, a fresh process exact-rebuilds it and compares the exact persisted entry."
+        ]
+      }
+    },
+    {
+      "id": "independent-root-fork-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-independent-root-fork-counterexample"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-independent-root-fork-counterexample": [
+          "Two caller-owned roots initialized at the same genesis demonstrably accept different pairwise-valid candidate heads."
+        ]
+      }
+    },
+    {
+      "id": "deletion-reopen-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-deletion-reopen-counterexample"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-deletion-reopen-counterexample": [
+          "Deleting one bounded caller-owned namespace demonstrably reinitializes the genesis and accepts a different branch."
+        ]
+      }
+    },
+    {
+      "id": "bounded-persisted-transition-data",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-bounded-persisted-data"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-bounded-persisted-data": [
+          "Entries persist the bounded transition receipt and digest references, not exact-rebuild inputs, raw public keys, raw signatures, private context, raw model output, or machine paths."
+        ]
+      }
+    },
+    {
+      "id": "transition-ledger-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-ledger-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-ledger-authority-none": [
+          "Receipts and snapshots grant no authenticated host, identity, human, provider, execution, adoption, installation, promotion, merge, Foundation, or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-host-authorization.actual": [
+          "The explicit confirmation phrase and library call authenticate no host or trusted entrypoint."
+        ]
+      }
+    },
+    {
+      "id": "globally-consistent-transition-log",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-log-global-consistency.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-log-global-consistency.actual": [
+          "The independent-root counterexample proves local serialization is not consensus, total order, or global fork exclusion."
+        ]
+      }
+    },
+    {
+      "id": "independent-external-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-external-retention.actual": [
+          "Fresh-process reload uses the same caller-owned root; no independent receiver or retention authority is proven."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-monotonic-state.actual": [
+          "The deletion counterexample proves the caller-owned local head is not protected monotonic state."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-time.external": [
+          "Ordering checks use caller timestamps; no external trusted-time receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "independent-real-world-controllers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual": [
+          "Synthetic keys and declared digests do not authenticate independent real-world controllers."
+        ]
+      }
+    },
+    {
+      "id": "global-single-use",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-global-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-global-single-use.actual": [
+          "Separate roots and deleted state can accept alternate branches from the same genesis."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only synthetic fixtures were used; no real person reviewed a current transition."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution-and-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ]
+      }
+    },
+    {
+      "id": "held-out-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

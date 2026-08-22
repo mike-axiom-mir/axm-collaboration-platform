@@ -1,0 +1,49 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-continuation-capsule",
+  "version": "v0.1",
+  "provides": [
+    "continuity.source-linked-capsule.compile",
+    "continuity.path-independent-digest",
+    "continuity.volatile-state-reprobe-gate",
+    "continuity.compact-resume-card",
+    "continuity.private-source-refusal",
+    "continuity.hidden-authority-refusal"
+  ],
+  "consumes": [
+    "memory-reference:axm.memory.reentry-capsule",
+    "memory-reference:axm.memory.session-handoff-packet",
+    "filesystem:explicit-source-files",
+    "axm.local-continuation-declaration/v1",
+    "deterministic-json-core"
+  ],
+  "permissions": ["filesystem-read", "export"],
+  "handoffs": {
+    "emits": ["axm.local-continuation-capsule/v1", "axm.local-continuation-capsule-verification/v1", "axm.local-continuation-resume-card/v1"],
+    "accepts": ["human-or-agent:explicit-public-safe-continuation-declaration", "filesystem:explicit-source-root"]
+  },
+  "lifecycle": { "state_owner": "none", "reload": "not-applicable", "disconnect": "not-applicable", "cleanup": "explicit" },
+  "boundaries": {
+    "writes": ["explicit-create-new-output-outside-repository"],
+    "refuses": [
+      "source-content-embedding",
+      "source-input-path-disclosure",
+      "declared-private-or-user-source-ingestion",
+      "declared-raw-log-source-ingestion",
+      "declared-repetitive-telemetry-source-ingestion",
+      "declared-temporary-capture-source-ingestion",
+      "declared-unclassified-source-ingestion",
+      "external-freshness-inference-from-stored-digest",
+      "automatic-action",
+      "permission-change",
+      "memory-handoff-permission",
+      "hidden-memory-authority",
+      "source-acceptance-inference",
+      "repository-write",
+      "network",
+      "promotion",
+      "roots-change",
+      "canon-change"
+    ]
+  }
+}

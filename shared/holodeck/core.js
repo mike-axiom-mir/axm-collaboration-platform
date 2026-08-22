@@ -1,17 +1,24 @@
 (function (root, factory) {
   'use strict';
-  var api = factory();
+  var deterministicJson = typeof module !== 'undefined' && module.exports
+    ? require('../../tools/deterministic-json-core')
+    : root && root.AXMDeterministicJson;
+  var api = factory(deterministicJson);
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.AXMHolodeckCore = api;
-})(typeof self !== 'undefined' ? self : globalThis, function () {
+})(typeof self !== 'undefined' ? self : globalThis, function (DeterministicJson) {
   'use strict';
+
+  if (!DeterministicJson || typeof DeterministicJson.canonicalJson !== 'function') {
+    throw new Error('AXM deterministic JSON core is required');
+  }
 
   var ID_PATTERN = /^[a-z0-9][a-z0-9._:-]{0,119}$/;
   var HASH_SEEDS = [0x811c9dc5, 0x9e3779b9, 0x85ebca6b, 0xc2b2ae35];
   var HASH_PRIMES = [0x01000193, 0x27d4eb2d, 0x165667b1, 0x85ebca77];
 
   function clone(value) {
-    return JSON.parse(JSON.stringify(value));
+    return JSON.parse(DeterministicJson.canonicalJson(value));
   }
 
   function text(value, max) {
@@ -52,7 +59,7 @@
   }
 
   function stableStringify(value) {
-    return JSON.stringify(stableValue(value));
+    return DeterministicJson.canonicalJson(value);
   }
 
   function digest(value) {

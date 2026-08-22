@@ -1,0 +1,49 @@
+{
+  "schema": "axm.capability-gap-transition/v1",
+  "comparator": "detect-capability-gaps/scripts/compare_capabilities.py",
+  "requirementsRef": "CAPABILITY_REQUIREMENTS.json",
+  "before": {
+    "overall": "BLOCKED",
+    "requiredRequirementStates": {
+      "historical-receipt-integrity": "BLOCKED",
+      "exact-current-source-comparison": "BLOCKED",
+      "mutable-derived-view-boundary": "BLOCKED",
+      "non-greenwashing-continuity": "BLOCKED",
+      "bounded-authority": "BLOCKED"
+    },
+    "missingCapabilities": [
+      "verification.continuity.authority.none",
+      "verification.continuity.historical-receipt-digest-verify",
+      "verification.continuity.history-no-rewrite",
+      "verification.continuity.missing-source-hold",
+      "verification.continuity.mutable-derived-view-distinguish",
+      "verification.continuity.tracked-source-current-compare",
+      "verification.continuity.tracked-source-drift-not-pass",
+      "verification.continuity.unrecognized-derived-hold"
+    ]
+  },
+  "after": {
+    "overall": "READY",
+    "requiredRequirementStates": {
+      "historical-receipt-integrity": "READY",
+      "exact-current-source-comparison": "READY",
+      "mutable-derived-view-boundary": "READY",
+      "non-greenwashing-continuity": "READY",
+      "bounded-authority": "READY"
+    },
+    "missingCapabilities": [],
+    "optionalEvidence": {
+      "historical-derived-bytes-retained": "DEGRADED"
+    }
+  },
+  "route": "REUSE_RECEIPT_DIGESTS_AND_GENERIC_HISTORICAL_CURRENTNESS_RULE_THEN_ADD_ONE_PURE_MULTI_SOURCE_DERIVED_VIEW_ADAPTER",
+  "truth": {
+    "existingGenericDigestDriftRuleReusedAsPrecedent": true,
+    "existingReceiptSourceDigestsReused": true,
+    "exactMultiSourceDerivedViewClassifierPreviouslyAvailable": false,
+    "historicalDerivedBytesInvented": false,
+    "trackedSourceDriftHidden": false,
+    "newAuthorityCreated": false
+  }
+}
+

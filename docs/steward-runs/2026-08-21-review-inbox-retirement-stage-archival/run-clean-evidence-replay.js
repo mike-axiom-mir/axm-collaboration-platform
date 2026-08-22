@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+'use strict';
+
+const childProcess = require('child_process');
+const crypto = require('crypto');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
+const ROOT = path.resolve(__dirname,'../../..');
+const EVIDENCE_COMMIT = 'c2c6958f64fbecbd27c7266768acc52e31331144';
+const EVIDENCE_TREE = 'f9bba099eee52fb6956b7d00f5977d5c8b1fda3c';
+const EVIDENCE_PATH = 'docs/steward-runs/2026-08-21-review-inbox-retirement-stage-archival';
+const slicePaths = [EVIDENCE_PATH,'tools/deterministic-json-core'];
+function run(executable,args,options) { return childProcess.spawnSync(executable,args,Object.assign({ encoding:'utf8',windowsHide:true,timeout:180000,maxBuffer:64 * 1024 * 1024 },options)); }
+function git(args,cwd,encoding) { return run('git',args,{ cwd,encoding:encoding === null ? null : 'utf8' }); }
+function sha256(value) { return crypto.createHash('sha256').update(value).digest('hex'); }
+
+const temp = fs.mkdtempSync(path.join(os.tmpdir(),'axm-v51-clean-evidence-')), archive = path.join(temp,'evidence.tar');
+try {
+  const tree = String(git(['rev-parse',EVIDENCE_COMMIT + '^{tree}'],ROOT).stdout || '').trim();
+  if (tree !== EVIDENCE_TREE) throw new Error('evidence tree identity mismatch');
+  const gitDir = String(git(['rev-parse','--absolute-git-dir'],ROOT).stdout || '').trim();
+  const made = git(['archive','--format=tar','--output',archive,EVIDENCE_COMMIT,'--',...slicePaths],ROOT);
+  if (made.status !== 0) throw new Error('evidence archive creation failed');
+  const extracted = run('tar',['-xf',archive,'-C',temp],{ cwd:ROOT });
+  if (extracted.status !== 0) throw new Error('evidence archive extraction failed');
+  const listing = git(['ls-tree','-r','--name-only','-z',EVIDENCE_COMMIT,'--',...slicePaths],ROOT);
+  const names = String(listing.stdout || '').split('\0').filter(Boolean);
+  const selftest = run(process.execPath,[path.join(EVIDENCE_PATH,'selftest.js')],{ cwd:temp,env:{ ...process.env,GIT_DIR:gitDir,GIT_WORK_TREE:temp } });
+  const segment = fs.readFileSync(path.join(temp,EVIDENCE_PATH,'SESSION_SEGMENT.jsonl'));
+  const seal = JSON.parse(fs.readFileSync(path.join(temp,EVIDENCE_PATH,'SESSION_SEGMENT.seal.json'),'utf8'));
+  const lines = segment.toString('utf8').split(/\r?\n/).filter(Boolean);
+  const valid = lines.filter(line => { try { JSON.parse(line); return true; } catch (_) { return false; } }).length;
+  const sealReplay = { verdict:seal.sha256 === sha256(segment) && seal.eventLines === lines.length && valid === lines.length ? 'PASS' : 'FAIL', sha256Matches:seal.sha256 === sha256(segment), eventLines:lines.length, validJsonLines:valid };
+  const receipt = {
+    schema:'axm.clean-archived-evidence-replay/v1', status:selftest.status === 0 && sealReplay.verdict === 'PASS' ? 'PASS' : 'FAIL',
+    evidenceCommit:EVIDENCE_COMMIT, evidenceTree:EVIDENCE_TREE, slicePaths,
+    archiveSha256:'sha256:' + sha256(fs.readFileSync(archive)), trackedFiles:names.length,
+    selftest:{ command:'node ' + EVIDENCE_PATH + '/selftest.js', exitCode:Number.isInteger(selftest.status) ? selftest.status : 1, verdict:selftest.status === 0 ? 'PASS' : 'FAIL', stdout:String(selftest.stdout || '').trim(), diagnostic:selftest.status === 0 ? null : String(selftest.stderr || selftest.error || '').trim().split(/\r?\n/).slice(-8).join('\n') },
+    sealReplay, immutableGitObjectDatabaseUsedForProductBlobVerification:true, sourceCheckoutOrSharedMainMutated:false, temporaryReplayPathRetained:false,
+    excludedPackageLaneInspected:false, replayDigest:null
+  };
+  const body = JSON.parse(JSON.stringify(receipt));
+  delete body.replayDigest;
+  receipt.replayDigest = 'sha256:' + sha256(JSON.stringify(body));
+  fs.writeFileSync(path.join(__dirname,'CLEAN_EVIDENCE_REPLAY.json'),JSON.stringify(receipt,null,2) + '\n','utf8');
+  process.stdout.write(receipt.status + ' clean archived evidence replay: selftest ' + receipt.selftest.verdict + ', seal ' + receipt.sealReplay.verdict + '\n');
+  if (receipt.status !== 'PASS') process.exitCode = 1;
+} finally {
+  const resolved = path.resolve(temp), allowed = path.resolve(os.tmpdir()) + path.sep;
+  if (!resolved.startsWith(allowed)) throw new Error('temporary evidence root escaped OS temp directory');
+  fs.rmSync(resolved,{ recursive:true,force:true,maxRetries:10,retryDelay:100 });
+}

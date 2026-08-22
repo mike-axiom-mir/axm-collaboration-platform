@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.anti-drift-pickup/v1",
+  "title": "AXM Anti-Drift Shadow Clone Pickup",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "pickupDigest", "pickupId", "status", "state", "sourceLedgerDigest", "consumerAlias", "baseContextDigest", "createdAt", "expiresAt", "cloneProfile", "adoption", "claimBoundary"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.anti-drift-pickup/v1" },
+    "pickupDigest": { "$ref": "#/$defs/digest" },
+    "pickupId": { "type": "string" },
+    "status": { "const": "EXPERIMENTAL" },
+    "state": { "enum": ["EXPLICIT_ANTI_DRIFT_PROFILE_READY", "HOLD_CANDIDATES_AWAIT_VERIFICATION"] },
+    "sourceLedgerDigest": { "$ref": "#/$defs/digest" },
+    "consumerAlias": { "type": "string" },
+    "baseContextDigest": { "$ref": "#/$defs/digest" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "cloneProfile": { "type": "object" },
+    "adoption": { "type": "object" },
+    "claimBoundary": { "type": "string" }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" } }
+}

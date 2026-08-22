@@ -1,0 +1,65 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "routes": [
+    {
+      "claimId":"exact-admission",
+      "claim":"Every durable observation exact-rebuilds from a live v2.7 audit package before write.",
+      "kind":"deterministic behavior",
+      "risk":"high",
+      "passCondition":"Valid input writes the exact validated audit; changed input or receipt writes nothing and returns a typed refusal.",
+      "primarySurface":"focused runtime assertions with valid and tampered packages",
+      "counterevidence":"any mismatch is admitted or any failed admission creates a manifest or record",
+      "secondarySurface":"fresh-process exact receipt comparison"
+    },
+    {
+      "claimId":"local-persistence",
+      "claim":"A stored observation reloads after a process restart without the source or retention roots.",
+      "kind":"persistence",
+      "risk":"high",
+      "passCondition":"A separate process reloads the byte-identical observation and chain summary after both compared roots are removed from a synthetic test directory.",
+      "primarySurface":"fresh child process after bounded synthetic root removal",
+      "counterevidence":"reload touches or requires either compared root, changes the observation, or succeeds from a corrupt chain",
+      "secondarySurface":"canonical record bytes and digest inspection"
+    },
+    {
+      "claimId":"append-integrity",
+      "claim":"The local observation log is append-only, contiguous, digest-bound, exclusive-created, and file-fsynced.",
+      "kind":"deterministic behavior",
+      "risk":"high",
+      "passCondition":"Stored bytes equal canonical receipts; gaps, corruption, extras, overwrites, stale locks, and concurrent writes fail closed.",
+      "primarySurface":"focused adversarial filesystem selftest",
+      "counterevidence":"a corrupt or gapped namespace reloads, a record is replaced, or both concurrent writers succeed",
+      "secondarySurface":"source inspection plus clean detached replay"
+    },
+    {
+      "claimId":"authority-boundary",
+      "claim":"Observation capture and reload grant no execution, review, identity, adoption, promotion, merge, or CANON authority.",
+      "kind":"authorization",
+      "risk":"high",
+      "passCondition":"Closed receipts and contracts contain only false authority flags and autonomousActionCount zero; wrong or absent confirmation cannot write.",
+      "primarySurface":"closed-schema and focused denied-confirmation assertions",
+      "counterevidence":"any affirmative authority flag, action side effect, identity claim, or write without the exact confirmation",
+      "secondarySurface":"contract/source minimization scan"
+    },
+    {
+      "claimId":"bounded-counterexample",
+      "claim":"Local observation survival is not external retention or protected monotonic continuity.",
+      "kind":"quality",
+      "risk":"high",
+      "passCondition":"The suite demonstrates origin-root loss survival and separately demonstrates that joint three-root replacement can form another internally exact local history.",
+      "primarySurface":"explicit synthetic counterexample assertions",
+      "counterevidence":"artifact or documentation claims external operation, protected monotonicity, rollback prevention, or global continuity",
+      "secondarySurface":"contract/source truth-field inspection"
+    },
+    {
+      "claimId":"repository-regression",
+      "claim":"The additive leaf does not regress inherited Workshop checks.",
+      "kind":"deterministic behavior",
+      "risk":"medium",
+      "passCondition":"Focused, inherited retained-module, evidence, required AGENTS, and detached replay commands all exit zero.",
+      "primarySurface":"recorded command-result ledger",
+      "counterevidence":"any nonzero exit or changed stable input during a run",
+      "secondarySurface":"final shared-workspace snapshot and detached worktree rerun"
+    }
+  ]
+}

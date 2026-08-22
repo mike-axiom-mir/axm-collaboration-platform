@@ -1,0 +1,169 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "v52-reason-privacy-gap",
+      "kind": "behavioral",
+      "claim": "The exact v5.2 product persists and returns the synthetic raw reason, recognized credential value, and machine path.",
+      "evidence": [
+        "BASELINE_REASON_PRIVACY_GAP.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The fixture is synthetic and proves only exact v5.2 local behavior."
+    },
+    {
+      "id": "exact-reason-digest-commitment",
+      "kind": "persistence",
+      "claim": "v2 intent and v3 result carry a SHA-256 commitment to the exact raw reason bytes while omitting the exact raw value.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The digest does not authenticate an actor and may permit guessing of low-entropy reasons."
+    },
+    {
+      "id": "recognized-credential-and-path-minimization",
+      "kind": "privacy",
+      "claim": "Synthetic labeled credential and machine-path values are absent from new intent bytes, runtime result, and CLI JSON; explicit redaction markers remain.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json",
+        "NATIVE_SURFACE_RECEIPT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Arbitrary, encoded, or novel secret absence is not proven."
+    },
+    {
+      "id": "unchanged-reason-withholding",
+      "kind": "privacy",
+      "claim": "When the shared redactor would leave a reason unchanged, v2/v3 use a fixed withheld marker instead of persisting or returning the exact raw reason.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Recognized-pattern summaries may retain non-sensitive context and are not a general content-classification proof."
+    },
+    {
+      "id": "cli-boundary",
+      "kind": "transport",
+      "claim": "Emitted CLI JSON omits the exact raw reason and synthetic credential/path values.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "CLI arguments, process inspection, terminal software, and shell history are outside this claim."
+    },
+    {
+      "id": "legacy-v1-compatibility",
+      "kind": "persistence",
+      "claim": "An exact v1 raw-reason intent is typed LEGACY_AUTHORIZED_RAW_REASON, remains retryable, and is not rewritten or deleted.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The legacy file continues to retain its raw reason; no migration or erasure is claimed."
+    },
+    {
+      "id": "corruption-holds",
+      "kind": "behavioral",
+      "claim": "Self-inconsistent reason digest and non-idempotent reason summary evidence hold before archive mutation.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Local evidence is not protected against a writer that can coherently fabricate every field."
+    },
+    {
+      "id": "schema-continuity",
+      "kind": "technical",
+      "claim": "Historical intent/v1, authorization-status/v1, and result/v2 files remain outside the product diff; new semantics use explicit intent/v2, status/v2, and result/v3 files.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Additive schemas do not prove every external consumer has migrated."
+    },
+    {
+      "id": "crash-and-caller-convergence",
+      "kind": "persistence",
+      "claim": "Six intent-publication and nine archive crash-matrix cases plus reentrant and two-process callers preserve exact convergence.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json",
+        "NATIVE_SURFACE_RECEIPT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Process exit is not a power-interruption test and the mechanism remains cooperating single-host only."
+    },
+    {
+      "id": "host-local-boundary",
+      "kind": "authorization",
+      "claim": "Intent status and archival remain host-local runtime/CLI surfaces with no API or browser route.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Host-locality is not actor authentication, consent, or live-publisher safety."
+    },
+    {
+      "id": "required-checks",
+      "kind": "technical",
+      "claim": "All ten exact AGENTS.md commands and twelve focused commands exit zero.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Script checks are separate from browser render/click evidence."
+    },
+    {
+      "id": "clean-product-replay",
+      "kind": "persistence",
+      "claim": "The exact product dependency slice replays twelve focused commands with 1,230 assertions or controls and no tracked-byte changes.",
+      "evidence": [
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The replay is a bounded dependency slice, not every repository file or host substrate."
+    },
+    {
+      "id": "promotion-selftest",
+      "kind": "technical",
+      "claim": "The current Review Inbox selftest digest passes and tools-index reports READY_FOR_HUMAN_REVIEW.",
+      "evidence": [
+        "PROMOTION_SELFTEST_RECEIPT.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Twelve other promotion selftests remain nonpassing; readiness grants no promotion, merge, or CANON authority."
+    },
+    {
+      "id": "aggregate-operations-nonpass",
+      "kind": "technical",
+      "claim": "Aggregate operations reaches the product checks and then fails in the unchanged missing curated verification intake lane.",
+      "evidence": [
+        "AGGREGATE_OPERATIONS_PROBE.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The aggregate command is not claimed as passing and the package-intake lane remains outside this diff."
+    },
+    {
+      "id": "visual-and-human-gate",
+      "kind": "visual",
+      "claim": "No browser-facing product file or route changed; Review Inbox remains TEST and Mike Tobi / AXM remains merge and CANON gate.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "NATIVE_SURFACE_RECEIPT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "No browser render/click, authenticated human review, human benefit, merge, or CANON decision occurred."
+    }
+  ],
+  "routesDigest": "sha256:a5d31872570a738f36aa8ddb034957c51f970857039f6d20d67434a3b76fdd87"
+}

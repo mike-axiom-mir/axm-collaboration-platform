@@ -1,0 +1,244 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "exact-upstream-signed-review",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.signed-receipt-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.signed-receipt-exact-rebuild": [
+          "The stacked v0.1 signed-review leaf rebuilds detached Ed25519 evidence under a caller-supplied unauthenticated policy."
+        ]
+      }
+    },
+    {
+      "id": "explicit-write-confirmation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-explicit-confirmation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-explicit-confirmation": [
+          "The exact phrase CONSUME SIGNED REVIEW CHALLENGE ONCE is required before any ledger directory or entry write."
+        ]
+      }
+    },
+    {
+      "id": "immutable-ledger-identity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-ledger-id-immutable-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-ledger-id-immutable-bind": [
+          "A create-once, file-synced manifest binds one caller ledger id to the state root; the id and root authenticate no host."
+        ]
+      }
+    },
+    {
+      "id": "current-state-replay-refusal",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-exclusive-create",
+        "model.shadow.review.challenge-replay-refusal-while-state-preserved"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-exclusive-create": [
+          "One append-only file per challenge digest is created with filesystem wx semantics and file fsync."
+        ],
+        "model.shadow.review.challenge-replay-refusal-while-state-preserved": [
+          "An existing valid entry refuses replay only while the caller-owned ledger state is preserved."
+        ]
+      }
+    },
+    {
+      "id": "restart-persistence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-fresh-process-replay-refusal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-fresh-process-replay-refusal": [
+          "A second Node process reloads the same state root and receives CHALLENGE_ALREADY_CONSUMED in the synthetic filesystem test."
+        ]
+      }
+    },
+    {
+      "id": "concurrent-contention",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-concurrent-single-winner"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-concurrent-single-winner": [
+          "Two concurrent Node processes produce exactly one exclusive-create winner and one typed replay loser for the same challenge in the synthetic test."
+        ]
+      }
+    },
+    {
+      "id": "corruption-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-corruption-fail-closed"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-corruption-fail-closed": [
+          "Corrupt JSON, strict truth-boundary tampering, missing manifests with existing state, and conflicting ledger ids block reuse and require steward repair."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.execution-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.execution-authority-none": [
+          "Challenge consumption grants no provider, experiment, evaluation, adoption, promotion, merge, Foundation, or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "receipt-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-consumption-receipt-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-consumption-receipt-exact-rebuild": [
+          "The bounded consumption receipt rebuilds from the exact signed-review input, receipt, caller ledger id, confirmation, and caller time."
+        ]
+      }
+    },
+    {
+      "id": "protected-ledger-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual": [
+          "The selftest demonstrates that deleting the caller-owned namespace reopens the same challenge; no protected storage is claimed."
+        ]
+      }
+    },
+    {
+      "id": "global-single-use",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-global-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-global-single-use.actual": [
+          "The selftest demonstrates that the same challenge can be consumed in a different state root."
+        ]
+      }
+    },
+    {
+      "id": "host-trust-anchor",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.host-trust-anchor.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.host-trust-anchor.actual": [
+          "No Mike- or host-provisioned reviewer trust root or host authorization service was supplied or inspected."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only generated Ed25519 keys and synthetic approvals were used; no real person reviewed a current plan."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

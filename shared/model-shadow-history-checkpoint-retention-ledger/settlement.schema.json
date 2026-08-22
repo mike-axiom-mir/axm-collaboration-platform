@@ -1,0 +1,30 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-history-checkpoint-retention-ledger-settlement/v1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema","version","status","settlementId","settledAt","mode","log","manifestRef","proposalRef","previousSettledCheckpointRef","settledCheckpointRef","classification","decision","state","truth","settlementDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-history-checkpoint-retention-ledger-settlement/v1"},
+    "version":{"const":"2.7.0"},
+    "status":{"const":"TEST"},
+    "settlementId":{"type":"string","minLength":1,"maxLength":180},
+    "settledAt":{"$ref":"#/$defs/time"},
+    "mode":{"const":"CALLER_OWNED_DISTINCT_LOCAL_CHECKPOINT_RETENTION_UNAUTHENTICATED"},
+    "log":{"type":"object","additionalProperties":false,"required":["retentionLogId","sequence","previousProposalRef"],"properties":{"retentionLogId":{"type":"string","minLength":1,"maxLength":180},"sequence":{"type":"integer","minimum":1,"maximum":10000},"previousProposalRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]}}},
+    "manifestRef":{"$ref":"#/$defs/reference"},
+    "proposalRef":{"$ref":"#/$defs/reference"},
+    "previousSettledCheckpointRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "settledCheckpointRef":{"$ref":"#/$defs/reference"},
+    "classification":{"const":"LOCAL_HISTORY_CHECKPOINT_RETENTION_SETTLED"},
+    "decision":{"const":{"localSettledRetentionHeadAdvanced":true,"executionAuthorized":false,"adoptionAuthorized":false,"autonomousActionCount":0}},
+    "state":{"const":"DECLARED_RETENTION_SETTLEMENT_RECORDED_LOCAL_HEAD_ADVANCED_AUTHORITY_AND_PROTECTION_NOT_PROVEN"},
+    "truth":{"const":{"pendingProposalExactRebuiltFromCallerPackageAndStoredReceipt":true,"embeddedV26CheckpointSelfDigestValidated":true,"separateSettlementConfirmationObserved":true,"localSettledRetentionHeadAdvanced":true,"advanceLimitedToConfiguredLocalRetentionLedger":true,"localSettlementExclusiveCreateAndFileFsyncCompleted":true,"checkpointOriginReauthenticatedAtSettlement":true,"transientV25OperationLockMayBeWritten":true,"durableSourceLedgerStateChangedByModule":false,"sourceCurrentAfterFinalReadProven":false,"declaredConfirmationAuthenticatesHost":false,"actualHumanParticipationProven":false,"externalRetentionProven":false,"protectedMonotonicStateProven":false,"deletionOrRollbackPrevented":false,"globallyConsistentLogProven":false,"executionAuthorized":false,"adoptionAuthorized":false,"providerInvoked":false,"evaluationPerformed":false,"humanBenefitProven":false,"broadLearningClaimed":false,"rawPublicKeyEmbedded":false,"rawSignatureEmbedded":false,"privateKeyIngested":false,"sourceOrLedgerPathEmbedded":false,"rawUpstreamPackageEmbedded":false,"rawModelOutputEmbedded":false,"privateContextEmbedded":false,"automaticPermissionGrant":false,"automaticInstall":false,"automaticPromotion":false,"automaticMerge":false,"automaticCanon":false,"foundationMutation":false}},
+    "settlementDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "time":{"type":"string","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"},
+    "reference":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}}
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-observation-ledger-snapshot/v1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema","version","status","auditLogId","mode","manifestRef","retentionManifestRef","observationCount","heldObservationCount","nonholdObservationCount","latestObservationRef","latestV27AuditRef","latestClassification","aggregateStorageBytes","truth","snapshotDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-observation-ledger-snapshot/v1"},
+    "version":{"const":"2.8.0"},
+    "status":{"const":"TEST"},
+    "auditLogId":{"type":"string","minLength":1,"maxLength":180},
+    "mode":{"const":"CALLER_OWNED_DISTINCT_LOCAL_RETENTION_AUDIT_OBSERVATION_UNAUTHENTICATED"},
+    "manifestRef":{"$ref":"#/$defs/reference"},
+    "retentionManifestRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "observationCount":{"type":"integer","minimum":0,"maximum":10000},
+    "heldObservationCount":{"type":"integer","minimum":0,"maximum":10000},
+    "nonholdObservationCount":{"type":"integer","minimum":0,"maximum":10000},
+    "latestObservationRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "latestV27AuditRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "latestClassification":{"oneOf":[{"type":"null"},{"enum":["HELD_RETENTION_AUDIT_OBSERVATION","NONHOLD_RETENTION_AUDIT_OBSERVATION"]}]},
+    "aggregateStorageBytes":{"type":"integer","minimum":0,"maximum":268435456},
+    "truth":{
+      "type":"object","additionalProperties":false,
+      "required":["manifestReloaded","completeObservationChainValidated","fullV27AuditsReloadedWithoutAuditInputs","sourceOrRetentionPresentationRequiredForReload","currentSourceOrRetentionStateContinuouslyMonitored","observationRootCallerOwnedAndLocal","externalRetentionProven","protectedMonotonicStateProven","jointThreeRootLossExcluded","hostAuthorizationAuthenticated","actorRealWorldIdentityProven","actualHumanParticipationProven","timeExternallyTrusted","executionAuthorized","adoptionAuthorized","humanBenefitProven","broadLearningClaimed","autonomousActionCount","automaticPromotion","automaticMerge","automaticCanon","foundationMutation"],
+      "properties":{
+        "manifestReloaded":{"const":true},"completeObservationChainValidated":{"const":true},"fullV27AuditsReloadedWithoutAuditInputs":{"const":true},"sourceOrRetentionPresentationRequiredForReload":{"const":false},"currentSourceOrRetentionStateContinuouslyMonitored":{"const":false},"observationRootCallerOwnedAndLocal":{"const":true},
+        "externalRetentionProven":{"const":false},"protectedMonotonicStateProven":{"const":false},"jointThreeRootLossExcluded":{"const":false},"hostAuthorizationAuthenticated":{"const":false},"actorRealWorldIdentityProven":{"const":false},"actualHumanParticipationProven":{"const":false},"timeExternallyTrusted":{"const":false},
+        "executionAuthorized":{"const":false},"adoptionAuthorized":{"const":false},"humanBenefitProven":{"const":false},"broadLearningClaimed":{"const":false},"autonomousActionCount":{"const":0},"automaticPromotion":{"const":false},"automaticMerge":{"const":false},"automaticCanon":{"const":false},"foundationMutation":{"const":false}
+      }
+    },
+    "snapshotDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "reference":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}}
+  }
+}

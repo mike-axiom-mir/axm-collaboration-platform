@@ -1,0 +1,63 @@
+{
+  "schema": "axm.claim-evidence-matrix/v1",
+  "date": "2026-08-22",
+  "candidateStatus": "TEST",
+  "claims": [
+    {
+      "claim": "Equivalent policies and observations produce deterministic digests and receipts.",
+      "claimType": "behavioral-determinism",
+      "verifier": "focused execution with reordered inputs and exact digest assertions",
+      "evidence": "node shared/resource-grounded-capability-gate/selftest.js",
+      "result": "SUPPORTED_WITHIN_TEST_FIXTURES"
+    },
+    {
+      "claim": "Missing, stale, manual, incomparable, over-budget, and regressive required evidence cannot produce an aligned state.",
+      "claimType": "behavioral-gating",
+      "verifier": "focused positive and adversarial runtime assertions",
+      "evidence": "43-check Resource-Grounded Capability Gate selftest",
+      "result": "SUPPORTED_WITHIN_TEST_FIXTURES"
+    },
+    {
+      "claim": "The companion rejects a cycle after the human decision and preserves the existing functional loop.",
+      "claimType": "integration-boundary",
+      "verifier": "focused companion assertions plus upstream regression suite",
+      "evidence": "43 companion checks and 24 Verified Capability Loop checks",
+      "result": "SUPPORTED"
+    },
+    {
+      "claim": "The candidate does not regress the repository's required scripted checks.",
+      "claimType": "repository-regression",
+      "verifier": "all commands required by AGENTS.md",
+      "evidence": "VERIFICATION_RECEIPT.json",
+      "result": "PASS_WITH_41_REPOSITORY_WARNINGS"
+    },
+    {
+      "claim": "The module measures real hardware resources or authenticates the observer.",
+      "claimType": "resource-and-authorization",
+      "verifier": "would require named meter telemetry and trusted issuer authentication",
+      "evidence": "not performed",
+      "result": "NOT_CLAIMED"
+    },
+    {
+      "claim": "The candidate improves resource use on a real workload.",
+      "claimType": "performance",
+      "verifier": "would require repeated baseline-candidate measurement under a named workload and environment",
+      "evidence": "not performed",
+      "result": "UNKNOWN"
+    },
+    {
+      "claim": "The candidate has a working browser interface.",
+      "claimType": "visual",
+      "verifier": "live browser render and interaction",
+      "evidence": "not applicable; no UI was added",
+      "result": "NOT_APPLICABLE"
+    },
+    {
+      "claim": "The candidate is accepted, installed, promoted, merged, or CANON.",
+      "claimType": "governance",
+      "verifier": "explicit Mike decision plus governed integration evidence",
+      "evidence": "not present",
+      "result": "FALSE"
+    }
+  ]
+}

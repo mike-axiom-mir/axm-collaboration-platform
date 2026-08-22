@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-publication-archival-result/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "state", "recordedAt", "stageFile", "targetFile", "archiveFile", "stageDigest", "stageBytes", "targetState", "reason", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-publication-archival-result/v1" },
+    "status": { "const": "TEST" },
+    "state": { "enum": ["ARCHIVED", "RECOVERED_ARCHIVE_CHECKPOINT", "ALREADY_ARCHIVED"] },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "stageFile": { "type": "string", "minLength": 1 },
+    "targetFile": { "type": "string", "minLength": 1 },
+    "archiveFile": { "type": "string", "minLength": 1 },
+    "stageDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "stageBytes": { "type": "integer", "minimum": 0, "maximum": 65536 },
+    "targetState": { "enum": ["ABSENT", "EXACT_MATCH"] },
+    "reason": { "type": "string", "minLength": 20, "maxLength": 500 },
+    "truth": { "$ref": "review-operation-lease-retirement-publication-stage-plan.schema.json#/$defs/truth" }
+  }
+}

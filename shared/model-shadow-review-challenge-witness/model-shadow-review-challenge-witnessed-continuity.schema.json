@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-witnessed-continuity/v1",
+  "title": "Model Shadow review challenge witnessed continuity audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "auditId", "checkedAt", "status", "witnessRef",
+    "checkpointRef", "keyPolicyRef", "continuityAuditRef", "currentSnapshot",
+    "comparison", "decision", "state", "nextGate", "truth", "auditDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-witnessed-continuity/v1"},
+    "version": {"const": "0.4.0"},
+    "auditId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "checkedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "witnessRef": {"$ref": "#/$defs/reference"},
+    "checkpointRef": {"$ref": "#/$defs/reference"},
+    "keyPolicyRef": {"$ref": "#/$defs/reference"},
+    "continuityAuditRef": {"$ref": "#/$defs/reference"},
+    "currentSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256", "availability", "ledgerRef", "entryCount", "entriesDigest", "errors"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"const": "axm.model-shadow-review-challenge-ledger-snapshot/v1"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "availability": {"enum": ["AVAILABLE", "ABSENT", "INVALID"]},
+        "ledgerRef": {"oneOf": [{"$ref": "#/$defs/reference"}, {"type": "null"}]},
+        "entryCount": {"type": "integer", "minimum": 0},
+        "entriesDigest": {"$ref": "#/$defs/digest"},
+        "errors": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 120}}
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledgerIdentityMatches", "missingCheckpointChallenges", "replacedCheckpointEntries", "addedCurrentChallenges"],
+      "properties": {
+        "ledgerIdentityMatches": {"type": "boolean"},
+        "missingCheckpointChallenges": {"type": "array", "items": {"$ref": "#/$defs/digest"}},
+        "replacedCheckpointEntries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["challengeDigest", "checkpointReceiptDigest", "currentReceiptDigest"],
+            "properties": {
+              "challengeDigest": {"$ref": "#/$defs/digest"},
+              "checkpointReceiptDigest": {"$ref": "#/$defs/digest"},
+              "currentReceiptDigest": {"$ref": "#/$defs/digest"}
+            }
+          }
+        },
+        "addedCurrentChallenges": {"type": "array", "items": {"$ref": "#/$defs/digest"}}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "bestAction", "reviewRequired", "autonomousActionCount"],
+      "properties": {
+        "classification": {"enum": [
+          "HOLD_LEDGER_STATE_ABSENT_AGAINST_PRESENTED_CHECKPOINT",
+          "HOLD_CURRENT_LEDGER_STATE_INVALID",
+          "HOLD_LEDGER_IDENTITY_CHANGED",
+          "ROLLBACK_OR_REPLACEMENT_DETECTED_AGAINST_PRESENTED_CHECKPOINT",
+          "CURRENT_LEDGER_EXTENDS_PRESENTED_CHECKPOINT",
+          "CURRENT_LEDGER_MATCHES_PRESENTED_CHECKPOINT"
+        ]},
+        "bestAction": {"type": "string", "minLength": 1, "maxLength": 180},
+        "reviewRequired": {"type": "boolean"},
+        "autonomousActionCount": {"const": 0}
+      }
+    },
+    "state": {"const": "SIGNED_CHECKPOINT_VERIFIED_AGAINST_CALLER_POLICY_AND_COMPARED_AUTHORITY_NOT_AUTHENTICATED"},
+    "nextGate": {"const": "HOST_TRUSTED_WITNESS_POLICY_AND_EXTERNALLY_RETAINED_WITNESS_OR_PROTECTED_MONOTONIC_STORE"},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointWitnessVerifiedByExactRebuild",
+        "checkpointDetachedSignaturesCryptographicallyValid",
+        "checkpointSigningKeyPossessionVerified", "checkpointKeysAllowedByExactCallerPolicy",
+        "checkpointPolicyAuthorityAuthenticated", "checkpointSignerRealWorldIdentityProven",
+        "actualHumanParticipationProven", "checkpointExternalRetentionProven",
+        "checkpointOriginAuthenticatedByHost", "witnessedAuditTimeExternallyTrusted",
+        "bareContinuityAuditVerifiedByExactRebuild", "comparisonBoundToExactLedgerIdentity",
+        "rollbackOrReplacementDetectedAgainstWitnessedCheckpoint",
+        "currentAbsenceDetectedAgainstWitnessedCheckpoint", "currentInvalidityDetected",
+        "preCheckpointHistoryProven", "checkpointDeletionOrRollbackPrevented",
+        "ledgerDeletionOrRollbackPrevented", "globalSingleUseProven",
+        "hostAuthorizationAuthenticated", "experimentExecuted", "evaluationPerformed",
+        "executionAuthorized", "adoptionAuthorized", "humanBenefitProven",
+        "broadLearningClaimed", "automaticWrite", "automaticPermissionGrant",
+        "automaticPromotion", "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "checkpointWitnessVerifiedByExactRebuild": {"const": true},
+        "checkpointDetachedSignaturesCryptographicallyValid": {"const": true},
+        "checkpointSigningKeyPossessionVerified": {"const": true},
+        "checkpointKeysAllowedByExactCallerPolicy": {"const": true},
+        "checkpointPolicyAuthorityAuthenticated": {"const": false},
+        "checkpointSignerRealWorldIdentityProven": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "checkpointExternalRetentionProven": {"const": false},
+        "checkpointOriginAuthenticatedByHost": {"const": false},
+        "witnessedAuditTimeExternallyTrusted": {"const": false},
+        "bareContinuityAuditVerifiedByExactRebuild": {"const": true},
+        "comparisonBoundToExactLedgerIdentity": {"type": "boolean"},
+        "rollbackOrReplacementDetectedAgainstWitnessedCheckpoint": {"type": "boolean"},
+        "currentAbsenceDetectedAgainstWitnessedCheckpoint": {"type": "boolean"},
+        "currentInvalidityDetected": {"type": "boolean"},
+        "preCheckpointHistoryProven": {"const": false},
+        "checkpointDeletionOrRollbackPrevented": {"const": false},
+        "ledgerDeletionOrRollbackPrevented": {"const": false},
+        "globalSingleUseProven": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "auditDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

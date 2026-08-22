@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-witness/v1",
+  "title": "Model Shadow review challenge checkpoint witness",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "witnessId", "verifiedAt", "status", "checkpointRef",
+    "ledgerRef", "entriesDigest", "keyPolicyRef", "state", "signatureEvidence",
+    "nextGate", "truth", "witnessDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-witness/v1"},
+    "version": {"const": "0.4.0"},
+    "witnessId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "verifiedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "checkpointRef": {"$ref": "#/$defs/reference"},
+    "ledgerRef": {"$ref": "#/$defs/reference"},
+    "entriesDigest": {"$ref": "#/$defs/digest"},
+    "keyPolicyRef": {"$ref": "#/$defs/reference"},
+    "state": {"const": "CHECKPOINT_SIGNATURES_VERIFIED_AGAINST_CALLER_POLICY_AUTHORITY_NOT_AUTHENTICATED"},
+    "signatureEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "requiredSignatures", "verifiedSignatures", "policyAuthorityOrigin", "attestations"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "requiredSignatures": {"type": "integer", "minimum": 1, "maximum": 10},
+        "verifiedSignatures": {"type": "integer", "minimum": 1, "maximum": 10},
+        "policyAuthorityOrigin": {"const": "CALLER_SUPPLIED_UNAUTHENTICATED"},
+        "attestations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "attestationIdDigest", "attestationDigest", "keyIdDigest", "keyFingerprint",
+              "actorDigest", "actorKind", "issuedAt", "expiresAt"
+            ],
+            "properties": {
+              "attestationIdDigest": {"$ref": "#/$defs/digest"},
+              "attestationDigest": {"$ref": "#/$defs/digest"},
+              "keyIdDigest": {"$ref": "#/$defs/digest"},
+              "keyFingerprint": {"$ref": "#/$defs/digest"},
+              "actorDigest": {"$ref": "#/$defs/digest"},
+              "actorKind": {"enum": ["human", "machine", "unknown"]},
+              "issuedAt": {"type": "string", "format": "date-time"},
+              "expiresAt": {"type": "string", "format": "date-time"}
+            }
+          }
+        }
+      }
+    },
+    "nextGate": {"const": "HOST_TRUSTED_WITNESS_POLICY_AND_EXTERNALLY_RETAINED_WITNESS_OR_PROTECTED_MONOTONIC_STORE"},
+    "truth": {"$ref": "#/$defs/witnessTruth"},
+    "witnessDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "witnessTruth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointVerifiedByExactRebuild", "checkpointSelfDigestValid",
+        "detachedSignaturesCryptographicallyValid", "signingKeyPossessionVerified",
+        "keysAllowedByExactCallerPolicy", "policyAuthorityAuthenticated",
+        "signerRealWorldIdentityProven", "declaredHumanSignerIsAuthenticatedHuman",
+        "actualHumanParticipationProven", "witnessVerificationTimeExternallyTrusted",
+        "checkpointExternalRetentionProven", "checkpointStoredByThisModule",
+        "checkpointOriginAuthenticatedByHost", "checkpointDeletionOrRollbackPrevented",
+        "ledgerDeletionOrRollbackPrevented", "globalSingleUseProven",
+        "hostAuthorizationAuthenticated", "rawActorIdentityEmbedded",
+        "rawPublicKeyEmbedded", "rawSignatureEmbedded", "privateKeyIngested",
+        "rawModelOutputEmbedded", "privateContextEmbedded", "experimentExecuted",
+        "evaluationPerformed", "executionAuthorized", "adoptionAuthorized",
+        "humanBenefitProven", "broadLearningClaimed", "automaticWrite",
+        "automaticPermissionGrant", "automaticPromotion", "automaticMerge",
+        "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "checkpointVerifiedByExactRebuild": {"const": true},
+        "checkpointSelfDigestValid": {"const": true},
+        "detachedSignaturesCryptographicallyValid": {"const": true},
+        "signingKeyPossessionVerified": {"const": true},
+        "keysAllowedByExactCallerPolicy": {"const": true},
+        "policyAuthorityAuthenticated": {"const": false},
+        "signerRealWorldIdentityProven": {"const": false},
+        "declaredHumanSignerIsAuthenticatedHuman": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "witnessVerificationTimeExternallyTrusted": {"const": false},
+        "checkpointExternalRetentionProven": {"const": false},
+        "checkpointStoredByThisModule": {"const": false},
+        "checkpointOriginAuthenticatedByHost": {"const": false},
+        "checkpointDeletionOrRollbackPrevented": {"const": false},
+        "ledgerDeletionOrRollbackPrevented": {"const": false},
+        "globalSingleUseProven": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "rawActorIdentityEmbedded": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "privateKeyIngested": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    }
+  }
+}

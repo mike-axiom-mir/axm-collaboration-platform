@@ -1,0 +1,51 @@
+{
+  "schema": "axm.code-capability-fabric-readiness-integration-handoff/v1",
+  "observedAt": "2026-08-22T00:03:45.938Z",
+  "source": {
+    "branch": "codex/code-capability-fabric-readiness-v1.5",
+    "implementationCommit": "3579073aaa5854fba7bbf1e985b5a23d0f98ac1a",
+    "priorReceiptTip": "72eae8641001d050936a271d409fe1087f1bb1b3",
+    "intakeBaseCommit": "d9066284e45eaedb07d8e7998b7c6a972e67c0c1"
+  },
+  "changedPaths": [
+    "shared/code-capability-fabric/README-readiness-v1.md",
+    "shared/code-capability-fabric/code-capability-readiness-subject.schema.json",
+    "shared/code-capability-fabric/code-capability-readiness-v1.js",
+    "shared/code-capability-fabric/code-capability-readiness.schema.json",
+    "shared/code-capability-fabric/code-external-assurance-record.schema.json",
+    "shared/code-capability-fabric/code-host-observation-attestation.schema.json",
+    "shared/code-capability-fabric/code-trust-key.schema.json",
+    "shared/code-capability-fabric/module-readiness-v1.contract.json",
+    "shared/code-capability-fabric/selftest-readiness-v1.js"
+  ],
+  "observedCanonicalCheckout": {
+    "branch": "local-visual-fabric-20260728",
+    "head": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "dirty": true,
+    "trackedChangeEntries": 3599,
+    "untrackedEntries": 4036,
+    "priorReceiptTipIsAncestor": false,
+    "implementationCommitIsAncestor": false,
+    "taskRelevantStatusEntries": 0
+  },
+  "targetAssumption": "Mike has not selected an integration target. The observed canonical checkout is not a safe merge surface and must not be switched, overwritten, or merged in place.",
+  "exactReadOnlyReviewActions": [
+    "git show --stat --oneline 3579073aaa5854fba7bbf1e985b5a23d0f98ac1a",
+    "git diff --check 72eae8641001d050936a271d409fe1087f1bb1b3...3579073aaa5854fba7bbf1e985b5a23d0f98ac1a",
+    "git diff --stat 72eae8641001d050936a271d409fe1087f1bb1b3...3579073aaa5854fba7bbf1e985b5a23d0f98ac1a"
+  ],
+  "safeIntegrationTemplateAfterMikeSelectsAndAcceptsATarget": [
+    "Re-check the selected target HEAD and worktree status; confirm whether it contains 72eae8641001d050936a271d409fe1087f1bb1b3.",
+    "Create a new clean review worktree from the Mike-selected target ref; do not reuse the busy canonical checkout.",
+    "In that clean review worktree run: git merge --no-ff --no-commit <final-source-tip>.",
+    "Inspect the complete staged diff, resolve ancestry intentionally, rerun all required and focused checks, and let Mike decide whether to create the merge commit."
+  ],
+  "authority": {
+    "mergePerformed": false,
+    "canonicalCheckoutModified": false,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false,
+    "finalGate": "Mike Tobi"
+  }
+}

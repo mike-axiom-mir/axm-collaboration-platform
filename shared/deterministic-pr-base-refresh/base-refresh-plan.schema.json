@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-base-refresh-plan/v1",
+  "type": "object",
+  "required": ["schema", "policyVersion", "state", "action", "effectsIfExplicitlyAuthorized", "blockers", "planDigest"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-base-refresh-plan/v1" },
+    "state": { "enum": ["READY", "NO_CHANGE", "HELD"] },
+    "action": { "enum": ["CREATE_LOCAL_MERGE_COMMIT", "RECHECKPOINT_ONLY", "NONE"] },
+    "planDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "blockers": { "type": "array" }
+  },
+  "additionalProperties": true
+}

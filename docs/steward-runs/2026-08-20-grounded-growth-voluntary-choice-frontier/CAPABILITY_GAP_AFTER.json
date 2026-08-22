@@ -1,0 +1,192 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "exact-current-state-and-route-coverage-crossbind",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.choice.current-state.native-verify",
+        "growth.choice.human-route-coverage.native-verify",
+        "growth.choice.portfolio.crossbind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.choice.current-state.native-verify": [
+          "The frontier accepts the current state only through its exact native rebuild verifier."
+        ],
+        "growth.choice.human-route-coverage.native-verify": [
+          "The frontier accepts route coverage only through its exact native rebuild verifier."
+        ],
+        "growth.choice.portfolio.crossbind": [
+          "Current state, exact coverage, and catalog are bound to one ten-outcome, six-chain portfolio."
+        ]
+      }
+    },
+    {
+      "id": "exact-current-route-catalog",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.choice.catalog.digest-verify",
+        "growth.choice.catalog.semantic-crossbind",
+        "growth.choice.catalog.command-boundary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.choice.catalog.digest-verify": [
+          "The catalog self-digest is rebuilt exactly."
+        ],
+        "growth.choice.catalog.semantic-crossbind": [
+          "Every ready and held catalog row cross-binds exact coverage claims, references, and states."
+        ],
+        "growth.choice.catalog.command-boundary": [
+          "Commands must share one bounded workspace-relative JavaScript runner and exact capability selector; held routes stay commandless."
+        ]
+      }
+    },
+    {
+      "id": "neutral-voluntary-selection-policy",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.choice.no-default",
+        "human.choice.no-ranking",
+        "human.choice.no-preselection",
+        "human.choice.wait-or-opt-out"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.choice.no-default": [
+          "The current menu has no default route."
+        ],
+        "human.choice.no-ranking": [
+          "The current menu has no ranking or recommendation."
+        ],
+        "human.choice.no-preselection": [
+          "Every ready route is unselected and unstarted."
+        ],
+        "human.choice.wait-or-opt-out": [
+          "Waiting and opting out remain explicit, penalty-free choices; menu or prompt requires a new human request."
+        ]
+      }
+    },
+    {
+      "id": "held-route-preservation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.choice.held-route.commandless",
+        "human.choice.held-route.external-event"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.choice.held-route.commandless": [
+          "The held signal-lineage route remains visible but has no command."
+        ],
+        "human.choice.held-route.external-event": [
+          "The held route retains its exact reason, proposal, and required external event."
+        ]
+      }
+    },
+    {
+      "id": "ai-human-evidence-balance",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.choice.beneficiary-separation",
+        "growth.choice.technical-ahead-visible"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.choice.beneficiary-separation": [
+          "Technical, AI-workflow, and human evidence counts remain separate."
+        ],
+        "growth.choice.technical-ahead-visible": [
+          "The frontier explicitly reports that technical evidence is ahead while shared AI-and-human growth remains unestablished."
+        ]
+      }
+    },
+    {
+      "id": "authority-and-side-effect-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "authority.choice-frontier.none",
+        "side-effect.choice-frontier.none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "authority.choice-frontier.none": [
+          "The frontier grants no selection, prompt, review, execution, lifecycle, Foundation, training, or CANON authority."
+        ],
+        "side-effect.choice-frontier.none": [
+          "The pure leaf has zero permissions, reads, writes, or network effects."
+        ]
+      }
+    },
+    {
+      "id": "explicit-human-selection-event",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "human.choice.selection.live"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "human.choice.selection.live": [
+          "No person has explicitly requested, selected, started, completed, or withdrawn from a current route."
+        ]
+      }
+    },
+    {
+      "id": "live-human-beneficiary-outcome",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "growth.human-evidence.live"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.live": [
+          "All six current human claims remain NOT_RUN."
+        ]
+      }
+    },
+    {
+      "id": "human-source-authentication",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "human.source.authentication"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "human.source.authentication": [
+          "Local pseudonymous references do not authenticate identity or human presence."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

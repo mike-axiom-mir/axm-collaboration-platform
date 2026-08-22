@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.city-graph-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "state", "sourceCommit", "graphDigest", "viewDigests", "checks", "authority", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.city-graph-receipt/v1" },
+    "state": { "enum": ["PASS", "FAIL"] },
+    "sourceCommit": { "type": ["string", "null"] },
+    "graphDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "viewDigests": { "type": "object" },
+    "checks": { "type": "array" },
+    "authority": { "type": "object" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

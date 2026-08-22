@@ -1,0 +1,104 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"model-shadow-retention-audit-review-outcome-history-checkpoint",
+  "version":"v3.3",
+  "status":"TEST",
+  "provides":[
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.exact-v32-bracketed-presentation",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.portable-self-validating-checkpoint",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.manifest-and-snapshot-binding",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.complete-ordered-history-commitment",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.minimized-classification-timeline",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.count-endpoint-sequence-coherence",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.origin-exact-rebuild-verifier",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.fresh-process-ledger-independent-self-validation",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.exact-history-classification",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.forward-extension-classification",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.strict-rollback-classification",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.replacement-or-fork-classification",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.ledger-identity-drift-classification",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.ledger-absence-classification",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.ledger-or-configuration-invalid-classification",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.complete-prefix-and-identity-comparison",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.retained-checkpoint-relative-full-rewrite-detection",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.joint-checkpoint-ledger-replacement-counterexample",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.no-durable-ledger-write",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.reference-only-data-minimization",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.input-checkpoint-audit-resource-bounds",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.review-only-authority-none-hold-unresolved",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.closed-checkpoint-and-audit-schemas",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint.focused-classification-corruption-counterexample-tests",
+    "axm.model-shadow-retention-audit-review-outcome-history-checkpoint/v1",
+    "axm.model-shadow-retention-audit-review-outcome-history-audit/v1"
+  ],
+  "consumes":[
+    "one exact configured caller-owned v3.2 review-outcome ledger for checkpoint origin",
+    "one caller-retained self-validating v3.3 checkpoint and one later configured v3.2 ledger for audit",
+    "caller-supplied checkpoint and audit ids plus untrusted UTC times"
+  ],
+  "permissions":[
+    "read one explicit v3.2 local ledger root through the unchanged inspect and complete-record read surfaces",
+    "allow v3.2 to exclusive-create file-fsync and remove its fixed transient operation lock"
+  ],
+  "handoffs":{
+    "emits":[
+      "axm.model-shadow-retention-audit-review-outcome-history-checkpoint/v1",
+      "axm.model-shadow-retention-audit-review-outcome-history-audit/v1"
+    ],
+    "accepts":[
+      "one configured present v3.2 ledger for checkpoint creation",
+      "one self-validating v3.3 checkpoint plus valid absent invalid or replaced v3.2 presentation for audit"
+    ]
+  },
+  "boundaries":{
+    "reads":[
+      "one explicit v3.2 state root only through v3.2 service construction inspect and readAll",
+      "caller-presented checkpoint and audit packages"
+    ],
+    "writes":[
+      "only the unchanged v3.2 fixed transient operation lock during inspect and readAll; no durable record checkpoint or audit write"
+    ],
+    "refuses":[
+      "checkpoint-without-present-valid-v3.2-ledger",
+      "checkpoint-without-complete-single-load-record-chain-read",
+      "checkpoint-when-bracketing-v3.2-snapshots-differ",
+      "checkpoint-or-audit-with-extra-missing-oversized-noncanonical-or-self-digest-drifted-fields",
+      "checkpoint-with-count-endpoint-sequence-reference-classification-or-history-commitment-drift",
+      "checkpoint-time-before-latest-v3.2-record-or-audit-time-before-checkpoint",
+      "non-forward-identity-drift-absent-or-invalid-history-as-exact-or-forward-continuity",
+      "caller-presented-checkpoint-as-proof-it-was-separately-retained",
+      "self-digested-checkpoint-as-authenticated-origin-host-reviewer-human-organization-or-policy",
+      "relative-rewrite-detection-as-deletion-or-rollback-prevention",
+      "joint-ledger-and-checkpoint-replacement-as-original-history",
+      "presented-pair-as-withheld-branch-exclusion-global-uniqueness-or-globally-consistent-log",
+      "equal-bracketing-snapshots-as-atomic-filesystem-snapshot",
+      "equal-bracketing-snapshots-as-exclusion-of-intermediate-reverted-or-post-read-change",
+      "caller-time-as-externally-trusted-time",
+      "checkpoint-as-external-custody-protected-monotonic-state-or-hardware-durability",
+      "complete-v3.2-record-complete-v3.1-outcome-actor-digest-vote-raw-review-path-model-output-or-private-context-embedding",
+      "approved-history-as-hold-resolution-remediation-execution-or-adoption-authority",
+      "provider-execution-evaluation-benefit-learning-install-promotion-merge-or-canon-claim",
+      "automatic-durable-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle":{
+    "state_owner":"none",
+    "state_owner_detail":"caller owns checkpoint audit and v3.2 service configuration data; this module persists none of them",
+    "reload":"not-applicable",
+    "reload_detail":"checkpoint self-validation is ledger-independent; checkpoint origin and audit exact-rebuild require the caller-presented configured v3.2 ledger",
+    "disconnect":"not-applicable",
+    "disconnect_detail":"no network provider Review Inbox or other-host transport is opened",
+    "cleanup":"not-applicable",
+    "cleanup_detail":"withholding or jointly replacing checkpoint and ledger removes the original relative comparison boundary",
+    "installed":false,
+    "promoted":false
+  },
+  "merge_gate":"Mike Tobi / AXM"
+}

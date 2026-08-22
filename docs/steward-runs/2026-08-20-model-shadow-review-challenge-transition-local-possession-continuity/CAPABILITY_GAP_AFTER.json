@@ -1,0 +1,520 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-v1.3-fresh-process-reload",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession.fresh-process-reload"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession.fresh-process-reload": [
+          "v1.4 composes the unchanged v1.3 reload for every response after strict deterministic filename derivation."
+        ]
+      }
+    },
+    {
+      "id": "strict-response-filename-identity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.strict-response-filename-identity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.strict-response-filename-identity": [
+          "Every inventory filename must equal SHA-256 of the embedded signed challenge id and receiver id; a valid response copied under another well-formed name makes state INVALID."
+        ]
+      }
+    },
+    {
+      "id": "strict-response-inventory",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.strict-response-inventory"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.strict-response-inventory": [
+          "The read-only scan refuses unexpected names, symlinks, noncanonical or oversized files, duplicate challenges and all v1.3 reload failures."
+        ]
+      }
+    },
+    {
+      "id": "v1.3-reload-compose",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.v1.3-reload-compose"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.v1.3-reload-compose": [
+          "Each admitted response re-runs exact v1.3 challenge, v1.2 custody, v1.1 policy and signature verification."
+        ]
+      }
+    },
+    {
+      "id": "read-only-snapshot",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.read-only-snapshot"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.read-only-snapshot": [
+          "A data-minimized self-digested snapshot inventories up to 64 exact response references without writing state."
+        ]
+      }
+    },
+    {
+      "id": "caller-checkpoint",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.caller-checkpoint"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.caller-checkpoint": [
+          "An available non-empty snapshot can become a portable self-digested checkpoint that the caller, not the module, must retain."
+        ]
+      }
+    },
+    {
+      "id": "checkpoint-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.checkpoint-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.checkpoint-exact-rebuild": [
+          "Checkpoint identity, canonical entry order, counts, digests and fixed truth boundary exact-validate."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-compare",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.fresh-process-compare"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.fresh-process-compare": [
+          "A new Node process strictly recaptures state and compares it with one exact caller-presented checkpoint."
+        ]
+      }
+    },
+    {
+      "id": "relative-rollback-detect",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.rollback-detect-relative-to-presented-checkpoint"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.rollback-detect-relative-to-presented-checkpoint": [
+          "Missing checkpoint responses are detected relative to the exact presented checkpoint; this neither prevents rollback nor proves checkpoint retention."
+        ]
+      }
+    },
+    {
+      "id": "relative-replacement-detect",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.replacement-detect-relative-to-presented-checkpoint"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.replacement-detect-relative-to-presented-checkpoint": [
+          "A different valid receiver-signed response for the same challenge is detected relative to the exact presented checkpoint."
+        ]
+      }
+    },
+    {
+      "id": "absent-invalid-identity-holds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.absent-invalid-identity-holds"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.absent-invalid-identity-holds": [
+          "Whole-state absence, invalid current state and configured identity drift yield typed review holds with zero autonomous actions."
+        ]
+      }
+    },
+    {
+      "id": "public-artifact-data-minimization",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.public-artifact-data-minimization"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.public-artifact-data-minimization": [
+          "Snapshots, checkpoints and audits omit raw labels, keys, signatures, custody records, assessment receipts, private keys and machine paths."
+        ]
+      }
+    },
+    {
+      "id": "resource-bounds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.resource-bounds"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.resource-bounds": [
+          "Scans are bounded to 64 responses and errors and public artifacts to 512 KiB canonical JSON."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.authority-none": [
+          "The read-only self-digested route authenticates no observer, checkpoint holder, host, identity or time and grants no execution, adoption, promotion, merge or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "independently-retained-checkpoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.checkpoint-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.checkpoint-external-retention.actual": [
+          "The module stores no checkpoint and the selftest's caller file remains under one synthetic controller."
+        ]
+      }
+    },
+    {
+      "id": "independently-operated-parties",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.party-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.party-independence.actual": [
+          "One synthetic test controls checkpoint, parties, keys, timestamps, processes and roots."
+        ]
+      }
+    },
+    {
+      "id": "actual-network-transport",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.network-transport.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.network-transport.actual": [
+          "The runtime opens no socket and performs read-only local filesystem observation."
+        ]
+      }
+    },
+    {
+      "id": "other-host-delivery",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.other-host-delivery.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.other-host-delivery.actual": [
+          "State and checkpoint remain on one host in the test."
+        ]
+      }
+    },
+    {
+      "id": "external-retention-duration",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.external-retention-duration.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.external-retention-duration.actual": [
+          "Caller-declared times are not external retention-duration evidence."
+        ]
+      }
+    },
+    {
+      "id": "durability-beyond-file-fsync",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.storage-durability-beyond-file-fsync.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.storage-durability-beyond-file-fsync.actual": [
+          "No physical-media, power-loss or device-recovery evidence was gathered."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.monotonic-state.actual": [
+          "No protected monotonic state exists."
+        ]
+      }
+    },
+    {
+      "id": "rollback-prevention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.rollback-prevention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.rollback-prevention.actual": [
+          "A controller able to alter both state and checkpoint can defeat comparison."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.host-authorization.actual": [
+          "A library call is not authenticated host authorization."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-party-identity",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.party-identity.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.party-identity.actual": [
+          "Configured labels and keys authenticate no legal or organizational identity."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.time.external": [
+          "Observation, checkpoint and audit times are caller supplied."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only synthetic fixtures were used."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or experiment was invoked."
+        ]
+      }
+    },
+    {
+      "id": "held-out-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.evaluation.actual": [
+          "No baseline or challenger evaluation was executed."
+        ]
+      }
+    },
+    {
+      "id": "branch-adoption",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.adoption.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.adoption.actual": [
+          "Continuity audits grant no branch adoption authority."
+        ]
+      }
+    },
+    {
+      "id": "held-out-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    },
+    {
+      "id": "held-out-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.learning.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.learning.held-out": [
+          "No held-out learning evaluation was run."
+        ]
+      }
+    },
+    {
+      "id": "promotion-merge-canon",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "axm.workshop.canon-decision.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "axm.workshop.canon-decision.actual": [
+          "Mike Tobi remains the merge and CANON gate; no decision was supplied."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

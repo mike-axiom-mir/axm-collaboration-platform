@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger-snapshot/v1",
+  "title": "AXM local-possession checkpoint transition ledger snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "logId", "manifestRef", "genesisSeparatedWitnessRef", "currentHeadSeparatedWitnessRef", "receiverIdDigest", "challengerIdDigest", "receiverPolicyRef", "entryCount", "lastEntryRef", "truth", "snapshotDigest"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger-snapshot/v1" },
+    "version": { "const": "1.9.0" },
+    "status": { "const": "TEST" },
+    "logId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "manifestRef": { "$ref": "#/$defs/reference" },
+    "genesisSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "currentHeadSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "receiverIdDigest": { "$ref": "#/$defs/digest" },
+    "challengerIdDigest": { "$ref": "#/$defs/digest" },
+    "receiverPolicyRef": { "$ref": "#/$defs/reference" },
+    "entryCount": { "type": "integer", "minimum": 0 },
+    "lastEntryRef": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/reference" }] },
+    "truth": { "type": "object" },
+    "snapshotDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-anchor-gate",
+  "version": "v0.5",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-witness-exact-rebuild",
+    "model.shadow.review.challenge-anchor-policy-exact-rebuild",
+    "model.shadow.review.challenge-anchor-expected-digest-match",
+    "model.shadow.review.challenge-anchor-detached-ed25519-verify",
+    "model.shadow.review.challenge-anchor-threshold-signature-verify",
+    "model.shadow.review.challenge-anchor-signing-key-possession-evidence",
+    "model.shadow.review.challenge-anchor-exact-witness-policy-bind",
+    "model.shadow.review.challenge-anchor-witness-chain-exact-rebuild",
+    "model.shadow.review.challenge-anchored-continuity-exact-rebuild",
+    "model.shadow.review.challenge-anchor-joint-substitution-nontrust-proof",
+    "model.shadow.review.challenge-anchor-authority-none",
+    "axm.model-shadow-review-challenge-anchor-policy/v1",
+    "axm.model-shadow-review-challenge-anchor-authorization/v1",
+    "axm.model-shadow-review-challenge-anchored-witness/v1",
+    "axm.model-shadow-review-challenge-anchored-continuity/v1"
+  ],
+  "consumes": [
+    "axm.model-shadow-review-challenge-witness/v1 as data",
+    "exact witness rebuild inputs",
+    "caller-presented expected anchor digest",
+    "caller-presented checkpoint-witness anchor policy",
+    "detached anchor authorization signatures",
+    "axm.model-shadow-review-challenge-ledger-snapshot/v1 as data",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-anchored-witness/v1",
+      "axm.model-shadow-review-challenge-anchored-continuity/v1"
+    ],
+    "accepts": [
+      "one exact-rebuild checkpoint witness",
+      "one exact caller-presented anchor digest and policy",
+      "one or more detached anchor authorization signatures",
+      "one current exact-rebuild challenge-ledger snapshot"
+    ]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "invalid-checkpoint-witness-or-snapshot",
+      "expected-anchor-digest-mismatch",
+      "invalid-anchor-policy-self-digest",
+      "invalid-or-non-ed25519-anchor-signature",
+      "unlisted-or-disabled-anchor-key",
+      "duplicate-anchor-key-as-independent-seat",
+      "duplicate-anchor-steward-as-independent-seat",
+      "expired-anchor-policy-or-authorization",
+      "signature-without-exact-anchor-pin-witness-policy-witness-checkpoint-ledger-and-entries-binding",
+      "caller-presented-anchor-as-authenticated-host-trust-root",
+      "caller-presented-anchor-digest-as-authenticated-pin",
+      "self-declared-anchor-epoch-as-monotonic-state",
+      "anchor-key-possession-as-real-world-identity",
+      "declared-human-anchor-key-as-authenticated-human",
+      "anchor-signature-as-actual-human-participation",
+      "anchored-witness-as-proven-external-retention",
+      "anchored-witness-as-deletion-or-rollback-prevention",
+      "anchored-comparison-as-global-single-use",
+      "caller-time-as-trusted-time",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "test-leaf-as-installed-or-promoted",
+      "anchor-signature-as-execution-authority",
+      "anchor-signature-as-adoption-authority",
+      "raw-steward-identity-retention",
+      "raw-public-key-retention",
+      "raw-signature-retention",
+      "private-key-ingestion",
+      "raw-model-output-ingestion",
+      "private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains anchor pin, policies, authorizations, witness package and receipts",
+    "reload": "exact-rebuild anchored witness chain and compare a current snapshot in a fresh process",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned",
+    "installed": false,
+    "promoted": false
+  }
+}

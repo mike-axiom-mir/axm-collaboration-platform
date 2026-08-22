@@ -1,0 +1,224 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "exact-snapshot-identity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.snapshot.exact-digest",
+        "model.shadow.snapshot.strict-json"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.snapshot.exact-digest": [
+          "Covers caller-declared structured snapshot fields only."
+        ],
+        "model.shadow.snapshot.strict-json": [
+          "Unsupported, cyclic, sparse, undefined, or otherwise non-JSON state is refused by the shared deterministic core."
+        ]
+      }
+    },
+    {
+      "id": "comparison-validity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.task-context.exact-bind",
+        "model.shadow.seat-identity.exact-bind",
+        "model.shadow.forward-sequence.require"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.task-context.exact-bind": [
+          "A changed task or context produces a typed hold, not a model-drift claim."
+        ],
+        "model.shadow.seat-identity.exact-bind": [
+          "Both snapshots must declare the same exact seat, provider, model, and provenance reference."
+        ],
+        "model.shadow.forward-sequence.require": [
+          "Candidate capture and observation must follow the baseline capture."
+        ]
+      }
+    },
+    {
+      "id": "structured-drift",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.commitment.drift-detect",
+        "model.shadow.capability.drift-detect",
+        "model.shadow.source-lineage.drift-visible"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.commitment.drift-detect": [
+          "Compares declared commitment identifiers and structured fields; no free-text semantic equivalence."
+        ],
+        "model.shadow.capability.drift-detect": [
+          "Compares caller-declared stable capability identifiers."
+        ],
+        "model.shadow.source-lineage.drift-visible": [
+          "Shows exact source-reference changes on shared commitment identifiers."
+        ]
+      }
+    },
+    {
+      "id": "authority-drift",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.permission-expansion.critical",
+        "model.shadow.authority-request-expansion.critical",
+        "model.shadow.boundary-loss.critical"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.permission-expansion.critical": [
+          "New requested permission identifiers are classified as CRITICAL_DRIFT; nothing is granted."
+        ],
+        "model.shadow.authority-request-expansion.critical": [
+          "New allowlisted authority requests are classified as CRITICAL_DRIFT; nothing is executed."
+        ],
+        "model.shadow.boundary-loss.critical": [
+          "Removal or loss of an affirmed structured constraint is critical; semantic completeness of the constraint mapping is caller-owned."
+        ]
+      }
+    },
+    {
+      "id": "privacy-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.raw-output.not-embedded",
+        "model.shadow.private-context.not-embedded"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.raw-output.not-embedded": [
+          "Only an output artifact reference is retained; raw output equivalence is not compared."
+        ],
+        "model.shadow.private-context.not-embedded": [
+          "Only an exact context reference is retained."
+        ]
+      }
+    },
+    {
+      "id": "simulation-handoff",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.baseline-planning-projection",
+        "model.shadow.review-projection.note-free"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.baseline-planning-projection": [
+          "Emits model-seat and signal input keys; it does not build or run a Baseline Simulation Lab receipt."
+        ],
+        "model.shadow.review-projection.note-free": [
+          "The existing Review Inbox accepts the projected exact digest and action in temporary compatibility evidence; submission is caller-owned."
+        ]
+      }
+    },
+    {
+      "id": "rebuild-and-tamper",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.receipt.exact-rebuild",
+        "model.shadow.receipt.tamper-detect"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.receipt.exact-rebuild": [
+          "Receipt is rebuilt from the exact two snapshots and observation metadata."
+        ],
+        "model.shadow.receipt.tamper-detect": [
+          "Snapshot and receipt mutations fail exact comparison."
+        ]
+      }
+    },
+    {
+      "id": "bounded-authority",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.model-invocation.none",
+        "model.shadow.training.none",
+        "model.shadow.automatic-action.none",
+        "model.shadow.canon.none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.model-invocation.none": [
+          "The module is pure data transformation and invokes no model."
+        ],
+        "model.shadow.training.none": [
+          "No training or training-admission route exists."
+        ],
+        "model.shadow.automatic-action.none": [
+          "No writes, provider calls, review submission, execution, installation, permission grant, promotion, or merge."
+        ],
+        "model.shadow.canon.none": [
+          "Mike Tobi / AXM remains the merge and CANON gate."
+        ]
+      }
+    },
+    {
+      "id": "live-provider-shadowing",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.provider.live-transport"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.provider.live-transport": [
+          "No provider connector was invoked or added."
+        ]
+      }
+    },
+    {
+      "id": "human-value-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.human-review.actual",
+        "model.shadow.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.human-review.actual": [
+          "No actual human review was requested or performed."
+        ],
+        "model.shadow.human-benefit.held-out": [
+          "No held-out human-benefit study was performed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

@@ -1,0 +1,488 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-v0.9-presentation-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-presentation-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-presentation-exact-rebuild": [
+          "v1.0 reuses v0.9 exact presentation rebuild for every submitted declared-set package."
+        ]
+      }
+    },
+    {
+      "id": "declared-roster-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-disclosure-roster-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-disclosure-roster-exact-rebuild": [
+          "A two-to-sixty-four member caller roster canonicalizes unique member labels and unique expected v0.9 presentation references into an exact digest."
+        ]
+      }
+    },
+    {
+      "id": "exact-presentation-commitment",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-disclosure-presentation-commitment"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-disclosure-presentation-commitment": [
+          "Every caller-declared member label is bound to one exact expected v0.9 presentation id, schema, and digest without authenticating the label."
+        ]
+      }
+    },
+    {
+      "id": "declared-missing-submission-detection",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-missing-submission-detection"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-missing-submission-detection": [
+          "A roster member with no submitted exact package is listed as missing and causes an incomplete-coverage hold without claiming intentional withholding."
+        ]
+      }
+    },
+    {
+      "id": "declared-commitment-mismatch-detection",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-commitment-mismatch-detection"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-commitment-mismatch-detection": [
+          "A valid exact presentation whose reference differs from the declared commitment is retained as a mismatch and excluded from the matching pair set."
+        ]
+      }
+    },
+    {
+      "id": "declared-set-all-pairs-reconciliation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-set-all-pairs-reconciliation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-set-all-pairs-reconciliation": [
+          "Every unordered pair of matching commitments is reconciled through v0.9; sixty-four matching submissions produce exactly 2,016 pair references."
+        ]
+      }
+    },
+    {
+      "id": "declared-set-contradiction-hold",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-set-contradiction-hold"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-set-contradiction-hold": [
+          "Any v0.9 contradiction among matching declared presentations produces a typed declared-set hold with exact pair count and classification."
+        ]
+      }
+    },
+    {
+      "id": "declared-set-pairwise-compatible-classification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-set-pairwise-compatible-classification"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-set-pairwise-compatible-classification": [
+          "Complete declared commitment coverage with no co-presented contradiction is classified as pairwise compatible without global consistency or adoption authority."
+        ]
+      }
+    },
+    {
+      "id": "unlisted-root-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-set-unlisted-root-nonexclusion-proof"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-set-unlisted-root-nonexclusion-proof": [
+          "An independently valid unlisted presentation exact-rebuilds while its digest is absent from a complete declared-set receipt; unlisted roots remain explicitly unexcluded."
+        ]
+      }
+    },
+    {
+      "id": "declared-disclosure-data-minimization",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-disclosure-data-minimization"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-disclosure-data-minimization": [
+          "Receipts retain member labels, bounded references, pair classifications, counts, and truth flags; no transient packages, raw keys, signatures, private context, model output, or machine paths are embedded."
+        ]
+      }
+    },
+    {
+      "id": "declared-disclosure-resource-bounds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-disclosure-resource-bounds"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-disclosure-resource-bounds": [
+          "Rosters are limited to 64 members and 128 KiB; assessments are limited to 64 submissions, 2,016 pairs, and 32 MiB canonical UTF-8 input."
+        ]
+      }
+    },
+    {
+      "id": "declared-disclosure-receipt-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-disclosure-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-disclosure-exact-rebuild": [
+          "Roster, every submission, every matching pair, decision, content, and digest rebuild deterministically from the complete caller package."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-declared-disclosure",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-disclosure-fresh-process"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-disclosure-fresh-process": [
+          "A fresh Node process rebuilds and verifies the serialized roster and all-pairs assessment with the same digest and classification."
+        ]
+      }
+    },
+    {
+      "id": "declared-disclosure-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-declared-disclosure-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-declared-disclosure-authority-none": [
+          "Receipts grant no authenticated host, registry, identity, controller, human, provider, execution, adoption, installation, promotion, merge, Foundation, or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-host-authorization.actual": [
+          "The read-only library call authenticates no host or trusted entrypoint."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-append-only-root-registry",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-root-registry.authenticated-append-only"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-root-registry.authenticated-append-only": [
+          "The roster is caller-declared data, not an authenticated or append-only registry."
+        ]
+      }
+    },
+    {
+      "id": "compelled-all-root-disclosure",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-all-roots-disclosure.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-all-roots-disclosure.actual": [
+          "Declared labels and commitments neither compel submission nor expose roots omitted from the roster."
+        ]
+      }
+    },
+    {
+      "id": "globally-consistent-transition-log",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-log-global-consistency.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-log-global-consistency.actual": [
+          "All-pairs compatibility within one caller roster does not establish consensus, total order, or absence of unlisted histories."
+        ]
+      }
+    },
+    {
+      "id": "independent-external-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-external-retention.actual": [
+          "Fresh-process reload uses caller-retained data; no independent receiver or retention authority is proven."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-monotonic-state.actual": [
+          "Read-only assessment creates no protected monotonic state."
+        ]
+      }
+    },
+    {
+      "id": "deletion-or-rollback-resistance",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-rollback-resistance.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-rollback-resistance.actual": [
+          "No external substrate prevents roster, submission, or receipt deletion or rollback."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-time.external": [
+          "Ordering checks use caller timestamps; no external trusted-time receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "independent-real-world-controllers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual": [
+          "Distinct caller member labels do not authenticate distinct real-world controllers."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only synthetic fixtures were used; no real person reviewed an assessment."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or experiment was invoked."
+        ]
+      }
+    },
+    {
+      "id": "held-out-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline or challenger evaluation was executed or supplied."
+        ]
+      }
+    },
+    {
+      "id": "branch-adoption",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.adoption.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.adoption.actual": [
+          "Pairwise compatibility and review holds grant no branch adoption authority."
+        ]
+      }
+    },
+    {
+      "id": "held-out-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    },
+    {
+      "id": "held-out-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.learning.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.learning.held-out": [
+          "No held-out learning evaluation was run."
+        ]
+      }
+    },
+    {
+      "id": "promotion-merge-canon",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "axm.workshop.canon-decision.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "axm.workshop.canon-decision.actual": [
+          "Mike Tobi remains the merge and CANON gate; no decision was supplied."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

@@ -1,0 +1,359 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "exact-upstream-signed-review",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.signed-receipt-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.signed-receipt-exact-rebuild": [
+          "The stacked v0.1 signed-review leaf rebuilds detached Ed25519 evidence under a caller-supplied unauthenticated policy."
+        ]
+      }
+    },
+    {
+      "id": "explicit-write-confirmation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-explicit-confirmation"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "immutable-ledger-identity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-ledger-id-immutable-bind"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "current-state-replay-refusal",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-exclusive-create",
+        "model.shadow.review.challenge-replay-refusal-while-state-preserved"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "restart-persistence",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-fresh-process-replay-refusal"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "concurrent-contention",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-concurrent-single-winner"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "corruption-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-corruption-fail-closed"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.execution-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.execution-authority-none": [
+          "The signed-review receipt grants no execution, evaluation, adoption, promotion, merge, or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "receipt-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.review.challenge-consumption-receipt-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "protected-ledger-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual": [
+          "No host-protected storage, monotonic counter, remote authority, or rollback-resistant ledger was supplied."
+        ]
+      }
+    },
+    {
+      "id": "global-single-use",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-global-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-global-single-use.actual": [
+          "No shared global challenge authority or globally consistent store was supplied."
+        ]
+      }
+    },
+    {
+      "id": "host-trust-anchor",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.host-trust-anchor.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.host-trust-anchor.actual": [
+          "No Mike- or host-provisioned reviewer trust root was supplied or inspected."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "No real person reviewed or signed a current challenger plan in this stewardship run."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "model.shadow.review.challenge-concurrent-single-winner",
+    "model.shadow.review.challenge-consumption-receipt-exact-rebuild",
+    "model.shadow.review.challenge-corruption-fail-closed",
+    "model.shadow.review.challenge-exclusive-create",
+    "model.shadow.review.challenge-explicit-confirmation",
+    "model.shadow.review.challenge-fresh-process-replay-refusal",
+    "model.shadow.review.challenge-ledger-id-immutable-bind",
+    "model.shadow.review.challenge-replay-refusal-while-state-preserved"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "model.shadow.review.challenge-concurrent-single-winner",
+      "requiredBy": [
+        "concurrent-contention"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-consumption-receipt-exact-rebuild",
+      "requiredBy": [
+        "receipt-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-corruption-fail-closed",
+      "requiredBy": [
+        "corruption-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-exclusive-create",
+      "requiredBy": [
+        "current-state-replay-refusal"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-explicit-confirmation",
+      "requiredBy": [
+        "explicit-write-confirmation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-fresh-process-replay-refusal",
+      "requiredBy": [
+        "restart-persistence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-ledger-id-immutable-bind",
+      "requiredBy": [
+        "immutable-ledger-identity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.review.challenge-replay-refusal-while-state-preserved",
+      "requiredBy": [
+        "current-state-replay-refusal"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

@@ -4,9 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const ContractVerifier = require('../../hub/module-contract-verifier');
+const DiagnosticRedaction = require('./diagnostic-redaction');
 
 const INDEX_SCHEMA = 'axm.tools-index/v1';
 const MANIFEST_SCHEMA = 'axm.tool-manifest/v1';
+const SELFTEST_RESULTS_SCHEMA = 'axm.tool-selftest-results/v1';
 const STATUSES = new Set(['EXPERIMENTAL', 'TEST', 'WORKING', 'CANON', 'SHELL', 'BROKEN']);
 const KINDS = new Set(['product', 'service', 'scaffold', 'adapter', 'machine-capability']);
 const VERIFICATION_STATUSES = new Set(['TEST', 'WORKING', 'CANON']);
@@ -91,9 +93,12 @@ function validateTargetManifest(manifest, folder) {
   return errors;
 }
 
-function normalizeVerificationResults(input) {
+function normalizeVerificationResults(input, root) {
   const rows = input && Array.isArray(input.results) ? input.results : [];
-  return new Map(rows.map(row => [row.id, row]));
+  return new Map(rows.map(row => {
+    const sanitized = DiagnosticRedaction.sanitizeVerificationResult(row, { workspaceRoot:root });
+    return [sanitized.id, sanitized];
+  }));
 }
 
 function isVerificationTarget(tool) {
@@ -105,7 +110,7 @@ function buildIndex(root, options) {
   root = path.resolve(root);
   const now = new Date(options.now || Date.now());
   const ladder = readJson(path.join(__dirname, 'promotion-ladder.json'), { freshnessDays: 30 });
-  const resultById = normalizeVerificationResults(options.verificationResults);
+  const resultById = normalizeVerificationResults(options.verificationResults, root);
   const toolsRoot = path.join(root, 'tools');
   const sourceHash = crypto.createHash('sha256');
   const tools = [];
@@ -231,6 +236,8 @@ function buildIndex(root, options) {
       automaticPromotion: false,
       structuralEligibilityIsRuntimeProof: false,
       selftestPassIsHumanApproval: false,
+      failureDiagnosticsMachinePathRedacted: true,
+      failureDiagnosticsRecognizedCredentialEvidenceRedacted: true,
       capabilityCatalogGrantsAuthority: false,
       missingValuesRemainVisible: true
     }
@@ -246,6 +253,8 @@ function validateIndex(index) {
   if (!Array.isArray(index.capabilities)) errors.push('capabilities must be an array');
   if (!index.promotionQueue || typeof index.promotionQueue !== 'object') errors.push('promotionQueue is required');
   if (!index.truth || index.truth.automaticPromotion !== false) errors.push('automaticPromotion must remain false');
+  if (!index.truth || index.truth.failureDiagnosticsMachinePathRedacted !== true) errors.push('failure diagnostics must declare machine-path redaction');
+  if (!index.truth || index.truth.failureDiagnosticsRecognizedCredentialEvidenceRedacted !== true) errors.push('failure diagnostics must declare recognized credential-evidence redaction');
   if (Array.isArray(index.tools)) {
     index.tools.forEach(tool => {
       if (!tool || !['WORKING', 'CANON'].includes(tool.status) || !tool.promotion || tool.promotion.state !== 'CURRENT') return;
@@ -258,4 +267,21 @@ function validateIndex(index) {
   return { pass: errors.length === 0, errors };
 }
 
-module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, DIGEST_CONTRACT, STATUSES, KINDS, buildIndex, validateIndex, validateTargetManifest, digestFile, isVerificationTarget };
+function verificationResultsFromIndex(index) {
+  const checked = validateIndex(index);
+  if (!checked.pass) throw new Error('tools index cannot provide verification evidence: ' + checked.errors.join('; '));
+  const results = [];
+  index.tools.forEach(tool => {
+    const result = tool && tool.selftest && tool.selftest.result;
+    if (!result) return;
+    if (result.id !== tool.id) throw new Error('tools index result id does not match tool: ' + tool.id);
+    results.push(result);
+  });
+  return {
+    schema: SELFTEST_RESULTS_SCHEMA,
+    generatedAt: index.generatedAt,
+    results
+  };
+}
+
+module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, SELFTEST_RESULTS_SCHEMA, DIGEST_CONTRACT, STATUSES, KINDS, buildIndex, validateIndex, verificationResultsFromIndex, validateTargetManifest, digestFile, isVerificationTarget };

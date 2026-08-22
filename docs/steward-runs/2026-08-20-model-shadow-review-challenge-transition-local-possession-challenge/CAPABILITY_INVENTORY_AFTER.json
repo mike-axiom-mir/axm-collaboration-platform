@@ -1,0 +1,35 @@
+{
+  "capabilities": [
+    {"id":"model.shadow.review.challenge-transition.local-receiver-signed-custody-record","status":"available","constraints":["v1.3 reuses v1.2 exact custody-record, policy, stored-receipt and receiver-signature validation before answering."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.signed-challenge-exact-rebuild","status":"available","constraints":["A configured Ed25519 challenger signs one deterministic challenge with exact ids, references, 32-byte nonce, key fingerprint and bounded caller time window."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.custody-reread-exact-verification","status":"available","constraints":["Answer and reload re-read one fixed canonical v1.2 custody file and use the unchanged v1.2 validator before success."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.nonce-custody-binding","status":"available","constraints":["Challenge and response bind one exact 32-byte nonce to one custody-record and receiver-policy reference."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.receiver-signed-response","status":"available","constraints":["The configured receiver Ed25519 key signs one data-minimized response after custody and challenge verification."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.response-exclusive-fsync","status":"available","constraints":["Exact answer confirmation permits one exclusive-create response file and success follows file fsync."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.replay-refusal-while-file-present","status":"available","constraints":["A fixed challenge-and-receiver-derived filename refuses repeat or conflicting answers while that file remains present; deletion or rollback is not prevented."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.fresh-process-reload","status":"available","constraints":["A new Node process reloads both v1.2 custody and v1.3 response files and verifies challenger and receiver signatures."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.public-receipt-data-minimization","status":"available","constraints":["Public receipts retain bounded references, digests, filenames and truth flags, not raw labels, keys, signatures, custody records, stored assessment receipts or machine paths."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.same-controller-counterexample","status":"available","constraints":["Distinct child PIDs remain one synthetic controller and explicitly do not prove independent parties, trusted time or external retention."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.resource-bounds","status":"available","constraints":["Challenges are bounded to 64 KiB, responses to 4 MiB, windows to 24 hours, roots and fixed filenames are bounded, and traversal is refused."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.authority-none","status":"available","constraints":["Labels, keys, caller times and confirmation authenticate no real identity or host and grant no human, provider, execution, adoption, promotion, merge or CANON authority."]},
+
+    {"id":"model.shadow.review.challenge-transition.local-possession.party-independence.actual","status":"unknown","constraints":["The synthetic test controls challenger, receiver, keys, timestamps, processes and local root."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.network-transport.actual","status":"unknown","constraints":["The runtime opens no socket and proves only local filesystem reads and writes."]},
+    {"id":"model.shadow.review.challenge-transition.local-possession.other-host-delivery.actual","status":"unknown","constraints":["Challenge and response remain on one host."]},
+    {"id":"model.shadow.review.challenge-transition.external-retention.actual","status":"unknown","constraints":["Caller-owned local state is not independently controlled external retention."]},
+    {"id":"model.shadow.review.challenge-transition.external-retention-duration.actual","status":"unknown","constraints":["Caller-declared challenge times are not retention-duration evidence."]},
+    {"id":"model.shadow.review.challenge-transition.storage-durability-beyond-file-fsync.actual","status":"unknown","constraints":["No physical-media, directory-fsync, power-loss or device-recovery evidence was gathered."]},
+    {"id":"model.shadow.review.challenge-transition.monotonic-state.actual","status":"unknown","constraints":["Exclusive immutable files are not a protected monotonic store."]},
+    {"id":"model.shadow.review.challenge-transition.rollback-resistance.actual","status":"unknown","constraints":["Deleting or rolling back the response directory can permit challenge reuse."]},
+    {"id":"model.shadow.review.challenge-transition.host-authorization.actual","status":"unknown","constraints":["Exact confirmation is not host authentication."]},
+    {"id":"model.shadow.review.challenge-transition.party-identity.actual","status":"unknown","constraints":["Configured labels and keys authenticate no legal or organizational identity."]},
+    {"id":"model.shadow.review.challenge-transition.time.external","status":"unknown","constraints":["Ordering uses caller timestamps without trusted-time evidence."]},
+    {"id":"model.shadow.challenger.human-review.actual","status":"unknown","constraints":["Only synthetic fixtures were used."]},
+    {"id":"model.shadow.challenger.shadow-execution.actual","status":"unknown","constraints":["No model provider or experiment was invoked."]},
+    {"id":"model.shadow.challenger.evaluation.actual","status":"unknown","constraints":["No baseline or challenger evaluation was executed."]},
+    {"id":"model.shadow.challenger.adoption.actual","status":"unknown","constraints":["Possession receipts grant no branch adoption authority."]},
+    {"id":"model.shadow.challenger.human-benefit.held-out","status":"unknown","constraints":["No voluntary held-out human outcome was observed."]},
+    {"id":"model.shadow.challenger.learning.held-out","status":"unknown","constraints":["No held-out learning evaluation was run."]},
+    {"id":"axm.workshop.canon-decision.actual","status":"unknown","constraints":["Mike Tobi remains the merge and CANON gate; no decision was supplied."]}
+  ]
+}

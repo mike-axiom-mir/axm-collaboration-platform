@@ -1,0 +1,43 @@
+{
+  "schema": "axm.capability-gap-transition/v1",
+  "requirementsSource": "SCOUT_REQUIREMENTS.json",
+  "beforeInventory": "SCOUT_INVENTORY_BEFORE.json",
+  "afterInventory": "SCOUT_INVENTORY_AFTER.json",
+  "before": {
+    "overall": "BLOCKED",
+    "requiredStructuralBinding": "BLOCKED",
+    "missing": [
+      "code.fabric.request-policy.bind",
+      "code.fabric.policy-bound-review.verify"
+    ]
+  },
+  "after": {
+    "overall": "DEGRADED",
+    "requiredStructuralBinding": "READY",
+    "available": [
+      "code.fabric.v2-request.normalize",
+      "code.fabric.independent-review.verify",
+      "code.fabric.request-policy.bind",
+      "code.fabric.policy-bound-review.verify"
+    ],
+    "optionalMissing": [
+      "code.fabric.human-policy-decision.authenticate",
+      "code.fabric.output-lineage.prove",
+      "code.fabric.resource-enforcement.observe",
+      "code.fabric.sandbox-executor.repaired"
+    ]
+  },
+  "gapTypes": {
+    "closed": [
+      "CONTRACT"
+    ],
+    "open": [
+      "AUTHORITY",
+      "EVIDENCE",
+      "HAND",
+      "SUBSTRATE"
+    ]
+  },
+  "cheapestHonestRouteUsed": "Compose the existing v2 request normalizer and independent-review verifier through one additive deterministic envelope and review contract. Do not rewrite v2, create a human identity system, or build an executor.",
+  "nextUnknownTest": "Authenticated human acceptance would require a separately governed decision-key policy and allowed/denied identity tests; no such authority was inferred or added."
+}

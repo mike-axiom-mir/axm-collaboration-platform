@@ -1,0 +1,440 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-v1.8-forward-transition",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.exact-rebuild": [
+          "Unchanged v1.8 exact pairwise gate."
+        ]
+      }
+    },
+    {
+      "id": "upstream-v1.4-live-source-capture",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.read-only-capture"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.read-only-capture": [
+          "Unchanged v1.4 strict read-only capture; later source change remains possible."
+        ]
+      }
+    },
+    {
+      "id": "upstream-v1.7-candidate-currentness",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.currentness-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.currentness-exact-rebuild": [
+          "Unchanged v1.7 exact currentness audit."
+        ]
+      }
+    },
+    {
+      "id": "stateful-reference-pattern",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.ledger-pattern.reference"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.ledger-pattern.reference": [
+          "v0.8 remains a reference only; v1.9 implements a possession-specific ledger without modifying v0.8."
+        ]
+      }
+    },
+    {
+      "id": "exact-forward-gate",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.exact-v1.8-forward-transition-gate"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.exact-v1.8-forward-transition-gate": [
+          "Only exact v1.8 forward response extensions with preserved false authority claims are eligible."
+        ]
+      }
+    },
+    {
+      "id": "prewrite-exact-currentness-gate",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.prewrite-v1.7-candidate-source-match-gate"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.prewrite-v1.7-candidate-source-match-gate": [
+          "The module itself captures the configured source and requires an exact candidate response-set match before creating its namespace; capture and append are not atomic."
+        ]
+      }
+    },
+    {
+      "id": "exclusive-local-sequence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.exclusive-local-sequence-append"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.exclusive-local-sequence-append": [
+          "One caller-owned root gets a contiguous exclusive-create sequence and file fsync; global uniqueness and directory durability are unproven."
+        ]
+      }
+    },
+    {
+      "id": "local-digest-chain-reload",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.local-digest-chain-reload"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.local-digest-chain-reload": [
+          "Reload validates canonical files, manifest/context binding, contiguous sequence, receipt self-digests, entry digests, and the derived local head."
+        ]
+      }
+    },
+    {
+      "id": "persisted-caller-package-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.caller-package-persisted-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.caller-package-persisted-exact-rebuild": [
+          "A fresh process can exact-rebuild a stored entry only when the caller retains the original transition input and returned captured-currentness evidence."
+        ]
+      }
+    },
+    {
+      "id": "independent-root-and-deletion-counterevidence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.independent-root-and-deletion-counterevidence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.independent-root-and-deletion-counterevidence": [
+          "Tests demonstrate divergent independent roots and deletion reopening sequence one."
+        ]
+      }
+    },
+    {
+      "id": "public-artifact-minimization",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.public-artifact-data-minimization"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.public-artifact-data-minimization": [
+          "Persisted entries retain bounded receipts and digest references, not upstream rebuild inputs, raw snapshots, keys, signatures, labels, or paths."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.authority-none": [
+          "Confirmation and local possession prove no authenticated authority, identity, execution, adoption, promotion, merge, or CANON status."
+        ]
+      }
+    },
+    {
+      "id": "atomic-source-and-ledger-binding",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.atomic-source-binding.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.atomic-source-binding.actual": [
+          "The source can change after capture or during append; no cross-store transaction exists."
+        ]
+      }
+    },
+    {
+      "id": "global-transition-uniqueness",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.global-uniqueness.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.global-uniqueness.actual": [
+          "Independent roots can accept divergent forks."
+        ]
+      }
+    },
+    {
+      "id": "globally-consistent-log",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.global-log-consistency.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.global-log-consistency.actual": [
+          "No globally coordinated log exists."
+        ]
+      }
+    },
+    {
+      "id": "external-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.external-retention.actual": [
+          "No independent retention substrate was supplied."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.monotonic-state.actual": [
+          "No protected monotonic store was supplied."
+        ]
+      }
+    },
+    {
+      "id": "deletion-or-rollback-prevention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.rollback-prevention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.rollback-prevention.actual": [
+          "Deletion test reopens sequence one."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.host-authorization.actual": [
+          "Exact confirmation remains unauthenticated."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-independent-controllers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.controller-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.controller-independence.actual": [
+          "Synthetic tests use one controller and do not prove independent custody or anti-collusion."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-human-participation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.human-participation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.human-participation.actual": [
+          "No authenticated voluntary human participation receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.time.external": [
+          "All timestamps remain caller supplied."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No provider or experiment was invoked."
+        ]
+      }
+    },
+    {
+      "id": "held-out-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.evaluation.actual": [
+          "No held-out evaluation was run."
+        ]
+      }
+    },
+    {
+      "id": "held-out-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No held-out human outcome was observed."
+        ]
+      }
+    },
+    {
+      "id": "held-out-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.learning.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.learning.held-out": [
+          "No held-out learning evidence exists."
+        ]
+      }
+    },
+    {
+      "id": "promotion-merge-canon",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "axm.workshop.canon-decision.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "axm.workshop.canon-decision.actual": [
+          "Mike Tobi remains the merge and CANON gate."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

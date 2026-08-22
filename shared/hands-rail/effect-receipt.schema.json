@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.effect-receipt/v1",
+  "type": "object",
+  "required": ["schema", "state", "executorId", "requestDigest", "decisionDigest", "consumptionReceipt", "startedAt", "finishedAt", "durationMs", "resultDigest", "partial", "error", "cleanup", "receiptDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.effect-receipt/v1" },
+    "state": { "enum": ["SUCCESS", "PARTIAL", "FAILURE", "CANCELLED"] },
+    "executorId": { "type": "string" },
+    "requestDigest": { "type": "string" },
+    "decisionDigest": { "type": "string" },
+    "consumptionReceipt": { "type": "object" },
+    "startedAt": { "type": "string" },
+    "finishedAt": { "type": "string" },
+    "durationMs": { "type": "number" },
+    "resultDigest": { "type": ["string", "null"] },
+    "partial": { "type": ["object", "null"] },
+    "error": { "type": ["object", "null"] },
+    "cleanup": { "type": "object" },
+    "receiptDigest": { "type": "string" }
+  }
+}

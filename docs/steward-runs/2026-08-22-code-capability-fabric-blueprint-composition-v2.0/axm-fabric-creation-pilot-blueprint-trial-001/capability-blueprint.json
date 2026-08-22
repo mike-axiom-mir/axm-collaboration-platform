@@ -1,0 +1,192 @@
+{
+  "schema": "axm.fabric-declarative-capability-blueprint/v1",
+  "version": "0.1.0",
+  "id": "bounded-code-change-proposal",
+  "name": "Bounded Code Change Proposal",
+  "purpose": "Compose one inert, reviewable capability blueprint from a request, declared capabilities, and known failures without creating or executing implementation code.",
+  "status": "EXPERIMENTAL",
+  "kind": "PURE_DATA_TRANSFORM",
+  "provides": [
+    "code.change-proposal.compose"
+  ],
+  "consumes": [],
+  "interface": {
+    "inputs": [
+      {
+        "description": "Declared provider-neutral capabilities available for composition.",
+        "id": "capability-catalog",
+        "required": true,
+        "type": "array"
+      },
+      {
+        "description": "One bounded human-directed code improvement request.",
+        "id": "change-request",
+        "required": true,
+        "type": "object"
+      },
+      {
+        "description": "Preserved failures and counterevidence relevant to the request.",
+        "id": "known-failures",
+        "required": true,
+        "type": "array"
+      }
+    ],
+    "outputs": [
+      {
+        "description": "An inert proposal containing interfaces, boundaries, tests, and unresolved gaps.",
+        "id": "candidate-specification",
+        "source": "candidate-specification",
+        "type": "object"
+      }
+    ]
+  },
+  "composition": {
+    "steps": [
+      {
+        "description": "Reject malformed, unbounded, or authority-expanding requests.",
+        "id": "validate-request",
+        "operation": "VALIDATE",
+        "produces": "validated-request",
+        "reads": [
+          "change-request"
+        ]
+      },
+      {
+        "description": "Select only exactly declared compatible capabilities; ambiguity remains a hold.",
+        "id": "select-capabilities",
+        "operation": "SELECT",
+        "produces": "selected-capabilities",
+        "reads": [
+          "capability-catalog",
+          "validated-request"
+        ]
+      },
+      {
+        "description": "Bind known failures and counterevidence to the proposed route.",
+        "id": "bind-failures",
+        "operation": "ASSEMBLE",
+        "produces": "evidence-bound-route",
+        "reads": [
+          "known-failures",
+          "selected-capabilities"
+        ]
+      },
+      {
+        "description": "Emit an inert specification for later human review and separate implementation.",
+        "id": "emit-specification",
+        "operation": "EMIT",
+        "produces": "candidate-specification",
+        "reads": [
+          "evidence-bound-route"
+        ]
+      }
+    ]
+  },
+  "desiredOutcomes": [
+    {
+      "claim": "The proposal identifies verification before implementation.",
+      "status": "UNPROVEN"
+    },
+    {
+      "claim": "The proposal preserves all four AXM roots and leaves merge authority with Mike.",
+      "status": "UNPROVEN"
+    },
+    {
+      "claim": "The proposal preserves unresolved failures instead of hiding them.",
+      "status": "UNPROVEN"
+    }
+  ],
+  "resourceBudget": {
+    "maxDurationMs": 1000,
+    "maxInputBytes": 32768,
+    "maxMemoryBytes": 67108864,
+    "maxOperations": 4,
+    "maxOutputBytes": 32768
+  },
+  "permissions": [],
+  "rootsGate": [
+    "truth",
+    "agency-non-domination",
+    "continuity",
+    "wisdom-over-speed"
+  ],
+  "acceptancePlan": [
+    {
+      "id": "composition-graph-resolves",
+      "claim": "Every declared step reads an available token, produces a unique token, and contributes to an output.",
+      "evidenceRequired": "STRICT_COMPOSER_VALIDATION",
+      "status": "COMPOSER_VALIDATED"
+    },
+    {
+      "id": "declared-input-contract-holds",
+      "claim": "A future implementation accepts only the declared input fields and types.",
+      "evidenceRequired": "HELD_OUT_SCHEMA_AND_BOUNDARY_TESTS",
+      "status": "PLANNED"
+    },
+    {
+      "id": "declared-output-contract-holds",
+      "claim": "A future implementation emits every declared output field with its declared type.",
+      "evidenceRequired": "HELD_OUT_OUTPUT_VALIDATION",
+      "status": "PLANNED"
+    },
+    {
+      "id": "deterministic-replay-holds",
+      "claim": "A future implementation emits byte-identical output for the same normalized input and version.",
+      "evidenceRequired": "REPEAT_EXECUTION_WITH_EXACT_DIGEST_COMPARISON",
+      "status": "PLANNED"
+    },
+    {
+      "id": "runtime-resource-ceilings-hold",
+      "claim": "A future implementation stays inside the declared duration, memory, input, output, and operation ceilings.",
+      "evidenceRequired": "MEASURED_RUNTIME_TELEMETRY_UNDER_DECLARED_WORKLOAD",
+      "status": "PLANNED"
+    },
+    {
+      "id": "authority-boundary-holds",
+      "claim": "A future implementation cannot use network, filesystem, child-process, install, promote, or CANON authority.",
+      "evidenceRequired": "ALLOWED_AND_DENIED_AUTHORIZATION_BOUNDARY_TESTS",
+      "status": "PLANNED"
+    },
+    {
+      "id": "human-quality-review-holds",
+      "claim": "The declared quality outcomes are useful and meaningful for the intended human purpose.",
+      "evidenceRequired": "MIKE_OR_APPOINTED_HUMAN_REVIEW",
+      "status": "PLANNED"
+    }
+  ],
+  "boundaries": {
+    "permits": [
+      "pure-data-transformation",
+      "deterministic-formatting",
+      "reviewable-blueprint-handoff"
+    ],
+    "refuses": [
+      "source-content-reading",
+      "network-use",
+      "filesystem-write",
+      "child-process-execution",
+      "generated-code-execution",
+      "permission-grant",
+      "automatic-install",
+      "automatic-registration",
+      "automatic-staging",
+      "automatic-promotion",
+      "automatic-canon",
+      "persistent-learning-admission"
+    ]
+  },
+  "provenance": {
+    "intentRef": {
+      "id": "bounded-code-change-proposal",
+      "schema": "axm.fabric-declarative-blueprint-intent/v1",
+      "sha256": "sha256:0a71ace5949bdd570910612bdaa2195b4e517dfd0379b90bf4c60f6e8c16d629"
+    },
+    "composerProfileRef": {
+      "id": "declarative-pure-data-blueprint-composer",
+      "schema": "axm.fabric-blueprint-composer-profile/v1",
+      "sha256": "sha256:24cc93072ec43cfd45c48aec741e8599c09f4fafd34f19391389d1b343217663"
+    }
+  },
+  "authority": "NONE",
+  "blueprintDigest": "sha256:89dec506c5d2e65994b599baa42b618340348202538ca715e8e0dae88e849c39"
+}

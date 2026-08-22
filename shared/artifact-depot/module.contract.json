@@ -1,0 +1,17 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "artifact-depot",
+  "version": "v0.1",
+  "provides": ["city.artifact.put-atomic", "city.artifact.verify", "city.artifact.lease", "city.artifact.offline-export-manifest"],
+  "consumes": ["filesystem:explicit-depot-root", "bytes"],
+  "permissions": ["write-candidate"],
+  "handoffs": {
+    "emits": ["axm.artifact-ref/v1", "axm.artifact-lease/v1", "axm.artifact-export/v1"],
+    "accepts": ["bytes", "filesystem/explicit-depot-root"]
+  },
+  "lifecycle": { "state_owner": "caller-selected-local-depot", "reload": "verify-by-digest", "disconnect": "close-file-handles", "cleanup": "explicit-human-authorized-only" },
+  "boundaries": {
+    "writes": ["explicit-depot-root/sha256", "explicit-depot-root/leases", "explicit-depot-root/roots"],
+    "refuses": ["automatic-garbage-collection", "automatic-deletion", "artifact-execution", "overwrite-on-digest-conflict", "network-write", "promotion", "merge", "canon-change", "root-change"]
+  }
+}

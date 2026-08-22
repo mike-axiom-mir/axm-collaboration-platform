@@ -3,6 +3,53 @@
 Notable public AXM Workshop changes are recorded here. Historical workbench
 reports remain available under [`docs/history/`](docs/history/).
 
+## v0.7.0-experimental — 2026-08-22
+
+### Capability fabrics and bounded growth
+
+- Added the deterministic Code Capability Fabric, its resource-aware gate, and
+  the Identity Shell Fabric trial as reviewable `EXPERIMENTAL` systems. They can
+  compile, compare, gate, and preserve evidence; they cannot promote themselves,
+  rewrite Foundation, claim identity or consciousness, or acquire authority.
+- Added the Shadow Clone Learning Steward for compact, evidence-bound comparison
+  and drift review without granting autonomous merge or canon powers.
+- Integrated the Grounded Growth stewardship chain and review-inbox evidence
+  views while preserving dissent, rollback paths, human authority, and explicit
+  retirement/retention boundaries.
+
+### Workshop visibility and building surfaces
+
+- Added Workshop Observatory as a separate evidence lane alongside raw growth:
+  lifecycle declarations, structural coverage, exact capability seams, evidence
+  freshness, typed improvement signals, and human-recorded milestones remain
+  distinct instead of becoming one misleading score.
+- Repaired the Hub layout fallback that allowed its decorative canvas to reserve
+  a large empty row above the interface.
+- Added the LEGO Software City experiment, Shardrunner prototype, and standalone
+  Pocket Adventure experiment without presenting any of them as CANON.
+
+### Determinism, portability, and public evidence
+
+- Added Windows-portable newline and exact-byte verification repairs, stable
+  discovery-clock generation, scoped readiness evidence, deterministic PR
+  sequencing, and workspace activity observation.
+- Regenerated the public discovery spine at 219 tools and 2,022 declared
+  capabilities. Declarations remain navigation data, not behavioral proof.
+- Curated 126 raw session-event traces out of the public release candidate while
+  retaining their compact seals, summaries, indexes, and review receipts.
+- Added a fail-closed v0.7.0 prerelease workflow whose source and Windows package
+  artifacts are downloaded into separate directories before receiver checks.
+
+### Boundaries
+
+- This remains an experimental technical checkpoint, not production or safety
+  certification, promotion, roots authority, or CANON.
+- Capability fabrics, identity shells, shadows, simulation material, and model
+  opinions do not prove consciousness, personhood, truth, or correctness.
+- Clean macOS/Linux first-launch proof and independent beginner-comprehension
+  testing remain outside this cutoff.
+- No broad open-source license has been granted; see `LICENSE_STATUS.md`.
+
 ## v0.6.1-experimental — 2026-08-16
 
 ### Corrective integrity release

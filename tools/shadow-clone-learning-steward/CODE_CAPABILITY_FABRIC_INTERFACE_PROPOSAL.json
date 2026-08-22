@@ -1,0 +1,37 @@
+{
+  "schema": "axm.code-capability.interface-proposal/v1",
+  "proposalId": "shadow-clone-compact-snapshot-provider-v1",
+  "status": "PROPOSAL_ONLY",
+  "installed": false,
+  "invoked": false,
+  "dependsOnInProgressBranch": false,
+  "capability": {
+    "id": "codex.task.compact-snapshot.read",
+    "providerSchema": "axm.code-capability.compact-snapshot-provider/v1",
+    "method": "collectCompactSnapshotSet",
+    "request": {
+      "scope": "ACTIVE_AXM_CODEX_COMPACT_LEARNING",
+      "authorizationReceiptDigest": "sha256",
+      "compactSnapshotsOnly": true,
+      "taskHistoryRead": false,
+      "crossTaskMessaging": false,
+      "asOf": "date-time"
+    },
+    "response": "axm.shadow-clone.compact-snapshot-set/v1"
+  },
+  "requiredProviderReceipt": {
+    "status": "AVAILABLE",
+    "compactSnapshotsOnly": true,
+    "taskHistoryRead": false,
+    "crossTaskMessaging": false,
+    "credentialInspection": false
+  },
+  "boundaries": [
+    "Mike authorization is explicit and digest-bound",
+    "provider returns redacted compact snapshots only",
+    "provider does not expose thread ids, session paths, prompts, transcripts, credentials, or raw histories",
+    "provider cannot message, interrupt, redirect, merge, promote, inherit, or canonize",
+    "missing capability returns a typed receipt"
+  ]
+}
+

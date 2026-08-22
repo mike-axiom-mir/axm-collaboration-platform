@@ -1,0 +1,74 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "baseline-simulation-lab",
+  "version": "v0.2",
+  "status": "TEST",
+  "provides": [
+    "simulation.run-envelope.verify",
+    "simulation.run-envelope.no-new-information-stop",
+    "simulation.run-envelope.artifact-ancestry",
+    "simulation.run-envelope.idea-evidence-ancestry",
+    "simulation.run-envelope.native-evidence-routing",
+    "simulation.run-envelope.output-closure",
+    "simulation.run-envelope.transport-receipts",
+    "simulation.run-envelope.permission-attempts",
+    "simulation.run-envelope.budget-hold",
+    "simulation.run-envelope.human-authority-gate",
+    "axm.baseline-simulation-lab-run/v1"
+  ],
+  "consumes": [
+    "axm.portable-baseline-capsule/v1",
+    "axm.evidence-receipt/v2",
+    "axm.verified-capability-cycle-receipt/v1",
+    "caller-supplied digest-bound observations",
+    "caller-supplied adapter and transport receipts",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.baseline-simulation-lab-run/v1",
+      "one axm.verified-capability-cycle-receipt/v1"
+    ],
+    "accepts": [
+      "SOFTWARE_REPOSITORY baseline capsule",
+      "MIRROR_STATE baseline capsule",
+      "SPECIALIST_MASK baseline capsule"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "source-execution",
+      "model-invocation",
+      "recursive-generation",
+      "majority-vote-as-truth",
+      "global-ranking",
+      "global-score",
+      "central-simulation-database",
+      "evidence-plane",
+      "summary-as-output-substitute",
+      "model-self-availability",
+      "candidate-self-availability",
+      "automatic-next-generation",
+      "automatic-build",
+      "automatic-write",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation",
+      "model-weight-training-claim",
+      "publication",
+      "push",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from caller-supplied receipts",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-policy-bound-assurance-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "baseRequestRef", "trustPolicyRef", "assuranceSchemas", "rootsGate", "boundAt", "expiresAt", "scope", "authority", "bindingDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-policy-bound-assurance-request/v1"},
+    "id": {"$ref": "#/$defs/id"},
+    "baseRequestRef": {"$ref": "#/$defs/reference"},
+    "trustPolicyRef": {"$ref": "#/$defs/reference"},
+    "assuranceSchemas": {"type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/contract"}},
+    "rootsGate": {"const": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"]},
+    "boundAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "scope": {"const": "INDEPENDENT_ASSURANCE_REVIEW_ONLY"},
+    "authority": {"const": "NONE"},
+    "bindingDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "schema": {"$ref": "#/$defs/contract"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

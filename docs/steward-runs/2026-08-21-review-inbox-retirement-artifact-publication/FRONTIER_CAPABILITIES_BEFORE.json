@@ -1,0 +1,64 @@
+{
+  "capabilities": [
+    {
+      "id": "review.retirement.json.exclusive-create-then-write",
+      "status": "available",
+      "constraints": ["authoritative path opened with wx before bytes are written", "file handle fsynced after write"]
+    },
+    {
+      "id": "review.retirement.json.authoritative-path-atomic-visibility",
+      "status": "unavailable",
+      "constraints": ["zero or partial authoritative file can remain after process termination"]
+    },
+    {
+      "id": "review.retirement.json.exclusive-no-overwrite-publication",
+      "status": "unavailable",
+      "constraints": ["exclusive create exists but is coupled to incomplete-byte visibility"]
+    },
+    {
+      "id": "review.retirement.json.prepublication-crash-retryable",
+      "status": "unavailable",
+      "constraints": ["crash after open can leave final path present and invalid"]
+    },
+    {
+      "id": "review.retirement.json.postpublication-crash-observable",
+      "status": "unavailable",
+      "constraints": ["no separate publication point exists"]
+    },
+    {
+      "id": "review.retirement.json.intent-decision-result-coverage",
+      "status": "unavailable",
+      "constraints": ["intent, decision, and result all use create-then-write"]
+    },
+    {
+      "id": "review.retirement.json.real-process-crash-evidence",
+      "status": "unavailable",
+      "constraints": ["no process-termination test at JSON publication checkpoints"]
+    },
+    {
+      "id": "review.retirement.json.closed-local-publication-contract",
+      "status": "unavailable",
+      "constraints": ["no staged-publication contract or truth ceiling"]
+    },
+    {
+      "id": "storage.power-loss-durability.proven",
+      "status": "unavailable",
+      "constraints": ["no power interruption or directory-entry durability test"]
+    },
+    {
+      "id": "storage.cross-file.atomicity",
+      "status": "unavailable",
+      "constraints": ["intent, decision, quarantine, and result remain separate files"]
+    },
+    {
+      "id": "review.retirement.json.stale-stage-reclamation",
+      "status": "unavailable",
+      "constraints": ["no staging directory exists"]
+    },
+    {
+      "id": "review.retirement.json.atomic-publication-without-hard-links",
+      "status": "unavailable",
+      "constraints": ["no atomic no-overwrite fallback is declared"]
+    }
+  ]
+}

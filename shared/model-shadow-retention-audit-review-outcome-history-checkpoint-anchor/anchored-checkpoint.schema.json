@@ -1,0 +1,15 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","receiptId","verifiedAt","checkpointRef","witnessRef","witnessPolicyRef","anchorPolicyRef","anchorRef","state","separationEvidence","truth","receiptDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored/v1"},"version":{"const":"3.4.0"},"status":{"const":"TEST"},
+    "receiptId":{"type":"string","minLength":1,"maxLength":180},"verifiedAt":{"$ref":"#/$defs/time"},
+    "checkpointRef":{"$ref":"#/$defs/ref"},"witnessRef":{"$ref":"#/$defs/ref"},"witnessPolicyRef":{"$ref":"#/$defs/ref"},"anchorPolicyRef":{"$ref":"#/$defs/ref"},"anchorRef":{"$ref":"#/$defs/ref"},
+    "state":{"const":"TWO_LAYER_SIGNATURES_AND_OBSERVABLE_NONOVERLAP_VERIFIED_CALLER_AUTHORITIES_NOT_AUTHENTICATED"},
+    "separationEvidence":{"type":"object","additionalProperties":false,"required":["witnessVerifiedSeats","anchorVerifiedSeats","witnessKeyFingerprintSetDigest","anchorKeyFingerprintSetDigest","witnessDeclaredPrincipalSetDigest","anchorDeclaredPrincipalSetDigest","anchorAuthorizationSetDigest","sharedKeyFingerprintCount","sharedDeclaredPrincipalDigestCount","expectedAnchorOrigin"],"properties":{"witnessVerifiedSeats":{"type":"integer","minimum":1,"maximum":10},"anchorVerifiedSeats":{"type":"integer","minimum":1,"maximum":10},"witnessKeyFingerprintSetDigest":{"$ref":"#/$defs/digest"},"anchorKeyFingerprintSetDigest":{"$ref":"#/$defs/digest"},"witnessDeclaredPrincipalSetDigest":{"$ref":"#/$defs/digest"},"anchorDeclaredPrincipalSetDigest":{"$ref":"#/$defs/digest"},"anchorAuthorizationSetDigest":{"$ref":"#/$defs/digest"},"sharedKeyFingerprintCount":{"const":0},"sharedDeclaredPrincipalDigestCount":{"const":0},"expectedAnchorOrigin":{"const":"CALLER_PRESENTED_UNAUTHENTICATED"}}},
+    "truth":{"type":"object"},"receiptDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{"digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},"time":{"type":"string","format":"date-time","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"},"ref":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}}}
+}

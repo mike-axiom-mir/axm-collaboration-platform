@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-capability-route-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request", "status", "candidates", "selected", "hostObservation", "holds", "nextGate", "truth", "authority", "planDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-capability-route-plan/v1"},
+    "version": {"const": "0.1.0"},
+    "request": {"$ref": "code-capability-request.schema.json"},
+    "status": {"enum": ["MISSING_HAND", "PREFERRED_PROVIDER_UNAVAILABLE", "SELECTION_REQUIRED", "HOST_OBSERVATION_REQUIRED", "HOST_OBSERVATION_STALE", "HOST_UNAVAILABLE", "AUTHORITY_HOLD", "ROUTE_PLANNED"]},
+    "candidates": {"type": "array", "maxItems": 128, "items": {"$ref": "#/$defs/providerRef"}},
+    "selected": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/providerRef"}]},
+    "hostObservation": {"oneOf": [{"type": "null"}, {"$ref": "code-provider-host-observation.schema.json"}]},
+    "holds": {"type": "array", "maxItems": 8, "items": {"type": "string", "minLength": 1, "maxLength": 300}},
+    "nextGate": {"enum": ["EXPLICIT_EXECUTOR_AUTHORIZATION_AND_INDEPENDENT_VERIFICATION", "REPAIR_OR_EXPLICIT_SELECTION_THEN_REPLAN"]},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planOnly", "providerCodeLoaded", "providerCodeExecuted", "inputContentRead", "outputWritten", "permissionGranted", "networkUsed", "hostObservationIsExecutionProof", "installed", "promoted", "canonChanged"],
+      "properties": {
+        "planOnly": {"const": true},
+        "providerCodeLoaded": {"const": false},
+        "providerCodeExecuted": {"const": false},
+        "inputContentRead": {"const": false},
+        "outputWritten": {"const": false},
+        "permissionGranted": {"const": false},
+        "networkUsed": {"const": false},
+        "hostObservationIsExecutionProof": {"const": false},
+        "installed": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    },
+    "authority": {"const": "NONE"},
+    "planDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "ids": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "providerRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "descriptorSha256", "status", "permissions", "network", "mutability", "executionBoundary", "evidenceCeiling"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "version": {"type": "string"},
+        "descriptorSha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "status": {"enum": ["EXPERIMENTAL", "TEST", "WORKING"]},
+        "permissions": {"$ref": "#/$defs/ids"},
+        "network": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "domains"],
+          "properties": {"mode": {"enum": ["disabled", "allowlist"]}, "domains": {"$ref": "#/$defs/ids"}}
+        },
+        "mutability": {"enum": ["read-only", "candidate-only", "process-observation"]},
+        "executionBoundary": {"$ref": "#/$defs/id"},
+        "evidenceCeiling": {"type": "string", "minLength": 1, "maxLength": 600}
+      }
+    }
+  }
+}

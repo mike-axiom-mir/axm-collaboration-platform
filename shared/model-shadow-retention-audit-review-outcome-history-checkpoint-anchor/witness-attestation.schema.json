@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-witness-attestation/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","attestationId","keyId","actorDigest","actorKind","verdict","scope","policyDigest","checkpointDigest","issuedAt","expiresAt","signatureAlgorithm","signature"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-witness-attestation/v1"},
+    "attestationId":{"type":"string","minLength":1,"maxLength":180},"keyId":{"type":"string","minLength":1,"maxLength":180},
+    "actorDigest":{"$ref":"#/$defs/digest"},"actorKind":{"enum":["human","machine","unknown"]},
+    "verdict":{"const":"WITNESS"},"scope":{"const":"WITNESS_EXACT_MODEL_SHADOW_RETENTION_AUDIT_REVIEW_OUTCOME_HISTORY_CHECKPOINT"},
+    "policyDigest":{"$ref":"#/$defs/digest"},"checkpointDigest":{"$ref":"#/$defs/digest"},
+    "issuedAt":{"$ref":"#/$defs/time"},"expiresAt":{"$ref":"#/$defs/time"},
+    "signatureAlgorithm":{"const":"Ed25519"},"signature":{"type":"string","minLength":88,"maxLength":88}
+  },
+  "$defs":{"digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},"time":{"type":"string","format":"date-time","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"}}
+}

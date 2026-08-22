@@ -1,0 +1,316 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "explicit-intent-withdrawal",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.intent.withdraw.explicit"
+      ],
+      "declaredConstraints": {
+        "review.retirement.intent.withdraw.explicit": [
+          "no withdrawal method or CLI command"
+        ]
+      }
+    },
+    {
+      "id": "append-only-withdrawal-evidence",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.intent.withdraw.append-only-evidence"
+      ],
+      "declaredConstraints": {
+        "review.retirement.intent.withdraw.append-only-evidence": [
+          "no withdrawal evidence schema"
+        ]
+      }
+    },
+    {
+      "id": "owner-lock-preservation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.intent.withdraw.owner-lock-preserved"
+      ],
+      "declaredConstraints": {
+        "review.retirement.intent.withdraw.owner-lock-preserved": [
+          "no withdrawal operation"
+        ]
+      }
+    },
+    {
+      "id": "proceed-withdraw-arbitration",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.decision.exclusive-cooperating-single-host"
+      ],
+      "declaredConstraints": {
+        "review.retirement.decision.exclusive-cooperating-single-host": [
+          "resume and direct retirement do not claim a shared proceed-or-withdraw decision"
+        ]
+      }
+    },
+    {
+      "id": "concurrent-decision-convergence",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.decision.concurrent-convergence"
+      ],
+      "declaredConstraints": {
+        "review.retirement.decision.concurrent-convergence": [
+          "no proceed-versus-withdraw race contract"
+        ]
+      }
+    },
+    {
+      "id": "closed-host-local-contract",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.intent.withdraw.closed-host-local-contract"
+      ],
+      "declaredConstraints": {
+        "review.retirement.intent.withdraw.closed-host-local-contract": [
+          "no request, result, or host-local route"
+        ]
+      }
+    },
+    {
+      "id": "general-cancellation-safety",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.cancel.general-safety"
+      ],
+      "declaredConstraints": {
+        "review.retirement.cancel.general-safety": [
+          "external writers and arbitrary phases are outside scope"
+        ]
+      }
+    },
+    {
+      "id": "cross-file-atomicity",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "storage.cross-file.atomicity"
+      ],
+      "declaredConstraints": {
+        "storage.cross-file.atomicity": [
+          "intent, decision, quarantine, and result remain separate files"
+        ]
+      }
+    },
+    {
+      "id": "holder-liveness-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.lease.holder-liveness.authenticated"
+      ],
+      "declaredConstraints": {
+        "review.lease.holder-liveness.authenticated": [
+          "process id is evidence, not authenticated liveness"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "review.lease.holder-liveness.authenticated",
+    "review.retirement.cancel.general-safety",
+    "review.retirement.decision.concurrent-convergence",
+    "review.retirement.decision.exclusive-cooperating-single-host",
+    "review.retirement.intent.withdraw.append-only-evidence",
+    "review.retirement.intent.withdraw.closed-host-local-contract",
+    "review.retirement.intent.withdraw.explicit",
+    "review.retirement.intent.withdraw.owner-lock-preserved",
+    "storage.cross-file.atomicity"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "review.lease.holder-liveness.authenticated",
+      "requiredBy": [
+        "holder-liveness-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.cancel.general-safety",
+      "requiredBy": [
+        "general-cancellation-safety"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.decision.concurrent-convergence",
+      "requiredBy": [
+        "concurrent-decision-convergence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.decision.exclusive-cooperating-single-host",
+      "requiredBy": [
+        "proceed-withdraw-arbitration"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.intent.withdraw.append-only-evidence",
+      "requiredBy": [
+        "append-only-withdrawal-evidence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.intent.withdraw.closed-host-local-contract",
+      "requiredBy": [
+        "closed-host-local-contract"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.intent.withdraw.explicit",
+      "requiredBy": [
+        "explicit-intent-withdrawal"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.intent.withdraw.owner-lock-preserved",
+      "requiredBy": [
+        "owner-lock-preservation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "storage.cross-file.atomicity",
+      "requiredBy": [
+        "cross-file-atomicity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"model-shadow-retention-audit-review-outcome-history-checkpoint-anchor",
+  "version":"v3.4",
+  "status":"TEST",
+  "provides":[
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.exact-v33-checkpoint-self-validation",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.exact-caller-witness-policy-rebuild",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.detached-ed25519-witness-verification",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.witness-threshold-and-seat-uniqueness",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.witness-time-and-domain-binding",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.minimized-witness-receipt",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.exact-caller-anchor-policy-rebuild",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.caller-expected-anchor-commitment",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.detached-ed25519-anchor-verification",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.anchor-threshold-and-seat-uniqueness",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.cross-layer-key-fingerprint-nonoverlap",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.cross-layer-declared-principal-digest-nonoverlap",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.minimized-anchored-checkpoint-receipt",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.exact-v33-read-only-audit-composition",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.signing-key-possession-only-truth-boundary",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.same-controller-distinct-key-counterexample",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.joint-package-replacement-counterexample",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.no-signing-key-generation-provider-or-durable-write",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.resource-bounds",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor.closed-top-level-schemas",
+    "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-witness/v1",
+    "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored/v1",
+    "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored-audit/v1"
+  ],
+  "consumes":[
+    "one exact self-validating v3.3 checkpoint",
+    "one caller-supplied witness policy and detached Ed25519 attestations",
+    "one caller-supplied anchor policy expected anchor digest and detached Ed25519 authorizations",
+    "one caller-configured current v3.2 ledger for optional anchored audit",
+    "caller-supplied ids epochs and untrusted UTC times"
+  ],
+  "permissions":[
+    "read caller-presented JSON data and public keys",
+    "read one explicit v3.2 local ledger only through unchanged v3.3 audit composition"
+  ],
+  "handoffs":{
+    "emits":[
+      "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-witness/v1",
+      "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored/v1",
+      "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchored-audit/v1"
+    ],
+    "accepts":[
+      "one exact v3.3 checkpoint witness package",
+      "one exact witnessed-checkpoint anchor package",
+      "one exact anchored package plus current v3.2 service configuration"
+    ]
+  },
+  "boundaries":{
+    "reads":[
+      "caller-presented checkpoint policies public keys detached signatures expected anchor and receipts",
+      "one explicit v3.2 ledger only through unchanged v3.3 audit composition"
+    ],
+    "writes":[
+      "no durable state; only the unchanged v3.2 transient operation lock may be created and removed during an anchored audit"
+    ],
+    "refuses":[
+      "invalid-extra-missing-oversized-or-noncanonical-input-or-receipt",
+      "invalid-non-spki-private-or-non-ed25519-key-material",
+      "invalid-noncanonical-wrong-domain-wrong-binding-expired-or-stale-signature",
+      "insufficient-threshold-or-duplicate-key-principal-fingerprint-attestation-or-authorization-seat",
+      "cross-layer-public-key-fingerprint-or-declared-principal-digest-overlap",
+      "caller-policy-as-authenticated-trust-root-host-steward-reviewer-human-organization-or-authority",
+      "distinct-keys-or-declared-digests-as-independent-real-world-controllers",
+      "caller-presented-expected-anchor-as-authenticated-protected-or-monotonic-state",
+      "signatures-as-separate-retention-independent-custody-original-history-global-consistency-or-rollback-prevention",
+      "joint-checkpoint-policy-signature-and-anchor-replacement-as-original-history",
+      "approved-history-or-signatures-as-retention-hold-resolution-remediation-execution-or-adoption-authority",
+      "provider-execution-evaluation-benefit-learning-install-promotion-merge-or-canon-claim",
+      "automatic-signing-or-key-generation",
+      "automatic-durable-write",
+      "automatic-permission-grant",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle":{
+    "state_owner":"none",
+    "state_owner_detail":"caller owns checkpoint policies keys detached signatures receipts expected anchor and v3.2 service configuration; this module persists none",
+    "reload":"not-applicable",
+    "reload_detail":"exact rebuild requires the caller-presented package; anchored audit additionally requires the configured current v3.2 ledger",
+    "disconnect":"not-applicable",
+    "disconnect_detail":"no network provider Review Inbox external custody or trust-root service is opened",
+    "cleanup":"not-applicable",
+    "cleanup_detail":"withholding or jointly replacing checkpoint policies signatures receipts and expected anchor removes the original relative comparison boundary",
+    "installed":false,
+    "promoted":false
+  },
+  "merge_gate":"Mike Tobi / AXM"
+}

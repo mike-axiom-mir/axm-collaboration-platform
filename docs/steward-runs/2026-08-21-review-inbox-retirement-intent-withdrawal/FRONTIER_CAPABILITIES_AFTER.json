@@ -1,0 +1,64 @@
+{
+  "capabilities": [
+    {
+      "id": "review.retirement.intent.write-exclusive",
+      "status": "available",
+      "constraints": ["TEST", "single host", "append-only intent file"]
+    },
+    {
+      "id": "review.retirement.recovery.explicit",
+      "status": "available",
+      "constraints": ["RESUME_RETIREMENT or FINALIZE_RESULT only", "operator assertion required"]
+    },
+    {
+      "id": "review.retirement.recovery.checkpoint-convergence",
+      "status": "available",
+      "constraints": ["cooperating exact callers", "single host", "bounded observation"]
+    },
+    {
+      "id": "review.retirement.intent.withdraw.explicit",
+      "status": "available",
+      "constraints": ["TEST", "undecided intent-only evidence", "closed operator request"]
+    },
+    {
+      "id": "review.retirement.intent.withdraw.append-only-evidence",
+      "status": "available",
+      "constraints": ["exact intent and decision retained", "no deletion route"]
+    },
+    {
+      "id": "review.retirement.intent.withdraw.owner-lock-preserved",
+      "status": "available",
+      "constraints": ["withdrawal does not rewrite, release, or quarantine operation.lock"]
+    },
+    {
+      "id": "review.retirement.decision.exclusive-cooperating-single-host",
+      "status": "available",
+      "constraints": ["exclusive decision-file create", "cooperating single-host callers", "before quarantine"]
+    },
+    {
+      "id": "review.retirement.decision.concurrent-convergence",
+      "status": "available",
+      "constraints": ["two real processes exercised in both winner orders", "loser receives typed refusal"]
+    },
+    {
+      "id": "review.retirement.intent.withdraw.closed-host-local-contract",
+      "status": "available",
+      "constraints": ["request and result schemas", "host-local CLI only", "no API or browser route"]
+    },
+    {
+      "id": "review.retirement.cancel.general-safety",
+      "status": "unavailable",
+      "constraints": ["external writers, arbitrary phases, and multi-host races are outside scope"]
+    },
+    {
+      "id": "storage.cross-file.atomicity",
+      "status": "unavailable",
+      "constraints": ["intent, decision, quarantine, and result remain separate files"]
+    },
+    {
+      "id": "review.lease.holder-liveness.authenticated",
+      "status": "unavailable",
+      "constraints": ["process id is evidence, not authenticated liveness"]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-authority-index/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "policy", "recovery", "byReviewId"],
+  "properties": {
+    "schema": { "const": "axm.review-authority-index/v2" },
+    "status": { "const": "TEST" },
+    "policy": { "type": "object" },
+    "recovery": { "$ref": "review-projection-recovery-status.schema.json" },
+    "byReviewId": { "type": "object", "additionalProperties": { "$ref": "review-authority-view.schema.json" } }
+  }
+}

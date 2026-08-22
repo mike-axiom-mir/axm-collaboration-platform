@@ -1,0 +1,200 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "exact-shadow-input",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.observation-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.observation-exact-rebuild": [
+          "Requires the exact embedded snapshots and observation fields; no provider is invoked."
+        ]
+      }
+    },
+    {
+      "id": "bounded-drift-route",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.ordinary-drift-only",
+        "model.shadow.challenger.critical-drift-hold",
+        "model.shadow.challenger.invalid-comparison-hold",
+        "model.shadow.challenger.distinct-output-require"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.ordinary-drift-only": [
+          "Only valid DRIFT_DETECTED observations can reach plan construction."
+        ],
+        "model.shadow.challenger.critical-drift-hold": [
+          "Critical authority drift is held for repair or refusal and creates no experiment plan."
+        ],
+        "model.shadow.challenger.invalid-comparison-hold": [
+          "Changed task, context, identity, provenance, or non-forward time cannot become a drift experiment."
+        ],
+        "model.shadow.challenger.distinct-output-require": [
+          "Exact baseline and candidate output references must differ before the Challenger Lab can compare them."
+        ]
+      }
+    },
+    {
+      "id": "existing-direction-only",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.direction-native-reuse"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.direction-native-reuse": [
+          "The gate delegates to Challenger Lab verification and cannot invent or accept a WAIT direction."
+        ]
+      }
+    },
+    {
+      "id": "held-out-challenger-plan",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.plan-native-build",
+        "growth.challenger.held-out-separation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.plan-native-build": [
+          "Produces an inert TEST plan only; it executes nothing."
+        ],
+        "growth.challenger.held-out-separation": [
+          "At least one held-out AI-workflow case and one held-out regression case are required."
+        ]
+      }
+    },
+    {
+      "id": "review-projection",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.review-inbox-projection"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.review-inbox-projection": [
+          "Binds the exact challenger plan digest and is not automatically submitted."
+        ]
+      }
+    },
+    {
+      "id": "declared-human-review-gate",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.declared-human-seat-require",
+        "review.digest.approval.local-record"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.declared-human-seat-require": [
+          "Requires at least one Review Inbox approval declared as human while admitting actor authentication is absent."
+        ],
+        "review.digest.approval.local-record": [
+          "Review Inbox compatibility is proven in temporary synthetic state; actual human participation is not."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.execution-authority.none",
+        "growth.challenger.adoption.none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.execution-authority.none": [
+          "Even a reviewed handoff grants no execution, evaluation, adoption, promotion, merge, or CANON authority."
+        ],
+        "growth.challenger.adoption.none": [
+          "The existing Challenger Lab plan grants no adoption authority."
+        ]
+      }
+    },
+    {
+      "id": "receipt-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.challenger.receipt-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.receipt-exact-rebuild": [
+          "Proposal and reviewed handoff tampering are detected against exact caller inputs."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "No real person reviewed a current plan in this stewardship run."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No provider or shadow experiment was executed."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation exists for this gate."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

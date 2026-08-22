@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-witness-attestation/v1",
+  "title": "Model Shadow local possession checkpoint witness attestation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "attestationId", "keyId", "actorDigest", "actorKind",
+    "verdict", "scope", "policyDigest", "checkpointDigest",
+    "sourceSnapshotDigest", "receiverIdDigest", "challengerIdDigest",
+    "receiverPolicyDigest", "entriesDigest", "issuedAt", "expiresAt",
+    "signatureAlgorithm", "signature"
+  ],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-witness-attestation/v1" },
+    "attestationId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "keyId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "actorDigest": { "$ref": "#/$defs/digest" },
+    "actorKind": { "enum": ["human", "machine", "unknown"] },
+    "verdict": { "const": "WITNESS" },
+    "scope": { "const": "WITNESS_EXACT_MODEL_SHADOW_REVIEW_CHALLENGE_TRANSITION_LOCAL_POSSESSION_CHECKPOINT" },
+    "policyDigest": { "$ref": "#/$defs/digest" },
+    "checkpointDigest": { "$ref": "#/$defs/digest" },
+    "sourceSnapshotDigest": { "$ref": "#/$defs/digest" },
+    "receiverIdDigest": { "$ref": "#/$defs/digest" },
+    "challengerIdDigest": { "$ref": "#/$defs/digest" },
+    "receiverPolicyDigest": { "$ref": "#/$defs/digest" },
+    "entriesDigest": { "$ref": "#/$defs/digest" },
+    "issuedAt": { "$ref": "#/$defs/timestamp" },
+    "expiresAt": { "$ref": "#/$defs/timestamp" },
+    "signatureAlgorithm": { "const": "Ed25519" },
+    "signature": { "type": "string", "minLength": 88, "maxLength": 88 }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$" }
+  }
+}

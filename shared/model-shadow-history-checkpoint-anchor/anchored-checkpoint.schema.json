@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-two-phase-history-checkpoint-anchored/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "receiptId", "verifiedAt", "checkpointRef", "witnessRef", "witnessPolicyRef", "anchorPolicyRef", "anchorRef", "state", "separationEvidence", "truth", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-two-phase-history-checkpoint-anchored/v1" }, "version": { "const": "2.2.0" }, "status": { "const": "TEST" },
+    "receiptId": { "type": "string" }, "verifiedAt": { "type": "string", "format": "date-time" }, "checkpointRef": { "type": "object" }, "witnessRef": { "type": "object" },
+    "witnessPolicyRef": { "type": "object" }, "anchorPolicyRef": { "type": "object" }, "anchorRef": { "type": "object" }, "state": { "type": "string" },
+    "separationEvidence": { "type": "object" }, "truth": { "type": "object" }, "receiptDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" } }
+}

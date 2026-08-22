@@ -1,0 +1,200 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "independent-nested-semantics",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.verify.nested-semantics"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.verify.nested-semantics": [
+          "static manifest verification only; no compiler import"
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.verify.fresh-process"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.verify.fresh-process": [
+          "fresh Node process reads the committed manifest and imports only the independent verifier"
+        ]
+      }
+    },
+    {
+      "id": "fail-closed-malformed-input",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.verify.malformed-fail-closed"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.verify.malformed-fail-closed": [
+          "malformed inputs return FAIL without throwing in the focused regression set"
+        ]
+      }
+    },
+    {
+      "id": "keel-lineage-memory-portability",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.keel.scenario.fork",
+        "identity.shell.keel.scenario.memory",
+        "identity.shell.keel.scenario.migration"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.keel.scenario.fork": [
+          "in-memory deterministic scenario; no live identity fork performed"
+        ],
+        "identity.shell.keel.scenario.memory": [
+          "synthetic candidate and acceptance receipts only; no real memory retained"
+        ],
+        "identity.shell.keel.scenario.migration": [
+          "two inert unbound neural descriptors; no model or connector executed"
+        ]
+      }
+    },
+    {
+      "id": "cross-process-determinism",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.determinism.cross-process"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.determinism.cross-process": [
+          "20 fresh compiler processes produced one digest; 20 fresh verifier processes passed"
+        ]
+      }
+    },
+    {
+      "id": "live-host-binding",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.host.bind"
+      ],
+      "declaredConstraints": {
+        "identity.shell.host.bind": [
+          "outside the v0.1 inert compiler and verifier boundary"
+        ]
+      }
+    },
+    {
+      "id": "authenticated-human-acceptance",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.human.authenticate"
+      ],
+      "declaredConstraints": {
+        "identity.shell.human.authenticate": [
+          "no external authenticated human-decision service"
+        ]
+      }
+    },
+    {
+      "id": "runtime-continuity-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.runtime.continuity.observe"
+      ],
+      "declaredConstraints": {
+        "identity.shell.runtime.continuity.observe": [
+          "no live host or restart-bound runtime continuity surface"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "identity.shell.host.bind",
+    "identity.shell.human.authenticate",
+    "identity.shell.runtime.continuity.observe"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "identity.shell.host.bind",
+      "requiredBy": [
+        "live-host-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "identity.shell.human.authenticate",
+      "requiredBy": [
+        "authenticated-human-acceptance"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "identity.shell.runtime.continuity.observe",
+      "requiredBy": [
+        "runtime-continuity-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

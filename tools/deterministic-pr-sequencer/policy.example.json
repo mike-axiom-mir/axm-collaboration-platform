@@ -1,0 +1,24 @@
+{
+  "schema": "axm.git-pr-sequence-policy/v1",
+  "id": "example-sequence",
+  "repository": "github.com/example-owner/example-repository",
+  "baseBranch": "main",
+  "mergeMethod": "merge",
+  "candidates": [
+    {
+      "number": 10,
+      "expectedHead": "1111111111111111111111111111111111111111",
+      "evidenceLevel": "checkpoint",
+      "handoffRequired": true
+    },
+    {
+      "number": 11,
+      "expectedHead": "2222222222222222222222222222222222222222",
+      "evidenceLevel": "transport",
+      "handoffRequired": true
+    }
+  ],
+  "requiredChecks": ["discovery-and-static-gates", "windows-clean-launch"],
+  "reviewBranchPrefixes": ["agent/", "codex/"],
+  "refuseUnlistedReviewBranches": true
+}

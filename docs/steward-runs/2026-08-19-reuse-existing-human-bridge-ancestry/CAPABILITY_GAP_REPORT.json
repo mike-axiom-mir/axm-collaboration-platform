@@ -1,0 +1,116 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "exact-current-ancestry-coverage",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.bridge.candidate-ancestry",
+        "human.bridge.reuse-existing-ancestry",
+        "human.bridge.intervention-link-native-verify",
+        "human.bridge.every-current-chain"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.bridge.candidate-ancestry": [
+          "Derived from cycle.candidate.artifactRef only when no existing-capability ancestry is present."
+        ],
+        "human.bridge.reuse-existing-ancestry": [
+          "Derived from cycle.gap.existingCapabilityRef only for exact NO_GAP / REUSE_EXISTING cycles with no candidate."
+        ],
+        "human.bridge.intervention-link-native-verify": [
+          "Digest-bound v2 link rebuilds from the exact verified cycle and protocol."
+        ],
+        "human.bridge.every-current-chain": [
+          "Exact current portfolio coverage must remain four of four routes."
+        ]
+      }
+    },
+    {
+      "id": "human-evidence-gates-preserved",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.bridge.live-only",
+        "human.bridge.scope-bind",
+        "human.bridge.source-trust-bind",
+        "human.bridge.closure-bind",
+        "human.bridge.synthetic-hold"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.bridge.live-only": [
+          "Synthetic and forged-LIVE fixtures map to UNKNOWN."
+        ],
+        "human.bridge.scope-bind": [
+          "Protocol, judgment, binding, claim, and capability scope must agree."
+        ],
+        "human.bridge.source-trust-bind": [
+          "Named steward and cohort trust modes require their exact external reference schemas; the bridge does not authenticate identity."
+        ],
+        "human.bridge.closure-bind": [
+          "Current closure must cover the cycle, protocol, evaluation, judgment, link, comparison surfaces, baseline, capability surface, and trust reference."
+        ],
+        "human.bridge.synthetic-hold": [
+          "Synthetic fixtures remain contract evidence and cannot become human benefit."
+        ]
+      }
+    },
+    {
+      "id": "v1-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.bridge.v1-preserved"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.bridge.v1-preserved": [
+          "v2 is a separate leaf; no v1 source, schema, contract, or prior sealed receipt is rewritten."
+        ]
+      }
+    },
+    {
+      "id": "authority-preservation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "authority.human-steward.preserve"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "authority.human-steward.preserve": [
+          "No human input, execution, install, permission, promotion, merge, CANON, or Foundation authority."
+        ]
+      }
+    },
+    {
+      "id": "live-human-beneficiary-outcome",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.human-evidence.live"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.live": [
+          "No person opted in; no LIVE session, evaluation, explicit judgment, bridge bundle, or Grounded Growth refresh exists."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

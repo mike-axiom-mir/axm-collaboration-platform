@@ -1,0 +1,76 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "implementationCommit": "09c6bce30e50d9a960848a3c953c35cedcac6742",
+  "claims": [
+    {
+      "id": "deterministic-inert-candidate-bytes",
+      "claimType": "technical",
+      "claim": "The same sealed intent produces the same exact six paths, bytes, lengths, and digests.",
+      "proofSurface": ["selftest-slow-creation-pilot-v1.js", "CREATION_TRIAL_RECEIPT.json"],
+      "verdict": "PASS"
+    },
+    {
+      "id": "bounded-external-write",
+      "claimType": "authorization-and-persistence",
+      "claim": "One invocation writes exclusively to one new direct-child root and fault cleanup is limited to the validated owned root.",
+      "proofSurface": ["source inspection", "fault injection", "existing-root and path-alias adversaries"],
+      "verdict": "PASS_WITH_EXTERNAL_AUTHORITY_BOUNDARY"
+    },
+    {
+      "id": "actual-candidate-emission",
+      "claimType": "persistence",
+      "claim": "The post-hardening trial retained six candidate files totaling 7,372 bytes and a path-free receipt.",
+      "proofSurface": ["CREATION_TRIAL_RECEIPT.json", "byte readback observations"],
+      "verdict": "PASS"
+    },
+    {
+      "id": "independent-structural-readiness",
+      "claimType": "structural-behavior",
+      "claim": "Repeat Detached Candidate Nursery inspection deterministically returned READY_FOR_LATER_INTAKE with zero errors.",
+      "proofSurface": ["Nursery native record digest", "CREATION_TRIAL_RECEIPT.json"],
+      "verdict": "PASS"
+    },
+    {
+      "id": "candidate-runtime-behavior",
+      "claimType": "behavioral",
+      "claim": "The candidate works when executed.",
+      "proofSurface": [],
+      "verdict": "UNKNOWN_NOT_RUN"
+    },
+    {
+      "id": "candidate-visual-quality",
+      "claimType": "visual",
+      "claim": "The candidate has acceptable rendered quality.",
+      "proofSurface": [],
+      "verdict": "UNKNOWN_NOT_RUN"
+    },
+    {
+      "id": "authenticated-human-consent",
+      "claimType": "authorization",
+      "claim": "The pilot declaration proves an authenticated natural-person decision and cannot be replayed.",
+      "proofSurface": [],
+      "verdict": "UNKNOWN_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "machine-wide-fabric-default",
+      "claimType": "persistence-and-authorization",
+      "claim": "Machine Host now routes creation through the Fabric by default.",
+      "proofSurface": ["unchanged Machine Host paths", "receipt truth ceiling"],
+      "verdict": "FALSE_NOT_ACTIVATED"
+    },
+    {
+      "id": "persistent-learning",
+      "claimType": "behavioral-and-authorization",
+      "claim": "The system admitted persistent learning from the trial.",
+      "proofSurface": ["receipt truth ceiling", "contract refusal"],
+      "verdict": "FALSE_NOT_ADMITTED"
+    },
+    {
+      "id": "browser-behavior",
+      "claimType": "visual",
+      "claim": "A live browser surface changed and passed click testing.",
+      "proofSurface": [],
+      "verdict": "NOT_APPLICABLE_NOT_RUN"
+    }
+  ]
+}

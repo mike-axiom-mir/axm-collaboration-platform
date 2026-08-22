@@ -1,0 +1,100 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-local-possession-challenge",
+  "version": "v1.3",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition.local-possession.signed-challenge-exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession.custody-reread-exact-verification",
+    "model.shadow.review.challenge-transition.local-possession.nonce-custody-binding",
+    "model.shadow.review.challenge-transition.local-possession.receiver-signed-response",
+    "model.shadow.review.challenge-transition.local-possession.response-exclusive-fsync",
+    "model.shadow.review.challenge-transition.local-possession.replay-refusal-while-file-present",
+    "model.shadow.review.challenge-transition.local-possession.fresh-process-reload",
+    "model.shadow.review.challenge-transition.local-possession.public-receipt-data-minimization",
+    "model.shadow.review.challenge-transition.local-possession.same-controller-counterexample",
+    "model.shadow.review.challenge-transition.local-possession.resource-bounds",
+    "model.shadow.review.challenge-transition.local-possession.authority-none",
+    "axm.model-shadow-review-challenge-transition-local-possession-challenge/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-response-record/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-receipt/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-reload-receipt/v1"
+  ],
+  "consumes": [
+    "one exact persisted v1.2 local receiver custody record",
+    "the exact v1.1 receiver policy referenced by that custody record",
+    "one caller-declared challenger label and transient Ed25519 key",
+    "one caller-declared receiver label and matching transient Ed25519 key for answer only",
+    "one exact 32-byte nonce and caller-declared challenge time window no longer than 24 hours",
+    "one existing caller-owned local receiver custody root",
+    "exact explicit confirmation before answer persistence"
+  ],
+  "permissions": [
+    "read the fixed v1.2 custody-record file under the explicit receiver custody root",
+    "exclusive-create and file-fsync one fixed response record under the adapter namespace in that root"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-local-possession-challenge/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-response-record/v1 as a non-public verification package",
+      "axm.model-shadow-review-challenge-transition-local-possession-receipt/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-reload-receipt/v1"
+    ],
+    "accepts": [
+      "axm.model-shadow-review-challenge-transition-local-receiver-custody-record/v1 from the exact v1.2 local custody namespace",
+      "axm.model-shadow-review-challenge-transition-receiver-policy/v1",
+      "one exact signed v1.3 challenge whose configured challenger key and receiver match"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "<caller-receiver-root>/model-shadow-review-challenge-transition-local-receiver-custody/records/<sha256>.json",
+      "<caller-receiver-root>/model-shadow-review-challenge-transition-local-possession-challenge/answers/<sha256>.json"
+    ],
+    "writes": [
+      "exclusive-create and file-fsync one challenge-identity-digest-named receiver response record"
+    ],
+    "refuses": [
+      "answer-write-without-exact-explicit-confirmation",
+      "missing-non-directory-filesystem-root-or-symbolic-link-root",
+      "path-traversal-or-caller-selected-arbitrary-record-path",
+      "invalid-or-tampered-v1.2-custody-record",
+      "invalid-tampered-or-mismatched-v1.1-receiver-policy",
+      "unknown-disabled-or-mismatched-receiver",
+      "private-key-that-does-not-match-declared-receiver-public-key",
+      "non-ed25519-or-noncanonical-private-or-public-key",
+      "challenge-not-signed-by-the-configured-challenger-key",
+      "challenge-with-nonce-other-than-exactly-32-canonical-base64-bytes",
+      "challenge-for-a-different-custody-record-policy-receiver-or-challenger",
+      "challenge-issued-no-later-than-custody-receipt",
+      "challenge-window-over-24-hours-or-beyond-receiver-policy-expiry",
+      "answer-outside-the-declared-challenge-window",
+      "response-overwrite-or-repeat-while-the-fixed-response-file-exists",
+      "challenge-or-response-noncanonical-JSON-or-oversized-input",
+      "caller-labels-or-keys-as-real-identity-or-organizational-authority",
+      "caller-times-as-externally-trusted-time-or-retention-duration-proof",
+      "one-controller-processes-as-independent-challenger-or-receiver",
+      "local-files-as-network-or-other-host-transport",
+      "file-fsync-as-durability-beyond-the-reported-file-fsync",
+      "existing-response-refusal-as-protected-monotonic-state-or-deletion-rollback-resistance",
+      "response-as-human-review-provider-execution-adoption-benefit-or-learning",
+      "private-key-persistence",
+      "full-v1.2-custody-record-or-stored-assessment-receipt-in-public-receipts",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller-selected local receiver custody root",
+    "reload": "fresh process reads the fixed v1.2 custody and v1.3 response files, exact-verifies both signatures and returns a data-minimized receipt",
+    "disconnect": "not-applicable; no socket or network transport is opened",
+    "cleanup": "caller-owned; responses are never automatically deleted or overwritten",
+    "installed": false,
+    "promoted": false
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-local-receiver-custody",
+  "version": "v1.2",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition.local-receiver-envelope-exact-rebuild",
+    "model.shadow.review.challenge-transition.local-receiver-sender-exclusive-fsync",
+    "model.shadow.review.challenge-transition.local-receiver-receiver-read",
+    "model.shadow.review.challenge-transition.local-receiver-assessment-exact-rebuild-before-write",
+    "model.shadow.review.challenge-transition.local-receiver-data-minimized-custody-fsync",
+    "model.shadow.review.challenge-transition.local-receiver-signed-custody-record",
+    "model.shadow.review.challenge-transition.local-receiver-sender-receiver-receipt-binding",
+    "model.shadow.review.challenge-transition.local-receiver-fresh-process-reload",
+    "model.shadow.review.challenge-transition.local-receiver-v1.1-acknowledgement-compose",
+    "model.shadow.review.challenge-transition.local-receiver-same-controller-process-counterexample",
+    "model.shadow.review.challenge-transition.local-receiver-public-receipt-data-minimization",
+    "model.shadow.review.challenge-transition.local-receiver-resource-bounds",
+    "model.shadow.review.challenge-transition.local-receiver-authority-none",
+    "axm.model-shadow-review-challenge-transition-local-receiver-envelope/v1",
+    "axm.model-shadow-review-challenge-transition-local-receiver-sender-receipt/v1",
+    "axm.model-shadow-review-challenge-transition-local-receiver-custody-record/v1",
+    "axm.model-shadow-review-challenge-transition-local-receiver-receipt/v1",
+    "axm.model-shadow-review-challenge-transition-local-receiver-reload-receipt/v1"
+  ],
+  "consumes": [
+    "one exact v1.0 declared-disclosure assessment package as transient data",
+    "one exact v1.1 caller receiver policy as transient data",
+    "one caller-selected enabled receiver label and matching transient Ed25519 private key",
+    "one existing caller-owned local transport root",
+    "one separate existing caller-owned local receiver custody root",
+    "exact explicit confirmation for each sender or receiver write"
+  ],
+  "permissions": [
+    "read and exclusive-create files under the fixed adapter namespace in the explicit local transport root",
+    "read and exclusive-create files under the fixed adapter namespace in the explicit local receiver custody root"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-local-receiver-sender-receipt/v1",
+      "axm.model-shadow-review-challenge-transition-local-receiver-receipt/v1",
+      "axm.model-shadow-review-challenge-transition-local-receiver-reload-receipt/v1",
+      "axm.model-shadow-review-challenge-transition-receiver-acknowledgement/v1"
+    ],
+    "accepts": [
+      "axm.model-shadow-review-challenge-transition-declared-disclosure/v1 with complete exact-rebuild input",
+      "axm.model-shadow-review-challenge-transition-receiver-policy/v1",
+      "one fixed digest-named local outbox envelope created by this exact adapter version"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "<caller-transport-root>/model-shadow-review-challenge-transition-local-receiver-custody/outbound/<sha256>.json",
+      "<caller-receiver-root>/model-shadow-review-challenge-transition-local-receiver-custody/records/<sha256>.json"
+    ],
+    "writes": [
+      "exclusive-create and file-fsync one delivery-identity-digest-named local outbox envelope",
+      "exclusive-create and file-fsync one receiver-signed data-minimized custody record"
+    ],
+    "refuses": [
+      "write-without-exact-explicit-confirmation",
+      "missing-non-directory-filesystem-root-or-symbolic-link-root",
+      "equal-or-nested-transport-and-receiver-roots",
+      "path-traversal-or-caller-selected-record-path",
+      "overwrite-or-silent-idempotent-replacement",
+      "invalid-or-tampered-v1.0-assessment-package",
+      "invalid-tampered-or-mismatched-v1.1-receiver-policy",
+      "unknown-or-disabled-receiver",
+      "private-key-that-does-not-match-declared-receiver-public-key",
+      "non-ed25519-private-key",
+      "delivery-or-receipt-time-outside-assessment-policy-and-envelope-order",
+      "envelope-or-custody-record-over-48-MiB-canonical-UTF-8",
+      "corrupt-or-noncanonical-outbox-envelope-or-custody-record",
+      "local-child-processes-as-independent-real-world-receivers",
+      "local-file-handoff-as-network-or-other-host-delivery",
+      "file-fsync-as-durability-beyond-the-reported-file-fsync",
+      "caller-owned-custody-root-as-independent-external-retention",
+      "local-record-as-retention-duration-proof",
+      "local-files-as-protected-monotonic-state-or-deletion-rollback-resistance",
+      "v1.1-NO_DURABLE_RETENTION_CLAIM-as-a-durable-retention-claim",
+      "explicit-confirmation-as-host-authentication",
+      "caller-receiver-label-or-key-as-identity-or-organizational-authority",
+      "receipt-as-human-review-provider-execution-branch-adoption-or-benefit",
+      "private-key-persistence",
+      "full-assessment-input-persistence-in-receiver-custody",
+      "raw-model-output-or-private-context-ingestion",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller-selected local transport and receiver custody roots",
+    "reload": "fresh process reads one fixed content-addressed record and verifies stored assessment-receipt digest, receiver signature, acknowledgement signature, and public reload receipt",
+    "disconnect": "not-applicable; no socket or network transport is opened",
+    "cleanup": "caller-owned; outbound envelopes and custody records are never automatically deleted or overwritten",
+    "installed": false,
+    "promoted": false
+  }
+}

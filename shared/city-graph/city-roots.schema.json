@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.city-roots/v1",
+  "title": "AXM LEGO City discovery roots",
+  "type": "object",
+  "required": ["schema", "roots", "authority"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.city-roots/v1" },
+    "roots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "mode", "idMode", "declarations"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "minLength": 1, "pattern": "^[^\\\\/]+$" },
+          "mode": { "const": "DIRECT_CHILDREN" },
+          "idMode": { "enum": ["DECLARED", "ROOT_QUALIFIED"] },
+          "declarations": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1, "pattern": "^[^\\\\/]+$" }
+          },
+          "ignorePrefix": { "type": "string" }
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "required": ["install", "execute", "network", "promote", "merge", "canon", "roots"],
+      "additionalProperties": false,
+      "properties": {
+        "install": { "const": false },
+        "execute": { "const": false },
+        "network": { "const": false },
+        "promote": { "const": false },
+        "merge": { "const": false },
+        "canon": { "const": false },
+        "roots": { "const": false }
+      }
+    }
+  }
+}

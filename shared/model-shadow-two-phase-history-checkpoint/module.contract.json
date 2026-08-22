@@ -1,0 +1,97 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-history-checkpoint",
+  "version": "v2.1",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.exact-origin-history-checkpoint",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.full-sequence-reference-commitment",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.two-read-movement-refusal",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.portable-self-validation",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.exact-current-history-presentation",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.exact-and-forward-classification",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.strict-rollback-classification",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.replacement-or-fork-classification",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.identity-drift-classification",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.absence-and-invalidity-classification",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.fresh-process-exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.read-only-audit",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.public-artifact-data-minimization",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.resource-bounds",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.relative-detection-counterevidence",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.authority-none",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-history-checkpoint/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-history-audit/v1"
+  ],
+  "consumes": [
+    "one explicit v2.0 service configuration as transient caller data",
+    "one exact caller package for every persisted v2.0 proposal and settlement",
+    "one caller-supplied checkpoint id and untrusted UTC checkpoint time",
+    "one caller-presented unauthenticated portable checkpoint for later audit",
+    "one exact current v2.0 service configuration and complete caller package set when current state is valid",
+    "one caller-supplied audit id and untrusted UTC audit time"
+  ],
+  "permissions": [
+    "read one explicitly configured v2.0 caller-owned ledger root through the unchanged v2.0 reload and exact-package verification APIs",
+    "read another explicitly configured v2.0 caller-owned ledger root through the same APIs during a later audit"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-history-checkpoint/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-history-audit/v1"
+    ],
+    "accepts": [
+      "one complete exact-rebuild package set for a present v2.0 history",
+      "one self-valid caller-presented v2.1 checkpoint plus zero packages for absent or invalid current state, or a complete current package set for valid state"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "only explicit v2.0 state and source roots through the unchanged v2.0 read-only inspect and verification surface"
+    ],
+    "writes": [],
+    "refuses": [
+      "checkpoint-without-complete-exact-v2.0-caller-package-verification",
+      "checkpoint-or-valid-current-presentation-with-missing-extra-or-mismatched-package",
+      "checkpoint-or-valid-current-presentation-when-bracketing-v2.0-snapshots-differ",
+      "checkpoint-over-10000-proposals-or-16-MiB-canonical-UTF-8",
+      "input-over-64-MiB-or-audit-over-1-MiB-canonical-UTF-8",
+      "checkpoint-time-before-latest-verified-ledger-record",
+      "audit-time-before-checkpoint-time",
+      "ignored-current-packages-for-absent-or-invalid-ledger",
+      "unconstructable-service-configuration-as-a-ledger-invalidity-receipt",
+      "caller-presented-checkpoint-as-authenticated-pin-or-origin",
+      "portable-checkpoint-as-proof-of-retention-or-independent-custody",
+      "relative-rollback-detection-as-deletion-or-rollback-prevention",
+      "equal-bracketing-reads-as-atomic-filesystem-snapshot",
+      "equal-bracketing-reads-as-exclusion-of-intermediate-or-reverted-change",
+      "audit-as-proof-of-ledger-currentness-after-final-read",
+      "audit-as-source-state-recapture",
+      "one-checkpoint-comparison-as-global-uniqueness-or-global-log-consistency",
+      "current-absence-as-proof-of-deletion-cause",
+      "caller-time-as-externally-trusted-time",
+      "declared-digests-as-real-world-identity",
+      "observable-signer-separation-as-independent-controller-proof",
+      "library-call-as-authenticated-host-entrypoint",
+      "checkpoint-or-audit-as-execution-adoption-promotion-or-canon-authority",
+      "raw-public-key-signature-private-key-model-output-or-private-context-persistence",
+      "source-or-ledger-path-persistence",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; checkpoint, audit, service options, and exact caller packages remain caller-owned data",
+    "reload": "self-validate checkpoint and audit digests; origin or current exact reconstruction additionally requires the caller packages and readable v2.0 root",
+    "disconnect": "not-applicable; no network route is opened",
+    "cleanup": "caller-owned; deleting or replacing both checkpoint and ledger can remove the prior relative comparison boundary",
+    "installed": false,
+    "promoted": false
+  }
+}

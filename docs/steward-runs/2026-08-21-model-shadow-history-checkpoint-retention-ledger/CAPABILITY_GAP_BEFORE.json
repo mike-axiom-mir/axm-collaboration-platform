@@ -1,0 +1,808 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "UNKNOWN",
+  "requirements": [
+    {
+      "id": "upstream-v26-portable-checkpoint-validation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.portable-pin-settlement-history-checkpoint.portable-self-digested-checkpoint"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.portable-pin-settlement-history-checkpoint.portable-self-digested-checkpoint": [
+          "v2.6 validates one portable checkpoint but does not persist it."
+        ]
+      }
+    },
+    {
+      "id": "upstream-v26-origin-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.portable-pin-settlement-history-checkpoint.checkpoint-origin-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.portable-pin-settlement-history-checkpoint.checkpoint-origin-exact-rebuild": [
+          "v2.6 exact-rebuilds a checkpoint from one current v2.5 root and complete caller packages."
+        ]
+      }
+    },
+    {
+      "id": "upstream-v26-relative-current-audit",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.portable-pin-settlement-history-checkpoint.exact-history-audit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.portable-pin-settlement-history-checkpoint.exact-history-audit": [
+          "v2.6 audits one caller-presented checkpoint against one exact current presentation."
+        ]
+      }
+    },
+    {
+      "id": "distinct-local-retention-root",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.distinct-local-root"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.distinct-local-root": [
+          "No v2.6-compatible retention ledger exists yet."
+        ]
+      }
+    },
+    {
+      "id": "exact-origin-before-proposal",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.exact-v2.6-origin-before-proposal"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.exact-v2.6-origin-before-proposal": [
+          "No retained proposal composes v2.6 origin verification yet."
+        ]
+      }
+    },
+    {
+      "id": "persistent-full-checkpoint-proposal",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.persistent-full-checkpoint-proposal"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.persistent-full-checkpoint-proposal": [
+          "v2.6 leaves checkpoint persistence to its caller."
+        ]
+      }
+    },
+    {
+      "id": "exclusive-create-file-fsync",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.exclusive-create-file-fsync"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.exclusive-create-file-fsync": [
+          "No compatible checkpoint-retention write path exists."
+        ]
+      }
+    },
+    {
+      "id": "one-trailing-pending-proposal",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.one-trailing-pending-proposal"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.one-trailing-pending-proposal": [
+          "No checkpoint-retention proposal sequence exists."
+        ]
+      }
+    },
+    {
+      "id": "initial-checkpoint-capture",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.initial-exact-checkpoint-capture"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.initial-exact-checkpoint-capture": [
+          "No local initial v2.6 capture exists."
+        ]
+      }
+    },
+    {
+      "id": "forward-only-succession",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.forward-only-checkpoint-succession"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.forward-only-checkpoint-succession": [
+          "No retained v2.6 succession gate exists."
+        ]
+      }
+    },
+    {
+      "id": "typed-non-forward-refusal",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.typed-non-forward-refusal"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.typed-non-forward-refusal": [
+          "No local retention gate rejects replay rollback fork identity drift absence or invalidity."
+        ]
+      }
+    },
+    {
+      "id": "exact-proposal-package-settlement",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.exact-proposal-package-settlement"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.exact-proposal-package-settlement": [
+          "No retained checkpoint proposal package can settle."
+        ]
+      }
+    },
+    {
+      "id": "separate-settlement-confirmation",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.separate-settlement-confirmation"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.separate-settlement-confirmation": [
+          "No second retention confirmation exists."
+        ]
+      }
+    },
+    {
+      "id": "settled-head-derived",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.settled-head-derived-from-settlements"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.settled-head-derived-from-settlements": [
+          "No settled retention head exists."
+        ]
+      }
+    },
+    {
+      "id": "latest-persisted-selection",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.latest-persisted-observation-selection"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.latest-persisted-observation-selection": [
+          "No persisted checkpoint can be selected without caller re-presentation."
+        ]
+      }
+    },
+    {
+      "id": "pending-observation-audit",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.pending-observation-audit"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.pending-observation-audit": [
+          "No pending persisted checkpoint audit exists."
+        ]
+      }
+    },
+    {
+      "id": "settled-observation-audit",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.settled-observation-audit"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.settled-observation-audit": [
+          "No settled persisted checkpoint audit exists."
+        ]
+      }
+    },
+    {
+      "id": "rollback-detection-after-retention",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.source-rollback-after-local-retention"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.source-rollback-after-local-retention": [
+          "Caller omission still removes the v2.6 relative comparison boundary."
+        ]
+      }
+    },
+    {
+      "id": "absence-detection-after-retention",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.source-absence-after-local-retention"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.source-absence-after-local-retention": [
+          "No retained v2.6 checkpoint remains available after source absence."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-reload",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.fresh-process-reload-and-audit"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.fresh-process-reload-and-audit": [
+          "No compatible local retention state exists to reload."
+        ]
+      }
+    },
+    {
+      "id": "complete-chain-validation",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.complete-chain-validation"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.complete-chain-validation": [
+          "No manifest proposal settlement checkpoint chain exists."
+        ]
+      }
+    },
+    {
+      "id": "corruption-sequence-fail-closed",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.corruption-and-sequence-fail-closed"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.corruption-and-sequence-fail-closed": [
+          "No compatible retained sequence exists to corrupt or validate."
+        ]
+      }
+    },
+    {
+      "id": "operation-lock-fail-closed",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.operation-lock-fail-closed"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.operation-lock-fail-closed": [
+          "No compatible local operation lock exists."
+        ]
+      }
+    },
+    {
+      "id": "aggregate-resource-bound",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.aggregate-resource-bound"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.aggregate-resource-bound": [
+          "No compatible retention resource budget exists."
+        ]
+      }
+    },
+    {
+      "id": "caller-time-ordering",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.caller-time-ordering"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.caller-time-ordering": [
+          "No compatible proposal settlement audit time order exists."
+        ]
+      }
+    },
+    {
+      "id": "source-no-durable-change",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.no-durable-source-ledger-change"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.no-durable-source-ledger-change": [
+          "No composed retention operation has been exercised against v2.6 source state."
+        ]
+      }
+    },
+    {
+      "id": "local-retention-durable-write",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.local-durable-proposal-and-settlement-write"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.local-durable-proposal-and-settlement-write": [
+          "No compatible local durable retention write exists."
+        ]
+      }
+    },
+    {
+      "id": "joint-replacement-counterexample",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.joint-source-and-retention-replacement-counterexample"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.joint-source-and-retention-replacement-counterexample": [
+          "No compatible two-root replacement test exists."
+        ]
+      }
+    },
+    {
+      "id": "public-data-minimization",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.public-artifact-data-minimization"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.public-artifact-data-minimization": [
+          "No v2.7 public artifacts exist."
+        ]
+      }
+    },
+    {
+      "id": "closed-schemas",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.closed-artifact-schemas"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.closed-artifact-schemas": [
+          "No v2.7 schemas exist."
+        ]
+      }
+    },
+    {
+      "id": "authority-none",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.history-checkpoint-retention-ledger.authority-none"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.history-checkpoint-retention-ledger.authority-none": [
+          "No v2.7 authority boundary exists."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-checkpoint-origin-or-pin",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.checkpoint-pin-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.checkpoint-pin-authorization.actual": [
+          "A self-digest and local confirmation do not authenticate origin or authority."
+        ]
+      }
+    },
+    {
+      "id": "external-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.external-retention.actual": [
+          "A separate caller-owned local root is not independently operated external retention."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.monotonic-state.actual": [
+          "Caller-owned files can be deleted or replaced."
+        ]
+      }
+    },
+    {
+      "id": "deletion-or-rollback-prevention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.rollback-prevention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.rollback-prevention.actual": [
+          "Relative detection does not prevent source or retention-root rollback."
+        ]
+      }
+    },
+    {
+      "id": "directory-entry-hardware-durability",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "state.local.file-fsync.directory-hardware-durability.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "state.local.file-fsync.directory-hardware-durability.actual": [
+          "File fsync does not establish directory-entry hardware or power-loss durability."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-policy-rotation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.policy-rotation-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.policy-rotation-authorization.actual": [
+          "No authenticated policy authority exists."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-controller-independence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.controller-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.controller-independence.actual": [
+          "Synthetic roots and processes remain under one test controller."
+        ]
+      }
+    },
+    {
+      "id": "collusion-exclusion",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.collusion-exclusion.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.collusion-exclusion.actual": [
+          "No independent principals or anti-collusion evidence exists."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-human-participation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.human-participation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.human-participation.actual": [
+          "Confirmation strings do not prove a human participated."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.host-authorization.actual": [
+          "Library calls do not authenticate the invoking host or actor."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.time.external": [
+          "All times are caller supplied."
+        ]
+      }
+    },
+    {
+      "id": "global-transition-uniqueness",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.global-uniqueness.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.global-uniqueness.actual": [
+          "Other roots and withheld branches remain possible."
+        ]
+      }
+    },
+    {
+      "id": "globally-consistent-log",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.global-log-consistency.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.global-log-consistency.actual": [
+          "Two local roots are not a globally consistent log."
+        ]
+      }
+    },
+    {
+      "id": "atomic-ledger-snapshot",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.atomic-ledger-snapshot.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-history-checkpoint.atomic-ledger-snapshot.actual": [
+          "Equal bracketing reads are not an atomic filesystem snapshot."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No provider is invoked."
+        ]
+      }
+    },
+    {
+      "id": "held-out-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.evaluation.actual": [
+          "No held-out evaluation occurs."
+        ]
+      }
+    },
+    {
+      "id": "held-out-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No human-benefit study or observation exists."
+        ]
+      }
+    },
+    {
+      "id": "held-out-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.learning.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.learning.held-out": [
+          "No learning or training occurs."
+        ]
+      }
+    },
+    {
+      "id": "promotion-merge-canon",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "axm.workshop.canon-decision.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "axm.workshop.canon-decision.actual": [
+          "Only Mike Tobi / AXM can merge or declare CANON."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

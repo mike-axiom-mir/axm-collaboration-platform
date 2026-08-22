@@ -1,0 +1,30 @@
+{
+  "schema": "axm.capability-inventory/v1",
+  "status": "TEST",
+  "capabilities": [
+    {"id": "model.shadow.snapshot.exact-digest", "status": "available", "constraints": ["Covers caller-declared structured snapshot fields only."]},
+    {"id": "model.shadow.snapshot.strict-json", "status": "available", "constraints": ["Unsupported, cyclic, sparse, undefined, or otherwise non-JSON state is refused by the shared deterministic core."]},
+    {"id": "model.shadow.task-context.exact-bind", "status": "available", "constraints": ["A changed task or context produces a typed hold, not a model-drift claim."]},
+    {"id": "model.shadow.seat-identity.exact-bind", "status": "available", "constraints": ["Both snapshots must declare the same exact seat, provider, model, and provenance reference."]},
+    {"id": "model.shadow.forward-sequence.require", "status": "available", "constraints": ["Candidate capture and observation must follow the baseline capture."]},
+    {"id": "model.shadow.commitment.drift-detect", "status": "available", "constraints": ["Compares declared commitment identifiers and structured fields; no free-text semantic equivalence."]},
+    {"id": "model.shadow.capability.drift-detect", "status": "available", "constraints": ["Compares caller-declared stable capability identifiers."]},
+    {"id": "model.shadow.source-lineage.drift-visible", "status": "available", "constraints": ["Shows exact source-reference changes on shared commitment identifiers."]},
+    {"id": "model.shadow.permission-expansion.critical", "status": "available", "constraints": ["New requested permission identifiers are classified as CRITICAL_DRIFT; nothing is granted."]},
+    {"id": "model.shadow.authority-request-expansion.critical", "status": "available", "constraints": ["New allowlisted authority requests are classified as CRITICAL_DRIFT; nothing is executed."]},
+    {"id": "model.shadow.boundary-loss.critical", "status": "available", "constraints": ["Removal or loss of an affirmed structured constraint is critical; semantic completeness of the constraint mapping is caller-owned."]},
+    {"id": "model.shadow.raw-output.not-embedded", "status": "available", "constraints": ["Only an output artifact reference is retained; raw output equivalence is not compared."]},
+    {"id": "model.shadow.private-context.not-embedded", "status": "available", "constraints": ["Only an exact context reference is retained."]},
+    {"id": "model.shadow.baseline-planning-projection", "status": "available", "constraints": ["Emits model-seat and signal input keys; it does not build or run a Baseline Simulation Lab receipt."]},
+    {"id": "model.shadow.review-projection.note-free", "status": "available", "constraints": ["The existing Review Inbox accepts the projected exact digest and action in temporary compatibility evidence; submission is caller-owned."]},
+    {"id": "model.shadow.receipt.exact-rebuild", "status": "available", "constraints": ["Receipt is rebuilt from the exact two snapshots and observation metadata."]},
+    {"id": "model.shadow.receipt.tamper-detect", "status": "available", "constraints": ["Snapshot and receipt mutations fail exact comparison."]},
+    {"id": "model.shadow.model-invocation.none", "status": "available", "constraints": ["The module is pure data transformation and invokes no model."]},
+    {"id": "model.shadow.training.none", "status": "available", "constraints": ["No training or training-admission route exists."]},
+    {"id": "model.shadow.automatic-action.none", "status": "available", "constraints": ["No writes, provider calls, review submission, execution, installation, permission grant, promotion, or merge."]},
+    {"id": "model.shadow.canon.none", "status": "available", "constraints": ["Mike Tobi / AXM remains the merge and CANON gate."]},
+    {"id": "model.shadow.provider.live-transport", "status": "unknown", "constraints": ["No provider connector was invoked or added."]},
+    {"id": "model.shadow.human-review.actual", "status": "unknown", "constraints": ["No actual human review was requested or performed."]},
+    {"id": "model.shadow.human-benefit.held-out", "status": "unknown", "constraints": ["No held-out human-benefit study was performed."]}
+  ]
+}

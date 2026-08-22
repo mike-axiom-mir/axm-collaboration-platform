@@ -1,0 +1,76 @@
+{
+  "schema": "axm.code-capability-fabric-blueprint-composition-integration-handoff/v1",
+  "observedAt": "2026-08-22T02:39:28.437Z",
+  "source": {
+    "branch": "codex/code-capability-fabric-blueprint-composition-v2.0",
+    "implementationCommit": "e22723eaa37762743fdb9af7ecd6fb614e4fd768",
+    "priorReceiptTip": "ffee40c2f3c326967e72881a5e15232aa89a3c42",
+    "intakeBaseCommit": "d9066284e45eaedb07d8e7998b7c6a972e67c0c1",
+    "registeredInCanonicalCommonGitDirectory": true,
+    "sourceCheckoutUnderActiveDrive": true
+  },
+  "changedPaths": [
+    "shared/code-capability-fabric/README-declarative-blueprint-composer-v1.md",
+    "shared/code-capability-fabric/blueprint-composer-cli.js",
+    "shared/code-capability-fabric/declarative-blueprint-composer-v1.js",
+    "shared/code-capability-fabric/fabric-blueprint-composer-profile.schema.json",
+    "shared/code-capability-fabric/fabric-blueprint-composition-receipt.schema.json",
+    "shared/code-capability-fabric/fabric-declarative-blueprint-intent.schema.json",
+    "shared/code-capability-fabric/fabric-declarative-capability-blueprint.schema.json",
+    "shared/code-capability-fabric/module-declarative-blueprint-composer-v1.contract.json",
+    "shared/code-capability-fabric/selftest-declarative-blueprint-composer-v1.js",
+    "docs/steward-runs/2026-08-22-code-capability-fabric-blueprint-composition-v2.0/"
+  ],
+  "observedCanonicalCheckout": {
+    "branch": "local-visual-fabric-20260728",
+    "head": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "dirty": true,
+    "trackedChangeEntries": 3599,
+    "allStatusEntriesExpanded": 13119,
+    "untrackedEntriesExpanded": 9520,
+    "taskRelevantStatusEntries": 0,
+    "sourceBranchRefRegistered": true,
+    "containsPriorReceiptTip": false
+  },
+  "driftRecheck": {
+    "priorObservedHead": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "currentObservedHead": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "priorTrackedChangeEntries": 3599,
+    "currentTrackedChangeEntries": 3599,
+    "priorUntrackedEntriesExpanded": 9513,
+    "currentUntrackedEntriesExpanded": 9520,
+    "untrackedEntryDelta": 7,
+    "headChanged": false,
+    "busyStatusChanged": true,
+    "taskRelevantOverlapObserved": false,
+    "conclusion": "The canonical checkout remains busy and unsuitable for in-place integration."
+  },
+  "targetAssumption": "Mike has not selected a final integration target. A clean target must contain or intentionally reconcile prior receipt tip ffee40c2f3c326967e72881a5e15232aa89a3c42. The observed canonical checkout does not contain that tip and must not be switched, overwritten, or merged in place.",
+  "exactReadOnlyReviewActionsFromCanonicalRepository": [
+    "git show --stat --oneline e22723eaa37762743fdb9af7ecd6fb614e4fd768",
+    "git diff --check ffee40c2f3c326967e72881a5e15232aa89a3c42...codex/code-capability-fabric-blueprint-composition-v2.0",
+    "git diff --stat ffee40c2f3c326967e72881a5e15232aa89a3c42...codex/code-capability-fabric-blueprint-composition-v2.0",
+    "git diff ffee40c2f3c326967e72881a5e15232aa89a3c42...codex/code-capability-fabric-blueprint-composition-v2.0 -- shared/code-capability-fabric docs/steward-runs/2026-08-22-code-capability-fabric-blueprint-composition-v2.0"
+  ],
+  "exactSafeReviewWorktreeCommandsFromCanonicalRepository": [
+    "git worktree add -b codex/review-code-capability-fabric-blueprint-v2.0 ../workshop-code-capability-fabric-blueprint-v2.0-review ffee40c2f3c326967e72881a5e15232aa89a3c42",
+    "git -C ../workshop-code-capability-fabric-blueprint-v2.0-review merge --ff-only codex/code-capability-fabric-blueprint-composition-v2.0"
+  ],
+  "exactImplementationIntegrationCommandAfterCleanTargetAndAncestryChecks": "git merge --no-ff --no-commit codex/code-capability-fabric-blueprint-composition-v2.0",
+  "safeIntegrationConditions": [
+    "Re-check the Mike-selected target HEAD and full worktree status immediately before integration.",
+    "Run git merge-base --is-ancestor ffee40c2f3c326967e72881a5e15232aa89a3c42 HEAD; stop and review if it returns nonzero.",
+    "Use a new clean review worktree; never reuse the busy canonical checkout.",
+    "Inspect implementation, retained generated data, and append-only receipt; rerun required and focused checks; then let Mike decide whether to create the merge commit."
+  ],
+  "authority": {
+    "fourRootsTechnicalGateFirst": true,
+    "mergePerformed": false,
+    "canonicalCheckoutModified": false,
+    "installed": false,
+    "published": false,
+    "promoted": false,
+    "canonChanged": false,
+    "humanGitGate": "Mike Tobi"
+  }
+}

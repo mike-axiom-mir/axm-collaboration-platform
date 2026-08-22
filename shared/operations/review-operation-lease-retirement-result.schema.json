@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-result/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "state", "retirementId", "recordedAt", "ownerDigest", "ownerEvidenceValid", "observedProcessId", "observedAcquiredAt", "callerAssertion", "reason", "intentFile", "quarantinedOwnerEvidenceFile", "resultFile", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-result/v1" },
+    "status": { "const": "TEST" },
+    "state": { "const": "RETIRED" },
+    "retirementId": { "type": "string", "format": "uuid" },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "ownerDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "ownerEvidenceValid": { "type": "boolean" },
+    "observedProcessId": { "type": ["integer", "null"], "minimum": 1 },
+    "observedAcquiredAt": { "type": ["string", "null"], "format": "date-time" },
+    "callerAssertion": { "const": "HOLDER_TERMINATED_OR_ABANDONED" },
+    "reason": { "type": "string", "minLength": 20, "maxLength": 500 },
+    "intentFile": { "type": "string", "pattern": "^[a-f0-9-]+\\.intent\\.json$" },
+    "quarantinedOwnerEvidenceFile": { "type": "string", "pattern": "^[a-f0-9-]+\\.owner-evidence$" },
+    "resultFile": { "type": "string", "pattern": "^[a-f0-9-]+\\.result\\.json$" },
+    "truth": {
+      "allOf": [
+        { "$ref": "review-operation-lease-retirement-plan.schema.json#/$defs/truth" },
+        { "properties": { "ownerEvidenceQuarantined": { "const": true } } }
+      ]
+    }
+  }
+}

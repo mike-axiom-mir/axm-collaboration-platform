@@ -1,0 +1,95 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger",
+  "version": "v2.0",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.prewrite-matched-proposal",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.proposal-does-not-advance-settled-head",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.trailing-pending-crash-recovery",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.postwrite-source-recapture",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.typed-postwrite-drift-hold",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.settled-only-derived-head",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.local-digest-chain-reload",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.caller-package-exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.independent-root-and-deletion-counterevidence",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.public-artifact-data-minimization",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.resource-bounds",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.authority-none",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-proposal/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-settlement/v1"
+  ],
+  "consumes": [
+    "one exact v1.8 forward transition and rebuild package as data",
+    "one v1.4 source capture and v1.7 separated audit before proposal",
+    "one later v1.4 source capture and v1.7 separated audit before settlement",
+    "one explicit caller-owned ledger root",
+    "separate exact proposal and settlement confirmations",
+    "caller-supplied untrusted UTC timestamps"
+  ],
+  "permissions": [
+    "read the explicitly configured local-possession source and referenced custody records through v1.4",
+    "create one fixed namespace beneath the explicitly configured caller-owned ledger root",
+    "exclusive-create canonical manifest, proposal, and settlement JSON files beneath that namespace"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-proposal/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-settlement/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger-snapshot/v1"
+    ],
+    "accepts": [
+      "an exact current settled-head v1.8 forward transition",
+      "the exact caller package for a trailing pending proposal"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "only explicit sourceStateRoot local-possession and custody data needed for strict response reload",
+      "only the fixed two-phase namespace beneath explicit stateRoot"
+    ],
+    "writes": [
+      "only stateRoot/model-shadow-review-challenge-transition-local-possession-checkpoint-two-phase-settlement-ledger/ledger.json",
+      "only contiguous exclusive-create proposal JSON files beneath proposals",
+      "only matching contiguous exclusive-create settlement JSON files beneath settlements"
+    ],
+    "refuses": [
+      "invalid-or-nonforward-v1.8-transition",
+      "proposal-without-exact-prewrite-source-match",
+      "proposal-while-a-trailing-pending-proposal-exists",
+      "proposal-as-settled-head-advance",
+      "observed-postwrite-drift-as-settlement",
+      "prewrite-or-postwrite-capture-as-atomic-with-following-file-write",
+      "two-observations-as-exclusion-of-intermediate-or-reverted-source-change",
+      "postwrite-match-as-proof-of-later-currentness",
+      "inspect-as-live-source-recapture",
+      "local-settled-head-as-global-fork-exclusion",
+      "independent-roots-as-excluded",
+      "local-files-as-external-retention-or-protected-monotonic-state",
+      "file-fsync-as-directory-entry-or-hardware-durability-proof",
+      "deletion-or-rollback-prevention",
+      "explicit-confirmations-as-host-authorization",
+      "caller-time-as-trusted-time",
+      "declared-digests-as-real-world-identity",
+      "observable-signer-separation-as-controller-independence-or-collusion-exclusion",
+      "proposal-or-settlement-as-execution-adoption-promotion-or-canon-authority",
+      "raw-public-key-signature-private-key-model-output-or-private-context-persistence",
+      "source-or-ledger-root-path-persistence",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller-owned local two-phase root; source remains upstream-owned",
+    "reload": "validate manifest, contiguous proposals, matching settlements, digest bindings, one optional trailing pending proposal, and settled-only head",
+    "disconnect": "a crash may leave one trailing proposal pending; settlement requires its original caller package",
+    "cleanup": "caller-owned; deletion can reopen an earlier local branch and is not prevented",
+    "installed": false,
+    "promoted": false
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-outcome-receipt/v1",
+  "title": "AXM Grounded Growth Outcome Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "outcomeId",
+    "generatedAt",
+    "capabilityId",
+    "cycleReceipt",
+    "interventionRef",
+    "previousOutcomeRef",
+    "noNewInformation",
+    "informationRefs",
+    "claims",
+    "refresh",
+    "state",
+    "growthClaim",
+    "nextEvidenceNeeds",
+    "truth",
+    "receiptDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-outcome-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "outcomeId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "capabilityId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "cycleReceipt": {
+      "type": "object",
+      "required": ["schema", "capabilityId", "state", "receiptDigest"],
+      "properties": {
+        "schema": { "const": "axm.verified-capability-cycle-receipt/v1" },
+        "capabilityId": { "type": "string" },
+        "state": { "type": "string" },
+        "receiptDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "interventionRef": { "oneOf": [{ "$ref": "#/$defs/reference" }, { "type": "null" }] },
+    "previousOutcomeRef": { "oneOf": [{ "$ref": "#/$defs/reference" }, { "type": "null" }] },
+    "noNewInformation": { "type": "boolean" },
+    "informationRefs": { "type": "array", "maxItems": 32, "items": { "$ref": "#/$defs/reference" } },
+    "claims": {
+      "type": "array",
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/claim" }
+    },
+    "refresh": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkedAt", "due", "reason"],
+      "properties": {
+        "checkedAt": { "type": "string", "format": "date-time" },
+        "due": { "type": "boolean" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 800 }
+      }
+    },
+    "state": {
+      "enum": [
+        "NO_NEW_INFORMATION",
+        "EVIDENCE_HOLD",
+        "REGRESSION_HOLD",
+        "REFRESH_REQUIRED",
+        "CYCLE_HOLD",
+        "CANDIDATE_ONLY",
+        "AVAILABLE_EFFECT_UNKNOWN",
+        "SYSTEM_EFFECT_ONLY",
+        "HUMAN_GROWTH_ONLY",
+        "AI_WORKFLOW_GROWTH_ONLY",
+        "GROUNDED_SHARED_GROWTH"
+      ]
+    },
+    "growthClaim": { "type": "string", "minLength": 1 },
+    "nextEvidenceNeeds": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "truth": { "type": "object" },
+    "receiptDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "checkedAt", "receiptRef", "coveredDigests"],
+      "properties": {
+        "state": { "enum": ["CURRENT", "HELD", "UNKNOWN"] },
+        "checkedAt": { "oneOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }] },
+        "receiptRef": { "oneOf": [{ "$ref": "#/$defs/reference" }, { "type": "null" }] },
+        "coveredDigests": {
+          "type": "array",
+          "maxItems": 96,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/digest" }
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "beneficiary",
+        "statement",
+        "kind",
+        "verdict",
+        "admittedVerdict",
+        "proofSurface",
+        "baselineRef",
+        "outcomeRef",
+        "evidenceRefs",
+        "evidenceClosure",
+        "routeStatus",
+        "routeReasons",
+        "limitations"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "beneficiary": { "enum": ["HUMAN", "AI_WORKFLOW", "SHARED_SYSTEM"] },
+        "statement": { "type": "string", "minLength": 1, "maxLength": 1200 },
+        "kind": { "type": "string" },
+        "verdict": { "enum": ["PASS", "FAIL", "UNKNOWN", "NOT_RUN"] },
+        "admittedVerdict": { "enum": ["PASS", "FAIL", "UNKNOWN", "NOT_RUN"] },
+        "proofSurface": { "type": "string" },
+        "baselineRef": { "oneOf": [{ "$ref": "#/$defs/reference" }, { "type": "null" }] },
+        "outcomeRef": { "oneOf": [{ "$ref": "#/$defs/reference" }, { "type": "null" }] },
+        "evidenceRefs": { "type": "array", "maxItems": 32, "items": { "$ref": "#/$defs/reference" } },
+        "evidenceClosure": { "$ref": "#/$defs/closure" },
+        "routeStatus": { "enum": ["ADMITTED", "HOLD", "NOT_PROVEN"] },
+        "routeReasons": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "limitations": { "type": "array", "maxItems": 24, "items": { "type": "string" } }
+      }
+    }
+  }
+}

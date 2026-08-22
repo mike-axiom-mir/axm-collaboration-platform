@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-sequence-policy/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "repository", "baseBranch", "mergeMethod", "candidates", "requiredChecks", "reviewBranchPrefixes", "refuseUnlistedReviewBranches"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-sequence-policy/v1" },
+    "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "repository": { "type": "string" },
+    "baseBranch": { "const": "main" },
+    "mergeMethod": { "const": "merge" },
+    "candidates": { "type": "array", "minItems": 1, "maxItems": 50 },
+    "requiredChecks": { "type": "array", "minItems": 1, "maxItems": 20, "items": { "type": "string" } },
+    "reviewBranchPrefixes": { "type": "array", "minItems": 1, "maxItems": 10, "items": { "type": "string" } },
+    "refuseUnlistedReviewBranches": { "type": "boolean" }
+  }
+}

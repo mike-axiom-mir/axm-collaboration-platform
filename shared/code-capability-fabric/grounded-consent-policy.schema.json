@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-consent-policy/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "validFrom", "expiresAt", "maximumInstanceWindowMs", "domainRules", "rootsGate", "mandatoryReconsentTriggers", "authority", "policyDigest"],
+  "properties": {
+    "schema": {"const": "axm.grounded-consent-policy/v1"},
+    "id": {"$ref": "#/$defs/id"},
+    "validFrom": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "maximumInstanceWindowMs": {"type": "integer", "minimum": 1, "maximum": 2678400000},
+    "domainRules": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "#/$defs/domainRule"}},
+    "rootsGate": {"const": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"]},
+    "mandatoryReconsentTriggers": {"type": "array", "minItems": 10, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "authority": {"const": "NONE"},
+    "policyDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "ids": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "contracts": {"type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/contract"}},
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publish", "install", "deploy", "persistentLearning", "hardwareActuation", "canon"],
+      "properties": {
+        "publish": {"type": "boolean"},
+        "install": {"type": "boolean"},
+        "deploy": {"type": "boolean"},
+        "persistentLearning": {"type": "boolean"},
+        "hardwareActuation": {"type": "boolean"},
+        "canon": {"type": "boolean"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxInputBytes", "maxOutputBytes", "maxMemoryBytes", "maxDurationMs", "maxProcesses", "maxAttempts", "maxCostMinorUnits"],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxDurationMs": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxProcesses": {"type": "integer", "minimum": 1, "maximum": 1024},
+        "maxAttempts": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "maxCostMinorUnits": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+      }
+    },
+    "domainRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "subjectSchemas", "domainProfileSchemas", "allowedActions", "allowedPermissions", "allowedNetworkDomains", "allowedDataClasses", "allowedSourceUses", "allowedLifecycle", "resourceCeilings", "requiredPredecisionEvidenceSchemas", "requiredEvidenceSchemas"],
+      "properties": {
+        "domain": {"$ref": "#/$defs/id"},
+        "subjectSchemas": {"$ref": "#/$defs/contracts"},
+        "domainProfileSchemas": {"$ref": "#/$defs/contracts"},
+        "allowedActions": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "allowedPermissions": {"$ref": "#/$defs/ids"},
+        "allowedNetworkDomains": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "allowedDataClasses": {"type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "allowedSourceUses": {"type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "allowedLifecycle": {"$ref": "#/$defs/lifecycle"},
+        "resourceCeilings": {"$ref": "#/$defs/resources"},
+        "requiredPredecisionEvidenceSchemas": {"$ref": "#/$defs/contracts"},
+        "requiredEvidenceSchemas": {"$ref": "#/$defs/contracts"}
+      }
+    }
+  }
+}

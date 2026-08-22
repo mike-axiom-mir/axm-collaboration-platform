@@ -1,0 +1,27 @@
+{
+  "capabilities": [
+    {"id": "model.shadow.review.challenge-separated-witness-exact-rebuild", "status": "available", "constraints": ["Both previous and candidate v0.6 separated chains must rebuild exactly before pairwise comparison."]},
+    {"id": "model.shadow.review.challenge-pairwise-exact-replay-classification", "status": "available", "constraints": ["An identical separated receipt and checkpoint is classified as consistent replay and not as a forward transition."]},
+    {"id": "model.shadow.review.challenge-pairwise-forward-extension-classification", "status": "available", "constraints": ["A candidate with the same ledger and anchor identity, nondecreasing self-declared epoch, later checkpoint time, all prior entries unchanged, and at least one new challenge is pairwise-admissible."]},
+    {"id": "model.shadow.review.challenge-pairwise-anchor-identity-drift-detection", "status": "available", "constraints": ["Different presented anchor ids or schemas produce a typed hold receipt."]},
+    {"id": "model.shadow.review.challenge-pairwise-anchor-epoch-rollback-detection", "status": "available", "constraints": ["A lower candidate self-declared anchor epoch produces a typed hold without promoting the epoch to protected monotonic state."]},
+    {"id": "model.shadow.review.challenge-pairwise-same-epoch-anchor-equivocation-detection", "status": "available", "constraints": ["A different exact anchor policy digest at the same anchor identity and self-declared epoch produces a typed equivocation hold."]},
+    {"id": "model.shadow.review.challenge-pairwise-checkpoint-equivocation-detection", "status": "available", "constraints": ["Reusing a checkpoint id with a different digest, presenting a different chain for the same checkpoint, time collision, or metadata-only checkpoint change produces a typed hold."]},
+    {"id": "model.shadow.review.challenge-pairwise-entry-fork-detection", "status": "available", "constraints": ["Missing or replaced prior checkpoint entries produce a typed hold with exact challenge and receipt-digest evidence."]},
+    {"id": "model.shadow.review.challenge-withheld-fork-nonexclusion-proof", "status": "available", "constraints": ["Two synthetic candidates each pass against one prior chain, then contradict each other when co-presented; unpresented and withheld branches remain explicitly unexcluded."]},
+    {"id": "model.shadow.review.challenge-pairwise-transition-exact-rebuild", "status": "available", "constraints": ["Transition content and digest rebuild exactly from both full separated-chain inputs, their receipts, transition id, and caller comparison time."]},
+    {"id": "model.shadow.review.challenge-pairwise-transition-fresh-process", "status": "available", "constraints": ["A fresh Node process reloads the serialized pair, rebuilds the exact receipt, and verifies it without mutating state."]},
+    {"id": "model.shadow.review.challenge-transition-authority-none", "status": "available", "constraints": ["Receipts grant no host, identity, human, provider, execution, adoption, installation, promotion, merge, Foundation, or CANON authority."]},
+    {"id": "model.shadow.review.challenge-anchor-host-pin.actual", "status": "unknown", "constraints": ["Both anchor chains remain caller-presented; no Mike- or host-promoted pin was supplied."]},
+    {"id": "model.shadow.review.challenge-transition-log-global-consistency.actual", "status": "unknown", "constraints": ["Pairwise comparison observes only two presented chains and cannot establish consensus, total ordering, or absence of unpresented branches."]},
+    {"id": "model.shadow.review.challenge-transition-external-retention.actual", "status": "unknown", "constraints": ["A temporary package is reloaded in a child process, but no independent receiver or retention authority is proven."]},
+    {"id": "model.shadow.review.challenge-transition-monotonic-state.actual", "status": "unknown", "constraints": ["Anchor epochs and transition heads remain caller-owned and replaceable; no protected monotonic store is proven."]},
+    {"id": "model.shadow.review.challenge-transition-time.external", "status": "unknown", "constraints": ["Ordering checks use caller timestamps; no external trusted-time receipt was supplied."]},
+    {"id": "model.shadow.review.challenge-separation-controller-identity-independence.actual", "status": "unknown", "constraints": ["Synthetic keys and declared digests do not authenticate independent real-world controllers."]},
+    {"id": "model.shadow.review.challenge-global-single-use.actual", "status": "unknown", "constraints": ["No globally consistent authority prevents two unseen branches from advancing independently."]},
+    {"id": "model.shadow.challenger.human-review.actual", "status": "unknown", "constraints": ["Only synthetic chains and generated fixtures were used; no real person reviewed a current transition or plan."]},
+    {"id": "model.shadow.challenger.shadow-execution.actual", "status": "unknown", "constraints": ["No model provider or shadow experiment was invoked."]},
+    {"id": "model.shadow.challenger.evaluation.actual", "status": "unknown", "constraints": ["No current baseline/challenger evaluation was executed or supplied."]},
+    {"id": "model.shadow.challenger.human-benefit.held-out", "status": "unknown", "constraints": ["No voluntary held-out human outcome was observed."]}
+  ]
+}

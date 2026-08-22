@@ -1,0 +1,385 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "durable-intent-record",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.durable-record"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.durable-record": [
+          "append-only host-local JSON records the exact submitted archival request before active stage unlink",
+          "the record is evidence of the request, not authenticated authority"
+        ]
+      }
+    },
+    {
+      "id": "intent-before-mutation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.before-active-stage-unlink"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.before-active-stage-unlink": [
+          "new v1.4 archival publishes exact intent before archive link and active-stage unlink",
+          "legacy archive checkpoints without intent are authorization-unknown and active-stage unlink is refused"
+        ]
+      }
+    },
+    {
+      "id": "exact-request-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.exact-request-and-stage-binding"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.exact-request-and-stage-binding": [
+          "closed request digest binds schema, stage filename and digest, assertion, confirmation, and reason",
+          "intent also records exact artifact target and observed target classification"
+        ]
+      }
+    },
+    {
+      "id": "append-only-intent",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.exclusive-no-overwrite"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.exclusive-no-overwrite": [
+          "private fsynced stage is published through an exclusive same-filesystem hard link",
+          "conflicting or corrupt authoritative intent holds archival"
+        ]
+      }
+    },
+    {
+      "id": "intent-crash-convergence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.process-crash-convergence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.process-crash-convergence": [
+          "six real intent-publication exits cover pre-link and post-link checkpoints across intent, decision, and result stages",
+          "nine inherited archive exits still cover pre-link, post-link, and post-unlink checkpoints"
+        ]
+      }
+    },
+    {
+      "id": "intent-caller-convergence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.concurrent-caller-convergence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.concurrent-caller-convergence": [
+          "matching reentrant and two-process callers converge through exact intent and archive checkpoints",
+          "claim is limited to cooperating callers on one host"
+        ]
+      }
+    },
+    {
+      "id": "legacy-honesty",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.no-posthoc-legacy-fabrication"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.no-posthoc-legacy-fabrication": [
+          "completed v1.3 archives without intent report authorization unknown",
+          "v1.3 archive-link checkpoints receive neither retrospective intent nor active-stage unlink"
+        ]
+      }
+    },
+    {
+      "id": "residual-intent-stage-status",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.bounded-residual-stage-status"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.bounded-residual-stage-status": [
+          "host-local status reads at most one entry beyond the 200-stage bound",
+          "residual intent-publication stages are non-authoritative and never reclaimed automatically"
+        ]
+      }
+    },
+    {
+      "id": "artifact-coverage",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.intent-decision-result-coverage"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.intent-decision-result-coverage": [
+          "exact archival intent is exercised for retirement intent, decision, and result stage artifacts"
+        ]
+      }
+    },
+    {
+      "id": "host-local-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archival-intent.host-local-no-api-browser-boundary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.host-local-no-api-browser-boundary": [
+          "authorization status and archival remain explicit host-local CLI/runtime methods",
+          "no operations API or browser control exists"
+        ]
+      }
+    },
+    {
+      "id": "authenticated-authorization",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.archival-intent.authenticated-actor-authorization"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archival-intent.authenticated-actor-authorization": [
+          "the caller assertion and reason are persisted but not authenticated",
+          "no consent, permission, or real-world identity is proven"
+        ]
+      }
+    },
+    {
+      "id": "storage-space-reclamation",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.storage-space-reclamation"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.storage-space-reclamation": [
+          "lossless archive retains the bytes"
+        ]
+      }
+    },
+    {
+      "id": "live-publisher-safety",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.live-publisher-safety"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.live-publisher-safety": [
+          "publisher liveness is not inferred or authenticated",
+          "a false assertion can interrupt a live publisher"
+        ]
+      }
+    },
+    {
+      "id": "hard-link-free-archival",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.lossless-archive-without-hard-links"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.lossless-archive-without-hard-links": [
+          "same-filesystem hard-link support is required for intent and archive publication"
+        ]
+      }
+    },
+    {
+      "id": "power-loss-durability",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "storage.power-loss-durability.proven"
+      ],
+      "declaredConstraints": {
+        "storage.power-loss-durability.proven": [
+          "no power interruption or directory-entry durability test"
+        ]
+      }
+    },
+    {
+      "id": "cross-file-atomicity",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "storage.cross-file.atomicity"
+      ],
+      "declaredConstraints": {
+        "storage.cross-file.atomicity": [
+          "intent publication, archive link, and active-stage unlink remain distinct filesystem checkpoints"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "review.retirement.publication-stage.archival-intent.authenticated-actor-authorization",
+    "review.retirement.publication-stage.live-publisher-safety",
+    "review.retirement.publication-stage.lossless-archive-without-hard-links",
+    "review.retirement.publication-stage.storage-space-reclamation",
+    "storage.cross-file.atomicity",
+    "storage.power-loss-durability.proven"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "review.retirement.publication-stage.archival-intent.authenticated-actor-authorization",
+      "requiredBy": [
+        "authenticated-authorization"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.live-publisher-safety",
+      "requiredBy": [
+        "live-publisher-safety"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.lossless-archive-without-hard-links",
+      "requiredBy": [
+        "hard-link-free-archival"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.storage-space-reclamation",
+      "requiredBy": [
+        "storage-space-reclamation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "storage.cross-file.atomicity",
+      "requiredBy": [
+        "cross-file-atomicity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "storage.power-loss-durability.proven",
+      "requiredBy": [
+        "power-loss-durability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

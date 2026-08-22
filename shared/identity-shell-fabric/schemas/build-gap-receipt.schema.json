@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.build-gap-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "blueprintRef", "gaps", "outputs", "truth", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.build-gap-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"enum": ["COMPILED", "HOLD"]},
+    "blueprintRef": {"$ref": "common.schema.json#/$defs/reference"},
+    "gaps": {
+      "type": "array", "maxItems": 128,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["capabilityId", "gapType", "state", "reason", "cheapestEvidence"],
+        "properties": {
+          "capabilityId": {"$ref": "common.schema.json#/$defs/id"},
+          "gapType": {"enum": ["HAND", "SKILL", "AUTHORITY", "SUBSTRATE", "EVIDENCE", "CONTRACT", "UNKNOWN"]},
+          "state": {"const": "UNKNOWN_HOLD"},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 1200},
+          "cheapestEvidence": {"type": "string", "minLength": 1, "maxLength": 1200}
+        }
+      }
+    },
+    "outputs": {
+      "type": "object", "additionalProperties": false, "required": ["manifestRef", "lineageReceiptRef"],
+      "properties": {
+        "manifestRef": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/reference"}]},
+        "lineageReceiptRef": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/reference"}]}
+      }
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["runtimeClaimFollows", "executionPerformed", "modelInvoked", "networkUsed", "filesystemMutated", "actuationPerformed", "humanDecisionAuthenticatedByCompiler", "installed", "promoted", "canon"],
+      "properties": {
+        "runtimeClaimFollows": {"const": false}, "executionPerformed": {"const": false}, "modelInvoked": {"const": false}, "networkUsed": {"const": false},
+        "filesystemMutated": {"const": false}, "actuationPerformed": {"const": false}, "humanDecisionAuthenticatedByCompiler": {"const": false}, "installed": {"const": false}, "promoted": {"const": false}, "canon": {"const": false}
+      }
+    },
+    "receiptDigest": {"$ref": "common.schema.json#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "COMPILED"}}, "required": ["status"]},
+      "then": {"properties": {"gaps": {"maxItems": 0}, "outputs": {"properties": {"manifestRef": {"$ref": "common.schema.json#/$defs/reference"}, "lineageReceiptRef": {"$ref": "common.schema.json#/$defs/reference"}}}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "HOLD"}}, "required": ["status"]},
+      "then": {"properties": {"gaps": {"minItems": 1}, "outputs": {"properties": {"manifestRef": {"type": "null"}, "lineageReceiptRef": {"type": "null"}}}}}
+    }
+  ]
+}

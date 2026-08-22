@@ -1,0 +1,79 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-reconciliation",
+  "version": "v0.9",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition-presentation-exact-rebuild",
+    "model.shadow.review.challenge-transition-presentation-data-minimization",
+    "model.shadow.review.challenge-transition-history-exact-replay-classification",
+    "model.shadow.review.challenge-transition-history-prefix-classification",
+    "model.shadow.review.challenge-transition-history-sibling-fork-detection",
+    "model.shadow.review.challenge-transition-history-entry-id-equivocation-detection",
+    "model.shadow.review.challenge-transition-history-alternate-record-detection",
+    "model.shadow.review.challenge-transition-history-domain-drift-detection",
+    "model.shadow.review.challenge-transition-history-withheld-root-nonexclusion-proof",
+    "model.shadow.review.challenge-transition-presentation-resource-bounds",
+    "model.shadow.review.challenge-transition-reconciliation-exact-rebuild",
+    "model.shadow.review.challenge-transition-reconciliation-fresh-process",
+    "model.shadow.review.challenge-transition-reconciliation-authority-none",
+    "axm.model-shadow-review-challenge-transition-ledger-presentation/v1",
+    "axm.model-shadow-review-challenge-transition-reconciliation/v1"
+  ],
+  "consumes": [
+    "two exact v0.8 manifests as data",
+    "two bounded ordered arrays of v0.8 entries as data",
+    "the transient exact v0.8 advance input for every presented entry",
+    "two exact presentation receipts as data",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-ledger-presentation/v1",
+      "axm.model-shadow-review-challenge-transition-reconciliation/v1"
+    ],
+    "accepts": ["two exact caller-presented v0.8 local histories and their transient exact-rebuild packages"]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "invalid-or-tampered-v0.8-manifest-entry-or-advance-package",
+      "noncontiguous-or-broken-presented-entry-chain",
+      "presentation-over-4096-entries",
+      "presentation-over-16-MiB-canonical-UTF-8",
+      "caller-presentation-time-before-presented-entry",
+      "reconciliation-time-before-either-presentation",
+      "pairwise-replay-as-proof-of-no-withheld-root",
+      "pairwise-prefix-as-global-total-order",
+      "co-presented-fork-detection-as-compelled-disclosure",
+      "co-presented-fork-detection-as-global-fork-exclusion",
+      "two-presented-roots-as-all-existing-roots",
+      "caller-log-id-as-authenticated-log-authority",
+      "caller-packages-as-external-retention",
+      "pairwise-reconciliation-as-protected-monotonic-state",
+      "read-only-library-call-as-host-authorized-trusted-entry-point",
+      "reconciliation-receipt-as-branch-adoption-or-execution-authority",
+      "raw-public-key-or-signature-embedding",
+      "private-key-ingestion",
+      "raw-model-output-or-private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains manifests, entries, transient exact-rebuild packages, presentations and reconciliation receipt",
+    "reload": "exact-rebuild both complete presentations and the reconciliation receipt in a fresh process",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned transient packages; receipts contain bounded references only",
+    "installed": false,
+    "promoted": false
+  }
+}

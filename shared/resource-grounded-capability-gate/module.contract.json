@@ -1,0 +1,58 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "resource-grounded-capability-gate",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "resource-grounded-capability-policy/v1",
+    "resource-observation/v1",
+    "resource-grounded-capability-gate-receipt/v1",
+    "digest-bound-baseline-candidate-resource-comparison",
+    "absolute-resource-ceiling-hold",
+    "resource-regression-hold",
+    "pre-steward-resource-evidence-recommendation"
+  ],
+  "consumes": [
+    "axm.verified-capability-cycle-receipt/v1",
+    "direct-machine-meter-or-imported-attestation",
+    "workload-and-environment-references",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.resource-grounded-capability-gate-receipt/v1"],
+    "accepts": [
+      "verified capability cycle awaiting human stewardship",
+      "sealed resource policy",
+      "sealed baseline and candidate observations"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "candidate-execution",
+      "hardware-metering",
+      "measurement-evidence-byte-verification",
+      "observation-authority-authentication",
+      "operator-declaration-as-resource-proof",
+      "unknown-resource-as-unlimited",
+      "incomparable-workload-or-environment",
+      "incomparable-measurement-definition",
+      "post-decision-resource-approval",
+      "automatic-permission-grant",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-canon",
+      "automatic-root-mutation",
+      "hardware-safety-claim",
+      "long-term-safety-claim",
+      "broad-improvement-claim"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

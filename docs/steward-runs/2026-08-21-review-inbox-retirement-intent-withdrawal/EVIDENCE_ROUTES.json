@@ -1,0 +1,112 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "parent-capability-gap",
+      "kind": "technical",
+      "claim": "The exact v4.8 parent exports no withdrawal method or decision/withdrawal schema and exposes no withdraw CLI or contract.",
+      "evidence": [
+        "BASELINE_FRONTIER_AUDIT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Source/runtime absence proves this bounded seam was missing, not that every possible cancellation design was absent."
+    },
+    {
+      "id": "closed-withdrawal-contract",
+      "kind": "technical",
+      "claim": "The product accepts only the exact schema, id, digest, assertion, confirmation, and bounded reason.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The caller assertion is not authenticated and proves no holder state."
+    },
+    {
+      "id": "append-only-owner-preserving-withdrawal",
+      "kind": "persistence",
+      "claim": "Withdrawal retains exact intent and decision evidence without rewriting or releasing the owner lock.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Noncooperating writers and protected-storage properties are outside scope."
+    },
+    {
+      "id": "proceed-withdraw-process-arbitration",
+      "kind": "behavioral",
+      "claim": "Two real cooperating processes converge in both winner orders and the loser receives a typed refusal.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Only cooperating callers on one host and the exercised local filesystem are covered."
+    },
+    {
+      "id": "ambiguous-intent-repair",
+      "kind": "behavioral",
+      "claim": "Withdrawing one exact undecided intent repairs a two-intent ambiguity while retaining both records.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "This does not choose which intent an operator should withdraw."
+    },
+    {
+      "id": "legacy-retirement-recovery-preserved",
+      "kind": "regression",
+      "claim": "Inherited lease, retirement, recovery, checkpoint, and process tests remain passing.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Passing focused tests do not prove all I/O failures or filesystems."
+    },
+    {
+      "id": "public-boundary",
+      "kind": "authorization",
+      "claim": "Review Inbox remains TEST and declares no automatic/API/browser withdrawal, general cancellation safety, liveness, merge, or CANON authority.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "No authenticated human review or acceptance occurred."
+    },
+    {
+      "id": "required-checks",
+      "kind": "technical",
+      "claim": "All ten AGENTS.md commands exit zero on the product worktree.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Script checks are not a browser render/click test."
+    },
+    {
+      "id": "clean-product-replay",
+      "kind": "persistence",
+      "claim": "The exact product dependency slice replays nine focused commands with unchanged tracked bytes.",
+      "evidence": [
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "This is a 102-file dependency slice, not the full repository."
+    },
+    {
+      "id": "aggregate-nonpass",
+      "kind": "technical",
+      "claim": "Aggregate operations remains nonpassing only after both product tests pass, at an unchanged absent curated intake.",
+      "evidence": [
+        "AGGREGATE_OPERATIONS_PROBE.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The aggregate command is not claimed as passing."
+    }
+  ],
+  "routesDigest": "sha256:bfe70b0b4b43eff844c45bcc02a5c8bdf1365e2fabda83b4a15926cb3519e21f"
+}

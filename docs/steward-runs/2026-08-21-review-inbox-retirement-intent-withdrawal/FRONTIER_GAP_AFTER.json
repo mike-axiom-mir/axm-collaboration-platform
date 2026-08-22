@@ -1,0 +1,139 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "explicit-intent-withdrawal",
+      "required": true,
+      "status": "READY",
+      "available": ["review.retirement.intent.withdraw.explicit"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.intent.withdraw.explicit": ["TEST", "undecided intent-only evidence", "closed operator request"]
+      }
+    },
+    {
+      "id": "append-only-withdrawal-evidence",
+      "required": true,
+      "status": "READY",
+      "available": ["review.retirement.intent.withdraw.append-only-evidence"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.intent.withdraw.append-only-evidence": ["exact intent and decision retained", "no deletion route"]
+      }
+    },
+    {
+      "id": "owner-lock-preservation",
+      "required": true,
+      "status": "READY",
+      "available": ["review.retirement.intent.withdraw.owner-lock-preserved"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.intent.withdraw.owner-lock-preserved": ["withdrawal does not rewrite, release, or quarantine operation.lock"]
+      }
+    },
+    {
+      "id": "proceed-withdraw-arbitration",
+      "required": true,
+      "status": "READY",
+      "available": ["review.retirement.decision.exclusive-cooperating-single-host"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.decision.exclusive-cooperating-single-host": ["exclusive decision-file create", "cooperating single-host callers", "before quarantine"]
+      }
+    },
+    {
+      "id": "concurrent-decision-convergence",
+      "required": true,
+      "status": "READY",
+      "available": ["review.retirement.decision.concurrent-convergence"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.decision.concurrent-convergence": ["two real processes exercised in both winner orders", "loser receives typed refusal"]
+      }
+    },
+    {
+      "id": "closed-host-local-contract",
+      "required": true,
+      "status": "READY",
+      "available": ["review.retirement.intent.withdraw.closed-host-local-contract"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.intent.withdraw.closed-host-local-contract": ["request and result schemas", "host-local CLI only", "no API or browser route"]
+      }
+    },
+    {
+      "id": "general-cancellation-safety",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["review.retirement.cancel.general-safety"],
+      "declaredConstraints": {
+        "review.retirement.cancel.general-safety": ["external writers, arbitrary phases, and multi-host races are outside scope"]
+      }
+    },
+    {
+      "id": "cross-file-atomicity",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["storage.cross-file.atomicity"],
+      "declaredConstraints": {
+        "storage.cross-file.atomicity": ["intent, decision, quarantine, and result remain separate files"]
+      }
+    },
+    {
+      "id": "holder-liveness-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["review.lease.holder-liveness.authenticated"],
+      "declaredConstraints": {
+        "review.lease.holder-liveness.authenticated": ["process id is evidence, not authenticated liveness"]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "review.lease.holder-liveness.authenticated",
+    "review.retirement.cancel.general-safety",
+    "storage.cross-file.atomicity"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "review.lease.holder-liveness.authenticated",
+      "requiredBy": ["holder-liveness-proof"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "review.retirement.cancel.general-safety",
+      "requiredBy": ["general-cancellation-safety"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "storage.cross-file.atomicity",
+      "requiredBy": ["cross-file-atomicity"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

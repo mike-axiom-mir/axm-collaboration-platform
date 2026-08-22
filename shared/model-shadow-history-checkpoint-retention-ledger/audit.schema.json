@@ -1,0 +1,32 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-history-checkpoint-retention-ledger-audit/v1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema","version","status","auditId","auditedAt","mode","retention","classification","upstreamAudit","decision","truth","auditDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-history-checkpoint-retention-ledger-audit/v1"},
+    "version":{"const":"2.7.0"},
+    "status":{"const":"TEST"},
+    "auditId":{"type":"string","minLength":1,"maxLength":180},
+    "auditedAt":{"$ref":"#/$defs/time"},
+    "mode":{"const":"CALLER_OWNED_DISTINCT_LOCAL_CHECKPOINT_RETENTION_UNAUTHENTICATED"},
+    "retention":{"type":"object","additionalProperties":false,"required":["manifestRef","proposalRef","settlementRef","checkpointRef","sequence","selectionStatus"],"properties":{"manifestRef":{"$ref":"#/$defs/reference"},"proposalRef":{"$ref":"#/$defs/reference"},"settlementRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},"checkpointRef":{"$ref":"#/$defs/reference"},"sequence":{"type":"integer","minimum":1,"maximum":10000},"selectionStatus":{"enum":["PENDING","SETTLED"]}}},
+    "classification":{"enum":["EXACT_HISTORY_MATCH","FORWARD_HISTORY_EXTENSION","OBSERVED_STRICT_HISTORY_ROLLBACK_RELATIVE_TO_PRESENTED_CHECKPOINT","OBSERVED_HISTORY_REPLACEMENT_OR_FORK_RELATIVE_TO_PRESENTED_CHECKPOINT","OBSERVED_LEDGER_IDENTITY_DRIFT","OBSERVED_LEDGER_ABSENT","OBSERVED_LEDGER_OR_CONFIGURATION_INVALID"]},
+    "upstreamAudit":{"$ref":"../model-shadow-portable-pin-settlement-history-checkpoint/audit.schema.json"},
+    "decision":{"type":"object","additionalProperties":false,"required":["reviewRequired","holdRequired","bestAction","autonomousActionCount"],"properties":{"reviewRequired":{"const":true},"holdRequired":{"type":"boolean"},"bestAction":{"type":"string","minLength":1,"maxLength":180},"autonomousActionCount":{"const":0}}},
+    "truth":{
+      "type":"object","additionalProperties":false,
+      "required":["retentionManifestReloaded","completeRetentionChainValidated","latestPersistedCheckpointSelectedWithoutCallerCheckpointPresentation","latestPersistedCheckpointPending","latestPersistedCheckpointSettled","pendingObservationGrantsSettledAuthority","retainedCheckpointSelfDigestValidated","retainedCheckpointOriginReauthenticatedAtAudit","currentSourceValidatedByV26Audit","sourceRollbackObserved","sourceAbsenceObserved","sourceReplacementOrForkObserved","retentionRootDistinctAndNonnestedFromPresentedSourceRoot","localCheckpointRetentionObserved","transientRetentionOperationLockWritten","transientV25OperationLockMayBeWritten","durableSourceLedgerStateChangedByModule","auditReceiptPersistedByModule","directoryEntryOrHardwareDurabilityProven","checkpointOriginAuthenticated","externalRetentionProven","protectedMonotonicStateProven","deletionOrRollbackPrevented","withheldOrJointlyReplacedRootsExcluded","globalTransitionUniquenessProven","globallyConsistentLogProven","hostAuthorizationAuthenticated","actorRealWorldIdentityProven","actualHumanParticipationProven","timeExternallyTrusted","rawPublicKeyEmbedded","rawSignatureEmbedded","privateKeyIngested","sourceOrLedgerPathEmbedded","rawUpstreamPackageEmbedded","rawModelOutputEmbedded","privateContextEmbedded","experimentExecuted","providerInvoked","evaluationPerformed","executionAuthorized","adoptionAuthorized","humanBenefitProven","broadLearningClaimed","autonomousActionCount","automaticPermissionGrant","automaticInstall","automaticPromotion","automaticMerge","automaticCanon","foundationMutation"],
+      "properties":{
+        "retentionManifestReloaded":{"const":true},"completeRetentionChainValidated":{"const":true},"latestPersistedCheckpointSelectedWithoutCallerCheckpointPresentation":{"const":true},"latestPersistedCheckpointPending":{"type":"boolean"},"latestPersistedCheckpointSettled":{"type":"boolean"},"pendingObservationGrantsSettledAuthority":{"const":false},"retainedCheckpointSelfDigestValidated":{"const":true},"retainedCheckpointOriginReauthenticatedAtAudit":{"const":false},"currentSourceValidatedByV26Audit":{"type":"boolean"},"sourceRollbackObserved":{"type":"boolean"},"sourceAbsenceObserved":{"type":"boolean"},"sourceReplacementOrForkObserved":{"type":"boolean"},"retentionRootDistinctAndNonnestedFromPresentedSourceRoot":{"const":true},"localCheckpointRetentionObserved":{"const":true},"transientRetentionOperationLockWritten":{"const":true},"transientV25OperationLockMayBeWritten":{"type":"boolean"},"durableSourceLedgerStateChangedByModule":{"const":false},"auditReceiptPersistedByModule":{"const":false},"directoryEntryOrHardwareDurabilityProven":{"const":false},"checkpointOriginAuthenticated":{"const":false},"externalRetentionProven":{"const":false},"protectedMonotonicStateProven":{"const":false},"deletionOrRollbackPrevented":{"const":false},"withheldOrJointlyReplacedRootsExcluded":{"const":false},"globalTransitionUniquenessProven":{"const":false},"globallyConsistentLogProven":{"const":false},"hostAuthorizationAuthenticated":{"const":false},"actorRealWorldIdentityProven":{"const":false},"actualHumanParticipationProven":{"const":false},"timeExternallyTrusted":{"const":false},"rawPublicKeyEmbedded":{"const":false},"rawSignatureEmbedded":{"const":false},"privateKeyIngested":{"const":false},"sourceOrLedgerPathEmbedded":{"const":false},"rawUpstreamPackageEmbedded":{"const":false},"rawModelOutputEmbedded":{"const":false},"privateContextEmbedded":{"const":false},"experimentExecuted":{"const":false},"providerInvoked":{"const":false},"evaluationPerformed":{"const":false},"executionAuthorized":{"const":false},"adoptionAuthorized":{"const":false},"humanBenefitProven":{"const":false},"broadLearningClaimed":{"const":false},"autonomousActionCount":{"const":0},"automaticPermissionGrant":{"const":false},"automaticInstall":{"const":false},"automaticPromotion":{"const":false},"automaticMerge":{"const":false},"automaticCanon":{"const":false},"foundationMutation":{"const":false}
+      }
+    },
+    "auditDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "time":{"type":"string","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"},
+    "reference":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}}
+  }
+}

@@ -1,0 +1,372 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "exact-stage-plan",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.exact-plan"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.exact-plan": [
+          "one explicit lowercase stage filename per plan",
+          "host-local read only",
+          "invalid missing conflicting unreadable or oversized evidence is held"
+        ]
+      }
+    },
+    {
+      "id": "artifact-content-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.artifact-content-binding"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.artifact-content-binding": [
+          "validates closed intent decision or result JSON against the filename artifact kind and retirement id",
+          "maximum artifact bytes remain 65536"
+        ]
+      }
+    },
+    {
+      "id": "authoritative-target-classification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.authoritative-target-classification"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.authoritative-target-classification": [
+          "classifies the exact authoritative target as absent exact conflict invalid or unreadable",
+          "does not mutate the authoritative target"
+        ]
+      }
+    },
+    {
+      "id": "closed-archival-request",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.closed-digest-confirmed-archival-request"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.closed-digest-confirmed-archival-request": [
+          "requires the exact closed publisher-terminated-or-abandoned assertion",
+          "requires exact lowercase stage filename digest-bound confirmation and trimmed 20-to-500-character reason",
+          "assertion is not authenticated or proven true"
+        ]
+      }
+    },
+    {
+      "id": "lossless-archival",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.lossless-archive"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.lossless-archive": [
+          "exclusively hard-links exact stage bytes into a separate host-local archive before unlinking the active stage path",
+          "authoritative target and owner lock are not mutated",
+          "archive retention is unbounded"
+        ]
+      }
+    },
+    {
+      "id": "archival-crash-convergence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.archive-checkpoint-crash-convergence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.archive-checkpoint-crash-convergence": [
+          "nine real process exits cover pre-link post-link and post-unlink across intent decision and result",
+          "retry converges only through exact digest-verified archive evidence",
+          "power-loss durability is unproven"
+        ]
+      }
+    },
+    {
+      "id": "archival-caller-convergence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.concurrent-caller-convergence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.concurrent-caller-convergence": [
+          "reentrant and two real cooperating single-host callers converge at the exclusive archive hard link",
+          "multi-host network-filesystem and noncooperating-writer safety are unproven"
+        ]
+      }
+    },
+    {
+      "id": "artifact-coverage",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.intent-decision-result-coverage"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.intent-decision-result-coverage": [
+          "intent decision and result stages are each validated and archived in focused tests"
+        ]
+      }
+    },
+    {
+      "id": "host-local-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.publication-stage.host-local-no-api-browser-boundary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.host-local-no-api-browser-boundary": [
+          "plan and archival are exposed by the separate host-local CLI only",
+          "no automatic API or browser route"
+        ]
+      }
+    },
+    {
+      "id": "durable-authorization-record",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.durable-authorization-record"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.durable-authorization-record": [
+          "reason and assertion are returned in the immediate result but no durable archival authorization artifact is written"
+        ]
+      }
+    },
+    {
+      "id": "storage-space-reclamation",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.storage-space-reclamation"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.storage-space-reclamation": [
+          "lossless archival preserves the bytes and only removes the active stage pathname",
+          "archive storage is not reclaimed"
+        ]
+      }
+    },
+    {
+      "id": "live-publisher-safety",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.live-publisher-safety"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.live-publisher-safety": [
+          "publisher liveness is not inferred or authenticated",
+          "a false assertion can interrupt a live publisher"
+        ]
+      }
+    },
+    {
+      "id": "hard-link-free-archival",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.publication-stage.lossless-archive-without-hard-links"
+      ],
+      "declaredConstraints": {
+        "review.retirement.publication-stage.lossless-archive-without-hard-links": [
+          "same-filesystem hard-link support is required and no fallback is provided"
+        ]
+      }
+    },
+    {
+      "id": "power-loss-durability",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "storage.power-loss-durability.proven"
+      ],
+      "declaredConstraints": {
+        "storage.power-loss-durability.proven": [
+          "no power interruption or directory-entry durability test"
+        ]
+      }
+    },
+    {
+      "id": "cross-file-atomicity",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "storage.cross-file.atomicity"
+      ],
+      "declaredConstraints": {
+        "storage.cross-file.atomicity": [
+          "retirement evidence and archival remain multi-file and multi-name sequences"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "review.retirement.publication-stage.durable-authorization-record",
+    "review.retirement.publication-stage.live-publisher-safety",
+    "review.retirement.publication-stage.lossless-archive-without-hard-links",
+    "review.retirement.publication-stage.storage-space-reclamation",
+    "storage.cross-file.atomicity",
+    "storage.power-loss-durability.proven"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "review.retirement.publication-stage.durable-authorization-record",
+      "requiredBy": [
+        "durable-authorization-record"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.live-publisher-safety",
+      "requiredBy": [
+        "live-publisher-safety"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.lossless-archive-without-hard-links",
+      "requiredBy": [
+        "hard-link-free-archival"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.publication-stage.storage-space-reclamation",
+      "requiredBy": [
+        "storage-space-reclamation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "storage.cross-file.atomicity",
+      "requiredBy": [
+        "cross-file-atomicity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "storage.power-loss-durability.proven",
+      "requiredBy": [
+        "power-loss-durability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

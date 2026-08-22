@@ -1,13 +1,13 @@
 # Sonnet: playtest a local AXM game through the file courier
 
-You are using this route because your sandbox can read/write `D:\AXM_ACTIVE\workshop` but cannot reach the Windows host's `127.0.0.1` directly.
+You are using this route because your sandbox can read/write `<AXM_WORKSHOP>` but cannot reach the Windows host's `127.0.0.1` directly.
 
 Do not create a tunnel. Do not try remote URLs. Mike or a local agent starts `START_AI_SEAT_COURIER.cmd` once; afterward you operate only through files.
 
 ## Mailbox
 
-- Write requests to `D:\AXM_ACTIVE\workshop\state\ai-seat-courier\inbox\<unique-id>.json`.
-- Read the matching receipt from `D:\AXM_ACTIVE\workshop\state\ai-seat-courier\outbox\<unique-id>.json`.
+- Write requests to `<AXM_WORKSHOP>\state\ai-seat-courier\inbox\<unique-id>.json`.
+- Read the matching receipt from `<AXM_WORKSHOP>\state\ai-seat-courier\outbox\<unique-id>.json`.
 - PNG paths returned by `launch`, `screenshot`, or `snapshot` are real local frames you can inspect with your image-reading capability.
 - Check `status.json` first. Continue only when its `status` is `ready`.
 

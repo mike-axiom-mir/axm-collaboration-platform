@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.continuity-event/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "receiptId", "policyId", "sequence", "previousReceiptDigest", "eventType", "status", "payloadRef", "candidateReceiptDigest", "acceptanceReceiptRef", "rollbackTargetDigest", "modelSwapDisclosure", "occurredAt", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.continuity-event/v1"},
+    "version": {"const": "0.1.0"},
+    "receiptId": {"$ref": "common.schema.json#/$defs/id"},
+    "policyId": {"$ref": "common.schema.json#/$defs/id"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "previousReceiptDigest": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/digest"}]},
+    "eventType": {"enum": ["ORIGIN", "MEMORY_CANDIDATE", "MEMORY_ACCEPTANCE", "DISSENT", "MODEL_OR_CONNECTOR_SWAP", "MIGRATION", "RECONSTRUCTION", "ROLLBACK", "RETIREMENT_PROPOSAL"]},
+    "status": {"enum": ["CANDIDATE", "ACCEPTED"]},
+    "payloadRef": {"$ref": "common.schema.json#/$defs/reference"},
+    "candidateReceiptDigest": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/digest"}]},
+    "acceptanceReceiptRef": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/reference"}]},
+    "rollbackTargetDigest": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/digest"}]},
+    "modelSwapDisclosure": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "additionalProperties": false, "required": ["disclosed", "beforeDescriptorRef", "afterDescriptorRef"], "properties": {"disclosed": {"const": true}, "beforeDescriptorRef": {"$ref": "common.schema.json#/$defs/reference"}, "afterDescriptorRef": {"$ref": "common.schema.json#/$defs/reference"}}}
+      ]
+    },
+    "occurredAt": {"type": "string", "format": "date-time"},
+    "receiptDigest": {"$ref": "common.schema.json#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"eventType": {"const": "MEMORY_CANDIDATE"}}, "required": ["eventType"]},
+      "then": {"properties": {"status": {"const": "CANDIDATE"}, "candidateReceiptDigest": {"type": "null"}, "acceptanceReceiptRef": {"type": "null"}}},
+      "else": {"properties": {"status": {"const": "ACCEPTED"}, "acceptanceReceiptRef": {"type": "object", "required": ["schema"], "properties": {"schema": {"const": "axm.human-acceptance/v1"}}}}}
+    },
+    {
+      "if": {"properties": {"eventType": {"const": "MEMORY_ACCEPTANCE"}}, "required": ["eventType"]},
+      "then": {"properties": {"candidateReceiptDigest": {"$ref": "common.schema.json#/$defs/digest"}}},
+      "else": {"properties": {"candidateReceiptDigest": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"eventType": {"const": "ROLLBACK"}}, "required": ["eventType"]},
+      "then": {"properties": {"rollbackTargetDigest": {"$ref": "common.schema.json#/$defs/digest"}}},
+      "else": {"properties": {"rollbackTargetDigest": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"eventType": {"const": "MODEL_OR_CONNECTOR_SWAP"}}, "required": ["eventType"]},
+      "then": {"properties": {"modelSwapDisclosure": {"type": "object"}}},
+      "else": {"properties": {"modelSwapDisclosure": {"type": "null"}}}
+    }
+  ]
+}

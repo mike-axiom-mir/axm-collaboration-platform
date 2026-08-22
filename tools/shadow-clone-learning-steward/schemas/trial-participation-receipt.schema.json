@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.trial-participation-receipt/v1",
+  "title": "AXM Shadow Clone One-Case Trial Participation Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptDigest", "participationId", "prospectivePlanDigest", "candidateDigest", "assignmentRequestId", "seat", "recipientAlias", "baseContextDigest", "requestedAt", "expiresAt", "state", "withdrawalReceiptDigest", "automaticEnrollment"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.trial-participation-receipt/v1" },
+    "receiptDigest": { "$ref": "#/$defs/digest" },
+    "participationId": { "$ref": "#/$defs/id" },
+    "prospectivePlanDigest": { "$ref": "#/$defs/digest" },
+    "candidateDigest": { "$ref": "#/$defs/digest" },
+    "assignmentRequestId": { "$ref": "#/$defs/id" },
+    "seat": { "enum": ["BASELINE", "LEARNING_ROUTE"] },
+    "recipientAlias": { "$ref": "#/$defs/id" },
+    "baseContextDigest": { "$ref": "#/$defs/digest" },
+    "requestedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "state": { "const": "OPT_IN_ONE_HELD_OUT_CASE" },
+    "withdrawalReceiptDigest": { "type": "null" },
+    "automaticEnrollment": { "const": false }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

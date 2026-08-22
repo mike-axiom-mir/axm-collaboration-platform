@@ -1,0 +1,79 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-signed-review-evidence",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.handoff-exact-rebuild",
+    "model.shadow.review.detached-ed25519-verify",
+    "model.shadow.review.exact-artifact-bind",
+    "model.shadow.review.retained-approval-bind",
+    "model.shadow.review.signing-key-possession-evidence",
+    "model.shadow.review.caller-policy-authority-admission",
+    "model.shadow.review.execution-authority-none",
+    "model.shadow.review.receipt-exact-rebuild",
+    "axm.model-shadow-review-key-policy/v1",
+    "axm.model-shadow-signed-review-attestation/v1",
+    "axm.model-shadow-signed-review-receipt/v1"
+  ],
+  "consumes": [
+    "axm.model-shadow-challenger-reviewed-handoff/v1",
+    "axm.model-shadow-challenger-review-evidence/v1",
+    "caller-supplied Ed25519 public key policy",
+    "caller-supplied digest-bound challenge",
+    "detached Ed25519 signatures",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.model-shadow-signed-review-receipt/v1"],
+    "accepts": [
+      "one exact-rebuild reviewed challenger handoff and its rebuild input",
+      "one exact-plan caller key policy",
+      "one or more exact-review detached approval attestations"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "invalid-or-non-ed25519-signature",
+      "unlisted-or-disabled-signing-key",
+      "duplicate-key-as-independent-seat",
+      "duplicate-actor-as-independent-seat",
+      "expired-policy-or-attestation",
+      "signature-without-exact-handoff-plan-review-and-challenge-binding",
+      "caller-key-policy-as-authenticated-host-trust-root",
+      "key-possession-as-real-world-identity",
+      "declared-human-key-as-authenticated-human",
+      "signature-as-actual-human-participation",
+      "caller-challenge-as-proven-single-use",
+      "caller-time-as-trusted-time",
+      "signature-as-execution-authority",
+      "signature-as-adoption-authority",
+      "raw-actor-identity-retention",
+      "raw-public-key-retention",
+      "raw-signature-retention",
+      "review-discussion-ingestion",
+      "vote-note-ingestion",
+      "private-key-ingestion",
+      "raw-model-output-ingestion",
+      "private-context-ingestion",
+      "automatic-execution",
+      "automatic-write",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from exact caller receipts, policy, challenge and attestations",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

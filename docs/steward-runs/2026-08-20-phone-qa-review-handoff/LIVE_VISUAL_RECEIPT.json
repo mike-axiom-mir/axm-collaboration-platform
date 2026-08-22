@@ -1,0 +1,69 @@
+{
+  "schema": "axm.live-visual-receipt/v1",
+  "status": "TEST",
+  "claim": "A captured phone-QA candidate can be explicitly routed to the existing Review Inbox while the UI keeps proof and warning authority false.",
+  "surface": {
+    "visualBackend": "BROWSER_PRIMARY",
+    "fallbackReason": null,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "routes": [
+      "tools/browser-lan-hardware-qa-lab/index.html",
+      "tools/review-inbox/index.html"
+    ]
+  },
+  "baseline": {
+    "reviewControlVisible": true,
+    "reviewControlEnabled": false,
+    "reviewInboxLinkVisible": false,
+    "horizontalOverflow": false,
+    "frameDigest": "sha256:702d467bb1679f7976bed3ef5f158b726b9fc9c62196734d010b027ae005df02"
+  },
+  "action": {
+    "fixture": "All six physical-behavior declarations remained false; only voluntary candidate capture was checked.",
+    "candidateCompleteness": false,
+    "openedExactReview": true,
+    "castReviewVote": false
+  },
+  "observedSequence": [
+    "The incomplete candidate produced a visible retry-or-stop notice and one local device receipt.",
+    "The review control became enabled after persistence.",
+    "Opening review produced a visible no-warning-cleared notice and an Open Review Inbox link.",
+    "The inbox showed one pending Phone QA candidate bound to the same exact digest.",
+    "Inspect exact digest showed candidateComplete false, physicalHardwareProven false, warningClosureAuthorized false, and manifestMutationAuthorized false."
+  ],
+  "settledFrames": [
+    {
+      "name": "qa-review-opened",
+      "digest": "sha256:d97fa19eb7acb2cc6ec6171dd1d328f7143ef12891b39d326954984acec7a8f7"
+    },
+    {
+      "name": "inbox-exact-action-selected",
+      "digest": "sha256:ebfc17b81f566c683c328dd5e4870aa77ded538eaece2befb224876f7be21c5c"
+    }
+  ],
+  "typedObservation": {
+    "reviewRouteVisibleAndUsable": true,
+    "exactDigestVisibleInBothSurfaces": true,
+    "authorityFlagsRemainFalse": true,
+    "horizontalOverflow": false,
+    "actualPhysicalPhoneObserved": false,
+    "actualHumanReviewPerformed": false,
+    "humanUsefulnessObserved": false
+  },
+  "verdict": "PASS",
+  "namedSeam": null,
+  "cleanup": {
+    "rollingBufferAvailable": false,
+    "temporaryFilesCreated": 0,
+    "temporaryFrameBytesReleased": true,
+    "browserTabClosed": true,
+    "viewportReset": true,
+    "fixtureQaAndReviewReceiptsDeleted": true,
+    "serverGeneratedDisposableStateDeleted": true,
+    "cleanupComplete": true
+  },
+  "nextCheapestTest": "An actual person may voluntarily review a real physical-phone candidate later; that remains NOT_RUN and is not required for adapter correctness."
+}

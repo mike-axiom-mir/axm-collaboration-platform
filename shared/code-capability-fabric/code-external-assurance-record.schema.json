@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-external-assurance-record/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "assuranceSchema", "subjectDigest", "verifierRef", "verdict", "observedAt", "expiresAt", "evidenceArtifacts", "authority", "recordDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-external-assurance-record/v1"},
+    "id": {"$ref": "#/$defs/id"},
+    "assuranceSchema": {"$ref": "#/$defs/contract"},
+    "subjectDigest": {"$ref": "#/$defs/digest"},
+    "verifierRef": {"$ref": "#/$defs/reference"},
+    "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "observedAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "evidenceArtifacts": {"type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/artifactReference"}},
+    "authority": {"const": "VERIFY_ONLY"},
+    "recordDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "schema": {"$ref": "#/$defs/contract"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256", "byteLength"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "schema": {"$ref": "#/$defs/contract"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+      }
+    }
+  }
+}

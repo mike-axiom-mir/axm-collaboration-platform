@@ -1,0 +1,168 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "workshop-fabric-integration",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.fabric.present"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.fabric.present": [
+          "reviewable Workshop branch; canonical busy checkout not mutated"
+        ]
+      }
+    },
+    {
+      "id": "keel-shell-compilation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.compile.deterministic",
+        "identity.shell.export.canonical"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.compile.deterministic": [
+          "pure inert compiler; no provider, model, tool, body, or connector execution"
+        ],
+        "identity.shell.export.canonical": [
+          "canonical redacted JSON only"
+        ]
+      }
+    },
+    {
+      "id": "keel-shell-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.verify.independent",
+        "identity.shell.fit.assert"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.verify.independent": [
+          "static manifest evidence ceiling"
+        ],
+        "identity.shell.fit.assert": [
+          "checks declared Keel/Codex role criteria; does not replace human acceptance"
+        ]
+      }
+    },
+    {
+      "id": "live-host-binding",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.host.bind"
+      ],
+      "declaredConstraints": {
+        "identity.shell.host.bind": [
+          "held outside v0.1 execution boundary"
+        ]
+      }
+    },
+    {
+      "id": "human-accepted-identity-state",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.human.authenticate"
+      ],
+      "declaredConstraints": {
+        "identity.shell.human.authenticate": [
+          "compiler cannot authenticate human authorship or acceptance"
+        ]
+      }
+    },
+    {
+      "id": "runtime-continuity-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.runtime.continuity.observe"
+      ],
+      "declaredConstraints": {
+        "identity.shell.runtime.continuity.observe": [
+          "no live host or cross-runtime observation surface"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "identity.shell.host.bind",
+    "identity.shell.human.authenticate",
+    "identity.shell.runtime.continuity.observe"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "identity.shell.host.bind",
+      "requiredBy": [
+        "live-host-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "identity.shell.human.authenticate",
+      "requiredBy": [
+        "human-accepted-identity-state"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "identity.shell.runtime.continuity.observe",
+      "requiredBy": [
+        "runtime-continuity-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

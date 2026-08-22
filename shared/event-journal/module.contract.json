@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "event-journal",
+  "version": "v0.1",
+  "provides": ["city.event.append", "city.event.chain-verify", "city.event.projection-replay"],
+  "consumes": ["axm.event/v1", "filesystem:explicit-journal-file"],
+  "permissions": ["write-candidate"],
+  "handoffs": { "emits": ["axm.event/v1", "axm.journal-record/v1"], "accepts": ["axm.event/v1", "filesystem/explicit-journal-file"] },
+  "lifecycle": { "state_owner": "caller-selected-local-journal", "reload": "verify-and-replay", "disconnect": "release-lock", "cleanup": "explicit-human-authorized-only" },
+  "boundaries": {
+    "writes": ["explicit-journal-file", "adjacent-short-lived-lock-file"],
+    "refuses": ["event-rewrite", "event-deletion", "event-as-authority", "automatic-truncation-repair", "network-write", "promotion", "merge", "canon-change", "root-change"]
+  }
+}

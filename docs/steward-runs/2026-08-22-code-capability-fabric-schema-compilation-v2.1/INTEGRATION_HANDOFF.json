@@ -1,0 +1,74 @@
+{
+  "schema": "axm.code-capability-fabric-schema-compilation-integration-handoff/v1",
+  "observedAt": "2026-08-22T03:11:42.606Z",
+  "source": {
+    "branch": "codex/code-capability-fabric-schema-compilation-v2.1",
+    "implementationCommit": "fd1edf87b01d10fdbdafcff6a13249e1724cb3a3",
+    "baseCommit": "203fc98a84b2d50907b8303a8c2c8b4579aac78a",
+    "intakeCommit": "d9066284e45eaedb07d8e7998b7c6a972e67c0c1",
+    "registeredInCanonicalCommonGitDirectory": true,
+    "sourceCheckoutUnderActiveDrive": true
+  },
+  "changedPaths": [
+    "shared/code-capability-fabric/README-blueprint-schema-compiler-v1.md",
+    "shared/code-capability-fabric/blueprint-schema-compiler-v1.js",
+    "shared/code-capability-fabric/fabric-blueprint-acceptance-matrix.schema.json",
+    "shared/code-capability-fabric/fabric-blueprint-schema-compilation-receipt.schema.json",
+    "shared/code-capability-fabric/fabric-blueprint-schema-compilation-subject.schema.json",
+    "shared/code-capability-fabric/fabric-blueprint-schema-compiler-profile.schema.json",
+    "shared/code-capability-fabric/module-blueprint-schema-compiler-v1.contract.json",
+    "shared/code-capability-fabric/selftest-blueprint-schema-compiler-v1.js",
+    "docs/steward-runs/2026-08-22-code-capability-fabric-schema-compilation-v2.1/"
+  ],
+  "observedCanonicalCheckout": {
+    "branch": "local-visual-fabric-20260728",
+    "head": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "dirty": true,
+    "trackedChangeEntries": 3599,
+    "untrackedEntriesExpanded": 9540,
+    "allStatusEntriesExpanded": 13139,
+    "taskRelevantStatusEntries": 0,
+    "sourceBranchRefRegistered": true,
+    "containsBaseCommit": false
+  },
+  "driftRecheck": {
+    "firstObservedHead": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "currentObservedHead": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "firstTrackedChangeEntries": 3599,
+    "currentTrackedChangeEntries": 3599,
+    "firstUntrackedEntriesExpanded": 9540,
+    "currentUntrackedEntriesExpanded": 9540,
+    "headChanged": false,
+    "busyStatusChanged": false,
+    "taskRelevantOverlapObserved": false,
+    "conclusion": "The canonical checkout remains busy, unchanged across the final drift recheck, and unsuitable for in-place integration."
+  },
+  "targetAssumption": "Mike has not selected a final integration target. A clean target must contain or intentionally reconcile base 203fc98a84b2d50907b8303a8c2c8b4579aac78a. The observed canonical checkout does not contain that base and must not be switched, overwritten, or merged in place.",
+  "exactReadOnlyReviewActionsFromCanonicalRepository": [
+    "git show --stat --oneline fd1edf87b01d10fdbdafcff6a13249e1724cb3a3",
+    "git diff --check 203fc98a84b2d50907b8303a8c2c8b4579aac78a...codex/code-capability-fabric-schema-compilation-v2.1",
+    "git diff --stat 203fc98a84b2d50907b8303a8c2c8b4579aac78a...codex/code-capability-fabric-schema-compilation-v2.1",
+    "git diff 203fc98a84b2d50907b8303a8c2c8b4579aac78a...codex/code-capability-fabric-schema-compilation-v2.1 -- shared/code-capability-fabric docs/steward-runs/2026-08-22-code-capability-fabric-schema-compilation-v2.1"
+  ],
+  "exactSafeReviewWorktreeCommandsFromCanonicalRepository": [
+    "git worktree add -b codex/review-code-capability-fabric-schema-v2.1 ../workshop-code-capability-fabric-schema-v2.1-review 203fc98a84b2d50907b8303a8c2c8b4579aac78a",
+    "git -C ../workshop-code-capability-fabric-schema-v2.1-review merge --ff-only codex/code-capability-fabric-schema-compilation-v2.1"
+  ],
+  "exactImplementationIntegrationCommandAfterCleanTargetAndAncestryChecks": "git merge --no-ff --no-commit codex/code-capability-fabric-schema-compilation-v2.1",
+  "safeIntegrationConditions": [
+    "Re-check the Mike-selected target HEAD and full worktree status immediately before integration.",
+    "Run git merge-base --is-ancestor 203fc98a84b2d50907b8303a8c2c8b4579aac78a HEAD; stop and review if it returns nonzero.",
+    "Use a new clean review worktree; never reuse the busy canonical checkout.",
+    "Inspect implementation, retained generated data, and append-only receipt; rerun required and focused checks; then let Mike decide whether to create the merge commit."
+  ],
+  "authority": {
+    "fourRootsTechnicalGateFirst": true,
+    "mergePerformed": false,
+    "canonicalCheckoutModified": false,
+    "installed": false,
+    "published": false,
+    "promoted": false,
+    "canonChanged": false,
+    "humanGitGate": "Mike Tobi"
+  }
+}

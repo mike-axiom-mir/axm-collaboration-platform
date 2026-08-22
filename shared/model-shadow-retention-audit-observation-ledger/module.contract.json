@@ -1,0 +1,103 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"model-shadow-retention-audit-observation-ledger",
+  "version":"v2.8",
+  "status":"TEST",
+  "merge_gate":"Mike Tobi / AXM",
+  "provides":[
+    "model.shadow.retention-audit.exact-rebuild",
+    "model.shadow.retention-audit.explicit-unauthenticated-confirmation",
+    "model.shadow.retention-audit.three-root-distinct-nonnested",
+    "model.shadow.retention-audit.full-observation-exclusive-create-file-fsync",
+    "model.shadow.retention-audit.contiguous-digest-chain",
+    "model.shadow.retention-audit.fresh-process-origin-independent-reload",
+    "model.shadow.retention-audit.hold-observation-preserved",
+    "model.shadow.retention-audit.nonhold-observation-preserved",
+    "model.shadow.retention-audit.caller-time-ordering",
+    "model.shadow.retention-audit.single-retention-manifest-binding",
+    "model.shadow.retention-audit.corruption-gap-unexpected-state-fail-closed",
+    "model.shadow.retention-audit.concurrent-writer-exclusion",
+    "model.shadow.retention-audit.aggregate-and-input-resource-bounds",
+    "model.shadow.retention-audit.public-artifact-data-minimization",
+    "model.shadow.retention-audit.no-durable-upstream-change",
+    "model.shadow.retention-audit.reload-after-source-and-retention-loss",
+    "model.shadow.retention-audit.joint-three-root-loss-counterexample",
+    "model.shadow.retention-audit.authority-none",
+    "model.shadow.retention-audit.closed-artifact-schemas",
+    "axm.model-shadow-retention-audit-observation-ledger-manifest/v1",
+    "axm.model-shadow-retention-audit-observation-ledger-observation/v1",
+    "axm.model-shadow-retention-audit-observation-ledger-snapshot/v1"
+  ],
+  "consumes":[
+    "one existing caller-owned local observation root",
+    "one exact v2.7 retention service configuration as transient input",
+    "one exact v2.7 current audit input and receipt as transient input",
+    "one observation id caller UTC time and exact unauthenticated confirmation"
+  ],
+  "permissions":[
+    "read and exclusive-create files only beneath the fixed namespace in one explicit caller-owned observation root",
+    "read one distinct v2.7 retention root and one distinct v2.5 source root through the unchanged v2.7 verification API",
+    "allow unchanged v2.7 and v2.5 verification calls to create file-fsync and remove their fixed transient operation locks"
+  ],
+  "handoffs":{
+    "emits":[
+      "axm.model-shadow-retention-audit-observation-ledger-observation/v1",
+      "axm.model-shadow-retention-audit-observation-ledger-snapshot/v1"
+    ],
+    "accepts":[
+      "one exact axm.model-shadow-history-checkpoint-retention-ledger-audit/v1 plus its complete live exact-rebuild input"
+    ]
+  },
+  "boundaries":{
+    "reads":[
+      "one explicit observation namespace with fixed manifest observations and operation-lock paths",
+      "one v2.7 retention ledger and one v2.5 source ledger only during capture exact-rebuild"
+    ],
+    "writes":[
+      "exclusive-create and file-fsync one canonical observation manifest after the first valid capture",
+      "exclusive-create and file-fsync one full minimized v2.7 audit observation per contiguous sequence",
+      "exclusive-create file-fsync and remove one fixed transient observation operation lock",
+      "only unchanged v2.7 and v2.5 transient verification locks outside the observation root; no durable upstream record"
+    ],
+    "refuses":[
+      "write-without-exact-explicit-unauthenticated-confirmation",
+      "missing-filesystem-root-filesystem-root-symbolic-link-or-junction-root",
+      "equal-or-nested-observation-retention-or-source-roots",
+      "caller-selected-namespace-or-record-path",
+      "v2.7-audit-that-does-not-exact-rebuild-from-live-retention-and-source-input",
+      "observation-time-before-v2.7-audit-or-log-or-not-strictly-after-prior-observation",
+      "retention-manifest-identity-change-within-one-observation-log",
+      "duplicate-observation-id-or-v2.7-audit-digest",
+      "overwrite-gap-extra-file-noncanonical-json-corrupt-digest-or-stale-lock",
+      "artifact-over-4-MiB-input-over-384-MiB-ledger-over-256-MiB-or-more-than-10000-observations",
+      "stored-observation-as-continuous-monitoring-of-later-source-or-retention-state",
+      "caller-owned-local-root-as-independent-external-retention",
+      "local-files-as-protected-monotonic-state-deletion-prevention-or-global-continuity",
+      "joint-source-retention-and-observation-root-loss-as-original-continuity",
+      "file-fsync-as-directory-entry-device-cache-hardware-or-power-loss-durability",
+      "equal-bracketing-reads-as-an-atomic-filesystem-snapshot",
+      "confirmation-string-as-host-actor-human-organization-or-policy-authentication",
+      "observation-as-human-review-provider-execution-evaluation-benefit-learning-adoption-promotion-merge-or-canon-authority",
+      "v2.7-audit-input-configured-path-private-key-raw-model-output-or-private-context-persistence",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle":{
+    "state_owner":"filesystem",
+    "state_owner_detail":"caller owns all three local roots; retained records contain the complete minimized v2.7 audit but not its exact-rebuild input or configured paths",
+    "reload":"resume",
+    "reload_detail":"fresh process validates canonical manifest and complete observation chain and returns exact stored v2.7 audits without either compared root",
+    "disconnect":"not-applicable",
+    "disconnect_detail":"no socket network provider or other-host transport is opened",
+    "cleanup":"explicit",
+    "cleanup_detail":"joint loss or replacement of source retention and observation roots defeats original local continuity",
+    "installed":false,
+    "promoted":false
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger",
+  "version":"v3.6",
+  "status":"TEST",
+  "provides":[
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.exact-v35-forward-transition-gate",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.explicit-configured-genesis-head",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.exact-anchored-package-local-head",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.exact-checkpoint-local-head",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.exact-caller-epoch-local-head",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.pinned-anchor-and-witness-policy-profiles",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.exclusive-local-sequence-append",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.canonical-manifest-entry-and-snapshot",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.successful-record-path-file-fsync-and-postwrite-reload",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.contiguous-sequence-reload",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.local-entry-digest-chain",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.fresh-process-inspect",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.caller-package-persisted-exact-rebuild",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.stale-local-head-refusal",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.same-previous-second-branch-refusal",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.replay-and-id-reuse-refusal",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.concurrent-writer-contention",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.independent-root-counterexample",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.deletion-and-rollback-counterexample",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.aggregate-resource-bounds",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.public-artifact-data-minimization",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.closed-artifact-schemas",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.authority-none",
+    "model.shadow.retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger.no-source-ledger-mutation",
+    "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger-manifest/v1",
+    "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger-entry/v1",
+    "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger-snapshot/v1"
+  ],
+  "consumes":[
+    "one existing explicit caller-owned local state root",
+    "one explicitly configured log id exact genesis anchored-checkpoint reference checkpoint reference and caller epoch",
+    "one exact v3.5 forward transition input and receipt as transient caller data",
+    "one entry id untrusted UTC recording time and exact explicit confirmation"
+  ],
+  "permissions":[
+    "read and exclusive-create files only beneath one fixed namespace in the explicit caller-owned state root",
+    "read caller-presented v3.5 and nested v3.4 packages transiently through unchanged exact-rebuild APIs"
+  ],
+  "handoffs":{
+    "emits":[
+      "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger-manifest/v1",
+      "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger-entry/v1",
+      "axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger-snapshot/v1"
+    ],
+    "accepts":[
+      "one exact current-local-head v3.5 forward anchored-history transition",
+      "one exact caller package for persisted-entry rebuild"
+    ]
+  },
+  "boundaries":{
+    "reads":[
+      "only the fixed manifest and entries namespace beneath explicit stateRoot",
+      "caller-presented upstream packages during record or persisted verification"
+    ],
+    "writes":[
+      "exclusive-create and file-fsync one canonical manifest in the fixed namespace",
+      "exclusive-create and file-fsync contiguous canonical sequence entries in the fixed entries directory"
+    ],
+    "refuses":[
+      "missing-nonexact-confirmation-or-invalid-nonforward-v35-transition",
+      "missing-filesystem-root-symbolic-link-junction-or-filesystem-root-state-root",
+      "caller-selected-namespace-manifest-or-entry-path",
+      "overwrite-gap-extra-file-noncanonical-json-corrupt-digest-or-reused-id",
+      "transition-that-does-not-consume-the-exact-current-anchored-package-checkpoint-and-epoch-head",
+      "anchor-or-witness-policy-identity-or-normalized-profile-drift",
+      "artifact-input-entry-count-or-aggregate-ledger-over-declared-bound",
+      "one-local-sequence-as-global-transition-uniqueness-withheld-branch-exclusion-or-globally-consistent-log",
+      "caller-owned-local-files-as-independent-external-retention-protected-monotonic-state-or-rollback-prevention",
+      "file-fsync-as-directory-entry-hardware-or-power-loss-durability",
+      "write-or-fsync-failure-as-proof-that-no-inspectable-file-remains",
+      "deletion-rollback-or-joint-root-replacement-as-excluded",
+      "confirmation-string-as-host-actor-human-organization-or-policy-authentication",
+      "caller-time-as-externally-trusted-time",
+      "stored-self-digest-as-upstream-exact-rebuild-without-caller-package",
+      "local-recording-as-retention-hold-resolution-provider-execution-evaluation-benefit-learning-execution-adoption-promotion-merge-or-canon-authority",
+      "raw-v34-package-public-key-signature-private-key-path-review-material-model-output-or-private-context-persistence",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle":{
+    "state_owner":"filesystem",
+    "state_owner_detail":"caller owns the local state root and retains upstream rebuild packages; the module stores minimized transition receipts and references only",
+    "reload":"resume",
+    "reload_detail":"fresh process validates canonical manifest contiguous entries digest chain stored transition self-digests pinned profiles and the derived exact local head",
+    "disconnect":"not-applicable",
+    "disconnect_detail":"no network provider source observer custody service or external trust root is opened",
+    "cleanup":"explicit",
+    "cleanup_detail":"deleting replacing or rolling back the caller-owned root can reopen an earlier branch and is outside module prevention authority",
+    "installed":false,
+    "promoted":false
+  },
+  "merge_gate":"Mike Tobi / AXM"
+}

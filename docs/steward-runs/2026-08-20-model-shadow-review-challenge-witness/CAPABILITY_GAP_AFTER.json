@@ -1,0 +1,352 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-checkpoint-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-checkpoint-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-exact-rebuild": [
+          "The stacked v0.3 observer validates exact checkpoint structure, truth boundary, canonical ordering, and self-digest without authenticating origin."
+        ]
+      }
+    },
+    {
+      "id": "checkpoint-specific-signature-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-checkpoint-detached-ed25519-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-detached-ed25519-verify": [
+          "The v0.4 leaf verifies canonical 64-byte detached Ed25519 signatures over checkpoint-specific attestation payloads."
+        ]
+      }
+    },
+    {
+      "id": "checkpoint-signature-threshold",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-checkpoint-threshold-signature-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-threshold-signature-verify": [
+          "All presented attestations must verify and satisfy a one-through-ten signature threshold with distinct keys and actor digests."
+        ]
+      }
+    },
+    {
+      "id": "checkpoint-policy-exact-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-checkpoint-exact-policy-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-exact-policy-bind": [
+          "Policy and attestations bind the exact checkpoint digest, ledger manifest digest, entries digest, scope, validity window, and policy digest."
+        ]
+      }
+    },
+    {
+      "id": "public-key-only-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-checkpoint-private-key-refusal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-private-key-refusal": [
+          "Runtime accepts only Ed25519 SPKI public-key PEM values and rejects private-key material."
+        ]
+      }
+    },
+    {
+      "id": "signing-key-possession-evidence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-checkpoint-signing-key-possession-evidence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-signing-key-possession-evidence": [
+          "Valid signatures prove possession of keys allowed by the exact caller policy, not host authority or real-world identity."
+        ]
+      }
+    },
+    {
+      "id": "privacy-bounded-witness-receipt",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-checkpoint-witness-privacy-boundary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-witness-privacy-boundary": [
+          "Witness receipts retain digested attestation/key identifiers, key fingerprints, and actor digests; they omit raw keys, signatures, state paths, and actor strings."
+        ]
+      }
+    },
+    {
+      "id": "witness-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-checkpoint-witness-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-checkpoint-witness-exact-rebuild": [
+          "Witness content and digest rebuild exactly from the checkpoint, exact policy, detached attestations, witness id, and caller verification time."
+        ]
+      }
+    },
+    {
+      "id": "witnessed-continuity-composition",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-witnessed-continuity-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witnessed-continuity-exact-rebuild": [
+          "A valid witness receipt must rebuild before its exact checkpoint can drive the stacked v0.3 continuity comparison."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-witnessed-comparison",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-witnessed-continuity-fresh-process"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witnessed-continuity-fresh-process": [
+          "Fresh Node processes verify the serialized witness package and audit exact, extended, missing, invalid, absent, and identity-drift synthetic ledger states without writing the ledger."
+        ]
+      }
+    },
+    {
+      "id": "relative-rollback-detection-from-witness",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-witnessed-rollback-detect-relative-to-signed-checkpoint"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witnessed-rollback-detect-relative-to-signed-checkpoint": [
+          "A missing challenge is detected relative to the exact checkpoint covered by the verified signatures; detection remains distinct from prevention."
+        ]
+      }
+    },
+    {
+      "id": "policy-swap-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-witness-policy-swap-nontrust-proof"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-policy-swap-nontrust-proof": [
+          "A counterexample proves that a replacement caller policy with its own keys can create a distinct valid witness, so caller policy is not promoted to host trust."
+        ]
+      }
+    },
+    {
+      "id": "witness-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-witness-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-authority-none": [
+          "Witness and audit receipts grant no host, identity, human, provider, execution, evaluation, adoption, installation, promotion, merge, Foundation, or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-witness-policy",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-witness-host-trust-root.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-host-trust-root.actual": [
+          "The v0.4 policy is explicitly caller-supplied and unauthenticated; no checkpoint-specific Mike- or host-promoted trust root was supplied."
+        ]
+      }
+    },
+    {
+      "id": "actual-external-witness-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-witness-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-external-retention.actual": [
+          "The selftest serializes a synthetic witness package outside the ledger namespace, but no independent store, receiver, or retention authority is proven."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-ledger-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-deletion-rollback-resistance.actual": [
+          "Signatures make alteration detectable relative to the original policy and witness; they do not prevent withholding, deletion, or joint replacement of caller-owned artifacts."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-real-world-signer",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-witness-signer-identity.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-signer-identity.actual": [
+          "Synthetic key possession does not authenticate the declared actor kind, real person, or host identity."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-witness-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-witness-time.external": [
+          "Validity-window checks use caller timestamps; no external trusted time receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "global-single-use",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-global-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-global-single-use.actual": [
+          "Comparison remains bound to one presented ledger identity and does not establish global challenge uniqueness."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only synthetic keys, actor kinds, and generated fixture approvals were used; no real person reviewed a current checkpoint or plan."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

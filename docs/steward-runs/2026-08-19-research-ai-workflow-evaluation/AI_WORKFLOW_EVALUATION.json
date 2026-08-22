@@ -1,0 +1,215 @@
+{
+  "schema": "axm.ai-workflow-evaluation/v1",
+  "version": "0.1.0",
+  "evaluationId": "grounded-research-steward-guard-20260819",
+  "generatedAt": "2026-08-19T09:58:00.000Z",
+  "beneficiary": "AI_WORKFLOW",
+  "workflow": "Bounded AI-assisted steward routing across claim, contradiction, reuse, deduplication, human-evidence, lifecycle, and evidence-closure situations.",
+  "proofSurface": "AI_WORKFLOW_EVALUATION",
+  "fixturePolicy": "These representative cases are frozen as data outside the decision functions. They come from existing Workshop situations, not from the supplied multi-model artifact outputs, and the evaluator does not tune or mutate them.",
+  "inputRefs": [
+    {
+      "id": "public-baseline-research-disposition",
+      "schema": "axm.research-disposition/v1",
+      "sha256": "sha256:1cc351246cfe6f2500de91b7e21d801520f26ee1e9455aecc081de49b9c01f5b"
+    },
+    {
+      "id": "grounded-research-steward-cases-20260819",
+      "schema": "axm.steward-workflow-case-set/v1",
+      "sha256": "sha256:217fa15846294e6f38c2dca889e2665948ad27ec29c860f47a69d58d1e2a4367"
+    },
+    {
+      "id": "research-ai-workflow-evaluator",
+      "schema": "text/javascript",
+      "sha256": "sha256:00e6b14f88821ca369f0d2b4019655d68f8a6420c4bbc74b91c220c5a7c5281f"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-5yff-current-reality-readme-md",
+      "schema": "text/markdown",
+      "sha256": "sha256:47ca39dd75bab57bd2c376edb81d1540f0f6f311d6d5309846c1fc22fc848e42"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-grounded-growth-feedback-evidence-routes-md",
+      "schema": "text/markdown",
+      "sha256": "sha256:85097271d888baa1913827555a1a1b14c0184ee9961343aa5a9451b8b1b54238"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-public-baseline-research-run-research-disposition-json",
+      "schema": "application/json",
+      "sha256": "sha256:1cc351246cfe6f2500de91b7e21d801520f26ee1e9455aecc081de49b9c01f5b"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-human-grounded-bridge-evidence-routes-md",
+      "schema": "text/markdown",
+      "sha256": "sha256:558c64964e1977f599c46562052b5265f605da3d5c920ce4ce5005601f277f12"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-grounded-growth-ai-workflow-evaluation-receipt-json",
+      "schema": "application/json",
+      "sha256": "sha256:5e2f3f837d835ee674505f3e5d1198b5c83b7fe8e56761cb32ff69758094647b"
+    }
+  ],
+  "baseline": {
+    "policyId": "STATUS_CONSENSUS_AND_LABEL_SHORTCUTS",
+    "description": "A bounded legacy shortcut accepts declarations, verdict labels, verification labels, proposals, or high-level goal overlap without the needed native evidence and authority checks.",
+    "correctDecisions": 2,
+    "totalDecisions": 8,
+    "unsupportedOrUnsafeDecisions": 6
+  },
+  "outcome": {
+    "policyId": "GROUNDED_RESEARCH_STEWARD_GUARD",
+    "description": "The guard routes claims to native evidence, preserves contradictions and distinct needs, reuses exact capabilities, refuses synthetic human evidence, and preserves the human steward gate.",
+    "correctDecisions": 8,
+    "totalDecisions": 8,
+    "unsupportedOrUnsafeDecisions": 0,
+    "newlyCorrectedDecisions": 6
+  },
+  "cases": [
+    {
+      "id": "roadmap-art-is-not-launch-proof",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-5yff-current-reality-readme-md",
+        "schema": "text/markdown",
+        "sha256": "sha256:47ca39dd75bab57bd2c376edb81d1540f0f6f311d6d5309846c1fc22fc848e42"
+      },
+      "expectedDecision": "WAIT_FOR_EVIDENCE",
+      "expectedRule": "CLAIM_NATIVE_EVIDENCE",
+      "baselineDecision": "CONTINUE_WITH_CLAIM",
+      "baselineRule": "STATUS_OR_ARTIFACT_SHORTCUT",
+      "candidateDecision": "WAIT_FOR_EVIDENCE",
+      "candidateRule": "CLAIM_NATIVE_EVIDENCE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "contradictory-supplier-status",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-5yff-current-reality-readme-md",
+        "schema": "text/markdown",
+        "sha256": "sha256:47ca39dd75bab57bd2c376edb81d1540f0f6f311d6d5309846c1fc22fc848e42"
+      },
+      "expectedDecision": "REPAIR_OR_VERIFY",
+      "expectedRule": "CONTRADICTION_REQUIRES_REPAIR",
+      "baselineDecision": "ACCEPT_DECLARATION",
+      "baselineRule": "LATEST_DECLARATION_SHORTCUT",
+      "candidateDecision": "REPAIR_OR_VERIFY",
+      "candidateRule": "CONTRADICTION_REQUIRES_REPAIR",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "similar-goals-distinct-needs",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-grounded-growth-feedback-evidence-routes-md",
+        "schema": "text/markdown",
+        "sha256": "sha256:85097271d888baa1913827555a1a1b14c0184ee9961343aa5a9451b8b1b54238"
+      },
+      "expectedDecision": "PRESERVE_BOTH",
+      "expectedRule": "EXACT_IDENTITY_BEFORE_DEDUPLICATION",
+      "baselineDecision": "SUPPRESS_AS_DUPLICATE",
+      "baselineRule": "GOAL_LABEL_DEDUPLICATION",
+      "candidateDecision": "PRESERVE_BOTH",
+      "candidateRule": "EXACT_IDENTITY_BEFORE_DEDUPLICATION",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "proposal-duplicates-existing-capability",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-public-baseline-research-run-research-disposition-json",
+        "schema": "application/json",
+        "sha256": "sha256:1cc351246cfe6f2500de91b7e21d801520f26ee1e9455aecc081de49b9c01f5b"
+      },
+      "expectedDecision": "REUSE_EXISTING",
+      "expectedRule": "REUSE_BEFORE_BUILD",
+      "baselineDecision": "BUILD_NEW",
+      "baselineRule": "PROPOSAL_FIRST_BUILD",
+      "candidateDecision": "REUSE_EXISTING",
+      "candidateRule": "REUSE_BEFORE_BUILD",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "synthetic-human-pass",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-human-grounded-bridge-evidence-routes-md",
+        "schema": "text/markdown",
+        "sha256": "sha256:558c64964e1977f599c46562052b5265f605da3d5c920ce4ce5005601f277f12"
+      },
+      "expectedDecision": "REFUSE_AS_HUMAN_EVIDENCE",
+      "expectedRule": "VOLUNTARY_HUMAN_EVIDENCE",
+      "baselineDecision": "ADMIT_HUMAN_PASS",
+      "baselineRule": "VERDICT_LABEL_SHORTCUT",
+      "candidateDecision": "REFUSE_AS_HUMAN_EVIDENCE",
+      "candidateRule": "VOLUNTARY_HUMAN_EVIDENCE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "verified-candidate-without-steward-decision",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-5yff-current-reality-readme-md",
+        "schema": "text/markdown",
+        "sha256": "sha256:47ca39dd75bab57bd2c376edb81d1540f0f6f311d6d5309846c1fc22fc848e42"
+      },
+      "expectedDecision": "AWAIT_STEWARD",
+      "expectedRule": "HUMAN_STEWARD_GATE",
+      "baselineDecision": "PROMOTE",
+      "baselineRule": "VERIFICATION_EQUALS_AUTHORITY",
+      "candidateDecision": "AWAIT_STEWARD",
+      "candidateRule": "HUMAN_STEWARD_GATE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "exact-active-need-duplicate",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-grounded-growth-feedback-evidence-routes-md",
+        "schema": "text/markdown",
+        "sha256": "sha256:85097271d888baa1913827555a1a1b14c0184ee9961343aa5a9451b8b1b54238"
+      },
+      "expectedDecision": "SUPPRESS_EXACT_DUPLICATE",
+      "expectedRule": "EXACT_ACTIVE_NEED_DEDUPLICATION",
+      "baselineDecision": "SUPPRESS_EXACT_DUPLICATE",
+      "baselineRule": "GOAL_LABEL_DEDUPLICATION",
+      "candidateDecision": "SUPPRESS_EXACT_DUPLICATE",
+      "candidateRule": "EXACT_ACTIVE_NEED_DEDUPLICATION",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    },
+    {
+      "id": "registered-source-remains-current",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-grounded-growth-ai-workflow-evaluation-receipt-json",
+        "schema": "application/json",
+        "sha256": "sha256:5e2f3f837d835ee674505f3e5d1198b5c83b7fe8e56761cb32ff69758094647b"
+      },
+      "expectedDecision": "CONTINUE",
+      "expectedRule": "CURRENT_CLOSURE_CAN_CONTINUE",
+      "baselineDecision": "CONTINUE",
+      "baselineRule": "CURRENT_CLOSURE_CAN_CONTINUE",
+      "candidateDecision": "CONTINUE",
+      "candidateRule": "CURRENT_CLOSURE_CAN_CONTINUE",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    }
+  ],
+  "verdict": "PASS",
+  "limitations": [
+    "No language model was invoked; this evaluates a deterministic guard for an AI-assisted workflow, not a model, provider, model weights, intelligence, or generalization.",
+    "The eight fixtures are representative existing Workshop situations, not a statistically sampled or independently blinded benchmark.",
+    "The baseline is an explicit shortcut policy used for comparison, not a claim about any named model or the current AXM steward implementation.",
+    "Passing these cases does not establish human benefit, production availability, permission, promotion, merge, or CANON status."
+  ],
+  "truth": {
+    "modelInvoked": false,
+    "modelWeightsChanged": false,
+    "modelGeneralizationClaimed": false,
+    "humanParticipant": false,
+    "humanBenefitClaimed": false,
+    "automaticExecution": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "receiptDigest": "sha256:3e88292fcf5177fd6214ac07547c508aff5cfd9f4097681bd78c9341c8c63395"
+}

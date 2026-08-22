@@ -1,0 +1,65 @@
+{
+  "schema":"axm.evidence-routes/v1",
+  "routes":[
+    {
+      "claimId":"typed-digest-verification",
+      "claim":"Only an exact v2.9 held-audit item with a recomputed canonical artifact digest becomes typed-view vote-ready.",
+      "kind":"deterministic behavior",
+      "risk":"high",
+      "passCondition":"Exact fixture returns VERIFIED; malformed identity, altered payload, artifact digest drift, item digest drift, oversized input, or authority inflation returns HOLD and never vote-ready.",
+      "primarySurface":"focused renderer execution with exact and corrupt fixtures",
+      "counterevidence":"any mismatched claimed held-audit item renders as verified or vote-ready",
+      "secondarySurface":"live browser exact and mismatch selections"
+    },
+    {
+      "claimId":"authority-boundary",
+      "claim":"The typed view adds no submission or review authority and explicitly preserves the unresolved hold.",
+      "kind":"authorization",
+      "risk":"high",
+      "passCondition":"Source adds no post route; rendered view says hold unresolved and approval grants no action; contract fixes submission identity review decision hold resolution execution and promotion outside scope.",
+      "primarySurface":"source contract and rendered-copy inspection",
+      "counterevidence":"the renderer submits votes claims identity resolves the hold or implies action authority",
+      "secondarySurface":"live visible exact-item panel"
+    },
+    {
+      "claimId":"desktop-review-journey",
+      "claim":"At desktop width a person can select a held audit and see its typed exact-digest decision context without losing raw evidence.",
+      "kind":"interaction journey",
+      "risk":"medium",
+      "passCondition":"After one selection the typed VERIFIED panel full digest classification best action boundaries and raw JSON are visible without clipping or overlap.",
+      "primarySurface":"live browser baseline selection settled screenshot and semantic snapshot",
+      "counterevidence":"panel is missing misleading clipped overlapping or replaces raw evidence",
+      "secondarySurface":"focused DOM and source assertions"
+    },
+    {
+      "claimId":"mismatch-journey",
+      "claim":"A digest-mismatched claimed held audit visibly fails closed and cannot be voted from the UI.",
+      "kind":"interaction journey",
+      "risk":"high",
+      "passCondition":"Selecting the corrupt fixture shows a HOLD integrity panel and the vote button remains disabled after verification settles.",
+      "primarySurface":"live browser mismatch selection plus control-disabled semantic state",
+      "counterevidence":"mismatch appears verified or enables the vote control",
+      "secondarySurface":"focused digest-corruption assertions"
+    },
+    {
+      "claimId":"narrow-responsive-view",
+      "claim":"The typed view remains readable at a narrow mobile-sized viewport.",
+      "kind":"visual appearance",
+      "risk":"medium",
+      "passCondition":"At 390 by 844 the panel becomes one column with wrapped digests and no horizontal page overflow or sticky-panel collision.",
+      "primarySurface":"live browser narrow viewport screenshot and layout measurements",
+      "counterevidence":"horizontal scroll clipped evidence hidden controls or overlap",
+      "secondarySurface":"responsive CSS inspection"
+    },
+    {
+      "claimId":"repository-regression",
+      "claim":"The additive renderer and minimal Review Inbox seams preserve inherited Workshop behavior.",
+      "kind":"deterministic behavior",
+      "risk":"medium",
+      "passCondition":"Focused Review Inbox v2.9 inherited all ten AGENTS evidence and detached replay commands exit zero on stable inputs.",
+      "primarySurface":"recorded command-result ledger",
+      "counterevidence":"any nonzero command or task-relevant moving-workspace conflict",
+      "secondarySurface":"final snapshot and clean detached replay"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.compact-snapshot-set/v1",
+  "title": "AXM Shadow Clone Compact Snapshot Set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "collectionId", "asOf", "authorization", "providerBoundary", "activeTaskAliases", "sourceDigests", "snapshots", "previousLedger", "limits", "retention"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.compact-snapshot-set/v1" },
+    "collectionId": { "$ref": "#/$defs/id" },
+    "asOf": { "type": "string", "format": "date-time" },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority", "scope", "authorizationReceiptDigest", "declaredConsent"],
+      "properties": {
+        "authority": { "const": "MIKE_DECLARED" },
+        "scope": { "const": "ACTIVE_AXM_CODEX_COMPACT_LEARNING" },
+        "authorizationReceiptDigest": { "$ref": "#/$defs/digest" },
+        "declaredConsent": { "const": true }
+      }
+    },
+    "providerBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "capabilityReceiptDigest", "automaticEnumeration", "taskHistoryRead", "compactSnapshotsOnly", "crossTaskMessaging", "credentialInspection", "rawTaskDataPresent"],
+      "properties": {
+        "mode": { "const": "HOST_SUPPLIED_REDACTED_COMPACT_SNAPSHOTS" },
+        "capabilityReceiptDigest": { "$ref": "#/$defs/digest" },
+        "automaticEnumeration": { "type": "boolean" },
+        "taskHistoryRead": { "const": false },
+        "compactSnapshotsOnly": { "const": true },
+        "crossTaskMessaging": { "const": false },
+        "credentialInspection": { "const": false },
+        "rawTaskDataPresent": { "const": false }
+      }
+    },
+    "activeTaskAliases": { "type": "array", "minItems": 2, "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "sourceDigests": { "type": "array", "minItems": 2, "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/digest" } },
+    "snapshots": { "type": "array", "minItems": 2, "maxItems": 64, "items": { "$ref": "#/$defs/snapshot" } },
+    "previousLedger": { "oneOf": [{ "type": "null" }, { "type": "object" }] },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxCycles", "maxLessons", "maxSignals", "maxActiveTasks"],
+      "properties": {
+        "maxCycles": { "type": "integer", "minimum": 1, "maximum": 32 },
+        "maxLessons": { "type": "integer", "minimum": 1, "maximum": 256 },
+        "maxSignals": { "type": "integer", "minimum": 2, "maximum": 8192 },
+        "maxActiveTasks": { "type": "integer", "minimum": 2, "maximum": 64 }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["localOnly", "rawTaskDataRetained", "retainUntil", "refreshAfter"],
+      "properties": {
+        "localOnly": { "const": true },
+        "rawTaskDataRetained": { "const": false },
+        "retainUntil": { "type": "string", "format": "date-time" },
+        "refreshAfter": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alias", "role", "status"],
+      "properties": {
+        "alias": { "$ref": "#/$defs/id" },
+        "role": { "enum": ["BUILDER", "TESTER", "STEWARD"] },
+        "status": { "enum": ["ACTIVE", "COMPLETE", "NEEDS_ATTENTION"] }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotId", "sourceKind", "sourceDigest", "sourceVersion", "task", "observedAt", "expiresAt", "observations", "userFeedback", "verifications", "declaredLimits"],
+      "properties": {
+        "snapshotId": { "$ref": "#/$defs/id" },
+        "sourceKind": { "enum": ["COMPACT_TASK_SNAPSHOT", "FINAL_SUMMARY", "HANDOFF_RECEIPT", "TEST_RECEIPT", "DIFF_RECEIPT", "DECLARED_USER_FEEDBACK"] },
+        "sourceDigest": { "$ref": "#/$defs/digest" },
+        "sourceVersion": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "task": { "$ref": "#/$defs/task" },
+        "observedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "observations": { "type": "array", "maxItems": 128, "items": { "type": "object" } },
+        "userFeedback": { "type": "array", "maxItems": 64, "items": { "type": "object" } },
+        "verifications": { "type": "array", "maxItems": 64, "items": { "type": "object" } },
+        "declaredLimits": { "type": "array", "maxItems": 64, "items": { "type": "string", "minLength": 1, "maxLength": 1000 } }
+      }
+    }
+  }
+}
+

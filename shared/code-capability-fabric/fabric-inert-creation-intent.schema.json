@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabric-inert-creation-intent/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "name", "purpose", "capability", "status", "template", "authority", "intentDigest"],
+  "properties": {
+    "schema": {"const": "axm.fabric-inert-creation-intent/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 120},
+    "purpose": {"type": "string", "minLength": 1, "maxLength": 600},
+    "capability": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{1,127}$"},
+    "status": {"const": "EXPERIMENTAL"},
+    "template": {"const": "STATIC_HTML_MODULE_SHELL"},
+    "authority": {"const": "NONE"},
+    "intentDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}

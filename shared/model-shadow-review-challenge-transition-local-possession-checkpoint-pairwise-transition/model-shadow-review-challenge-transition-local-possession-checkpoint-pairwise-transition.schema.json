@@ -1,0 +1,281 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition/v1",
+  "title": "Model Shadow local possession checkpoint pairwise transition receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "transitionId", "comparedAt", "status",
+    "previousSeparatedWitnessRef", "candidateSeparatedWitnessRef",
+    "anchorTransition", "witnessPolicyTransition", "receiverContextTransition",
+    "previousCheckpointRef", "candidateCheckpointRef", "comparison", "decision",
+    "state", "nextGate", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition/v1" },
+    "version": { "const": "1.8.0" },
+    "transitionId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "comparedAt": { "$ref": "#/$defs/timestamp" },
+    "status": { "const": "TEST" },
+    "previousSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "candidateSeparatedWitnessRef": { "$ref": "#/$defs/reference" },
+    "anchorTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "previousAnchorRef", "candidateAnchorRef", "previousSelfDeclaredEpoch",
+        "candidateSelfDeclaredEpoch", "relation"
+      ],
+      "properties": {
+        "previousAnchorRef": { "$ref": "#/$defs/reference" },
+        "candidateAnchorRef": { "$ref": "#/$defs/reference" },
+        "previousSelfDeclaredEpoch": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "candidateSelfDeclaredEpoch": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "relation": { "enum": ["ROLLBACK_SELF_DECLARED", "SAME_SELF_DECLARED_EPOCH", "ADVANCED_SELF_DECLARED"] }
+      }
+    },
+    "witnessPolicyTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["previousWitnessPolicyRef", "candidateWitnessPolicyRef"],
+      "properties": {
+        "previousWitnessPolicyRef": { "$ref": "#/$defs/reference" },
+        "candidateWitnessPolicyRef": { "$ref": "#/$defs/reference" }
+      }
+    },
+    "receiverContextTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "previousReceiverIdDigest", "candidateReceiverIdDigest",
+        "previousChallengerIdDigest", "candidateChallengerIdDigest",
+        "previousReceiverPolicyRef", "candidateReceiverPolicyRef"
+      ],
+      "properties": {
+        "previousReceiverIdDigest": { "$ref": "#/$defs/digest" },
+        "candidateReceiverIdDigest": { "$ref": "#/$defs/digest" },
+        "previousChallengerIdDigest": { "$ref": "#/$defs/digest" },
+        "candidateChallengerIdDigest": { "$ref": "#/$defs/digest" },
+        "previousReceiverPolicyRef": { "$ref": "#/$defs/reference" },
+        "candidateReceiverPolicyRef": { "$ref": "#/$defs/reference" }
+      }
+    },
+    "previousCheckpointRef": { "$ref": "#/$defs/reference" },
+    "candidateCheckpointRef": { "$ref": "#/$defs/reference" },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anchorIdentityMatches", "witnessPolicyIdentityMatches",
+        "declaredReceiverDigestMatches", "declaredChallengerDigestMatches",
+        "receiverPolicyMatches", "candidateVerificationTimePrecedesPrevious",
+        "candidateCheckpointTimePrecedesPrevious", "sameAnchorDigest",
+        "sameWitnessPolicyDigest", "sameCheckpointDigest",
+        "sameSeparatedReceiptDigest", "missingPreviousChallenges",
+        "replacedPreviousResponses", "addedCandidateChallenges"
+      ],
+      "properties": {
+        "anchorIdentityMatches": { "type": "boolean" },
+        "witnessPolicyIdentityMatches": { "type": "boolean" },
+        "declaredReceiverDigestMatches": { "type": "boolean" },
+        "declaredChallengerDigestMatches": { "type": "boolean" },
+        "receiverPolicyMatches": { "type": "boolean" },
+        "candidateVerificationTimePrecedesPrevious": { "type": "boolean" },
+        "candidateCheckpointTimePrecedesPrevious": { "type": "boolean" },
+        "sameAnchorDigest": { "type": "boolean" },
+        "sameWitnessPolicyDigest": { "type": "boolean" },
+        "sameCheckpointDigest": { "type": "boolean" },
+        "sameSeparatedReceiptDigest": { "type": "boolean" },
+        "missingPreviousChallenges": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/digest" }
+        },
+        "replacedPreviousResponses": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "challengeDigest", "previousEntryDigest", "candidateEntryDigest",
+              "previousResponseDigest", "candidateResponseDigest",
+              "previousCustodyRecordDigest", "candidateCustodyRecordDigest",
+              "previousAnsweredAt", "candidateAnsweredAt"
+            ],
+            "properties": {
+              "challengeDigest": { "$ref": "#/$defs/digest" },
+              "previousEntryDigest": { "$ref": "#/$defs/digest" },
+              "candidateEntryDigest": { "$ref": "#/$defs/digest" },
+              "previousResponseDigest": { "$ref": "#/$defs/digest" },
+              "candidateResponseDigest": { "$ref": "#/$defs/digest" },
+              "previousCustodyRecordDigest": { "$ref": "#/$defs/digest" },
+              "candidateCustodyRecordDigest": { "$ref": "#/$defs/digest" },
+              "previousAnsweredAt": { "$ref": "#/$defs/timestamp" },
+              "candidateAnsweredAt": { "$ref": "#/$defs/timestamp" }
+            }
+          }
+        },
+        "addedCandidateChallenges": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/digest" }
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification", "pairwiseConsistency", "forwardTransitionAdmissible",
+        "reviewRequired", "bestAction", "autonomousActionCount"
+      ],
+      "properties": {
+        "classification": { "enum": [
+          "PRESENTED_POSSESSION_CHAIN_EXACT_REPLAY",
+          "CANDIDATE_EXTENDS_PRESENTED_POSSESSION_CHAIN",
+          "HOLD_ANCHOR_IDENTITY_DRIFT",
+          "HOLD_WITNESS_POLICY_IDENTITY_DRIFT",
+          "HOLD_DECLARED_RECEIVER_DIGEST_DRIFT",
+          "HOLD_DECLARED_CHALLENGER_DIGEST_DRIFT",
+          "HOLD_RECEIVER_POLICY_DRIFT",
+          "HOLD_PRESENTED_TIME_ROLLBACK",
+          "HOLD_SELF_DECLARED_ANCHOR_EPOCH_ROLLBACK",
+          "HOLD_ANCHOR_EQUIVOCATION_AT_SELF_DECLARED_EPOCH",
+          "HOLD_CHECKPOINT_ID_EQUIVOCATION",
+          "HOLD_ALTERNATE_SEPARATED_CHAIN_FOR_SAME_CHECKPOINT",
+          "HOLD_CHECKPOINT_TIME_COLLISION",
+          "HOLD_CANDIDATE_REMOVES_OR_REPLACES_PRIOR_RESPONSES",
+          "HOLD_CHECKPOINT_CHANGED_WITHOUT_RESPONSE_EXTENSION"
+        ] },
+        "pairwiseConsistency": { "enum": ["CONSISTENT_REPLAY", "CONSISTENT_EXTENSION", "CONTRADICTION"] },
+        "forwardTransitionAdmissible": { "type": "boolean" },
+        "reviewRequired": { "type": "boolean" },
+        "bestAction": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "autonomousActionCount": { "const": 0 }
+      }
+    },
+    "state": { "const": "PAIRWISE_LOCAL_POSSESSION_SEPARATED_CHAIN_TRANSITION_COMPARED_GLOBAL_FORK_ABSENCE_NOT_PROVEN" },
+    "nextGate": { "const": "HOST_AUTHENTICATED_EXTERNALLY_RETAINED_GLOBALLY_CONSISTENT_LOCAL_POSSESSION_TRANSITION_LOG_OR_PROTECTED_MONOTONIC_STORE" },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "previousSeparatedChainVerifiedByExactRebuild", "candidateSeparatedChainVerifiedByExactRebuild",
+        "previousAnchoredWitnessVerifiedByExactRebuild", "candidateAnchoredWitnessVerifiedByExactRebuild",
+        "sourceSnapshotsPresentedByReferenceOnly", "sourceStateRecapturedByThisModule",
+        "presentedCheckpointSourceTruthIndependentlyProven",
+        "pairwiseComparisonOnly", "pairwiseAnchorIdentityMatches",
+        "pairwiseWitnessPolicyIdentityMatches", "pairwiseDeclaredReceiverDigestMatches",
+        "pairwiseDeclaredChallengerDigestMatches", "pairwiseReceiverPolicyMatches",
+        "witnessPolicyDigestChangedForCandidate", "exactPresentedReplayObserved",
+        "forwardExtensionObserved", "pairwiseConflictOrContradictionDetected",
+        "priorResponseRemovalOrReplacementDetected", "anchorEpochSelfDeclared",
+        "anchorEpochRollbackObserved", "sameEpochAnchorEquivocationObserved",
+        "checkpointIdEquivocationObserved", "anchorEpochMonotonicityProven",
+        "withheldForksExcluded", "unpresentedBranchesExcluded",
+        "globalTransitionUniquenessProven", "globallyConsistentTransitionLogProven",
+        "externalTransitionRetentionProven", "protectedMonotonicStateProven",
+        "keyCustodyIndependenceProven", "realWorldControllerIndependenceProven",
+        "sameControllerWithDistinctKeysStillPossible", "declaredPrincipalDigestsAuthenticated",
+        "crossLayerCollusionExcluded", "witnessPolicyReplacementPrevented",
+        "jointAnchorPinAndWitnessPolicySubstitutionStillPossible",
+        "anchorPolicyAuthorityAuthenticated", "expectedAnchorDigestAuthorityAuthenticated",
+        "witnessPolicyAuthorityAuthenticated", "anchorOriginAuthenticatedByHost",
+        "actualHumanParticipationProven", "comparisonTimeExternallyTrusted",
+        "deletionOrRollbackPrevented", "hostAuthorizationAuthenticated",
+        "rawPrincipalIdentityEmbedded", "rawPublicKeyEmbedded", "rawSignatureEmbedded",
+        "rawConfiguredPartyLabelEmbedded", "stateRootPathEmbedded",
+        "rawCustodyRecordEmbedded", "rawAssessmentReceiptEmbedded", "privateKeyIngested",
+        "rawModelOutputEmbedded", "privateContextEmbedded", "experimentExecuted",
+        "evaluationPerformed", "executionAuthorized", "adoptionAuthorized",
+        "humanBenefitProven", "broadLearningClaimed", "automaticWrite",
+        "automaticPermissionGrant", "automaticPromotion", "automaticMerge",
+        "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "previousSeparatedChainVerifiedByExactRebuild": { "const": true },
+        "candidateSeparatedChainVerifiedByExactRebuild": { "const": true },
+        "previousAnchoredWitnessVerifiedByExactRebuild": { "const": true },
+        "candidateAnchoredWitnessVerifiedByExactRebuild": { "const": true },
+        "sourceSnapshotsPresentedByReferenceOnly": { "const": true },
+        "sourceStateRecapturedByThisModule": { "const": false },
+        "presentedCheckpointSourceTruthIndependentlyProven": { "const": false },
+        "pairwiseComparisonOnly": { "const": true },
+        "pairwiseAnchorIdentityMatches": { "type": "boolean" },
+        "pairwiseWitnessPolicyIdentityMatches": { "type": "boolean" },
+        "pairwiseDeclaredReceiverDigestMatches": { "type": "boolean" },
+        "pairwiseDeclaredChallengerDigestMatches": { "type": "boolean" },
+        "pairwiseReceiverPolicyMatches": { "type": "boolean" },
+        "witnessPolicyDigestChangedForCandidate": { "type": "boolean" },
+        "exactPresentedReplayObserved": { "type": "boolean" },
+        "forwardExtensionObserved": { "type": "boolean" },
+        "pairwiseConflictOrContradictionDetected": { "type": "boolean" },
+        "priorResponseRemovalOrReplacementDetected": { "type": "boolean" },
+        "anchorEpochSelfDeclared": { "const": true },
+        "anchorEpochRollbackObserved": { "type": "boolean" },
+        "sameEpochAnchorEquivocationObserved": { "type": "boolean" },
+        "checkpointIdEquivocationObserved": { "type": "boolean" },
+        "anchorEpochMonotonicityProven": { "const": false },
+        "withheldForksExcluded": { "const": false },
+        "unpresentedBranchesExcluded": { "const": false },
+        "globalTransitionUniquenessProven": { "const": false },
+        "globallyConsistentTransitionLogProven": { "const": false },
+        "externalTransitionRetentionProven": { "const": false },
+        "protectedMonotonicStateProven": { "const": false },
+        "keyCustodyIndependenceProven": { "const": false },
+        "realWorldControllerIndependenceProven": { "const": false },
+        "sameControllerWithDistinctKeysStillPossible": { "const": true },
+        "declaredPrincipalDigestsAuthenticated": { "const": false },
+        "crossLayerCollusionExcluded": { "const": false },
+        "witnessPolicyReplacementPrevented": { "const": false },
+        "jointAnchorPinAndWitnessPolicySubstitutionStillPossible": { "const": true },
+        "anchorPolicyAuthorityAuthenticated": { "const": false },
+        "expectedAnchorDigestAuthorityAuthenticated": { "const": false },
+        "witnessPolicyAuthorityAuthenticated": { "const": false },
+        "anchorOriginAuthenticatedByHost": { "const": false },
+        "actualHumanParticipationProven": { "const": false },
+        "comparisonTimeExternallyTrusted": { "const": false },
+        "deletionOrRollbackPrevented": { "const": false },
+        "hostAuthorizationAuthenticated": { "const": false },
+        "rawPrincipalIdentityEmbedded": { "const": false },
+        "rawPublicKeyEmbedded": { "const": false },
+        "rawSignatureEmbedded": { "const": false },
+        "rawConfiguredPartyLabelEmbedded": { "const": false },
+        "stateRootPathEmbedded": { "const": false },
+        "rawCustodyRecordEmbedded": { "const": false },
+        "rawAssessmentReceiptEmbedded": { "const": false },
+        "privateKeyIngested": { "const": false },
+        "rawModelOutputEmbedded": { "const": false },
+        "privateContextEmbedded": { "const": false },
+        "experimentExecuted": { "const": false },
+        "evaluationPerformed": { "const": false },
+        "executionAuthorized": { "const": false },
+        "adoptionAuthorized": { "const": false },
+        "humanBenefitProven": { "const": false },
+        "broadLearningClaimed": { "const": false },
+        "automaticWrite": { "const": false },
+        "automaticPermissionGrant": { "const": false },
+        "automaticPromotion": { "const": false },
+        "automaticMerge": { "const": false },
+        "automaticCanon": { "const": false },
+        "foundationMutation": { "const": false }
+      }
+    },
+    "receiptDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabric-blueprint-acceptance-matrix/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "blueprintRef", "interfaceSchemaRefs", "cases", "desiredOutcomeReviews", "rootsGate", "truth", "authority", "matrixDigest"],
+  "properties": {
+    "schema": {"const": "axm.fabric-blueprint-acceptance-matrix/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "TEST_PLAN_ONLY"},
+    "blueprintRef": {"$ref": "#/$defs/reference"},
+    "interfaceSchemaRefs": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/reference"}},
+    "cases": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/case"}},
+    "desiredOutcomeReviews": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "#/$defs/outcome"}},
+    "rootsGate": {"const": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"]},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blueprintLineageVerified", "inputSchemaGenerated", "outputSchemaGenerated", "acceptanceCasesRouted", "anyAcceptanceCaseExecuted", "semanticBehaviorImplemented", "runtimeQualityProven", "humanQualityApproved"],
+      "properties": {
+        "blueprintLineageVerified": {"const": true},
+        "inputSchemaGenerated": {"const": true},
+        "outputSchemaGenerated": {"const": true},
+        "acceptanceCasesRouted": {"const": true},
+        "anyAcceptanceCaseExecuted": {"const": false},
+        "semanticBehaviorImplemented": {"const": false},
+        "runtimeQualityProven": {"const": false},
+        "humanQualityApproved": {"const": false}
+      }
+    },
+    "authority": {"const": "NONE"},
+    "matrixDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 220},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "claim", "sourceStatus", "evidenceRequired", "evidenceKind", "evidenceArtifactRefs", "verdict"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+        "claim": {"type": "string", "minLength": 1, "maxLength": 500},
+        "sourceStatus": {"enum": ["COMPOSER_VALIDATED", "PLANNED"]},
+        "evidenceRequired": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,99}$"},
+        "evidenceKind": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,99}$"},
+        "evidenceArtifactRefs": {"type": "array", "maxItems": 1, "items": {"$ref": "#/$defs/reference"}},
+        "verdict": {"const": "UNRUN"}
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim", "sourceStatus", "reviewStatus"],
+      "properties": {
+        "claim": {"type": "string", "minLength": 1, "maxLength": 360},
+        "sourceStatus": {"const": "UNPROVEN"},
+        "reviewStatus": {"const": "HUMAN_REVIEW_REQUIRED"}
+      }
+    }
+  }
+}

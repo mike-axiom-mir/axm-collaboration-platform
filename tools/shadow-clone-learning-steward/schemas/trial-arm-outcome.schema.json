@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.trial-arm-outcome/v1",
+  "title": "AXM Shadow Clone Held-Out Trial Arm Outcome",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptDigest", "outcomeId", "assignmentDigest", "caseAlias", "arm", "recipientAlias", "baseContextDigest", "completedAt", "finalSummaryDigest", "outcomeDigest", "testReceiptDigest", "primaryOutcomeVerified", "lessonUse"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.trial-arm-outcome/v1" },
+    "receiptDigest": { "$ref": "#/$defs/digest" },
+    "outcomeId": { "$ref": "#/$defs/id" },
+    "assignmentDigest": { "$ref": "#/$defs/digest" },
+    "caseAlias": { "$ref": "#/$defs/id" },
+    "arm": { "enum": ["BASELINE", "LEARNING_ROUTE"] },
+    "recipientAlias": { "$ref": "#/$defs/id" },
+    "baseContextDigest": { "$ref": "#/$defs/digest" },
+    "completedAt": { "type": "string", "format": "date-time" },
+    "finalSummaryDigest": { "$ref": "#/$defs/digest" },
+    "outcomeDigest": { "$ref": "#/$defs/digest" },
+    "testReceiptDigest": { "$ref": "#/$defs/digest" },
+    "primaryOutcomeVerified": { "const": true },
+    "lessonUse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateDigest", "recipientElectedUse", "automaticPromptRewrite"],
+      "properties": {
+        "candidateDigest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] },
+        "recipientElectedUse": { "type": "boolean" },
+        "automaticPromptRewrite": { "const": false }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

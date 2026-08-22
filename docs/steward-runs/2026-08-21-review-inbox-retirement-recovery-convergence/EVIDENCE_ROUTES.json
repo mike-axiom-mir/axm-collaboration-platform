@@ -1,0 +1,99 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "parent-resume-race",
+      "kind": "behavioral",
+      "claim": "The exact parent surfaces raw ENOENT in the lease-move race.",
+      "evidence": [
+        "CONVERGENCE_REPRODUCTION.json#/baseline/resume"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Synthetic deterministic interleaving does not prove production frequency."
+    },
+    {
+      "id": "parent-finalize-race",
+      "kind": "behavioral",
+      "claim": "The exact parent surfaces raw EEXIST in the result race.",
+      "evidence": [
+        "CONVERGENCE_REPRODUCTION.json#/baseline/finalize"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Synthetic deterministic interleaving does not prove production frequency."
+    },
+    {
+      "id": "product-reentrant-convergence",
+      "kind": "behavioral",
+      "claim": "Both product checkpoints converge without raw race errors.",
+      "evidence": [
+        "CONVERGENCE_REPRODUCTION.json#/product",
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "This covers cooperating single-host exact callers only."
+    },
+    {
+      "id": "product-real-process-convergence",
+      "kind": "behavioral",
+      "claim": "Two real processes converge at both product checkpoints.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "No multi-host or network-filesystem behavior is tested."
+    },
+    {
+      "id": "corrupt-collision-holds",
+      "kind": "technical",
+      "claim": "Invalid result and corrupt quarantine collisions remain typed holds.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Unknown I/O failures outside recognized checkpoint races may still surface."
+    },
+    {
+      "id": "contract-truth-ceiling",
+      "kind": "authorization",
+      "claim": "The runtime and public contract deny broader authority and safety claims.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "No authenticated human review or CANON decision occurred."
+    },
+    {
+      "id": "required-repository-checks",
+      "kind": "technical",
+      "claim": "All ten required checks exit zero.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Script checks are not a browser render/click test."
+    },
+    {
+      "id": "clean-product-replay",
+      "kind": "persistence",
+      "claim": "The exact archived product slice replays seven checks without tracked mutation.",
+      "evidence": [
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The replay is a bounded dependency slice, not the entire repository."
+    },
+    {
+      "id": "aggregate-operations-nonpass",
+      "kind": "technical",
+      "claim": "Aggregate operations remains nonpassing at an unchanged missing curated intake.",
+      "evidence": [
+        "AGGREGATE_OPERATIONS_PROBE.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The aggregate command is not claimed as passing."
+    }
+  ],
+  "routesDigest": "sha256:207c7259cb864fb58e360aa324a30f3b2c732c651f4020fd6fc24554bc418bc0"
+}

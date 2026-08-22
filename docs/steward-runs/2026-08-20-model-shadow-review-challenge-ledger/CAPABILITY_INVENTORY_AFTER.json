@@ -1,0 +1,90 @@
+{
+  "schema": "axm.capability-inventory/v1",
+  "capabilities": [
+    {
+      "id": "model.shadow.review.signed-receipt-exact-rebuild",
+      "status": "available",
+      "constraints": ["The stacked v0.1 signed-review leaf rebuilds detached Ed25519 evidence under a caller-supplied unauthenticated policy."]
+    },
+    {
+      "id": "model.shadow.review.challenge-explicit-confirmation",
+      "status": "available",
+      "constraints": ["The exact phrase CONSUME SIGNED REVIEW CHALLENGE ONCE is required before any ledger directory or entry write."]
+    },
+    {
+      "id": "model.shadow.review.challenge-ledger-id-immutable-bind",
+      "status": "available",
+      "constraints": ["A create-once, file-synced manifest binds one caller ledger id to the state root; the id and root authenticate no host."]
+    },
+    {
+      "id": "model.shadow.review.challenge-exclusive-create",
+      "status": "available",
+      "constraints": ["One append-only file per challenge digest is created with filesystem wx semantics and file fsync."]
+    },
+    {
+      "id": "model.shadow.review.challenge-replay-refusal-while-state-preserved",
+      "status": "available",
+      "constraints": ["An existing valid entry refuses replay only while the caller-owned ledger state is preserved."]
+    },
+    {
+      "id": "model.shadow.review.challenge-fresh-process-replay-refusal",
+      "status": "available",
+      "constraints": ["A second Node process reloads the same state root and receives CHALLENGE_ALREADY_CONSUMED in the synthetic filesystem test."]
+    },
+    {
+      "id": "model.shadow.review.challenge-concurrent-single-winner",
+      "status": "available",
+      "constraints": ["Two concurrent Node processes produce exactly one exclusive-create winner and one typed replay loser for the same challenge in the synthetic test."]
+    },
+    {
+      "id": "model.shadow.review.challenge-corruption-fail-closed",
+      "status": "available",
+      "constraints": ["Corrupt JSON, strict truth-boundary tampering, missing manifests with existing state, and conflicting ledger ids block reuse and require steward repair."]
+    },
+    {
+      "id": "model.shadow.review.execution-authority-none",
+      "status": "available",
+      "constraints": ["Challenge consumption grants no provider, experiment, evaluation, adoption, promotion, merge, Foundation, or CANON authority."]
+    },
+    {
+      "id": "model.shadow.review.challenge-consumption-receipt-exact-rebuild",
+      "status": "available",
+      "constraints": ["The bounded consumption receipt rebuilds from the exact signed-review input, receipt, caller ledger id, confirmation, and caller time."]
+    },
+    {
+      "id": "model.shadow.review.challenge-deletion-rollback-resistance.actual",
+      "status": "unknown",
+      "constraints": ["The selftest demonstrates that deleting the caller-owned namespace reopens the same challenge; no protected storage is claimed."]
+    },
+    {
+      "id": "model.shadow.review.challenge-global-single-use.actual",
+      "status": "unknown",
+      "constraints": ["The selftest demonstrates that the same challenge can be consumed in a different state root."]
+    },
+    {
+      "id": "model.shadow.review.host-trust-anchor.actual",
+      "status": "unknown",
+      "constraints": ["No Mike- or host-provisioned reviewer trust root or host authorization service was supplied or inspected."]
+    },
+    {
+      "id": "model.shadow.challenger.human-review.actual",
+      "status": "unknown",
+      "constraints": ["Only generated Ed25519 keys and synthetic approvals were used; no real person reviewed a current plan."]
+    },
+    {
+      "id": "model.shadow.challenger.shadow-execution.actual",
+      "status": "unknown",
+      "constraints": ["No model provider or shadow experiment was invoked."]
+    },
+    {
+      "id": "model.shadow.challenger.evaluation.actual",
+      "status": "unknown",
+      "constraints": ["No current baseline/challenger evaluation was executed or supplied."]
+    },
+    {
+      "id": "model.shadow.challenger.human-benefit.held-out",
+      "status": "unknown",
+      "constraints": ["No voluntary held-out human outcome was observed."]
+    }
+  ]
+}

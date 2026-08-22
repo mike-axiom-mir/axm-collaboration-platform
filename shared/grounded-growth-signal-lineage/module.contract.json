@@ -1,0 +1,54 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "grounded-growth-signal-lineage",
+  "version": "v0.2",
+  "status": "TEST",
+  "provides": [
+    "growth.knowledge-signal-lineage.build",
+    "growth.knowledge-signal-lineage.verify",
+    "growth.knowledge-signal-lineage.coverage",
+    "growth.knowledge-signal-lineage.current-evidence-bind",
+    "growth.knowledge-signal-lineage.human-hold",
+    "growth.knowledge-signal-lineage.proposal-non-action",
+    "growth.knowledge-signal-lineage.detached-integrity",
+    "axm.grounded-growth-signal-lineage-receipt/v1"
+  ],
+  "consumes": [
+    "axm.research-disposition/v1",
+    "axm.grounded-growth-portfolio/v1",
+    "digest-bound current evidence references",
+    "explicit signal and proposal lineage declarations",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.grounded-growth-signal-lineage-receipt/v1"],
+    "accepts": ["exact current disposition, native-valid portfolio, and bounded lineage declarations"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "missing-signal-lineage",
+      "missing-proposal-lineage",
+      "unknown-evidence-reference",
+      "stale-outcome-or-claim-binding",
+      "unknown-human-signal-as-technical-closure",
+      "human-readiness-as-human-benefit",
+      "rejected-proposal-as-action",
+      "deferred-signal-ledger-as-implemented",
+      "portable-integrity-as-source-truth",
+      "automatic-participation",
+      "automatic-execution",
+      "automatic-promotion",
+      "automatic-canon",
+      "foundation-mutation",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "exact rebuild from current explicit inputs",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

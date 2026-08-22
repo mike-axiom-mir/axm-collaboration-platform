@@ -1,0 +1,86 @@
+{
+  "schema": "axm.code-capability-fabric-static-review-findings/v1",
+  "generatedAt": "2026-08-22T09:00:00.000Z",
+  "disposition": "USEFUL_ARCHITECTURE_RUNTIME_REPAIR_REQUIRED",
+  "workingStatic": [
+    "Both archives have safe structure, exact stable outer digests, and internally exact module bundles.",
+    "Both candidates pass the Workshop's existing Detached Candidate Nursery structural inspection without executing candidate code.",
+    "v0.2 is an additive file evolution from v0.1 with no removed files.",
+    "Provider-neutral capability identifiers, deterministic provider selection, candidate-only mutation, fixed node:test invocation, explicit resource profiles, and proposal-only integration are useful patterns.",
+    "The package accurately admits that lexical maps are not semantic graphs, resource profiles are not reservations, filename filtering is not complete secret detection, and logical enclosure is not an OS sandbox."
+  ],
+  "repairRequired": [
+    {
+      "code": "RUN_OUTPUT_REPLACES_PRIOR_EVIDENCE",
+      "severity": "HIGH",
+      "evidence": "lib/pipeline.js:169-171; lib/enclave.js:17-20",
+      "detail": "A repeated task deletes the previous candidate and evidence directories. The receipt Hand declares append-new-records, but the orchestrator removes the record set first. This breaks append-only continuity and can erase dissent or prior failure evidence."
+    },
+    {
+      "code": "SOURCE_OUTPUT_DISJOINTNESS_NOT_ENFORCED",
+      "severity": "HIGH",
+      "evidence": "lib/enclave.js:8-22",
+      "detail": "outputRoot is not proven disjoint from sourceRoot. A caller can place the generated candidate inside the source or collide with an existing path, allowing the pre-copy cleanup to mutate the source boundary."
+    },
+    {
+      "code": "EXECUTOR_INHERITS_HOST_AUTHORITY",
+      "severity": "HIGH",
+      "evidence": "hands/node-test-verification-hand.js:31-49",
+      "detail": "The child inherits almost the full host environment and has ordinary host filesystem and network access. Fixed argv removes shell ambiguity but does not confine test code, credentials, child processes, or external writes."
+    },
+    {
+      "code": "PRIVATE_CONTENT_RETAINED_IN_EVIDENCE",
+      "severity": "HIGH",
+      "evidence": "hands/context-pack-hand.js:78-110; lib/pipeline.js:121-155; hands/node-test-verification-hand.js:50-64",
+      "detail": "Full selected source content and raw bounded stdout/stderr are embedded in durable evidence. Filename-only exclusions do not prevent source, credentials, personal paths, or test-emitted secrets from entering receipts."
+    },
+    {
+      "code": "RESOURCE_BUDGET_DECLARED_NOT_ENFORCED",
+      "severity": "MEDIUM",
+      "evidence": "lib/text-scan.js:32-79; hands/context-pack-hand.js:45-77",
+      "detail": "Up to 512 MiB is synchronously read and retained as Buffers, UTF-8 strings, lowercase copies, line arrays, and ranked objects. index_memory_budget_mb and worker ceilings are reported but not measured or enforced, so the package cannot refuse unbounded aggregate memory relative to its declaration."
+    },
+    {
+      "code": "PROTOCOL_SCHEMAS_ARE_PARTIAL",
+      "severity": "MEDIUM",
+      "evidence": "schemas/code-protocols.schema.json; lib/contracts.js",
+      "detail": "The JSON schemas mostly constrain the schema discriminator and required top-level fields; runtime validation covers one task shape and descriptors but not complete emitted-record validation or additional properties."
+    },
+    {
+      "code": "LINEAGE_NOT_BOUND_TO_PARENT_BYTES",
+      "severity": "MEDIUM",
+      "evidence": "manifest.json lineage; candidate.receipt.json; SOURCE_MAP.md",
+      "detail": "v0.2 names the v0.1 id and version but does not bind the parent ZIP, parent bundle, or parent manifest digest. The observed additive relationship is external evidence rather than candidate-enforced lineage."
+    },
+    {
+      "code": "WINDOWS_PATH_EDGE_CASES_UNCOVERED",
+      "severity": "MEDIUM",
+      "evidence": "lib/stable.js:26-45; hands/exact-text-transform-hand.js:28-63",
+      "detail": "Relative-path validation does not explicitly reject Windows alternate-data-stream colons, reserved device names, trailing dot/space aliases, or case-fold collisions. Cross-platform output replacement behavior is not independently demonstrated."
+    },
+    {
+      "code": "DIRECT_REUSE_TERMS_ABSENT",
+      "severity": "MEDIUM",
+      "evidence": "archive file inventory and package.json",
+      "detail": "The packages are private and include no LICENSE, COPYING, NOTICE, or explicit reuse grant. Concepts can inform an independent native design; direct public code transplantation remains held pending source-rights confirmation."
+    }
+  ],
+  "declaredButNotIndependentlyVerified": [
+    "The bundled 11-test v0.1 result.",
+    "The bundled 20-test v0.2 result.",
+    "The verified-demo behavioral receipts.",
+    "Runtime safety, enforced memory ceilings, Windows portability, or compatibility with live Workshop organs.",
+    "Any improvement to a model, person, or persistent system identity."
+  ],
+  "truth": {
+    "packageCodeExecuted": false,
+    "packageTestsExecuted": false,
+    "runtimeSafeProven": false,
+    "humanBenefitProven": false,
+    "modelImprovementProven": false,
+    "systemCompositionGapSupported": true,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false
+  }
+}

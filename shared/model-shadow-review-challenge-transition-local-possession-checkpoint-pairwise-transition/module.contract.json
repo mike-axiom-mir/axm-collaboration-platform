@@ -1,0 +1,81 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition",
+  "version": "v1.8",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.exact-replay-classification",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.forward-response-extension-classification",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.anchor-identity-and-epoch-drift-detection",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.witness-policy-identity-drift-detection",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.declared-party-digest-drift-detection",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.receiver-policy-drift-detection",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.checkpoint-equivocation-detection",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.response-fork-detection",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.withheld-fork-nonexclusion-proof",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.fresh-process-continuity",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.public-artifact-data-minimization",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.resource-bounds",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.authority-none",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition/v1"
+  ],
+  "consumes": [
+    "two axm.model-shadow-review-challenge-transition-local-possession-checkpoint-separated-witness/v1 receipts as data",
+    "exact v1.7 rebuild inputs for both separated chains",
+    "canonical local-possession checkpoint response entries and anchor/policy references",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition/v1"],
+    "accepts": ["one exact previous v1.7 separated possession chain", "one exact candidate v1.7 separated possession chain"]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "invalid-previous-or-candidate-v1.7-separated-possession-chain",
+      "presented-checkpoint-as-current-source-state-recapture",
+      "pairwise-comparison-as-global-fork-exclusion",
+      "pairwise-comparison-as-observation-of-withheld-branches",
+      "pairwise-extension-as-globally-unique-transition",
+      "self-declared-anchor-epoch-as-protected-monotonic-state",
+      "same-witness-policy-identity-as-policy-authority-or-replacement-prevention",
+      "declared-party-digest-continuity-as-authenticated-real-world-identity",
+      "observable-signer-separation-as-controller-or-custody-independence",
+      "observable-signer-separation-as-collusion-exclusion",
+      "caller-time-as-trusted-time",
+      "presented-chain-as-proven-external-retention",
+      "pairwise-hold-as-deletion-or-rollback-prevention",
+      "caller-presented-anchor-as-authenticated-host-trust-root",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "test-leaf-as-installed-or-promoted",
+      "transition-receipt-as-execution-or-adoption-authority",
+      "raw-actor-or-steward-principal-retention",
+      "raw-public-key-or-signature-retention",
+      "raw-configured-party-label-retention",
+      "state-root-path-retention",
+      "raw-custody-record-or-assessment-receipt-retention",
+      "private-key-ingestion",
+      "raw-model-output-or-private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains both separated chains and the pairwise receipt",
+    "reload": "exact-rebuild both v1.7 separated chains and the v1.8 receipt in a fresh process",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned",
+    "installed": false,
+    "promoted": false
+  }
+}

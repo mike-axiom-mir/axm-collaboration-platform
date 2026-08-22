@@ -1,31 +1,33 @@
 {
   "schema": "axm.public-modules/v1",
-  "generated_at": "2026-08-16T08:57:56.200Z",
+  "generated_at": "2026-08-22T05:28:04.919Z",
   "source": {
     "path": "tools-index.json",
-    "digest": "e586a1fa21e14c410b20d676dfddc5cc611009a8e0020aafdf1df48da4ab15a7"
+    "digest": "1604f809671e05f0b66d91a2f218eddb0f5bc86de2ec58aeb567b7643e6ba946"
   },
   "summary": {
-    "tools": 215,
+    "tools": 219,
     "statuses": {
       "TEST": 121,
       "WORKING": 4,
-      "EXPERIMENTAL": 89,
+      "EXPERIMENTAL": 93,
       "SHELL": 1
     },
-    "contractsPresent": 215,
-    "contractsValid": 215,
-    "topLevelSelftests": 213,
-    "anySelftests": 215,
-    "permissionsDeclared": 215,
-    "kindsDeclared": 155,
-    "readmes": 128,
-    "capabilities": 1854
+    "contractsPresent": 219,
+    "contractsValid": 219,
+    "topLevelSelftests": 217,
+    "anySelftests": 219,
+    "permissionsDeclared": 219,
+    "kindsDeclared": 159,
+    "readmes": 133,
+    "capabilities": 2022
   },
   "truth": {
     "automaticPromotion": false,
     "structuralEligibilityIsRuntimeProof": false,
     "selftestPassIsHumanApproval": false,
+    "failureDiagnosticsMachinePathRedacted": true,
+    "failureDiagnosticsRecognizedCredentialEvidenceRedacted": true,
     "capabilityCatalogGrantsAuthority": false,
     "missingValuesRemainVisible": true
   },
@@ -118,7 +120,7 @@
       "verified_at": "2026-07-27T20:47:31.6393762Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 19
+        "ageDays": 25
       },
       "promotion": {
         "state": "CLAIM_NEEDS_REVERIFICATION",
@@ -329,7 +331,7 @@
       "verified_at": "2026-07-28T19:13:44Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 18
+        "ageDays": 24
       },
       "promotion": {
         "state": "NEEDS_SELFTEST_RUN",
@@ -1356,7 +1358,7 @@
       "entry_path": "tools/browser-lan-hardware-qa-lab/index.html",
       "manifest": {
         "path": "tools/browser-lan-hardware-qa-lab/manifest.json",
-        "sha256": "9cf27beba05495e95922b2bd8c2cda64d3a05996a483e283cb7783241fc6de9d",
+        "sha256": "1cc7d2eda0852eb45da63bc833186b5eaee66421d85ae2d199d6e78582cb939e",
         "valid": true,
         "errors": []
       },
@@ -1368,12 +1370,17 @@
           "bounded-browser-journeys",
           "html-accessibility-inspection",
           "device-evidence-receipts",
-          "latency-and-reconnect-evidence"
+          "latency-and-reconnect-evidence",
+          "physical-phone-observation-candidates",
+          "exact-phone-candidate-review-handoff",
+          "note-free-voluntary-campaign-review-input"
         ],
         "consumes": [
           "service:runtime",
+          "service:review-inbox",
           "browser-device-metadata",
-          "axm.qa-evidence-request/v1"
+          "axm.qa-evidence-request/v1",
+          "explicit-voluntary-human-observation"
         ],
         "errors": []
       },
@@ -1760,7 +1767,7 @@
       "verified_at": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 22
+        "ageDays": 28
       },
       "promotion": {
         "state": "NEEDS_SELFTEST_RUN",
@@ -2351,6 +2358,59 @@
       }
     },
     {
+      "id": "deterministic-continuation-capsule",
+      "name": "AXM Deterministic Continuation Capsule",
+      "status": "EXPERIMENTAL",
+      "kind": "gate",
+      "audience": "human-machine",
+      "source_path": "tools/deterministic-continuation-capsule",
+      "entry_path": "tools/deterministic-continuation-capsule/continuation-cli.js",
+      "manifest": {
+        "path": "tools/deterministic-continuation-capsule/manifest.json",
+        "sha256": "0d114a02378740e52283e5ae216a4c5ef4723e0dac2d4facc29ce75f77f3134e",
+        "valid": false,
+        "errors": [
+          "kind is unsupported"
+        ]
+      },
+      "contract": {
+        "path": "tools/deterministic-continuation-capsule/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "continuity.source-linked-capsule.compile",
+          "continuity.path-independent-digest",
+          "continuity.volatile-state-reprobe-gate",
+          "continuity.compact-resume-card",
+          "continuity.private-source-refusal",
+          "continuity.hidden-authority-refusal"
+        ],
+        "consumes": [
+          "memory-reference:axm.memory.reentry-capsule",
+          "memory-reference:axm.memory.session-handoff-packet",
+          "filesystem:explicit-source-files",
+          "axm.local-continuation-declaration/v1",
+          "deterministic-json-core"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/deterministic-continuation-capsule/selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
+        "blockers": [
+          "kind is unsupported",
+          "kind is undeclared"
+        ]
+      }
+    },
+    {
       "id": "deterministic-job-cache-scheduler",
       "name": "Deterministic Job Queue & Artifact Cache",
       "status": "EXPERIMENTAL",
@@ -2427,6 +2487,58 @@
       },
       "tests": [
         "tools/deterministic-json-core/selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
+        "blockers": [
+          "kind is unsupported",
+          "kind is undeclared"
+        ]
+      }
+    },
+    {
+      "id": "deterministic-pr-base-refresh",
+      "name": "AXM Deterministic PR Base Refresh",
+      "status": "EXPERIMENTAL",
+      "kind": "gate",
+      "audience": "human-machine",
+      "source_path": "tools/deterministic-pr-base-refresh",
+      "entry_path": "tools/deterministic-pr-base-refresh/base-refresh-cli.js",
+      "manifest": {
+        "path": "tools/deterministic-pr-base-refresh/manifest.json",
+        "sha256": "47537eebe42be336a31c8fbd2dd8b8a44fb688502d9e61e3aad4d1771ed1488a",
+        "valid": false,
+        "errors": [
+          "kind is unsupported"
+        ]
+      },
+      "contract": {
+        "path": "tools/deterministic-pr-base-refresh/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "git-pr.exact-base-refresh-plan",
+          "git-pr.merge-tree-conflict-gate",
+          "git-pr.non-rewriting-local-feature-merge",
+          "git-pr.post-refresh-recheckpoint-boundary",
+          "git-pr.remote-write-refusal"
+        ],
+        "consumes": [
+          "git-pr.read-only-local-checkpoint",
+          "git-pr.checkpoint-verification",
+          "filesystem:explicit-clean-publish-lane-worktree",
+          "local-git-runtime",
+          "approved-git-remote"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/deterministic-pr-base-refresh/selftest.js"
       ],
       "verified_at": null,
       "freshness": {
@@ -2536,6 +2648,59 @@
       },
       "tests": [
         "tools/deterministic-pr-publisher/selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
+        "blockers": [
+          "kind is unsupported",
+          "kind is undeclared"
+        ]
+      }
+    },
+    {
+      "id": "deterministic-pr-sequencer",
+      "name": "AXM Deterministic PR Sequencer",
+      "status": "EXPERIMENTAL",
+      "kind": "gate",
+      "audience": "human-machine",
+      "source_path": "tools/deterministic-pr-sequencer",
+      "entry_path": "tools/deterministic-pr-sequencer/pr-sequencer-cli.js",
+      "manifest": {
+        "path": "tools/deterministic-pr-sequencer/manifest.json",
+        "sha256": "63078d5317cd28859758e67a3743a3a7682f083c2668365af58e5e11e32231aa",
+        "valid": false,
+        "errors": [
+          "kind is unsupported"
+        ]
+      },
+      "contract": {
+        "path": "tools/deterministic-pr-sequencer/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "git-pr.multi-handoff-sequence-plan",
+          "git-pr.exact-next-candidate-selection",
+          "git-pr.base-and-head-drift-hold",
+          "git-pr.required-check-receiver-gate",
+          "git-pr.compact-platform-next-action-handoff",
+          "git-pr.post-action-reprobe-boundary",
+          "git-pr.merge-authority-refusal"
+        ],
+        "consumes": [
+          "git-pr.deterministic-checkpoint-handoff",
+          "git-pr.publisher-transport-handoff-optional",
+          "host-authenticated-github-cli-session",
+          "human-or-steward-explicit-sequence-policy"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/deterministic-pr-sequencer/selftest.js"
       ],
       "verified_at": null,
       "freshness": {
@@ -4056,6 +4221,7 @@
         "tools/game-hub/game-library/017-small-odds/tests/package-selftest.js",
         "tools/game-hub/game-library/018-last-stop-nebula/tests/package-selftest.cjs",
         "tools/game-hub/game-library/019-brace-room/tests/brace-room-selftest.js",
+        "tools/game-hub/game-library/022-shardrunner/tests/package-selftest.js",
         "tools/game-hub/game-night-selftest.js",
         "tools/game-hub/game-package-verifier-selftest.js"
       ],
@@ -5898,7 +6064,7 @@
       "verified_at": "2026-07-27T21:25:31.6648828Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 19
+        "ageDays": 25
       },
       "promotion": {
         "state": "CLAIM_NEEDS_REVERIFICATION",
@@ -7183,7 +7349,7 @@
       "verified_at": "2026-07-28T19:01:43.329Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 18
+        "ageDays": 24
       },
       "promotion": {
         "state": "CLAIM_NEEDS_REVERIFICATION",
@@ -8012,7 +8178,7 @@
       "verified_at": "2026-07-27T22:14:01.8589096Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 19
+        "ageDays": 25
       },
       "promotion": {
         "state": "CLAIM_NEEDS_REVERIFICATION",
@@ -8190,7 +8356,7 @@
       "entry_path": "tools/review-inbox/index.html",
       "manifest": {
         "path": "tools/review-inbox/manifest.json",
-        "sha256": "6e81524fb6d4483af0fcbff56271181d1c17bba76044b3a693ba5e3d1fc60566",
+        "sha256": "fe9d0d399d039c9683748cf9c7742f23371caaca257a38941e68dcfbcd644f42",
         "valid": true,
         "errors": []
       },
@@ -8203,24 +8369,128 @@
           "structural-review-evidence-view",
           "unified-review-queue",
           "exact-digest-votes",
-          "independent-review-seats",
+          "distinct-attributed-review-labels",
+          "legacy-approval-host-authority-separation",
+          "host-configured-ed25519-submission-verification",
+          "host-configured-ed25519-vote-verification",
+          "host-key-principal-seat-uniqueness",
+          "host-key-submitter-reviewer-separation",
+          "host-key-authority-fail-closed-reload-verification",
+          "host-key-authority-ui-status",
           "hold-and-reject",
           "bounded-one-to-ten-seat-panels",
           "rejected-item-discussion",
           "repair-or-cancel-decision-pool",
-          "superseded-artifact-detection"
+          "superseded-artifact-detection",
+          "model.shadow.retention-audit-review-view.strict-v29-detection",
+          "model.shadow.retention-audit-review-view.browser-canonical-sha256",
+          "model.shadow.retention-audit-review-view.item-artifact-digest-binding",
+          "model.shadow.retention-audit-review-view.held-classification-and-decision",
+          "model.shadow.retention-audit-review-view.typed-human-readable-summary",
+          "model.shadow.retention-audit-review-view.zero-authority-boundary-copy",
+          "model.shadow.retention-audit-review-view.mismatch-failclosed",
+          "model.shadow.retention-audit-review-view.pending-and-invalid-vote-gating",
+          "model.shadow.retention-audit-review-view.generic-review-nondisruption",
+          "model.shadow.retention-audit-review-view.stale-selection-ignored",
+          "model.shadow.retention-audit-review-view.safe-html-escaping",
+          "model.shadow.retention-audit-review-view.raw-json-evidence-preserved",
+          "model.shadow.retention-audit-review-view.read-only-no-new-mutation",
+          "model.shadow.retention-audit-review-view.desktop-and-narrow-layout",
+          "model.shadow.retention-audit-review-view.live-browser-exact-and-mismatch-journey",
+          "model.shadow.retention-audit-review-view.focused-contract-and-corruption-tests",
+          "model.shadow.retention-audit-review-view.bounded-artifact-inspection",
+          "model.shadow.transition-history-reconciliation-review-view.strict-v40-detection",
+          "model.shadow.transition-history-reconciliation-review-view.browser-canonical-sha256",
+          "model.shadow.transition-history-reconciliation-review-view.item-artifact-digest-binding",
+          "model.shadow.transition-history-reconciliation-review-view.both-history-commitments-and-first-divergence",
+          "model.shadow.transition-history-reconciliation-review-view.typed-human-readable-summary",
+          "model.shadow.transition-history-reconciliation-review-view.zero-reconciliation-and-authority-copy",
+          "model.shadow.transition-history-reconciliation-review-view.mismatch-failclosed",
+          "model.shadow.transition-history-reconciliation-review-view.pending-and-invalid-vote-gating",
+          "model.shadow.transition-history-reconciliation-review-view.generic-review-nondisruption",
+          "model.shadow.transition-history-reconciliation-review-view.stale-selection-ignored",
+          "model.shadow.transition-history-reconciliation-review-view.safe-html-escaping",
+          "model.shadow.transition-history-reconciliation-review-view.raw-json-evidence-preserved",
+          "model.shadow.transition-history-reconciliation-review-view.read-only-no-new-mutation",
+          "model.shadow.transition-history-reconciliation-review-view.desktop-and-narrow-layout",
+          "model.shadow.transition-history-reconciliation-review-view.live-browser-exact-and-mismatch-journey",
+          "model.shadow.transition-history-reconciliation-review-view.focused-contract-and-corruption-tests",
+          "model.shadow.transition-history-reconciliation-review-view.bounded-artifact-inspection",
+          "host-key-intent-before-review-projection",
+          "host-key-explicit-local-projection-recovery",
+          "host-key-pending-projection-ui-status",
+          "host-key-v1-ledger-read-v2-write-migration",
+          "same-principal-signed-vote-supersession",
+          "cooperating-single-host-review-mutation-serialization",
+          "bounded-exclusive-create-review-operation-lease",
+          "fail-closed-held-or-invalid-review-operation-lease-status",
+          "review-operation-lease-ui-status",
+          "explicit-host-local-review-operation-lease-retirement-plan",
+          "assertion-and-exact-digest-bound-review-operation-lease-retirement",
+          "review-operation-owner-evidence-quarantine",
+          "review-operation-lease-retirement-intent-and-result-evidence",
+          "no-api-or-browser-review-operation-lease-retirement-route",
+          "bounded-interrupted-review-operation-lease-retirement-status",
+          "exact-operator-confirmed-interrupted-retirement-recovery",
+          "intent-only-exact-owner-retirement-resume",
+          "quarantined-owner-evidence-result-finalization",
+          "invalid-ambiguous-or-changed-retirement-evidence-held",
+          "no-automatic-api-or-browser-interrupted-retirement-recovery",
+          "cooperating-single-host-interrupted-retirement-recovery-checkpoint-convergence",
+          "typed-concurrent-recovery-checkpoint-collision-holds",
+          "explicit-host-local-retirement-intent-withdrawal",
+          "append-only-retirement-proceed-withdraw-decision",
+          "cooperating-single-host-retirement-decision-arbitration",
+          "ambiguous-undecided-retirement-intent-withdrawal-repair",
+          "owner-lock-preserving-retirement-intent-withdrawal",
+          "no-api-or-browser-retirement-intent-withdrawal",
+          "cooperating-single-host-hard-link-retirement-artifact-atomic-visibility",
+          "complete-fsynced-stage-before-exclusive-authoritative-publication",
+          "bounded-host-local-retirement-publication-status",
+          "process-crash-consistent-intent-decision-result-publication",
+          "exact-retirement-publication-stage-artifact-and-target-plan",
+          "assertion-and-exact-digest-bound-lossless-retirement-publication-stage-archival",
+          "cooperating-single-host-retirement-publication-archive-checkpoint-convergence",
+          "authoritative-retirement-target-and-owner-lock-preserving-stage-archival",
+          "no-automatic-api-or-browser-retirement-publication-stage-archival",
+          "durable-intent-before-retirement-publication-stage-archival-mutation",
+          "append-only-exact-request-and-stage-digest-bound-archival-intent",
+          "process-crash-consistent-archival-intent-publication",
+          "cooperating-single-host-archival-intent-and-archive-convergence",
+          "bounded-host-local-archival-intent-publication-stage-status",
+          "legacy-archive-authorization-unknown-without-posthoc-intent",
+          "privacy-minimized-archival-reason-digest-and-redacted-summary",
+          "typed-legacy-v1-raw-reason-intent-compatibility"
         ],
         "consumes": [
           "axm.review-item/v1",
           "artifact-sha256",
           "attributed-review-votes",
+          "axm.review-trust-policy/v1",
+          "axm.authenticated-review-envelope/v1",
+          "host-configured-ed25519-public-keys",
+          "deterministic-canonical-json",
+          "axm.model-shadow-retention-audit-review-artifact/v1",
+          "axm.model-shadow-retention-audit-review-action/v1",
+          "axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-artifact/v1",
+          "axm.model-shadow-retention-audit-review-outcome-transition-settlement-history-reconciliation-review-action/v1",
+          "browser-web-crypto-sha256",
           "axm.workshop-readiness-view/v1",
           "axm.tools-index/v1",
-          "axm.tool-selftest-results/v1"
+          "axm.tool-selftest-results/v1",
+          "axm.review-authentication-ledger/v1",
+          "axm.review-authentication-ledger/v2",
+          "axm.review-operation-lease-owner/v1",
+          "axm.review-operation-lease-retirement-request/v1",
+          "axm.review-operation-lease-retirement-recovery-request/v1",
+          "axm.review-operation-lease-retirement-withdrawal-request/v1",
+          "axm.review-operation-lease-retirement-publication-archival-request/v1"
         ],
         "errors": []
       },
       "tests": [
+        "tools/review-inbox/history-reconciliation-review-view-selftest.js",
+        "tools/review-inbox/retention-audit-review-view-selftest.js",
         "tools/review-inbox/selftest.js"
       ],
       "verified_at": null,
@@ -8738,6 +9008,79 @@
       }
     },
     {
+      "id": "shadow-clone-learning-steward",
+      "name": "Shadow Clone Learning Steward",
+      "status": "EXPERIMENTAL",
+      "kind": "machine-capability",
+      "audience": "machine",
+      "source_path": "tools/shadow-clone-learning-steward",
+      "entry_path": "tools/shadow-clone-learning-steward/index.html",
+      "manifest": {
+        "path": "tools/shadow-clone-learning-steward/manifest.json",
+        "sha256": "f821d8044dbe2429a5c368ed9f9fa764f0d4505411f89998bbea6dd127b35b65",
+        "valid": true,
+        "errors": []
+      },
+      "contract": {
+        "path": "tools/shadow-clone-learning-steward/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "shadow-clone.compact-snapshot.normalize",
+          "shadow-clone.lesson.candidate",
+          "shadow-clone.dissent.preserve",
+          "shadow-clone.anti-drift.pickup",
+          "mirror.private-lesson.proposal",
+          "shadow-clone.review-decision.compose",
+          "shadow-clone.trial-participation.validate",
+          "shadow-clone.trial-assignment.prepare",
+          "shadow-clone.value-trial.evidence-bound-score",
+          "shadow-clone.value-trial.score",
+          "shadow-clone.learning.replay",
+          "periodic-compact-snapshot-adapter"
+        ],
+        "consumes": [
+          "axm.shadow-clone.compact-snapshot-set/v1",
+          "axm.grand-garden.instance-learning-steward-ledger/v1",
+          "axm.shadow-clone.pickup-request/v1",
+          "axm.shadow-clone.mirror-proposal-request/v1",
+          "axm.shadow-clone.trial-assignment-request/v1",
+          "axm.shadow-clone.candidate-review-decision/v1",
+          "axm.review-receipt/v1",
+          "axm.shadow-clone.candidate-review-intake-request/v1",
+          "axm.shadow-clone.candidate-review-decision/v2",
+          "axm.shadow-clone.trial-participation-receipt/v1",
+          "axm.shadow-clone.trial-assignment-request/v2",
+          "axm.shadow-clone.lesson-presentation-ack/v1",
+          "axm.shadow-clone.trial-arm-outcome/v1",
+          "axm.shadow-clone.trial-case-evaluation/v1",
+          "axm.shadow-clone.evidence-bound-value-trial/v1",
+          "axm.shadow-clone.scored-value-trial/v1",
+          "future:codex.task.compact-snapshot.read/v1",
+          "human:explicit-learning-authorization",
+          "human:explicit-pickup-selection",
+          "human:explicit-mirror-review",
+          "human:host-authenticated-candidate-review",
+          "human:explicit-paired-recipient-requests",
+          "human:host-authenticated-evidence-receipts",
+          "human:two-independent-evaluator-seats"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/shadow-clone-learning-steward/selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
+        "blockers": []
+      }
+    },
+    {
       "id": "shapeable-builder",
       "name": "AXM Shapeable Builder",
       "status": "EXPERIMENTAL",
@@ -8973,7 +9316,7 @@
       "verified_at": "2026-07-24T15:30:00.000Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 22
+        "ageDays": 28
       },
       "promotion": {
         "state": "NEEDS_SELFTEST_RUN",
@@ -10491,7 +10834,7 @@
       "verified_at": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 22
+        "ageDays": 28
       },
       "promotion": {
         "state": "NEEDS_SELFTEST_RUN",

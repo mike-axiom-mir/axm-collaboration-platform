@@ -1,0 +1,87 @@
+{
+  "schema": "axm.local-ai-delta-claims/v1",
+  "status": "EXPERIMENTAL",
+  "observedAt": "2026-08-15T11:34:32Z",
+  "source": {
+    "label": "AXM_LOCAL_AI_DELTA_LOG_2026-08-15.txt",
+    "classification": "PRIVATE_OR_USER_SOURCE",
+    "instructionsTreatedAsAuthority": false
+  },
+  "claims": [
+    {
+      "id": "lmstudio-0.4.21-bundle",
+      "status": "HELD_UNVERIFIED",
+      "sourceClaim": "LM Studio 0.4.21 added a local server API key for enterprise internal-network endpoints plus mmap, mlock, direct-I/O settings and improved load errors.",
+      "finding": "The official changelog currently exposes 0.4.20 as the latest visible stable release. It confirms an enterprise internal-network model endpoint in 0.4.20, and the API changelog confirms token configuration in the native API, but the named 0.4.21 bundle and its load-setting details were not found.",
+      "sources": [
+        "https://lmstudio.ai/changelog",
+        "https://lmstudio.ai/changelog/lmstudio-v0.4.20",
+        "https://lmstudio.ai/docs/developer/api-changelog"
+      ],
+      "nextEvidence": "Pin an official LM Studio 0.4.21 release page or signed release artifact before accepting the version-specific details."
+    },
+    {
+      "id": "ollama-0.32.10-repeat-penalty",
+      "status": "VERIFIED_PRIMARY",
+      "sourceClaim": "Models without repeat_penalty now default to 1.0 instead of 1.1.",
+      "finding": "The official v0.32.10 release says exactly this and links it to alignment with other engines and speculative-decoding speed.",
+      "sources": [
+        "https://github.com/ollama/ollama/releases/tag/v0.32.10"
+      ],
+      "axmUse": "Treat implicit runtime defaults as fingerprinted behavior inputs and pin repeat_penalty for sensitive runs."
+    },
+    {
+      "id": "ollama-0.32.11-agent-shells",
+      "status": "VERIFIED_PRIMARY",
+      "sourceClaim": "Ollama added DeepSeek Harness and Muse Code launch support, compatible Responses API web search, and Muse Glimmer template updates.",
+      "finding": "The official v0.32.11 release confirms these capability additions.",
+      "sources": [
+        "https://github.com/ollama/ollama/releases/tag/v0.32.11"
+      ],
+      "axmUse": "Test Ollama as a bounded compatibility adapter; keep network search off unless explicitly authorized."
+    },
+    {
+      "id": "ollama-0.32.12-13-qwen",
+      "status": "PARTIAL_PRIMARY",
+      "sourceClaim": "Ollama added Qwen 3.8 27B and then developer-instruction support.",
+      "finding": "The official v0.32.12 and v0.32.13 releases confirm availability and developer-instruction support. Vendor statements about coding, research, professional work, and long-horizon quality remain unverified performance claims.",
+      "sources": [
+        "https://github.com/ollama/ollama/releases/tag/v0.32.12",
+        "https://github.com/ollama/ollama/releases/tag/v0.32.13"
+      ],
+      "axmUse": "Queue the model for later specialist evaluation without granting authority from vendor positioning."
+    },
+    {
+      "id": "llama-cpp-2026-08-14-runtime-deltas",
+      "status": "VERIFIED_PRIMARY",
+      "sourceClaim": "Recent llama.cpp builds added reasoning_effort template plumbing, live metrics/slots during decode, recurrent-state rollback work, and virtual iGPU devices.",
+      "finding": "Official build releases b10429, b10430, b10431, and b10434 confirm the named changes.",
+      "sources": [
+        "https://github.com/ggml-org/llama.cpp/releases/tag/b10429",
+        "https://github.com/ggml-org/llama.cpp/releases/tag/b10430",
+        "https://github.com/ggml-org/llama.cpp/releases/tag/b10431",
+        "https://github.com/ggml-org/llama.cpp/releases/tag/b10434"
+      ],
+      "axmUse": "Expose requested reasoning effort and observable runtime state while preserving model-specific interpretation as an open seam."
+    },
+    {
+      "id": "anthropic-sonnet-5-price-correction",
+      "status": "VERIFIED_PRIMARY",
+      "sourceClaim": "Sonnet 5 pricing remains $2/M input and $10/M output; the scheduled $3/$15 increase will not occur.",
+      "finding": "Anthropic's current pricing page explicitly states that the introductory price is now standard and the September 1 increase will not occur.",
+      "sources": [
+        "https://platform.claude.com/docs/en/about-claude/pricing"
+      ],
+      "axmUse": "Correct optional cloud-escalation budget assumptions without changing local-first routing."
+    },
+    {
+      "id": "no-foundation-change",
+      "status": "CANDIDATE_DECISION",
+      "sourceClaim": "No Foundation change is required.",
+      "finding": "The evidence supports additive contracts, adapters, and evaluation fixtures. It does not require a Foundation edit.",
+      "sources": [],
+      "axmUse": "Route through candidate -> sandbox test -> behavioral verification -> dependency classification -> reusable organ/adapter; Mike remains the merge and CANON gate."
+    }
+  ]
+}
+

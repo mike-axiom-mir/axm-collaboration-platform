@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabric-blueprint-schema-compilation-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "subjectRef", "intentRef", "blueprintRef", "compositionReceiptRef", "inputArtifactRefs", "consentEvaluationRef", "instructionRef", "compilerProfileRef", "derivedArtifactFiles", "resourceObservation", "limitations", "nextImprovementGaps", "truth", "authority", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.fabric-blueprint-schema-compilation-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "SCHEMA_PACKET_EMITTED_FOR_REVIEW"},
+    "subjectRef": {"$ref": "#/$defs/reference"},
+    "intentRef": {"$ref": "#/$defs/reference"},
+    "blueprintRef": {"$ref": "#/$defs/reference"},
+    "compositionReceiptRef": {"$ref": "#/$defs/reference"},
+    "inputArtifactRefs": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/artifactReference"}},
+    "consentEvaluationRef": {"$ref": "#/$defs/reference"},
+    "instructionRef": {"$ref": "#/$defs/reference"},
+    "compilerProfileRef": {"$ref": "#/$defs/reference"},
+    "derivedArtifactFiles": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/derivedArtifact"}},
+    "resourceObservation": {"$ref": "#/$defs/resources"},
+    "limitations": {"type": "array", "minItems": 15, "maxItems": 15, "uniqueItems": true, "items": {"type": "string"}},
+    "nextImprovementGaps": {"type": "array", "minItems": 9, "maxItems": 9, "uniqueItems": true, "items": {"type": "string"}},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fabricFirstGateApplied", "exactSourceArtifactBytesVerified", "sourceObjectLineageVerified", "groundedConsentScopeVerified", "interactiveDeclarationSupplied", "interactiveDeclarationReplayPrevented", "cryptographicHumanAuthenticationVerified", "predecisionEvidenceContentVerified", "declaredPublicDataClassContentVerified", "trustedClockObserved", "liveRevocationChecked", "compilerWriteAuthorityUsed", "fabricGrantedAuthority", "inputSchemaWritten", "outputSchemaWritten", "acceptanceMatrixWritten", "allArtifactsReadBack", "receiptWritten", "receiptReadBack", "arbitraryWorkspaceContentRead", "networkUsed", "childProcessSpawned", "generatedExecutableCodePresent", "candidateCodeExecuted", "schemaValidationRuntimeExecuted", "anyAcceptanceCaseExecuted", "runtimeQualityProven", "humanQualityApproved", "machineDefaultActivated", "persistentLearningAdmitted", "installed", "registered", "staged", "promoted", "canonChanged", "filesRetained"],
+      "properties": {
+        "fabricFirstGateApplied": {"const": true},
+        "exactSourceArtifactBytesVerified": {"const": true},
+        "sourceObjectLineageVerified": {"const": true},
+        "groundedConsentScopeVerified": {"const": true},
+        "interactiveDeclarationSupplied": {"const": true},
+        "interactiveDeclarationReplayPrevented": {"const": false},
+        "cryptographicHumanAuthenticationVerified": {"const": false},
+        "predecisionEvidenceContentVerified": {"const": false},
+        "declaredPublicDataClassContentVerified": {"const": false},
+        "trustedClockObserved": {"const": false},
+        "liveRevocationChecked": {"const": false},
+        "compilerWriteAuthorityUsed": {"const": true},
+        "fabricGrantedAuthority": {"const": false},
+        "inputSchemaWritten": {"const": true},
+        "outputSchemaWritten": {"const": true},
+        "acceptanceMatrixWritten": {"const": true},
+        "allArtifactsReadBack": {"const": true},
+        "receiptWritten": {"const": true},
+        "receiptReadBack": {"const": true},
+        "arbitraryWorkspaceContentRead": {"const": false},
+        "networkUsed": {"const": false},
+        "childProcessSpawned": {"const": false},
+        "generatedExecutableCodePresent": {"const": false},
+        "candidateCodeExecuted": {"const": false},
+        "schemaValidationRuntimeExecuted": {"const": false},
+        "anyAcceptanceCaseExecuted": {"const": false},
+        "runtimeQualityProven": {"const": false},
+        "humanQualityApproved": {"const": false},
+        "machineDefaultActivated": {"const": false},
+        "persistentLearningAdmitted": {"const": false},
+        "installed": {"const": false},
+        "registered": {"const": false},
+        "staged": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false},
+        "filesRetained": {"const": true}
+      }
+    },
+    "authority": {"const": "DISPOSABLE_SCHEMA_PACKET_WRITE_ONLY_USED"},
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 220},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256", "byteLength"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 220},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 65536}
+      }
+    },
+    "derivedArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "schema", "objectSha256", "fileSha256", "byteLength"],
+      "properties": {
+        "path": {"enum": ["acceptance-matrix.json", "input.schema.json", "output.schema.json"]},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 220},
+        "objectSha256": {"$ref": "#/$defs/digest"},
+        "fileSha256": {"$ref": "#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 65536}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compilerInputBytes", "inputSchemaBytes", "outputSchemaBytes", "matrixBytes", "receiptBytes", "totalFilesWritten", "totalBytesWritten", "inputByteCeilingEnforced", "fileCountEnforced", "outputByteCeilingEnforced", "attemptCountEnforced", "durationEnforced", "memoryEnforced"],
+      "properties": {
+        "compilerInputBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "inputSchemaBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "outputSchemaBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "matrixBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "receiptBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "totalFilesWritten": {"const": 4},
+        "totalBytesWritten": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "inputByteCeilingEnforced": {"const": true},
+        "fileCountEnforced": {"const": true},
+        "outputByteCeilingEnforced": {"const": true},
+        "attemptCountEnforced": {"const": true},
+        "durationEnforced": {"const": false},
+        "memoryEnforced": {"const": false}
+      }
+    }
+  }
+}

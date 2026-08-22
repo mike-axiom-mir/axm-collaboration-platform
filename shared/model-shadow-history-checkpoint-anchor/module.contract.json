@@ -1,0 +1,96 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-portable-history-checkpoint-anchor",
+  "version": "v2.2",
+  "status": "TEST",
+  "merge_gate": "Mike Tobi / AXM",
+  "provides": [
+    "model.shadow.portable-history-checkpoint-anchor.witness-policy-exact-rebuild",
+    "model.shadow.portable-history-checkpoint-anchor.detached-ed25519-witness-verification",
+    "model.shadow.portable-history-checkpoint-anchor.witness-threshold-and-seat-uniqueness",
+    "model.shadow.portable-history-checkpoint-anchor.checkpoint-signature-binding",
+    "model.shadow.portable-history-checkpoint-anchor.witness-receipt-exact-rebuild",
+    "model.shadow.portable-history-checkpoint-anchor.anchor-policy-exact-rebuild",
+    "model.shadow.portable-history-checkpoint-anchor.expected-anchor-digest-match",
+    "model.shadow.portable-history-checkpoint-anchor.detached-ed25519-anchor-verification",
+    "model.shadow.portable-history-checkpoint-anchor.anchor-threshold-and-seat-uniqueness",
+    "model.shadow.portable-history-checkpoint-anchor.anchor-checkpoint-witness-binding",
+    "model.shadow.portable-history-checkpoint-anchor.cross-layer-key-nonoverlap",
+    "model.shadow.portable-history-checkpoint-anchor.cross-layer-declared-principal-nonoverlap",
+    "model.shadow.portable-history-checkpoint-anchor.anchored-checkpoint-exact-rebuild",
+    "model.shadow.portable-history-checkpoint-anchor.anchored-read-only-audit",
+    "model.shadow.portable-history-checkpoint-anchor.fresh-process-rebuild",
+    "model.shadow.portable-history-checkpoint-anchor.same-controller-distinct-identity-counterexample",
+    "model.shadow.portable-history-checkpoint-anchor.joint-replacement-counterexample",
+    "model.shadow.portable-history-checkpoint-anchor.data-minimization-resource-authority-boundary",
+    "axm.model-shadow-two-phase-history-checkpoint-witness/v1",
+    "axm.model-shadow-two-phase-history-checkpoint-anchored/v1",
+    "axm.model-shadow-two-phase-history-checkpoint-anchored-audit/v1"
+  ],
+  "consumes": [
+    "one self-validating caller-presented v2.1 portable settlement-history checkpoint",
+    "one caller-supplied witness policy and detached Ed25519 attestations",
+    "one caller-supplied anchor policy, expected anchor digest, and detached Ed25519 authorizations",
+    "for audit, exact current v2.1 ledger service options and complete caller packages when current state is valid"
+  ],
+  "permissions": [
+    "read one explicitly configured v2.0 caller-owned ledger root through the unchanged v2.1 read-only audit surface"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-two-phase-history-checkpoint-witness/v1",
+      "axm.model-shadow-two-phase-history-checkpoint-anchored/v1",
+      "axm.model-shadow-two-phase-history-checkpoint-anchored-audit/v1"
+    ],
+    "accepts": [
+      "one exact v2.1 portable checkpoint plus caller policies and detached signature packages",
+      "one exact v2.2 anchored checkpoint rebuild package plus a valid, absent, or invalid v2.1 current-ledger presentation"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "only caller data plus explicit v2.0 state and source roots reached through the unchanged v2.1 read-only audit"
+    ],
+    "writes": [],
+    "refuses": [
+      "invalid-v2.1-checkpoint-self-digest-or-truth-boundary",
+      "witness-or-anchor-policy-with-invalid-self-digest-domain-threshold-seat-or-validity-window",
+      "non-ed25519-key-signature-or-private-key-material",
+      "signature-without-exact-checkpoint-witness-policy-anchor-policy-and-set-commitment-binding",
+      "duplicate-key-fingerprint-or-declared-principal-seat-within-either-layer",
+      "verified-public-key-fingerprint-or-declared-principal-digest-overlap-across-layers",
+      "caller-presented-expected-anchor-that-does-not-match-the-exact-anchor-commitment",
+      "caller-policy-or-expected-anchor-as-authenticated-host-authority",
+      "declared-principal-kind-or-digest-as-authenticated-real-world-identity",
+      "observable-key-and-digest-nonoverlap-as-controller-independence-or-collusion-exclusion",
+      "same-controller-distinct-keys-and-declared-digests-as-independent-stewardship",
+      "joint-checkpoint-policy-signature-and-expected-anchor-replacement-as-original-continuity",
+      "checkpoint-or-receipt-retention",
+      "deletion-or-rollback-prevention",
+      "protected-monotonic-state-or-global-consistency",
+      "caller-time-as-externally-trusted-time",
+      "raw-public-key-signature-private-key-model-output-private-context-or-ledger-path-persistence",
+      "provider-invocation-experiment-evaluation-learning-or-human-benefit",
+      "execution-adoption-permission-install-promotion-merge-or-canon-authority",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "state_owner_detail": "caller retains checkpoint, policies, signatures, expected anchor, receipts, and v2.1 audit packages",
+    "reload": "not-applicable",
+    "reload_detail": "exact-rebuild witness, anchored checkpoint, and optional anchored audit from caller packages in a fresh process",
+    "disconnect": "not-applicable",
+    "disconnect_detail": "no network route is opened",
+    "cleanup": "not-applicable",
+    "cleanup_detail": "caller owns all data; deleting or jointly replacing checkpoint, policies, signatures, and expected anchor can remove the prior relative comparison boundary",
+    "installed": false,
+    "promoted": false
+  }
+}

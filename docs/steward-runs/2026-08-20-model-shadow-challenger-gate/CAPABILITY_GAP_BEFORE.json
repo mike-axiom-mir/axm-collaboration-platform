@@ -1,0 +1,365 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "exact-shadow-input",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.challenger.observation-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "bounded-drift-route",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.challenger.ordinary-drift-only",
+        "model.shadow.challenger.critical-drift-hold",
+        "model.shadow.challenger.invalid-comparison-hold",
+        "model.shadow.challenger.distinct-output-require"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "existing-direction-only",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.challenger.direction-native-reuse"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "held-out-challenger-plan",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "growth.challenger.held-out-separation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.challenger.plan-native-build"
+      ],
+      "declaredConstraints": {
+        "growth.challenger.held-out-separation": [
+          "Requires a verified non-WAIT direction and caller-declared cases."
+        ]
+      }
+    },
+    {
+      "id": "review-projection",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.challenger.review-inbox-projection"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "declared-human-review-gate",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "review.digest.approval.local-record"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.challenger.declared-human-seat-require"
+      ],
+      "declaredConstraints": {
+        "review.digest.approval.local-record": [
+          "Review Inbox records declared seats but does not authenticate the real human behind an actor string."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "growth.challenger.adoption.none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.challenger.execution-authority.none"
+      ],
+      "declaredConstraints": {
+        "growth.challenger.adoption.none": [
+          "A challenger plan or evaluation grants no adoption authority."
+        ]
+      }
+    },
+    {
+      "id": "receipt-integrity",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.challenger.receipt-exact-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "No real person reviewed a current plan in this stewardship run."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No provider or shadow experiment was executed."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation exists for this gate."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "model.shadow.challenger.critical-drift-hold",
+    "model.shadow.challenger.declared-human-seat-require",
+    "model.shadow.challenger.direction-native-reuse",
+    "model.shadow.challenger.distinct-output-require",
+    "model.shadow.challenger.execution-authority.none",
+    "model.shadow.challenger.invalid-comparison-hold",
+    "model.shadow.challenger.observation-exact-rebuild",
+    "model.shadow.challenger.ordinary-drift-only",
+    "model.shadow.challenger.plan-native-build",
+    "model.shadow.challenger.receipt-exact-rebuild",
+    "model.shadow.challenger.review-inbox-projection"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "model.shadow.challenger.critical-drift-hold",
+      "requiredBy": [
+        "bounded-drift-route"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.declared-human-seat-require",
+      "requiredBy": [
+        "declared-human-review-gate"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.direction-native-reuse",
+      "requiredBy": [
+        "existing-direction-only"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.distinct-output-require",
+      "requiredBy": [
+        "bounded-drift-route"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.execution-authority.none",
+      "requiredBy": [
+        "authority-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.invalid-comparison-hold",
+      "requiredBy": [
+        "bounded-drift-route"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.observation-exact-rebuild",
+      "requiredBy": [
+        "exact-shadow-input"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.ordinary-drift-only",
+      "requiredBy": [
+        "bounded-drift-route"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.plan-native-build",
+      "requiredBy": [
+        "held-out-challenger-plan"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.receipt-exact-rebuild",
+      "requiredBy": [
+        "receipt-integrity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.challenger.review-inbox-projection",
+      "requiredBy": [
+        "review-projection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

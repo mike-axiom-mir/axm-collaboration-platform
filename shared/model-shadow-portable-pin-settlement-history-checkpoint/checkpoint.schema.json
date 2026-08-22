@@ -1,0 +1,35 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-portable-pin-settlement-history-checkpoint/v1",
+  "title":"AXM portable pin-settlement history checkpoint",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema","version","status","checkpointId","checkpointedAt","mode","logIdDigest","manifestRef","genesisPinRef","snapshotBinding","state","history","truth","checkpointDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-portable-pin-settlement-history-checkpoint/v1"},
+    "version":{"const":"2.6.0"},
+    "status":{"const":"TEST"},
+    "checkpointId":{"$ref":"#/$defs/text"},
+    "checkpointedAt":{"$ref":"#/$defs/time"},
+    "mode":{"const":"CALLER_PORTABLE_UNAUTHENTICATED_PIN_SETTLEMENT_HISTORY_CHECKPOINT"},
+    "logIdDigest":{"$ref":"#/$defs/digest"},
+    "manifestRef":{"$ref":"#/$defs/reference"},
+    "genesisPinRef":{"$ref":"#/$defs/reference"},
+    "snapshotBinding":{"$ref":"#/$defs/snapshotBinding"},
+    "state":{"$ref":"#/$defs/state"},
+    "history":{"$ref":"#/$defs/history"},
+    "truth":{"$ref":"#/$defs/truth"},
+    "checkpointDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "text":{"type":"string","minLength":1,"maxLength":180,"pattern":"^[^\\u0000-\\u001f\\u007f]+$"},
+    "time":{"type":"string","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"},
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "reference":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"$ref":"#/$defs/text"},"schema":{"$ref":"#/$defs/text"},"sha256":{"$ref":"#/$defs/digest"}}},
+    "nullableReference":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "snapshotBinding":{"type":"object","additionalProperties":false,"required":["schema","sha256"],"properties":{"schema":{"$ref":"#/$defs/text"},"sha256":{"$ref":"#/$defs/digest"}}},
+    "state":{"type":"object","additionalProperties":false,"required":["proposalCount","settlementCount","currentSettledPinRef","pendingProposalRef","lastProposalRef","lastSettlementRef"],"properties":{"proposalCount":{"type":"integer","minimum":0,"maximum":10000},"settlementCount":{"type":"integer","minimum":0,"maximum":10000},"currentSettledPinRef":{"$ref":"#/$defs/reference"},"pendingProposalRef":{"$ref":"#/$defs/nullableReference"},"lastProposalRef":{"$ref":"#/$defs/nullableReference"},"lastSettlementRef":{"$ref":"#/$defs/nullableReference"}}},
+    "history":{"type":"object","additionalProperties":false,"required":["proposalRefs","settlementRefs","settledPinRefs","historyDigest"],"properties":{"proposalRefs":{"type":"array","maxItems":10000,"items":{"$ref":"#/$defs/reference"}},"settlementRefs":{"type":"array","maxItems":10000,"items":{"$ref":"#/$defs/reference"}},"settledPinRefs":{"type":"array","maxItems":10000,"items":{"$ref":"#/$defs/reference"}},"historyDigest":{"$ref":"#/$defs/digest"}}},
+    "truth":{"const":{"originLedgerValidatedByV25Reload":true,"everyPersistedProposalExactRebuiltFromCallerPackage":true,"everyPersistedSettlementExactRebuiltFromDeduplicatedCallerPackage":true,"fullProposalSettlementAndSettledPinReferenceSequencesCommitted":true,"currentSettledHeadSelfValidatedFromSettlementSequence":true,"equalBracketingSnapshotsRequired":true,"transientV25OperationLockMayBeWritten":true,"durableLedgerStateChangedByModule":false,"checkpointPortableAsData":true,"checkpointPersistedByModule":false,"checkpointExternalRetentionProven":false,"checkpointPinAuthenticated":false,"checkpointOriginAuthenticated":false,"ledgerSnapshotAtomic":false,"intermediateOrRevertedLedgerChangesExcluded":false,"ledgerCurrentAfterFinalReadProven":false,"deletionOrRollbackPrevented":false,"protectedMonotonicStateProven":false,"withheldRootsExcluded":false,"globalTransitionUniquenessProven":false,"globallyConsistentLogProven":false,"hostAuthorizationAuthenticated":false,"actorRealWorldIdentityProven":false,"actualHumanParticipationProven":false,"timeExternallyTrusted":false,"rawPublicKeyEmbedded":false,"rawSignatureEmbedded":false,"privateKeyIngested":false,"sourceOrLedgerPathEmbedded":false,"rawUpstreamPackageEmbedded":false,"rawModelOutputEmbedded":false,"privateContextEmbedded":false,"experimentExecuted":false,"providerInvoked":false,"evaluationPerformed":false,"executionAuthorized":false,"adoptionAuthorized":false,"humanBenefitProven":false,"broadLearningClaimed":false,"automaticPermissionGrant":false,"automaticInstall":false,"automaticPromotion":false,"automaticMerge":false,"automaticCanon":false,"foundationMutation":false}}
+  }
+}

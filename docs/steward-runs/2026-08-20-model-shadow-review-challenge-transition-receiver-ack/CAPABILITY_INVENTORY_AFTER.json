@@ -1,0 +1,37 @@
+{
+  "capabilities": [
+    {"id":"model.shadow.review.challenge-transition-declared-disclosure-exact-rebuild","status":"available","constraints":["v1.1 reuses v1.0 exact assessment rebuild before accepting any policy or acknowledgement."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-policy-exact-rebuild","status":"available","constraints":["A bounded caller policy exact-rebuilds two to ten Ed25519 receiver entries and a threshold of at least two."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-policy-assessment-bind","status":"available","constraints":["The policy digest binds the exact v1.0 assessment reference, issue/expiry times, threshold, enabled flags, labels and public keys."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-detached-ed25519-verify","status":"available","constraints":["Each presented acknowledgement must verify under its declared canonical Ed25519 public key and exact signing payload."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-distinct-label-and-key-verify","status":"available","constraints":["Policy receiver labels and Ed25519 key fingerprints are unique, but this is declared-set distinctness only."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-threshold-classification","status":"available","constraints":["Zero or one valid acknowledgement per enabled receiver is counted against the caller-declared threshold."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-incomplete-threshold-hold","status":"available","constraints":["A below-threshold set produces HOLD_DECLARED_RECEIVER_ACKNOWLEDGEMENT_THRESHOLD_INCOMPLETE."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-same-controller-multikey-nonindependence-proof","status":"available","constraints":["Two distinct keys generated in one process meet threshold while real-world receiver independence stays false."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-receipt-data-minimization","status":"available","constraints":["Witnesses retain digests, counts, times and truth flags, not raw receiver labels, public keys, signatures, private keys or transient assessment packages."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-resource-bounds","status":"available","constraints":["Policies permit at most ten receivers and 256 KiB; witnesses permit at most ten acknowledgements and 48 MiB canonical UTF-8 input."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-witness-exact-rebuild","status":"available","constraints":["Assessment, policy, acknowledgement verification, classification, truth boundaries and receipt digest rebuild deterministically."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-witness-fresh-process","status":"available","constraints":["A fresh Node process exact-rebuilds and verifies the serialized caller witness with identical digest, classification and count."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-no-runtime-io","status":"available","constraints":["The runtime imports crypto and the v1.0 leaf only; it has no filesystem, process, network or state-write route."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-authority-none","status":"available","constraints":["The caller policy and signatures authenticate no host, receiver identity, independent operator, delivery, retention, adoption, execution, promotion, merge or CANON authority."]},
+
+    {"id":"model.shadow.review.challenge-transition-receiver-transport.actual","status":"unknown","constraints":["Signed fixture objects were passed in one process; no transport was invoked or observed."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-read.actual","status":"unknown","constraints":["A valid signature is not evidence that an independent receiver read or applied the assessment."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-persistence.actual","status":"unknown","constraints":["No receiver-owned persisted assessment bytes were inspected."]},
+    {"id":"model.shadow.review.challenge-transition-receiver-independence.actual","status":"unknown","constraints":["The same-process two-key fixture disproves any inference from key distinctness to independent operation."]},
+    {"id":"model.shadow.review.challenge-transition-external-retention.actual","status":"unknown","constraints":["Every acknowledgement declares NO_DURABLE_RETENTION_CLAIM; no external retention receipt exists."]},
+    {"id":"model.shadow.review.challenge-transition-external-retention-duration.actual","status":"unknown","constraints":["No independently enforced retention duration exists."]},
+    {"id":"model.shadow.review.challenge-transition-monotonic-state.actual","status":"unknown","constraints":["The permissionless read-only leaf creates no protected monotonic state."]},
+    {"id":"model.shadow.review.challenge-transition-rollback-resistance.actual","status":"unknown","constraints":["No external substrate prevents caller package deletion or rollback."]},
+    {"id":"model.shadow.review.challenge-transition-host-authorization.actual","status":"unknown","constraints":["Library calls authenticate no host entrypoint."]},
+    {"id":"model.shadow.review.challenge-transition-root-registry.authenticated-append-only","status":"unknown","constraints":["The receiver policy is caller-supplied and unauthenticated."]},
+    {"id":"model.shadow.review.challenge-transition-time.external","status":"unknown","constraints":["Ordering checks use caller timestamps without a trusted-time receipt."]},
+    {"id":"model.shadow.challenger.human-review.actual","status":"unknown","constraints":["Only synthetic fixtures were used."]},
+    {"id":"model.shadow.challenger.shadow-execution.actual","status":"unknown","constraints":["No model provider or experiment was invoked."]},
+    {"id":"model.shadow.challenger.evaluation.actual","status":"unknown","constraints":["No current baseline or challenger evaluation was executed."]},
+    {"id":"model.shadow.challenger.adoption.actual","status":"unknown","constraints":["A declared acknowledgement threshold grants no branch adoption authority."]},
+    {"id":"model.shadow.challenger.human-benefit.held-out","status":"unknown","constraints":["No voluntary held-out human outcome was observed."]},
+    {"id":"model.shadow.challenger.learning.held-out","status":"unknown","constraints":["No held-out learning evaluation was run."]},
+    {"id":"axm.workshop.canon-decision.actual","status":"unknown","constraints":["Mike Tobi remains the merge and CANON gate; no decision was supplied."]}
+  ]
+}

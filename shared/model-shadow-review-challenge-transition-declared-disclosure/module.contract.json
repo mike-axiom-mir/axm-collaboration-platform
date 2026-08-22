@@ -1,0 +1,86 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-declared-disclosure",
+  "version": "v1.0",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition-disclosure-roster-exact-rebuild",
+    "model.shadow.review.challenge-transition-disclosure-presentation-commitment",
+    "model.shadow.review.challenge-transition-declared-missing-submission-detection",
+    "model.shadow.review.challenge-transition-declared-commitment-mismatch-detection",
+    "model.shadow.review.challenge-transition-declared-set-all-pairs-reconciliation",
+    "model.shadow.review.challenge-transition-declared-set-contradiction-hold",
+    "model.shadow.review.challenge-transition-declared-set-pairwise-compatible-classification",
+    "model.shadow.review.challenge-transition-declared-set-unlisted-root-nonexclusion-proof",
+    "model.shadow.review.challenge-transition-declared-disclosure-data-minimization",
+    "model.shadow.review.challenge-transition-declared-disclosure-resource-bounds",
+    "model.shadow.review.challenge-transition-declared-disclosure-exact-rebuild",
+    "model.shadow.review.challenge-transition-declared-disclosure-fresh-process",
+    "model.shadow.review.challenge-transition-declared-disclosure-authority-none",
+    "axm.model-shadow-review-challenge-transition-disclosure-roster/v1",
+    "axm.model-shadow-review-challenge-transition-declared-disclosure/v1"
+  ],
+  "consumes": [
+    "one caller-declared roster of two to sixty-four member labels",
+    "one exact v0.9 presentation reference commitment per declared member label",
+    "zero or one exact v0.9 presentation package per declared member label",
+    "transient v0.8 history and v0.7 transition packages required by each submitted v0.9 presentation",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-disclosure-roster/v1",
+      "axm.model-shadow-review-challenge-transition-declared-disclosure/v1"
+    ],
+    "accepts": [
+      "caller-declared expected presentation references as data",
+      "caller-presented v0.9 exact-rebuild packages as data"
+    ]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "roster-with-fewer-than-two-or-more-than-sixty-four-members",
+      "duplicate-member-label",
+      "duplicate-expected-presentation-reference",
+      "submission-for-undeclared-member-label",
+      "duplicate-submission-for-one-member-label",
+      "invalid-or-tampered-v0.9-presentation-or-upstream-package",
+      "roster-over-128-KiB-canonical-UTF-8",
+      "assessment-over-32-MiB-canonical-UTF-8",
+      "assessment-time-before-roster-or-submission",
+      "caller-declared-roster-as-authenticated-root-registry",
+      "complete-declared-commitment-coverage-as-all-existing-roots",
+      "missing-declared-submission-as-proof-of-intentional-withholding",
+      "caller-member-label-as-authenticated-person-host-or-controller",
+      "distinct-member-labels-as-independent-real-world-controllers",
+      "declared-coverage-as-actual-compelled-disclosure",
+      "all-pairs-prefix-compatibility-as-global-total-order-or-global-consistency",
+      "co-presented-fork-detection-as-exclusion-of-unlisted-roots",
+      "caller-time-as-externally-trusted-time",
+      "caller-packages-as-external-retention-or-rollback-resistance",
+      "assessment-receipt-as-branch-adoption-or-execution-authority",
+      "raw-public-key-or-signature-embedding",
+      "private-key-ingestion",
+      "raw-model-output-or-private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains roster input, roster, submissions, transient exact-rebuild packages, and assessment receipt",
+    "reload": "exact-rebuild the roster, every submission, all matching pairs, and the assessment receipt in a fresh process",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned transient packages; receipts retain bounded references and classifications only",
+    "installed": false,
+    "promoted": false
+  }
+}

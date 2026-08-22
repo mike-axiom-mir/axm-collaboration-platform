@@ -1,0 +1,38 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "gate",
+  "id": "deterministic-continuation-capsule",
+  "name": "AXM Deterministic Continuation Capsule",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "continuation-cli.js",
+  "contract": "module.contract.json",
+  "type": "machine-capability",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "ARCHIVE",
+  "risk": "HIGH",
+  "tags": ["continuity", "re-entry", "session-handoff", "deterministic", "source-linked", "privacy", "reasoning-cost"],
+  "uses": [
+    "deterministic-json-core",
+    "filesystem-read",
+    "explicit-source-declaration",
+    "memory-continuity-garden:axm.memory.reentry-capsule-reference",
+    "memory-continuity-garden:axm.memory.session-handoff-packet-reference"
+  ],
+  "permissions": ["filesystem-read", "export"],
+  "machine": { "entry": "continuation-cli.js", "actions": ["compile", "verify", "render", "verify-card"] },
+  "actions": [
+    "bind a declared active goal, decisions, open loops, boundaries, and logical source locators to exact source digests",
+    "compile a path-independent capsule without embedding linked source content",
+    "preserve REPROBE_REQUIRED for volatile external facts even when stored digests match",
+    "render a compact digest-bound resume card for a later local AXM or Codex instance",
+    "refuse sources declared private, raw-log, repetitive-telemetry, temporary-capture, or unclassified, plus permission inference, promotion, roots, and CANON"
+  ],
+  "accepts": ["axm.local-continuation-declaration/v1", "explicit-local-source-root", "declared-source-files"],
+  "produces": ["axm.local-continuation-capsule/v1", "axm.local-continuation-capsule-verification/v1", "axm.local-continuation-resume-card/v1"],
+  "readiness": ["explicit-public-safe-declaration", "exact-source-digests", "source-classification", "freshness-classification"],
+  "summary": "Compile exact evidence-linked continuation state into a compact verifiable resume card without granting hidden memory or action authority.",
+  "notes": "EXPERIMENTAL adapter over two reference-only Memory & Continuity Garden candidates. It does not activate their semantic runtime or memory.handoff permission and is not CANON."
+}

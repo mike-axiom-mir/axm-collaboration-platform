@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1",
+  "title": "Model Shadow local possession response-set snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "observationId", "observedAt", "status",
+    "availability", "receiverIdDigest", "challengerIdDigest",
+    "receiverPolicyRef", "entryCount", "entriesDigest", "entries", "errors",
+    "truth", "snapshotDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1" },
+    "version": { "const": "1.4.0" },
+    "observationId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "observedAt": { "$ref": "#/$defs/timestamp" },
+    "status": { "const": "TEST" },
+    "availability": { "enum": ["AVAILABLE", "ABSENT", "INVALID"] },
+    "receiverIdDigest": { "$ref": "#/$defs/digest" },
+    "challengerIdDigest": { "$ref": "#/$defs/digest" },
+    "receiverPolicyRef": { "$ref": "#/$defs/reference" },
+    "entryCount": { "type": "integer", "minimum": 0, "maximum": 64 },
+    "entriesDigest": { "$ref": "#/$defs/digest" },
+    "entries": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/entry" } },
+    "errors": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 120 } },
+    "truth": { "$ref": "#/$defs/truth" },
+    "snapshotDigest": { "$ref": "#/$defs/digest" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "availability": { "const": "AVAILABLE" } }, "required": ["availability"] },
+      "then": {
+        "properties": {
+          "truth": {
+            "properties": {
+              "strictV13ResponseReloadVerified": { "const": true },
+              "responseFilenameIdentityVerified": { "const": true },
+              "responseSetCanonicalAndUnique": { "const": true }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "truth": {
+            "properties": {
+              "strictV13ResponseReloadVerified": { "const": false },
+              "responseFilenameIdentityVerified": { "const": false },
+              "responseSetCanonicalAndUnique": { "const": false }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["challengeRef", "responseRef", "custodyRecordRef", "answeredAt", "responseFileName"],
+      "properties": {
+        "challengeRef": { "$ref": "#/$defs/reference" },
+        "responseRef": { "$ref": "#/$defs/reference" },
+        "custodyRecordRef": { "$ref": "#/$defs/reference" },
+        "answeredAt": { "$ref": "#/$defs/timestamp" },
+        "responseFileName": { "type": "string", "pattern": "^[a-f0-9]{64}\\.json$" }
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "readOnlyObservation", "strictV13ResponseReloadVerified",
+        "responseFilenameIdentityVerified", "responseSetCanonicalAndUnique",
+        "callerOwnedFilesystemObserved", "snapshotOriginAuthenticated",
+        "observationTimeExternallyTrusted", "stateRootPathEmbedded",
+        "rawPartyLabelEmbedded", "rawPublicKeyEmbedded", "rawSignatureEmbedded",
+        "currentAbsenceClaimedAsNeverExisted", "invalidStateClaimedAsUnused",
+        "checkpointAuthorityAuthenticated", "rollbackOrDeletionPrevented",
+        "hostAuthorizationAuthenticated", "executionAuthorized", "automaticWrite",
+        "automaticPromotion", "automaticCanon"
+      ],
+      "properties": {
+        "readOnlyObservation": { "const": true },
+        "strictV13ResponseReloadVerified": { "type": "boolean" },
+        "responseFilenameIdentityVerified": { "type": "boolean" },
+        "responseSetCanonicalAndUnique": { "type": "boolean" },
+        "callerOwnedFilesystemObserved": { "const": true },
+        "snapshotOriginAuthenticated": { "const": false },
+        "observationTimeExternallyTrusted": { "const": false },
+        "stateRootPathEmbedded": { "const": false },
+        "rawPartyLabelEmbedded": { "const": false },
+        "rawPublicKeyEmbedded": { "const": false },
+        "rawSignatureEmbedded": { "const": false },
+        "currentAbsenceClaimedAsNeverExisted": { "const": false },
+        "invalidStateClaimedAsUnused": { "const": false },
+        "checkpointAuthorityAuthenticated": { "const": false },
+        "rollbackOrDeletionPrevented": { "const": false },
+        "hostAuthorizationAuthenticated": { "const": false },
+        "executionAuthorized": { "const": false },
+        "automaticWrite": { "const": false },
+        "automaticPromotion": { "const": false },
+        "automaticCanon": { "const": false }
+      }
+    }
+  }
+}

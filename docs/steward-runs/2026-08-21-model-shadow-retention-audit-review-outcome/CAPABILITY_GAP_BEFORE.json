@@ -1,0 +1,796 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "v29-request-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.retention-audit-review.exact-request-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.retention-audit-review.exact-request-rebuild": [
+          "v2.9 exact-rebuilds the held observation review request"
+        ]
+      }
+    },
+    {
+      "id": "v29-pending-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.retention-audit-review.request-and-handoff-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.retention-audit-review.request-and-handoff-exact-rebuild": [
+          "v2.9 exact-rebuilds only pristine pending Review Inbox handoffs"
+        ]
+      }
+    },
+    {
+      "id": "review-state-machine",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review-inbox.exact-digest-vote-state-machine"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review-inbox.exact-digest-vote-state-machine": [
+          "ReviewService records exact-digest APPROVE HOLD and REJECT votes without authenticating actors"
+        ]
+      }
+    },
+    {
+      "id": "strict-route-binding",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.strict-v29-route-binding"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "supported-states",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.supported-post-pending-states"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "immutable-transition",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.immutable-review-item-transition-binding"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "vote-digest-binding",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.exact-vote-artifact-binding"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "distinct-actors",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.case-insensitive-distinct-actors"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "declared-human-seat",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.declared-human-approval-required"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "state-vote-consistency",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.state-vote-consistency"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "conflicting-approval",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.conflicting-approved-vote-refusal"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "pseudonymous-evidence",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.minimized-pseudonymous-vote-evidence"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "private-data-omission",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.raw-identity-note-discussion-path-omission"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "context-minimization",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.review-context-minimization"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "self-digest",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.outcome-self-digest"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "exact-verifier",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.exact-rebuild-verifier"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "time-ordering",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.caller-time-ordering"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "fresh-process",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.fresh-process-rebuild"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "resource-bounds",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.resource-bounds"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "no-state-change",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.no-durable-source-or-receiver-change"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "no-runtime-authority",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.data-only-no-service-network-process"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "unresolved-hold",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.unresolved-hold-zero-authority"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "closed-schema",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.closed-output-schema"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "focused-corruption",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "model.shadow.retention-audit-review-outcome.focused-contract-and-corruption-tests"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "live-host-observation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit-review-outcome.live-host-review-outcome-observation"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authenticated-actor",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit-review-outcome.authenticated-review-actor"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit-review-outcome.actual-human-review"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "steward-remediation-decision",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit-review-outcome.authenticated-steward-remediation-decision"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "hold-resolution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit-review-outcome.retention-hold-resolution"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "receiver-durability",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit-review-outcome.independent-receiver-durability"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "provider-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit-review-outcome.provider-execution-or-evaluation"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "benefit-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit-review-outcome.human-benefit-or-learning-proof"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "promotion-authority",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.retention-audit-review-outcome.adoption-promotion-merge-canon-authority"
+      ],
+      "missing": [],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "model.shadow.retention-audit-review-outcome.caller-time-ordering",
+    "model.shadow.retention-audit-review-outcome.case-insensitive-distinct-actors",
+    "model.shadow.retention-audit-review-outcome.closed-output-schema",
+    "model.shadow.retention-audit-review-outcome.conflicting-approved-vote-refusal",
+    "model.shadow.retention-audit-review-outcome.data-only-no-service-network-process",
+    "model.shadow.retention-audit-review-outcome.declared-human-approval-required",
+    "model.shadow.retention-audit-review-outcome.exact-rebuild-verifier",
+    "model.shadow.retention-audit-review-outcome.exact-vote-artifact-binding",
+    "model.shadow.retention-audit-review-outcome.focused-contract-and-corruption-tests",
+    "model.shadow.retention-audit-review-outcome.fresh-process-rebuild",
+    "model.shadow.retention-audit-review-outcome.immutable-review-item-transition-binding",
+    "model.shadow.retention-audit-review-outcome.minimized-pseudonymous-vote-evidence",
+    "model.shadow.retention-audit-review-outcome.no-durable-source-or-receiver-change",
+    "model.shadow.retention-audit-review-outcome.outcome-self-digest",
+    "model.shadow.retention-audit-review-outcome.raw-identity-note-discussion-path-omission",
+    "model.shadow.retention-audit-review-outcome.resource-bounds",
+    "model.shadow.retention-audit-review-outcome.review-context-minimization",
+    "model.shadow.retention-audit-review-outcome.state-vote-consistency",
+    "model.shadow.retention-audit-review-outcome.strict-v29-route-binding",
+    "model.shadow.retention-audit-review-outcome.supported-post-pending-states",
+    "model.shadow.retention-audit-review-outcome.unresolved-hold-zero-authority"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.caller-time-ordering",
+      "requiredBy": [
+        "time-ordering"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.case-insensitive-distinct-actors",
+      "requiredBy": [
+        "distinct-actors"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.closed-output-schema",
+      "requiredBy": [
+        "closed-schema"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.conflicting-approved-vote-refusal",
+      "requiredBy": [
+        "conflicting-approval"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.data-only-no-service-network-process",
+      "requiredBy": [
+        "no-runtime-authority"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.declared-human-approval-required",
+      "requiredBy": [
+        "declared-human-seat"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.exact-rebuild-verifier",
+      "requiredBy": [
+        "exact-verifier"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.exact-vote-artifact-binding",
+      "requiredBy": [
+        "vote-digest-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.focused-contract-and-corruption-tests",
+      "requiredBy": [
+        "focused-corruption"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.fresh-process-rebuild",
+      "requiredBy": [
+        "fresh-process"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.immutable-review-item-transition-binding",
+      "requiredBy": [
+        "immutable-transition"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.minimized-pseudonymous-vote-evidence",
+      "requiredBy": [
+        "pseudonymous-evidence"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.no-durable-source-or-receiver-change",
+      "requiredBy": [
+        "no-state-change"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.outcome-self-digest",
+      "requiredBy": [
+        "self-digest"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.raw-identity-note-discussion-path-omission",
+      "requiredBy": [
+        "private-data-omission"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.resource-bounds",
+      "requiredBy": [
+        "resource-bounds"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.review-context-minimization",
+      "requiredBy": [
+        "context-minimization"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.state-vote-consistency",
+      "requiredBy": [
+        "state-vote-consistency"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.strict-v29-route-binding",
+      "requiredBy": [
+        "strict-route-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.supported-post-pending-states",
+      "requiredBy": [
+        "supported-states"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "model.shadow.retention-audit-review-outcome.unresolved-hold-zero-authority",
+      "requiredBy": [
+        "unresolved-hold"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

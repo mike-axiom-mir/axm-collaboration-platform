@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabric-blueprint-schema-compilation-subject/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "blueprintRef", "compositionReceiptRef", "inputArtifacts"],
+  "properties": {
+    "schema": {"const": "axm.fabric-blueprint-schema-compilation-subject/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}-schema-compilation$"},
+    "blueprintRef": {"$ref": "#/$defs/reference"},
+    "compositionReceiptRef": {"$ref": "#/$defs/reference"},
+    "inputArtifacts": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/artifactReference"}
+    }
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 220},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256", "byteLength"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 220},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 65536}
+      }
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "schema": "axm.identity-shell.verifier-hardening-check-results/v1",
+  "status": "TEST",
+  "branch": "codex/identity-shell-fabric-keel-trial-v0.1",
+  "startingCommit": "74cc58da29fb8dfde770bf90dc39683730eb2799",
+  "manifestDigest": "sha256:575f667d86b5b81784579f080a07c6e6c581545233f2e9c013fa464e78e85307",
+  "focused": {
+    "fabricSelftest": {
+      "command": "node shared/identity-shell-fabric/selftest.js",
+      "exit": 0,
+      "assertions": 87,
+      "verdict": "PASS"
+    },
+    "keelTrial": {
+      "command": "node shared/identity-shell-fabric/examples/keel-workshop-collaborator/trial-selftest.js",
+      "exit": 0,
+      "verdict": "PASS",
+      "scenarios": ["origin-rebuild", "distinct-fork", "candidate-memory-acceptance", "disclosed-neural-migration"]
+    },
+    "freshProcessVerifier": {
+      "command": "node shared/identity-shell-fabric/examples/keel-workshop-collaborator/fresh-process-verifier.js",
+      "exit": 0,
+      "verdict": "PASS",
+      "importsCompiler": false,
+      "redigestedAdversariesRejected": 3
+    },
+    "crossProcess": {
+      "freshCompilerProcesses": 20,
+      "compilerFailures": 0,
+      "uniqueManifestDigests": 1,
+      "freshVerifierProcesses": 20,
+      "verifierFailures": 0
+    },
+    "capabilityRoute": "DEGRADED",
+    "requiredCapabilityRequirementsNotReady": 0,
+    "optionalGaps": 3
+  },
+  "repairs": [
+    {
+      "finding": "A maliciously re-digested manifest could set an unsafe portability flag and pass the old independent verifier.",
+      "resolution": "The independent verifier now enforces exact portability semantics."
+    },
+    {
+      "finding": "A maliciously re-digested EMPTY continuity state could contain accepted history and pass the old independent verifier.",
+      "resolution": "The independent verifier now couples continuity state, head, accepted, candidate, and effective histories."
+    },
+    {
+      "finding": "A maliciously re-digested descriptor could use a numeric-string resource value and be coerced by the old independent verifier.",
+      "resolution": "Every descriptor and envelope resource field must now be a non-negative safe integer with exact boundaries."
+    },
+    {
+      "finding": "The first added regression-test edit reused an existing networkExpansion identifier.",
+      "resolution": "The lane-local syntax failure was preserved, classified as a regression, renamed, and rerun successfully."
+    },
+    {
+      "finding": "The Keel alternate neural descriptor exceeded the origin requested resource totals before reaching the disclosure gate.",
+      "resolution": "The in-memory migration now visibly raises requested totals within the unchanged permitted ceiling before testing disclosure."
+    }
+  ],
+  "independentVerifierCoverage": {
+    "validCompilerManifestKinds": ["ORIGIN", "FORK", "MIGRATION", "RECONSTRUCTION", "SUCCESSION_PROPOSAL", "RETIREMENT_PROPOSAL"],
+    "redigestedSemanticAttackAssertions": 17,
+    "malformedFailClosedAssertions": 5,
+    "checks": ["identity-root", "ownership-and-disclosure", "component-role", "provider-unbound", "descriptor-authority", "resource-types-and-ceilings", "network-and-actuation", "continuity-consistency", "lineage-and-lifecycle", "portability", "privacy", "inert-truth"]
+  },
+  "requiredWorkshopChecks": [
+    {"command": "node verify.js", "exit": 0},
+    {"command": "node hub/hub-selftest.js", "exit": 0},
+    {"command": "node hub/route-selftest.js", "exit": 0},
+    {"command": "node hub/graft-selftest.js", "exit": 0},
+    {"command": "node hub/skin-selftest.js", "exit": 0},
+    {"command": "node hub/verify-plus.js", "exit": 0},
+    {"command": "node tests/html-script-syntax-test.js", "exit": 0},
+    {"command": "node tests/tool-forge-package-test.js", "exit": 0},
+    {"command": "node tools/agent-tool-forge/selftest.js", "exit": 0},
+    {"command": "node tools/evidence-desk/selftest.js", "exit": 0}
+  ],
+  "workshopVerification": {
+    "verifyWarnings": 41,
+    "verifyPlus": "VERIFIED_WITH_LIMITS",
+    "verifyPlusReceipts": 6,
+    "verifyPlusAtomicClaims": 9,
+    "transientObservation": "One combined broad-check attempt produced no exit line for more than 90 seconds; its verify.js child later ended. An isolated verify.js rerun exited 0 in approximately 17 seconds, and the other nine checks then exited 0. The silent attempt is not counted as a pass."
+  },
+  "notRun": [
+    "browser-render-click: no UI or visual claim",
+    "live-shell-host-binding: unavailable in v0.1",
+    "authenticated-human-acceptance: unavailable",
+    "cross-runtime-continuity: unavailable",
+    "model-or-connector-execution: prohibited by v0.1",
+    "robotic-actuation: unavailable in v0.1"
+  ]
+}

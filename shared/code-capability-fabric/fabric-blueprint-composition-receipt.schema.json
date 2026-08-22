@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabric-blueprint-composition-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "intentRef", "consentEvaluationRef", "instructionRef", "composerProfileRef", "blueprintRef", "artifactFiles", "resourceObservation", "limitations", "nextImprovementGaps", "truth", "authority", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.fabric-blueprint-composition-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "BLUEPRINT_EMITTED_FOR_REVIEW"},
+    "intentRef": {"$ref": "#/$defs/reference"},
+    "consentEvaluationRef": {"$ref": "#/$defs/reference"},
+    "instructionRef": {"$ref": "#/$defs/reference"},
+    "composerProfileRef": {"$ref": "#/$defs/reference"},
+    "blueprintRef": {"$ref": "#/$defs/reference"},
+    "artifactFiles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "prefixItems": [{"allOf": [{"$ref": "#/$defs/fileReference"}, {"properties": {"path": {"const": "capability-blueprint.json"}}}]}],
+      "items": false
+    },
+    "resourceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["composerInputBytes", "blueprintBytes", "receiptBytes", "totalFilesWritten", "totalBytesWritten", "inputByteCeilingEnforced", "fileCountEnforced", "outputByteCeilingEnforced", "operationCountEnforced", "durationEnforced", "memoryEnforced"],
+      "properties": {
+        "composerInputBytes": {"type": "integer", "minimum": 1, "maximum": 32768},
+        "blueprintBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "receiptBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "totalFilesWritten": {"const": 2},
+        "totalBytesWritten": {"type": "integer", "minimum": 2, "maximum": 65536},
+        "inputByteCeilingEnforced": {"const": true},
+        "fileCountEnforced": {"const": true},
+        "outputByteCeilingEnforced": {"const": true},
+        "operationCountEnforced": {"const": true},
+        "durationEnforced": {"const": false},
+        "memoryEnforced": {"const": false}
+      }
+    },
+    "limitations": {
+      "const": ["INTERACTIVE_DECLARATION_NOT_CRYPTOGRAPHIC_IDENTITY_PROOF", "INTERACTIVE_DECLARATION_REPLAY_NOT_PREVENTED", "PREDECISION_EVIDENCE_CONTENT_NOT_VERIFIED_BY_COMPOSER", "DECLARED_DATA_CLASS_CONTENT_NOT_VERIFIED", "TRUSTED_CLOCK_NOT_OBSERVED", "LIVE_REVOCATION_NOT_CHECKED", "DECLARATIVE_BLUEPRINT_ONLY", "SEMANTIC_BEHAVIOR_NOT_IMPLEMENTED", "GENERATED_EXECUTABLE_CODE_ABSENT", "RUNTIME_RESOURCE_BUDGETS_DECLARED_NOT_ENFORCED", "RUNTIME_QUALITY_NOT_PROVEN", "MACHINE_HOST_DEFAULT_NOT_ACTIVATED", "PERSISTENT_LEARNING_NOT_ADMITTED"]
+    },
+    "nextImprovementGaps": {
+      "const": ["consent.human-decision.authenticate", "consent.declaration.replay-prevent", "consent.revocation.observe-live", "consent.trusted-clock.observe", "creation.blueprint-to-code.provider", "creation.semantic-candidate.generate", "creation.runtime-quality.verify", "learning.admission.decide"]
+    },
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "DISPOSABLE_BLUEPRINT_WRITE_ONLY_USED"},
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "contractToken": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {"id": {"$ref": "#/$defs/contractToken"}, "schema": {"$ref": "#/$defs/contractToken"}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "fileReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "byteLength"],
+      "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}, "byteLength": {"type": "integer", "minimum": 1, "maximum": 65536}}
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fabricFirstGateApplied", "interactiveDeclarationSupplied", "interactiveDeclarationReplayPrevented", "cryptographicHumanAuthenticationVerified", "predecisionEvidenceContentVerified", "declaredDataClassContentVerified", "trustedClockObserved", "liveRevocationChecked", "composerWriteAuthorityUsed", "fabricGrantedAuthority", "intentBytesValidated", "compositionGraphValidated", "blueprintWritten", "blueprintReadBack", "receiptWritten", "receiptReadBack", "sourceContentRead", "networkUsed", "childProcessSpawned", "generatedExecutableCodePresent", "candidateCodeExecuted", "runtimeQualityProven", "machineDefaultActivated", "persistentLearningAdmitted", "installed", "registered", "staged", "promoted", "canonChanged", "filesRetained"],
+      "properties": {
+        "fabricFirstGateApplied": {"const": true},
+        "interactiveDeclarationSupplied": {"const": true},
+        "interactiveDeclarationReplayPrevented": {"const": false},
+        "cryptographicHumanAuthenticationVerified": {"const": false},
+        "predecisionEvidenceContentVerified": {"const": false},
+        "declaredDataClassContentVerified": {"const": false},
+        "trustedClockObserved": {"const": false},
+        "liveRevocationChecked": {"const": false},
+        "composerWriteAuthorityUsed": {"const": true},
+        "fabricGrantedAuthority": {"const": false},
+        "intentBytesValidated": {"const": true},
+        "compositionGraphValidated": {"const": true},
+        "blueprintWritten": {"const": true},
+        "blueprintReadBack": {"const": true},
+        "receiptWritten": {"const": true},
+        "receiptReadBack": {"const": true},
+        "sourceContentRead": {"const": false},
+        "networkUsed": {"const": false},
+        "childProcessSpawned": {"const": false},
+        "generatedExecutableCodePresent": {"const": false},
+        "candidateCodeExecuted": {"const": false},
+        "runtimeQualityProven": {"const": false},
+        "machineDefaultActivated": {"const": false},
+        "persistentLearningAdmitted": {"const": false},
+        "installed": {"const": false},
+        "registered": {"const": false},
+        "staged": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false},
+        "filesRetained": {"const": true}
+      }
+    }
+  }
+}

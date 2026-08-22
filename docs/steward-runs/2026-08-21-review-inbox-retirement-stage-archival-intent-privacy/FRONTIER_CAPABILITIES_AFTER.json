@@ -1,0 +1,79 @@
+{
+  "schema": "axm.frontier-capability-inventory/v1",
+  "status": "TEST",
+  "phase": "after",
+  "sourceCommit": "04294776eefdbb8a31604bf2be2725708bc6d3e0",
+  "productTree": "2722e79a578711819bbd492aa329e591d53c2bcb",
+  "available": [
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.exact-digest-commitment",
+      "constraints": [
+        "SHA-256 commitment to exact raw reason bytes; no protected-storage or authentication claim."
+      ]
+    },
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.raw-value-absent-from-new-durable-state",
+      "constraints": [
+        "v2 intent stores a changed redacted summary or fixed withheld marker, never the exact raw reason."
+      ]
+    },
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.raw-value-absent-from-result-and-cli",
+      "constraints": [
+        "v3 result and emitted CLI JSON omit the exact raw reason. CLI argv and shell history are outside this claim."
+      ]
+    },
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.recognized-credential-redaction",
+      "constraints": [
+        "Reuses the tested shared diagnostic redactor; arbitrary or encoded secrets remain unproven."
+      ]
+    },
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.machine-path-redaction",
+      "constraints": [
+        "Configured roots and residual absolute paths are minimized in reason summaries."
+      ]
+    },
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.legacy-v1-raw-record-compatibility",
+      "constraints": [
+        "Exact v1 record remains readable and retryable, is typed legacy, and is not rewritten."
+      ]
+    },
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.typed-privacy-status",
+      "constraints": [
+        "Status distinguishes v2 private intent, legacy v1 raw reason, and authorization-unknown legacy archive."
+      ]
+    },
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.digest-and-redaction-corruption-held",
+      "constraints": [
+        "Self-inconsistent digest and non-idempotent redaction summary hold before archive mutation."
+      ]
+    },
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.existing-convergence-preserved",
+      "constraints": [
+        "Fifteen matrix crash checkpoints, adversarial crash fixtures, reentrant caller and two cooperating processes."
+      ]
+    },
+    {
+      "id": "review.retirement.publication-stage.archival-intent.reason.all-artifact-host-local-coverage",
+      "constraints": [
+        "Intent, decision, and result stages; no API or browser route."
+      ]
+    }
+  ],
+  "missing": [
+    "review.retirement.publication-stage.archival-intent.reason.arbitrary-or-encoded-secret-absence",
+    "review.retirement.publication-stage.archival-intent.authenticated-actor-authorization",
+    "review.retirement.publication-stage.storage-space-reclamation",
+    "review.retirement.publication-stage.live-publisher-safety",
+    "review.retirement.publication-stage.lossless-archive-without-hard-links",
+    "storage.power-loss-durability.proven",
+    "storage.cross-file.atomicity"
+  ],
+  "inventoryDigest": "sha256:9f8416dd658ec6bdd9b5d81aa0639f9851b22352e346883c70057a35eebf7682"
+}

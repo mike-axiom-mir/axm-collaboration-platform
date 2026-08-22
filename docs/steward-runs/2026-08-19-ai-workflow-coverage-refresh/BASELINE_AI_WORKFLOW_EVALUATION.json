@@ -1,0 +1,224 @@
+{
+  "schema": "axm.ai-workflow-evaluation/v1",
+  "version": "0.1.0",
+  "evaluationId": "baseline-change-gated-ai-workflow-20260819",
+  "generatedAt": "2026-08-19T10:20:00.000Z",
+  "beneficiary": "AI_WORKFLOW",
+  "workflow": "Decide whether an AI-assisted baseline simulation workflow should stop, run one bounded cycle, or hold.",
+  "proofSurface": "AI_WORKFLOW_EVALUATION",
+  "fixturePolicy": "Representative cases are frozen as data outside both comparison policies. They are grounded in existing Workshop receipts and tests; they are not a statistically sampled or independently blinded model benchmark.",
+  "inputRefs": [
+    {
+      "id": "baseline-change-gated-workflow-cases-20260819",
+      "schema": "axm.steward-workflow-case-set/v1",
+      "sha256": "sha256:ab4f6cd1c0fdb55681a5676ea27cdf73913aee83ec63019c3977a54046c6dc89"
+    },
+    {
+      "id": "ai-workflow-coverage-evaluator",
+      "schema": "text/javascript",
+      "sha256": "sha256:1a9fadd5d6f14f9fe06e55dba665ee652a96f02bb90b13ff220d644242062716"
+    },
+    {
+      "id": "baseline-simulation-lab-implementation",
+      "schema": "text/javascript",
+      "sha256": "sha256:8aa061aae5ff17051bd1af41e3b7021c974bd3942cde093e307718cb5e981140"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-baseline-simulation-lab-live-comparison-observation-json",
+      "schema": "application/json",
+      "sha256": "sha256:30cf4c7ffb4cde6745babca57884f75a2f915bf64b3ba40b8981dc6e04a3b8ac"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-public-baseline-research-run-research-disposition-json",
+      "schema": "application/json",
+      "sha256": "sha256:1cc351246cfe6f2500de91b7e21d801520f26ee1e9455aecc081de49b9c01f5b"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-baseline-simulation-lab-no-new-evidence-receipt-json",
+      "schema": "application/json",
+      "sha256": "sha256:6bf453a80ed9c36ee465d791411f60eb3a0e5c3d6aee9d6339472385e7ccb3e7"
+    },
+    {
+      "id": "case-source:shared-baseline-simulation-lab-selftest-js",
+      "schema": "text/javascript",
+      "sha256": "sha256:4a3ff0fa9a1d7b7aaf2df2b84d02943694e3b82b4e4cd25889f36cf5b76163da"
+    },
+    {
+      "id": "case-source:shared-portable-baseline-capsule-selftest-js",
+      "schema": "text/javascript",
+      "sha256": "sha256:6e42c4d519ee64f30174c39641634cf27488f8a4a0d68e35e9d44ffd61e6ba3f"
+    }
+  ],
+  "baseline": {
+    "policyId": "REQUEST_DRIVEN_REGENERATE",
+    "description": "A declared comparison policy runs another bounded cycle whenever a simulation request arrives, without exact change gating.",
+    "correctDecisions": 3,
+    "totalDecisions": 8,
+    "unsupportedUnsafeOrWastefulDecisions": 5
+  },
+  "outcome": {
+    "policyId": "EXACT_CHANGE_GATED_BASELINE_WORKFLOW",
+    "description": "The guard stops exact no-change cases, runs only on declared new information, and holds changed-without-information or incomparable subjects.",
+    "correctDecisions": 8,
+    "totalDecisions": 8,
+    "unsupportedUnsafeOrWastefulDecisions": 0,
+    "newlyCorrectedDecisions": 5
+  },
+  "cases": [
+    {
+      "id": "unchanged-baseline-no-new-information",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-baseline-simulation-lab-live-comparison-observation-json",
+        "schema": "application/json",
+        "sha256": "sha256:30cf4c7ffb4cde6745babca57884f75a2f915bf64b3ba40b8981dc6e04a3b8ac"
+      },
+      "phase": "DECIDE",
+      "expectedDecision": "STOP_NO_NEW_INFORMATION",
+      "expectedRule": "EXACT_NO_NEW_INFORMATION_STOP",
+      "baselineDecision": "RUN_BOUNDED",
+      "baselineRule": "REQUEST_DRIVEN_REGENERATE",
+      "candidateDecision": "STOP_NO_NEW_INFORMATION",
+      "candidateRule": "EXACT_NO_NEW_INFORMATION_STOP",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "repeated-model-agreement-without-native-evidence",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-public-baseline-research-run-research-disposition-json",
+        "schema": "application/json",
+        "sha256": "sha256:1cc351246cfe6f2500de91b7e21d801520f26ee1e9455aecc081de49b9c01f5b"
+      },
+      "phase": "DECIDE",
+      "expectedDecision": "STOP_NO_NEW_INFORMATION",
+      "expectedRule": "AGREEMENT_IS_NOT_NEW_INFORMATION",
+      "baselineDecision": "RUN_BOUNDED",
+      "baselineRule": "REQUEST_DRIVEN_REGENERATE",
+      "candidateDecision": "STOP_NO_NEW_INFORMATION",
+      "candidateRule": "AGREEMENT_IS_NOT_NEW_INFORMATION",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "restated-known-requirement-without-new-reference",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-baseline-simulation-lab-no-new-evidence-receipt-json",
+        "schema": "application/json",
+        "sha256": "sha256:6bf453a80ed9c36ee465d791411f60eb3a0e5c3d6aee9d6339472385e7ccb3e7"
+      },
+      "phase": "DECIDE",
+      "expectedDecision": "STOP_NO_NEW_INFORMATION",
+      "expectedRule": "RESTATEMENT_IS_NOT_NEW_INFORMATION",
+      "baselineDecision": "RUN_BOUNDED",
+      "baselineRule": "REQUEST_DRIVEN_REGENERATE",
+      "candidateDecision": "STOP_NO_NEW_INFORMATION",
+      "candidateRule": "RESTATEMENT_IS_NOT_NEW_INFORMATION",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "changed-baseline-with-declared-evidence",
+      "sourceRef": {
+        "id": "case-source:shared-baseline-simulation-lab-selftest-js",
+        "schema": "text/javascript",
+        "sha256": "sha256:4a3ff0fa9a1d7b7aaf2df2b84d02943694e3b82b4e4cd25889f36cf5b76163da"
+      },
+      "phase": "DECIDE",
+      "expectedDecision": "RUN_BOUNDED",
+      "expectedRule": "BASELINE_CHANGE_WITH_INFORMATION_RUNS",
+      "baselineDecision": "RUN_BOUNDED",
+      "baselineRule": "REQUEST_DRIVEN_REGENERATE",
+      "candidateDecision": "RUN_BOUNDED",
+      "candidateRule": "BASELINE_CHANGE_WITH_INFORMATION_RUNS",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    },
+    {
+      "id": "new-counterexample-on-unchanged-baseline",
+      "sourceRef": {
+        "id": "case-source:shared-baseline-simulation-lab-selftest-js",
+        "schema": "text/javascript",
+        "sha256": "sha256:4a3ff0fa9a1d7b7aaf2df2b84d02943694e3b82b4e4cd25889f36cf5b76163da"
+      },
+      "phase": "DECIDE",
+      "expectedDecision": "RUN_BOUNDED",
+      "expectedRule": "NEW_COUNTEREXAMPLE_RUNS",
+      "baselineDecision": "RUN_BOUNDED",
+      "baselineRule": "REQUEST_DRIVEN_REGENERATE",
+      "candidateDecision": "RUN_BOUNDED",
+      "candidateRule": "NEW_COUNTEREXAMPLE_RUNS",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    },
+    {
+      "id": "new-requirement-on-unchanged-baseline",
+      "sourceRef": {
+        "id": "case-source:shared-baseline-simulation-lab-selftest-js",
+        "schema": "text/javascript",
+        "sha256": "sha256:4a3ff0fa9a1d7b7aaf2df2b84d02943694e3b82b4e4cd25889f36cf5b76163da"
+      },
+      "phase": "DECIDE",
+      "expectedDecision": "RUN_BOUNDED",
+      "expectedRule": "NEW_REQUIREMENT_RUNS",
+      "baselineDecision": "RUN_BOUNDED",
+      "baselineRule": "REQUEST_DRIVEN_REGENERATE",
+      "candidateDecision": "RUN_BOUNDED",
+      "candidateRule": "NEW_REQUIREMENT_RUNS",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    },
+    {
+      "id": "changed-baseline-without-information-reference",
+      "sourceRef": {
+        "id": "case-source:shared-baseline-simulation-lab-selftest-js",
+        "schema": "text/javascript",
+        "sha256": "sha256:4a3ff0fa9a1d7b7aaf2df2b84d02943694e3b82b4e4cd25889f36cf5b76163da"
+      },
+      "phase": "DECIDE",
+      "expectedDecision": "HOLD_CHANGED_WITHOUT_INFORMATION",
+      "expectedRule": "BASELINE_CHANGE_REQUIRES_INFORMATION",
+      "baselineDecision": "RUN_BOUNDED",
+      "baselineRule": "REQUEST_DRIVEN_REGENERATE",
+      "candidateDecision": "HOLD_CHANGED_WITHOUT_INFORMATION",
+      "candidateRule": "BASELINE_CHANGE_REQUIRES_INFORMATION",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "different-subject-identities",
+      "sourceRef": {
+        "id": "case-source:shared-portable-baseline-capsule-selftest-js",
+        "schema": "text/javascript",
+        "sha256": "sha256:6e42c4d519ee64f30174c39641634cf27488f8a4a0d68e35e9d44ffd61e6ba3f"
+      },
+      "phase": "DECIDE",
+      "expectedDecision": "HOLD_INCOMPARABLE",
+      "expectedRule": "SUBJECT_MISMATCH_IS_INCOMPARABLE",
+      "baselineDecision": "RUN_BOUNDED",
+      "baselineRule": "REQUEST_DRIVEN_REGENERATE",
+      "candidateDecision": "HOLD_INCOMPARABLE",
+      "candidateRule": "SUBJECT_MISMATCH_IS_INCOMPARABLE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    }
+  ],
+  "verdict": "PASS",
+  "limitations": [
+    "No language model was invoked; this proves a deterministic change-gated workflow guard, not model learning, intelligence, provider behavior, or broad generalization.",
+    "The eight cases are representative Workshop situations, not a statistically sampled or independently blinded benchmark.",
+    "The request-driven baseline is a declared comparison policy, not a claim about any named model or the current AXM steward.",
+    "The result does not establish human benefit, live Mirror or specialist-mask effectiveness, availability, promotion, merge, or CANON."
+  ],
+  "truth": {
+    "modelInvoked": false,
+    "modelWeightsChanged": false,
+    "modelGeneralizationClaimed": false,
+    "humanParticipant": false,
+    "humanBenefitClaimed": false,
+    "automaticExecution": false,
+    "automaticInstall": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "receiptDigest": "sha256:e193efef994083359633894502ef6152c790c8729eb508e28958418351a45156"
+}

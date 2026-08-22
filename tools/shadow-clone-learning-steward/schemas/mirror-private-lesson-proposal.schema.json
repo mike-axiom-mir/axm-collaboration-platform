@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.private-lesson-proposal/v1",
+  "title": "AXM Mirror Private Lesson Proposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "proposalDigest", "proposalId", "status", "state", "target", "reviewerAlias", "sourceLedgerDigest", "lesson", "trainingMeaning", "authority", "createdAt"],
+  "properties": {
+    "schema": { "const": "axm.mirror.private-lesson-proposal/v1" },
+    "proposalDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "proposalId": { "type": "string" },
+    "status": { "const": "EXPERIMENTAL" },
+    "state": { "const": "REVIEW_REQUIRED" },
+    "target": { "const": "service:mirror-native:private-action-lesson-intake-only" },
+    "reviewerAlias": { "type": "string" },
+    "sourceLedgerDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "lesson": { "type": "object" },
+    "trainingMeaning": { "const": "PRIVATE_LESSON_PROPOSAL_NOT_MODEL_WEIGHT_TRAINING" },
+    "authority": { "type": "object" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}
+

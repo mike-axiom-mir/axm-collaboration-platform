@@ -1,0 +1,175 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "UNKNOWN",
+  "requirements": [
+    {
+      "id": "candidate-to-review-inbox",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "qa.phone-review.shared-inbox-reuse"
+      ],
+      "degraded": [
+        "qa.phone-review.exact-native-digest-binding",
+        "qa.phone-review.idempotent-open"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.exact-native-digest-binding": [
+          "QA receipts had native digests, but no review adapter verified and bound them."
+        ],
+        "qa.phone-review.shared-inbox-reuse": [
+          "The durable exact-digest Review Inbox already existed."
+        ],
+        "qa.phone-review.idempotent-open": [
+          "QA Lab exposed no operation for opening its candidate in the existing inbox."
+        ]
+      }
+    },
+    {
+      "id": "review-to-campaign-input",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [
+        "qa.phone-review.latest-human-decision",
+        "qa.phone-review.five-field-campaign-input",
+        "qa.phone-review.incomplete-cannot-accept"
+      ],
+      "unknown": [
+        "qa.phone-review.note-redaction"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.latest-human-decision": [
+          "No adapter distinguished an exact latest human decision from machine, collective, or unknown votes."
+        ],
+        "qa.phone-review.five-field-campaign-input": [
+          "Campaign review records were manually assembled inputs in fixtures."
+        ],
+        "qa.phone-review.note-redaction": [
+          "No review-to-campaign transport existed to inspect for note leakage."
+        ],
+        "qa.phone-review.incomplete-cannot-accept": [
+          "No adapter prevented a generic approve vote from upgrading an incomplete checklist."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "qa.phone-review.proof-authority.none",
+        "qa.phone-review.warning-authority.none",
+        "qa.phone-review.human-usefulness-authority.none"
+      ],
+      "degraded": [
+        "qa.phone-review.nonhuman-export-refusal"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.nonhuman-export-refusal": [
+          "The generic inbox supports several actor kinds, but no phone-specific export rule existed."
+        ],
+        "qa.phone-review.proof-authority.none": [
+          "Existing candidate and gate contracts already refused review-as-physical-proof."
+        ],
+        "qa.phone-review.warning-authority.none": [
+          "The campaign and two-key gate already kept candidate review separate from warning closure."
+        ],
+        "qa.phone-review.human-usefulness-authority.none": [
+          "The existing two-key gate already kept device behavior separate from human usefulness."
+        ]
+      }
+    },
+    {
+      "id": "durable-handoff",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-review.service-reload",
+        "qa.phone-review.read-route"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.service-reload": [
+          "No cross-service phone review handoff existed to reload."
+        ],
+        "qa.phone-review.read-route": [
+          "No bounded read route exposed campaign-ready handoff state."
+        ]
+      }
+    },
+    {
+      "id": "visible-voluntary-route",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "qa.phone-review.desktop-live-route"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.desktop-live-route": [
+          "The review control and navigation did not exist in the rendered QA Lab."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "qa.phone-review.real-human-decision"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.real-human-decision": [
+          "No actual person reviewed a phone candidate in this run."
+        ]
+      }
+    },
+    {
+      "id": "physical-phone-evidence",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-observation.physical-session"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.physical-session": [
+          "No separate physical-phone session was run."
+        ]
+      }
+    },
+    {
+      "id": "human-usefulness",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-observation.human-usefulness"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.human-usefulness": [
+          "No voluntary human-usefulness outcome was supplied."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

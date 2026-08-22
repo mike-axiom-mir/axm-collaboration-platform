@@ -1,0 +1,91 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-local-possession-continuity",
+  "version": "v1.4",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition.local-possession-continuity.strict-response-filename-identity",
+    "model.shadow.review.challenge-transition.local-possession-continuity.strict-response-inventory",
+    "model.shadow.review.challenge-transition.local-possession-continuity.v1.3-reload-compose",
+    "model.shadow.review.challenge-transition.local-possession-continuity.read-only-snapshot",
+    "model.shadow.review.challenge-transition.local-possession-continuity.caller-checkpoint",
+    "model.shadow.review.challenge-transition.local-possession-continuity.checkpoint-exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-continuity.fresh-process-compare",
+    "model.shadow.review.challenge-transition.local-possession-continuity.rollback-detect-relative-to-presented-checkpoint",
+    "model.shadow.review.challenge-transition.local-possession-continuity.replacement-detect-relative-to-presented-checkpoint",
+    "model.shadow.review.challenge-transition.local-possession-continuity.absent-invalid-identity-holds",
+    "model.shadow.review.challenge-transition.local-possession-continuity.public-artifact-data-minimization",
+    "model.shadow.review.challenge-transition.local-possession-continuity.resource-bounds",
+    "model.shadow.review.challenge-transition.local-possession-continuity.authority-none",
+    "axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint/v1",
+    "axm.model-shadow-review-challenge-transition-local-possession-continuity/v1"
+  ],
+  "consumes": [
+    "one caller-owned v1.3 local possession response namespace as data",
+    "the exact v1.2 custody records referenced by those responses as data",
+    "one exact v1.1 receiver policy as transient validation data",
+    "one configured receiver label, challenger label and challenger Ed25519 public key as transient validation data",
+    "one caller-presented prior v1.4 checkpoint as data for continuity comparison",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [
+    "read fixed v1.3 response files and their referenced fixed v1.2 custody files under one explicit caller-owned state root"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-local-possession-snapshot/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-continuity/v1"
+    ],
+    "accepts": [
+      "one existing caller-owned local possession state root",
+      "one caller-retained exact v1.4 checkpoint for later comparison"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "<caller-state-root>/model-shadow-review-challenge-transition-local-possession-challenge/answers/<derived-sha256>.json",
+      "<caller-state-root>/model-shadow-review-challenge-transition-local-receiver-custody/records/<derived-sha256>.json"
+    ],
+    "writes": [],
+    "refuses": [
+      "well-formed-response-filename-as-derived-filename-identity",
+      "valid-response-artifact-copied-under-another-response-filename",
+      "unexpected-noncanonical-oversized-symlinked-or-duplicate-response-entry-as-valid-inventory",
+      "response-without-exact-v1.3-custody-challenge-policy-and-signature-reload-as-valid-inventory",
+      "invalid-current-state-as-empty-or-never-existing-state",
+      "missing-current-state-as-never-existing-state",
+      "caller-checkpoint-as-proven-external-retention",
+      "caller-checkpoint-as-authenticated-authority",
+      "self-digest-as-authenticated-integrity",
+      "snapshot-as-authenticated-observer-origin",
+      "caller-time-as-trusted-time",
+      "relative-rollback-detection-as-rollback-prevention",
+      "relative-rollback-detection-as-protected-monotonic-state",
+      "relative-rollback-detection-as-global-single-use",
+      "checkpoint-as-pre-checkpoint-history-proof",
+      "library-call-as-host-authorized-entrypoint",
+      "local-files-as-independent-external-retention",
+      "continuity-observation-as-human-review-provider-execution-adoption-benefit-or-learning",
+      "private-key-ingestion-or-persistence",
+      "raw-party-label-public-key-signature-custody-record-or-machine-path-in-public-artifacts",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller; this adapter is read-only and stores no checkpoint",
+    "reload": "strictly recapture current v1.3 response state and compare with a caller-presented self-digested checkpoint",
+    "disconnect": "not-applicable; no network route is opened",
+    "cleanup": "caller-owned",
+    "installed": false,
+    "promoted": false
+  }
+}

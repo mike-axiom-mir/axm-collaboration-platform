@@ -1,0 +1,227 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "campaign-and-device-binding",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.phone-evidence.campaign-native-bind",
+        "growth.phone-evidence.device-native-verify"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "warning-closure-separation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.phone-evidence.manifest-warning-closure-bind"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "human-outcome-native-route",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.phone-evidence.human-outcome-native-verify"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "two-key-non-conflation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.phone-evidence.two-key-separation"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authority-ceiling",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "growth.phone-evidence.authority.none"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "current-device-key",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.phone-evidence.current-device-key.pass"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.current-device-key.pass": [
+          "No exact physical-phone device receipt, accepted candidate review, or later warning-free verifier report exists for the current game."
+        ]
+      }
+    },
+    {
+      "id": "current-human-key",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.phone-evidence.current-human-key.pass"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.current-human-key.pass": [
+          "No live human handoff package exists for the declared current game experience."
+        ]
+      }
+    },
+    {
+      "id": "current-combined-evidence",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.phone-evidence.current-combined.pass"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.current-combined.pass": [
+          "Neither independent evidence key currently passes."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "growth.phone-evidence.authority.none",
+    "growth.phone-evidence.campaign-native-bind",
+    "growth.phone-evidence.device-native-verify",
+    "growth.phone-evidence.human-outcome-native-verify",
+    "growth.phone-evidence.manifest-warning-closure-bind",
+    "growth.phone-evidence.two-key-separation"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "growth.phone-evidence.authority.none",
+      "requiredBy": [
+        "authority-ceiling"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.phone-evidence.campaign-native-bind",
+      "requiredBy": [
+        "campaign-and-device-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.phone-evidence.device-native-verify",
+      "requiredBy": [
+        "campaign-and-device-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.phone-evidence.human-outcome-native-verify",
+      "requiredBy": [
+        "human-outcome-native-route"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.phone-evidence.manifest-warning-closure-bind",
+      "requiredBy": [
+        "warning-closure-separation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.phone-evidence.two-key-separation",
+      "requiredBy": [
+        "two-key-non-conflation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

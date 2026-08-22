@@ -1,0 +1,119 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "exact-parent-path-leak",
+      "claim": "The exact parent derived index retained absolute machine paths in 11 of 12 failure tails.",
+      "kind": "existence",
+      "risk": "high",
+      "passCondition": "Exact parent Git blobs expose raw capture and verbatim ingestion, while the receipt retains only counts.",
+      "primarySurface": "BASELINE_MACHINE_PATH_LEAK.json plus immutable Git blobs",
+      "counterevidence": "No absolute tails, a pre-existing redactor, or a receipt containing the leaked text.",
+      "verdict": "PASS",
+      "namedSeam": "Baseline counts prove the bounded leak, not all historical privacy debt."
+    },
+    {
+      "id": "known-and-residual-path-redaction",
+      "claim": "Known roots and residual Windows, UNC, POSIX, and file-URL paths are redacted.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Synthetic cross-platform fixtures emit typed placeholders and contain none of the input absolute roots.",
+      "primarySurface": "25-assertion diagnostic-redaction selftest",
+      "counterevidence": "Any fixture retains an absolute root or host/share identity.",
+      "secondarySurfaceIfNeeded": "Clean archived product replay",
+      "verdict": "PASS",
+      "namedSeam": "Pattern fixtures do not prove general secret detection."
+    },
+    {
+      "id": "diagnostic-utility-and-bounds",
+      "claim": "Relative context, web URLs, exact output hashes, tail bounds, and source receipt immutability are preserved.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "Selftests preserve declared context, bound tails after redaction, and leave source input unchanged; generator keeps raw outputSha256.",
+      "primarySurface": "Direct selftest plus product source snapshot",
+      "counterevidence": "Redaction mutates input, removes declared relative context, exceeds the bound, or hashes rewritten output.",
+      "verdict": "PASS",
+      "namedSeam": "A shallow result copy preserves unrelated nested references by design."
+    },
+    {
+      "id": "writer-and-ingestion-defense",
+      "claim": "Receipt creation and readiness ingestion both apply the shared redactor.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Generator/daily writer source calls the helper and a fresh synthetic readiness fixture sanitizes a raw legacy result without mutating it.",
+      "primarySurface": "Source snapshot and CLEAN_PRODUCT_REPLAY.json synthetic ingestion",
+      "counterevidence": "A raw supplied receipt reaches the derived index or a writer retains an unredacted failure tail.",
+      "secondarySurfaceIfNeeded": "shared/readiness/selftest.js in scoped checks",
+      "verdict": "PASS",
+      "namedSeam": "No retroactive mutation of ignored or external receipts is claimed."
+    },
+    {
+      "id": "current-tools-index-clean",
+      "claim": "Every current retained tools-index failure tail is path-redacted and bounded.",
+      "kind": "static-structure",
+      "risk": "high",
+      "passCondition": "All 12 retained tails are stable under a second redaction pass and at most 1200 characters.",
+      "primarySurface": "27-assertion tools-index diagnostic privacy selftest",
+      "counterevidence": "Any tail changes under redaction or exceeds its limit.",
+      "secondarySurfaceIfNeeded": "Clean archived tools-index artifact replay",
+      "verdict": "PASS",
+      "namedSeam": "Only retained failureTail fields in the current derived index are covered."
+    },
+    {
+      "id": "required-verification",
+      "claim": "The bounded product preserves Workshop structural checks.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "All ten AGENTS.md commands and all focused commands exit zero.",
+      "primarySurface": "CHECK_RESULTS.json",
+      "counterevidence": "Any recorded required or focused command is non-pass.",
+      "verdict": "PASS",
+      "namedSeam": "Script checks are not a browser journey."
+    },
+    {
+      "id": "aggregate-nonpass-preserved",
+      "claim": "Readiness passes while the operations aggregate retains an unrelated missing-intake failure.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Readiness exits zero; operations reaches inherited recovery then fails at an unchanged absent intake boundary.",
+      "primarySurface": "AGGREGATE_PROBES.json plus baseline/product Git comparison",
+      "counterevidence": "The failing service/script changed, the intake exists, or the aggregate failure is labeled pass.",
+      "verdict": "PASS",
+      "namedSeam": "The operations aggregate itself is not passing."
+    },
+    {
+      "id": "clean-product-replay",
+      "claim": "The exact product slice reproduces redaction and ingestion without tracked mutation.",
+      "kind": "persistence",
+      "risk": "high",
+      "passCondition": "Archived product Git objects pass five commands and fresh synthetic ingestion with all 15 tracked files unchanged.",
+      "primarySurface": "CLEAN_PRODUCT_REPLAY.json",
+      "counterevidence": "Identity mismatch, a failed check, retained absolute fixture root, changed tracked file, or leftover replay path.",
+      "verdict": "PASS",
+      "namedSeam": "This is a selected product slice, not a full clean-repository replay."
+    },
+    {
+      "id": "native-surface-boundary",
+      "claim": "No browser behavior or broader privacy scope is claimed.",
+      "kind": "quality",
+      "risk": "medium",
+      "passCondition": "Product diff changes no browser-facing file and receipts explicitly deny browser, secret, arbitrary-field, and full-audit proof.",
+      "primarySurface": "NATIVE_SURFACE_RECEIPT.json and product diff",
+      "counterevidence": "A changed browser surface, live-browser claim, or broad privacy claim.",
+      "verdict": "PASS",
+      "namedSeam": "The native surface is Node diagnostic text and JSON."
+    },
+    {
+      "id": "authority-boundary",
+      "claim": "The seam grants no promotion, merge, Foundation, or CANON authority.",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "Truth receipts deny authority and Mike Tobi / AXM remains the named gate.",
+      "primarySurface": "NATIVE_SURFACE_RECEIPT.json, README.md, and SESSION_INDEX.json",
+      "counterevidence": "Any automatic promotion or CANON claim.",
+      "verdict": "PASS",
+      "namedSeam": "Passing tests produce review material only."
+    }
+  ]
+}

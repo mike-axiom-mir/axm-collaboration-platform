@@ -1,0 +1,88 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-witness",
+  "version": "v0.4",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-checkpoint-exact-rebuild",
+    "model.shadow.review.challenge-checkpoint-detached-ed25519-verify",
+    "model.shadow.review.challenge-checkpoint-threshold-signature-verify",
+    "model.shadow.review.challenge-checkpoint-signing-key-possession-evidence",
+    "model.shadow.review.challenge-checkpoint-caller-policy-authority-admission",
+    "model.shadow.review.challenge-checkpoint-witness-exact-rebuild",
+    "model.shadow.review.challenge-witnessed-continuity-exact-rebuild",
+    "model.shadow.review.challenge-witnessed-rollback-detect-relative-to-signed-checkpoint",
+    "model.shadow.review.challenge-witness-authority-none",
+    "axm.model-shadow-review-challenge-witness-policy/v1",
+    "axm.model-shadow-review-challenge-witness-attestation/v1",
+    "axm.model-shadow-review-challenge-witness/v1",
+    "axm.model-shadow-review-challenge-witnessed-continuity/v1"
+  ],
+  "consumes": [
+    "axm.model-shadow-review-challenge-checkpoint/v1 as data",
+    "axm.model-shadow-review-challenge-ledger-snapshot/v1 as data",
+    "caller-supplied checkpoint-specific Ed25519 public key policy",
+    "detached checkpoint witness signatures",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-witness/v1",
+      "axm.model-shadow-review-challenge-witnessed-continuity/v1"
+    ],
+    "accepts": [
+      "one exact-rebuild challenge checkpoint",
+      "one exact-checkpoint caller key policy",
+      "one or more detached checkpoint witness attestations",
+      "one current exact-rebuild challenge-ledger snapshot"
+    ]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "invalid-checkpoint-or-snapshot",
+      "invalid-or-non-ed25519-signature",
+      "unlisted-or-disabled-witness-key",
+      "duplicate-key-as-independent-seat",
+      "duplicate-actor-as-independent-seat",
+      "expired-policy-or-attestation",
+      "signature-without-exact-policy-checkpoint-ledger-and-entries-binding",
+      "caller-witness-policy-as-authenticated-host-trust-root",
+      "signing-key-possession-as-real-world-identity",
+      "declared-human-key-as-authenticated-human",
+      "signature-as-actual-human-participation",
+      "signed-checkpoint-as-proven-external-retention",
+      "signed-checkpoint-as-deletion-or-rollback-prevention",
+      "witnessed-comparison-as-global-single-use",
+      "caller-time-as-trusted-time",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "test-leaf-as-installed-or-promoted",
+      "signature-as-execution-authority",
+      "signature-as-adoption-authority",
+      "raw-actor-identity-retention",
+      "raw-public-key-retention",
+      "raw-signature-retention",
+      "private-key-ingestion",
+      "raw-model-output-ingestion",
+      "private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains checkpoint, witness inputs and witness receipt",
+    "reload": "exact-rebuild witness and compare a current snapshot in a fresh process",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned",
+    "installed": false,
+    "promoted": false
+  }
+}

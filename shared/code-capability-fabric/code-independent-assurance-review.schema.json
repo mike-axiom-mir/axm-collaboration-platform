@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-independent-assurance-review/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "baseReadinessDigest", "trustPolicyRef", "reviewSubjectDigest", "boundVerifierRefs", "verifiedAttestationRefs", "quorumResults", "holds", "limitations", "nextGate", "truth", "authority", "reviewDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-independent-assurance-review/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"enum": ["BASE_READINESS_HOLD", "TRUST_POLICY_HOLD", "VERIFIER_KEY_HOLD", "ASSURANCE_ATTESTATION_HOLD", "QUORUM_HOLD", "HUMAN_POLICY_ACCEPTANCE_REQUIRED"]},
+    "baseReadinessDigest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "trustPolicyRef": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+    "reviewSubjectDigest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "boundVerifierRefs": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/reference"}},
+    "verifiedAttestationRefs": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"$ref": "#/$defs/reference"}},
+    "quorumResults": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/quorumResult"}},
+    "holds": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 500}},
+    "limitations": {"const": ["ORGANIZATIONAL_INDEPENDENCE_NOT_PROVEN", "TRUST_POLICY_NOT_BOUND_BY_V2_REQUEST"]},
+    "nextGate": {"enum": ["MIKE_ACCEPT_TRUST_POLICY_BEFORE_ANY_EXECUTOR_DECISION", "REPAIR_INDEPENDENT_ASSURANCE_EVIDENCE_THEN_REASSESS"]},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "reviewDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "schema": {"$ref": "#/$defs/contract"}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "quorumResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assuranceRecordRef", "requiredSignatures", "verifiedVerifierRefs", "satisfied"],
+      "properties": {
+        "assuranceRecordRef": {"$ref": "#/$defs/reference"},
+        "requiredSignatures": {"type": "integer", "minimum": 1, "maximum": 8},
+        "verifiedVerifierRefs": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/reference"}},
+        "satisfied": {"type": "boolean"}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseReadinessVerified", "trustPolicyIntegrityVerified", "trustPolicyRequestBound", "verifierKeysBound", "verifierKeysDistinctFromObserver", "assuranceSignaturesVerified", "assuranceQuorumsSatisfied", "organizationalIndependenceProven", "resourceEnforcementObserved", "executorAuthorized", "providerCodeLoaded", "providerCodeExecuted", "workspaceContentRead", "permissionGranted", "networkUsed", "outputWritten", "installed", "promoted", "canonChanged"],
+      "properties": {
+        "baseReadinessVerified": {"type": "boolean"},
+        "trustPolicyIntegrityVerified": {"type": "boolean"},
+        "trustPolicyRequestBound": {"const": false},
+        "verifierKeysBound": {"type": "boolean"},
+        "verifierKeysDistinctFromObserver": {"type": "boolean"},
+        "assuranceSignaturesVerified": {"type": "boolean"},
+        "assuranceQuorumsSatisfied": {"type": "boolean"},
+        "organizationalIndependenceProven": {"const": false},
+        "resourceEnforcementObserved": {"const": false},
+        "executorAuthorized": {"const": false},
+        "providerCodeLoaded": {"const": false},
+        "providerCodeExecuted": {"const": false},
+        "workspaceContentRead": {"const": false},
+        "permissionGranted": {"const": false},
+        "networkUsed": {"const": false},
+        "outputWritten": {"const": false},
+        "installed": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

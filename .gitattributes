@@ -10,13 +10,98 @@ shared/cognitive-resource/contracts/*.json text eol=lf
 # Keep generated JSON and JSONL LF-stable in fresh Windows checkouts.
 registry/*.json text eol=lf
 registry/*.jsonl text eol=lf
+registry/generated/** text eol=lf
+docs/generated/*.md text eol=lf
 
 # Museum originals are immutable byte evidence; never rewrite their line endings.
 museum/first-mirror/original/mirror.html -text
+museum/records/** text eol=lf
 
 # The public Mirror Core build manifest hashes every package byte. Preserve the
 # already-published baseline exactly instead of allowing Windows CRLF smudging.
 shared/mirror-core/** -text
+
+# Basis Universal provenance binds these three text payloads by exact size and
+# SHA-256; keep the accompanying WASM binary untouched.
+shared/asset-hands/vendor/basis-universal/basis_encoder.js text eol=lf
+shared/asset-hands/vendor/basis-universal/LICENSE text eol=lf
+shared/asset-hands/vendor/basis-universal/NOTICE text eol=lf
+shared/asset-hands/vendor/wasm-vips/vips.js text eol=lf
+shared/asset-hands/vendor/harfbuzz/index.mjs text eol=lf
+shared/asset-hands/vendor/harfbuzz/harfbuzz.js text eol=lf
+shared/asset-hands/vendor/harfbuzz/LICENSE text eol=lf
+shared/asset-hands/vendor/harfbuzz/README.md text eol=lf
+shared/asset-hands/vendor/fonts/noto/OFL.txt text eol=lf
+
+# These tool selftests compare bundled runtime and generated-catalog source
+# bytes against canonical SHA-256 values. Keep their text trees LF-stable on
+# Windows so a fresh checkout preserves the verified byte contract.
+tools/adapter-translation-garden/runtime/** text eol=lf
+tools/memory-continuity-garden/runtime/** text eol=lf
+tools/repair-resilience-library/components/** text eol=lf
+
+# Tool readiness fingerprints each tool's manifest, contract and top-level
+# selftest. Keep that exact evidence seam stable across Windows and POSIX.
+tools/*/manifest.json text eol=lf
+tools/*/module.contract.json text eol=lf
+tools/*/selftest.js text eol=lf
+
+# Steward receipts and their new deterministic source lanes bind exact bytes.
+# Keep these additions LF-stable in fresh Windows checkouts so autocrlf cannot
+# turn a valid evidence closure into false source drift.
+docs/steward-runs/** text eol=lf
+# These two current gap fixtures were already byte-bound with CRLF source
+# identities; preserve those recorded bytes instead of silently normalizing.
+docs/steward-runs/2026-08-20-grounded-growth-human-route-coverage/CAPABILITY_GAP_BEFORE.json -text
+docs/steward-runs/2026-08-20-grounded-growth-human-route-coverage/CAPABILITY_GAP_AFTER.json -text
+shared/baseline-simulation-lab/** text eol=lf
+shared/ai-native-hands/** text eol=lf
+shared/code-capability-fabric/** text eol=lf
+shared/evidence-retention/** text eol=lf
+shared/grounded-growth-*/** text eol=lf
+shared/human-benefit-evidence/** text eol=lf
+shared/identity-shell-fabric/** text eol=lf
+shared/portable-baseline-capsule/** text eol=lf
+shared/research-contribution-intake/** text eol=lf
+shared/resource-grounded-capability-gate/** text eol=lf
+shared/simulation-lab-extension-intake/** text eol=lf
+shared/sensorium/** text eol=lf
+shared/verification-snapshot-continuity/** text eol=lf
+shared/verification-source-evolution-review/** text eol=lf
+shared/verified-capability-loop/** text eol=lf
+shared/voluntary-phone-qa-campaign/** text eol=lf
+shared/visual-proof/** text eol=lf
+tools/deterministic-json-core/** text eol=lf
+tools/agent-tool-forge/skills/sensorium/** text eol=lf
+tools/branch-module-return-gate/return-gate-core.js text eol=lf
+tools/game-hub/game-library/002-robo-pong/game.manifest.json text eol=lf
+tools/game-hub/game-library/002-robo-pong/runtime/seat-interface.cjs text eol=lf
+tools/game-hub/game-library/002-robo-pong/runtime/neon-pong-duet-depth.js text eol=lf
+tools/game-hub/game-library/007-casino/lux-5-prototype/client/vendor/LICENSE text eol=lf
+tools/repair-resilience-library/components/common.js text eol=lf
+
+# Anim Kit selftests regenerate these checked-in outputs. Keep the generated
+# artifacts byte-stable so a Windows run does not look like content drift.
+tools/anim-kit/out/** text eol=lf
+
+# This curated intake retains 395 SHA-bound text artifacts. Their provenance
+# selftest hashes the source bytes, so Windows checkout normalization must not
+# rewrite the recorded LF representation.
+intakes/ai-team-collaboration-runs-01-101-v1/** text eol=lf
+
+# Text Fabric retains a mixed text/binary 281-file runtime with its own exact
+# checksum ledger. Disable Git text conversion for the whole sealed runtime.
+tools/text-fabric/runtime/** -text
+
+# AetherFX preserves a sealed mixed runtime plus the upstream checksum ledger.
+# These files verify their own raw bytes, so Git must not translate them.
+tools/aetherfx/UPSTREAM_SHA256SUMS.txt -text
+tools/aetherfx/runtime/** -text whitespace=-trailing-space
+
+# The authored District Party city is sealed by one digest across map.json and
+# 96 chunk files. Keep its generated JSON byte-identical on Windows checkouts.
+tools/game-hub/game-library/008-district-party/data/maps/tilburg-authored-city-alpha/map.json text eol=lf
+tools/game-hub/game-library/008-district-party/data/maps/tilburg-authored-city-alpha/map-chunks/** text eol=lf
 
 # Markdown uses intentional two-space hard line breaks, while generated module
 # skeletons and third-party source may retain harmless terminal blank lines.

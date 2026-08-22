@@ -1,0 +1,86 @@
+{
+  "schema": "axm.claim-evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "baseline-two-interruption-windows",
+      "kind": "behavioral",
+      "claim": "Exact v4.4 code can leave intent-only or quarantined-without-result retirement evidence and exports no recovery capability.",
+      "evidence": ["BASELINE_INTERRUPTION_REPRODUCTION.json", "run-baseline-interruption-reproduction.js"],
+      "verdict": "PASS",
+      "counterevidence": "Production interruption frequency and holder death are not proven."
+    },
+    {
+      "id": "bounded-read-only-classification",
+      "kind": "resource-safety",
+      "claim": "Recovery status reads at most 201 directory entries, emits at most 200 records, caps each evidence file at 64 KiB, and does not mutate state.",
+      "evidence": ["shared/operations/review-operation-lease.js", "shared/operations/review-operation-lease-retirement-recovery-selftest.js", "CHECK_RESULTS.json"],
+      "verdict": "PASS",
+      "counterevidence": "This bounded synthetic load is not a general filesystem performance or long-duration resource proof."
+    },
+    {
+      "id": "intent-only-exact-resume",
+      "kind": "persistence",
+      "claim": "A second exact request resumes an intent-only retirement only while current owner bytes still match and preserves those bytes in quarantine.",
+      "evidence": ["shared/operations/review-operation-lease-retirement-recovery-selftest.js", "shared/operations/review-operation-lease.js"],
+      "verdict": "PASS",
+      "counterevidence": "The assertion is not authenticated and a false assertion can violate serialization."
+    },
+    {
+      "id": "quarantined-evidence-finalization",
+      "kind": "persistence",
+      "claim": "Exact quarantined owner bytes without a result can be finalized into the ordinary typed retirement result.",
+      "evidence": ["shared/operations/review-operation-lease-retirement-recovery-selftest.js", "CLEAN_PRODUCT_REPLAY.json"],
+      "verdict": "PASS",
+      "counterevidence": "The sequence remains non-atomic and local evidence is not protected custody."
+    },
+    {
+      "id": "invalid-evidence-held",
+      "kind": "behavioral",
+      "claim": "Changed, ambiguous, current-process, corrupt, oversized, non-file, unrecognized, and digest-mismatched evidence stays held without recovery mutation.",
+      "evidence": ["shared/operations/review-operation-lease-retirement-recovery-selftest.js", "CHECK_RESULTS.json"],
+      "verdict": "PASS",
+      "counterevidence": "Noncooperating writers and multi-host races remain outside the contract."
+    },
+    {
+      "id": "local-cli-authorization-boundary",
+      "kind": "authorization",
+      "claim": "Interrupted-retirement recovery requires the local CLI and exact closed request; no API or browser route exists.",
+      "evidence": ["shared/operations/review-operation-lease-admin.js", "tools/review-inbox/module.contract.json", "NATIVE_SURFACE_RECEIPT.json"],
+      "verdict": "PASS",
+      "counterevidence": "Local CLI access is not authenticated real-world identity, live policy, or human participation."
+    },
+    {
+      "id": "inherited-retirement-continuity",
+      "kind": "technical",
+      "claim": "Existing explicit retirement and single-host lease behavior remain passing after v4.5.",
+      "evidence": ["CHECK_RESULTS.json", "CLEAN_PRODUCT_REPLAY.json"],
+      "verdict": "PASS",
+      "counterevidence": "Focused continuity does not prove cross-file ACID or multi-host safety."
+    },
+    {
+      "id": "clean-product-continuity",
+      "kind": "technical",
+      "claim": "Eleven selected commands pass in a clean 594-file archive slice of the product commit without tracked-file drift.",
+      "evidence": ["CLEAN_PRODUCT_REPLAY.json", "run-clean-product-replay.js"],
+      "verdict": "PASS",
+      "counterevidence": "The replay is a selected slice, not a full-repository archive replay."
+    },
+    {
+      "id": "aggregate-operations-nonpass",
+      "kind": "technical",
+      "claim": "The aggregate operations script remains a foreign non-pass at the unchanged missing curated-intake boundary rather than a v4.5 regression or success.",
+      "evidence": ["AGGREGATE_OPERATIONS_PROBE.json", "run-aggregate-operations-probe.js"],
+      "verdict": "PASS",
+      "counterevidence": "Supplying the external curated intake could change the downstream result; it was not created or inspected here."
+    },
+    {
+      "id": "authority-boundary",
+      "kind": "authorization",
+      "claim": "The seam grants no execution, adoption, promotion, merge, Foundation mutation, or CANON authority.",
+      "evidence": ["SOURCE_SNAPSHOT.json", "CAPABILITY_GAP_AFTER.json", "FRONTIER_AUDIT.md"],
+      "verdict": "PASS",
+      "counterevidence": "Identity, live review, holder death, recovery safety, benefit, learning, merge, and CANON remain unproven."
+    }
+  ]
+}

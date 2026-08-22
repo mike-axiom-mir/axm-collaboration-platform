@@ -1,0 +1,107 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"model-shadow-retention-audit-review-outcome-ledger",
+  "version":"v3.2",
+  "status":"TEST",
+  "provides":[
+    "model.shadow.retention-audit-review-outcome-ledger.explicit-unauthenticated-confirmation",
+    "model.shadow.retention-audit-review-outcome-ledger.distinct-nonnested-upstream-observation-root",
+    "model.shadow.retention-audit-review-outcome-ledger.manifest-exclusive-create-file-fsync",
+    "model.shadow.retention-audit-review-outcome-ledger.record-exclusive-create-file-fsync",
+    "model.shadow.retention-audit-review-outcome-ledger.contiguous-digest-chain",
+    "model.shadow.retention-audit-review-outcome-ledger.approved-hold-rejected-preservation",
+    "model.shadow.retention-audit-review-outcome-ledger.caller-time-ordering",
+    "model.shadow.retention-audit-review-outcome-ledger.duplicate-record-outcome-refusal",
+    "model.shadow.retention-audit-review-outcome-ledger.single-ledger-manifest-binding",
+    "model.shadow.retention-audit-review-outcome-ledger.fresh-process-upstream-independent-reload",
+    "model.shadow.retention-audit-review-outcome-ledger.reload-actor-provenance-boundary",
+    "model.shadow.retention-audit-review-outcome-ledger.corruption-gap-unexpected-state-fail-closed",
+    "model.shadow.retention-audit-review-outcome-ledger.concurrent-writer-exclusion",
+    "model.shadow.retention-audit-review-outcome-ledger.aggregate-and-input-resource-bounds",
+    "model.shadow.retention-audit-review-outcome-ledger.persisted-artifact-minimization",
+    "model.shadow.retention-audit-review-outcome-ledger.no-durable-upstream-change",
+    "model.shadow.retention-audit-review-outcome-ledger.joint-upstream-and-ledger-loss-counterexample",
+    "model.shadow.retention-audit-review-outcome-ledger.authority-none-hold-unresolved",
+    "model.shadow.retention-audit-review-outcome-ledger.closed-artifact-schemas",
+    "model.shadow.retention-audit-review-outcome-ledger.exact-persisted-record-reload-verifier",
+    "model.shadow.retention-audit-review-outcome-ledger.single-load-complete-record-chain-read",
+    "model.shadow.retention-audit-review-outcome-ledger.bounded-three-state-snapshot",
+    "model.shadow.retention-audit-review-outcome-ledger.focused-contract-and-corruption-tests",
+    "axm.model-shadow-retention-audit-review-outcome-ledger-manifest/v1",
+    "axm.model-shadow-retention-audit-review-outcome-ledger-record/v1",
+    "axm.model-shadow-retention-audit-review-outcome-ledger-snapshot/v1"
+  ],
+  "consumes":[
+    "one existing caller-owned local outcome ledger root",
+    "one exact v3.1 outcome plus its complete exact-rebuild input as transient capture data",
+    "one record id caller UTC time and exact unauthenticated confirmation"
+  ],
+  "permissions":[
+    "read and exclusive-create files only beneath the fixed namespace in one explicit caller-owned outcome ledger root",
+    "read one distinct v2.8 observation root through the unchanged v3.1 exact-rebuild path during capture",
+    "allow the unchanged v2.8 verifier to exclusive-create file-fsync and remove its fixed transient operation lock"
+  ],
+  "handoffs":{
+    "emits":[
+      "axm.model-shadow-retention-audit-review-outcome-ledger-record/v1",
+      "axm.model-shadow-retention-audit-review-outcome-ledger-snapshot/v1"
+    ],
+    "accepts":[
+      "one exact axm.model-shadow-retention-audit-review-outcome/v1 plus its complete caller package"
+    ]
+  },
+  "boundaries":{
+    "reads":[
+      "one explicit outcome ledger namespace with fixed manifest records and operation-lock paths",
+      "one distinct v2.8 observation root only during v3.1 capture exact-rebuild"
+    ],
+    "writes":[
+      "exclusive-create and file-fsync one canonical outcome ledger manifest after the first valid capture",
+      "exclusive-create and file-fsync one minimized v3.1 outcome record per contiguous sequence",
+      "exclusive-create file-fsync and remove one fixed transient outcome ledger operation lock",
+      "only the unchanged v2.8 transient verification lock outside the ledger root; no durable upstream record"
+    ],
+    "refuses":[
+      "write-without-exact-explicit-unauthenticated-confirmation",
+      "missing-filesystem-root-filesystem-root-symbolic-link-or-junction-root",
+      "equal-or-nested-ledger-and-upstream-observation-roots",
+      "caller-selected-namespace-or-record-path",
+      "v3.1-outcome-that-does-not-exact-rebuild-from-complete-caller-package",
+      "record-time-before-v3.1-outcome-or-ledger-or-not-strictly-after-prior-record",
+      "duplicate-record-id-outcome-id-or-outcome-digest",
+      "overwrite-gap-extra-file-noncanonical-json-corrupt-digest-or-stale-lock",
+      "artifact-over-4-MiB-input-over-40-MiB-ledger-over-256-MiB-or-more-than-10000-records",
+      "stored-record-as-continuous-monitoring-of-later-review-inbox-state",
+      "reload-as-independent-raw-actor-digest-provenance-proof",
+      "caller-owned-local-root-as-independent-external-retention",
+      "local-files-as-protected-monotonic-state-deletion-prevention-or-global-continuity",
+      "caller-controlled-full-ledger-rewrite-as-detectable-tamper-or-original-history-proof",
+      "joint-upstream-observation-and-outcome-ledger-loss-as-original-continuity",
+      "file-fsync-as-directory-entry-device-cache-hardware-or-power-loss-durability",
+      "confirmation-string-as-host-actor-human-organization-or-policy-authentication",
+      "persisted-approval-as-hold-resolution-remediation-or-execution-authority",
+      "outcome-input-raw-review-item-actor-note-discussion-path-private-context-or-model-output-persistence",
+      "provider-execution-evaluation-benefit-learning-adoption-promotion-merge-or-canon-claim",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle":{
+    "state_owner":"filesystem",
+    "state_owner_detail":"the caller owns the local ledger root; records retain complete minimized v3.1 outcomes but not their exact-rebuild inputs or configured paths",
+    "reload":"resume",
+    "reload_detail":"a fresh process validates the canonical manifest and complete record chain and returns exact stored minimized outcomes without the upstream observation root",
+    "disconnect":"not-applicable",
+    "disconnect_detail":"no socket network provider Review Inbox or other-host transport is opened",
+    "cleanup":"explicit",
+    "cleanup_detail":"joint loss or replacement of the upstream observation root and outcome ledger root defeats original local continuity",
+    "installed":false,
+    "promoted":false
+  },
+  "merge_gate":"Mike Tobi / AXM"
+}

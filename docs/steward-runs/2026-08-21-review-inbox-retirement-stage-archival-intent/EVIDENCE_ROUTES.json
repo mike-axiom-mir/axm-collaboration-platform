@@ -1,0 +1,178 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "v51-authorization-gap",
+      "kind": "behavioral",
+      "claim": "The exact v5.1 product archives a residual stage but persists neither its reason nor a durable archival authorization artifact.",
+      "evidence": [
+        "BASELINE_AUTHORIZATION_GAP.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The baseline proves the missing record only for the exact v5.1 commit and synthetic local fixture."
+    },
+    {
+      "id": "intent-before-mutation",
+      "kind": "persistence",
+      "claim": "For new v1.4 archival, an exact append-only intent is authoritative before archive linking or active-stage unlink.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Intent, archive, and unlink remain separate filesystem checkpoints rather than one transaction."
+    },
+    {
+      "id": "closed-request-binding",
+      "kind": "authorization",
+      "claim": "The durable intent binds the closed request schema, exact stage filename and digest, assertion, confirmation, and reason through a reproducible request digest.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The assertion is persisted but not authenticated; consent, permission, and real-world identity are unproven."
+    },
+    {
+      "id": "append-only-publication",
+      "kind": "persistence",
+      "claim": "Complete fsynced private intent bytes publish through an exclusive same-filesystem hard link without overwriting an existing intent.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "No hard-link-free fallback, protected storage, rollback prevention, or directory-entry power-loss proof exists."
+    },
+    {
+      "id": "intent-crash-convergence",
+      "kind": "persistence",
+      "claim": "Six real process exits cover pre-intent-link and post-intent-link checkpoints for intent, decision, and result stages; exact retry converges.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json",
+        "NATIVE_SURFACE_RECEIPT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Process exit is not a power interruption test."
+    },
+    {
+      "id": "archive-crash-convergence",
+      "kind": "persistence",
+      "claim": "Nine real process exits still cover pre-archive-link, post-archive-link, and post-active-stage-unlink checkpoints for all three artifact kinds.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The claim is limited to exact local evidence and same-filesystem hard links."
+    },
+    {
+      "id": "caller-convergence",
+      "kind": "behavioral",
+      "claim": "Reentrant and two real cooperating single-host callers converge through exact intent and archive checkpoints.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Multi-host, network-filesystem, and noncooperating-writer safety are unproven."
+    },
+    {
+      "id": "legacy-honesty",
+      "kind": "authorization",
+      "claim": "A completed v1.3 archive or archive-link checkpoint without intent remains authorization-unknown; no retrospective intent is created and the checkpoint stage is not unlinked.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "External writers are not excluded from fabricating local files."
+    },
+    {
+      "id": "bounded-intent-status",
+      "kind": "behavioral",
+      "claim": "Host-local authorization status exposes residual intent stages as non-authoritative, reads only one entry beyond the 200-stage bound, and performs no automatic reclamation.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The status is per requested stage plus a bounded directory observation, not a global storage-retention policy."
+    },
+    {
+      "id": "schema-continuity",
+      "kind": "technical",
+      "claim": "The v1 stage-plan and v1 archival-result schemas remain unchanged; new result semantics use an explicit closed archival-result/v2 schema.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "A new schema version does not prove consumer migration."
+    },
+    {
+      "id": "host-local-boundary",
+      "kind": "authorization",
+      "claim": "Authorization status and archival are host-local CLI/runtime surfaces with no automatic, API, or browser route.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Host-locality does not authenticate the caller or establish safety."
+    },
+    {
+      "id": "required-checks",
+      "kind": "technical",
+      "claim": "All ten exact AGENTS.md commands exit zero on the product worktree.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Script checks are separate from browser render/click evidence."
+    },
+    {
+      "id": "clean-product-replay",
+      "kind": "persistence",
+      "claim": "The exact product dependency slice replays eleven focused commands with 1,110 assertions or controls and no tracked-byte changes.",
+      "evidence": [
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The replay is a bounded dependency slice, not every repository file or host substrate."
+    },
+    {
+      "id": "promotion-selftest",
+      "kind": "technical",
+      "claim": "The current Review Inbox selftest digest passes and tools-index reports READY_FOR_HUMAN_REVIEW.",
+      "evidence": [
+        "PROMOTION_SELFTEST_RECEIPT.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Twelve other tool promotion selftests remain nonpassing; readiness grants no promotion, merge, or CANON authority."
+    },
+    {
+      "id": "aggregate-operations-nonpass",
+      "kind": "technical",
+      "claim": "Aggregate operations reaches the product checks and then fails at the unchanged missing curated verification intake.",
+      "evidence": [
+        "AGGREGATE_OPERATIONS_PROBE.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The aggregate command is not claimed as passing and the intake lane remains outside this diff."
+    },
+    {
+      "id": "visual-and-human-gate",
+      "kind": "visual",
+      "claim": "No browser-facing product file or browser route changed; Review Inbox remains TEST and Mike Tobi / AXM remains merge and CANON gate.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "NATIVE_SURFACE_RECEIPT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "No browser render/click, authenticated human review, human benefit, merge, or CANON decision occurred."
+    }
+  ],
+  "routesDigest": "sha256:6a88e1644b2bfabadf4b777ae39d0b57f6cf66c2c444e85b252b965681003ad1"
+}

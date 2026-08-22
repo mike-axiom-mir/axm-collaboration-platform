@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-reconciliation/v1",
+  "title": "Model Shadow review challenge transition reconciliation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "reconciliationId", "reconciledAt", "status",
+    "leftPresentationRef", "rightPresentationRef", "domain", "comparison",
+    "decision", "state", "nextGate", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-reconciliation/v1"},
+    "version": {"const": "0.9.0"},
+    "reconciliationId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "reconciledAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "leftPresentationRef": {"$ref": "#/$defs/reference"},
+    "rightPresentationRef": {"$ref": "#/$defs/reference"},
+    "domain": {
+      "type": "object", "additionalProperties": false,
+      "required": ["leftLogId", "rightLogId", "logIdentityMatches", "genesisMatches"],
+      "properties": {
+        "leftLogId": {"type": "string", "minLength": 1, "maxLength": 180},
+        "rightLogId": {"type": "string", "minLength": 1, "maxLength": 180},
+        "logIdentityMatches": {"type": "boolean"},
+        "genesisMatches": {"type": "boolean"}
+      }
+    },
+    "comparison": {
+      "type": "object", "additionalProperties": false,
+      "required": ["leftEntryCount", "rightEntryCount", "commonPrefixEntryCount", "divergence"],
+      "properties": {
+        "leftEntryCount": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "rightEntryCount": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "commonPrefixEntryCount": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "divergence": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object", "additionalProperties": false,
+              "required": ["sequence", "leftEntryRef", "rightEntryRef", "leftCandidateSeparatedWitnessRef", "rightCandidateSeparatedWitnessRef"],
+              "properties": {
+                "sequence": {"type": "integer", "minimum": 1, "maximum": 4096},
+                "leftEntryRef": {"$ref": "#/$defs/reference"},
+                "rightEntryRef": {"$ref": "#/$defs/reference"},
+                "leftCandidateSeparatedWitnessRef": {"$ref": "#/$defs/reference"},
+                "rightCandidateSeparatedWitnessRef": {"$ref": "#/$defs/reference"}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["classification", "pairwiseConsistency", "reviewRequired", "bestAction", "autonomousActionCount"],
+      "properties": {
+        "classification": {
+          "enum": [
+            "PRESENTED_LOCAL_HISTORIES_EXACT_REPLAY",
+            "LEFT_PRESENTED_HISTORY_IS_EXACT_PREFIX",
+            "RIGHT_PRESENTED_HISTORY_IS_EXACT_PREFIX",
+            "HOLD_LOG_IDENTITY_DRIFT",
+            "HOLD_GENESIS_DRIFT",
+            "HOLD_SIBLING_FORK_AT_PRESENTED_SEQUENCE",
+            "HOLD_ENTRY_ID_EQUIVOCATION_AT_PRESENTED_SEQUENCE",
+            "HOLD_ALTERNATE_LOCAL_RECORD_FOR_SAME_CANDIDATE_HEAD"
+          ]
+        },
+        "pairwiseConsistency": {"enum": ["CONSISTENT_REPLAY", "CONSISTENT_PREFIX", "CONTRADICTION"]},
+        "reviewRequired": {"type": "boolean"},
+        "bestAction": {"type": "string", "minLength": 1, "maxLength": 180},
+        "autonomousActionCount": {"const": 0}
+      }
+    },
+    "state": {"const": "TWO_EXACT_PRESENTED_LOCAL_HISTORIES_RECONCILED_WITHHELD_ROOTS_NOT_EXCLUDED"},
+    "nextGate": {"const": "HOST_AUTHENTICATED_MULTI_PARTY_TRANSPARENT_GLOBALLY_CONSISTENT_LOG_OR_PROTECTED_MONOTONIC_STORE"},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "leftPresentationVerifiedByExactRebuild", "rightPresentationVerifiedByExactRebuild",
+        "everyPresentedUpstreamTransitionVerifiedByExactRebuild", "pairwiseCoPresentationOnly",
+        "exactPresentedHistoryReplayObserved", "exactPrefixRelationshipObserved",
+        "presentedConflictOrContradictionDetected", "siblingForkAtPresentedSequenceDetected",
+        "entryIdEquivocationDetected", "alternateLocalRecordForSameCandidateDetected",
+        "logIdentityDriftDetected", "genesisDriftDetected", "withheldRootsExcluded",
+        "unpresentedHistoriesExcluded", "thirdRootAbsenceProven",
+        "globalTransitionUniquenessProven", "globallyConsistentTransitionLogProven",
+        "externalTransitionRetentionProven", "protectedMonotonicStateProven",
+        "deletionOrRollbackPrevented", "logAuthorityAuthenticated",
+        "hostAuthorizationAuthenticated", "realWorldControllerIndependenceProven",
+        "actualHumanParticipationProven", "reconciliationTimeExternallyTrusted",
+        "rawPublicKeyEmbedded", "rawSignatureEmbedded", "privateKeyIngested",
+        "rawModelOutputEmbedded", "privateContextEmbedded", "experimentExecuted",
+        "evaluationPerformed", "executionAuthorized", "adoptionAuthorized",
+        "humanBenefitProven", "broadLearningClaimed", "automaticWrite",
+        "automaticPermissionGrant", "automaticInstall", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "leftPresentationVerifiedByExactRebuild": {"const": true},
+        "rightPresentationVerifiedByExactRebuild": {"const": true},
+        "everyPresentedUpstreamTransitionVerifiedByExactRebuild": {"const": true},
+        "pairwiseCoPresentationOnly": {"const": true},
+        "exactPresentedHistoryReplayObserved": {"type": "boolean"},
+        "exactPrefixRelationshipObserved": {"type": "boolean"},
+        "presentedConflictOrContradictionDetected": {"type": "boolean"},
+        "siblingForkAtPresentedSequenceDetected": {"type": "boolean"},
+        "entryIdEquivocationDetected": {"type": "boolean"},
+        "alternateLocalRecordForSameCandidateDetected": {"type": "boolean"},
+        "logIdentityDriftDetected": {"type": "boolean"},
+        "genesisDriftDetected": {"type": "boolean"},
+        "withheldRootsExcluded": {"const": false},
+        "unpresentedHistoriesExcluded": {"const": false},
+        "thirdRootAbsenceProven": {"const": false},
+        "globalTransitionUniquenessProven": {"const": false},
+        "globallyConsistentTransitionLogProven": {"const": false},
+        "externalTransitionRetentionProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "logAuthorityAuthenticated": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "realWorldControllerIndependenceProven": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "reconciliationTimeExternallyTrusted": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "privateKeyIngested": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

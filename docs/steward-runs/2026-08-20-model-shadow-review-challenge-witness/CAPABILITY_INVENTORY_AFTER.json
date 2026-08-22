@@ -1,0 +1,119 @@
+{
+  "capabilities": [
+    {
+      "id": "model.shadow.review.challenge-checkpoint-exact-rebuild",
+      "status": "available",
+      "constraints": ["The stacked v0.3 observer validates exact checkpoint structure, truth boundary, canonical ordering, and self-digest without authenticating origin."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-detached-ed25519-verify",
+      "status": "available",
+      "constraints": ["The v0.4 leaf verifies canonical 64-byte detached Ed25519 signatures over checkpoint-specific attestation payloads."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-threshold-signature-verify",
+      "status": "available",
+      "constraints": ["All presented attestations must verify and satisfy a one-through-ten signature threshold with distinct keys and actor digests."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-exact-policy-bind",
+      "status": "available",
+      "constraints": ["Policy and attestations bind the exact checkpoint digest, ledger manifest digest, entries digest, scope, validity window, and policy digest."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-private-key-refusal",
+      "status": "available",
+      "constraints": ["Runtime accepts only Ed25519 SPKI public-key PEM values and rejects private-key material."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-signing-key-possession-evidence",
+      "status": "available",
+      "constraints": ["Valid signatures prove possession of keys allowed by the exact caller policy, not host authority or real-world identity."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-witness-privacy-boundary",
+      "status": "available",
+      "constraints": ["Witness receipts retain digested attestation/key identifiers, key fingerprints, and actor digests; they omit raw keys, signatures, state paths, and actor strings."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-witness-exact-rebuild",
+      "status": "available",
+      "constraints": ["Witness content and digest rebuild exactly from the checkpoint, exact policy, detached attestations, witness id, and caller verification time."]
+    },
+    {
+      "id": "model.shadow.review.challenge-witnessed-continuity-exact-rebuild",
+      "status": "available",
+      "constraints": ["A valid witness receipt must rebuild before its exact checkpoint can drive the stacked v0.3 continuity comparison."]
+    },
+    {
+      "id": "model.shadow.review.challenge-witnessed-continuity-fresh-process",
+      "status": "available",
+      "constraints": ["Fresh Node processes verify the serialized witness package and audit exact, extended, missing, invalid, absent, and identity-drift synthetic ledger states without writing the ledger."]
+    },
+    {
+      "id": "model.shadow.review.challenge-witnessed-rollback-detect-relative-to-signed-checkpoint",
+      "status": "available",
+      "constraints": ["A missing challenge is detected relative to the exact checkpoint covered by the verified signatures; detection remains distinct from prevention."]
+    },
+    {
+      "id": "model.shadow.review.challenge-witness-policy-swap-nontrust-proof",
+      "status": "available",
+      "constraints": ["A counterexample proves that a replacement caller policy with its own keys can create a distinct valid witness, so caller policy is not promoted to host trust."]
+    },
+    {
+      "id": "model.shadow.review.challenge-witness-authority-none",
+      "status": "available",
+      "constraints": ["Witness and audit receipts grant no host, identity, human, provider, execution, evaluation, adoption, installation, promotion, merge, Foundation, or CANON authority."]
+    },
+    {
+      "id": "model.shadow.review.challenge-witness-host-trust-root.actual",
+      "status": "unknown",
+      "constraints": ["The v0.4 policy is explicitly caller-supplied and unauthenticated; no checkpoint-specific Mike- or host-promoted trust root was supplied."]
+    },
+    {
+      "id": "model.shadow.review.challenge-witness-external-retention.actual",
+      "status": "unknown",
+      "constraints": ["The selftest serializes a synthetic witness package outside the ledger namespace, but no independent store, receiver, or retention authority is proven."]
+    },
+    {
+      "id": "model.shadow.review.challenge-deletion-rollback-resistance.actual",
+      "status": "unknown",
+      "constraints": ["Signatures make alteration detectable relative to the original policy and witness; they do not prevent withholding, deletion, or joint replacement of caller-owned artifacts."]
+    },
+    {
+      "id": "model.shadow.review.challenge-witness-signer-identity.actual",
+      "status": "unknown",
+      "constraints": ["Synthetic key possession does not authenticate the declared actor kind, real person, or host identity."]
+    },
+    {
+      "id": "model.shadow.review.challenge-witness-time.external",
+      "status": "unknown",
+      "constraints": ["Validity-window checks use caller timestamps; no external trusted time receipt was supplied."]
+    },
+    {
+      "id": "model.shadow.review.challenge-global-single-use.actual",
+      "status": "unknown",
+      "constraints": ["Comparison remains bound to one presented ledger identity and does not establish global challenge uniqueness."]
+    },
+    {
+      "id": "model.shadow.challenger.human-review.actual",
+      "status": "unknown",
+      "constraints": ["Only synthetic keys, actor kinds, and generated fixture approvals were used; no real person reviewed a current checkpoint or plan."]
+    },
+    {
+      "id": "model.shadow.challenger.shadow-execution.actual",
+      "status": "unknown",
+      "constraints": ["No model provider or shadow experiment was invoked."]
+    },
+    {
+      "id": "model.shadow.challenger.evaluation.actual",
+      "status": "unknown",
+      "constraints": ["No current baseline/challenger evaluation was executed or supplied."]
+    },
+    {
+      "id": "model.shadow.challenger.human-benefit.held-out",
+      "status": "unknown",
+      "constraints": ["No voluntary held-out human outcome was observed."]
+    }
+  ]
+}

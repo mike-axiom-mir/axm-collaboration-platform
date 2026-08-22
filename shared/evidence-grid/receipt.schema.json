@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.receipt/v1",
+  "type": "object",
+  "required": ["schema", "id", "claim", "subjectDigest", "status", "observedAt", "expiresAt", "verifier", "sourceSnapshot", "correlationId", "causationId", "evidenceRefs", "payloadSchema", "payload", "receiptDigest", "grantsAuthority"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.receipt/v1" },
+    "id": { "type": "string" },
+    "claim": { "type": "string" },
+    "subjectDigest": { "type": "string" },
+    "status": { "enum": ["PASS", "FAIL", "WARN", "PARTIAL", "UNKNOWN", "STALE"] },
+    "observedAt": { "type": "string" },
+    "expiresAt": { "type": ["string", "null"] },
+    "verifier": { "type": "string" },
+    "sourceSnapshot": { "type": "string" },
+    "correlationId": { "type": "string" },
+    "causationId": { "type": ["string", "null"] },
+    "evidenceRefs": { "type": "array" },
+    "payloadSchema": { "type": "string" },
+    "payload": {},
+    "receiptDigest": { "type": "string" },
+    "grantsAuthority": { "const": false }
+  }
+}

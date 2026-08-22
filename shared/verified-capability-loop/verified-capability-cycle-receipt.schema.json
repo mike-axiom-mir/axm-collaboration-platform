@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.verified-capability-cycle-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "cycleId", "capabilityId", "generatedAt", "state",
+    "baseline", "need", "gap", "provenance", "candidate", "verification",
+    "stewardDecision", "availability", "refresh", "improvementClaim", "truth",
+    "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.verified-capability-cycle-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "cycleId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "capabilityId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "state": {
+      "enum": [
+        "NEEDS_GAP_EVIDENCE", "REUSE_EXISTING", "GAP_OPEN", "CANDIDATE_UNVERIFIED",
+        "REPAIR_OR_REJECT", "VERIFICATION_HOLD", "AWAITING_STEWARD", "STEWARD_HOLD",
+        "REJECTED", "READY_FOR_GOVERNED_INTAKE", "AVAILABLE_FOR_REUSE", "REFRESH_DUE"
+      ]
+    },
+    "baseline": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "identity", "receiptRef"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1, "maxLength": 80},
+        "identity": {"type": "string", "minLength": 1, "maxLength": 300},
+        "receiptRef": {"$ref": "#/$defs/reference"}
+      }
+    },
+    "need": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "statement", "sourceRef", "directionRef"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "statement": {"type": "string", "minLength": 1, "maxLength": 1200},
+        "sourceRef": {"$ref": "#/$defs/reference"},
+        "directionRef": {"oneOf": [{"$ref": "#/$defs/reference"}, {"type": "null"}]}
+      }
+    },
+    "gap": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "reason", "reportRef", "existingCapabilityRef"],
+      "properties": {
+        "state": {"enum": ["OPEN", "NO_GAP", "UNKNOWN"]},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 1200},
+        "reportRef": {"$ref": "#/$defs/reference"},
+        "existingCapabilityRef": {"oneOf": [{"$ref": "#/$defs/reference"}, {"type": "null"}]}
+      }
+    },
+    "provenance": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/reference"}},
+    "candidate": {"oneOf": [{"$ref": "#/$defs/candidate"}, {"type": "null"}]},
+    "verification": {"oneOf": [{"$ref": "#/$defs/verification"}, {"type": "null"}]},
+    "stewardDecision": {"oneOf": [{"$ref": "#/$defs/decision"}, {"type": "null"}]},
+    "availability": {"oneOf": [{"$ref": "#/$defs/availability"}, {"type": "null"}]},
+    "refresh": {
+      "type": "object", "additionalProperties": false,
+      "required": ["trigger", "checkedAt", "due", "reason"],
+      "properties": {
+        "trigger": {"enum": ["NEW_INFORMATION", "MANUAL", "HEARTBEAT"]},
+        "checkedAt": {"type": "string", "format": "date-time"},
+        "due": {"type": "boolean"},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 800}
+      }
+    },
+    "improvementClaim": {"enum": ["NOT_ESTABLISHED", "VERIFIED_CANDIDATE_ONLY", "AVAILABLE_AND_REFRESHABLE", "PREVIOUSLY_AVAILABLE_RECHECK_REQUIRED"]},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "cycleAuthority", "automaticExecution", "automaticInstall", "automaticPermissionGrant",
+        "automaticPromotion", "automaticCanon", "automaticRootMutation",
+        "modelWeightTrainingClaimed", "humanStewardDecisionRequired"
+      ],
+      "properties": {
+        "cycleAuthority": {"const": "RECEIPT_LINKING_ONLY"},
+        "automaticExecution": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticCanon": {"const": false},
+        "automaticRootMutation": {"const": false},
+        "modelWeightTrainingClaimed": {"const": false},
+        "humanStewardDecisionRequired": {"const": true}
+      }
+    },
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["strategy", "status", "artifactRef", "sourceMutationPerformed", "installed", "promoted", "canon"],
+      "properties": {
+        "strategy": {"enum": ["REUSE", "COMPOSE", "ADAPT", "BUILD"]},
+        "status": {"const": "EXPERIMENTAL"},
+        "artifactRef": {"$ref": "#/$defs/reference"},
+        "sourceMutationPerformed": {"type": "boolean"},
+        "installed": {"const": false},
+        "promoted": {"const": false},
+        "canon": {"const": false}
+      }
+    },
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verdict", "subjectDigest", "receiptRef", "evidenceAuthority", "limitations"],
+      "properties": {
+        "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_RUN"]},
+        "subjectDigest": {"$ref": "#/$defs/digest"},
+        "receiptRef": {"$ref": "#/$defs/reference"},
+        "evidenceAuthority": {"enum": ["INDEPENDENT_RUNTIME", "MIXED", "STATIC_ONLY", "OPERATOR_DECLARATION"]},
+        "limitations": {"type": "array", "maxItems": 24, "items": {"type": "string", "minLength": 1, "maxLength": 500}}
+      }
+    },
+    "decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verdict", "actorKind", "actorId", "candidateDigest", "confirmation", "decisionRef"],
+      "properties": {
+        "verdict": {"enum": ["HOLD", "CONTINUE", "REJECT"]},
+        "actorKind": {"const": "HUMAN"},
+        "actorId": {"type": "string", "minLength": 1, "maxLength": 120},
+        "candidateDigest": {"$ref": "#/$defs/digest"},
+        "confirmation": {"enum": ["HOLD VERIFIED CAPABILITY", "CONTINUE VERIFIED CAPABILITY", "REJECT VERIFIED CAPABILITY"]},
+        "decisionRef": {"$ref": "#/$defs/reference"}
+      }
+    },
+    "availability": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "candidateDigest", "authorityId", "receiptRef"],
+      "properties": {
+        "status": {"enum": ["AVAILABLE", "NOT_AVAILABLE"]},
+        "candidateDigest": {"$ref": "#/$defs/digest"},
+        "authorityId": {"type": "string", "minLength": 1, "maxLength": 160},
+        "receiptRef": {"$ref": "#/$defs/reference"}
+      }
+    }
+  }
+}

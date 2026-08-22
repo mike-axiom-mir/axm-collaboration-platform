@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.resource-grounded-capability-policy/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "policyId", "capabilityId", "candidateDigest", "baselineDigest",
+    "workloadRef", "environmentRef", "freshnessWindowMs", "dimensions", "policyDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.resource-grounded-capability-policy/v1"},
+    "policyId": {"$ref": "#/$defs/id"},
+    "capabilityId": {"$ref": "#/$defs/id"},
+    "candidateDigest": {"$ref": "#/$defs/digest"},
+    "baselineDigest": {"$ref": "#/$defs/digest"},
+    "workloadRef": {"$ref": "#/$defs/reference"},
+    "environmentRef": {"$ref": "#/$defs/reference"},
+    "freshnessWindowMs": {"type": "integer", "minimum": 1, "maximum": 31536000000},
+    "dimensions": {
+      "type": "array", "minItems": 1, "maxItems": 16,
+      "items": {"$ref": "#/$defs/dimension"}
+    },
+    "policyDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:[._/-][a-z0-9]+)*$", "maxLength": 180},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "dimension": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "unit", "required", "absoluteMax", "maxRegressionBps"],
+      "properties": {
+        "id": {"enum": [
+          "CPU_CORE_MILLISECONDS", "WALL_MILLISECONDS", "ACCELERATOR_MILLISECONDS",
+          "PEAK_MEMORY_BYTES", "STORAGE_WRITE_BYTES", "NETWORK_INGRESS_BYTES",
+          "NETWORK_EGRESS_BYTES", "ENERGY_MILLIWATT_HOURS", "CARBON_MILLIGRAMS"
+        ]},
+        "unit": {"enum": ["ms", "byte", "mWh", "mgCO2e"]},
+        "required": {"type": "boolean"},
+        "absoluteMax": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
+        "maxRegressionBps": {"type": ["integer", "null"], "minimum": 0, "maximum": 100000}
+      }
+    }
+  }
+}

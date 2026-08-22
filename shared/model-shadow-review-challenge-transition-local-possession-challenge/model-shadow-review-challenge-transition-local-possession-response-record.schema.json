@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-local-possession-response-record/v1",
+  "title": "Model Shadow local possession response record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "responseId", "answeredAt", "status", "challenge",
+    "custodyRecordRef", "assessmentRef", "rosterRef", "receiverPolicyRef",
+    "receiverId", "challengerId", "storedAssessmentReceiptDigest",
+    "responseSignatureAlgorithm", "truth", "responseDigest", "responseSignature"
+  ],
+  "properties": {
+    "schema": { "const": "axm.model-shadow-review-challenge-transition-local-possession-response-record/v1" },
+    "version": { "const": "1.3.0" },
+    "responseId": { "type": "string", "pattern": "^local-possession-response:[a-f0-9]{64}$" },
+    "answeredAt": { "$ref": "#/$defs/timestamp" },
+    "status": { "const": "TEST" },
+    "challenge": { "$ref": "axm.model-shadow-review-challenge-transition-local-possession-challenge/v1" },
+    "custodyRecordRef": { "$ref": "#/$defs/reference" },
+    "assessmentRef": { "$ref": "#/$defs/reference" },
+    "rosterRef": { "$ref": "#/$defs/reference" },
+    "receiverPolicyRef": { "$ref": "#/$defs/reference" },
+    "receiverId": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "challengerId": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "storedAssessmentReceiptDigest": { "$ref": "#/$defs/digest" },
+    "responseSignatureAlgorithm": { "const": "Ed25519" },
+    "truth": { "$ref": "#/$defs/truth" },
+    "responseDigest": { "$ref": "#/$defs/digest" },
+    "responseSignature": { "$ref": "#/$defs/signature" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "signature": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "custodyRecordRereadFromLocalFilesystem", "custodyRecordDigestVerified",
+        "custodyRecordSignatureVerified", "storedAssessmentReceiptSelfDigestVerified",
+        "receiverPolicyVerified", "challengerSignatureVerified",
+        "nonceBoundToExactCustodyRecord", "receiverResponseSignatureVerified",
+        "responseExclusiveCreateCompleted", "responseFileFsyncCompleted",
+        "replayRefusedWhileResponseFilePresent", "freshProcessProvenByRecord",
+        "independentlyOperatedChallengerProven", "independentlyOperatedReceiverProven",
+        "actualNetworkTransportProven", "otherHostDeliveryProven",
+        "challengeTimeExternallyTrusted", "retentionDurationProven",
+        "durabilityBeyondReportedFileFsyncProven", "protectedMonotonicStateProven",
+        "deletionOrRollbackPrevented", "humanReviewProven", "providerExecutionProven",
+        "executionAuthorized", "adoptionAuthorized", "automaticCanon"
+      ],
+      "properties": {
+        "custodyRecordRereadFromLocalFilesystem": { "const": true },
+        "custodyRecordDigestVerified": { "const": true },
+        "custodyRecordSignatureVerified": { "const": true },
+        "storedAssessmentReceiptSelfDigestVerified": { "const": true },
+        "receiverPolicyVerified": { "const": true },
+        "challengerSignatureVerified": { "const": true },
+        "nonceBoundToExactCustodyRecord": { "const": true },
+        "receiverResponseSignatureVerified": { "const": true },
+        "responseExclusiveCreateCompleted": { "const": true },
+        "responseFileFsyncCompleted": { "const": true },
+        "replayRefusedWhileResponseFilePresent": { "const": true },
+        "freshProcessProvenByRecord": { "const": false },
+        "independentlyOperatedChallengerProven": { "const": false },
+        "independentlyOperatedReceiverProven": { "const": false },
+        "actualNetworkTransportProven": { "const": false },
+        "otherHostDeliveryProven": { "const": false },
+        "challengeTimeExternallyTrusted": { "const": false },
+        "retentionDurationProven": { "const": false },
+        "durabilityBeyondReportedFileFsyncProven": { "const": false },
+        "protectedMonotonicStateProven": { "const": false },
+        "deletionOrRollbackPrevented": { "const": false },
+        "humanReviewProven": { "const": false },
+        "providerExecutionProven": { "const": false },
+        "executionAuthorized": { "const": false },
+        "adoptionAuthorized": { "const": false },
+        "automaticCanon": { "const": false }
+      }
+    }
+  }
+}

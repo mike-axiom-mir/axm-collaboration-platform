@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.intake-state/v1",
+  "type": "object",
+  "required": ["schema", "id", "packageRefDigest", "openedAt", "steps", "nextStepIndex", "receipts", "state", "quarantined", "trusted", "installed", "temporaryInstallObserved", "promotionApplied", "externalActionRequired", "previousStateDigest", "stateDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.intake-state/v1" },
+    "id": { "type": "string" },
+    "packageRefDigest": { "type": "string" },
+    "openedAt": { "type": "string" },
+    "steps": { "type": "array" },
+    "nextStepIndex": { "type": "integer", "minimum": 0, "maximum": 15 },
+    "receipts": { "type": "array" },
+    "state": { "enum": ["IN_PROGRESS", "HOLD", "FAILED", "COMPLETE_EXTERNAL_ACTION_REQUIRED", "COMPLETE_REJECTED"] },
+    "quarantined": { "const": true },
+    "trusted": { "const": false },
+    "installed": { "const": false },
+    "temporaryInstallObserved": { "type": "boolean" },
+    "promotionApplied": { "const": false },
+    "externalActionRequired": { "type": ["string", "null"] },
+    "previousStateDigest": { "type": ["string", "null"] },
+    "stateDigest": { "type": "string" }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "current-warning-source",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "qa.phone-campaign.report-native-verify",
+        "qa.phone-campaign.lab-contract-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.report-native-verify": [
+          "A passing zero-failure seam report is structurally checked and digest-bound before planning."
+        ],
+        "qa.phone-campaign.lab-contract-bind": [
+          "The exact TEST QA Lab manifest and contract are identity, route, permission, write, and refusal checked."
+        ]
+      }
+    },
+    {
+      "id": "privacy-and-bounded-scope",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "qa.phone-campaign.sanitized-queue",
+        "qa.phone-campaign.machine-path-redaction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.sanitized-queue": [
+          "Only bounded game ids, slots, warning state, and review-state fields enter the campaign queue."
+        ],
+        "qa.phone-campaign.machine-path-redaction": [
+          "Source manifest and scope paths are excluded from the campaign output."
+        ]
+      }
+    },
+    {
+      "id": "human-agency",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "qa.phone-campaign.bounded-session-batching",
+        "qa.phone-campaign.voluntary-stop"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.bounded-session-batching": [
+          "The current seventeen items are deterministically split into six sessions of at most three games."
+        ],
+        "qa.phone-campaign.voluntary-stop": [
+          "Every session allows stop or skip and never begins automatically."
+        ]
+      }
+    },
+    {
+      "id": "evidence-and-warning-separation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "qa.phone-campaign.candidate-review-separate",
+        "qa.phone-campaign.warning-mutation.none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.candidate-review-separate": [
+          "Candidate review advances only campaign state and cannot authenticate identity or prove hardware."
+        ],
+        "qa.phone-campaign.warning-mutation.none": [
+          "Candidate acceptance and campaign completion leave every verifier warning open."
+        ]
+      }
+    },
+    {
+      "id": "candidate-observation-received",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-campaign.candidate.received"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.candidate.received": [
+          "No voluntary physical-phone candidate was supplied to this campaign."
+        ]
+      }
+    },
+    {
+      "id": "candidate-review-accepted",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-campaign.review.accepted"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.review.accepted": [
+          "No candidate review was supplied to this campaign."
+        ]
+      }
+    },
+    {
+      "id": "physical-phone-evidence-verified",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.physical-phone.verified"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.physical-phone.verified": [
+          "No native physical-phone journey was observed or verified in this run."
+        ]
+      }
+    },
+    {
+      "id": "game-warning-closed",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-campaign.game-warning.closed"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.game-warning.closed": [
+          "All seventeen verifier warnings remain open."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

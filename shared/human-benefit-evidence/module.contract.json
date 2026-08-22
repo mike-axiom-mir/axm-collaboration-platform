@@ -1,0 +1,64 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "human-benefit-evidence",
+  "version": "v0.2",
+  "status": "TEST",
+  "provides": [
+    "human.outcome.protocol.predeclared",
+    "human.outcome.consent.bound",
+    "human.outcome.observation.structured",
+    "human.outcome.retention.minimal",
+    "human.outcome.evaluation.deterministic",
+    "human.outcome.judgment.explicit",
+    "human.outcome.synthetic.separated",
+    "human.outcome.digest.receipts"
+  ],
+  "consumes": [
+    "digest-bound baseline and candidate artifact references",
+    "voluntary structured human responses",
+    "explicit claim-scoped human judgment",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.human-benefit-protocol/v1",
+      "axm.human-benefit-session-receipt/v1",
+      "axm.human-benefit-evaluation-receipt/v1",
+      "axm.human-benefit-judgment-receipt/v1"
+    ],
+    "accepts": [
+      "predeclared two-condition human comparison",
+      "structured no-free-text observation",
+      "human-entered final judgment"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "coerced-or-implied-consent",
+      "raw-identity-retention",
+      "free-text-retention",
+      "audio-video-or-screen-recording",
+      "network-transport",
+      "withdrawn-observation-retention",
+      "synthetic-fixture-as-live-human-evidence",
+      "numeric-signal-as-human-judgment",
+      "human-source-authentication-claim",
+      "scope-expansion-beyond-declared-beneficiaries",
+      "automatic-execution",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-canon",
+      "foundation-mutation",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

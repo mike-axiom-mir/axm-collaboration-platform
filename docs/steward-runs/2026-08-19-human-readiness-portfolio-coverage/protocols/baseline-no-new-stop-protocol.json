@@ -1,0 +1,123 @@
+{
+  "schema": "axm.human-benefit-protocol/v1",
+  "version": "0.1.0",
+  "protocolId": "baseline-no-new-stop-local-steward-20260819",
+  "generatedAt": "2026-08-19T10:45:00.000Z",
+  "fixtureMode": "LIVE",
+  "claim": {
+    "id": "baseline-no-new-stop-human-benefit",
+    "statement": "A human steward spends less effort reviewing recursive no-change output.",
+    "beneficiary": "HUMAN",
+    "targetScope": "NAMED_LOCAL_STEWARD",
+    "scopeStatement": "Any result applies only to the participating local AXM steward and cannot be generalized to other people."
+  },
+  "conditions": [
+    {
+      "id": "condition-a",
+      "role": "BASELINE",
+      "label": "Condition A",
+      "artifactRef": {
+        "id": "baseline-no-new-stop-condition-a-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:3d8b367fd3b81b701842af80c3381e6d09dfae7aa49bf53f35927a2af1b45389"
+      }
+    },
+    {
+      "id": "condition-b",
+      "role": "CANDIDATE",
+      "label": "Condition B",
+      "artifactRef": {
+        "id": "baseline-no-new-stop-condition-b-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:b1426f42fdf1fd67efb8f43c70b8aefb04fa6a80491da6fa9046120d3393a3f1"
+      }
+    }
+  ],
+  "trials": [
+    {
+      "id": "baseline-review-1",
+      "caseId": "baseline-request-only-1",
+      "conditionId": "condition-a",
+      "order": 1,
+      "prompt": "Condition A: a repeated request produced another package, but no exact comparison to the current baseline is shown. Acceptance requires a demonstrated change. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "baseline-review-2",
+      "caseId": "baseline-exact-no-new-1",
+      "conditionId": "condition-b",
+      "order": 2,
+      "prompt": "Condition B: exact baseline and information identities match the prior run; disposition is REUSE_EXISTING and generated output count is zero. The review requires avoiding unjustified duplicate work. Continue, hold, or mark unsure?",
+      "expectedDecision": "CONTINUE"
+    },
+    {
+      "id": "baseline-review-3",
+      "caseId": "baseline-identity-mismatch-1",
+      "conditionId": "condition-b",
+      "order": 3,
+      "prompt": "Condition B: the supplied baseline identity differs from the declared comparison target; disposition is HOLD and generation count is zero. The review requires the exact target baseline. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "baseline-review-4",
+      "caseId": "baseline-new-label-only-1",
+      "conditionId": "condition-a",
+      "order": 4,
+      "prompt": "Condition A: an output has a newer timestamp and revised label, but no baseline bytes or declared information were compared. Acceptance requires evidence of a meaningful change. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "baseline-review-5",
+      "caseId": "baseline-complete-no-stop-proof-1",
+      "conditionId": "condition-a",
+      "order": 5,
+      "prompt": "Condition A: the run reports complete after generating several files, but gives no generation count contract or no-new-information stop evidence. Acceptance requires bounded non-recursive behavior. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "baseline-review-6",
+      "caseId": "baseline-exact-change-1",
+      "conditionId": "condition-b",
+      "order": 6,
+      "prompt": "Condition B: an exact declared input digest changed, the target baseline still matches, and one bounded candidate is produced with the change recorded. The review requires an evidenced change and bounded output. Continue, hold, or mark unsure?",
+      "expectedDecision": "CONTINUE"
+    }
+  ],
+  "fairness": {
+    "orderPolicy": "BALANCED_WITHIN_SESSION",
+    "conditionLabels": "BLINDED_A_B",
+    "learningEffectRisk": "DECLARED",
+    "maximumSameConditionRun": 2
+  },
+  "successRule": {
+    "minimumCompletedSessions": 1,
+    "minimumCandidateAccuracyGain": 0,
+    "maximumCandidateUnsupportedContinueRate": 0,
+    "maximumCandidateMeanTimeRatio": 1.25,
+    "minimumHelpedFraction": 1,
+    "requireNoHighBurden": true
+  },
+  "consent": {
+    "mode": "VOLUNTARY_OPT_IN",
+    "withdrawalAllowed": true,
+    "completionConfirmationRequired": true,
+    "useScope": "LOCAL_BENEFIT_EVALUATION_ONLY"
+  },
+  "retention": {
+    "mode": "STRUCTURED_NO_FREE_TEXT",
+    "rawIdentity": "FORBIDDEN",
+    "freeText": "FORBIDDEN",
+    "rawRecording": "FORBIDDEN",
+    "network": "DENY",
+    "withdrawalBehavior": "OMIT_PARTICIPANT_AND_OBSERVATIONS"
+  },
+  "authority": {
+    "automaticHumanVerdict": false,
+    "finalHumanJudgmentRequired": true,
+    "sourceAuthenticationExternal": true,
+    "automaticExecution": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "protocolDigest": "sha256:147e03aaea2769d3ed683fb04e5456c8fb27ddc31fb8b5fdb93b37f66af42071"
+}

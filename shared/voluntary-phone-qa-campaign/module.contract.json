@@ -1,0 +1,56 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "voluntary-phone-qa-campaign",
+  "version": "v0.2",
+  "status": "TEST",
+  "provides": [
+    "qa.phone-campaign.report-native-verify",
+    "qa.phone-campaign.lab-contract-bind",
+    "qa.phone-campaign.sanitized-queue",
+    "qa.phone-campaign.bounded-session-batching",
+    "qa.phone-campaign.voluntary-stop",
+    "qa.phone-campaign.candidate-review-separate",
+    "qa.phone-campaign.warning-mutation.none",
+    "qa.phone-campaign.machine-path-redaction",
+    "axm.voluntary-phone-qa-campaign/v1"
+  ],
+  "consumes": [
+    "axm.game-package-verification/v1",
+    "browser-lan-hardware-qa-lab:v0.3",
+    "axm.device-qa-evidence/v1",
+    "explicit-voluntary-review-records",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.voluntary-phone-qa-campaign/v1"],
+    "accepts": ["current game seam report", "exact QA Lab manifest and contract", "optional explicit review records"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "automatic-human-participation",
+      "forced-session-completion",
+      "candidate-as-physical-proof",
+      "candidate-review-as-warning-closure",
+      "campaign-completion-as-warning-closure",
+      "human-identity-authentication-claim",
+      "raw-review-note-retention",
+      "machine-path-retention",
+      "undefined-or-non-json-representable-state",
+      "game-manifest-mutation",
+      "automatic-execution",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from exact caller inputs",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

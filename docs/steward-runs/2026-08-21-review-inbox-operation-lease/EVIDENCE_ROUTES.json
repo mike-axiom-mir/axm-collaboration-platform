@@ -1,0 +1,62 @@
+{
+  "schema": "axm.claim-evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "baseline-lost-update",
+      "kind": "behavioral",
+      "claim": "The exact v4.2 ReviewService can lose writes under the recorded synchronized interleaving.",
+      "evidence": ["BASELINE_RACE_REPRODUCTION.json", "run-baseline-race-reproduction.js"],
+      "verdict": "PASS",
+      "counterevidence": "The natural unsynchronized attempt was inconclusive, and production frequency is not proven."
+    },
+    {
+      "id": "cooperating-single-host-serialization",
+      "kind": "behavioral",
+      "claim": "Eight cooperating child processes preserve eight distinct review items through the v4.3 lease.",
+      "evidence": ["shared/operations/review-operation-lease-selftest.js", "CHECK_RESULTS.json"],
+      "verdict": "PASS",
+      "counterevidence": "The lease does not exclude noncooperating external writers and is not a multi-host guarantee."
+    },
+    {
+      "id": "crash-and-invalid-evidence",
+      "kind": "persistence",
+      "claim": "Crash residue and invalid or altered owner evidence remain present and block later mutation.",
+      "evidence": ["shared/operations/review-operation-lease-selftest.js", "shared/operations/review-operation-lease.js"],
+      "verdict": "PASS",
+      "counterevidence": "No process-liveness inference, automatic stale-owner theft, or protected rollback-resistant custody is claimed."
+    },
+    {
+      "id": "whole-authority-operation-scope",
+      "kind": "authorization",
+      "claim": "Signed submit, vote, and recovery place envelope handling, intent persistence, and ordinary projection inside the shared lease.",
+      "evidence": ["shared/operations/review-authority-service.js", "shared/operations/review-authority-service-selftest.js", "shared/operations/review-authority-api-selftest.js"],
+      "verdict": "PASS",
+      "counterevidence": "Serialization is not cross-file atomicity and grants no review, execution, or reconciliation authority."
+    },
+    {
+      "id": "inherited-review-continuity",
+      "kind": "technical",
+      "claim": "Nine selected review and downstream checks pass in a clean 583-file archived product slice without tracked-file drift.",
+      "evidence": ["CLEAN_PRODUCT_REPLAY.json", "run-clean-product-replay.js"],
+      "verdict": "PASS",
+      "counterevidence": "The successful replay is a selected product slice, not a full-repository archive replay."
+    },
+    {
+      "id": "live-review-inbox",
+      "kind": "visual",
+      "claim": "The committed UI exposes held owner metadata, disables voting while held, retains typed selected evidence, has no unlock control, and wraps at 390x844.",
+      "evidence": ["VISUAL_RECEIPT.json", "tools/review-inbox/app.js", "tools/review-inbox/index.html"],
+      "verdict": "PASS",
+      "counterevidence": "Synthetic localhost visual fixtures do not prove assistive-technology compatibility, human usability, or human benefit."
+    },
+    {
+      "id": "authority-boundary",
+      "kind": "authorization",
+      "claim": "The seam grants no execution, adoption, promotion, merge, Foundation mutation, or CANON authority.",
+      "evidence": ["SOURCE_SNAPSHOT.json", "CAPABILITY_GAP_AFTER.json", "FRONTIER_AUDIT.md"],
+      "verdict": "PASS",
+      "counterevidence": "Actual live host policy, signed human review, identity, trusted time, benefit, learning, merge, and CANON remain unproven."
+    }
+  ]
+}

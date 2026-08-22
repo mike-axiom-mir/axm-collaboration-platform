@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-direction-handoff/v1",
+  "title": "AXM Grounded Growth Direction Handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "handoffId", "generatedAt", "status",
+    "sourcePacket", "selections", "directions", "holds", "summary",
+    "truth", "handoffDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-direction-handoff/v1" },
+    "version": { "const": "0.1.0" },
+    "handoffId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "sourcePacket": { "type": "object" },
+    "selections": { "type": "array", "items": { "type": "object" } },
+    "directions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["needId", "needDigest", "selection", "direction", "directionDigest", "evidencePlan", "executionPlan"],
+        "properties": {
+          "needId": { "type": "string" },
+          "needDigest": { "$ref": "#/$defs/digest" },
+          "selection": { "type": "object" },
+          "direction": { "type": "object" },
+          "directionDigest": { "$ref": "#/$defs/digest" },
+          "evidencePlan": { "type": "object" },
+          "executionPlan": { "type": "object" }
+        }
+      }
+    },
+    "holds": { "type": "array", "items": { "type": "object" } },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateNeedCount", "directionCount", "holdCount", "waitDirectionCount", "actionDirectionCount", "acceptedDirectionCount", "executedDirectionCount"],
+      "properties": {
+        "candidateNeedCount": { "type": "integer", "minimum": 0 },
+        "directionCount": { "type": "integer", "minimum": 0 },
+        "holdCount": { "type": "integer", "minimum": 0 },
+        "waitDirectionCount": { "type": "integer", "minimum": 0 },
+        "actionDirectionCount": { "type": "integer", "minimum": 0 },
+        "acceptedDirectionCount": { "const": 0 },
+        "executedDirectionCount": { "const": 0 }
+      }
+    },
+    "truth": { "type": "object" },
+    "handoffDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}
+

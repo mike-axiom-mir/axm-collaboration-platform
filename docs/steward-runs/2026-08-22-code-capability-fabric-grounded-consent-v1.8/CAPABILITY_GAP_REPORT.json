@@ -1,0 +1,46 @@
+{
+  "schema": "axm.capability-gap-transition/v1",
+  "requirementsSource": "SCOUT_REQUIREMENTS.json",
+  "beforeInventory": "SCOUT_INVENTORY_BEFORE.json",
+  "afterInventory": "SCOUT_INVENTORY_AFTER.json",
+  "before": {
+    "comparatorOverall": "BLOCKED",
+    "requiredScopePlanning": "BLOCKED",
+    "missing": [
+      "consent.policy.normalize",
+      "consent.instance.normalize",
+      "consent.predecision-evidence.bind",
+      "consent.scope.evaluate",
+      "consent.reconsent-trigger.bind"
+    ]
+  },
+  "after": {
+    "comparatorOverall": "READY",
+    "missionOverall": "DEGRADED",
+    "requiredScopePlanning": "READY",
+    "available": [
+      "consent.policy.normalize",
+      "consent.instance.normalize",
+      "consent.predecision-evidence.bind",
+      "consent.scope.evaluate",
+      "consent.reconsent-trigger.bind"
+    ],
+    "missingConsequentialCapabilities": [
+      "consent.human-decision.authenticate",
+      "consent.revocation.observe-live",
+      "consent.trusted-clock.observe",
+      "consent.domain-safety.verify",
+      "consent.host-attempt.authorize",
+      "consent.attempt-receipt.emit",
+      "learning.admission.decide",
+      "hardware.safety-interlock.verify",
+      "code.fabric.sandbox-executor.repaired"
+    ]
+  },
+  "gapTypes": {
+    "closed": ["CONTRACT"],
+    "open": ["AUTHORITY", "EVIDENCE", "HAND", "SKILL", "SUBSTRATE"]
+  },
+  "cheapestHonestRouteUsed": "Compose existing Fabric digests and four-root review references through additive policy, exact-instance, and pure subset-evaluation contracts. Do not build an executor, identity system, revocation service, or universal safety verifier.",
+  "nextUnknownTest": "Authenticated consent needs an admitted human decision-key policy with allowed and denied identity tests. Live revocation, trusted time, and each domain safety adapter need their own native proof surfaces before any attempt can be authorized."
+}

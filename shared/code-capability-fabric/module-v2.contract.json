@@ -1,0 +1,68 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-capability-fabric",
+  "version": "v0.2",
+  "status": "TEST",
+  "provides": [
+    "axm.code-capability-provider/v2",
+    "axm.code-capability-request/v2",
+    "axm.code-provider-host-observation/v2",
+    "axm.code-capability-route-plan/v2",
+    "axm.code-workspace-boundary-declaration/v1",
+    "code.capability.plan",
+    "code.capability.plan.verify"
+  ],
+  "consumes": [
+    "provider descriptors",
+    "exact descriptor digests",
+    "digest-bound, time-bounded host-observed availability",
+    "explicit request authority policy",
+    "opaque byte-bound artifact and external-assurance references",
+    "declared bounded-resource ceilings",
+    "portable source/output/evidence boundary declarations",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.code-capability-route-plan/v2"],
+    "accepts": [
+      "axm.code-capability-request/v2",
+      "axm.code-capability-provider/v2",
+      "axm.code-provider-host-observation/v2",
+      "axm.code-workspace-boundary-declaration/v1"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "provider-code-loading",
+      "provider-code-execution",
+      "workspace-content-reading",
+      "source-or-candidate-mutation",
+      "process-execution",
+      "network-use",
+      "permission-grant",
+      "provider-self-asserted-availability",
+      "implicit-provider-choice-when-multiple-match",
+      "implicit-provider-version-choice",
+      "implicit-host-observation-choice",
+      "host-observation-as-execution-proof",
+      "host-observer-reference-as-cryptographic-authenticity-proof",
+      "resource-profile-as-measured-enforcement-proof",
+      "path-boundary-reference-as-existing-destination-proof",
+      "direct-reuse-without-declared-rights-reference",
+      "raw-source-content-or-machine-path-retention",
+      "overbroad-host-authority-inheritance",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-canon",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

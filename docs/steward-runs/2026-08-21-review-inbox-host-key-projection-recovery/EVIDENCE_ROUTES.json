@@ -1,0 +1,69 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "claimId": "intent-precedes-ordinary-projection",
+      "kind": "persistence",
+      "primarySurface": "review-authority-service source order plus injected submission and vote projection interruptions",
+      "passCondition": "the v2 signed operation exists in authentication.json before submitReserved or vote is called",
+      "counterevidence": "the two files are not one transaction and no multi-process serialization is proven",
+      "observedEvidence": "review-projection-recovery-selftest passes both interruption cases and source-order assertions",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "pending-projection-holds-authority",
+      "kind": "authorization",
+      "primarySurface": "v2 authority view and global recovery-status projection",
+      "passCondition": "a durable unprojected vote is typed PENDING, identifies its envelope, fills zero authenticated seats, and cannot produce host-key approval",
+      "counterevidence": "the signed intent still depends on the current local host policy and local clock",
+      "observedEvidence": "focused service suite and live RECOVERY_REQUIRED fixture both show zero seats and held authority",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "explicit-idempotent-recovery",
+      "kind": "behavioral",
+      "primarySurface": "host-local recoverProjection method with exact confirmation",
+      "passCondition": "current policy signature bindings and separation reverify; one projection is made; retry returns ALREADY_PROJECTED without appending evidence",
+      "counterevidence": "no browser route automatic retry reconciliation or consequential action exists",
+      "observedEvidence": "submission and vote recovery, wrong confirmation, unknown envelope, and repeated recovery cases pass",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "supersession-is-signed-order-exact",
+      "kind": "authorization",
+      "primarySurface": "same-principal vote chain derived from signed issuedAt and envelopeId values",
+      "passCondition": "older votes point to the next signed-order vote; reversed unsigned pointers fail closed; superseded recovery is refused",
+      "counterevidence": "local ledger storage is neither protected nor rollback resistant",
+      "observedEvidence": "focused tamper and rotated-key cases pass, including global HELD on pointer reversal",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "v1-read-v2-write-continuity",
+      "kind": "persistence",
+      "primarySurface": "legacy ledger loader followed by the next signed mutation",
+      "passCondition": "v1 finalized submission and vote evidence remains reverified and the next signed mutation writes a closed v2 operation ledger",
+      "counterevidence": "legacy pending submissions have no recoverable candidate and remain blocked rather than invented",
+      "observedEvidence": "fresh legacy fixture remains authenticated before and after deterministic v2 migration",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "read-only-visible-recovery-states",
+      "kind": "visual",
+      "primarySurface": "synthetic read-only localhost Review Inbox at 1280x720 and 390x844",
+      "passCondition": "CURRENT RECOVERY_REQUIRED and HELD are visibly distinct, cards expose pending or invalid status, no recovery button exists, and narrow layouts do not overflow",
+      "counterevidence": "synthetic fixtures prove no real policy signer review accessibility usability or human benefit",
+      "observedEvidence": "seven selected frame digests, exact DOM measurements, zero recovery controls, and zero browser warnings or errors",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "continuity-and-zero-action-authority",
+      "kind": "technical",
+      "primarySurface": "62-command focused and required verification matrix",
+      "passCondition": "new and inherited review paths pass while truth objects keep every consequential authority false and Mike remains the merge/CANON gate",
+      "counterevidence": "passing tests do not merge promote canonize prove benefit or complete the broad grounded-growth objective",
+      "observedEvidence": "62 of 62 commands pass with 5945 focused assertions and all ten AGENTS checks",
+      "verdict": "PASS"
+    }
+  ]
+}

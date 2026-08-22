@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-signed-review-attestation/v1",
+  "title": "Model Shadow signed review attestation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "attestationId", "keyId", "actorDigest", "actorKind", "verdict",
+    "scope", "policyDigest", "challengeDigest", "reviewedHandoffDigest",
+    "proposalDigest", "planDigest", "reviewEvidenceDigest", "reviewItemId",
+    "reviewApprovalAt", "issuedAt", "expiresAt", "signatureAlgorithm", "signature"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-signed-review-attestation/v1"},
+    "attestationId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "keyId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "actorDigest": {"$ref": "#/$defs/digest"},
+    "actorKind": {"enum": ["human", "machine", "unknown"]},
+    "verdict": {"const": "APPROVE"},
+    "scope": {"const": "REVIEW_EXACT_MODEL_SHADOW_CHALLENGER_PLAN"},
+    "policyDigest": {"$ref": "#/$defs/digest"},
+    "challengeDigest": {"$ref": "#/$defs/digest"},
+    "reviewedHandoffDigest": {"$ref": "#/$defs/digest"},
+    "proposalDigest": {"$ref": "#/$defs/digest"},
+    "planDigest": {"$ref": "#/$defs/digest"},
+    "reviewEvidenceDigest": {"$ref": "#/$defs/digest"},
+    "reviewItemId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "reviewApprovalAt": {"type": "string", "format": "date-time"},
+    "issuedAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "signatureAlgorithm": {"const": "Ed25519"},
+    "signature": {"type": "string", "minLength": 88, "maxLength": 88}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}

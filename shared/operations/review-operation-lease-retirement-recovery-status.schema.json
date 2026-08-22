@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-recovery-status/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "state", "reasonCode", "totalRetirements", "completeRetirements", "recoveryRequiredRetirements", "heldRetirements", "records", "recordsTruncated", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-recovery-status/v1" },
+    "status": { "const": "TEST" },
+    "state": { "enum": ["CURRENT", "RECOVERY_REQUIRED", "HELD"] },
+    "reasonCode": { "type": "string", "minLength": 1 },
+    "totalRetirements": { "type": "integer", "minimum": 0 },
+    "completeRetirements": { "type": "integer", "minimum": 0 },
+    "recoveryRequiredRetirements": { "type": "integer", "minimum": 0 },
+    "heldRetirements": { "type": "integer", "minimum": 0 },
+    "records": {
+      "type": "array",
+      "maxItems": 200,
+      "items": { "$ref": "#/$defs/record" }
+    },
+    "recordsTruncated": { "type": "boolean" },
+    "truth": { "$ref": "#/$defs/truth" }
+  },
+  "$defs": {
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retirementId", "state", "reasonCode", "ownerDigest", "actionRequired", "confirmationRequired", "withdrawalConfirmationRequired", "intentFile", "decisionFile", "decisionState", "quarantinedOwnerEvidenceFile", "resultFile", "truth"],
+      "properties": {
+        "retirementId": { "type": ["string", "null"], "format": "uuid" },
+        "state": { "enum": ["COMPLETE", "SUPERSEDED", "WITHDRAWN", "RECOVERY_REQUIRED", "HELD"] },
+        "reasonCode": { "type": "string", "minLength": 1 },
+        "ownerDigest": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+        "actionRequired": { "type": ["string", "null"], "enum": ["RESUME_RETIREMENT", "FINALIZE_RESULT", null] },
+        "confirmationRequired": { "type": ["string", "null"] },
+        "withdrawalConfirmationRequired": { "type": ["string", "null"] },
+        "intentFile": { "type": ["string", "null"] },
+        "decisionFile": { "type": ["string", "null"] },
+        "decisionState": { "type": ["string", "null"], "enum": ["PROCEED_RETIREMENT", "WITHDRAW_RETIREMENT_INTENT", null] },
+        "quarantinedOwnerEvidenceFile": { "type": ["string", "null"] },
+        "resultFile": { "type": ["string", "null"] },
+        "truth": { "$ref": "#/$defs/truth" }
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intentExact", "retirementDecisionExact", "withdrawalDecisionExact", "ownerEvidenceDigestVerified", "retirementResultExact", "explicitRecoveryConfirmationRequired", "callerAssertionRequired", "explicitIntentWithdrawalConfirmationRequired", "cooperatingSingleHostProceedWithdrawDecisionArbitration", "withdrawalOwnerLockMutation", "cooperatingSingleHostRecoveryCheckpointConvergence", "recoveryCheckpointObservationBounded", "generalRecoverySerializationProven", "retirementCancellationSafetyProven", "generalRetirementCancellationSafetyProven", "cooperatingSingleHostHardLinkAtomicVisibility", "completeBytesFsyncedBeforeHardLink", "hardLinkPublicationNoOverwrite", "sameFilesystemHardLinkRequired", "staleStageReclamationProvided", "hardLinkFreeAtomicFallbackProvided", "powerLossDurabilityProven", "holderTerminatedOrAbandonedProven", "recoverySafetyProven", "falseAssertionCanViolateSerialization", "automaticRecovery", "processLivenessInference", "browserRoute", "apiRoute", "crossFileAtomicityProven", "nonCooperatingExternalWritersExcluded", "protectedStorageOrRollbackPreventionProven", "realWorldIdentityProven", "actualHumanParticipationProven", "executionAuthorized", "adoptionAuthorized", "promotionAuthorized", "mergeAuthorized", "canonAuthorized"],
+      "properties": {
+        "intentExact": { "type": "boolean" },
+        "retirementDecisionExact": { "type": "boolean" },
+        "withdrawalDecisionExact": { "type": "boolean" },
+        "ownerEvidenceDigestVerified": { "type": "boolean" },
+        "retirementResultExact": { "type": "boolean" },
+        "explicitRecoveryConfirmationRequired": { "const": true },
+        "callerAssertionRequired": { "const": true },
+        "explicitIntentWithdrawalConfirmationRequired": { "const": true },
+        "cooperatingSingleHostProceedWithdrawDecisionArbitration": { "const": true },
+        "withdrawalOwnerLockMutation": { "const": false },
+        "cooperatingSingleHostRecoveryCheckpointConvergence": { "const": true },
+        "recoveryCheckpointObservationBounded": { "const": true },
+        "generalRecoverySerializationProven": { "const": false },
+        "retirementCancellationSafetyProven": { "const": false },
+        "generalRetirementCancellationSafetyProven": { "const": false },
+        "cooperatingSingleHostHardLinkAtomicVisibility": { "const": true },
+        "completeBytesFsyncedBeforeHardLink": { "const": true },
+        "hardLinkPublicationNoOverwrite": { "const": true },
+        "sameFilesystemHardLinkRequired": { "const": true },
+        "staleStageReclamationProvided": { "const": false },
+        "hardLinkFreeAtomicFallbackProvided": { "const": false },
+        "powerLossDurabilityProven": { "const": false },
+        "holderTerminatedOrAbandonedProven": { "const": false },
+        "recoverySafetyProven": { "const": false },
+        "falseAssertionCanViolateSerialization": { "const": true },
+        "automaticRecovery": { "const": false },
+        "processLivenessInference": { "const": false },
+        "browserRoute": { "const": false },
+        "apiRoute": { "const": false },
+        "crossFileAtomicityProven": { "const": false },
+        "nonCooperatingExternalWritersExcluded": { "const": false },
+        "protectedStorageOrRollbackPreventionProven": { "const": false },
+        "realWorldIdentityProven": { "const": false },
+        "actualHumanParticipationProven": { "const": false },
+        "executionAuthorized": { "const": false },
+        "adoptionAuthorized": { "const": false },
+        "promotionAuthorized": { "const": false },
+        "mergeAuthorized": { "const": false },
+        "canonAuthorized": { "const": false }
+      }
+    }
+  }
+}

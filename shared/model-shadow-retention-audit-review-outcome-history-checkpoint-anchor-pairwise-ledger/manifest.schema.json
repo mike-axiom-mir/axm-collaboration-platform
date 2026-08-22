@@ -1,0 +1,28 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger-manifest/v1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema","version","status","logId","genesisAnchoredCheckpointRef","genesisCheckpointRef","genesisAnchorEpoch","anchorPolicyIdentity","anchorProfileDigest","witnessPolicyIdentity","witnessProfileDigest","authorityOrigin","storageMode","manifestDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-pairwise-ledger-manifest/v1"},
+    "version":{"const":"3.6.0"},
+    "status":{"const":"TEST"},
+    "logId":{"type":"string","minLength":1,"maxLength":180},
+    "genesisAnchoredCheckpointRef":{"$ref":"#/$defs/ref"},
+    "genesisCheckpointRef":{"$ref":"#/$defs/ref"},
+    "genesisAnchorEpoch":{"type":"integer","minimum":1},
+    "anchorPolicyIdentity":{"$ref":"#/$defs/identity"},
+    "anchorProfileDigest":{"$ref":"#/$defs/digest"},
+    "witnessPolicyIdentity":{"$ref":"#/$defs/identity"},
+    "witnessProfileDigest":{"$ref":"#/$defs/digest"},
+    "authorityOrigin":{"const":"CALLER_OWNED_LOCAL_ROOT_AND_CONFIRMATION_UNAUTHENTICATED"},
+    "storageMode":{"const":"EXACT_V35_FORWARD_RECEIPT_THEN_EXCLUSIVE_LOCAL_SEQUENCE_ENTRY_CREATE"},
+    "manifestDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "identity":{"type":"object","additionalProperties":false,"required":["id","schema"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180}}},
+    "ref":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}}
+  }
+}

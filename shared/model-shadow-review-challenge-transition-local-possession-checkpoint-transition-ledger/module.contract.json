@@ -1,0 +1,86 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger",
+  "version": "v1.9",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.exact-v1.8-forward-transition-gate",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.prewrite-v1.7-candidate-source-match-gate",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.exclusive-local-sequence-append",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.local-digest-chain-reload",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.caller-package-persisted-exact-rebuild",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.independent-root-and-deletion-counterevidence",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.public-artifact-data-minimization",
+    "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.authority-none",
+    "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger-entry/v1"
+  ],
+  "consumes": [
+    "one exact axm.model-shadow-review-challenge-transition-local-possession-checkpoint-pairwise-transition/v1 forward-extension receipt and rebuild input as data",
+    "the candidate axm.model-shadow-review-challenge-transition-local-possession-checkpoint-separated-witness/v1 package embedded in that rebuild input",
+    "one explicitly configured local possession source root observed through the v1.4 continuity adapter",
+    "one explicit caller-owned ledger root",
+    "exact explicit confirmation",
+    "caller-supplied untrusted UTC timestamps"
+  ],
+  "permissions": [
+    "read the explicitly configured local possession source namespace and referenced custody records through the v1.4 observer",
+    "create one fixed ledger namespace beneath the explicitly configured caller-owned ledger root",
+    "exclusive-create canonical manifest and sequence entry JSON files beneath that namespace"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger-entry/v1",
+      "axm.model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger-snapshot/v1"
+    ],
+    "accepts": [
+      "one exact current local-head v1.8 forward transition",
+      "one exact pre-write v1.7 candidate currentness match captured by this module"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "only the explicit sourceStateRoot local-possession response namespace and custody references needed for strict v1.3 reload",
+      "only the fixed ledger namespace beneath explicit stateRoot"
+    ],
+    "writes": [
+      "only stateRoot/model-shadow-review-challenge-transition-local-possession-checkpoint-transition-ledger/ledger.json",
+      "only contiguous exclusive-create JSON entries beneath that namespace's entries directory"
+    ],
+    "refuses": [
+      "missing-or-inexact-explicit-confirmation",
+      "invalid-or-nonforward-v1.8-transition",
+      "candidate-source-absence-invalidity-extension-rollback-replacement-or-identity-drift",
+      "stale-local-head",
+      "prewrite-source-capture-as-atomic-with-ledger-append",
+      "prewrite-source-match-as-proof-of-later-currentness",
+      "inspect-or-reload-as-live-source-recapture",
+      "local-sequence-as-global-fork-exclusion",
+      "independent-caller-roots-as-excluded",
+      "local-files-as-external-retention-or-protected-monotonic-state",
+      "file-fsync-as-directory-entry-or-hardware-durability-proof",
+      "deletion-or-rollback-prevention",
+      "explicit-confirmation-as-host-authorization",
+      "caller-time-as-trusted-time",
+      "declared-party-digests-as-real-world-identity",
+      "observable-signer-separation-as-controller-independence-or-collusion-exclusion",
+      "transition-recording-as-execution-adoption-promotion-or-canon-authority",
+      "raw-public-key-signature-private-key-model-output-or-private-context-persistence",
+      "source-or-ledger-root-path-persistence",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller-owned local ledger root; source state remains owned by the upstream local-possession adapter",
+    "reload": "validate manifest, contiguous sequence, entry digests, stored receipt self-digests, and local head; exact upstream rebuild still requires the caller package",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned; deletion can reopen an earlier local branch and is not prevented",
+    "installed": false,
+    "promoted": false
+  }
+}

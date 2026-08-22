@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-checkpoint/v1",
+  "title": "Model Shadow review challenge checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "checkpointId", "anchoredAt", "status", "ledgerRef",
+    "sourceSnapshotRef", "entryCount", "entriesDigest", "entries", "state",
+    "nextGate", "truth", "checkpointDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-checkpoint/v1"},
+    "version": {"const": "0.3.0"},
+    "checkpointId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "anchoredAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "ledgerRef": {"$ref": "#/$defs/reference"},
+    "sourceSnapshotRef": {"$ref": "#/$defs/reference"},
+    "entryCount": {"type": "integer", "minimum": 0},
+    "entriesDigest": {"$ref": "#/$defs/digest"},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "state": {"const": "CALLER_RETAINED_CHECKPOINT_FOR_FUTURE_COMPARISON_AUTHORITY_NOT_AUTHENTICATED"},
+    "nextGate": {"const": "HOST_AUTHENTICATED_EXTERNALLY_RETAINED_CHECKPOINT_OR_PROTECTED_MONOTONIC_STORE"},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceSnapshotSelfDigestValid", "sourceSnapshotOriginAuthenticated",
+        "checkpointTimeExternallyTrusted", "futureStateComparable",
+        "checkpointWrittenByThisModule", "checkpointExternalRetentionProven",
+        "checkpointAuthorityAuthenticated", "preCheckpointHistoryProven",
+        "ledgerDeletionOrRollbackPrevented", "globalSingleUseProven",
+        "hostAuthorizationAuthenticated", "actualHumanParticipationProven",
+        "executionAuthorized", "adoptionAuthorized", "automaticWrite",
+        "automaticPromotion", "automaticMerge", "automaticCanon",
+        "foundationMutation"
+      ],
+      "properties": {
+        "sourceSnapshotSelfDigestValid": {"const": true},
+        "sourceSnapshotOriginAuthenticated": {"const": false},
+        "checkpointTimeExternallyTrusted": {"const": false},
+        "futureStateComparable": {"const": true},
+        "checkpointWrittenByThisModule": {"const": false},
+        "checkpointExternalRetentionProven": {"const": false},
+        "checkpointAuthorityAuthenticated": {"const": false},
+        "preCheckpointHistoryProven": {"const": false},
+        "ledgerDeletionOrRollbackPrevented": {"const": false},
+        "globalSingleUseProven": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "checkpointDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["challengeDigest", "consumptionReceiptDigest", "consumedAt"],
+      "properties": {
+        "challengeDigest": {"$ref": "#/$defs/digest"},
+        "consumptionReceiptDigest": {"$ref": "#/$defs/digest"},
+        "consumedAt": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

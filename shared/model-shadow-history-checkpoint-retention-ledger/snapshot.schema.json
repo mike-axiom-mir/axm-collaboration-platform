@@ -1,0 +1,30 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-history-checkpoint-retention-ledger-snapshot/v1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema","version","status","retentionLogId","mode","manifestRef","proposalCount","settlementCount","currentSettledCheckpointRef","latestPersistedCheckpointRef","latestPersistedProposalRef","pendingProposalRef","lastSettlementRef","latestPersistedStatus","state","truth","snapshotDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-history-checkpoint-retention-ledger-snapshot/v1"},
+    "version":{"const":"2.7.0"},
+    "status":{"const":"TEST"},
+    "retentionLogId":{"type":"string","minLength":1,"maxLength":180},
+    "mode":{"const":"CALLER_OWNED_DISTINCT_LOCAL_CHECKPOINT_RETENTION_UNAUTHENTICATED"},
+    "manifestRef":{"$ref":"#/$defs/reference"},
+    "proposalCount":{"type":"integer","minimum":0,"maximum":10000},
+    "settlementCount":{"type":"integer","minimum":0,"maximum":10000},
+    "currentSettledCheckpointRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "latestPersistedCheckpointRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "latestPersistedProposalRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "pendingProposalRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "lastSettlementRef":{"oneOf":[{"type":"null"},{"$ref":"#/$defs/reference"}]},
+    "latestPersistedStatus":{"enum":["EMPTY","PENDING","SETTLED"]},
+    "state":{"enum":["LOCAL_RETENTION_LEDGER_RELOADED_EMPTY","LOCAL_RETENTION_LEDGER_RELOADED_LATEST_OBSERVATION_PENDING","LOCAL_RETENTION_LEDGER_RELOADED_LATEST_OBSERVATION_SETTLED"]},
+    "truth":{"const":{"manifestValidated":true,"contiguousProposalAndSettlementSequencesValidated":true,"completeProposalAndSettlementDigestChainsValidated":true,"everyEmbeddedV26CheckpointSelfDigestValidated":true,"everyPostInitialCheckpointStrictlyForwardFromPreviousSettledHead":true,"currentSettledRetentionHeadDerivedOnlyFromSettlements":true,"latestPersistedObservationDerivedFromProposals":true,"atMostOneTrailingPendingProposal":true,"localFilesReloaded":true,"transientRetentionOperationLockWritten":true,"callerOriginPackagesRequiredForUpstreamExactReverification":true,"localCheckpointRetentionObserved":true,"directoryEntryOrHardwareDurabilityProven":false,"externalRetentionProven":false,"protectedMonotonicStateProven":false,"deletionOrRollbackPrevented":false,"independentRootsExcluded":false,"globallyConsistentLogProven":false,"hostAuthorizationAuthenticated":false,"actualHumanParticipationProven":false,"providerInvoked":false,"humanBenefitProven":false,"broadLearningClaimed":false,"automaticInstall":false,"automaticPromotion":false,"automaticMerge":false,"automaticCanon":false,"foundationMutation":false}},
+    "snapshotDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "reference":{"type":"object","additionalProperties":false,"required":["id","schema","sha256"],"properties":{"id":{"type":"string","minLength":1,"maxLength":180},"schema":{"type":"string","minLength":1,"maxLength":180},"sha256":{"$ref":"#/$defs/digest"}}}
+  }
+}

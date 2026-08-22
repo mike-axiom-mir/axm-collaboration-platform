@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.research-contribution-assessment/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "assessmentId", "generatedAt", "state", "bundle",
+    "counts", "attributionAssessment", "holds", "warnings", "projection", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.research-contribution-assessment/v1"},
+    "version": {"const": "0.1.0"},
+    "assessmentId": {"type": "string", "minLength": 1},
+    "generatedAt": {"type": "string", "minLength": 1},
+    "state": {"enum": ["READY_FOR_BASELINE_SIMULATION_PLANNING", "HELD_FOR_EVIDENCE_REPAIR"]},
+    "bundle": {"$ref": "research-contribution-bundle.schema.json"},
+    "counts": {
+      "type": "object",
+      "required": ["artifacts", "seats", "modelSeats", "evidenceSources", "retainedSignals", "proposals", "holds", "warnings"]
+    },
+    "attributionAssessment": {
+      "type": "object",
+      "required": [
+        "artifactToSeatMappingEstablished", "exactModelIdentityEstablished",
+        "priorOutputIsolationEstablished", "crossModelIndependenceEstablished",
+        "unassignedArtifactIds", "modelSeatsWithoutArtifacts", "modelAgreementIsProof"
+      ],
+      "properties": {"modelAgreementIsProof": {"const": false}}
+    },
+    "holds": {"type": "array", "items": {"type": "object"}},
+    "warnings": {"type": "array", "items": {"type": "object"}},
+    "projection": {"$ref": "research-contribution-simulation-projection.schema.json"},
+    "truth": {
+      "type": "object",
+      "required": [
+        "staticIntegrityOnly", "signalStagesPreservedNotPromoted", "disagreementsPreserved",
+        "proposalDispositionPreserved", "sourceExecuted", "modelInvoked", "baselineRunBuilt",
+        "runtimeBehaviorProven", "learningImprovementProven", "humanBenefitProven",
+        "automaticExecution", "automaticAcceptance", "automaticBuild", "automaticPromotion", "automaticCanon"
+      ],
+      "properties": {
+        "staticIntegrityOnly": {"const": true},
+        "signalStagesPreservedNotPromoted": {"const": true},
+        "disagreementsPreserved": {"const": true},
+        "proposalDispositionPreserved": {"const": true},
+        "sourceExecuted": {"const": false},
+        "modelInvoked": {"const": false},
+        "baselineRunBuilt": {"const": false},
+        "runtimeBehaviorProven": {"const": false},
+        "learningImprovementProven": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "automaticExecution": {"const": false},
+        "automaticAcceptance": {"const": false},
+        "automaticBuild": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticCanon": {"const": false}
+      }
+    },
+    "receiptDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

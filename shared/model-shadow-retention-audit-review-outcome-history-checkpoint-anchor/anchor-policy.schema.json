@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-policy/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","policyId","anchorId","anchorEpoch","issuedAt","expiresAt","status","audience","scope","authorityOrigin","requiredSignatures","maxAuthorizationAgeSeconds","keys","policyDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-retention-audit-review-outcome-history-checkpoint-anchor-policy/v1"},
+    "policyId":{"type":"string","minLength":1,"maxLength":180},"anchorId":{"type":"string","minLength":1,"maxLength":180},"anchorEpoch":{"type":"integer","minimum":1},
+    "issuedAt":{"$ref":"#/$defs/time"},"expiresAt":{"$ref":"#/$defs/time"},"status":{"const":"TEST"},
+    "audience":{"const":"MODEL_SHADOW_RETENTION_AUDIT_REVIEW_OUTCOME_HISTORY_CHECKPOINT_ANCHOR"},
+    "scope":{"const":"AUTHORIZE_EXACT_WITNESSED_MODEL_SHADOW_RETENTION_AUDIT_REVIEW_OUTCOME_HISTORY_CHECKPOINT"},
+    "authorityOrigin":{"const":"CALLER_SUPPLIED_UNAUTHENTICATED"},
+    "requiredSignatures":{"type":"integer","minimum":1,"maximum":10},"maxAuthorizationAgeSeconds":{"type":"integer","minimum":1,"maximum":86400},
+    "keys":{"type":"array","minItems":1,"maxItems":10,"items":{"$ref":"#/$defs/key"}},"policyDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{"digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},"time":{"type":"string","format":"date-time","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"},"key":{"type":"object","additionalProperties":false,"required":["keyId","algorithm","publicKeyPem","stewardDigest","stewardKind","scope","enabled"],"properties":{"keyId":{"type":"string","minLength":1,"maxLength":180},"algorithm":{"const":"Ed25519"},"publicKeyPem":{"type":"string","minLength":1,"maxLength":8192},"stewardDigest":{"$ref":"#/$defs/digest"},"stewardKind":{"enum":["human","machine","unknown"]},"scope":{"const":"AUTHORIZE_EXACT_WITNESSED_MODEL_SHADOW_RETENTION_AUDIT_REVIEW_OUTCOME_HISTORY_CHECKPOINT"},"enabled":{"const":true}}}}
+}

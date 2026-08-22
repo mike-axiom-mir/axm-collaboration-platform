@@ -1,0 +1,22 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.model-shadow-history-checkpoint-retention-ledger-manifest/v1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema","version","status","retentionLogId","createdAt","mode","storageMode","truth","manifestDigest"],
+  "properties":{
+    "schema":{"const":"axm.model-shadow-history-checkpoint-retention-ledger-manifest/v1"},
+    "version":{"const":"2.7.0"},
+    "status":{"const":"TEST"},
+    "retentionLogId":{"type":"string","minLength":1,"maxLength":180},
+    "createdAt":{"$ref":"#/$defs/time"},
+    "mode":{"const":"CALLER_OWNED_DISTINCT_LOCAL_CHECKPOINT_RETENTION_UNAUTHENTICATED"},
+    "storageMode":{"const":"LOCAL_EXCLUSIVE_CREATE_FILE_FSYNC_TWO_PHASE_RETENTION_HEAD"},
+    "truth":{"const":{"canonicalSelfDigestedManifest":true,"callerOwnedLocalRetentionRoot":true,"localExclusiveCreateIntended":true,"localFileFsyncIntended":true,"directoryEntryOrHardwareDurabilityProven":false,"externalRetentionProven":false,"protectedMonotonicStateProven":false,"deletionOrRollbackPrevented":false,"hostAuthorizationAuthenticated":false,"actualHumanParticipationProven":false,"automaticInstall":false,"automaticPromotion":false,"automaticMerge":false,"automaticCanon":false,"foundationMutation":false}},
+    "manifestDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs":{
+    "digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+    "time":{"type":"string","pattern":"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"}
+  }
+}

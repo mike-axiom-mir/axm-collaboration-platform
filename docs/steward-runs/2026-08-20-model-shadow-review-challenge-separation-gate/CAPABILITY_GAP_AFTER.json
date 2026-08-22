@@ -1,0 +1,308 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-anchored-witness-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-anchored-witness-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchored-witness-exact-rebuild": [
+          "The stacked v0.5 anchored chain must rebuild exactly before v0.6 compares its verified seat evidence."
+        ]
+      }
+    },
+    {
+      "id": "cross-layer-key-fingerprint-overlap-refusal",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-cross-layer-key-fingerprint-overlap-refusal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-cross-layer-key-fingerprint-overlap-refusal": [
+          "v0.6 refuses any exact Ed25519 public-key fingerprint observed in both the witness and anchor signature seats."
+        ]
+      }
+    },
+    {
+      "id": "cross-layer-declared-principal-overlap-refusal",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-cross-layer-declared-principal-overlap-refusal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-cross-layer-declared-principal-overlap-refusal": [
+          "v0.6 refuses any exact declared actor/steward digest observed in both threshold layers."
+        ]
+      }
+    },
+    {
+      "id": "privacy-bounded-separation-evidence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-cross-layer-set-digest-privacy-boundary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-cross-layer-set-digest-privacy-boundary": [
+          "The separation receipt retains domain-separated set digests and counts; it omits individual fingerprints, principal digests, keys, signatures, key ids, state paths, identity strings, private context, and model output."
+        ]
+      }
+    },
+    {
+      "id": "separation-receipt-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-cross-layer-observable-separation-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-cross-layer-observable-separation-exact-rebuild": [
+          "Receipt content and digest rebuild exactly from one exact v0.5 anchored package, receipt id, and caller verification time."
+        ]
+      }
+    },
+    {
+      "id": "separated-continuity-composition",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-separated-continuity-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separated-continuity-exact-rebuild": [
+          "A valid separation receipt must rebuild before its exact anchored checkpoint can drive continuity comparison."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-separated-comparison",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-separated-continuity-fresh-process"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separated-continuity-fresh-process": [
+          "Fresh Node processes verify the serialized separated package and audit exact, extended, missing, invalid, absent, and identity-drift synthetic ledger states without writing the ledger."
+        ]
+      }
+    },
+    {
+      "id": "relative-rollback-detection-from-separated-receipt",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-separated-rollback-detect-relative-to-witness"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separated-rollback-detect-relative-to-witness": [
+          "A missing challenge is detected relative to the exact separated checkpoint; detection remains distinct from prevention or restoration."
+        ]
+      }
+    },
+    {
+      "id": "same-controller-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-distinct-keys-same-controller-nonindependence-proof"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-distinct-keys-same-controller-nonindependence-proof": [
+          "A single synthetic test process controls all distinct fixture keys and declarations while passing observable separation, proving that non-overlap alone does not establish independent controllers."
+        ]
+      }
+    },
+    {
+      "id": "separation-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-separation-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separation-authority-none": [
+          "Receipts grant no host, custody, identity, human, provider, execution, evaluation, adoption, installation, promotion, merge, Foundation, or CANON authority and do not claim collusion exclusion."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-anchor-pin",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-anchor-host-pin.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-host-pin.actual": [
+          "The anchor and expected digest remain caller-presented and unauthenticated; no Mike- or host-promoted pin was supplied."
+        ]
+      }
+    },
+    {
+      "id": "independently-attested-controller-separation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-separation-key-custody-independence.actual",
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separation-key-custody-independence.actual": [
+          "Distinct public keys can be controlled by one entity; no independent custody attestation or hardware evidence was supplied."
+        ],
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual": [
+          "Distinct caller-declared digests do not authenticate distinct real-world controllers, people, organizations, or devices."
+        ]
+      }
+    },
+    {
+      "id": "actual-external-separation-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-separation-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separation-external-retention.actual": [
+          "The selftest serializes a synthetic package outside the ledger namespace, but no independent store, receiver, or retention authority is proven."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-anchor-monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-anchor-monotonic-state.actual": [
+          "Caller-owned artifacts remain deletable or jointly replaceable; no protected monotonic state is proven."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-separation-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separation-time.external": [
+          "Verification uses caller timestamps; no external trusted time receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "global-single-use",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-global-single-use.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-global-single-use.actual": [
+          "Comparison remains bound to one presented chain and ledger identity and does not establish global challenge uniqueness."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only synthetic keys, declarations, and generated fixtures were used; no real person reviewed a current chain or plan."
+        ]
+      }
+    },
+    {
+      "id": "executed-benefit-evidence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual",
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or shadow experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ],
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

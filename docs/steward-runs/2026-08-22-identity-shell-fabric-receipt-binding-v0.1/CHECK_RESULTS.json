@@ -1,0 +1,80 @@
+{
+  "schema": "axm.identity-shell.receipt-binding-check-results/v1",
+  "status": "TEST",
+  "branch": "codex/identity-shell-fabric-keel-trial-v0.1",
+  "startingCommit": "01a64991f6866869c9f635ab6c4b099c9dbd17b1",
+  "productCommit": "b5937f50c2ba6ab4d718dd2eb1d04d9c125c4aac",
+  "manifestDigest": "sha256:575f667d86b5b81784579f080a07c6e6c581545233f2e9c013fa464e78e85307",
+  "initialCounterevidence": {
+    "arbitraryAcceptanceSchemaAccepted": true,
+    "mismatchedAuthorizationSubjectWithEmptyEvidenceAccepted": true,
+    "primaryBuildReceiptVerifier": "undefined",
+    "primaryLineageReceiptVerifier": "undefined",
+    "independentBuildReceiptVerifier": "undefined",
+    "independentLineageReceiptVerifier": "undefined"
+  },
+  "repairs": [
+    {
+      "finding": "Any well-shaped reference schema could label a continuity event ACCEPTED.",
+      "resolution": "Every accepted continuity event now requires the exact external axm.human-acceptance/v1 schema; the fabric still disclaims human authentication."
+    },
+    {
+      "finding": "An authorization decision could name the wrong proposal event and provide no lineage or continuity evidence.",
+      "resolution": "Authorization now binds the decision, subject event, one exact parent manifest, and non-empty exact-schema continuity evidence; compilation also binds the decision evidence arrays to the lineage proposal."
+    },
+    {
+      "finding": "Build/gap and lineage receipts had no standalone public verification boundary.",
+      "resolution": "Primary and separately implemented compiler-independent receipt verifiers now enforce canonical digest, schema, status, output, lineage, privacy, and inert-truth semantics."
+    },
+    {
+      "finding": "Published receipt schemas did not state all runtime-enforced conditional boundaries.",
+      "resolution": "Build status/output, continuity event, exact acceptance-reference, and human-decision conditions are now explicit and topology-tested."
+    }
+  ],
+  "focused": {
+    "fabricSelftest": {"command": "node shared/identity-shell-fabric/selftest.js", "exit": 0, "assertions": 87, "verdict": "PASS"},
+    "schemaSelftest": {"command": "node shared/identity-shell-fabric/schema-selftest.js", "exit": 0, "assertions": 163, "schemas": 12, "verdict": "PASS"},
+    "manifestAdversarialCorpus": {"command": "node shared/identity-shell-fabric/adversarial-corpus-selftest.js", "exit": 0, "redigestedAttacks": 26, "gatesPerAttack": 4, "verdict": "PASS"},
+    "receiptBoundaryCorpus": {"command": "node shared/identity-shell-fabric/receipt-boundary-selftest.js", "exit": 0, "assertions": 105, "buildAttacks": 13, "lineageAttacks": 13, "verdict": "PASS"},
+    "keelTrial": {"command": "node shared/identity-shell-fabric/examples/keel-workshop-collaborator/trial-selftest.js", "exit": 0, "verdict": "PASS", "manifestDigestUnchanged": true},
+    "freshManifestVerifier": {"command": "node shared/identity-shell-fabric/examples/keel-workshop-collaborator/fresh-process-verifier.js", "exit": 0, "importsCompiler": false, "redigestedAttacksRejected": 3, "verdict": "PASS"},
+    "freshReceiptVerifier": {"command": "node shared/identity-shell-fabric/examples/keel-workshop-collaborator/fresh-process-receipt-verifier.js", "exit": 0, "importsCompiler": false, "redigestedAttacksRejected": 4, "verdict": "PASS"}
+  },
+  "crossProcess": {
+    "receiptBoundaryProcesses": 20,
+    "receiptBoundaryFailures": 0,
+    "freshReceiptVerifierProcesses": 20,
+    "freshReceiptVerifierFailures": 0,
+    "keelTrialProcesses": 20,
+    "keelTrialFailures": 0,
+    "uniqueManifestDigests": 1
+  },
+  "requiredWorkshopChecks": [
+    {"command": "node verify.js", "exit": 0},
+    {"command": "node hub/hub-selftest.js", "exit": 0},
+    {"command": "node hub/route-selftest.js", "exit": 0},
+    {"command": "node hub/graft-selftest.js", "exit": 0},
+    {"command": "node hub/skin-selftest.js", "exit": 0},
+    {"command": "node hub/verify-plus.js", "exit": 0},
+    {"command": "node tests/html-script-syntax-test.js", "exit": 0},
+    {"command": "node tests/tool-forge-package-test.js", "exit": 0},
+    {"command": "node tools/agent-tool-forge/selftest.js", "exit": 0},
+    {"command": "node tools/evidence-desk/selftest.js", "exit": 0}
+  ],
+  "workshopVerification": {
+    "verifyFailures": 0,
+    "verifyWarnings": 41,
+    "verifyPlus": "VERIFIED_WITH_LIMITS",
+    "verifyPlusReceipts": 6,
+    "verifyPlusAtomicClaims": 9
+  },
+  "capabilityRoute": {"overall": "DEGRADED", "requiredRequirementsNotReady": 0, "optionalGaps": 3},
+  "notRun": [
+    "browser-render-click: no UI or visual claim",
+    "live-shell-host-binding: unavailable in v0.1",
+    "authenticated-human-acceptance: unavailable",
+    "cross-runtime-continuity: unavailable",
+    "model-or-connector-execution: prohibited by v0.1",
+    "robotic-actuation: unavailable in v0.1"
+  ]
+}

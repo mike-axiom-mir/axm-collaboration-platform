@@ -1,0 +1,86 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-ledger",
+  "version": "v0.8",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-transition-forward-only-local-append",
+    "model.shadow.review.challenge-transition-exact-local-head-match",
+    "model.shadow.review.challenge-transition-contiguous-local-sequence",
+    "model.shadow.review.challenge-transition-local-digest-chain",
+    "model.shadow.review.challenge-transition-local-stale-head-refusal",
+    "model.shadow.review.challenge-transition-fresh-process-reload",
+    "model.shadow.review.challenge-transition-caller-package-persisted-exact-rebuild",
+    "model.shadow.review.challenge-transition-independent-root-fork-counterexample",
+    "model.shadow.review.challenge-transition-deletion-reopen-counterexample",
+    "model.shadow.review.challenge-transition-global-authority-none",
+    "axm.model-shadow-review-challenge-transition-ledger-manifest/v1",
+    "axm.model-shadow-review-challenge-transition-ledger-entry/v1",
+    "axm.model-shadow-review-challenge-transition-ledger-snapshot/v1"
+  ],
+  "consumes": [
+    "one axm.model-shadow-review-challenge-pairwise-transition/v1 receipt as data",
+    "the exact v0.7 transition rebuild input",
+    "one caller-owned existing state root",
+    "one caller-supplied log id and genesis separated-witness reference",
+    "one exact explicit confirmation phrase"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-review-challenge-transition-ledger-entry/v1",
+      "axm.model-shadow-review-challenge-transition-ledger-snapshot/v1"
+    ],
+    "accepts": ["one exact v0.7 forward-extension package at the exact current local head"]
+  },
+  "boundaries": {
+    "reads": [
+      "<caller-state-root>/model-shadow-review-challenge-transition-ledger/ledger.json",
+      "<caller-state-root>/model-shadow-review-challenge-transition-ledger/entries/<12-digit-sequence>.json"
+    ],
+    "writes": [
+      "exclusive-create and file-fsync immutable ledger.json manifest",
+      "exclusive-create and file-fsync next contiguous 12-digit entry"
+    ],
+    "refuses": [
+      "missing-or-inexact-explicit-confirmation",
+      "invalid-or-tampered-v0.7-transition-package",
+      "exact-replay-as-forward-transition",
+      "pairwise-hold-as-forward-transition",
+      "stale-previous-head-in-one-preserved-local-root",
+      "noncontiguous-or-unexpected-entry-files",
+      "corrupt-manifest-or-entry-as-absent-state",
+      "symlinked-state-root-namespace-entry-directory-manifest-or-entry",
+      "conflicting-log-id-or-genesis-in-one-state-root",
+      "local-sequence-as-global-transition-uniqueness",
+      "one-local-root-as-globally-consistent-log",
+      "independent-caller-roots-as-one-coordinated-state",
+      "caller-owned-files-as-external-retention-or-protected-monotonic-state",
+      "local-files-as-deletion-or-rollback-resistance",
+      "stored-transition-receipt-as-upstream-signature-reverification-after-restart",
+      "explicit-confirmation-as-host-authorization",
+      "caller-log-id-as-authenticated-ledger-authority",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "transition-recording-as-execution-or-adoption-authority",
+      "raw-public-key-or-signature-persistence",
+      "raw-model-output-or-private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "caller-provided local state root",
+    "reload": "validate manifest, contiguous local entries, digest chain, and derived head; exact upstream rebuild additionally requires caller-presented packages",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned; deletion or rollback can reopen a prior head and requires explicit steward review",
+    "installed": false,
+    "promoted": false
+  }
+}
+

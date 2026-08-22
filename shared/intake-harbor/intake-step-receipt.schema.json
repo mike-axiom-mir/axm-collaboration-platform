@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.intake-step-receipt/v1",
+  "type": "object",
+  "required": ["schema", "intakeId", "step", "stepIndex", "state", "observedAt", "verifier", "evidenceRefs", "summary", "authorityDecisionRef", "rollbackPlanRef", "payload", "performedByHarbor", "receiptDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.intake-step-receipt/v1" },
+    "intakeId": { "type": "string" },
+    "step": { "type": "string" },
+    "stepIndex": { "type": "integer", "minimum": 1, "maximum": 15 },
+    "state": { "enum": ["PASS", "FAIL", "HOLD"] },
+    "observedAt": { "type": "string" },
+    "verifier": { "type": "string" },
+    "evidenceRefs": { "type": "array" },
+    "summary": { "type": "string" },
+    "authorityDecisionRef": { "type": ["string", "null"] },
+    "rollbackPlanRef": { "type": ["string", "null"] },
+    "payload": { "type": "object" },
+    "performedByHarbor": { "const": false },
+    "receiptDigest": { "type": "string" }
+  }
+}

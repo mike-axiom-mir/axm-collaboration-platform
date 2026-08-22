@@ -1,0 +1,124 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"model-shadow-history-checkpoint-retention-ledger",
+  "version":"v2.7",
+  "status":"TEST",
+  "merge_gate":"Mike Tobi / AXM",
+  "provides":[
+    "model.shadow.history-checkpoint-retention-ledger.distinct-local-root",
+    "model.shadow.history-checkpoint-retention-ledger.exact-v2.6-origin-before-proposal",
+    "model.shadow.history-checkpoint-retention-ledger.persistent-full-checkpoint-proposal",
+    "model.shadow.history-checkpoint-retention-ledger.exclusive-create-file-fsync",
+    "model.shadow.history-checkpoint-retention-ledger.one-trailing-pending-proposal",
+    "model.shadow.history-checkpoint-retention-ledger.initial-exact-checkpoint-capture",
+    "model.shadow.history-checkpoint-retention-ledger.forward-only-checkpoint-succession",
+    "model.shadow.history-checkpoint-retention-ledger.typed-non-forward-refusal",
+    "model.shadow.history-checkpoint-retention-ledger.exact-proposal-package-settlement",
+    "model.shadow.history-checkpoint-retention-ledger.separate-settlement-confirmation",
+    "model.shadow.history-checkpoint-retention-ledger.settled-head-derived-from-settlements",
+    "model.shadow.history-checkpoint-retention-ledger.latest-persisted-observation-selection",
+    "model.shadow.history-checkpoint-retention-ledger.pending-observation-audit",
+    "model.shadow.history-checkpoint-retention-ledger.settled-observation-audit",
+    "model.shadow.history-checkpoint-retention-ledger.source-rollback-after-local-retention",
+    "model.shadow.history-checkpoint-retention-ledger.source-absence-after-local-retention",
+    "model.shadow.history-checkpoint-retention-ledger.fresh-process-reload-and-audit",
+    "model.shadow.history-checkpoint-retention-ledger.complete-chain-validation",
+    "model.shadow.history-checkpoint-retention-ledger.corruption-and-sequence-fail-closed",
+    "model.shadow.history-checkpoint-retention-ledger.operation-lock-fail-closed",
+    "model.shadow.history-checkpoint-retention-ledger.aggregate-resource-bound",
+    "model.shadow.history-checkpoint-retention-ledger.caller-time-ordering",
+    "model.shadow.history-checkpoint-retention-ledger.no-durable-source-ledger-change",
+    "model.shadow.history-checkpoint-retention-ledger.local-durable-proposal-and-settlement-write",
+    "model.shadow.history-checkpoint-retention-ledger.joint-source-and-retention-replacement-counterexample",
+    "model.shadow.history-checkpoint-retention-ledger.public-artifact-data-minimization",
+    "model.shadow.history-checkpoint-retention-ledger.closed-artifact-schemas",
+    "model.shadow.history-checkpoint-retention-ledger.authority-none",
+    "axm.model-shadow-history-checkpoint-retention-ledger-manifest/v1",
+    "axm.model-shadow-history-checkpoint-retention-ledger-proposal/v1",
+    "axm.model-shadow-history-checkpoint-retention-ledger-settlement/v1",
+    "axm.model-shadow-history-checkpoint-retention-ledger-snapshot/v1",
+    "axm.model-shadow-history-checkpoint-retention-ledger-audit/v1"
+  ],
+  "consumes":[
+    "one existing caller-owned local retention root",
+    "one v2.6 checkpoint plus its complete exact v2.5 origin package as transient proposal input",
+    "one retention proposal id untrusted canonical UTC time and exact proposal confirmation",
+    "one exact original proposal package plus separate settlement id time and confirmation",
+    "one exact current v2.5 presentation or an absent or invalid current namespace for later audit"
+  ],
+  "permissions":[
+    "read and exclusive-create files only beneath the fixed namespace in one explicit caller-owned local retention root",
+    "read one distinct explicit v2.5 source root through unchanged v2.6 and v2.5 verification APIs",
+    "allow unchanged v2.5 verification calls to exclusive-create file-fsync and remove their fixed transient operation lock"
+  ],
+  "handoffs":{
+    "emits":[
+      "axm.model-shadow-history-checkpoint-retention-ledger-proposal/v1",
+      "axm.model-shadow-history-checkpoint-retention-ledger-settlement/v1",
+      "axm.model-shadow-history-checkpoint-retention-ledger-snapshot/v1",
+      "axm.model-shadow-history-checkpoint-retention-ledger-audit/v1"
+    ],
+    "accepts":[
+      "one exact axm.model-shadow-portable-pin-settlement-history-checkpoint/v1 origin package",
+      "one exact stored v2.7 proposal package for settlement",
+      "one exact current v2.5 presentation for present-state audit or zero records for absent or invalid current state"
+    ]
+  },
+  "boundaries":{
+    "reads":[
+      "one explicit retention namespace with fixed manifest proposals settlements and operation-lock paths",
+      "one nonnested source root through unchanged v2.6 checkpoint-origin and audit surfaces"
+    ],
+    "writes":[
+      "exclusive-create and file-fsync one canonical retention manifest when the first valid proposal is admitted",
+      "exclusive-create and file-fsync one full-checkpoint proposal per contiguous sequence",
+      "exclusive-create and file-fsync one matching settlement per contiguous sequence",
+      "exclusive-create file-fsync and remove one fixed transient retention operation lock",
+      "only the unchanged v2.5 fixed transient operation lock under the source root; no durable source-ledger record"
+    ],
+    "refuses":[
+      "write-without-exact-explicit-proposal-or-settlement-confirmation",
+      "missing-file-root-filesystem-root-symbolic-link-or-junction-retention-root",
+      "equal-or-nested-source-and-retention-roots",
+      "caller-selected-namespace-or-record-path",
+      "overwrite-gap-extra-file-noncanonical-json-or-corrupt-digest-chain",
+      "more-than-one-trailing-pending-proposal",
+      "proposal-without-exact-v2.6-checkpoint-origin-rebuild",
+      "post-initial-checkpoint-that-is-replay-rollback-fork-identity-drift-absent-or-invalid",
+      "settlement-without-exact-currently-rebuildable-original-proposal-package",
+      "proposal-time-before-checkpoint-manifest-or-prior-settlement",
+      "settlement-time-before-proposal-or-audit-time-before-latest-persisted-proposal",
+      "artifact-over-20-MiB-input-over-declared-bound-or-ledger-over-256-MiB",
+      "pending-observation-as-settled-retention-authority",
+      "caller-owned-distinct-local-root-as-independent-external-retention",
+      "local-retention-files-as-protected-monotonic-state-or-rollback-prevention",
+      "joint-source-and-retention-root-replacement-as-original-continuity",
+      "file-fsync-as-directory-entry-or-hardware-durability",
+      "equal-bracketing-source-reads-as-atomic-filesystem-snapshot",
+      "byte-identical-durable-source-state-as-proof-that-no-transient-source-lock-write-occurred",
+      "confirmation-string-as-host-actor-human-organization-or-policy-authentication",
+      "local-sequence-as-global-transition-uniqueness-or-globally-consistent-log",
+      "retention-proposal-settlement-or-audit-as-provider-execution-evaluation-benefit-learning-adoption-promotion-merge-or-canon-authority",
+      "raw-origin-package-configured-path-public-key-signature-private-key-model-output-or-private-context-persistence",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle":{
+    "state_owner":"filesystem",
+    "state_owner_detail":"caller owns retention and source roots; the module never copies origin packages or paths into retained artifacts",
+    "reload":"resume",
+    "reload_detail":"fresh process validates exact canonical manifest proposal and settlement chains and derives latest persisted and settled checkpoint references",
+    "disconnect":"not-applicable",
+    "disconnect_detail":"no socket network or provider is opened",
+    "cleanup":"explicit",
+    "cleanup_detail":"deleting or replacing both source and retention roots removes the original comparison boundary",
+    "installed":false,
+    "promoted":false
+  }
+}

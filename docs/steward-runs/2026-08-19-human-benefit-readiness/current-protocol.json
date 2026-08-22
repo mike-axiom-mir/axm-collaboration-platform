@@ -1,0 +1,123 @@
+{
+  "schema": "axm.human-benefit-protocol/v1",
+  "version": "0.1.0",
+  "protocolId": "evidence-source-closure-local-steward-20260819",
+  "generatedAt": "2026-08-19T05:20:00.000Z",
+  "fixtureMode": "LIVE",
+  "claim": {
+    "id": "registered-source-closure-human-benefit",
+    "statement": "The exact source-closure surface helps the participating local AXM steward notice stale evidence sooner and avoid unsupported continuation decisions.",
+    "beneficiary": "HUMAN",
+    "targetScope": "NAMED_LOCAL_STEWARD",
+    "scopeStatement": "Any result applies only to the participating local AXM steward and cannot be generalized to other people."
+  },
+  "conditions": [
+    {
+      "id": "condition-a",
+      "role": "BASELINE",
+      "label": "Condition A",
+      "artifactRef": {
+        "id": "registered-identity-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:93421db8bb139f5fdc09b06c204264ae02c7a8da175912411c2b7e5cc9eb2ed7"
+      }
+    },
+    {
+      "id": "condition-b",
+      "role": "CANDIDATE",
+      "label": "Condition B",
+      "artifactRef": {
+        "id": "exact-closure-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:c428122e73fca43d50b24244b44d6a874d954d7f84484b5aaa65f629d9acc36b"
+      }
+    }
+  ],
+  "trials": [
+    {
+      "id": "review-1",
+      "caseId": "registered-without-later-check-1",
+      "conditionId": "condition-a",
+      "order": 1,
+      "prompt": "Condition A: a source digest was recorded yesterday. No later existence, type, or byte check is shown. A decision today requires the source bytes to still be current. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "review-2",
+      "caseId": "current-closure-1",
+      "conditionId": "condition-b",
+      "order": 2,
+      "prompt": "Condition B: the registered digest and a fresh exact check match; closure state is CURRENT. The decision requires current source bytes. Continue, hold, or mark unsure?",
+      "expectedDecision": "CONTINUE"
+    },
+    {
+      "id": "review-3",
+      "caseId": "changed-closure-1",
+      "conditionId": "condition-b",
+      "order": 3,
+      "prompt": "Condition B: a fresh exact check differs from the registered digest; closure state is CHANGED. The decision requires the registered source bytes. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "review-4",
+      "caseId": "registered-without-later-check-2",
+      "conditionId": "condition-a",
+      "order": 4,
+      "prompt": "Condition A: a report says the source was registered successfully. It gives no later closure state. A downstream acceptance relies on the source still existing unchanged. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "review-5",
+      "caseId": "registered-without-later-check-3",
+      "conditionId": "condition-a",
+      "order": 5,
+      "prompt": "Condition A: the original registration timestamp and digest are visible, but current file type and bytes are not checked. A decision requires current exact bytes. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "review-6",
+      "caseId": "missing-closure-1",
+      "conditionId": "condition-b",
+      "order": 6,
+      "prompt": "Condition B: a fresh closure check cannot find the registered source; closure state is MISSING. A decision relies on that source. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    }
+  ],
+  "fairness": {
+    "orderPolicy": "BALANCED_WITHIN_SESSION",
+    "conditionLabels": "BLINDED_A_B",
+    "learningEffectRisk": "DECLARED",
+    "maximumSameConditionRun": 2
+  },
+  "successRule": {
+    "minimumCompletedSessions": 1,
+    "minimumCandidateAccuracyGain": 0,
+    "maximumCandidateUnsupportedContinueRate": 0,
+    "maximumCandidateMeanTimeRatio": 1,
+    "minimumHelpedFraction": 1,
+    "requireNoHighBurden": true
+  },
+  "consent": {
+    "mode": "VOLUNTARY_OPT_IN",
+    "withdrawalAllowed": true,
+    "completionConfirmationRequired": true,
+    "useScope": "LOCAL_BENEFIT_EVALUATION_ONLY"
+  },
+  "retention": {
+    "mode": "STRUCTURED_NO_FREE_TEXT",
+    "rawIdentity": "FORBIDDEN",
+    "freeText": "FORBIDDEN",
+    "rawRecording": "FORBIDDEN",
+    "network": "DENY",
+    "withdrawalBehavior": "OMIT_PARTICIPANT_AND_OBSERVATIONS"
+  },
+  "authority": {
+    "automaticHumanVerdict": false,
+    "finalHumanJudgmentRequired": true,
+    "sourceAuthenticationExternal": true,
+    "automaticExecution": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "protocolDigest": "sha256:2f121d55aa981eee64430f8791b52f83119cde6e4cb12d2eaf5b004570fc4447"
+}

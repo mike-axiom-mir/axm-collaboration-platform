@@ -1,0 +1,536 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-v1.8-forward-transition",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-pairwise-transition.exact-rebuild": [
+          "Unchanged v1.8 exact transition gate."
+        ]
+      }
+    },
+    {
+      "id": "upstream-v1.4-source-capture",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-continuity.read-only-capture"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-continuity.read-only-capture": [
+          "Unchanged v1.4 read-only capture."
+        ]
+      }
+    },
+    {
+      "id": "upstream-v1.7-currentness-audit",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.currentness-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-separation.currentness-exact-rebuild": [
+          "Unchanged v1.7 currentness audit."
+        ]
+      }
+    },
+    {
+      "id": "upstream-v1.9-stateful-pattern",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.pattern.reference"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-transition-ledger.pattern.reference": [
+          "v1.9 remains unchanged and is used as a stateful reference, not as the v2.0 store."
+        ]
+      }
+    },
+    {
+      "id": "prewrite-matched-proposal",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.prewrite-matched-proposal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.prewrite-matched-proposal": [
+          "Proposal requires exact v1.8 eligibility and a module-captured v1.7 pre-write source match."
+        ]
+      }
+    },
+    {
+      "id": "proposal-does-not-advance",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.proposal-does-not-advance-settled-head"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.proposal-does-not-advance-settled-head": [
+          "Reload derives the settled head without applying a pending proposal."
+        ]
+      }
+    },
+    {
+      "id": "pending-crash-recovery",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.trailing-pending-crash-recovery"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.trailing-pending-crash-recovery": [
+          "Exactly one trailing proposal may remain pending and a fresh process can settle it only with its caller package."
+        ]
+      }
+    },
+    {
+      "id": "postwrite-source-recapture",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.postwrite-source-recapture"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.postwrite-source-recapture": [
+          "Settlement performs a later source capture; it is not atomic with the settlement write."
+        ]
+      }
+    },
+    {
+      "id": "typed-postwrite-drift-hold",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.typed-postwrite-drift-hold"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.typed-postwrite-drift-hold": [
+          "Observed extension, rollback/replacement, absence, invalidity, or identity drift produces a held settlement."
+        ]
+      }
+    },
+    {
+      "id": "settled-only-derived-head",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.settled-only-derived-head"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.settled-only-derived-head": [
+          "Only exact post-write match settlements advance the caller-owned derived head."
+        ]
+      }
+    },
+    {
+      "id": "local-digest-chain-reload",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.local-digest-chain-reload"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.local-digest-chain-reload": [
+          "Reload validates canonical manifest, proposal chain, settlement bindings, chronology, pending bound, and settled-only head."
+        ]
+      }
+    },
+    {
+      "id": "caller-package-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.caller-package-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.caller-package-exact-rebuild": [
+          "Fresh-process exact rebuild requires retained proposal inputs plus prewrite and postwrite evidence."
+        ]
+      }
+    },
+    {
+      "id": "independent-root-and-deletion-counterevidence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.independent-root-and-deletion-counterevidence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.independent-root-and-deletion-counterevidence": [
+          "Tests settle divergent independent roots and reopen sequence one after namespace deletion."
+        ]
+      }
+    },
+    {
+      "id": "public-artifact-minimization",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.public-artifact-data-minimization"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.public-artifact-data-minimization": [
+          "Stored artifacts retain bounded receipts and references, not rebuild inputs, raw snapshots, keys, signatures, labels, or paths."
+        ]
+      }
+    },
+    {
+      "id": "resource-bounds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.resource-bounds"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.resource-bounds": [
+          "Canonical artifacts are bounded to 1 MiB and proposal count to 10,000."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.authority-none": [
+          "Confirmations and local settlement prove no authenticated authority, identity, execution, adoption, promotion, merge, or CANON status."
+        ]
+      }
+    },
+    {
+      "id": "atomic-source-and-file-transaction",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.atomic-source-transaction.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.atomic-source-transaction.actual": [
+          "Neither capture is transactional with its following file write."
+        ]
+      }
+    },
+    {
+      "id": "intermediate-or-reverted-change-exclusion",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.intermediate-change-exclusion.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.intermediate-change-exclusion.actual": [
+          "A transient change can occur and revert between observations."
+        ]
+      }
+    },
+    {
+      "id": "later-source-currentness",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.later-currentness.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.local-possession-checkpoint-two-phase-settlement-ledger.later-currentness.actual": [
+          "The source can change immediately after post-write capture."
+        ]
+      }
+    },
+    {
+      "id": "global-transition-uniqueness",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.global-uniqueness.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.global-uniqueness.actual": [
+          "Independent roots settle divergent candidates."
+        ]
+      }
+    },
+    {
+      "id": "globally-consistent-log",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.global-log-consistency.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.global-log-consistency.actual": [
+          "No globally coordinated log exists."
+        ]
+      }
+    },
+    {
+      "id": "external-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.external-retention.actual": [
+          "No independent retention substrate was supplied."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.monotonic-state.actual": [
+          "No protected monotonic store was supplied."
+        ]
+      }
+    },
+    {
+      "id": "deletion-or-rollback-prevention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.rollback-prevention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.rollback-prevention.actual": [
+          "Deletion reopens sequence one."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.host-authorization.actual": [
+          "Both exact confirmations remain unauthenticated."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-independent-controllers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.controller-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.controller-independence.actual": [
+          "Synthetic tests do not prove independent custody or anti-collusion."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-human-participation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.human-participation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.human-participation.actual": [
+          "No authenticated voluntary human participation receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition.time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition.time.external": [
+          "All timestamps remain caller supplied."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No provider or experiment was invoked."
+        ]
+      }
+    },
+    {
+      "id": "held-out-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.evaluation.actual": [
+          "No held-out evaluation was run."
+        ]
+      }
+    },
+    {
+      "id": "held-out-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No held-out human outcome was observed."
+        ]
+      }
+    },
+    {
+      "id": "held-out-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.learning.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.learning.held-out": [
+          "No held-out learning evidence exists."
+        ]
+      }
+    },
+    {
+      "id": "promotion-merge-canon",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "axm.workshop.canon-decision.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "axm.workshop.canon-decision.actual": [
+          "Mike Tobi remains the merge and CANON gate."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

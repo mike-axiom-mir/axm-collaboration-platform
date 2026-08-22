@@ -1,0 +1,400 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "upstream-v0.8-entry-package-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-caller-package-persisted-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-caller-package-persisted-exact-rebuild": [
+          "v0.9 reuses v0.8 pure builders to exact-rebuild every presented entry and its complete upstream transition package in memory."
+        ]
+      }
+    },
+    {
+      "id": "complete-presentation-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-presentation-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-presentation-exact-rebuild": [
+          "A presentation exact-rebuilds its manifest, every ordered entry, each upstream signature-bearing package, previous-entry references, and derived head."
+        ]
+      }
+    },
+    {
+      "id": "presentation-data-minimization",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-presentation-data-minimization"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-presentation-data-minimization": [
+          "Presentation receipts retain bounded references only; transient caller packages, raw public keys, raw signatures, private context, model output, and machine paths are not embedded."
+        ]
+      }
+    },
+    {
+      "id": "history-exact-replay-classification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-history-exact-replay-classification"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-history-exact-replay-classification": [
+          "Two complete presented histories with identical entry references and counts are classified as exact replay without excluding withheld roots."
+        ]
+      }
+    },
+    {
+      "id": "history-prefix-classification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-history-prefix-classification"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-history-prefix-classification": [
+          "Either complete presented history can be classified as the exact prefix of the other without granting adoption authority or total-order status."
+        ]
+      }
+    },
+    {
+      "id": "history-sibling-fork-detection",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-history-sibling-fork-detection"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-history-sibling-fork-detection": [
+          "Different candidate heads after the exact common prefix produce a typed sibling-fork contradiction at the exact presented sequence."
+        ]
+      }
+    },
+    {
+      "id": "history-entry-id-equivocation-detection",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-history-entry-id-equivocation-detection"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-history-entry-id-equivocation-detection": [
+          "The same local entry id at one presented sequence with different entry digest and candidate head produces typed equivocation."
+        ]
+      }
+    },
+    {
+      "id": "history-alternate-record-detection",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-history-alternate-record-detection"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-history-alternate-record-detection": [
+          "Different exact local entry records leading to the same candidate head produce a distinct typed hold."
+        ]
+      }
+    },
+    {
+      "id": "history-domain-drift-detection",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-history-domain-drift-detection"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-history-domain-drift-detection": [
+          "Different caller log ids or different exact genesis references produce typed domain holds without authenticating either domain."
+        ]
+      }
+    },
+    {
+      "id": "withheld-root-counterexample",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-history-withheld-root-nonexclusion-proof"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-history-withheld-root-nonexclusion-proof": [
+          "A third independently valid history exact-rebuilds but is withheld; its head is absent from the pairwise fork receipt and unpresented histories remain explicitly unexcluded."
+        ]
+      }
+    },
+    {
+      "id": "presentation-resource-bounds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-presentation-resource-bounds"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-presentation-resource-bounds": [
+          "Each presentation is limited to 4096 entries and 16 MiB of canonical UTF-8 input before entry rebuild."
+        ]
+      }
+    },
+    {
+      "id": "reconciliation-receipt-exact-rebuild",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-reconciliation-exact-rebuild"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-reconciliation-exact-rebuild": [
+          "Reconciliation content and digest rebuild deterministically from both complete presentation inputs and receipts plus caller reconciliation id and time."
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-reconciliation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-reconciliation-fresh-process"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-reconciliation-fresh-process": [
+          "A fresh Node process rebuilds both complete serialized presentations and the exact reconciliation receipt."
+        ]
+      }
+    },
+    {
+      "id": "reconciliation-authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "model.shadow.review.challenge-transition-reconciliation-authority-none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-reconciliation-authority-none": [
+          "Receipts grant no authenticated host, log, identity, human, provider, execution, adoption, installation, promotion, merge, Foundation, or CANON authority."
+        ]
+      }
+    },
+    {
+      "id": "authenticated-host-entrypoint",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-host-authorization.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-host-authorization.actual": [
+          "The read-only library call authenticates no host or trusted entrypoint."
+        ]
+      }
+    },
+    {
+      "id": "globally-consistent-transition-log",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-log-global-consistency.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-log-global-consistency.actual": [
+          "Pairwise replay, prefix, and fork classifications do not establish consensus, total ordering, or absence of other histories."
+        ]
+      }
+    },
+    {
+      "id": "compelled-multi-party-disclosure",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-all-roots-disclosure.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-all-roots-disclosure.actual": [
+          "The withheld-third-history counterexample proves the leaf cannot compel disclosure or enumerate all roots."
+        ]
+      }
+    },
+    {
+      "id": "independent-external-retention",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-external-retention.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-external-retention.actual": [
+          "Fresh-process reload uses a caller-retained package; no independent receiver or retention authority is proven."
+        ]
+      }
+    },
+    {
+      "id": "protected-monotonic-state",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-monotonic-state.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-monotonic-state.actual": [
+          "Read-only comparison creates no protected monotonic state and prevents no deletion or rollback."
+        ]
+      }
+    },
+    {
+      "id": "externally-trusted-time",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-transition-time.external"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-transition-time.external": [
+          "Ordering checks use caller timestamps; no external trusted-time receipt was supplied."
+        ]
+      }
+    },
+    {
+      "id": "independent-real-world-controllers",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.review.challenge-separation-controller-identity-independence.actual": [
+          "Synthetic keys and declared digests do not authenticate independent real-world controllers."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-review.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-review.actual": [
+          "Only synthetic fixtures were used; no real person reviewed a reconciliation."
+        ]
+      }
+    },
+    {
+      "id": "provider-execution-and-evaluation",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.shadow-execution.actual",
+        "model.shadow.challenger.evaluation.actual"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.shadow-execution.actual": [
+          "No model provider or experiment was invoked."
+        ],
+        "model.shadow.challenger.evaluation.actual": [
+          "No current baseline/challenger evaluation was executed or supplied."
+        ]
+      }
+    },
+    {
+      "id": "held-out-benefit-and-learning",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "model.shadow.challenger.human-benefit.held-out",
+        "model.shadow.challenger.learning.held-out"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "model.shadow.challenger.human-benefit.held-out": [
+          "No voluntary held-out human outcome was observed."
+        ],
+        "model.shadow.challenger.learning.held-out": [
+          "No held-out learning evaluation was run."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

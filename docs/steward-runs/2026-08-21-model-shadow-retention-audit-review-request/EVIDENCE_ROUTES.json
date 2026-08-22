@@ -1,0 +1,65 @@
+{
+  "schema":"axm.evidence-routes/v1",
+  "routes":[
+    {
+      "claimId":"held-exact-routing",
+      "claim":"A request derives only from one exact persisted held v2.8 observation.",
+      "kind":"deterministic behavior",
+      "risk":"high",
+      "passCondition":"A held observation exact-reloads and builds; non-held, missing, altered, or corrupt observations fail without output.",
+      "primarySurface":"focused runtime assertions over held and non-held persisted fixtures",
+      "counterevidence":"any non-held or non-exact observation produces a request",
+      "secondarySurface":"request exact-rebuild verifier"
+    },
+    {
+      "claimId":"review-artifact-binding",
+      "claim":"The Review Inbox candidate embeds the exact minimized self-digested artifact it asks a reviewer to inspect.",
+      "kind":"deterministic behavior",
+      "risk":"high",
+      "passCondition":"Candidate raw digest equals the artifact self-digest and any artifact, action, summary, or digest tamper fails exact rebuild.",
+      "primarySurface":"focused canonical-digest and tamper assertions",
+      "counterevidence":"candidate digest can diverge from its embedded artifact",
+      "secondarySurface":"closed schema and source inspection"
+    },
+    {
+      "claimId":"review-transport-compatibility",
+      "claim":"The existing ReviewService accepts the candidate and a fresh receiver process reloads the same pending item.",
+      "kind":"transport",
+      "risk":"high",
+      "passCondition":"Initial receiver item and fresh-process reload are byte-equivalent and exactly match the request projection.",
+      "primarySurface":"sender item plus separate-process receiver reload tied by item id and digest",
+      "counterevidence":"receiver rejects, changes, loses, votes, discusses, or reclassifies the item",
+      "secondarySurface":"pending handoff exact-rebuild verifier"
+    },
+    {
+      "claimId":"host-authority-boundary",
+      "claim":"The bridge declares the host-authorized route but performs no submission, vote, review, approval, hold resolution, execution, or promotion.",
+      "kind":"authorization",
+      "risk":"high",
+      "passCondition":"Request and handoff fix all authority fields false; runtime has no ReviewService, API, network, or write call; only the synthetic compatibility harness mutates a temporary receiver root.",
+      "primarySurface":"source and closed-schema inspection plus denied-state assertions",
+      "counterevidence":"runtime imports ReviewService, writes review state, invokes the API, records a vote, resolves the hold, or grants authority",
+      "secondarySurface":"module contract and public-artifact scan"
+    },
+    {
+      "claimId":"data-minimization",
+      "claim":"Public review artifacts omit paths, full v2.7 audits, input packages, votes, notes, identities, model output, and private context.",
+      "kind":"static structure",
+      "risk":"medium",
+      "passCondition":"Key-aware scan finds only references, classifications, bounded decisions, and explicit negative truth fields.",
+      "primarySurface":"runtime artifact inspection and forbidden-key scan",
+      "counterevidence":"any configured path, full upstream audit, package, vote, note, identity, output, or private-context payload appears",
+      "secondarySurface":"closed schemas"
+    },
+    {
+      "claimId":"repository-regression",
+      "claim":"The additive leaf preserves inherited Workshop behavior.",
+      "kind":"deterministic behavior",
+      "risk":"medium",
+      "passCondition":"Focused, inherited, all ten AGENTS, evidence, and detached replay commands exit zero on stable inputs.",
+      "primarySurface":"recorded command-result ledger",
+      "counterevidence":"any nonzero command or task-relevant workspace movement",
+      "secondarySurface":"final shared-workspace snapshot and clean detached replay"
+    }
+  ]
+}

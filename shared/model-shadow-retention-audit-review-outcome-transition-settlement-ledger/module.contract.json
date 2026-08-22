@@ -1,0 +1,112 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"model-shadow-retention-audit-review-outcome-transition-settlement-ledger",
+  "version":"v3.7",
+  "status":"TEST",
+  "provides":[
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.exact-v36-persisted-entry-proposal-gate",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.distinct-nonnested-local-roots",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.equal-bracketing-source-observation-before-proposal",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.proposal-does-not-advance-settled-head",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.one-trailing-pending-proposal",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.separate-settlement-confirmation",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.exact-proposal-package-rebuild",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.source-entry-recheck-before-settlement-write",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.equal-bracketing-source-observation-before-settlement",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.typed-source-uncertainty-hold",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.settled-head-derived-only-from-exact-settlements",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.held-settlement-preserves-head",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.exclusive-canonical-proposal-and-settlement-files",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.successful-return-path-file-fsync-and-local-reload",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.local-operation-lock",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.contiguous-proposal-settlement-reload",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.fresh-process-inspect",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.caller-package-persisted-proposal-and-settlement-rebuild",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.concurrent-operation-contention",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.independent-root-counterexample",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.joint-source-and-settlement-replacement-counterexample",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.corruption-and-sequence-fail-closed",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.aggregate-resource-bounds",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.public-artifact-data-minimization",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.closed-artifact-schemas",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.no-durable-source-ledger-mutation",
+    "model.shadow.retention-audit-review-outcome-transition-settlement-ledger.authority-none",
+    "axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-manifest/v1",
+    "axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-proposal/v1",
+    "axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-settlement/v1",
+    "axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-snapshot/v1"
+  ],
+  "consumes":[
+    "one existing caller-owned settlement root distinct and nonnested from one existing v3.6 source root",
+    "one exact persisted v3.6 entry and its complete caller rebuild package as transient proposal input",
+    "one proposal id untrusted UTC time and exact proposal confirmation",
+    "one exact original proposal package settlement id later untrusted UTC time and separate exact settlement confirmation"
+  ],
+  "permissions":[
+    "read one explicit v3.6 source root through unchanged inspect and verifyPersisted APIs",
+    "exclusive-create and file-fsync canonical records only beneath one fixed namespace in the explicit settlement root",
+    "create and remove one fixed transient operation lock only beneath the settlement namespace"
+  ],
+  "handoffs":{
+    "emits":[
+      "axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-proposal/v1",
+      "axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-settlement/v1",
+      "axm.model-shadow-retention-audit-review-outcome-transition-settlement-ledger-snapshot/v1"
+    ],
+    "accepts":[
+      "one exact current-settled-head v3.6 persisted entry caller package",
+      "one exact trailing pending proposal package for settlement"
+    ]
+  },
+  "boundaries":{
+    "reads":[
+      "only the explicit v3.6 source through unchanged public APIs",
+      "only the fixed manifest proposals settlements and operation-lock paths beneath explicit settlement stateRoot"
+    ],
+    "writes":[
+      "exclusive-create and file-fsync one canonical settlement manifest",
+      "exclusive-create and file-fsync one canonical proposal per contiguous local sequence",
+      "exclusive-create and file-fsync one matching exact-or-held settlement per contiguous local sequence",
+      "exclusive-create and remove one fixed transient operation lock"
+    ],
+    "refuses":[
+      "missing-or-nonexact-proposal-or-settlement-confirmation",
+      "missing-filesystem-root-symbolic-link-junction-or-filesystem-root-state-root",
+      "equal-or-nested-source-and-settlement-roots",
+      "caller-selected-namespace-manifest-proposal-settlement-or-lock-path",
+      "proposal-without-exact-persisted-v36-entry-and-equal-bracketing-source-snapshots",
+      "proposal-entry-that-does-not-consume-the-current-local-settled-head",
+      "proposal-while-one-trailing-proposal-remains-pending",
+      "proposal-as-settled-head-advance",
+      "settlement-without-exact-original-proposal-package",
+      "source-absence-invalidity-change-or-entry-mismatch-as-settled-head-advance",
+      "source-observation-as-atomic-with-following-file-write",
+      "equal-bracketing-source-observations-as-exclusion-of-transient-change-and-reversion",
+      "prewrite-source-match-as-proof-of-postwrite-or-later-currentness",
+      "inspect-as-live-source-recapture-or-upstream-package-rebuild",
+      "local-settled-head-as-global-transition-uniqueness-withheld-branch-exclusion-or-globally-consistent-log",
+      "distinct-caller-owned-local-root-as-independent-external-retention-or-custody",
+      "caller-owned-files-as-protected-monotonic-state-or-rollback-prevention",
+      "joint-source-and-settlement-root-replacement-as-original-continuity",
+      "file-fsync-as-directory-entry-hardware-or-power-loss-durability",
+      "write-or-fsync-failure-as-proof-that-no-inspectable-file-remains",
+      "confirmation-string-as-host-actor-human-organization-or-policy-authentication",
+      "caller-time-as-externally-trusted-time",
+      "proposal-settlement-or-inspect-as-provider-execution-evaluation-benefit-learning-adoption-promotion-merge-or-canon-authority",
+      "source-record-input-v35-transition-v34-package-public-key-signature-private-key-path-review-material-model-output-or-private-context-persistence",
+      "automatic-permission-grant","automatic-training","automatic-install","automatic-promotion","automatic-merge","automatic-canon","foundation-mutation"
+    ]
+  },
+  "lifecycle":{
+    "state_owner":"filesystem",
+    "state_owner_detail":"caller owns both distinct local roots and retains complete upstream caller packages; the settlement adapter stores references and minimized observations only",
+    "reload":"resume",
+    "reload_detail":"fresh process validates canonical manifest contiguous proposals matching settlements digest bindings at most one pending proposal and settled-only head derivation without live source recapture",
+    "disconnect":"not-applicable",
+    "disconnect_detail":"no socket network provider custody service or external trust root is opened",
+    "cleanup":"explicit",
+    "cleanup_detail":"deleting or jointly replacing caller-owned roots can reopen an earlier branch and is outside module prevention authority",
+    "installed":false,"promoted":false
+  },
+  "merge_gate":"Mike Tobi / AXM"
+}

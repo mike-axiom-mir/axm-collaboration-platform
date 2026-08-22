@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.shadow-clone.trial-case-evaluation/v1",
+  "title": "AXM Shadow Clone Independent Paired-Case Evaluation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptDigest", "evaluationId", "assignmentDigest", "caseAlias", "evaluatorAlias", "evaluatedAt", "rubricDigest", "outcomeReceiptDigests", "independence", "scores", "statement"],
+  "properties": {
+    "schema": { "const": "axm.shadow-clone.trial-case-evaluation/v1" },
+    "receiptDigest": { "$ref": "#/$defs/digest" },
+    "evaluationId": { "$ref": "#/$defs/id" },
+    "assignmentDigest": { "$ref": "#/$defs/digest" },
+    "caseAlias": { "$ref": "#/$defs/id" },
+    "evaluatorAlias": { "$ref": "#/$defs/id" },
+    "evaluatedAt": { "type": "string", "format": "date-time" },
+    "rubricDigest": { "$ref": "#/$defs/digest" },
+    "outcomeReceiptDigests": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "$ref": "#/$defs/digest" } },
+    "independence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fromRecipients", "fromLessonSources", "hostAuthenticatedEvaluator"],
+      "properties": {
+        "fromRecipients": { "const": true },
+        "fromLessonSources": { "const": true },
+        "hostAuthenticatedEvaluator": { "const": true }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline", "learningRoute"],
+      "properties": {
+        "baseline": { "$ref": "#/$defs/scores" },
+        "learningRoute": { "$ref": "#/$defs/scores" }
+      }
+    },
+    "statement": { "type": "string", "minLength": 1, "maxLength": 1200 }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primaryValue", "secondaryReusableValue", "overhead"],
+      "properties": {
+        "primaryValue": { "$ref": "#/$defs/score" },
+        "secondaryReusableValue": { "$ref": "#/$defs/score" },
+        "overhead": { "$ref": "#/$defs/score" }
+      }
+    }
+  }
+}

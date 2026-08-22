@@ -1,0 +1,59 @@
+{
+  "capabilities": [
+    {
+      "id": "review.retirement.json.authoritative-path-atomic-visibility",
+      "status": "available",
+      "constraints": ["cooperating processes on one host", "one retirement JSON artifact at a time", "same-filesystem hard-link semantics required"]
+    },
+    {
+      "id": "review.retirement.json.exclusive-no-overwrite-publication",
+      "status": "available",
+      "constraints": ["hard-link publication returns EEXIST rather than replacing existing authoritative bytes"]
+    },
+    {
+      "id": "review.retirement.json.prepublication-crash-retryable",
+      "status": "available",
+      "constraints": ["authoritative target remains absent", "residual complete stage is non-authoritative and not reclaimed automatically"]
+    },
+    {
+      "id": "review.retirement.json.postpublication-crash-observable",
+      "status": "available",
+      "constraints": ["authoritative target contains complete schema-valid bytes", "residual stage may remain visible"]
+    },
+    {
+      "id": "review.retirement.json.intent-decision-result-coverage",
+      "status": "available",
+      "constraints": ["owner-evidence quarantine still uses a separate rename checkpoint"]
+    },
+    {
+      "id": "review.retirement.json.real-process-crash-evidence",
+      "status": "available",
+      "constraints": ["six child-process exits exercise pre-link and post-link boundaries for intent, decision, and result"]
+    },
+    {
+      "id": "review.retirement.json.closed-local-publication-contract",
+      "status": "available",
+      "constraints": ["bounded read-only host-local publication status", "no API or browser route", "TEST status and zero authority"]
+    },
+    {
+      "id": "storage.power-loss-durability.proven",
+      "status": "unavailable",
+      "constraints": ["no power interruption test", "directory-entry durability is not asserted"]
+    },
+    {
+      "id": "storage.cross-file.atomicity",
+      "status": "unavailable",
+      "constraints": ["intent, decision, owner quarantine, and result remain independent checkpoints"]
+    },
+    {
+      "id": "review.retirement.json.stale-stage-reclamation",
+      "status": "unavailable",
+      "constraints": ["status reports residual stages but performs no deletion, age inference, or reclamation"]
+    },
+    {
+      "id": "review.retirement.json.atomic-publication-without-hard-links",
+      "status": "unavailable",
+      "constraints": ["same-filesystem hard-link support is required and no fallback is claimed"]
+    }
+  ]
+}

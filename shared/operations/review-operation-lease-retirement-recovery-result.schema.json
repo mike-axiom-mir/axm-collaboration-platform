@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-recovery-result/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "state", "retirementId", "action", "ownerDigest", "recordedAt", "reason", "retirementResult", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-recovery-result/v1" },
+    "status": { "const": "TEST" },
+    "state": { "enum": ["RECOVERED", "ALREADY_COMPLETE"] },
+    "retirementId": { "type": "string", "format": "uuid" },
+    "action": { "enum": ["RESUME_RETIREMENT", "FINALIZE_RESULT"] },
+    "ownerDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "reason": { "type": "string", "minLength": 20, "maxLength": 500 },
+    "retirementResult": { "$ref": "review-operation-lease-retirement-result.schema.json" },
+    "truth": { "$ref": "review-operation-lease-retirement-recovery-status.schema.json#/$defs/truth" }
+  }
+}

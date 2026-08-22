@@ -1,0 +1,109 @@
+{
+  "capabilities": [
+    {
+      "id": "model.shadow.review.challenge-replay-refusal-while-state-preserved",
+      "status": "available",
+      "constraints": ["The stacked v0.2 ledger refuses same-root replay while its caller-owned namespace remains present and valid."]
+    },
+    {
+      "id": "model.shadow.review.challenge-ledger-read-only-snapshot",
+      "status": "available",
+      "constraints": ["The observer reads only the fixed manifest and challenge-entry paths and emits no machine state-root path."]
+    },
+    {
+      "id": "model.shadow.review.challenge-ledger-strict-entry-validation",
+      "status": "available",
+      "constraints": ["Manifest, namespace inventory, entry filenames, entry receipts, ledger identity, and strict truth boundaries are validated; invalid state is never treated as unused."]
+    },
+    {
+      "id": "model.shadow.review.challenge-ledger-snapshot-exact-rebuild",
+      "status": "available",
+      "constraints": ["Snapshot content and digest rebuild exactly; observer origin and caller time remain unauthenticated."]
+    },
+    {
+      "id": "model.shadow.review.challenge-caller-checkpoint",
+      "status": "available",
+      "constraints": ["A privacy-bounded self-digested checkpoint retains ledger identity plus sorted challenge and consumption-receipt digests for later comparison."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-exact-rebuild",
+      "status": "available",
+      "constraints": ["Checkpoint summaries, canonical ordering, strict truth fields, and digest are validated without authenticating authority."]
+    },
+    {
+      "id": "model.shadow.review.challenge-fresh-process-continuity-compare",
+      "status": "available",
+      "constraints": ["Fresh Node processes compare the caller-retained checkpoint with exact, extended, missing, replaced, invalid, deleted, and identity-drift states in synthetic temporary roots."]
+    },
+    {
+      "id": "model.shadow.review.challenge-rollback-detect-relative-to-presented-checkpoint",
+      "status": "available",
+      "constraints": ["Missing entries and whole-namespace absence are detected only relative to the exact checkpoint the caller presents."]
+    },
+    {
+      "id": "model.shadow.review.challenge-replacement-detect-relative-to-presented-checkpoint",
+      "status": "available",
+      "constraints": ["A valid replacement receipt for the same challenge digest is detected by its changed consumption-receipt digest."]
+    },
+    {
+      "id": "model.shadow.review.challenge-ledger-identity-drift-hold",
+      "status": "available",
+      "constraints": ["A different valid ledger manifest identity or invalid current state produces an explicit hold with no recovery action."]
+    },
+    {
+      "id": "model.shadow.review.challenge-continuity-authority-none",
+      "status": "available",
+      "constraints": ["Continuity observations grant no host, human, provider, execution, evaluation, adoption, promotion, merge, Foundation, or CANON authority."]
+    },
+    {
+      "id": "model.shadow.review.challenge-continuity-exact-rebuild",
+      "status": "available",
+      "constraints": ["The continuity audit rebuilds from the exact prior checkpoint, current snapshot, audit id, and caller time."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-external-retention.actual",
+      "status": "unknown",
+      "constraints": ["The selftest stores a synthetic checkpoint outside the ledger namespace, but no independently operated store or retention authority is proven."]
+    },
+    {
+      "id": "model.shadow.review.challenge-checkpoint-authority.actual",
+      "status": "unknown",
+      "constraints": ["A self-digest is not an authenticated signature or host trust anchor."]
+    },
+    {
+      "id": "model.shadow.review.challenge-deletion-rollback-resistance.actual",
+      "status": "unknown",
+      "constraints": ["The leaf detects presented contradictions but does not prevent deletion, rollback, checkpoint withholding, or joint ledger/checkpoint alteration."]
+    },
+    {
+      "id": "model.shadow.review.challenge-global-single-use.actual",
+      "status": "unknown",
+      "constraints": ["Comparison is bound to one presented ledger identity and does not establish global challenge uniqueness."]
+    },
+    {
+      "id": "model.shadow.review.host-trust-anchor.actual",
+      "status": "unknown",
+      "constraints": ["No Mike- or host-provisioned reviewer trust root or independently authenticated identity boundary was supplied."]
+    },
+    {
+      "id": "model.shadow.challenger.human-review.actual",
+      "status": "unknown",
+      "constraints": ["Only synthetic approvals and generated keys were used; no real person reviewed a current plan."]
+    },
+    {
+      "id": "model.shadow.challenger.shadow-execution.actual",
+      "status": "unknown",
+      "constraints": ["No model provider or shadow experiment was invoked."]
+    },
+    {
+      "id": "model.shadow.challenger.evaluation.actual",
+      "status": "unknown",
+      "constraints": ["No current baseline/challenger evaluation was executed or supplied."]
+    },
+    {
+      "id": "model.shadow.challenger.human-benefit.held-out",
+      "status": "unknown",
+      "constraints": ["No voluntary held-out human outcome was observed."]
+    }
+  ]
+}

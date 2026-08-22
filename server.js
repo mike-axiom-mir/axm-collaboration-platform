@@ -27,6 +27,8 @@ const SharedProfileProvider = require("./shared/profile/axm-profile-provider");
 const ExplorationGarden = require("./shared/exploration/axm-exploration-core");
 const GrowthMetrics = require("./shared/growth/axm-growth-metrics");
 const GrowthWorkerRunner = require("./shared/growth/growth-worker-runner");
+const WorkshopObservatory = require("./shared/growth/axm-workshop-observatory");
+const WorkshopObservatoryRunner = require("./shared/growth/observatory-worker-runner");
 const SpecialistLibrary = require("./shared/specialists/axm-specialist-library");
 const SpecialistRouter = require("./shared/specialists/specialist-router");
 const PhysicsCore = require("./shared/physics/axm-physics-core");
@@ -145,6 +147,12 @@ const GROWTH_SCAN_CACHE_FILE = path.join(
   GROWTH_STATE_DIR,
   "text-scan-cache.json",
 );
+const OBSERVATORY_STATE_DIR = path.join(STATE_ROOT, "workshop-observatory");
+const OBSERVATORY_CACHE_FILE = path.join(OBSERVATORY_STATE_DIR, "latest.json");
+const OBSERVATORY_MILESTONES_FILE = path.join(
+  OBSERVATORY_STATE_DIR,
+  "milestones.json",
+);
 const SPECIALIST_STATE_DIR = path.join(STATE_ROOT, "specialist-library");
 const SPECIALIST_STATE_FILE = path.join(SPECIALIST_STATE_DIR, "library.json");
 const BODY_PULSE_STATE_DIR = path.join(STATE_ROOT, "body-pulse");
@@ -234,6 +242,23 @@ const MIRROR_VISION_INBOX_FILE = path.join(
   "perception-inbox",
   "vision-observations.jsonl",
 );
+const WORKSHOP_OBSERVATORY_RUNNER = WorkshopObservatoryRunner.create({
+  root: ROOT,
+  cacheFile: OBSERVATORY_CACHE_FILE,
+  verificationReceiptFile: path.join(
+    STATE_ROOT,
+    "tool-readiness",
+    "latest-selftests.json",
+  ),
+  workerFile: path.join(
+    ROOT,
+    "shared",
+    "growth",
+    "observatory-scan-worker.cjs",
+  ),
+  timeoutMs: 120000,
+  staleAfterMs: 5 * 60 * 1000,
+});
 let MIRROR_RUNTIME = null;
 let VISION_BUSY = false;
 let VISION_STATUS = {
@@ -494,6 +519,23 @@ async function scanGrowthBodies() {
   const result = await GROWTH_SCAN_RUNNER.scanBodies();
   GROWTH_SCAN_STATUS = result.status;
   return result.metrics;
+}
+
+function loadObservatoryMilestones() {
+  try {
+    return WorkshopObservatory.milestoneState(
+      JSON.parse(fs.readFileSync(OBSERVATORY_MILESTONES_FILE, "utf8")),
+    );
+  } catch (_) {
+    return WorkshopObservatory.milestoneState();
+  }
+}
+
+function saveObservatoryMilestones(value) {
+  OperationsUtils.atomicJson(
+    OBSERVATORY_MILESTONES_FILE,
+    WorkshopObservatory.milestoneState(value),
+  );
 }
 
 function localDateKey(date) {
@@ -3581,6 +3623,87 @@ const server = http.createServer((req, res) => {
       }
     });
     return;
+  }
+  if (url === "/api/workshop-observatory" && req.method === "GET") {
+    const current = WORKSHOP_OBSERVATORY_RUNNER.read();
+    if (!current.ready || current.freshness.stale) {
+      void WORKSHOP_OBSERVATORY_RUNNER.refresh().catch((error) => {
+        slog(
+          `Workshop Observatory refresh failed · ${String(error.message || error).slice(0, 160)}`,
+        );
+      });
+    }
+    return send(res, 200, {
+      ok: true,
+      ready: current.ready,
+      observatory: current.observatory,
+      freshness: current.freshness,
+      scanStatus: current.scanStatus,
+      error: current.error,
+      milestones: loadObservatoryMilestones().milestones,
+      truth: {
+        measuringDoesNotClaimCompletion: true,
+        milestonesAreHumanRecorded: true,
+        canonChanged: false,
+      },
+    });
+  }
+  if (url === "/api/workshop-observatory/refresh" && req.method === "POST") {
+    if (req.headers["x-axm-observatory"] !== "explicit-local-refresh")
+      return send(res, 403, {
+        ok: false,
+        error: "explicit local Observatory refresh required",
+      });
+    void WORKSHOP_OBSERVATORY_RUNNER.refresh().catch((error) => {
+      slog(
+        `Explicit Workshop Observatory refresh failed · ${String(error.message || error).slice(0, 160)}`,
+      );
+    });
+    return send(res, 202, {
+      ok: true,
+      accepted: true,
+      state: "MEASURING",
+      automaticPromotion: false,
+    });
+  }
+  if (url === "/api/workshop-observatory/milestones" && req.method === "POST") {
+    if (req.headers["x-axm-observatory"] !== "explicit-local-milestone")
+      return send(res, 403, {
+        ok: false,
+        error: "explicit local milestone intent required",
+      });
+    return readJsonBody(req, 8192, (error, input) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        const current = WORKSHOP_OBSERVATORY_RUNNER.read();
+        if (!current.ready || !current.observatory)
+          return send(res, 409, {
+            ok: false,
+            error: "measure the Workshop Observatory before recording a milestone",
+          });
+        const result = WorkshopObservatory.recordMilestone(
+          loadObservatoryMilestones(),
+          current.observatory,
+          {
+            label: input.label,
+            note: input.note,
+            actor: input.actor || "local-human",
+          },
+        );
+        if (!result.duplicate) saveObservatoryMilestones(result.state);
+        return send(res, 200, {
+          ok: true,
+          duplicate: result.duplicate,
+          milestone: result.milestone,
+          milestones: result.state.milestones,
+        });
+      } catch (milestoneError) {
+        return send(res, 400, {
+          ok: false,
+          error: String(milestoneError.message || milestoneError).slice(0, 500),
+        });
+      }
+    });
   }
   if (url === "/api/workshop-growth" && req.method === "GET") {
     void (async () => {

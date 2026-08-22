@@ -1,0 +1,71 @@
+{
+  "schema": "capability-inventory/v1",
+  "capabilities": [
+    {
+      "id": "code.fabric.plan.verify",
+      "status": "available",
+      "source": "code-capability-fabric-v2.js",
+      "constraints": ["pure deterministic rebuild", "authority NONE", "no provider execution"]
+    },
+    {
+      "id": "code.fabric.observer-key.bind",
+      "status": "available",
+      "source": "code-capability-readiness-v1.js",
+      "constraints": ["Ed25519 public key only", "no private-key storage", "no trust-key promotion"]
+    },
+    {
+      "id": "code.fabric.observation-signature.verify",
+      "status": "available",
+      "source": "code-capability-readiness-v1.js",
+      "constraints": ["exact canonical payload", "time bounded", "synthetic fixture tested"]
+    },
+    {
+      "id": "code.fabric.assurance-record.verify",
+      "status": "available",
+      "source": "code-capability-readiness-v1.js",
+      "constraints": ["record integrity and scope only", "evidence artifact bytes remain opaque"]
+    },
+    {
+      "id": "code.fabric.readiness-subject.bind",
+      "status": "available",
+      "source": "code-capability-readiness-v1.js",
+      "constraints": ["non-circular digest subject", "does not bind executed output because none exists"]
+    },
+    {
+      "id": "code.fabric.authorization-required.emit",
+      "status": "available",
+      "source": "code-capability-readiness-v1.js",
+      "constraints": ["authority NONE", "Mike remains decision gate", "not execution readiness proof"]
+    },
+    {
+      "id": "code.fabric.sandbox-executor.repaired",
+      "status": "unavailable",
+      "constraints": ["supplied executors remain data", "future disposable-sandbox execution is not authorized"]
+    },
+    {
+      "id": "code.fabric.human-authorization.consume",
+      "status": "unavailable",
+      "constraints": ["no software authorization consumer was added", "Mike remains external authority"]
+    },
+    {
+      "id": "code.fabric.resource-enforcement.observe",
+      "status": "unavailable",
+      "constraints": ["no provider or executor ran", "assurance record acceptance is not live measurement"]
+    },
+    {
+      "id": "code.fabric.output-lineage.prove",
+      "status": "unavailable",
+      "constraints": ["no output was produced or written"]
+    },
+    {
+      "id": "code.fabric.private-evidence-retention.enforce",
+      "status": "unavailable",
+      "constraints": ["planner retains only opaque references", "future executor retention enforcement remains missing"]
+    },
+    {
+      "id": "code.fabric.generated-source-rights.decide",
+      "status": "unknown",
+      "constraints": ["Mike decision intentionally deferred", "default research-only and direct-reuse hold"]
+    }
+  ]
+}

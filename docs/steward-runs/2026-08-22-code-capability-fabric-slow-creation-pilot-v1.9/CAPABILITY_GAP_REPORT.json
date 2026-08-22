@@ -1,0 +1,49 @@
+{
+  "schema": "axm.capability-gap-transition/v1",
+  "requirementsSource": "SCOUT_REQUIREMENTS.json",
+  "beforeInventory": "SCOUT_INVENTORY_BEFORE.json",
+  "afterInventory": "SCOUT_INVENTORY_AFTER.json",
+  "before": {
+    "comparatorOverall": "BLOCKED",
+    "requiredSlowCreationRung": "BLOCKED",
+    "missing": [
+      "creation.inert-candidate.emit",
+      "creation.candidate.readback.verify",
+      "creation.receipt.strict-normalize",
+      "authority.creation.ceiling",
+      "creation.failure.cleanup",
+      "creation.resource.bytes.enforce"
+    ]
+  },
+  "after": {
+    "comparatorOverall": "READY",
+    "missionOverall": "DEGRADED",
+    "requiredSlowCreationRung": "READY",
+    "available": [
+      "creation.inert-candidate.emit",
+      "creation.candidate.readback.verify",
+      "creation.nursery.inspect",
+      "creation.receipt.strict-normalize",
+      "consent.scope.bind",
+      "authority.creation.ceiling",
+      "creation.failure.cleanup",
+      "creation.resource.bytes.enforce"
+    ],
+    "missingConsequentialCapabilities": [
+      "consent.human-decision.authenticate",
+      "consent.declaration.replay-prevent",
+      "consent.revocation.observe-live",
+      "consent.trusted-clock.observe",
+      "machine-host.fabric-create.fixed-action",
+      "creation.semantic-candidate.generate",
+      "creation.runtime-quality.verify",
+      "learning.admission.decide"
+    ]
+  },
+  "gapTypes": {
+    "closed": ["CONTRACT", "HAND", "EVIDENCE"],
+    "open": ["AUTHORITY", "HAND", "SKILL", "SUBSTRATE", "EVIDENCE"]
+  },
+  "cheapestHonestRouteUsed": "Compose the existing grounded-consent planner and Detached Candidate Nursery around one fixed emitter. Grant no runtime, network, source-read, installation, promotion, or learning authority.",
+  "nextUnknownTest": "Add a non-replayable authenticated decision record with trusted time and live revocation before considering a fixed Machine Host action. Semantic generation and runtime-quality proof remain later, separately authorized rungs."
+}

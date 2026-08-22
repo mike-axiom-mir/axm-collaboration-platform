@@ -1,0 +1,70 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-review-challenge-transition-gate",
+  "version": "v0.7",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.review.challenge-separated-witness-exact-rebuild",
+    "model.shadow.review.challenge-pairwise-exact-replay-classification",
+    "model.shadow.review.challenge-pairwise-forward-extension-classification",
+    "model.shadow.review.challenge-pairwise-anchor-identity-drift-detection",
+    "model.shadow.review.challenge-pairwise-anchor-epoch-rollback-detection",
+    "model.shadow.review.challenge-pairwise-same-epoch-anchor-equivocation-detection",
+    "model.shadow.review.challenge-pairwise-checkpoint-equivocation-detection",
+    "model.shadow.review.challenge-pairwise-entry-fork-detection",
+    "model.shadow.review.challenge-withheld-fork-nonexclusion-proof",
+    "model.shadow.review.challenge-pairwise-transition-exact-rebuild",
+    "model.shadow.review.challenge-transition-authority-none",
+    "axm.model-shadow-review-challenge-pairwise-transition/v1"
+  ],
+  "consumes": [
+    "two axm.model-shadow-review-challenge-separated-witness/v1 receipts as data",
+    "exact rebuild inputs for both separated chains",
+    "canonical checkpoint entries and anchor references from both chains",
+    "strict deterministic canonical JSON"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.model-shadow-review-challenge-pairwise-transition/v1"],
+    "accepts": ["one exact previous separated chain", "one exact candidate separated chain"]
+  },
+  "boundaries": {
+    "reads": [],
+    "writes": [],
+    "refuses": [
+      "invalid-previous-or-candidate-separated-chain",
+      "pairwise-comparison-as-global-fork-exclusion",
+      "pairwise-comparison-as-observation-of-withheld-branches",
+      "pairwise-extension-as-globally-unique-transition",
+      "self-declared-anchor-epoch-as-protected-monotonic-state",
+      "caller-time-as-trusted-time",
+      "presented-chain-as-proven-external-retention",
+      "pairwise-hold-as-deletion-or-rollback-prevention",
+      "observable-signer-separation-as-controller-independence",
+      "observable-signer-separation-as-collusion-exclusion",
+      "caller-presented-anchor-as-authenticated-host-trust-root",
+      "library-call-as-host-authorized-trusted-entry-point",
+      "test-leaf-as-installed-or-promoted",
+      "transition-receipt-as-execution-authority",
+      "transition-receipt-as-adoption-authority",
+      "raw-model-output-ingestion",
+      "private-context-ingestion",
+      "automatic-write",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; caller retains both separated chains and the pairwise receipt",
+    "reload": "exact-rebuild both separated chains and the pairwise receipt in a fresh process",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned",
+    "installed": false,
+    "promoted": false
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-review-challenge-transition-receiver-acknowledgement-witness/v1",
+  "title": "Model Shadow declared receiver acknowledgement witness",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "witnessId", "verifiedAt", "status", "assessmentRef",
+    "rosterRef", "receiverPolicyRef", "acknowledgementEvidence", "decision",
+    "state", "nextGate", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-review-challenge-transition-receiver-acknowledgement-witness/v1"},
+    "version": {"const": "1.1.0"},
+    "witnessId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "verifiedAt": {"type": "string", "format": "date-time", "maxLength": 64},
+    "status": {"const": "TEST"},
+    "assessmentRef": {"$ref": "#/$defs/assessmentReference"},
+    "rosterRef": {"$ref": "#/$defs/rosterReference"},
+    "receiverPolicyRef": {"$ref": "#/$defs/policyReference"},
+    "acknowledgementEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "requiredAcknowledgements", "enabledReceiverCount", "verifiedAcknowledgements",
+        "allEnabledDeclaredReceiversAcknowledged", "acknowledgements", "missingReceiverIdDigests"
+      ],
+      "properties": {
+        "requiredAcknowledgements": {"type": "integer", "minimum": 2, "maximum": 10},
+        "enabledReceiverCount": {"type": "integer", "minimum": 2, "maximum": 10},
+        "verifiedAcknowledgements": {"type": "integer", "minimum": 0, "maximum": 10},
+        "allEnabledDeclaredReceiversAcknowledged": {"type": "boolean"},
+        "acknowledgements": {
+          "type": "array", "maxItems": 10,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": [
+              "acknowledgementIdDigest", "acknowledgementPackageDigest", "signedPayloadDigest",
+              "receiverIdDigest", "keyFingerprint", "acknowledgedAt"
+            ],
+            "properties": {
+              "acknowledgementIdDigest": {"$ref": "#/$defs/digest"},
+              "acknowledgementPackageDigest": {"$ref": "#/$defs/digest"},
+              "signedPayloadDigest": {"$ref": "#/$defs/digest"},
+              "receiverIdDigest": {"$ref": "#/$defs/digest"},
+              "keyFingerprint": {"$ref": "#/$defs/digest"},
+              "acknowledgedAt": {"type": "string", "format": "date-time", "maxLength": 64}
+            }
+          }
+        },
+        "missingReceiverIdDigests": {
+          "type": "array", "maxItems": 10, "uniqueItems": true,
+          "items": {"$ref": "#/$defs/digest"}
+        }
+      }
+    },
+    "decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["classification", "thresholdStatus", "reviewRequired", "bestAction", "autonomousActionCount"],
+      "properties": {
+        "classification": {"enum": ["DECLARED_RECEIVER_ACKNOWLEDGEMENT_THRESHOLD_MET", "HOLD_DECLARED_RECEIVER_ACKNOWLEDGEMENT_THRESHOLD_INCOMPLETE"]},
+        "thresholdStatus": {"enum": ["MET", "INCOMPLETE"]},
+        "reviewRequired": {"type": "boolean"},
+        "bestAction": {"type": "string", "minLength": 1, "maxLength": 180},
+        "autonomousActionCount": {"const": 0}
+      }
+    },
+    "state": {"const": "DECLARED_RECEIVER_KEY_ACKNOWLEDGEMENTS_VERIFIED_EXTERNAL_RETENTION_NOT_PROVEN"},
+    "nextGate": {"const": "INDEPENDENTLY_OPERATED_RECEIVER_TRANSPORT_AND_DURABLE_RETENTION_RECEIPTS_OR_PROTECTED_MONOTONIC_STORE"},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "assessmentVerifiedByExactRebuild", "receiverPolicyVerifiedByExactRebuild",
+        "everyPresentedAcknowledgementSignatureCryptographicallyValid",
+        "distinctPresentedReceiverLabelsVerified", "distinctPresentedReceiverKeysVerified",
+        "acknowledgementThresholdMet", "declaredReceiverAcknowledgementStatementsObserved",
+        "allEnabledDeclaredReceiversAcknowledged", "callerSuppliedReceiverPolicy",
+        "receiverPolicyAuthorityAuthenticated", "receiverIdentitiesAuthenticated",
+        "signingKeyPossessionEvidenceObserved", "realWorldReceiverIndependenceProven",
+        "actualTransportDeliveryProven", "receiverReadOrAppliedAssessmentProven",
+        "receiverPersistedAssessmentBytesProven", "independentExternalRetentionProven",
+        "retentionDurationProven", "protectedMonotonicStateProven",
+        "deletionOrRollbackPrevented", "hostAuthorizationAuthenticated",
+        "witnessTimeExternallyTrusted", "actualHumanParticipationProven",
+        "rawPublicKeyEmbedded", "rawSignatureEmbedded", "privateKeyIngested",
+        "rawModelOutputEmbedded", "privateContextEmbedded", "experimentExecuted",
+        "evaluationPerformed", "executionAuthorized", "adoptionAuthorized",
+        "humanBenefitProven", "broadLearningClaimed", "automaticWrite",
+        "automaticPermissionGrant", "automaticInstall", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "assessmentVerifiedByExactRebuild": {"const": true},
+        "receiverPolicyVerifiedByExactRebuild": {"const": true},
+        "everyPresentedAcknowledgementSignatureCryptographicallyValid": {"const": true},
+        "distinctPresentedReceiverLabelsVerified": {"const": true},
+        "distinctPresentedReceiverKeysVerified": {"const": true},
+        "acknowledgementThresholdMet": {"type": "boolean"},
+        "declaredReceiverAcknowledgementStatementsObserved": {"type": "boolean"},
+        "allEnabledDeclaredReceiversAcknowledged": {"type": "boolean"},
+        "callerSuppliedReceiverPolicy": {"const": true},
+        "receiverPolicyAuthorityAuthenticated": {"const": false},
+        "receiverIdentitiesAuthenticated": {"const": false},
+        "signingKeyPossessionEvidenceObserved": {"type": "boolean"},
+        "realWorldReceiverIndependenceProven": {"const": false},
+        "actualTransportDeliveryProven": {"const": false},
+        "receiverReadOrAppliedAssessmentProven": {"const": false},
+        "receiverPersistedAssessmentBytesProven": {"const": false},
+        "independentExternalRetentionProven": {"const": false},
+        "retentionDurationProven": {"const": false},
+        "protectedMonotonicStateProven": {"const": false},
+        "deletionOrRollbackPrevented": {"const": false},
+        "hostAuthorizationAuthenticated": {"const": false},
+        "witnessTimeExternallyTrusted": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "rawPublicKeyEmbedded": {"const": false},
+        "rawSignatureEmbedded": {"const": false},
+        "privateKeyIngested": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "assessmentReference": {
+      "allOf": [
+        {"$ref": "#/$defs/reference"},
+        {"properties": {"schema": {"const": "axm.model-shadow-review-challenge-transition-declared-disclosure/v1"}}}
+      ]
+    },
+    "rosterReference": {
+      "allOf": [
+        {"$ref": "#/$defs/reference"},
+        {"properties": {"schema": {"const": "axm.model-shadow-review-challenge-transition-disclosure-roster/v1"}}}
+      ]
+    },
+    "policyReference": {
+      "allOf": [
+        {"$ref": "#/$defs/reference"},
+        {"properties": {"schema": {"const": "axm.model-shadow-review-challenge-transition-receiver-policy/v1"}}}
+      ]
+    }
+  }
+}
