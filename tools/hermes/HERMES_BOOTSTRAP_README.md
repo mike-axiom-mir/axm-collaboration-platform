@@ -1,27 +1,23 @@
-# AXM Hermes Bootstrap / Runtime Launcher
+# AXM Hermes Bootstrap / Runtime Launcher v0.4
 
-Status: TEST / review required.
+Status: TEST / local-intake candidate.
 
-This launcher keeps Hermes external while giving AXM a reproducible source pin and a local policy boundary.
+The launcher keeps Hermes external while AXM owns source verification, local policy, credential filtering, run evidence, and repair.
 
 ## Reviewed source
 
-`hermes-source.lock.json` records the reviewed upstream repository and one full immutable commit SHA. `install` does not trust `main`, a floating tag, or an arbitrary local source override.
+`hermes-source.lock.json` pins:
 
-On install the launcher:
+```text
+repository
+commit SHA
+Git tree SHA
+observed package version
+```
 
-1. clones the reviewed upstream repository if needed
-2. checks that `origin` still matches the reviewed source
-3. refuses a dirty checkout instead of overwriting local work
-4. fetches the exact locked commit
-5. checks it out detached
-6. verifies `HEAD` equals the lock
+`verify` requires all four to match plus a clean worktree. Floating `main`, tags, dirty checkout, changed tree, or version drift are refused.
 
-A later Hermes upgrade requires a deliberate review and a new lock commit.
-
-## Commands
-
-From `tools/hermes/`:
+## Command path
 
 ```text
 node hermes-bootstrap.js doctor
@@ -29,63 +25,90 @@ node hermes-bootstrap.js install
 node hermes-bootstrap.js verify
 node hermes-bootstrap.js deps
 node hermes-bootstrap.js prepare
+node hermes-bootstrap.js repair
 node hermes-bootstrap.js consent on "reason"
-node hermes-bootstrap.js consent off "reason"
 node hermes-bootstrap.js start
+node hermes-bootstrap.js consent off "reason"
 ```
 
-### `doctor`
+`install`, dependency installation, config preparation/repair, action consent, and runtime start remain separate explicit operations.
 
-Reports Git, Python, Node, uv, source lock, checkout verification, AXM profile state, local action consent, and workspace path.
+## Prepare vs repair
 
-### `install`
+`prepare` creates local ignored runtime state and inserts an AXM-managed hook block into the Hermes profile.
 
-Performs the immutable source checkout and verification only. It does not silently install Python dependencies.
+The managed block has begin/end markers. Provider/model settings outside the block are preserved. Before changing an existing profile AXM creates a local backup according to `policy.repair`.
 
-### `deps`
+`repair` performs prepare/reconciliation plus:
 
-Requires the source pin to verify, then explicitly runs the upstream `uv sync --locked` dependency path.
+- policy validation
+- provider-credential policy check
+- source-verification report
+- closure of interrupted run capsules that never received a Return Packet
 
-### `prepare`
+A conflicting unmanaged top-level `hooks:` block or broken AXM marker structure fails closed. `repair --force` is the explicit backed-up take-over path.
 
-Creates local ignored state under `runtime/`, including an AXM-owned `HERMES_HOME`, workspace, policy, state counters, and receipt folder. It installs the AXM shell hooks in the generated local Hermes `config.yaml`.
+## Default posture
 
-If that generated config already exists but differs, `prepare` refuses to silently replace it. `prepare --force` is the explicit replacement path.
+Fresh policy starts:
 
-### `consent`
+```text
+posture = research
+consent = OFF
+provider_egress = local_only
+```
 
-Changes action consent in `runtime/policy.json`. Consent starts OFF.
+Research posture uses a narrow read/research allowlist. Operator posture still requires individual capability switches; it is not blanket permission.
 
-### `start`
+File mutation, terminal/process, execute-code, computer-use, delegation, scheduling, messaging, memory/skill mutation, browser interaction, external-account/home/project/coordination actions, and generation all default OFF.
 
-Refuses to launch unless the upstream checkout still matches the reviewed immutable pin and the AXM runtime profile exists. It starts Hermes with:
+Unknown future tools fail closed until explicitly reviewed.
 
-- AXM `HERMES_HOME`
-- project-local Hermes plugins disabled
-- Hermes YOLO mode disabled
-- AXM policy/workspace/state/receipt paths supplied through the environment
-- working directory set to the AXM Hermes workspace
+## Provider credential guard
 
-Arguments following `start` are passed through to the Hermes CLI.
+Before a Hermes child starts, inherited secret-like environment variables are stripped.
+
+Under `local_only`, loopback provider credentials are restored only when the paired base URL points to `localhost`, `127.0.0.1`, or `::1`. Inherited proxy variables are removed and loopback `NO_PROXY` is forced.
+
+Under `explicit_remote`, only exact secret environment-variable names in `provider_egress.allowed_secret_env` are restored.
+
+If `HERMES_HOME/.env` contains secret keys inconsistent with the selected posture, start/repair refuses.
+
+This is **not network isolation**. It reduces accidental credential/provider egress; Docker/VM/network namespace controls are still required for a hard offline guarantee.
+
+## Per-run lifecycle
+
+Each explicit `start` creates a fresh run capsule with its own counter state and evidence directories.
+
+Hermes hook metadata produces:
+
+- tool receipts
+- provider/model/base-scope receipts
+- session outcome events
+
+The launcher creates `run-manifest.json` before execution and `return-packet.json` after exit. Raw prompts, responses, tool args/results, paths, CLI values, and secret names/values are not stored by AXM evidence files.
+
+Interrupted capsules are not deleted; `repair` closes them into recovery Return Packets.
 
 ## Hook boundary
 
-The generated Hermes profile uses:
+Managed Hermes hooks:
 
-- `pre_tool_call` -> `axm/axm_gate.py` with `fail_closed: true`
-- `pre_llm_call` -> `axm/axm_context.py`
-- `post_tool_call` -> `axm/axm_receipt.py`
+```text
+pre_tool_call       -> axm_gate.py          fail_closed=true
+pre_llm_call        -> axm_context.py
+post_tool_call      -> axm_receipt.py
+pre_api_request     -> axm_provider_receipt.py
+post_api_request    -> axm_provider_receipt.py
+api_request_error   -> axm_provider_receipt.py
+on_session_end      -> axm_session_event.py
+on_session_finalize -> axm_session_event.py
+```
 
-The pre-tool hook is the runtime authorization seam. It is deliberately fail closed, so a missing/crashed/invalid gate does not silently grant a tool call.
+Provider observer hooks record evidence but cannot veto provider requests. The pre-tool hook is the blocking authorization seam for tools.
 
-## What this still does not prove
+## Boundary
 
-The hook is not an OS sandbox. It does not make a local shell safe merely because a command came through Hermes. Terminal, arbitrary code execution, computer-use, delegation, scheduling, and messaging therefore default OFF in AXM policy.
+Tool authorization is not OS isolation. Credential filtering is not network isolation. Process exit zero is not proof the work is correct. Return Packets are candidates, never automatic canon.
 
-The tool gate also does not gate the model-provider request itself. If a user configures a cloud provider, model conversation data can leave the machine according to that provider path. Provider egress/local-model policy is a separate boundary and must not be implied by tool consent.
-
-The old loopback `hermes-runner.js` consent toggle remains separate from `runtime/policy.json` until intentionally unified.
-
-## Rule
-
-Pinned source is not canon. Runtime availability is not action authority. Tool authorization is not OS isolation. A Hermes memory, skill, or conclusion remains candidate material until AXM review promotes it.
+The older loopback `hermes-runner.js` consent store remains separate from runtime policy until deliberately unified.
