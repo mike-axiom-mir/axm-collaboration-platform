@@ -7,6 +7,7 @@ const metricProfile = require('./metric-profiles/balanced-v1.json');
 
 let checks = 0;
 function check(condition, message) { assert(condition, message); checks += 1; }
+function objectSchemasClosed(value) { if (Array.isArray(value)) return value.every(objectSchemasClosed); if (!value || typeof value !== 'object') return true; if (value.type === 'object' && value.additionalProperties !== false) return false; return Object.keys(value).every(function (key) { return objectSchemasClosed(value[key]); }); }
 
 for (const pack of Fabric.loadPacks()) {
   check(Fabric.validatePack(pack).ok, pack.id + ' field pack validates');
@@ -25,5 +26,6 @@ const runtimeCore=JSON.parse(JSON.stringify(runtimeContract));delete runtimeCore
 const metricCore=JSON.parse(JSON.stringify(metricProfile));delete metricCore.digest;check(Fabric.digest(metricCore)===metricProfile.digest&&metricProfile.digest===Fabric.METRIC_PROFILE.digest,'metric profile digest binds exact weights');
 check(Object.values(Fabric.METRIC_PROFILE.weights).reduce(function(sum,value){return sum+value;},0) === 100, 'metric weights total 100');
 check(Fabric.parseSentence('completely unknown orbit', Fabric.loadPacks()).draft === null, 'unknown controlled sentence stops before generation');
+['organ-archive-connection-plan','organ-archive-receiver-acknowledgement','organ-archive-connection-receipt','organ-archive-connection-result'].forEach(function(name){const schema=JSON.parse(require('fs').readFileSync(require('path').join(__dirname,'schemas',name+'.schema.json'),'utf8'));check(schema.$id==='axm.'+name+'/v1'&&objectSchemasClosed(schema),name+' schema is identity-bound and closed at every object node');});
 
 console.log('Deterministic Organ Fabric shared selftest PASS · ' + checks + ' checks');

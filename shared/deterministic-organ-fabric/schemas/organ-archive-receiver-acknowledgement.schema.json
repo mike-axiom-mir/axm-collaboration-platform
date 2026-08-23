@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.organ-archive-receiver-acknowledgement/v1",
+  "title": "AXM Passive Archive Receiver Acknowledgement v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "targetModuleId", "targetVersion", "targetContractCanonicalDigest", "sourcePath", "sourceSha256", "sourceDisposition", "archiveObjectId", "archiveObjectDisposition", "archiveAdmissionStatus", "startupPolicy", "objectVerified", "trustedReceiverAdapterLoaded", "organLoaded", "organExecuted", "runtimeConnected", "runtimeAdmitted", "acknowledgementDigest"],
+  "properties": {
+    "schema": {"const": "axm.organ-archive-receiver-acknowledgement/v1"},
+    "targetModuleId": {"const": "ai-organ-archive"},
+    "targetVersion": {"type": "string"},
+    "targetContractCanonicalDigest": {"$ref": "#/$defs/digest"},
+    "sourcePath": {"type": "string", "pattern": "^organs/[a-z0-9-]+-organ\\.js$"},
+    "sourceSha256": {"$ref": "#/$defs/rawDigest"},
+    "sourceDisposition": {"const": "SOURCE_ARTIFACT_PRESENT_VERIFIED"},
+    "archiveObjectId": {"$ref": "#/$defs/rawDigest"},
+    "archiveObjectDisposition": {"const": "ARCHIVE_OBJECT_PRESENT_VERIFIED"},
+    "archiveAdmissionStatus": {"const": "ARCHIVED_NOT_ADMITTED_TO_RUNTIME"},
+    "startupPolicy": {"const": "DORMANT"},
+    "objectVerified": {"const": true},
+    "trustedReceiverAdapterLoaded": {"const": true},
+    "organLoaded": {"const": false},
+    "organExecuted": {"const": false},
+    "runtimeConnected": {"const": false},
+    "runtimeAdmitted": {"const": false},
+    "acknowledgementDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "rawDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}
+}

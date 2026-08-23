@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.organ-archive-connection-plan/v1",
+  "title": "AXM Passive Organ Archive Connection Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "operation", "sourcePackage", "stashDigest", "envelopeDigest", "sourceArtifact", "target", "authorization", "expectedReceiverState", "authority", "boundary", "planDigest"],
+  "properties": {
+    "schema": {"const": "axm.organ-archive-connection-plan/v1"},
+    "status": {"const": "EXPERIMENTAL"},
+    "operation": {"const": "CONNECT_SOURCE_TO_PASSIVE_DORMANT_ARCHIVE"},
+    "sourcePackage": {"type": "object", "additionalProperties": false, "required": ["packageDigest", "candidateId", "definitionDigest", "evaluationDigest"], "properties": {"packageDigest": {"$ref": "#/$defs/digest"}, "candidateId": {"type": "string"}, "definitionDigest": {"$ref": "#/$defs/digest"}, "evaluationDigest": {"$ref": "#/$defs/digest"}}},
+    "stashDigest": {"$ref": "#/$defs/digest"},
+    "envelopeDigest": {"$ref": "#/$defs/digest"},
+    "sourceArtifact": {"type": "object", "additionalProperties": false, "required": ["path", "bytes", "sha256", "targetArchiveObjectId"], "properties": {"path": {"type": "string", "pattern": "^organs/[a-z0-9-]+-organ\\.js$"}, "bytes": {"type": "integer", "minimum": 1, "maximum": 2097152}, "sha256": {"$ref": "#/$defs/rawDigest"}, "targetArchiveObjectId": {"$ref": "#/$defs/rawDigest"}}},
+    "target": {"type": "object", "additionalProperties": false, "required": ["moduleId", "version", "status", "contractSchema", "contractFileSha256", "contractCanonicalDigest", "catalogSchema", "portableLibrarySchema", "dormantComponentSchema", "sourceConvention", "receiverEntryPoint", "receiverEntryPointSha256", "receiverFiles", "receiverBundleDigest"], "properties": {"moduleId": {"const": "ai-organ-archive"}, "version": {"type": "string"}, "status": {"const": "TEST"}, "contractSchema": {"const": "axm.ai-native-module-contract/v1"}, "contractFileSha256": {"$ref": "#/$defs/rawDigest"}, "contractCanonicalDigest": {"$ref": "#/$defs/digest"}, "catalogSchema": {"const": "axm.mirror.ai-organ-catalog/v3"}, "portableLibrarySchema": {"const": "axm.mirror.portable-ai-organ-library/v1"}, "dormantComponentSchema": {"const": "axm.mirror.dormant-organ-component/v1"}, "sourceConvention": {"const": "organs/*-organ.js"}, "receiverEntryPoint": {"const": "modules/ai-organ-archive/core/organ-archive.js"}, "receiverEntryPointSha256": {"$ref": "#/$defs/rawDigest"}, "receiverFiles": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/$defs/rawDigest"}}}}, "receiverBundleDigest": {"$ref": "#/$defs/digest"}}},
+    "authorization": {"type": "object", "additionalProperties": false, "required": ["required", "hostOwned", "exactAcknowledgement"], "properties": {"required": {"const": true}, "hostOwned": {"const": true}, "exactAcknowledgement": {"const": "CONNECT_DORMANT_ORGAN_TO_MIRROR_ARCHIVE"}}},
+    "expectedReceiverState": {"$ref": "#/$defs/dormantState"},
+    "authority": {"$ref": "organ-archive-stash-projection.schema.json#/$defs/authority"},
+    "boundary": {"type": "string", "minLength": 1},
+    "planDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "rawDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "dormantState": {"type": "object", "additionalProperties": false, "required": ["archiveAdmissionStatus", "startupPolicy", "runtimeConnection", "organLoad", "organExecution", "runtimeAdmission", "installation", "registration", "promotion", "canonChange"], "properties": {"archiveAdmissionStatus": {"const": "ARCHIVED_NOT_ADMITTED_TO_RUNTIME"}, "startupPolicy": {"const": "DORMANT"}, "runtimeConnection": {"const": false}, "organLoad": {"const": false}, "organExecution": {"const": false}, "runtimeAdmission": {"const": false}, "installation": {"const": false}, "registration": {"const": false}, "promotion": {"const": false}, "canonChange": {"const": false}}}
+  }
+}

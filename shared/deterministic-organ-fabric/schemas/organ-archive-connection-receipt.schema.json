@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.organ-archive-connection-receipt/v1",
+  "title": "AXM Passive Organ Archive Connection Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "outcome", "planDigest", "packageDigest", "stashDigest", "envelopeDigest", "sourceArtifact", "receiver", "authority", "stateChanges", "boundary", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.organ-archive-connection-receipt/v1"},
+    "status": {"const": "EXPERIMENTAL"},
+    "outcome": {"const": "DORMANT_ARCHIVE_CONNECTION_ACKNOWLEDGED"},
+    "planDigest": {"$ref": "#/$defs/digest"},
+    "packageDigest": {"$ref": "#/$defs/digest"},
+    "stashDigest": {"$ref": "#/$defs/digest"},
+    "envelopeDigest": {"$ref": "#/$defs/digest"},
+    "sourceArtifact": {"type": "object", "additionalProperties": false, "required": ["path", "bytes", "sha256", "targetArchiveObjectId"], "properties": {"path": {"type": "string"}, "bytes": {"type": "integer"}, "sha256": {"$ref": "#/$defs/rawDigest"}, "targetArchiveObjectId": {"$ref": "#/$defs/rawDigest"}}},
+    "receiver": {"type": "object", "additionalProperties": false, "required": ["targetModuleId", "targetVersion", "targetContractCanonicalDigest", "acknowledgementDigest", "archiveObjectId", "sourceDisposition", "archiveObjectDisposition", "archiveAdmissionStatus", "startupPolicy", "objectVerified"], "properties": {"targetModuleId": {"const": "ai-organ-archive"}, "targetVersion": {"type": "string"}, "targetContractCanonicalDigest": {"$ref": "#/$defs/digest"}, "acknowledgementDigest": {"$ref": "#/$defs/digest"}, "archiveObjectId": {"$ref": "#/$defs/rawDigest"}, "sourceDisposition": {"type": "string"}, "archiveObjectDisposition": {"type": "string"}, "archiveAdmissionStatus": {"const": "ARCHIVED_NOT_ADMITTED_TO_RUNTIME"}, "startupPolicy": {"const": "DORMANT"}, "objectVerified": {"const": true}}},
+    "authority": {"$ref": "organ-archive-stash-projection.schema.json#/$defs/authority"},
+    "stateChanges": {"type": "object", "additionalProperties": false, "required": ["sourceArtifactPlaced", "passiveArchiveObjectPresent", "runtimeConnection", "organLoaded", "organExecuted", "runtimeAdmitted", "installed", "registered", "staged", "promoted", "permissionsChanged", "foundationChanged", "canonChanged"], "properties": {"sourceArtifactPlaced": {"const": true}, "passiveArchiveObjectPresent": {"const": true}, "runtimeConnection": {"const": false}, "organLoaded": {"const": false}, "organExecuted": {"const": false}, "runtimeAdmitted": {"const": false}, "installed": {"const": false}, "registered": {"const": false}, "staged": {"const": false}, "promoted": {"const": false}, "permissionsChanged": {"const": false}, "foundationChanged": {"const": false}, "canonChanged": {"const": false}}},
+    "boundary": {"type": "string", "minLength": 1},
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "rawDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}
+}

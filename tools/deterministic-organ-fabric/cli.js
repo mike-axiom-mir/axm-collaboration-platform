@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const fabric = require('../../shared/deterministic-organ-fabric/index.js');
 const archiveApi = require('../../shared/deterministic-organ-fabric/archive-store.js');
+const mirrorConnector = require('../../shared/deterministic-organ-fabric/mirror-archive-connector.js');
 const zipStore = require('../agent-tool-forge/zip-store.js');
 
 function fail(code, message, details) {
@@ -59,9 +60,16 @@ function commandArchive(args){
   else if(action==='export'){if(!args.pack)fail('PACK_PATH_REQUIRED','archive export requires --pack.');console.log(JSON.stringify(archive.exportPack(args.pack),null,2));}
   else if(action==='import'){const packFile=existingFile(args.pack,'Archive pack');console.log(JSON.stringify(archive.importPack(packFile),null,2));}
   else if(action==='stash-export'){if(!args['package-digest'])fail('PACKAGE_DIGEST_REQUIRED','archive stash-export requires --package-digest.');if(!args.pack)fail('PACK_PATH_REQUIRED','archive stash-export requires --pack.');console.log(JSON.stringify(archive.exportStashEnvelope(args['package-digest'],args.pack),null,2));}
-  else fail('ARCHIVE_ACTION_UNKNOWN','Expected archive list, verify, revalidate, export, import, or stash-export.');
+  else if(action==='connection-plan'){if(!args['package-digest'])fail('PACKAGE_DIGEST_REQUIRED','archive connection-plan requires --package-digest.');console.log(JSON.stringify(fabric.buildArchiveConnectionPlan(archive.getPackage(args['package-digest'])),null,2));}
+  else if(action==='connect-mirror'){
+    if(!args['package-digest'])fail('PACKAGE_DIGEST_REQUIRED','archive connect-mirror requires --package-digest.');
+    const mirrorRoot=existingDirectory(args['mirror-root'],'Mirror root'),mirrorArchiveRoot=existingDirectory(args['mirror-archive-root'],'Mirror archive root');
+    try{console.log(JSON.stringify(mirrorConnector.connect({archiveRoot:root,packageDigest:args['package-digest'],mirrorRoot:mirrorRoot,mirrorArchiveRoot:mirrorArchiveRoot,acknowledge:args.acknowledge}),null,2));}
+    catch(error){fail(error.code||'MIRROR_ARCHIVE_CONNECTION_REFUSED',error.message,error.details);}
+  }
+  else fail('ARCHIVE_ACTION_UNKNOWN','Expected archive list, verify, revalidate, export, import, stash-export, connection-plan, or connect-mirror.');
 }
-function usage(){return 'Deterministic Organ Fabric v1\n\nvalidate --intent <file>\ngenerate --intent <file> --output-parent <existing-dir> --archive-root <existing-dir>\ncompare --run <generated-run-dir>\narchive list|verify|revalidate --archive-root <dir>\narchive export|import --archive-root <dir> --pack <file>\narchive stash-export --archive-root <dir> --package-digest <sha256:...> --pack <new-file>\n';}
+function usage(){return 'Deterministic Organ Fabric v1\n\nvalidate --intent <file>\ngenerate --intent <file> --output-parent <existing-dir> --archive-root <existing-dir>\ncompare --run <generated-run-dir>\narchive list|verify|revalidate --archive-root <dir>\narchive export|import --archive-root <dir> --pack <file>\narchive stash-export --archive-root <dir> --package-digest <sha256:...> --pack <new-file>\narchive connection-plan --archive-root <dir> --package-digest <sha256:...>\narchive connect-mirror --archive-root <dir> --package-digest <sha256:...> --mirror-root <dir> --mirror-archive-root <dir> --acknowledge '+fabric.ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT+'\n';}
 function main(argv){const args=parseArgs(argv),command=args._[0];if(!command||command==='help'||command==='--help'){console.log(usage());return;}if(command==='validate')return commandValidate(args);if(command==='generate')return commandGenerate(args);if(command==='compare')return commandCompare(args);if(command==='archive')return commandArchive(args);fail('COMMAND_UNKNOWN','Unknown command: '+command);}
 
 if(require.main===module){try{main(process.argv.slice(2));}catch(error){console.error(JSON.stringify(error.receipt||{schema:'axm.organ-cli-error/v1',ok:false,code:'UNEXPECTED_ERROR',message:error.message},null,2));process.exitCode=1;}}

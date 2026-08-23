@@ -58,8 +58,22 @@
     catalogSchema: 'axm.mirror.ai-organ-catalog/v3',
     portableLibrarySchema: 'axm.mirror.portable-ai-organ-library/v1',
     dormantComponentSchema: 'axm.mirror.dormant-organ-component/v1',
-    sourceConvention: 'organs/*-organ.js'
+    sourceConvention: 'organs/*-organ.js',
+    receiverEntryPoint: 'modules/ai-organ-archive/core/organ-archive.js',
+    receiverEntryPointSha256: 'f7a9a5cc34e0eec45db47f4277ae8524d0a0654f1d0c32e3305e4cf791bc4b5d',
+    receiverFiles: [
+      {path:'kernel/immutable-batch-store.js',sha256:'befe68bebb861ed99245ddf43919efdf2075a017afb26ac47dea225ef8cdb68c'},
+      {path:'modules/ai-organ-archive/core/dormant-organ-component-protocol.js',sha256:'a89ce672d5fb35d931803ab2215828a3b193a07252c1d3814202120d106172cb'},
+      {path:'modules/ai-organ-archive/core/organ-archive.js',sha256:'f7a9a5cc34e0eec45db47f4277ae8524d0a0654f1d0c32e3305e4cf791bc4b5d'},
+      {path:'modules/ai-organ-archive/core/organ-inspector.js',sha256:'0fc8ba70042dc7c3c7d86d3eac2c7864ddbc9cd3ce96ffed4921d60ba4f30bf7'},
+      {path:'modules/ai-organ-archive/core/organ-purpose-taxonomy.js',sha256:'2c0d542d1380ed0605314d2267cbe9dba7969fe67f476ca5711e18773698164b'},
+      {path:'modules/ai-organ-archive/core/organ-verification-evidence.js',sha256:'40d2ec73ca79b8aeed7f0bddbb0d15e1745cceabf5845d821d98adc58f902f9c'},
+      {path:'modules/ai-organ-archive/core/specialist-mirror-incubator.js',sha256:'adf6d00429a277cbaa9b2b825ce0578cdfda498da1c9401e6c64baf24f3eff14'},
+      {path:'modules/ai-organ-archive/core/verification-spine-evidence.js',sha256:'548e42e54138c118543501a64ed311456b0a0350c4dc51a1345724007b759436'}
+    ],
+    receiverBundleDigest: 'sha256:9ce654796b34faa6ddf13ee22bfff83583f7f3222c4d4650590f244a84d59749'
   });
+  const ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT = 'CONNECT_DORMANT_ORGAN_TO_MIRROR_ARCHIVE';
 
   function clone(value) { return JSON.parse(canonicalJson(value)); }
   function pretty(value) { return JSON.stringify(JSON.parse(canonicalJson(value)), null, 2) + '\n'; }
@@ -643,6 +657,64 @@
     };
     return Object.assign({},basis,{envelopeDigest:digest(basis)});
   }
+  function buildArchiveConnectionPlan(candidate,projection){
+    const envelope=buildArchiveStashEnvelope(candidate,projection),basis={
+      schema:'axm.organ-archive-connection-plan/v1',status:'EXPERIMENTAL',operation:'CONNECT_SOURCE_TO_PASSIVE_DORMANT_ARCHIVE',
+      sourcePackage:clone(envelope.sourcePackage),stashDigest:envelope.stashProjection.stashDigest,envelopeDigest:envelope.envelopeDigest,
+      sourceArtifact:{path:envelope.sourceArtifact.path,bytes:envelope.sourceArtifact.bytes,sha256:envelope.sourceArtifact.sha256,targetArchiveObjectId:envelope.stashProjection.source.targetArchiveObjectIdIfImported},
+      target:clone(ORGAN_ARCHIVE_BRIDGE),
+      authorization:{required:true,hostOwned:true,exactAcknowledgement:ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT},
+      expectedReceiverState:{archiveAdmissionStatus:'ARCHIVED_NOT_ADMITTED_TO_RUNTIME',startupPolicy:'DORMANT',runtimeConnection:false,organLoad:false,organExecution:false,runtimeAdmission:false,installation:false,registration:false,promotion:false,canonChange:false},
+      authority:archiveAuthority(),
+      boundary:'This plan authorizes only an exact source-byte handoff to the bound passive archive receiver. It does not authorize organ loading, execution, runtime connection, admission, installation, registration, staging, promotion, permission changes, Foundation mutation, or CANON.'
+    };
+    return Object.assign({},basis,{planDigest:digest(basis)});
+  }
+  function verifyArchiveConnectionPlan(plan,candidate){
+    const errors=[];
+    if(!plan||plan.schema!=='axm.organ-archive-connection-plan/v1')errors.push(issue('CONNECTION_PLAN_SCHEMA_INVALID','$.schema','Expected archive connection plan v1.'));
+    else{
+      if(plan.planDigest!==digest(withoutKey(plan,'planDigest')))errors.push(issue('CONNECTION_PLAN_DIGEST_MISMATCH','$.planDigest','Archive connection plan digest mismatch.'));
+      if(canonicalJson(plan.target||{})!==canonicalJson(ORGAN_ARCHIVE_BRIDGE))errors.push(issue('CONNECTION_TARGET_LINEAGE_STALE','$.target','Archive receiver lineage is not current.'));
+      if(!plan.authorization||plan.authorization.exactAcknowledgement!==ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT||plan.authorization.required!==true||plan.authorization.hostOwned!==true)errors.push(issue('CONNECTION_AUTHORIZATION_INVALID','$.authorization','Exact host authorization is required.'));
+      if(canonicalJson(plan.authority||{})!==canonicalJson(archiveAuthority()))errors.push(issue('CONNECTION_AUTHORITY_EXCEEDED','$.authority','Archive connection plan exceeds its authority ceiling.'));
+      if(!plan.expectedReceiverState||plan.expectedReceiverState.archiveAdmissionStatus!=='ARCHIVED_NOT_ADMITTED_TO_RUNTIME'||plan.expectedReceiverState.startupPolicy!=='DORMANT'||Object.keys(plan.expectedReceiverState).filter(function(key){return ['archiveAdmissionStatus','startupPolicy'].indexOf(key)<0;}).some(function(key){return plan.expectedReceiverState[key]!==false;}))errors.push(issue('CONNECTION_EXPECTED_STATE_ACTIVE','$.expectedReceiverState','Receiver state must remain dormant and non-authoritative.'));
+      if(candidate){try{const rebuilt=buildArchiveConnectionPlan(candidate);if(canonicalJson(rebuilt)!==canonicalJson(plan))errors.push(issue('CONNECTION_PLAN_REBUILD_DRIFT','$','Archive connection plan does not reproduce from its candidate.'));}catch(error){errors.push(issue('CONNECTION_PLAN_CANDIDATE_INVALID','$',String(error.message||error)));}}
+    }
+    return {schema:'axm.organ-archive-connection-plan-verification/v1',ok:errors.length===0,errors:errors,planDigest:plan&&plan.planDigest||null};
+  }
+  function buildArchiveConnectionReceipt(plan,receiverAcknowledgement){
+    const planCheck=verifyArchiveConnectionPlan(plan);
+    if(!planCheck.ok)throw new Error('Archive connection receipt refused: invalid plan.');
+    const acknowledgement=clone(receiverAcknowledgement||{}),ackBasis=withoutKey(acknowledgement,'acknowledgementDigest');
+    if(acknowledgement.schema!=='axm.organ-archive-receiver-acknowledgement/v1'||acknowledgement.acknowledgementDigest!==digest(ackBasis))throw new Error('Archive connection receipt refused: receiver acknowledgement digest is invalid.');
+    if(acknowledgement.targetModuleId!==plan.target.moduleId||acknowledgement.targetVersion!==plan.target.version||acknowledgement.targetContractCanonicalDigest!==plan.target.contractCanonicalDigest)throw new Error('Archive connection receipt refused: receiver lineage differs from the plan.');
+    if(acknowledgement.sourcePath!==plan.sourceArtifact.path||acknowledgement.sourceSha256!==plan.sourceArtifact.sha256||acknowledgement.archiveObjectId!==plan.sourceArtifact.targetArchiveObjectId)throw new Error('Archive connection receipt refused: receiver source identity differs from the plan.');
+    if(acknowledgement.archiveAdmissionStatus!=='ARCHIVED_NOT_ADMITTED_TO_RUNTIME'||acknowledgement.startupPolicy!=='DORMANT'||acknowledgement.objectVerified!==true||acknowledgement.trustedReceiverAdapterLoaded!==true||acknowledgement.organLoaded!==false||acknowledgement.organExecuted!==false||acknowledgement.runtimeConnected!==false||acknowledgement.runtimeAdmitted!==false)throw new Error('Archive connection receipt refused: receiver acknowledgement exceeds the dormant boundary.');
+    const basis={
+      schema:'axm.organ-archive-connection-receipt/v1',status:'EXPERIMENTAL',outcome:'DORMANT_ARCHIVE_CONNECTION_ACKNOWLEDGED',
+      planDigest:plan.planDigest,packageDigest:plan.sourcePackage.packageDigest,stashDigest:plan.stashDigest,envelopeDigest:plan.envelopeDigest,
+      sourceArtifact:clone(plan.sourceArtifact),
+      receiver:{targetModuleId:acknowledgement.targetModuleId,targetVersion:acknowledgement.targetVersion,targetContractCanonicalDigest:acknowledgement.targetContractCanonicalDigest,acknowledgementDigest:acknowledgement.acknowledgementDigest,archiveObjectId:acknowledgement.archiveObjectId,sourceDisposition:acknowledgement.sourceDisposition,archiveObjectDisposition:acknowledgement.archiveObjectDisposition,archiveAdmissionStatus:acknowledgement.archiveAdmissionStatus,startupPolicy:acknowledgement.startupPolicy,objectVerified:true},
+      authority:archiveAuthority(),
+      stateChanges:{sourceArtifactPlaced:true,passiveArchiveObjectPresent:true,runtimeConnection:false,organLoaded:false,organExecuted:false,runtimeAdmitted:false,installed:false,registered:false,staged:false,promoted:false,permissionsChanged:false,foundationChanged:false,canonChanged:false},
+      boundary:'The passive archive receiver acknowledged exact dormant source bytes. This is not a runtime connection, implementation decision, quality proof, compatibility proof, installation, registration, promotion, permission grant, Foundation change, or CANON.'
+    };
+    return Object.assign({},basis,{receiptDigest:digest(basis)});
+  }
+  function verifyArchiveConnectionReceipt(receipt,candidate){
+    const errors=[];
+    if(!receipt||receipt.schema!=='axm.organ-archive-connection-receipt/v1')errors.push(issue('CONNECTION_RECEIPT_SCHEMA_INVALID','$.schema','Expected archive connection receipt v1.'));
+    else{
+      if(receipt.receiptDigest!==digest(withoutKey(receipt,'receiptDigest')))errors.push(issue('CONNECTION_RECEIPT_DIGEST_MISMATCH','$.receiptDigest','Archive connection receipt digest mismatch.'));
+      if(canonicalJson(receipt.authority||{})!==canonicalJson(archiveAuthority()))errors.push(issue('CONNECTION_RECEIPT_AUTHORITY_EXCEEDED','$.authority','Archive connection receipt exceeds its authority ceiling.'));
+      if(!receipt.stateChanges||receipt.stateChanges.sourceArtifactPlaced!==true||receipt.stateChanges.passiveArchiveObjectPresent!==true||Object.keys(receipt.stateChanges).filter(function(key){return ['sourceArtifactPlaced','passiveArchiveObjectPresent'].indexOf(key)<0;}).some(function(key){return receipt.stateChanges[key]!==false;}))errors.push(issue('CONNECTION_RECEIPT_STATE_INVALID','$.stateChanges','Connection receipt claims an active or authority-changing state.'));
+      if(!receipt.receiver||receipt.receiver.targetModuleId!==ORGAN_ARCHIVE_BRIDGE.moduleId||receipt.receiver.targetVersion!==ORGAN_ARCHIVE_BRIDGE.version||receipt.receiver.targetContractCanonicalDigest!==ORGAN_ARCHIVE_BRIDGE.contractCanonicalDigest||receipt.receiver.archiveAdmissionStatus!=='ARCHIVED_NOT_ADMITTED_TO_RUNTIME'||receipt.receiver.startupPolicy!=='DORMANT'||receipt.receiver.objectVerified!==true||receipt.receiver.sourceDisposition!=='SOURCE_ARTIFACT_PRESENT_VERIFIED'||receipt.receiver.archiveObjectDisposition!=='ARCHIVE_OBJECT_PRESENT_VERIFIED')errors.push(issue('CONNECTION_RECEIVER_STATE_INVALID','$.receiver','Receiver acknowledgement is not the current verified dormant archive target.'));
+      if(!receipt.sourceArtifact||receipt.receiver&&receipt.receiver.archiveObjectId!==receipt.sourceArtifact.targetArchiveObjectId||receipt.sourceArtifact&&receipt.sourceArtifact.targetArchiveObjectId!==digest({sourcePath:receipt.sourceArtifact.path,sourceSha256:receipt.sourceArtifact.sha256}).slice(7))errors.push(issue('CONNECTION_RECEIVER_IDENTITY_INVALID','$.sourceArtifact','Receiver archive object identity does not reproduce from the source path and digest.'));
+      if(candidate){try{const plan=buildArchiveConnectionPlan(candidate);if(receipt.packageDigest!==candidate.package.packageDigest||receipt.planDigest!==plan.planDigest||receipt.stashDigest!==plan.stashDigest||receipt.envelopeDigest!==plan.envelopeDigest||canonicalJson(receipt.sourceArtifact)!==canonicalJson(plan.sourceArtifact))errors.push(issue('CONNECTION_RECEIPT_PACKAGE_DRIFT','$','Connection receipt does not reproduce from the archived candidate package.'));}catch(error){errors.push(issue('CONNECTION_RECEIPT_PACKAGE_INVALID','$',String(error.message||error)));}}
+    }
+    return {schema:'axm.organ-archive-connection-receipt-verification/v1',ok:errors.length===0,errors:errors,receiptDigest:receipt&&receipt.receiptDigest||null};
+  }
   function parseSentence(sentence,packs,preferredPackId){
     const text=String(sentence||'').trim(),lower=text.toLowerCase();
     if(!text)return {schema:'axm.organ-intent-preview/v1',status:'PREVIEW_REQUIRED',draft:null,unresolved:[{code:'PURPOSE_MISSING',message:'Describe the organ purpose.'}],warnings:[]};
@@ -671,6 +743,8 @@
     validateGraph:validateGraph,executeGraph:executeGraph,runDefinition:runDefinition,makeDefinition:makeDefinition,evaluateDefinition:evaluateDefinition,
     buildPackage:buildPackage,verifyPackage:verifyPackage,generateCandidates:generateCandidates,compareCandidates:compareCandidates,
     selectCandidate:selectCandidate,parseSentence:parseSentence,importProposal:importProposal,portSchema:portSchema,
-    ORGAN_ARCHIVE_BRIDGE:ORGAN_ARCHIVE_BRIDGE,projectArchiveStash:projectArchiveStash,verifyArchiveStashProjection:verifyArchiveStashProjection,buildArchiveStashEnvelope:buildArchiveStashEnvelope
+    ORGAN_ARCHIVE_BRIDGE:ORGAN_ARCHIVE_BRIDGE,ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT:ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT,
+    projectArchiveStash:projectArchiveStash,verifyArchiveStashProjection:verifyArchiveStashProjection,buildArchiveStashEnvelope:buildArchiveStashEnvelope,
+    buildArchiveConnectionPlan:buildArchiveConnectionPlan,verifyArchiveConnectionPlan:verifyArchiveConnectionPlan,buildArchiveConnectionReceipt:buildArchiveConnectionReceipt,verifyArchiveConnectionReceipt:verifyArchiveConnectionReceipt
   };
 });

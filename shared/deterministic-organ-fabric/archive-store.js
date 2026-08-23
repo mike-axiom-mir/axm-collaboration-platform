@@ -103,20 +103,26 @@ function summarizeObject(row, derivedStatus, stash, selected) {
     primaryPurposeCategory: stash.purposeClassification.primaryPurposeCategory,
     useFields: stash.purposeClassification.useFields,
     functionalRoles: stash.purposeClassification.functionalRoles,
-    classificationState: stash.purposeClassification.state
+    classificationState: stash.purposeClassification.state,
+    archiveConnections: []
   };
 }
 function rebuildIndex(root) {
   root = assertExistingDirectory(root); ensureLayout(root);
   const fullEvents = listJson(path.join(root, 'events'));
-  const statusByDigest = {},selectedByDigest={};
+  const statusByDigest = {},selectedByDigest={},connectionsByDigest={};
   fullEvents.forEach(function (event) {
     if (event.eventType === 'REVALIDATION_REQUIRED') statusByDigest[event.objectDigest] = 'REVALIDATION_REQUIRED';
     if (event.eventType === 'REVALIDATED') statusByDigest[event.objectDigest] = 'CURRENT';
     if (event.eventType === 'SELECTED') selectedByDigest[event.objectDigest] = true;
+    if (event.eventType === 'ARCHIVE_CONNECTED' && event.payload && event.payload.connectionReceipt) {
+      const receipt=event.payload.connectionReceipt;
+      if(!connectionsByDigest[event.objectDigest])connectionsByDigest[event.objectDigest]=[];
+      if(!connectionsByDigest[event.objectDigest].some(function(row){return row.receiptDigest===receipt.receiptDigest;}))connectionsByDigest[event.objectDigest].push({targetModuleId:receipt.receiver.targetModuleId,targetVersion:receipt.receiver.targetVersion,receiptDigest:receipt.receiptDigest,archiveObjectId:receipt.receiver.archiveObjectId,sourcePath:receipt.sourceArtifact.path,state:receipt.outcome,runtimeConnected:false});
+    }
   });
   const stashByPackage={};listJson(path.join(root,'stash')).forEach(function(row){stashByPackage[row.packageDigest]=row;});
-  const objects = listJson(path.join(root, 'objects')).map(function (row) { const stash=stashByPackage[row.objectDigest]||core.projectArchiveStash(row.package);return summarizeObject(row, statusByDigest[row.objectDigest],stash,selectedByDigest[row.objectDigest]); }).sort(function (a,b) { return a.objectDigest.localeCompare(b.objectDigest); });
+  const objects = listJson(path.join(root, 'objects')).map(function (row) { const stash=stashByPackage[row.objectDigest]||core.projectArchiveStash(row.package),summary=summarizeObject(row, statusByDigest[row.objectDigest],stash,selectedByDigest[row.objectDigest]);summary.archiveConnections=(connectionsByDigest[row.objectDigest]||[]).slice().sort(function(a,b){return a.receiptDigest.localeCompare(b.receiptDigest);});return summary; }).sort(function (a,b) { return a.objectDigest.localeCompare(b.objectDigest); });
   const failures = listJson(path.join(root, 'failures')).map(function (row) { return { failureDigest:row.failureDigest, intentDigest:row.intentDigest, strategy:row.strategy, failedGates:row.failedGates.map(function (gate) { return gate.id; }) }; });
   const events = fullEvents.map(function (row) { return { sequence:row.sequence, eventType:row.eventType, objectDigest:row.objectDigest, eventDigest:row.eventDigest }; });
   const index = { schema:'axm.organ-archive-index/v1', derived:true, objects:objects, failures:failures, events:events, indexDigest:'' };
@@ -153,6 +159,18 @@ function openArchive(root) {
       const event = appendEvent(root, 'SELECTED', receipt.packageDigest, { selectionReceipt:receipt });
       rebuildIndex(root); return event;
     },
+    addConnection: function (receipt) {
+      const objectFile=path.join(root,'objects',hexDigest(receipt.packageDigest)+'.json');
+      if(!fs.existsSync(objectFile))throw new Error('Connected package is not in this archive.');
+      const object=readJson(objectFile),verification=core.verifyArchiveConnectionReceipt(receipt,object.package);
+      if(!verification.ok)throw new Error('Archive connection receipt is invalid or exceeds authority ceiling.');
+      const plan=core.buildArchiveConnectionPlan(object.package);
+      if(receipt.planDigest!==plan.planDigest||receipt.sourceArtifact.path!==plan.sourceArtifact.path||receipt.sourceArtifact.sha256!==plan.sourceArtifact.sha256)throw new Error('Archive connection receipt does not bind the current package handoff plan.');
+      const existing=listJson(path.join(root,'events')).find(function(event){return event.eventType==='ARCHIVE_CONNECTED'&&event.objectDigest===receipt.packageDigest&&event.payload&&event.payload.connectionReceipt&&event.payload.connectionReceipt.receiptDigest===receipt.receiptDigest;});
+      if(existing){rebuildIndex(root);return {disposition:'DEDUPLICATED',event:existing};}
+      const event=appendEvent(root,'ARCHIVE_CONNECTED',receipt.packageDigest,{connectionReceipt:receipt});
+      rebuildIndex(root);return {disposition:'CREATED',event:event};
+    },
     addEvent: function (eventType, objectDigest, payload) {
       if (['SUPERSEDED','DELETED'].indexOf(eventType) < 0) throw new Error('Generic event action is limited to SUPERSEDED or DELETED.');
       const event=appendEvent(root,eventType,objectDigest,payload); rebuildIndex(root); return event;
@@ -167,7 +185,7 @@ function openArchive(root) {
       const objectByDigest={};listJson(path.join(root,'objects')).forEach(function(object){objectByDigest[object.objectDigest]=object.package;});
       listJson(path.join(root,'stash')).forEach(function(stash){const candidate=objectByDigest[stash.packageDigest],check=core.verifyArchiveStashProjection(stash,candidate);if(!candidate)errors.push({code:'STASH_PACKAGE_ABSENT',stashDigest:stash.stashDigest});else if(!check.ok)errors.push({code:'STASH_PROJECTION_INVALID',stashDigest:stash.stashDigest,details:check.errors});});
       listJson(path.join(root,'failures')).forEach(function(failure){const expected=core.digest(omit(failure,'failureDigest'));if(expected!==failure.failureDigest)errors.push({code:'ARCHIVE_FAILURE_DIGEST_MISMATCH',failureDigest:failure.failureDigest});});
-      listJson(path.join(root,'events')).forEach(function(event){const expected=core.digest(omit(event,'eventDigest'));if(expected!==event.eventDigest)errors.push({code:'ARCHIVE_EVENT_DIGEST_MISMATCH',eventDigest:event.eventDigest});});
+      listJson(path.join(root,'events')).forEach(function(event){const expected=core.digest(omit(event,'eventDigest'));if(expected!==event.eventDigest)errors.push({code:'ARCHIVE_EVENT_DIGEST_MISMATCH',eventDigest:event.eventDigest});if(event.eventType==='ARCHIVE_CONNECTED'){const receipt=event.payload&&event.payload.connectionReceipt,candidate=objectByDigest[event.objectDigest],check=core.verifyArchiveConnectionReceipt(receipt,candidate);if(!check.ok||!candidate||receipt.packageDigest!==event.objectDigest)errors.push({code:'ARCHIVE_CONNECTION_RECEIPT_INVALID',eventDigest:event.eventDigest,details:check.errors});}});
       const index=rebuildIndex(root);return {schema:'axm.organ-archive-verification/v1',ok:errors.length===0,errors:errors,objectCount:index.objects.length,failureCount:index.failures.length,eventCount:index.events.length,indexDigest:index.indexDigest};
     },
     revalidate: function () {
@@ -198,7 +216,7 @@ function openArchive(root) {
       const results=[],portableStash=Array.isArray(portable.stash)?portable.stash:[];
       portable.objects.forEach(function(object){const check=core.verifyPackage(object.package);if(!check.ok||object.objectDigest!==object.package.package.packageDigest)throw new Error('Portable object failed package verification.');const disposition=writeContentAddressed(path.join(root,'objects',hexDigest(object.objectDigest)+'.json'),canonicalLine(object));const stash=portableStash.find(function(row){return row.packageDigest===object.objectDigest;})||core.projectArchiveStash(object.package),stashCheck=core.verifyArchiveStashProjection(stash,object.package);if(!stashCheck.ok)throw new Error('Portable dormant stash projection is invalid.');const stashDisposition=writeContentAddressed(path.join(root,'stash',hexDigest(stash.stashDigest)+'.json'),canonicalLine(stash));results.push({objectDigest:object.objectDigest,disposition:disposition,stashDigest:stash.stashDigest,stashDisposition:stashDisposition});});
       portable.failures.forEach(function(failure){const failureExpected=core.digest(omit(failure,'failureDigest'));if(failureExpected!==failure.failureDigest)throw new Error('Portable failure receipt digest is invalid.');writeContentAddressed(path.join(root,'failures',hexDigest(failure.failureDigest)+'.json'),canonicalLine(failure));});
-      portable.events.forEach(function(event){const eventExpected=core.digest(omit(event,'eventDigest'));if(eventExpected!==event.eventDigest)throw new Error('Portable archive event digest is invalid.');const filename=String(event.sequence).padStart(10,'0')+'-'+hexDigest(event.eventDigest).slice(0,16)+'.json';writeContentAddressed(path.join(root,'events',filename),canonicalLine(event));});
+      portable.events.forEach(function(event){const eventExpected=core.digest(omit(event,'eventDigest'));if(eventExpected!==event.eventDigest)throw new Error('Portable archive event digest is invalid.');if(event.eventType==='ARCHIVE_CONNECTED'){const receipt=event.payload&&event.payload.connectionReceipt,portableObject=portable.objects.find(function(object){return object.objectDigest===event.objectDigest;}),storedObjectFile=path.join(root,'objects',hexDigest(event.objectDigest)+'.json'),candidate=portableObject&&portableObject.package||fs.existsSync(storedObjectFile)&&readJson(storedObjectFile).package,check=core.verifyArchiveConnectionReceipt(receipt,candidate);if(!check.ok||receipt.packageDigest!==event.objectDigest||!candidate)throw new Error('Portable archive connection receipt is invalid.');}const filename=String(event.sequence).padStart(10,'0')+'-'+hexDigest(event.eventDigest).slice(0,16)+'.json';writeContentAddressed(path.join(root,'events',filename),canonicalLine(event));});
       rebuildIndex(root);return {schema:'axm.organ-archive-import/v1',packDigest:portable.packDigest,results:results,registered:false,installed:false};
     },
     exportStashEnvelope: function (packageDigest, packFile) {
@@ -208,6 +226,19 @@ function openArchive(root) {
       const resolved=path.resolve(String(packFile||''));if(!packFile||!fs.existsSync(path.dirname(resolved))||fs.existsSync(resolved))throw new Error('Dormant stash envelope path must be a new file in an existing directory.');
       writeContentAddressed(resolved,JSON.stringify(envelope,null,2)+'\n');
       return {schema:'axm.organ-archive-stash-export/v1',pack:resolved,packageDigest:packageDigest,stashDigest:stash.stashDigest,envelopeDigest:envelope.envelopeDigest,admissionStatus:stash.archiveState.admissionStatus,installed:false,registered:false,executed:false};
+    },
+    getPackage: function (packageDigest) {
+      const objectFile=path.join(root,'objects',hexDigest(packageDigest)+'.json');
+      if(!fs.existsSync(objectFile))throw new Error('Package is not in this archive.');
+      const object=readJson(objectFile),verification=core.verifyPackage(object.package);
+      if(!verification.ok||object.objectDigest!==packageDigest)throw new Error('Archived package failed verification.');
+      return object.package;
+    },
+    getStashEnvelope: function (packageDigest) {
+      const objectFile=path.join(root,'objects',hexDigest(packageDigest)+'.json');
+      if(!fs.existsSync(objectFile))throw new Error('Dormant stash package is not in this archive.');
+      const object=readJson(objectFile),stash=listJson(path.join(root,'stash')).find(function(row){return row.packageDigest===packageDigest;})||core.projectArchiveStash(object.package);
+      return core.buildArchiveStashEnvelope(object.package,stash);
     }
   };
 }
