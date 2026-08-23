@@ -35,6 +35,7 @@ jobs:
           node --check tools/hermes/hermes-runner.js
           node --check tools/hermes/axm/runtime-policy.js
           node --check tools/hermes/axm/run-ledger.js
+          node --check tools/hermes/axm/hardening-selftest.js
           node --check tools/hermes/selftest.js
 
       - name: Compile AXM Hermes Python hooks
@@ -46,5 +47,7 @@ jobs:
             tools/hermes/axm/axm_provider_receipt.py \
             tools/hermes/axm/axm_session_event.py
 
-      - name: Run deterministic AXM Hermes self-test
-        run: node tools/hermes/selftest.js
+      - name: Run deterministic AXM Hermes self-tests
+        run: |
+          node tools/hermes/axm/hardening-selftest.js
+          node tools/hermes/selftest.js
