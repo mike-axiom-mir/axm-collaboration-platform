@@ -15,6 +15,7 @@ module.exports = {
   svgRenderer: require('./svg-renderer'),
   browserSnapshot: require('./browser-snapshot'),
   browserSession: require('./browser-session'),
+  sessionVerifier: require('./session-verifier'),
   localBrowserHost: require('./local-browser-host'),
   engine: require('./engine')
 };
