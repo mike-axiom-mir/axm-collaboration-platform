@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const Engine = require('../src/engine');
 const BrowserSession = require('../src/browser-session');
+const SessionVerifier = require('../src/session-verifier');
 
 const root = path.resolve(__dirname, '..');
 const schemaDir = path.join(root, 'schemas');
@@ -59,6 +60,9 @@ function main() {
   assert(localSession.schema === 'axm.web.local-browser-session/v1', 'local session representative schema mismatch');
   assert(localSession.bundle.schema === 'axm.web.local-browser-bundle/v1', 'local bundle representative schema mismatch');
   assert(localSession.bundle.pages.every(function (page) { return page.structureIndexDigest; }), 'local bundle lineage missing');
+  const verification = SessionVerifier.verifySessionBytes(Buffer.from(JSON.stringify(localSession), 'utf8'));
+  assert(verification.schema === 'axm.web.local-browser-session-verification/v1', 'local session verification representative schema mismatch');
+  assert(verification.status === 'PASS', 'local session verification representative did not pass');
   process.stdout.write('parsed ' + names.length + ' schema documents and checked representative schema identities\n');
 }
 
