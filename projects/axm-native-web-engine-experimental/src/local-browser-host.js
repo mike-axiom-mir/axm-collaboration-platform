@@ -6,6 +6,8 @@ const ShellPolicy = require('./shell-policy');
 const BrowserAiControl = require('./browser-ai-control');
 const BrowserAiControlHost = require('./browser-ai-control-host');
 const HtmlLiveBuilderHost = require('./html-live-builder-host');
+const ReferenceLabModule = require('./reference-lab');
+const ReferenceLabHost = require('./reference-lab-host');
 
 const HOST_RECEIPT_SCHEMA = 'axm.web.local-browser-host-receipt/v2';
 
@@ -31,8 +33,11 @@ async function createLocalBrowserHost(session, options) {
     options.aiControlHost !== false && Boolean(options.aiRegistry || options.aiControlPlane || options.researchRunner || options.researchConfig)
   );
   const shouldStartBuilderHost = options.builderEnabled === true;
+  const shouldStartReferenceLab = options.referenceLab === true || Boolean(options.referenceConfig || options.referenceLabInstance);
   let aiControlHost = null;
   let builderHost = null;
+  let referenceLab = null;
+  let referenceHost = null;
   try {
     if (shouldStartAiControlHost) {
       aiControlHost = await BrowserAiControlHost.createBrowserAiControlHost(
@@ -47,9 +52,30 @@ async function createLocalBrowserHost(session, options) {
         options.builderHostOptions || {}
       );
     }
+    if (shouldStartReferenceLab) {
+      const config = options.referenceConfig || {};
+      referenceLab = options.referenceLabInstance || new ReferenceLabModule.ReferenceLab({
+        aiRegistry: aiControl.registry,
+        aiRegistryProvider: function () { return aiControl.registry; },
+        visualStateProvider: function () { return aiControl.ensureVisualState(session.snapshot()); },
+        searchConfig: config.searchConfig || (options.researchConfig && options.researchConfig.searchConfig) || {},
+        imageSearchConfig: config.imageSearchConfig || config.searchConfig || (options.researchConfig && options.researchConfig.searchConfig) || {},
+        aiNetworkAuthority: config.aiNetworkAuthority,
+        searchNetworkAuthority: config.searchNetworkAuthority,
+        aiOptions: config.aiOptions || {},
+        searchOptions: config.searchOptions || {},
+        imageSearchOptions: config.imageSearchOptions || {}
+      });
+      referenceHost = await ReferenceLabHost.createReferenceLabHost(referenceLab, {
+        port: config.port,
+        maxJsonBytes: config.maxJsonBytes,
+        maxUploadBytes: config.maxUploadBytes
+      });
+    }
   } catch (error) {
-    if (builderHost) await builderHost.close();
-    if (aiControlHost) await aiControlHost.close();
+    if (referenceHost) await referenceHost.close().catch(function () {});
+    if (builderHost) await builderHost.close().catch(function () {});
+    if (aiControlHost) await aiControlHost.close().catch(function () {});
     await host.close();
     throw error;
   }
@@ -71,9 +97,14 @@ async function createLocalBrowserHost(session, options) {
     aiControlUrl: aiControlHost ? aiControlHost.receipt.controlUrl : null,
     builderReceipt: builderHost ? builderHost.receipt : null,
     builderUrl: builderHost ? builderHost.receipt.builderUrl : null,
+    referenceLab,
+    referenceLabHost: referenceHost,
+    referenceLabUrl: referenceHost ? referenceHost.url : null,
+    referenceLabReceipt: referenceHost ? referenceHost.receipt : null,
     controlState: function () { return aiControl.state(session.snapshot()); },
     visualState: function () { return aiControl.ensureVisualState(session.snapshot()); },
     close: async function () {
+      if (referenceHost) await referenceHost.close();
       if (builderHost) await builderHost.close();
       if (aiControlHost) await aiControlHost.close();
       await host.close();
