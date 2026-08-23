@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Write metadata-only Hermes tool receipts for AXM review.
 
-One JSON file is written per tool event. Raw arguments, results, user content,
-paths, and raw identifiers are deliberately excluded.
+Evidence recording is controlled by receipts.enabled, not current action
+consent. If consent is revoked while an already-authorized tool is finishing,
+AXM still records the completion metadata instead of losing the audit edge.
 """
 from __future__ import annotations
 
@@ -35,7 +36,7 @@ def load_event() -> dict[str, Any]:
 def receipts_enabled() -> bool:
     try:
         policy = json.loads(POLICY_FILE.read_text(encoding="utf-8"))
-        return policy.get("consent", {}).get("enabled") is True and policy.get("receipts", {}).get("enabled") is True
+        return policy.get("receipts", {}).get("enabled") is True
     except Exception:
         return False
 
