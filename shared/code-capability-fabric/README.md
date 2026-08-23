@@ -196,3 +196,31 @@ Run:
 ```powershell
 node shared/code-capability-fabric/selftest-human-candidate-selection-binder-v1.js
 ```
+
+## Cross-domain bounded creation programs
+
+The additive v0.8 `TEST` rung compiles a human-authored typed artifact graph
+across arbitrary domains into one deterministic, plan-only creation program.
+Each exact capability requirement must bind one existing Fabric v2 route plan;
+missing, ambiguous, stale, drifted, authority-expanding, or resource-expanding
+routes remain typed gaps. Those gaps are emitted in the exact intake shape used
+by Workshop's existing Hand Specification Foundry.
+
+The planner assigns domain-native evidence surfaces, keeps every evidence
+verdict `UNKNOWN` and every step `NOT_RUN`, orders dependencies, enforces
+declared structural and byte ceilings, and exposes minimum consent tiers for
+candidate generation, sandbox trials, library lessons, installation or
+publication, and model training or physical actuation. Taste and meaning stay a
+human seat.
+
+It does not infer capabilities from prose, call providers, inspect a workspace,
+retain raw goal or source text in its durable program, generate artifacts, run
+verifiers, grant authority, execute a sandbox, learn, install, integrate,
+publish, actuate hardware, promote, or change `CANON`.
+
+See [README-bounded-creation-program-planner-v1.md](README-bounded-creation-program-planner-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-bounded-creation-program-planner-v1.js
+```

@@ -1,0 +1,584 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.bounded-creation-program/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "requestRef",
+    "scope",
+    "artifactOrder",
+    "artifactPlans",
+    "capabilityResolutions",
+    "capabilityGapReport",
+    "steps",
+    "nextGate",
+    "truth",
+    "authority",
+    "programDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.bounded-creation-program/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {
+      "enum": [
+        "ROOTS_HOLD",
+        "CAPABILITY_GAPS",
+        "REUSE_RIGHTS_HOLD",
+        "HIGHER_TIER_CONSENT_REQUIRED",
+        "READY_FOR_DETACHED_CANDIDATE_REQUEST"
+      ]
+    },
+    "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "scope": {"$ref": "#/$defs/scope"},
+    "artifactOrder": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {"$ref": "semantic-common.schema.json#/$defs/id"}
+    },
+    "artifactPlans": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {"$ref": "#/$defs/artifactPlan"}
+    },
+    "capabilityResolutions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/resolution"}
+    },
+    "capabilityGapReport": {"$ref": "#/$defs/gapReport"},
+    "steps": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 512,
+      "items": {"$ref": "#/$defs/step"}
+    },
+    "nextGate": {
+      "enum": [
+        "REPAIR_ROOT_EVIDENCE_AND_REPLAN",
+        "SPECIFY_OR_PROVIDE_MISSING_CAPABILITIES_AND_REPLAN",
+        "RESOLVE_REUSE_RIGHTS_AND_RECONSENT",
+        "NEW_EXACT_HUMAN_CONSENT_REQUIRED",
+        "SEMANTIC_GENERATION_REQUEST_REQUIRED"
+      ]
+    },
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "programDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "ids": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {"$ref": "semantic-common.schema.json#/$defs/id"}
+    },
+    "providerSelector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "descriptorSha256"],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "version": {"type": "string", "minLength": 1, "maxLength": 80},
+        "descriptorSha256": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxInputBytes",
+        "maxOutputBytes",
+        "maxMemoryBytes",
+        "maxDurationMs",
+        "maxProcesses",
+        "maxAttempts",
+        "maxCostMinorUnits",
+        "maxArtifacts",
+        "maxSteps",
+        "maxRequirements",
+        "maxDependencyDepth"
+      ],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1},
+        "maxOutputBytes": {"type": "integer", "minimum": 1},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1},
+        "maxDurationMs": {"type": "integer", "minimum": 1},
+        "maxProcesses": {"type": "integer", "minimum": 1},
+        "maxAttempts": {"type": "integer", "minimum": 1},
+        "maxCostMinorUnits": {"type": "integer", "minimum": 0},
+        "maxArtifacts": {"type": "integer", "minimum": 1},
+        "maxSteps": {"type": "integer", "minimum": 4},
+        "maxRequirements": {"type": "integer", "minimum": 1},
+        "maxDependencyDepth": {"type": "integer", "minimum": 1}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "durableEvidence",
+        "retainRawSource",
+        "retainStdout",
+        "retainStderr",
+        "retainMachinePaths",
+        "retainPrivateContent"
+      ],
+      "properties": {
+        "durableEvidence": {"const": "DIGESTS_MEASUREMENTS_VERDICTS_AND_LIMITATIONS_ONLY"},
+        "retainRawSource": {"const": false},
+        "retainStdout": {"const": false},
+        "retainStderr": {"const": false},
+        "retainMachinePaths": {"const": false},
+        "retainPrivateContent": {"const": false}
+      }
+    },
+    "reuseRights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "directReuseAllowed", "authorityRef"],
+      "properties": {
+        "state": {"enum": ["DECLARED_REUSE_ALLOWED", "RESEARCH_ONLY_HOLD", "UNKNOWN"]},
+        "directReuseAllowed": {"type": "boolean"},
+        "authorityRef": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "semantic-common.schema.json#/$defs/reference"}
+          ]
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domains",
+        "lifecycleTarget",
+        "planningConsentTier",
+        "minimumNextConsentTier",
+        "aiMode",
+        "challengerProviderRef",
+        "allowedPermissions",
+        "allowedNetworkDomains",
+        "allowedMutability",
+        "allowedSourceUse",
+        "resourceEnvelope",
+        "privacy",
+        "reuseRights",
+        "rootsGate",
+        "grantsAuthority"
+      ],
+      "properties": {
+        "domains": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {"$ref": "semantic-common.schema.json#/$defs/id"}
+        },
+        "lifecycleTarget": {
+          "enum": [
+            "DETACHED_CANDIDATE",
+            "DISPOSABLE_SANDBOX_TRIAL",
+            "CAPABILITY_LIBRARY_LESSON",
+            "INSTALL_INTEGRATE_OR_PUBLISH",
+            "MODEL_TRAINING_OR_PHYSICAL_ACTUATION"
+          ]
+        },
+        "planningConsentTier": {"const": 0},
+        "minimumNextConsentTier": {"type": "integer", "minimum": 1, "maximum": 5},
+        "aiMode": {"enum": ["OFF", "UNTRUSTED_CHALLENGER"]},
+        "challengerProviderRef": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/providerSelector"}
+          ]
+        },
+        "allowedPermissions": {"$ref": "#/$defs/ids"},
+        "allowedNetworkDomains": {"$ref": "#/$defs/ids"},
+        "allowedMutability": {
+          "type": "array",
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {"enum": ["read-only", "candidate-only", "process-observation"]}
+        },
+        "allowedSourceUse": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {"enum": ["inspect-only", "derive-concepts", "transform-bytes", "copy-bytes"]}
+        },
+        "resourceEnvelope": {"$ref": "#/$defs/resources"},
+        "privacy": {"$ref": "#/$defs/privacy"},
+        "reuseRights": {"$ref": "#/$defs/reuseRights"},
+        "rootsGate": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}
+        },
+        "grantsAuthority": {"const": false}
+      }
+    },
+    "capabilityState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirementId", "resolutionStatus"],
+      "properties": {
+        "requirementId": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "resolutionStatus": {"enum": ["ROUTE_READY_INPUT_CLAIM", "CAPABILITY_GAP"]}
+      }
+    },
+    "evidenceRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claimId",
+        "kind",
+        "risk",
+        "verifierRequirementId",
+        "evidenceSchema",
+        "primarySurface",
+        "counterevidence",
+        "humanJudgmentRequired",
+        "observedEvidence",
+        "verdict",
+        "executionStatus"
+      ],
+      "properties": {
+        "claimId": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "kind": {
+          "enum": [
+            "EXISTENCE",
+            "STATIC_STRUCTURE",
+            "DETERMINISTIC_BEHAVIOR",
+            "VISUAL_APPEARANCE",
+            "MOTION_TIMING",
+            "INTERACTION_JOURNEY",
+            "PERSISTENCE",
+            "TRANSPORT",
+            "AUTHORIZATION",
+            "PERFORMANCE",
+            "RESOURCE_SAFETY",
+            "LEARNING_IMPROVEMENT",
+            "QUALITY",
+            "TASTE_MEANING"
+          ]
+        },
+        "risk": {"enum": ["LOW", "MEDIUM", "HIGH"]},
+        "verifierRequirementId": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "semantic-common.schema.json#/$defs/id"}
+          ]
+        },
+        "evidenceSchema": {"$ref": "semantic-common.schema.json#/$defs/contract"},
+        "primarySurface": {"type": "string", "minLength": 1, "maxLength": 160},
+        "counterevidence": {"type": "string", "minLength": 1, "maxLength": 160},
+        "humanJudgmentRequired": {"type": "boolean"},
+        "observedEvidence": {"const": []},
+        "verdict": {"const": "UNKNOWN"},
+        "executionStatus": {"const": "NOT_RUN"}
+      }
+    },
+    "artifactPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifactId",
+        "domain",
+        "kind",
+        "consequenceClass",
+        "dependsOn",
+        "requirementIds",
+        "capabilityStates",
+        "evidenceRoutes"
+      ],
+      "properties": {
+        "artifactId": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "domain": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "kind": {"$ref": "semantic-common.schema.json#/$defs/contract"},
+        "consequenceClass": {
+          "enum": [
+            "INERT_DIGITAL",
+            "EXECUTABLE_DIGITAL",
+            "PUBLIC_OR_SHARED",
+            "PHYSICAL_SIMULATION",
+            "PHYSICAL_ACTUATION"
+          ]
+        },
+        "dependsOn": {"$ref": "#/$defs/ids"},
+        "requirementIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {"$ref": "semantic-common.schema.json#/$defs/id"}
+        },
+        "capabilityStates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {"$ref": "#/$defs/capabilityState"}
+        },
+        "evidenceRoutes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {"$ref": "#/$defs/evidenceRoute"}
+        }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirementId",
+        "capability",
+        "routePlanRef",
+        "routeStatus",
+        "resolutionStatus",
+        "selectedProviderRef",
+        "holds",
+        "gapType",
+        "inputClaimOnly"
+      ],
+      "properties": {
+        "requirementId": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "capability": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "routePlanRef": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "semantic-common.schema.json#/$defs/reference"}
+          ]
+        },
+        "routeStatus": {
+          "enum": [
+            "MISSING_ROUTE_PLAN",
+            "MISSING_HAND",
+            "SELECTED_PROVIDER_UNAVAILABLE",
+            "SELECTED_PROVIDER_STALE",
+            "SELECTION_REQUIRED",
+            "HOST_OBSERVATION_REQUIRED",
+            "HOST_OBSERVATION_AMBIGUOUS",
+            "HOST_OBSERVATION_STALE",
+            "HOST_OBSERVATION_UNTRUSTED",
+            "HOST_UNAVAILABLE",
+            "BOUNDARY_HOLD",
+            "ASSURANCE_HOLD",
+            "AUTHORITY_HOLD",
+            "RESOURCE_HOLD",
+            "REUSE_RIGHTS_HOLD",
+            "ROUTE_PLANNED"
+          ]
+        },
+        "resolutionStatus": {"enum": ["ROUTE_READY_INPUT_CLAIM", "CAPABILITY_GAP"]},
+        "selectedProviderRef": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/providerSelector"}
+          ]
+        },
+        "holds": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 300}
+        },
+        "gapType": {
+          "oneOf": [
+            {"type": "null"},
+            {"enum": ["HAND", "SKILL", "AUTHORITY", "SUBSTRATE", "EVIDENCE", "CONTRACT", "UNKNOWN"]}
+          ]
+        },
+        "inputClaimOnly": {"const": true}
+      }
+    },
+    "proposedContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capabilityId",
+        "requestedCapability",
+        "gapType",
+        "requiredBy",
+        "contractState",
+        "requiredFields"
+      ],
+      "properties": {
+        "capabilityId": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "requestedCapability": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "gapType": {"enum": ["HAND", "SKILL", "AUTHORITY", "SUBSTRATE", "EVIDENCE", "CONTRACT", "UNKNOWN"]},
+        "requiredBy": {"$ref": "#/$defs/ids"},
+        "contractState": {"const": "SPEC_REQUIRED"},
+        "requiredFields": {
+          "const": [
+            "inputs",
+            "outputs",
+            "sideEffects",
+            "permissions",
+            "resourceBudget",
+            "failureRecovery",
+            "compatibility",
+            "verification"
+          ]
+        }
+      }
+    },
+    "gapReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "overall",
+        "missingCapabilities",
+        "proposedContracts",
+        "handoff",
+        "automaticInstall",
+        "automaticPermission",
+        "automaticQualityReduction",
+        "truth"
+      ],
+      "properties": {
+        "schema": {"const": "axm.capability-gap-report/v1"},
+        "overall": {"enum": ["READY", "DEGRADED"]},
+        "missingCapabilities": {"$ref": "#/$defs/ids"},
+        "proposedContracts": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {"$ref": "#/$defs/proposedContract"}
+        },
+        "handoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["capability", "contractRef", "automaticSpecification"],
+          "properties": {
+            "capability": {"const": "capability.specify.missing-hand/v1"},
+            "contractRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+            "automaticSpecification": {"const": false}
+          }
+        },
+        "automaticInstall": {"const": false},
+        "automaticPermission": {"const": false},
+        "automaticQualityReduction": {"const": false},
+        "truth": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "implementationAvailableForEveryGap",
+            "specificationClosesGap",
+            "unsupportedCapabilityPretendedAvailable"
+          ],
+          "properties": {
+            "implementationAvailableForEveryGap": {"const": false},
+            "specificationClosesGap": {"const": false},
+            "unsupportedCapabilityPretendedAvailable": {"const": false}
+          }
+        }
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "artifactId",
+        "stage",
+        "dependsOnStepIds",
+        "requiredConsentTier",
+        "executionStatus",
+        "authority"
+      ],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "artifactId": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "stage": {
+          "enum": [
+            "COMPOSE_TYPED_BLUEPRINT",
+            "GENERATE_DETACHED_CANDIDATE",
+            "GATHER_DOMAIN_NATIVE_EVIDENCE",
+            "PRESENT_FOR_HUMAN_REVIEW"
+          ]
+        },
+        "dependsOnStepIds": {"$ref": "#/$defs/ids"},
+        "requiredConsentTier": {"type": "integer", "minimum": 0, "maximum": 5},
+        "executionStatus": {"const": "NOT_RUN"},
+        "authority": {"const": "NONE"}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deterministicPlanOnly",
+        "naturalLanguageSemanticsProven",
+        "routePlanInputsIndependentlyTrusted",
+        "providerDeclarationIsExecutionProof",
+        "hostObservationIsExecutionProof",
+        "unsupportedCapabilityPretendedAvailable",
+        "unknownEvidenceRenderedAsPass",
+        "humanTasteReplacedByScore",
+        "aiInvolvementHidden",
+        "aiOutputTrusted",
+        "providerCalled",
+        "workspaceRead",
+        "sourceBytesRead",
+        "artifactGenerated",
+        "verifierRun",
+        "humanDecisionAuthenticated",
+        "permissionGranted",
+        "networkUsed",
+        "resourceLimitsEnforced",
+        "sandboxExecuted",
+        "persistentLearningAdmitted",
+        "installed",
+        "integrated",
+        "published",
+        "modelTrainingPerformed",
+        "physicalActuationPerformed",
+        "promoted",
+        "canonChanged",
+        "mikeFinalMergeGatePreserved",
+        "challengerMode"
+      ],
+      "properties": {
+        "deterministicPlanOnly": {"const": true},
+        "naturalLanguageSemanticsProven": {"const": false},
+        "routePlanInputsIndependentlyTrusted": {"const": false},
+        "providerDeclarationIsExecutionProof": {"const": false},
+        "hostObservationIsExecutionProof": {"const": false},
+        "unsupportedCapabilityPretendedAvailable": {"const": false},
+        "unknownEvidenceRenderedAsPass": {"const": false},
+        "humanTasteReplacedByScore": {"const": false},
+        "aiInvolvementHidden": {"const": false},
+        "aiOutputTrusted": {"const": false},
+        "providerCalled": {"const": false},
+        "workspaceRead": {"const": false},
+        "sourceBytesRead": {"const": false},
+        "artifactGenerated": {"const": false},
+        "verifierRun": {"const": false},
+        "humanDecisionAuthenticated": {"const": false},
+        "permissionGranted": {"const": false},
+        "networkUsed": {"const": false},
+        "resourceLimitsEnforced": {"const": false},
+        "sandboxExecuted": {"const": false},
+        "persistentLearningAdmitted": {"const": false},
+        "installed": {"const": false},
+        "integrated": {"const": false},
+        "published": {"const": false},
+        "modelTrainingPerformed": {"const": false},
+        "physicalActuationPerformed": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false},
+        "mikeFinalMergeGatePreserved": {"const": true},
+        "challengerMode": {"enum": ["OFF", "UNTRUSTED_CHALLENGER"]}
+      }
+    }
+  }
+}

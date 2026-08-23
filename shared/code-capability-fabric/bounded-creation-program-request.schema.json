@@ -1,0 +1,303 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.bounded-creation-program-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "goal",
+    "artifacts",
+    "requirements",
+    "routes",
+    "settings",
+    "rootsGate",
+    "instructionRef",
+    "authority",
+    "requestDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.bounded-creation-program-request/v1"},
+    "version": {"const": "0.1.0"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "goal": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {"$ref": "#/$defs/artifact"}
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/requirement"}
+    },
+    "routes": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/route"}
+    },
+    "settings": {"$ref": "#/$defs/settings"},
+    "rootsGate": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}
+    },
+    "instructionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "authority": {"const": "NONE"},
+    "requestDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "ids": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {"$ref": "semantic-common.schema.json#/$defs/id"}
+    },
+    "providerSelector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "descriptorSha256"],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+        },
+        "descriptorSha256": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "statement",
+        "risk",
+        "verifierRequirementId",
+        "evidenceSchema",
+        "humanJudgmentRequired"
+      ],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "kind": {
+          "enum": [
+            "EXISTENCE",
+            "STATIC_STRUCTURE",
+            "DETERMINISTIC_BEHAVIOR",
+            "VISUAL_APPEARANCE",
+            "MOTION_TIMING",
+            "INTERACTION_JOURNEY",
+            "PERSISTENCE",
+            "TRANSPORT",
+            "AUTHORIZATION",
+            "PERFORMANCE",
+            "RESOURCE_SAFETY",
+            "LEARNING_IMPROVEMENT",
+            "QUALITY",
+            "TASTE_MEANING"
+          ]
+        },
+        "statement": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "risk": {"enum": ["LOW", "MEDIUM", "HIGH"]},
+        "verifierRequirementId": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "semantic-common.schema.json#/$defs/id"}
+          ]
+        },
+        "evidenceSchema": {"$ref": "semantic-common.schema.json#/$defs/contract"},
+        "humanJudgmentRequired": {"type": "boolean"}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "domain",
+        "kind",
+        "purpose",
+        "consequenceClass",
+        "dependsOn",
+        "requiredRequirementIds",
+        "acceptanceClaims"
+      ],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "domain": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "kind": {"$ref": "semantic-common.schema.json#/$defs/contract"},
+        "purpose": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "consequenceClass": {
+          "enum": [
+            "INERT_DIGITAL",
+            "EXECUTABLE_DIGITAL",
+            "PUBLIC_OR_SHARED",
+            "PHYSICAL_SIMULATION",
+            "PHYSICAL_ACTUATION"
+          ]
+        },
+        "dependsOn": {"$ref": "#/$defs/ids"},
+        "requiredRequirementIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {"$ref": "semantic-common.schema.json#/$defs/id"}
+        },
+        "acceptanceClaims": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {"$ref": "#/$defs/claim"}
+        }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "capability", "inputSchema", "outputSchema", "minimumInputArtifacts"],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "capability": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "inputSchema": {"$ref": "semantic-common.schema.json#/$defs/contract"},
+        "outputSchema": {"$ref": "semantic-common.schema.json#/$defs/contract"},
+        "minimumInputArtifacts": {"type": "integer", "minimum": 0, "maximum": 32}
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirementId", "routePlan"],
+      "properties": {
+        "requirementId": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "routePlan": {"$ref": "code-capability-route-plan-v2.schema.json"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxInputBytes",
+        "maxOutputBytes",
+        "maxMemoryBytes",
+        "maxDurationMs",
+        "maxProcesses",
+        "maxAttempts",
+        "maxCostMinorUnits",
+        "maxArtifacts",
+        "maxSteps",
+        "maxRequirements",
+        "maxDependencyDepth"
+      ],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 16777216},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxDurationMs": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxProcesses": {"type": "integer", "minimum": 1, "maximum": 1024},
+        "maxAttempts": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "maxCostMinorUnits": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "maxArtifacts": {"type": "integer", "minimum": 1, "maximum": 64},
+        "maxSteps": {"type": "integer", "minimum": 4, "maximum": 512},
+        "maxRequirements": {"type": "integer", "minimum": 1, "maximum": 256},
+        "maxDependencyDepth": {"type": "integer", "minimum": 1, "maximum": 16}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "durableEvidence",
+        "retainRawSource",
+        "retainStdout",
+        "retainStderr",
+        "retainMachinePaths",
+        "retainPrivateContent"
+      ],
+      "properties": {
+        "durableEvidence": {"const": "DIGESTS_MEASUREMENTS_VERDICTS_AND_LIMITATIONS_ONLY"},
+        "retainRawSource": {"const": false},
+        "retainStdout": {"const": false},
+        "retainStderr": {"const": false},
+        "retainMachinePaths": {"const": false},
+        "retainPrivateContent": {"const": false}
+      }
+    },
+    "reuseRights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "directReuseAllowed", "authorityRef"],
+      "properties": {
+        "state": {"enum": ["DECLARED_REUSE_ALLOWED", "RESEARCH_ONLY_HOLD", "UNKNOWN"]},
+        "directReuseAllowed": {"type": "boolean"},
+        "authorityRef": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "semantic-common.schema.json#/$defs/reference"}
+          ]
+        }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lifecycleTarget",
+        "aiMode",
+        "challengerProviderRef",
+        "allowedPermissions",
+        "allowedNetworkDomains",
+        "allowedMutability",
+        "allowedSourceUse",
+        "resourceEnvelope",
+        "privacy",
+        "reuseRights"
+      ],
+      "properties": {
+        "lifecycleTarget": {
+          "enum": [
+            "DETACHED_CANDIDATE",
+            "DISPOSABLE_SANDBOX_TRIAL",
+            "CAPABILITY_LIBRARY_LESSON",
+            "INSTALL_INTEGRATE_OR_PUBLISH",
+            "MODEL_TRAINING_OR_PHYSICAL_ACTUATION"
+          ]
+        },
+        "aiMode": {"enum": ["OFF", "UNTRUSTED_CHALLENGER"]},
+        "challengerProviderRef": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/providerSelector"}
+          ]
+        },
+        "allowedPermissions": {"$ref": "#/$defs/ids"},
+        "allowedNetworkDomains": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {"$ref": "semantic-common.schema.json#/$defs/id"}
+        },
+        "allowedMutability": {
+          "type": "array",
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {"enum": ["read-only", "candidate-only", "process-observation"]}
+        },
+        "allowedSourceUse": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {"enum": ["inspect-only", "derive-concepts", "transform-bytes", "copy-bytes"]}
+        },
+        "resourceEnvelope": {"$ref": "#/$defs/resources"},
+        "privacy": {"$ref": "#/$defs/privacy"},
+        "reuseRights": {"$ref": "#/$defs/reuseRights"}
+      }
+    }
+  }
+}
