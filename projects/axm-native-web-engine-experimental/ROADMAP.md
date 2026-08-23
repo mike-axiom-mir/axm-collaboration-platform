@@ -23,18 +23,23 @@ This roadmap records sequence; it grants no installation or promotion authority.
 - Provider-neutral Search Broker contracts for normalized search queries,
   non-executing request plans, normalized results, and deterministic federated
   result fusion over SearXNG / Brave / Kagi adapters.
+- Separate bounded Search Executor with explicit network-authority gate, fixed
+  Brave/Kagi endpoints, exact SearXNG endpoint allowlist, secret redaction,
+  timeout/response limits, no redirects, and execution receipts.
 
 Gate status: focused fixtures, deterministic goldens/examples, local schema
 identity checks, independent Draft 2020-12 validation, source manifest,
 bounds/refusal tests, static Structure View inspection, bounded local-shell
-interaction evidence, search-adapter fixtures, and search-fusion tests pass.
-Status remains `EXPERIMENTAL`.
+interaction evidence, search-adapter/fusion fixtures, and injected-transport
+search-execution tests pass. Status remains `EXPERIMENTAL`.
 
 ## Next cheapest hardening step
 
 - Run local intake verification from a clean checkout.
 - Add selected tokenizer/tree conformance cases and a fuzz/resource plan.
-- Add provider-response drift fixtures for the search adapters.
+- Add live provider-response drift fixtures for the search adapters without
+  committing credentials or raw private query history.
+- Add DNS/address policy before trusting non-loopback SearXNG endpoints.
 - Decide whether to migrate the core to Rust now or after style/layout contracts
   stabilize; preserve exact cross-implementation fixtures and digests where the
   contract allows.
@@ -54,9 +59,9 @@ Gate: golden CSS/layout fixtures, cascade provenance tests, resource limits,
 and explicit unsupported matrix. The current Structure Layout does not satisfy
 this gate.
 
-## Search execution broker — partial / network execution held
+## Search execution broker — partial
 
-Implemented without execution authority:
+Implemented:
 
 - normalized `axm.web.search-query/v1` contract;
 - SearXNG, Brave Search API, and Kagi Search API request adapters;
@@ -65,23 +70,31 @@ Implemented without execution authority:
 - normalized provider result sets;
 - HTTP(S)-only result URL normalization with common tracking-parameter removal;
 - deterministic Reciprocal Rank Fusion with provider-agreement metadata and a
-  bounded per-domain cap.
+  bounded per-domain cap;
+- separate `axm.web.search-execution/v1` executor/receipt;
+- explicit `EXPLICIT_ALLOW` / `--allow-network` execution gate;
+- maximum three provider requests per plan;
+- fixed Brave/Kagi endpoints and exact SearXNG endpoint allowlist;
+- secret resolution only into outbound headers, never receipts/results;
+- no redirects, cookies, or credential forwarding;
+- bounded timeout and JSON response bytes;
+- `require-all` and explicit `best-effort` failure modes;
+- transparent estimated external API cost per attempted provider.
 
-Still held before either human or headless browser can actually search:
+Still held:
 
-- the outbound network executor itself;
-- explicit endpoint allowlists / SearXNG endpoint trust policy;
-- credential resolution and redacted execution receipts;
-- timeout, cancellation, response-byte, query-count, and spend budgets;
-- provider error/rate-limit normalization and retry policy;
-- visible human/AI disclosure of which providers were queried and what each
-  query cost or exposed externally;
-- result-page fetching/opening.
+- automatic search from the normal human Browser Shell;
+- background/continuous search;
+- live provider compatibility certification beyond fixture shapes;
+- provider quota/rate-limit orchestration and automatic retry policy;
+- comprehensive DNS-rebinding/private-address policy for remote SearXNG;
+- result-page fetching/opening;
+- treating provider output as verified truth.
 
-Gate: transport threat review, provider fixtures, credential non-leak tests,
-endpoint/redirect/size/timeout refusal corpus, cost/network receipts, and an
-explicit user/host authority decision. Search planning alone grants none of
-this authority.
+Gate before broader exposure: live provider fixtures, credential non-leak tests,
+DNS/address threat review, visible provider/cost disclosures, and explicit host
+policy for whether the normal browser may invoke search. Search execution does
+not grant arbitrary page navigation.
 
 ## Brokered network intake — held
 
