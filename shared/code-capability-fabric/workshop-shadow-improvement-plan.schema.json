@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.workshop-shadow-improvement-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "id", "requestRef", "snapshotRef", "recipe", "finding", "comparison", "changes", "resources", "limitations", "truth", "authority", "planDigest"],
+  "properties": {
+    "schema": {"const": "axm.workshop-shadow-improvement-plan/v1"}, "version": {"const": "1.0.0"},
+    "status": {"enum": ["DRAFT_PLANNED", "CURRENT_NO_DRAFT"]}, "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "requestRef": {"$ref": "#/$defs/ref"}, "snapshotRef": {"$ref": "#/$defs/ref"},
+    "recipe": {"type": "object", "additionalProperties": false, "required": ["id", "outputPath"], "properties": {"id": {"const": "refresh-tools-index-v1"}, "outputPath": {"const": "tools-index.json"}}},
+    "finding": {"enum": ["NONE", "TOOLS_INDEX_MISSING", "TOOLS_INDEX_INVALID", "TOOLS_INDEX_SOURCE_DIGEST_STALE"]},
+    "comparison": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sourceDigestBefore", "sourceDigestAfter", "summaryBefore", "summaryAfter", "addedToolIds", "removedToolIds"],
+      "properties": {"sourceDigestBefore": {"type": ["string", "null"]}, "sourceDigestAfter": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "summaryBefore": {"anyOf": [{"$ref": "#/$defs/summary"}, {"type": "null"}]}, "summaryAfter": {"$ref": "#/$defs/summary"}, "addedToolIds": {"type": "array", "items": {"type": "string"}}, "removedToolIds": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "changes": {
+      "type": "array", "maxItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["path", "operation", "expectedCurrentSha256", "replacementSha256", "replacementByteLength"],
+        "properties": {"path": {"const": "tools-index.json"}, "operation": {"enum": ["ADD", "REPLACE"]}, "expectedCurrentSha256": {"type": ["string", "null"]}, "replacementSha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "replacementByteLength": {"type": "integer", "minimum": 1}}
+      }
+    },
+    "resources": {"type": "object", "additionalProperties": false, "required": ["inputFiles", "inputBytes", "outputFiles", "outputBytes", "networkRequests", "childProcesses", "enforced"], "properties": {"inputFiles": {"type": "integer", "minimum": 1}, "inputBytes": {"type": "integer", "minimum": 1}, "outputFiles": {"type": "integer", "minimum": 0, "maximum": 1}, "outputBytes": {"type": "integer", "minimum": 0}, "networkRequests": {"const": 0}, "childProcesses": {"const": 0}, "enforced": {"const": true}}},
+    "limitations": {"type": "array", "minItems": 1, "maxItems": 12, "items": {"type": "string", "minLength": 1, "maxLength": 300}},
+    "truth": {"type": "object", "additionalProperties": false, "required": ["deterministicPlan", "sourceCurrentAtPlanning", "draftDetached", "candidateExecuted", "sourceWritten", "installed", "integrated", "published", "promoted", "canonChanged"], "properties": {"deterministicPlan": {"const": true}, "sourceCurrentAtPlanning": {"const": true}, "draftDetached": {"type": "boolean"}, "candidateExecuted": {"const": false}, "sourceWritten": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "published": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}}},
+    "authority": {"const": "NONE"}, "planDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "ref": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"type": "string"}, "schema": {"type": "string"}, "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}},
+    "summary": {"type": "object", "additionalProperties": false, "required": ["tools", "contractsPresent", "contractsValid", "topLevelSelftests", "capabilities", "readyForHumanReview", "blocked", "claimsNeedingReverification"], "properties": {"tools": {"type": "integer", "minimum": 0}, "contractsPresent": {"type": "integer", "minimum": 0}, "contractsValid": {"type": "integer", "minimum": 0}, "topLevelSelftests": {"type": "integer", "minimum": 0}, "capabilities": {"type": "integer", "minimum": 0}, "readyForHumanReview": {"type": "integer", "minimum": 0}, "blocked": {"type": "integer", "minimum": 0}, "claimsNeedingReverification": {"type": "integer", "minimum": 0}}}
+  }
+}

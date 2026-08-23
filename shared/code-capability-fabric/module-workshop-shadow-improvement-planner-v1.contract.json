@@ -1,0 +1,16 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "workshop-shadow-improvement-planner-v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "provides": ["workshop.improvement.detect.deterministic", "workshop.improvement.draft.byte-bound-diff", "workshop.improvement.authority.none"],
+  "consumes": ["axm.workshop-shadow-refresh-request/v1", "axm.workshop-shadow-snapshot/v1", "tools/deterministic-json-core"],
+  "permissions": [],
+  "handoffs": {"accepts": ["axm.workshop-shadow-refresh-request/v1", "axm.workshop-shadow-snapshot/v1"], "emits": ["axm.workshop-shadow-improvement-plan/v1"]},
+  "boundaries": {
+    "writes": [],
+    "refuses": ["filesystem-read", "filesystem-write", "source-writeback", "candidate-execution", "provider-call", "network-use", "child-process", "environment-access", "automatic-installation", "automatic-integration", "automatic-publication", "automatic-promotion", "automatic-canon", "unsupported-recipe-fallback"]
+  },
+  "lifecycle": {"state_owner": "none", "reload": "deterministic-rebuild", "disconnect": "not-applicable", "cleanup": "none"}
+}
+

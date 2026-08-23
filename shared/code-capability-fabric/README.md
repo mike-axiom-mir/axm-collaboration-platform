@@ -128,3 +128,23 @@ node shared/code-capability-fabric/selftest-deterministic-gameplay-replay-v1.js
 node shared/code-capability-fabric/selftest-deterministic-gameplay-trailer-planner-v1.js
 node tools/game-hub/game-library/020-four-roots-adventure/media/trailer-selftest.js
 ```
+
+## Current-Workshop shadow improvement draft
+
+The next `TEST` rung adds one deterministic improvement recipe:
+`refresh-tools-index-v1`. A trusted host adapter observes exact privacy-scoped
+current Workshop state and may create an immutable, detached `tools-index.json`
+draft. The pure Fabric planner performs no filesystem or provider action.
+
+The source has no write path, the JSON candidate is never executed, and the
+script-free review preview refuses stale scoped bytes. Receipts bind request,
+snapshot, plan, candidate, resource measurements, and exact trusted generator
+files without retaining raw source or machine paths. This is not a general code
+improver and cannot recover missing repository files.
+
+See `tools/sandbox/README-workshop-shadow-sandbox-v1.md` and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-workshop-shadow-improvement-planner-v1.js
+node tools/sandbox/selftest-workshop-shadow-sandbox-v1.js
+```
