@@ -30,8 +30,8 @@ async function createLocalBrowserHost(session, options) {
     receipt,
     shellPolicy,
     aiControl,
-    controlState: function () { return aiControl.state(); },
-    visualState: function () { return aiControl.visualState; },
+    controlState: function () { return aiControl.state(session.snapshot()); },
+    visualState: function () { return aiControl.ensureVisualState(session.snapshot()); },
     close: host.close
   };
 }
