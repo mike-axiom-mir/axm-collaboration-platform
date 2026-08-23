@@ -24,6 +24,7 @@ function createRun(options) {
     schema: 'axm.hermes-run-manifest/v1',
     run_id: runId,
     started_at: now(),
+    launcher_pid: Number.isInteger(options.launcherPid) ? options.launcherPid : null,
     source: {
       repository: options.sourceLock.repo_url,
       commit: options.sourceLock.commit,
@@ -53,13 +54,11 @@ function createRun(options) {
   return { runId, runDir, stateDir, receiptDir, providerReceiptDir, sessionEventDir, manifest };
 }
 
+function readJson(file) { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch (_) { return null; } }
 function readJsonFiles(dir) {
   if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir).filter(name => name.endsWith('.json')).sort().map(name => {
-    try { return JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8')); } catch (_) { return null; }
-  }).filter(Boolean);
+  return fs.readdirSync(dir).filter(name => name.endsWith('.json')).sort().map(name => readJson(path.join(dir, name))).filter(Boolean);
 }
-
 function tally(records, key) {
   const out = {};
   for (const record of records) {
@@ -68,14 +67,12 @@ function tally(records, key) {
   }
   return out;
 }
-
 function receiptSetHash(records) {
   const hashes = records.map(record => String(record.receipt_hash || '')).filter(Boolean).sort();
   return hashText(hashes.join('\n'));
 }
-
 function latestSessionEvidence(records) {
-  const end = records.filter(r => r.event === 'on_session_end').sort((a, b) => Number(a.timestamp_ns || 0) - Number(b.timestamp_ns || 0)).pop();
+  const end = records.filter(r => r.event === 'on_session_end').pop();
   return end ? {
     completed: end.completed,
     failed: end.failed,
@@ -90,8 +87,14 @@ function finalizeRun(options) {
   const toolReceipts = readJsonFiles(options.receiptDir);
   const providerReceipts = readJsonFiles(options.providerReceiptDir);
   const sessionEvents = readJsonFiles(options.sessionEventDir);
+  const manifest = readJson(path.join(options.runDir, 'run-manifest.json')) || {};
   const providerMismatch = providerReceipts.some(record => record.policy_mismatch === true);
   const sessionEvidence = latestSessionEvidence(sessionEvents);
+  const finalPolicyHash = hashFile(options.policyFile);
+  const finalProfileHash = hashFile(options.configFile);
+  const initialPolicyHash = manifest.policy && manifest.policy.sha256 || null;
+  const initialProfileHash = manifest.profile_sha256 || null;
+
   const packet = {
     schema: 'axm.hermes-return-packet/v1',
     run_id: options.runId,
@@ -100,8 +103,10 @@ function finalizeRun(options) {
     process_signal: options.signal || null,
     source_commit: options.sourceLock.commit,
     source_tree: options.sourceLock.tree || null,
-    policy_sha256: hashFile(options.policyFile),
-    profile_sha256: hashFile(options.configFile),
+    initial_policy_sha256: initialPolicyHash,
+    final_policy_sha256: finalPolicyHash,
+    initial_profile_sha256: initialProfileHash,
+    final_profile_sha256: finalProfileHash,
     tool_receipts: {
       count: toolReceipts.length,
       receipt_set_sha256: receiptSetHash(toolReceipts),
@@ -126,7 +131,10 @@ function finalizeRun(options) {
       options.exitCode === 0 ? 'process-exited-zero' : 'process-exited-nonzero-or-unknown',
     integrity_flags: {
       provider_policy_mismatch: providerMismatch,
-      source_was_verified_before_launch: options.sourceVerified === true
+      source_was_verified_before_launch: options.sourceVerified === true,
+      source_verified_after_run: options.sourceVerifiedAfter === true,
+      policy_changed_during_run: Boolean(initialPolicyHash && finalPolicyHash && initialPolicyHash !== finalPolicyHash),
+      profile_changed_during_run: Boolean(initialProfileHash && finalProfileHash && initialProfileHash !== finalProfileHash)
     },
     raw_prompt_stored: false,
     raw_response_stored: false,
