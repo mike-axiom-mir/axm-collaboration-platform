@@ -5,8 +5,11 @@ const LocalBrowserHostCore = require('./local-browser-host-core');
 
 const SHELL_POLICY_SCHEMA = 'axm.web.local-browser-shell-policy/v1';
 
-function buildShellPolicy() {
+function buildShellPolicy(options) {
+  options = options || {};
   const headers = LocalBrowserHostCore.securityHeaders();
+  const controllerHash = options.controllerHash || LocalBrowserHostCore.controllerHash();
+  const contentSecurityPolicy = options.contentSecurityPolicy || LocalBrowserHostCore.contentSecurityPolicy();
   const material = {
     schema: SHELL_POLICY_SCHEMA,
     status: 'EXPERIMENTAL',
@@ -14,8 +17,8 @@ function buildShellPolicy() {
     capabilityTokenBytes: 24,
     mutationOriginPolicy: 'EXACT_SHELL_ORIGIN_REQUIRED',
     allowedMethods: ['GET', 'POST'],
-    controllerCspHash: 'sha256-' + LocalBrowserHostCore.controllerHash(),
-    contentSecurityPolicy: LocalBrowserHostCore.contentSecurityPolicy(),
+    controllerCspHash: 'sha256-' + controllerHash,
+    contentSecurityPolicy,
     responseSecurityHeaders: {
       cacheControl: headers['Cache-Control'],
       crossOriginOpenerPolicy: headers['Cross-Origin-Opener-Policy'],

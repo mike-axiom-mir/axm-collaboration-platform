@@ -18,6 +18,8 @@ module.exports = {
   browserVisualState: require('./browser-visual-state'),
   browserAiControl: require('./browser-ai-control'),
   browserAiControlHost: require('./browser-ai-control-host'),
+  browserAiChat: require('./browser-ai-chat'),
+  browserAiChatHost: require('./browser-ai-chat-host'),
   htmlLiveBuilder: require('./html-live-builder'),
   htmlLiveBuilderHost: require('./html-live-builder-host'),
   sessionVerifier: require('./session-verifier'),
