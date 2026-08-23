@@ -1,0 +1,46 @@
+name: Hermes AXM Runtime Gate
+
+on:
+  pull_request:
+    paths:
+      - 'tools/hermes/**'
+      - 'hub/module-contract-verifier.js'
+      - '.github/workflows/hermes-runtime-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hermes-runtime-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax check Node adapter
+        run: |
+          node --check tools/hermes/hermes-bootstrap.js
+          node --check tools/hermes/hermes-runner.js
+          node --check tools/hermes/selftest.js
+
+      - name: Compile AXM Hermes Python hooks
+        run: |
+          python -m py_compile \
+            tools/hermes/axm/axm_gate.py \
+            tools/hermes/axm/axm_context.py \
+            tools/hermes/axm/axm_receipt.py
+
+      - name: Run AXM Hermes boundary self-test
+        run: node tools/hermes/selftest.js
