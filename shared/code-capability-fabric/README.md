@@ -224,3 +224,30 @@ and run:
 ```powershell
 node shared/code-capability-fabric/selftest-bounded-creation-program-planner-v1.js
 ```
+
+## Consent-bound detached semantic candidate
+
+The additive v0.9 `TEST` rung joins the existing semantic generator, Ed25519
+trust-key contract, deterministic JSON core, and Detached Candidate Nursery.
+It verifies one exact Tier-1 decision against a host-selected trust-policy
+digest and a separately signed current revocation snapshot, reserves the
+decision nonce exclusively, then writes one native Review-Card adapter
+candidate into a new disposable direct-child root.
+
+Every emitted byte is read back and statically inspected. The path-free receipt
+measures candidate, replay, evidence, and total written bytes. Failed attempts
+remove only their newly owned candidate root and leave the nonce spent.
+
+Authentication is relative to the selected host policy; natural-person
+identity, informed understanding, independently trusted time, and global replay
+prevention are not claimed. Candidate code is never executed. AI challenger
+materialization, arbitrary domain recipes, installation, integration,
+publication, learning, training, physical actuation, promotion, and `CANON`
+remain outside this capability.
+
+See [README-semantic-candidate-materializer-v1.md](README-semantic-candidate-materializer-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-semantic-candidate-materializer-v1.js
+```
