@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.search-execution/v1",
+  "title": "AXM Bounded Search Execution Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","planDigest","failureMode","providersRequested","providersSucceeded","providersFailed","receipts","resultSet","estimatedExternalApiUsd","authority","executionDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.search-execution/v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PASS","PARTIAL"]},
+    "planDigest": {"$ref": "#/$defs/digest"},
+    "failureMode": {"enum": ["require-all","best-effort"]},
+    "providersRequested": {"$ref": "#/$defs/providers"},
+    "providersSucceeded": {"$ref": "#/$defs/providers"},
+    "providersFailed": {"$ref": "#/$defs/providers"},
+    "receipts": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"$ref": "#/$defs/receipt"}},
+    "resultSet": {"$ref": "search-result-set.schema.json"},
+    "estimatedExternalApiUsd": {"type": "number", "minimum": 0},
+    "authority": {"$ref": "#/$defs/authority"},
+    "executionDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "providers": {"type": "array", "maxItems": 3, "uniqueItems": true, "items": {"enum": ["searxng","brave","kagi"]}},
+    "receipt": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider","status","httpStatus","responseBytes","responseBodyDigest","resultCount","estimatedExternalApiUsd"],
+          "properties": {
+            "provider": {"enum": ["searxng","brave","kagi"]},
+            "status": {"const": "PASS"},
+            "httpStatus": {"type": "integer", "minimum": 200, "maximum": 299},
+            "responseBytes": {"type": "integer", "minimum": 0},
+            "responseBodyDigest": {"$ref": "#/$defs/digest"},
+            "resultCount": {"type": "integer", "minimum": 0, "maximum": 20},
+            "estimatedExternalApiUsd": {"type": "number", "minimum": 0}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider","status","code","message","estimatedExternalApiUsd"],
+          "properties": {
+            "provider": {"enum": ["searxng","brave","kagi"]},
+            "status": {"const": "FAIL"},
+            "code": {"type": "string", "minLength": 1},
+            "message": {"type": "string", "minLength": 1},
+            "estimatedExternalApiUsd": {"type": "number", "minimum": 0}
+          }
+        }
+      ]
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["networkExecutionUsed","arbitraryNavigationGranted","resultContentTrusted","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "networkExecutionUsed": {"const": true},
+        "arbitraryNavigationGranted": {"const": false},
+        "resultContentTrusted": {"const": false},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    }
+  }
+}
