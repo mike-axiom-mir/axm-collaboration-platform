@@ -59,6 +59,7 @@ function main() {
       const staticResult = { schema: expected.schema, version: expected.version, status: 'COMPLETE', plan: expected.plan, packet: staticPacket, files: staticFiles, receipt: staticReceipt, authority: expected.authority };
       check(Foundry.verify(staticResult).ok && staticPacket.packetDigest === expected.packet.packetDigest, 'committed ' + pilotIntent.recipe.capabilityKind + ' pilot is the exact deterministic Foundry output');
     });
+    const activeStateBefore = { catalogDigest: Fabric.loadCatalog().catalogDigest, builderPresent: Fabric.ALLOWED_BUILDERS.includes(intent.recipe.builderId), recipePresent: Fabric.loadCatalog().recipes.some((recipe) => recipe.id === intent.recipe.id) };
     const materialized = Cli.materialize(first, root);
     check(materialized.status === 'MATERIALIZED_FOR_SOURCE_REVIEW' && materialized.fileCount === 10, 'CLI materializes exactly eight HAND review files plus packet and receipt');
     check(materialized.builderSourceExecuted === false && materialized.generatedCodeExecuted === false && materialized.testsExecuted === false, 'materialization executes no authored or generated code');
@@ -81,7 +82,8 @@ function main() {
     check(Fabric.validateCompiledArtifact(proposal.recipe, built).ok, 'Capability Fabric accepts the HAND builder artifact contract');
     const inspected = Fabric.importRecipeProposal(proposal);
     check(inspected.ok && inspected.active === false && inspected.requiresSourceReview && inspected.requiresMikeMerge, 'materialized proposal remains inactive and source-review held');
-    check(!Fabric.ALLOWED_BUILDERS.includes(proposal.recipe.builderId) && !Fabric.loadCatalog().recipes.some((recipe) => recipe.id === proposal.recipe.id), 'materialization does not activate the builder or catalog recipe');
+    const activeStateAfter = { catalogDigest: Fabric.loadCatalog().catalogDigest, builderPresent: Fabric.ALLOWED_BUILDERS.includes(proposal.recipe.builderId), recipePresent: Fabric.loadCatalog().recipes.some((recipe) => recipe.id === proposal.recipe.id) };
+    check(activeStateBefore.builderPresent && activeStateBefore.recipePresent && Foundry.canonicalJson(activeStateAfter) === Foundry.canonicalJson(activeStateBefore), 'materialization preserves the separately reviewed active state without causing activation');
 
     const skillResult = Foundry.forge(skillIntent), skillMaterialized = Cli.materialize(skillResult, root);
     check(skillMaterialized.fileCount === 10 && skillMaterialized.builderSourceExecuted === false, 'CLI materializes the eight-file SKILL review packet without execution');

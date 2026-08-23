@@ -34,9 +34,9 @@ function resealPacket(packet) { const copy = Foundry.clone(packet); delete copy.
   const proposal = JSON.parse(first.files[Foundry.FILES.proposal]);
   const inspection = Fabric.importRecipeProposal(proposal);
   check(inspection.ok && inspection.active === false && inspection.requiresMikeMerge === true, 'Capability Fabric imports the pilot only as an inactive proposal');
-  check(!Fabric.ALLOWED_BUILDERS.includes(proposal.recipe.builderId), 'pilot builder is not smuggled into Capability Fabric compiled builders');
+  check(Fabric.ALLOWED_BUILDERS.includes(proposal.recipe.builderId), 'reviewed HAND pilot builder is now present through the explicit admission merge');
   const catalog = Fabric.loadCatalog();
-  check(!catalog.recipes.some((recipe) => recipe.id === proposal.recipe.id), 'pilot recipe is absent from the active recipe catalog');
+  check(catalog.recipes.some((recipe) => recipe.id === proposal.recipe.id && recipe.activation === Fabric.ACTIVE_RECIPE), 'reviewed HAND pilot recipe is now present in the active recipe catalog');
   check(proposal.sourceKind === 'CODEX' && proposal.recipe.activation === 'INACTIVE_PROPOSAL', 'proposal keeps truthful Codex provenance and inactive activation');
   const handContract = JSON.parse(first.files[Foundry.FILES.modularContract]);
   check(proposal.recipe.capabilityKind === 'HAND' && handContract.kind === 'HAND' && handContract.runtime.entry === 'capability.js' && handContract.portable.form === 'NONE', 'HAND proposal binds an executable modular contract without a portable skill form');

@@ -49,11 +49,11 @@ function main(){
       packageDigests.push(candidate.package.packageDigest);
       assert.throws(function(){Cli.materialize(candidate,root);},function(error){return error&&error.receipt&&error.receipt.code==='OUTPUT_OVERWRITE_REFUSED';});passed+=1;process.stdout.write('PASS '+recipe.id+' refuses overwrite of exact materialization\n');
     });
-    check(new Set(packageDigests).size===3,'three capability families produce distinct packages');
-    const registry=Nursery.scanSupply(root);check(registry.summary.total===3&&registry.summary.readyForLaterIntake===3,'Nursery independently sees all three exact candidates ready for later intake');
+    check(new Set(packageDigests).size===4,'four capability families produce distinct packages');
+    const registry=Nursery.scanSupply(root);check(registry.summary.total===4&&registry.summary.readyForLaterIntake===4,'Nursery independently sees all four exact candidates ready for later intake');
     check(registry.truth.candidateCodeExecuted===false&&registry.truth.installationPerformed===false,'Nursery proves scan-only authority boundary');
 
-    const request=Fabric.sealRequest(catalog.recipes[0].exampleRequest,true),candidate=Fabric.build(request,catalog).candidates[0],tampered=Fabric.clone(candidate);tampered.files['module-bundle.json']=tampered.files['module-bundle.json'].replace('pure-json-transform','changed-transform');
+    const tamperRecipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),request=Fabric.sealRequest(tamperRecipe.exampleRequest,true),candidate=Fabric.build(request,catalog).candidates[0],tampered=Fabric.clone(candidate);tampered.files['module-bundle.json']=tampered.files['module-bundle.json'].replace('pure-json-transform','changed-transform');
     check(!Fabric.verifyCandidate(tampered).ok,'bundle tampering fails package verification');
     const rollbackParent=path.join(root,'rollback-proof');fs.mkdirSync(rollbackParent);const originalScan=Nursery.scanSupply;let rollbackError=null;
     try{Nursery.scanSupply=function(){return {candidates:[]};};Cli.materialize(candidate,rollbackParent);}catch(error){rollbackError=error;}finally{Nursery.scanSupply=originalScan;}

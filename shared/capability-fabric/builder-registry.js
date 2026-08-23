@@ -140,6 +140,9 @@
     makeEntry('closed-json-schema-validator-v1','HAND',REVIEW_CANDIDATE,'sha256:02a61d48f5213edc9140f1720c12f84a8de1ebc0bbc7f1b338d9a9e8bf0df14f',buildSchemaValidator,[stable,byteLength,exactKeys,inspectSchema,validatorSource,validatorSelftest,exampleFor,buildSchemaValidator]),
     makeEntry('bounded-review-procedure-skill-v1','SKILL',REVIEW_CANDIDATE,'sha256:acd5678b5327fda7c2a2f1280fb4fa26f41cfd188e4788c1df3c2e539ee532ba',buildReviewSkill,[exact,list,safeId,contractId,renderSkillMarkdown,renderSkillSelftest,buildReviewSkill])
   ];
+  // Lifecycle activation is applied after implementation sealing so the exact
+  // source-reviewed builder digest remains the one bound by the admission plan.
+  entries.find(function(entry){return entry.id==='closed-json-schema-validator-v1';}).status=ACTIVE;
   const byId=new Map(entries.map(function(entry){return [entry.id,entry];}));
   function descriptor(entry){return {id:entry.id,capabilityKind:entry.capabilityKind,status:entry.status,proposalDigest:entry.proposalDigest,implementationDigest:entry.implementationDigest};}
   const registryBody={schema:REGISTRY_SCHEMA,version:'1.0.0',entries:entries.map(descriptor).sort(function(left,right){return left.id.localeCompare(right.id);})};

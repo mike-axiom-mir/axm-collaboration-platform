@@ -45,15 +45,17 @@ module contract, and receipt.
 - `axm.modular-capability-recipe-contract/v1`
 - `axm.modular-capability-contract/v1`
 
-The initial reviewed catalog contains three executable `HAND` recipes: a pure
-JSON transform, an SVG status-badge creation hand, and a Workshop Direction
-hand-request adapter. Portable `SKILL` support is proven by an inactive Recipe
-Foundry pilot; it is not silently added to the active catalog.
+The reviewed catalog contains four executable `HAND` recipes: a closed JSON
+Schema validator, a pure JSON transform, an SVG status-badge creation hand,
+and a Workshop Direction hand-request adapter. Portable `SKILL` support is
+proven by an inactive Recipe Foundry pilot; it is not silently added to the
+active catalog.
 
 Builder implementations now live behind a digest-bound modular registry.
 Recipes, plans, candidate packages, and verification all bind the exact active
-builder digest. The registry also carries the Foundry validator HAND and
-portable review SKILL as `REVIEW_CANDIDATE`, which the normal Fabric compiler
-refuses to execute. `tools/capability-recipe-admission-gate` verifies their
-packet, trusted test, source review, and Mike decision before it can emit a
-merge-only registry/catalog plan. The gate has no apply or activation action.
+builder digest. The Foundry validator HAND entered the active registry through
+the deterministic admission gate after exact packet inspection, trusted tests,
+nine-case source review, and Mike's merge decision. The portable review SKILL
+remains `REVIEW_CANDIDATE`, which the normal Fabric compiler refuses to execute.
+`tools/capability-recipe-admission-gate` can emit its merge-only registry/catalog
+plan after the same evidence route. The gate has no apply or activation action.

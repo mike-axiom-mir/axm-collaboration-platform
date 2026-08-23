@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `7b6b2cd08d6c1fbe9d724819b99bec6994b36308b1a1bf3206aa9424aec70755`
+Twin digest: `a9734d5bb10239117afad71f823398f5ee4aa42ed2ac0aadf0da362453bd6033`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -41,10 +41,10 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | browser-global-surface-observatory | ROOM | TEST | 5 | NONE | UNKNOWN | `7fd59e1eb7d51db5…` |
 | browser-lan-hardware-qa-lab | ROUTE | TEST | 7 | PHYSICAL_ACTUATION, WRITE_CANDIDATE | HIGH | `bb91233756d68341…` |
 | bulk-intake-conveyor | HAND | TEST | 7 | WRITE_CANDIDATE | UNKNOWN | `46335417c3c9f353…` |
-| capability-fabric | BRIDGE | EXPERIMENTAL | 6 | WRITE_CANDIDATE | UNKNOWN | `e3d8375d6170c6cc…` |
+| capability-fabric | BRIDGE | EXPERIMENTAL | 6 | WRITE_CANDIDATE | UNKNOWN | `64bf6ff24666119d…` |
 | capability-gap-workbench | HAND | TEST | 5 | WRITE_CANDIDATE | MEDIUM | `e8c183f4486ef4ae…` |
-| capability-recipe-admission-gate | HAND | EXPERIMENTAL | 6 | OBSERVE_LOCAL, WRITE_CANDIDATE | UNKNOWN | `d4a9a2567650677c…` |
-| capability-recipe-foundry | HAND | EXPERIMENTAL | 6 | WRITE_CANDIDATE | UNKNOWN | `d34e2bd0e664ab78…` |
+| capability-recipe-admission-gate | HAND | EXPERIMENTAL | 6 | OBSERVE_LOCAL, WRITE_CANDIDATE | UNKNOWN | `2495b24381904863…` |
+| capability-recipe-foundry | HAND | EXPERIMENTAL | 6 | WRITE_CANDIDATE | UNKNOWN | `bd7656384dd3dc5c…` |
 | challenge-arena | HAND | TEST | 5 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `5ab1c562399aff7e…` |
 | character-animation-mocap-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `2aea59965e3adca5…` |
 | character-creature-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `31530b278d8d7694…` |

@@ -11,10 +11,11 @@ Recipe Foundry carries the first inactive portable `SKILL` pilot through source
 review without activating it.
 
 Builder code is no longer selected by hard-coded branches in the Fabric core.
-A digest-bound modular registry supplies the three active builders and retains
-the Foundry validator HAND and portable review SKILL as non-executable review
-candidates. The separate Capability Recipe Admission Gate can prove the exact
-evidence and prospective catalog diff, but cannot activate either candidate.
+A digest-bound modular registry supplies four active HAND builders, including
+the validator admitted through the reviewed merge gate. The portable review
+SKILL remains a non-executable review candidate. The separate Capability Recipe
+Admission Gate can prove its exact evidence and prospective catalog diff, but
+cannot activate the candidate itself.
 
 Explicit local materialization is CLI-only:
 

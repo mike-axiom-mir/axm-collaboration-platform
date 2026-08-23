@@ -19,11 +19,11 @@ function resealCandidate(candidate){
 function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
-  check(catalog.recipes.length===3,'initial catalog has code, creation, and adapter recipes');
+  check(catalog.recipes.length===4,'reviewed catalog has validator, code, creation, and adapter recipes');
   check(catalog.recipes.every(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}),'reviewed active recipes are explicitly typed as executable HAND capabilities');
-  check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.defaultVariantId==='standard';}),'every initial recipe explicitly defaults to one standard candidate');
+  check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.variants.some(function(variant){return variant.id===row.candidatePolicy.defaultVariantId;});}),'every reviewed recipe explicitly defaults to one named candidate variant');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
-  check(BuilderRegistry.activeIds().length===3&&BuilderRegistry.reviewCandidateIds().length===2,'modular builder registry separates active builders from review candidates');
+  check(BuilderRegistry.activeIds().length===4&&BuilderRegistry.reviewCandidateIds().length===1,'modular builder registry separates four active builders from the remaining SKILL review candidate');
   check(catalog.recipes.every(function(row){const builder=BuilderRegistry.describe(row.builderId);return builder&&row.builderDigest===builder.implementationDigest;}),'every active recipe binds the exact modular builder digest');
 
   const packages={};
@@ -42,10 +42,10 @@ function main(){
     packages[recipe.id]=one.candidates[0];
   });
 
-  const recipe=catalog.recipes[0],base=Fabric.sealRequest(recipe.exampleRequest,true),changedDraft=Fabric.clone(recipe.exampleRequest);changedDraft.parameters.defaultValue='different';const changed=Fabric.sealRequest(changedDraft,true);
+  const recipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),base=Fabric.sealRequest(recipe.exampleRequest,true),changedDraft=Fabric.clone(recipe.exampleRequest);changedDraft.parameters.defaultValue='different';const changed=Fabric.sealRequest(changedDraft,true);
   check(base.requestDigest!==changed.requestDigest,'semantic request change alters request digest');
   check(Fabric.build(base,catalog).candidates[0].package.packageDigest!==Fabric.build(changed,catalog).candidates[0].package.packageDigest,'semantic request change alters package digest');
-  const builderDriftCatalog=Fabric.clone(catalog);builderDriftCatalog.recipes[0].builderDigest=Fabric.digest('wrong builder');delete builderDriftCatalog.recipes[0].recipeDigest;builderDriftCatalog.recipes[0].recipeDigest=Fabric.digest(builderDriftCatalog.recipes[0]);delete builderDriftCatalog.catalogDigest;builderDriftCatalog.catalogDigest=Fabric.digest(builderDriftCatalog);
+  const builderDriftCatalog=Fabric.clone(catalog),builderDriftRecipe=builderDriftCatalog.recipes.find(function(row){return row.id===recipe.id;});builderDriftRecipe.builderDigest=Fabric.digest('wrong builder');delete builderDriftRecipe.recipeDigest;builderDriftRecipe.recipeDigest=Fabric.digest(builderDriftRecipe);delete builderDriftCatalog.catalogDigest;builderDriftCatalog.catalogDigest=Fabric.digest(builderDriftCatalog);
   check(Fabric.planBuild(base,builderDriftCatalog).status==='HELD','builder implementation digest drift becomes a catalog hold');
 
   const unreviewed=Fabric.sealRequest(recipe.exampleRequest,false),unreviewedPlan=Fabric.planBuild(unreviewed,catalog);
@@ -58,9 +58,9 @@ function main(){
   check(ambiguous.status==='HELD'&&ambiguous.holds[0].code==='RECIPE_SELECTION_REQUIRED','ambiguous family returns selection hold');
   const invalid=Fabric.clone(base);invalid.parameters.extra=true;delete invalid.requestDigest;invalid.requestDigest=Fabric.digest(invalid);const invalidPlan=Fabric.planBuild(invalid,catalog);
   check(invalidPlan.status==='HELD'&&invalidPlan.holds[0].code==='CONTRACT_HOLD','unknown parameter is refused by closed recipe contract');
-  const defaultedCatalog=Fabric.clone(catalog),defaultedRecipe=defaultedCatalog.recipes[0];defaultedRecipe.candidatePolicy.variants[0].parameterOverrides={defaultValue:'from-variant'};delete defaultedRecipe.recipeDigest;defaultedRecipe.recipeDigest=Fabric.digest(defaultedRecipe);delete defaultedCatalog.catalogDigest;defaultedCatalog.catalogDigest=Fabric.digest(defaultedCatalog);const defaultedDraft=Fabric.clone(recipe.exampleRequest);delete defaultedDraft.parameters.defaultValue;const defaultedRequest=Fabric.sealRequest(defaultedDraft,true),defaultedPlan=Fabric.planBuild(defaultedRequest,defaultedCatalog);
+  const defaultedCatalog=Fabric.clone(catalog),defaultedRecipe=defaultedCatalog.recipes.find(function(row){return row.id===recipe.id;});defaultedRecipe.candidatePolicy.variants[0].parameterOverrides={defaultValue:'from-variant'};delete defaultedRecipe.recipeDigest;defaultedRecipe.recipeDigest=Fabric.digest(defaultedRecipe);delete defaultedCatalog.catalogDigest;defaultedCatalog.catalogDigest=Fabric.digest(defaultedCatalog);const defaultedDraft=Fabric.clone(recipe.exampleRequest);delete defaultedDraft.parameters.defaultValue;const defaultedRequest=Fabric.sealRequest(defaultedDraft,true),defaultedPlan=Fabric.planBuild(defaultedRequest,defaultedCatalog);
   check(defaultedPlan.status==='READY'&&Fabric.build(defaultedRequest,defaultedCatalog).status==='COMPLETE','default variant overrides are resolved before required-parameter validation');
-  const invalidVariantCatalog=Fabric.clone(catalog),invalidVariantRecipe=invalidVariantCatalog.recipes[0];invalidVariantRecipe.candidatePolicy.variants[0].parameterOverrides={undeclared:true};delete invalidVariantRecipe.recipeDigest;invalidVariantRecipe.recipeDigest=Fabric.digest(invalidVariantRecipe);delete invalidVariantCatalog.catalogDigest;invalidVariantCatalog.catalogDigest=Fabric.digest(invalidVariantCatalog);const invalidVariantPlan=Fabric.planBuild(base,invalidVariantCatalog);
+  const invalidVariantCatalog=Fabric.clone(catalog),invalidVariantRecipe=invalidVariantCatalog.recipes.find(function(row){return row.id===recipe.id;});invalidVariantRecipe.candidatePolicy.variants[0].parameterOverrides={undeclared:true};delete invalidVariantRecipe.recipeDigest;invalidVariantRecipe.recipeDigest=Fabric.digest(invalidVariantRecipe);delete invalidVariantCatalog.catalogDigest;invalidVariantCatalog.catalogDigest=Fabric.digest(invalidVariantCatalog);const invalidVariantPlan=Fabric.planBuild(base,invalidVariantCatalog);
   check(invalidVariantPlan.status==='HELD'&&invalidVariantPlan.holds[0].code==='CATALOG_HOLD','invalid variant override becomes a typed catalog hold before compilation');
   const forgedPlan=Fabric.clone(Fabric.planBuild(base,catalog));forgedPlan.requestDigest=unreviewed.requestDigest;resealPlan(forgedPlan);assert.throws(function(){Fabric.buildCandidate(unreviewed,catalog,forgedPlan);});passed+=1;
   const weakenedPlan=Fabric.clone(Fabric.planBuild(base,catalog));weakenedPlan.candidateCount=0;resealPlan(weakenedPlan);assert.throws(function(){Fabric.buildCandidate(base,catalog,weakenedPlan);});passed+=1;

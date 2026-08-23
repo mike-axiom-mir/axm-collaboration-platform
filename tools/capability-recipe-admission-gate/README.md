@@ -22,9 +22,10 @@ prospective active recipe, catalog, and builder-registry descriptors. It still
 writes none of them. A normal reviewed source diff and Workshop verification
 remain required.
 
-The initial registry contains three active HAND builders plus two inactive
-review candidates from the Foundry pilots: the closed-schema validator HAND
-and the portable evidence-review SKILL.
+The registry now contains four active HAND builders. The closed-schema
+validator entered through this exact reviewed-merge route; its inactive Foundry
+packet and external receipts remain provenance, not an activation surface. The
+portable evidence-review SKILL remains the one inactive review candidate.
 
 The gate cannot activate a recipe, install, register, stage, promote, mutate
 Foundation, or change CANON.

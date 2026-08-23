@@ -10,10 +10,7 @@ const Registry=require('../../shared/capability-fabric/builder-registry.js');
 const Admission=require('../../shared/capability-fabric/admission-core.js');
 const Host=require('./admission-host.js');
 
-const PILOTS=[
-  path.resolve(__dirname,'../capability-recipe-foundry/pilots/axm-capability-recipe-review-closed-json-schema-validator-recipe-pilot-6f0ccc698d7c'),
-  path.resolve(__dirname,'../capability-recipe-foundry/pilots/axm-capability-recipe-review-closed-capability-review-skill-recipe-pilot-7586a96b8fe0')
-];
+const REVIEW_PILOTS=[path.resolve(__dirname,'../capability-recipe-foundry/pilots/axm-capability-recipe-review-closed-capability-review-skill-recipe-pilot-7586a96b8fe0')];
 let passed=0;
 function check(value,label){assert(value,label);passed+=1;process.stdout.write('PASS '+label+'\n');}
 function evidenceCases(){return Admission.REVIEW_CASES.map(function(id){return {id:id,verdict:'PASS',evidenceRef:Fabric.digest({case:id,evidence:'focused admission selftest'})};});}
@@ -35,7 +32,7 @@ function exercisePilot(root){
   check(Admission.buildPlan(planInput(inspected,test,review,wrong)).state==='AWAITING_MIKE_DECISION',inspected.packet.target.capabilityKind+' non-Mike decision cannot open merge readiness');
   const decision=Admission.buildDecision(decisionInput),ready=Admission.buildPlan(planInput(inspected,test,review,decision));
   check(ready.state==='READY_FOR_REVIEWED_MERGE'&&Admission.verifyPlan(ready).state==='PASS',inspected.packet.target.capabilityKind+' exact reviewed decision produces merge-only readiness');
-  check(ready.proposedRecipe.builderDigest===inspected.builder.implementationDigest&&ready.proposedCatalog.recipes.length===4&&ready.proposedRegistry.entries.find(function(row){return row.id===inspected.builder.id;}).status===Registry.ACTIVE,inspected.packet.target.capabilityKind+' plan binds exact prospective recipe, catalog, and registry');
+  check(ready.proposedRecipe.builderDigest===inspected.builder.implementationDigest&&ready.proposedCatalog.recipes.length===Fabric.loadCatalog().recipes.length+1&&ready.proposedRegistry.entries.find(function(row){return row.id===inspected.builder.id;}).status===Registry.ACTIVE,inspected.packet.target.capabilityKind+' plan binds exact prospective recipe, catalog, and registry');
   const one=Registry.compileReviewCandidate(inspected.builder.id,inspected.builder.implementationDigest,inspected.proposal.recipe.exampleRequest.parameters),two=Registry.compileReviewCandidate(inspected.builder.id,inspected.builder.implementationDigest,inspected.proposal.recipe.exampleRequest.parameters);
   check(Fabric.canonicalJson(one)===Fabric.canonicalJson(two)&&Fabric.validateCompiledArtifact(inspected.proposal.recipe,one).ok,inspected.packet.target.capabilityKind+' review-candidate builder is deterministic and kind-valid');
   const tampered=Fabric.clone(test);tampered.builderDigest=Fabric.digest('tampered');
@@ -43,12 +40,14 @@ function exercisePilot(root){
 }
 function main(){
   const inventory=Registry.inventory();
-  check(Registry.activeIds().length===3&&Registry.reviewCandidateIds().length===2,'registry separates three active builders from two review candidates');
+  check(Registry.activeIds().length===4&&Registry.reviewCandidateIds().length===1,'registry separates four active builders from the remaining SKILL review candidate');
   check(inventory.registryDigest===Registry.inventory().registryDigest,'builder registry digest is deterministic');
-  PILOTS.forEach(exercisePilot);
-  check(Registry.activeIds().length===3&&Fabric.loadCatalog().recipes.length===3,'admission planning performs no actual activation or catalog mutation');
+  const activeValidator=Registry.describe('closed-json-schema-validator-v1'),activeRecipe=Fabric.loadCatalog().recipes.find(function(row){return row.id==='closed-json-schema-validator';});
+  check(activeValidator.status===Registry.ACTIVE&&activeRecipe&&activeRecipe.builderDigest===activeValidator.implementationDigest,'reviewed validator HAND remains exact and active after its external admission merge');
+  REVIEW_PILOTS.forEach(exercisePilot);
+  check(Registry.activeIds().length===4&&Fabric.loadCatalog().recipes.length===4,'admission planning performs no additional activation or catalog mutation');
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'axm-admission-tamper-'));
-  try{fs.cpSync(PILOTS[0],temp,{recursive:true});fs.appendFileSync(path.join(temp,'builder-contribution.js'),'\n');const result=Host.inspectPacketRoot(temp);check(result.verification.state==='FAIL','packet source-byte tampering fails host verification');}
+  try{fs.cpSync(REVIEW_PILOTS[0],temp,{recursive:true});fs.appendFileSync(path.join(temp,'builder-contribution.js'),'\n');const result=Host.inspectPacketRoot(temp);check(result.verification.state==='FAIL','packet source-byte tampering fails host verification');}
   finally{fs.rmSync(temp,{recursive:true,force:true});}
   process.stdout.write('Capability Fabric admission selftest PASS · '+passed+' checks\n');
 }
