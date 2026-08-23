@@ -19,5 +19,6 @@ module.exports = {
   localBrowserHost: require('./local-browser-host'),
   shellPolicy: require('./shell-policy'),
   searchBroker: require('./search-broker'),
+  searchExecutor: require('./search-executor'),
   engine: require('./engine')
 };
