@@ -108,9 +108,14 @@ visible history, and lineage receipts. Stop it with `Ctrl+C`; process-owned
 session state is discarded.
 
 The host binds only to `127.0.0.1`, uses a random capability path and a
-CSP-hash-bound controller, and refuses cross-origin or non-JSON mutations. This
-loopback shell transport is not the held external Network Broker. See
-`LOCAL_BROWSER_SESSION_CONTRACT.md` for the exact authority and evidence ceiling.
+CSP-hash-bound controller. Every mutation requires a present `Origin` exactly
+equal to the shell origin; missing-origin, cross-origin, non-JSON, and oversized
+actions are refused before session mutation. Loopback responses also apply
+same-origin opener/resource policies, deny unused device permissions, and use a
+CSP with `frame-ancestors 'none'`. These harden the trusted shell; they do not
+turn it into the held external Network Broker or an untrusted Web Content
+sandbox. See `LOCAL_BROWSER_SESSION_CONTRACT.md` for the exact authority and
+evidence ceiling.
 
 ## Create inert visual artifacts
 
