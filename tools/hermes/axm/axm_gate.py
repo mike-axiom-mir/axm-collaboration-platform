@@ -22,13 +22,18 @@ STATE_DIR = Path(os.environ.get("AXM_HERMES_STATE_DIR", MODULE_ROOT / "runtime" 
 WORKSPACE = Path(os.environ.get("AXM_HERMES_WORKSPACE", MODULE_ROOT / "runtime" / "workspace")).resolve()
 
 CAPABILITY_BY_TOOL = {
+    "write_file": "allow_file_mutation", "patch": "allow_file_mutation",
     "terminal": "allow_terminal", "process": "allow_terminal",
     "execute_code": "allow_execute_code", "computer_use": "allow_computer_use",
     "delegate_task": "allow_delegation", "cronjob": "allow_scheduling",
     "skill_manage": "allow_skill_mutation", "memory": "allow_memory_mutation",
+    "browser_navigate": "allow_browser_interaction", "browser_snapshot": "allow_browser_interaction",
     "browser_click": "allow_browser_interaction", "browser_type": "allow_browser_interaction",
-    "browser_press": "allow_browser_interaction", "browser_dialog": "allow_browser_interaction",
-    "browser_cdp": "allow_browser_interaction", "browser_exec": "allow_browser_interaction",
+    "browser_scroll": "allow_browser_interaction", "browser_back": "allow_browser_interaction",
+    "browser_press": "allow_browser_interaction", "browser_get_images": "allow_browser_interaction",
+    "browser_vision": "allow_browser_interaction", "browser_console": "allow_browser_interaction",
+    "browser_dialog": "allow_browser_interaction", "browser_cdp": "allow_browser_interaction",
+    "browser_exec": "allow_browser_interaction",
     "send_message": "allow_messaging", "discord": "allow_messaging", "discord_admin": "allow_messaging",
     "yb_send_dm": "allow_messaging", "feishu_drive_reply_comment": "allow_messaging",
     "feishu_drive_add_comment": "allow_messaging", "spotify_playback": "allow_external_account_actions",
@@ -43,7 +48,7 @@ CAPABILITY_BY_TOOL = {
     "xai_video_edit": "allow_generation", "xai_video_extend": "allow_generation",
     "bfl_flux3_text_to_video": "allow_generation", "bfl_flux3_image_to_video": "allow_generation",
     "bfl_flux3_keyframes_to_video": "allow_generation", "bfl_flux3_video_continuation": "allow_generation",
-    "text_to_speech": "allow_generation",
+    "bfl_flux3_get_result": "allow_generation", "text_to_speech": "allow_generation",
 }
 
 PATH_REQUIRED_TOOLS = {"read_file", "write_file", "patch"}
@@ -92,8 +97,7 @@ def tool_args(event: dict[str, Any]) -> dict[str, Any]:
 
 
 def session_key(event: dict[str, Any]) -> str:
-    raw = str(event.get("session_id") or "unknown")
-    return hashlib.sha256(raw.encode("utf-8", "replace")).hexdigest()[:24]
+    return hashlib.sha256(str(event.get("session_id") or "unknown").encode("utf-8", "replace")).hexdigest()[:24]
 
 
 def resolve_root(raw: str) -> Path:
@@ -141,8 +145,10 @@ def resolve_tool_path(raw: str) -> Path:
 
 
 def classify(tool: str) -> str:
-    if any(token in tool for token in WRITE_HINTS): return "write"
-    if any(token in tool for token in READ_HINTS): return "read"
+    if any(token in tool for token in WRITE_HINTS):
+        return "write"
+    if any(token in tool for token in READ_HINTS):
+        return "read"
     return "other"
 
 
@@ -152,7 +158,8 @@ def state_path(event: dict[str, Any]) -> Path:
 
 
 def read_state(path: Path) -> dict[str, int]:
-    if not path.exists(): return {"tool_calls": 0, "files_read": 0, "files_written": 0}
+    if not path.exists():
+        return {"tool_calls": 0, "files_read": 0, "files_written": 0}
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
         return {k: int(value.get(k, 0)) for k in ("tool_calls", "files_read", "files_written")}
@@ -164,42 +171,50 @@ def write_state(path: Path, state: dict[str, int]) -> None:
     fd, temp_name = tempfile.mkstemp(prefix=".axm-state-", dir=str(path.parent), text=True)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as handle:
-            json.dump(state, handle, sort_keys=True); handle.write("\n")
+            json.dump(state, handle, sort_keys=True)
+            handle.write("\n")
         os.replace(temp_name, path)
     finally:
         try:
-            if os.path.exists(temp_name): os.unlink(temp_name)
+            if os.path.exists(temp_name):
+                os.unlink(temp_name)
         except OSError:
             pass
 
 
 def positive_int(policy: dict[str, Any], name: str, default: int) -> int:
-    try: value = int(policy.get("limits", {}).get(name, default))
-    except Exception: block(f"invalid limit {name}")
-    if value < 1: block(f"limit {name} must be positive")
+    try:
+        value = int(policy.get("limits", {}).get(name, default))
+    except Exception:
+        block(f"invalid limit {name}")
+    if value < 1:
+        block(f"limit {name} must be positive")
     return value
 
 
 def main() -> None:
     event = event_from_stdin()
     policy = load_json(POLICY_FILE)
-    if policy.get("schema") != "axm.hermes-policy/v1": block("unsupported policy schema")
-    if policy.get("consent", {}).get("enabled") is not True: block("action consent is OFF")
+    if policy.get("schema") != "axm.hermes-policy/v1":
+        block("unsupported policy schema")
+    if policy.get("consent", {}).get("enabled") is not True:
+        block("action consent is OFF")
 
     mode = policy.get("mode", {})
     if (mode.get("hub_sandbox") is True) == (mode.get("external_mode") is True):
         block("policy must select exactly one run space: hub_sandbox or external_mode")
-
     posture = str(policy.get("posture") or "")
-    if posture not in {"research", "operator"}: block("invalid posture")
+    if posture not in {"research", "operator"}:
+        block("invalid posture")
 
     tool = str(event.get("tool_name") or "").strip().lower()
-    if not tool: block("tool name missing")
+    if not tool:
+        block("tool name missing")
     blocked_tools = {str(x).lower() for x in policy.get("blocked_tools", []) if isinstance(x, str)}
     research_tools = {str(x).lower() for x in policy.get("research_tools", []) if isinstance(x, str)}
     allowed_tools = {str(x).lower() for x in policy.get("allowed_tools", []) if isinstance(x, str)}
-    if tool in blocked_tools: block(f"tool '{tool}' is explicitly blocked")
-
+    if tool in blocked_tools:
+        block(f"tool '{tool}' is explicitly blocked")
     if posture == "research" and tool not in research_tools:
         block(f"research posture does not grant tool '{tool}'")
     if posture == "operator" and tool not in research_tools and tool not in CAPABILITY_BY_TOOL and tool not in allowed_tools:
@@ -215,27 +230,38 @@ def main() -> None:
         block(f"tool '{tool}' did not expose a recognized path field; containment cannot be verified")
     if kind == "read":
         allowed_roots = roots(policy, "read_roots")
-        if not allowed_roots: block("no read roots configured")
+        if not allowed_roots:
+            block("no read roots configured")
         for candidate in paths:
-            if not inside(candidate, allowed_roots): block(f"read path is outside configured AXM roots: {candidate}")
+            if not inside(candidate, allowed_roots):
+                block(f"read path is outside configured AXM roots: {candidate}")
     elif kind == "write":
         allowed_roots = roots(policy, "write_roots")
-        if not allowed_roots: block("no write roots configured")
+        if not allowed_roots:
+            block("no write roots configured")
         for candidate in paths:
-            if not inside(candidate, allowed_roots): block(f"write path is outside configured AXM roots: {candidate}")
+            if not inside(candidate, allowed_roots):
+                block(f"write path is outside configured AXM roots: {candidate}")
 
-    path = state_path(event); state = read_state(path)
+    path = state_path(event)
+    state = read_state(path)
     max_tools = positive_int(policy, "max_tool_calls_per_session", 15)
     max_reads = positive_int(policy, "max_files_read_per_session", 20)
     max_writes = positive_int(policy, "max_files_written_per_session", 5)
-    if state["tool_calls"] >= max_tools: block("tool-call limit reached")
-    if kind == "read" and state["files_read"] >= max_reads: block("file-read limit reached")
-    if kind == "write" and state["files_written"] >= max_writes: block("file-write limit reached")
+    if state["tool_calls"] >= max_tools:
+        block("tool-call limit reached")
+    if kind == "read" and state["files_read"] >= max_reads:
+        block("file-read limit reached")
+    if kind == "write" and state["files_written"] >= max_writes:
+        block("file-write limit reached")
     state["tool_calls"] += 1
-    if kind == "read": state["files_read"] += 1
-    elif kind == "write": state["files_written"] += 1
+    if kind == "read":
+        state["files_read"] += 1
+    elif kind == "write":
+        state["files_written"] += 1
     write_state(path, state)
     allow()
 
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
