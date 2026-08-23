@@ -155,13 +155,16 @@ test('Research Mode runner gets current AI registry and visual state and returns
   assert.equal(state.researchRunning, false);
 });
 
-test('local browser host exposes one shared AI control plane beside the same Browser Session', async function () {
+test('local browser host exposes one shared AI control plane and a structured visual fallback', async function () {
   const session = makeSession();
   const host = await LocalBrowserHost.createLocalBrowserHost(session, { aiRegistry: makeRegistry() });
   try {
     assert.ok(host.aiControl);
-    assert.equal(host.controlState().registryDigest, makeRegistry().registryDigest);
-    assert.equal(host.visualState(), null);
+    const controlState = host.controlState();
+    assert.equal(controlState.registryDigest, makeRegistry().registryDigest);
+    assert.equal(controlState.visualState.fidelity, 'STRUCTURED_SCREEN_MODEL');
+    assert.equal(controlState.visualState.page.pageId, session.snapshot().state.current.pageId);
+    assert.equal(host.visualState().visualDigest, host.aiControl.visualState.visualDigest);
     await host.aiControl.apply({ type: 'ai-provider-enabled', providerId: 'cloud', enabled: false }, session.snapshot());
     assert.equal(host.controlState().providers.find(function (item) { return item.id === 'cloud'; }).enabled, false);
   } finally {
