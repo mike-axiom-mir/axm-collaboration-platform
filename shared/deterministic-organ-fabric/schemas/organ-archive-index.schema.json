@@ -20,7 +20,7 @@
     "objectSummary": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["objectDigest", "status", "id", "strategy", "score", "stashDigest", "archiveDisposition", "retentionPolicy", "admissionStatus", "startupPolicy", "implementationStatus", "selected", "primaryPurposeCategory", "useFields", "functionalRoles", "classificationState", "archiveConnections"],
+      "required": ["objectDigest", "status", "id", "strategy", "score", "stashDigest", "archiveDisposition", "retentionPolicy", "admissionStatus", "startupPolicy", "implementationStatus", "selected", "supersededBy", "primaryPurposeCategory", "useFields", "functionalRoles", "classificationState", "archiveConnections"],
       "properties": {
         "objectDigest": {"$ref": "#/$defs/digest"},
         "status": {"enum": ["CURRENT", "REVALIDATION_REQUIRED"]},
@@ -37,8 +37,9 @@
         "retentionPolicy": {"const": "KEEP_WHEN_NO_CURRENT_USE"},
         "admissionStatus": {"const": "ARCHIVED_NOT_ADMITTED_TO_RUNTIME"},
         "startupPolicy": {"const": "DORMANT"},
-        "implementationStatus": {"enum": ["UNSELECTED", "SELECTED_FOR_IMPLEMENTATION_REVIEW"]},
+        "implementationStatus": {"enum": ["UNSELECTED", "SELECTED_FOR_IMPLEMENTATION_REVIEW", "HISTORICAL_SUPERSEDED"]},
         "selected": {"type": "boolean"},
+        "supersededBy": {"anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]},
         "primaryPurposeCategory": {"type": "string"},
         "useFields": {"type": "array", "items": {"type": "string"}},
         "functionalRoles": {"type": "array", "items": {"type": "string"}},

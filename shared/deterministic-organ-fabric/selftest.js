@@ -2,6 +2,7 @@
 
 const assert = require('assert');
 const Fabric = require('./index.js');
+const SelectedRouteOrgan = require('./selected-verification-route-organ.js');
 const runtimeContract = require('./runtime-contract.json');
 const metricProfile = require('./metric-profiles/balanced-v1.json');
 
@@ -27,7 +28,12 @@ const runtimeCore=JSON.parse(JSON.stringify(runtimeContract));delete runtimeCore
 const metricCore=JSON.parse(JSON.stringify(metricProfile));delete metricCore.digest;check(Fabric.digest(metricCore)===metricProfile.digest&&metricProfile.digest===Fabric.METRIC_PROFILE.digest,'metric profile digest binds exact weights');
 check(Object.values(Fabric.METRIC_PROFILE.weights).reduce(function(sum,value){return sum+value;},0) === 100, 'metric weights total 100');
 check(Fabric.parseSentence('completely unknown orbit', Fabric.loadPacks()).draft === null, 'unknown controlled sentence stops before generation');
-['organ-archive-connection-plan','organ-archive-receiver-acknowledgement','organ-archive-connection-receipt','organ-archive-connection-result','verification-route-token-registry','verification-route-plan'].forEach(function(name){const schema=JSON.parse(require('fs').readFileSync(require('path').join(__dirname,'schemas',name+'.schema.json'),'utf8'));check(schema.$id==='axm.'+name+'/v1'&&objectSchemasClosed(schema),name+' schema is identity-bound and closed at every object node');});
+['organ-archive-connection-plan','organ-archive-receiver-acknowledgement','organ-archive-connection-receipt','organ-archive-connection-result','organ-supersession-receipt','verification-route-token-registry','verification-route-plan','verification-spine-prefill','trusted-verification-route-organ','trusted-verification-route-output'].forEach(function(name){const schema=JSON.parse(require('fs').readFileSync(require('path').join(__dirname,'schemas',name+'.schema.json'),'utf8'));check(schema.$id==='axm.'+name+'/v1'&&objectSchemasClosed(schema),name+' schema is identity-bound and closed at every object node');});
 const registry=require('./verification-route-token-registry.json'),registryCore=JSON.parse(JSON.stringify(registry));delete registryCore.registryDigest;check(Fabric.digest(registryCore)===registry.registryDigest&&Fabric.canonicalJson(registry)===Fabric.canonicalJson(Fabric.VERIFICATION_ROUTE_TOKEN_REGISTRY),'verification route registry digest and runtime bytes agree');
+const selectedInspection=SelectedRouteOrgan.inspect(),selectedOutput=SelectedRouteOrgan.plan({changeType:'code',risk:4,affectedSurfaces:['organ-runtime','fabric-archive','mirror-passive-receiver']});
+check(selectedInspection.packageVerified&&selectedInspection.packageDigest==='sha256:874399d704bf7e68bb1fdbcf4b16609eb5adb262fab8e310c90710bb1106385c','selected balanced organ rebuilds the admitted package exactly');
+check(SelectedRouteOrgan.verify(selectedOutput).ok&&selectedOutput.plan.output.route.includes('archive-reload')&&selectedOutput.plan.output.route.includes('sender-receiver-parity'),'selected organ output rebuilds and covers persistence plus transport surfaces');
+check(selectedOutput.evidenceDeskPrefill.observations.every(function(row){return row.verdict==='UNKNOWN';})&&selectedOutput.verificationSpinePrefill.claims.every(function(row){return row.status==='UNKNOWN';}),'selected organ prefills preserve UNKNOWN until native evidence exists');
+check(!selectedOutput.authority.generatedCodeExecuted&&!selectedOutput.authority.checksExecuted&&!selectedOutput.authority.wroteState&&!selectedOutput.authority.installed&&!selectedOutput.authority.promoted&&!selectedOutput.authority.canonChanged,'selected organ stays inside its authority ceiling');
 
 console.log('Deterministic Organ Fabric shared selftest PASS · ' + checks + ' checks');

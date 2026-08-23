@@ -6,6 +6,7 @@
   <title>Deterministic Organ Fabric</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="responsive.css">
+  <link rel="stylesheet" href="selected-route.css">
   <style>.validation:empty{display:none}</style>
   <style>
     .archive-row{grid-template-columns:minmax(180px,1fr) minmax(150px,.75fr) minmax(210px,1.2fr) auto}
@@ -32,6 +33,7 @@
     <button class="tab active" data-view="brief" aria-selected="true">Brief</button>
     <button class="tab" data-view="candidates" aria-selected="false">Candidates <span id="candidate-count">0</span></button>
     <button class="tab" data-view="compare" aria-selected="false">Compare</button>
+    <button class="tab" data-view="route" aria-selected="false">Use selected</button>
     <button class="tab" data-view="archive" aria-selected="false">Archive <span id="archive-count">0</span></button>
     <button class="tab" data-view="boundaries" aria-selected="false">Boundaries</button>
   </nav>
@@ -75,8 +77,31 @@
       <div id="selection-receipt" class="receipt" hidden></div>
     </section>
 
+    <section id="view-route" class="view" aria-labelledby="route-title">
+      <div class="section-head"><div><p class="section-label">04 · Trusted implementation</p><h2 id="route-title">Use the selected balanced organ</h2></div><p>The exact selected package is rebuilt and verified in memory. Only the trusted declarative runtime evaluates it; generated <code>organ.js</code> is never loaded.</p></div>
+      <div class="brief-grid">
+        <form id="route-form" class="panel wizard">
+          <div class="panel-head"><div><p class="section-label">Selected admission</p><h3>Workshop verification route</h3></div><span class="status-chip">BALANCED · EXPERIMENTAL</span></div>
+          <p id="selected-lineage" class="helper">Verifying selected lineage…</p>
+          <label for="route-change-type">Change type</label>
+          <select id="route-change-type"><option value="code">Code</option><option value="ui">UI</option><option value="data">Data</option><option value="config">Configuration</option></select>
+          <label for="route-risk">Human-assigned risk</label>
+          <select id="route-risk"><option value="1">1 · low</option><option value="2">2 · low</option><option value="3" selected>3 · medium</option><option value="4">4 · high</option><option value="5">5 · high</option></select>
+          <fieldset class="surface-fieldset"><legend>Affected surfaces</legend><p class="helper">Choose every known surface touched. Unknown or empty sets are refused.</p><div id="route-surfaces" class="surface-grid"></div></fieldset>
+          <button type="submit" class="primary">Plan exact verification route</button>
+          <div id="route-status" class="validation">No route planned yet.</div>
+        </form>
+        <div class="panel route-output-panel">
+          <div class="panel-head"><div><p class="section-label">Evidence route</p><h3 id="route-containment">Awaiting a reviewed brief</h3></div><span id="route-count" class="status-chip">0 STEPS</span></div>
+          <p id="route-explanation" class="helper">The organ will produce Evidence Desk and Verification Spine prefills with every claim kept UNKNOWN until its native proof is gathered.</p>
+          <div id="route-steps" class="route-steps"><p class="empty">Choose the change type, risk, and affected surfaces.</p></div>
+          <details><summary>Exact deterministic output</summary><pre id="route-json" class="route-json">No output.</pre></details>
+        </div>
+      </div>
+    </section>
+
     <section id="view-archive" class="view" aria-labelledby="archive-title">
-      <div class="section-head"><div><p class="section-label">04 · Content-addressed dormant library</p><h2 id="archive-title">Organ Archive</h2></div><p>Hard-gate-valid organs stay available even when none is selected or currently needed. Archive admission never means runtime admission.</p></div>
+      <div class="section-head"><div><p class="section-label">05 · Content-addressed dormant library</p><h2 id="archive-title">Organ Archive</h2></div><p>Hard-gate-valid organs stay available even when none is selected or currently needed. Archive admission never means runtime admission.</p></div>
       <div class="archive-actions panel">
         <div><strong id="archive-summary">Archive is loading.</strong><p id="archive-reason" class="helper"></p></div>
         <div class="button-row"><button id="verify-archive" class="secondary">Verify archive</button><button id="export-archive" class="secondary">Export pack</button><label class="file-button">Import verified pack<input id="import-archive" type="file" accept="application/json,.json"></label></div>
@@ -87,7 +112,7 @@
     </section>
 
     <section id="view-boundaries" class="view" aria-labelledby="boundaries-title">
-      <div class="section-head"><div><p class="section-label">05 · Authority ceiling</p><h2 id="boundaries-title">What this Fabric can—and cannot—claim</h2></div></div>
+      <div class="section-head"><div><p class="section-label">06 · Authority ceiling</p><h2 id="boundaries-title">What this Fabric can—and cannot—claim</h2></div></div>
       <div class="boundary-grid">
         <article class="panel"><h3>Allowed grammar</h3><p id="allowed-grammar" class="token-list"></p><p>Reads, literals, comparisons, bounded selection, stable collections, and finite transitions only.</p></article>
         <article class="panel boundary"><h3>Always refused</h3><ul><li>Unknown operations, cycles, forward references, and unbounded iteration</li><li>Implicit randomness, missing explicit seeds, clock, environment, network, filesystem, and dynamic code</li><li>Organ load/execution, runtime connection/admission, install, register, stage, promote, permission-grant, Foundation mutation, and CANON actions</li></ul></article>
@@ -101,6 +126,7 @@
   <footer><span>EXPERIMENTAL</span><span>installed: false</span><span>promoted: false</span><span>canonChanged: false</span></footer>
   <script src="/tools/deterministic-json-core/index.js"></script>
   <script src="/shared/deterministic-organ-fabric/core.js"></script>
+  <script src="/shared/deterministic-organ-fabric/selected-verification-route-organ.js"></script>
   <script src="/tools/agent-tool-forge/zip-store.js"></script>
   <script src="browser-archive.js"></script>
   <script src="/hub/axm-hub-module.js"></script>

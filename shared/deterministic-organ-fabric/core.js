@@ -657,6 +657,62 @@
     const receipt={schema:'axm.organ-selection-receipt/v1',selectedBy:String(mikeLabel||'Mike Tobi'),comparisonDigest:comparison.comparisonDigest,candidateId:candidate.package.id,packageDigest:candidate.package.packageDigest,decision:'SELECT_FOR_IMPLEMENTATION_REVIEW',applied:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false};
     receipt.selectionDigest=digest(receipt);return receipt;
   }
+  function validSelectionReceipt(receipt){
+    return Boolean(receipt&&receipt.schema==='axm.organ-selection-receipt/v1'&&receipt.selectionDigest===digest(withoutKey(receipt,'selectionDigest'))&&!receipt.applied&&!receipt.installed&&!receipt.registered&&!receipt.staged&&!receipt.promoted&&!receipt.canonChanged&&!receipt.permissionsChanged);
+  }
+  function supersedeCandidateSelection(priorPackageDigest,replacementSelectionReceipt,mikeLabel){
+    if(!validSelectionReceipt(replacementSelectionReceipt))throw new Error('Replacement selection receipt is invalid or exceeds its authority ceiling.');
+    if(!/^sha256:[a-f0-9]{64}$/.test(String(priorPackageDigest||'')))throw new Error('Prior package digest is invalid.');
+    if(priorPackageDigest===replacementSelectionReceipt.packageDigest)throw new Error('A selection cannot supersede itself.');
+    const receipt={schema:'axm.organ-supersession-receipt/v1',selectedBy:String(mikeLabel||replacementSelectionReceipt.selectedBy||'Mike Tobi'),priorPackageDigest:String(priorPackageDigest),replacementPackageDigest:replacementSelectionReceipt.packageDigest,replacementSelectionDigest:replacementSelectionReceipt.selectionDigest,decision:'SUPERSEDE_IMPLEMENTATION_SELECTION',applied:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false};
+    receipt.supersessionDigest=digest(receipt);return receipt;
+  }
+  function verifySupersessionReceipt(receipt){
+    const errors=[];
+    if(!receipt||receipt.schema!=='axm.organ-supersession-receipt/v1')errors.push(issue('SUPERSESSION_SCHEMA_INVALID','$.schema','Expected organ supersession receipt v1.'));
+    else{
+      if(receipt.supersessionDigest!==digest(withoutKey(receipt,'supersessionDigest')))errors.push(issue('SUPERSESSION_DIGEST_MISMATCH','$.supersessionDigest','Supersession receipt digest mismatch.'));
+      if(!/^sha256:[a-f0-9]{64}$/.test(String(receipt.priorPackageDigest||''))||!/^sha256:[a-f0-9]{64}$/.test(String(receipt.replacementPackageDigest||''))||!/^sha256:[a-f0-9]{64}$/.test(String(receipt.replacementSelectionDigest||'')))errors.push(issue('SUPERSESSION_LINEAGE_INVALID','$','Supersession receipt digests are invalid.'));
+      if(receipt.priorPackageDigest===receipt.replacementPackageDigest)errors.push(issue('SUPERSESSION_SELF_REFERENCE','$.replacementPackageDigest','A selection cannot supersede itself.'));
+      if(receipt.decision!=='SUPERSEDE_IMPLEMENTATION_SELECTION'||receipt.applied||receipt.installed||receipt.registered||receipt.staged||receipt.promoted||receipt.canonChanged||receipt.permissionsChanged)errors.push(issue('SUPERSESSION_AUTHORITY_EXCEEDED','$','Supersession receipt exceeds its selection-only authority ceiling.'));
+    }
+    return {schema:'axm.organ-supersession-receipt-verification/v1',ok:errors.length===0,errors:errors,supersessionDigest:receipt&&receipt.supersessionDigest||null};
+  }
+  function verificationRefusal(code,message,details){const error=new Error(message);error.code=code;if(details!==undefined)error.details=details;return error;}
+  function normalizeVerificationBrief(input){
+    const brief=clone(input||{});
+    if(!Array.isArray(brief.affectedSurfaces))throw verificationRefusal('AFFECTED_SURFACES_REQUIRED','affectedSurfaces must be an explicit array of bounded surface tokens.');
+    brief.affectedSurfaces=Array.from(new Set(brief.affectedSurfaces.map(String))).sort();return brief;
+  }
+  function assertVerificationCandidate(candidate,pack){
+    const packageCheck=verifyPackage(candidate);
+    if(!packageCheck.ok)throw verificationRefusal('CANDIDATE_PACKAGE_INVALID','The candidate package is not intact.',packageCheck.errors);
+    const definition=candidate.definition||{},lineage=definition.lineage||{};
+    if(candidate.evaluation.status!=='VALID')throw verificationRefusal('CANDIDATE_NOT_VALID','Only a candidate with a VALID evaluation receipt can be planned.');
+    if(!pack||definition.field!==pack.id||lineage.pack.id!==pack.id||lineage.pack.version!==pack.version||lineage.pack.digest!==pack.packDigest)throw verificationRefusal('FIELD_PACK_LINEAGE_STALE','The candidate does not bind the supplied current field pack.');
+    if(pack.id!=='software-workshop')throw verificationRefusal('FIELD_PACK_UNSUPPORTED','Verification route planning requires the Software & Workshop field pack.');
+    if(!lineage.runtime||lineage.runtime.id!==RUNTIME_ID||lineage.runtime.version!==RUNTIME_VERSION||lineage.runtime.digest!==RUNTIME_DIGEST)throw verificationRefusal('RUNTIME_LINEAGE_STALE','The candidate does not bind the current trusted runtime.');
+    if(canonicalJson(lineage.routeTokenRegistry)!==canonicalJson(VERIFICATION_ROUTE_TOKEN_REGISTRY_REF))throw verificationRefusal('ROUTE_TOKEN_REGISTRY_LINEAGE_STALE','The candidate does not bind the current route-token registry.');
+    let intent;try{intent=JSON.parse(candidate.files['organ.intent.json']);}catch(error){throw verificationRefusal('BOUND_INTENT_INVALID','The package does not carry a readable bound intent.');}
+    const reevaluated=evaluateDefinition(definition,intent,pack);
+    if(reevaluated.status!=='VALID')throw verificationRefusal('TRUSTED_REEVALUATION_FAILED','The candidate definition fails a fresh trusted evaluation.',reevaluated.gates.filter(function(gate){return !gate.ok;}));
+    try{if(canonicalJson(JSON.parse(candidate.files['verification-route-token-registry.json']))!==canonicalJson(VERIFICATION_ROUTE_TOKEN_REGISTRY))throw new Error('registry mismatch');}catch(error){throw verificationRefusal('BOUND_ROUTE_TOKEN_REGISTRY_INVALID','The package does not carry the exact bound route-token registry.');}
+    return packageCheck;
+  }
+  function verificationRiskName(value){return Number(value)>=4?'HIGH':Number(value)>=3?'MEDIUM':'LOW';}
+  function planVerificationRouteForPack(candidate,input,pack){
+    assertVerificationCandidate(candidate,pack);const brief=normalizeVerificationBrief(input),result=runDefinition(candidate.definition,brief);
+    if(!result.ok)throw verificationRefusal(result.refusal&&result.refusal.code||'ORGAN_RUNTIME_REFUSAL','The trusted runtime refused the change brief.',result.refusal||result);
+    if(!Array.isArray(result.output.route))throw verificationRefusal('ROUTE_OUTPUT_INVALID','The organ did not emit a route array.');
+    const bindings=result.output.route.map(function(token){const binding=VERIFICATION_ROUTE_TOKEN_REGISTRY.tokens[token];if(!binding)throw verificationRefusal('ROUTE_TOKEN_UNKNOWN','The organ emitted a token outside its bound registry.',{token:token});return {token:token,description:binding.description,evidenceDesk:clone(binding.evidenceDesk),verificationSpine:clone(binding.verificationSpine)};});
+    const observations=bindings.map(function(binding,index){return {id:'route-'+String(index+1),claim:binding.description,kind:binding.evidenceDesk.claimKind,risk:verificationRiskName(brief.risk),verdict:'UNKNOWN',pass_condition:binding.evidenceDesk.passCondition,primary_surface:binding.evidenceDesk.primarySurface,observed_evidence:'',counterevidence:'Not yet tested; record any failing, contradictory, or missing evidence.',source_kind:'deterministic-organ-route-plan',source:candidate.package.packageDigest,named_seam:brief.affectedSurfaces.join(', ')};});
+    const plan={schema:'axm.verification-route-plan/v1',status:'EXPERIMENTAL',candidate:{id:candidate.package.id,packageDigest:candidate.package.packageDigest,definitionDigest:candidate.definition.definitionDigest,evaluationDigest:candidate.evaluation.receiptDigest,runtime:clone(candidate.definition.lineage.runtime),pack:clone(candidate.definition.lineage.pack),routeTokenRegistry:clone(candidate.definition.lineage.routeTokenRegistry)},input:{brief:brief,inputDigest:digest(brief)},output:clone(result.output),bindings:bindings,evidenceDeskPrefill:{schema:'axm.evidence-fields/v2',title:'Verification route · '+candidate.package.id,goal:candidate.definition.purpose,source_checkpoint:candidate.package.packageDigest,actor:{id:'deterministic-organ-fabric',type:'deterministic-planner'},observations:observations,actions:[],checks:[],changes:[],limitations:['This packet contains proposed evidence routes, not observed evidence.','Every verdict remains UNKNOWN until the native proof surface is actually used.'],next_actions:result.output.route.slice()},limitations:(candidate.evaluation.limitations||[]).concat(['This adapter plans only. It does not run tests, operate a browser, write state, or authorize implementation.']),authority:{executed:false,wroteState:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,foundationChanged:false},planDigest:''};
+    plan.planDigest=digest(withoutKey(plan,'planDigest'));return plan;
+  }
+  function verifyVerificationRoutePlanForPack(plan,candidate,input,pack){
+    const errors=[];try{const rebuilt=planVerificationRouteForPack(candidate,input||(plan.input&&plan.input.brief),pack);if(canonicalJson(rebuilt)!==canonicalJson(plan))errors.push(issue('PLAN_REBUILD_MISMATCH','$','Plan does not rebuild identically.'));}catch(error){errors.push(issue(error.code||'PLAN_VERIFY_REFUSAL','$',String(error.message||error),error.details));}
+    return {ok:errors.length===0,errors:errors,planDigest:plan&&plan.planDigest||null};
+  }
   function archiveAuthority(){
     return {loaded:false,executed:false,connected:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false,foundationChanged:false};
   }
@@ -813,7 +869,9 @@
     canonicalJson:canonicalJson,digest:digest,clone:clone,sealIntent:sealIntent,validateIntent:validateIntent,validatePack:validatePack,
     validateGraph:validateGraph,executeGraph:executeGraph,runDefinition:runDefinition,makeDefinition:makeDefinition,evaluateDefinition:evaluateDefinition,requiredInputUsage:requiredInputUsage,
     buildPackage:buildPackage,verifyPackage:verifyPackage,generateCandidates:generateCandidates,compareCandidates:compareCandidates,
-    selectCandidate:selectCandidate,parseSentence:parseSentence,importProposal:importProposal,portSchema:portSchema,
+    selectCandidate:selectCandidate,validSelectionReceipt:validSelectionReceipt,supersedeCandidateSelection:supersedeCandidateSelection,verifySupersessionReceipt:verifySupersessionReceipt,
+    planVerificationRouteForPack:planVerificationRouteForPack,verifyVerificationRoutePlanForPack:verifyVerificationRoutePlanForPack,normalizeVerificationBrief:normalizeVerificationBrief,
+    parseSentence:parseSentence,importProposal:importProposal,portSchema:portSchema,
     ORGAN_ARCHIVE_BRIDGE:ORGAN_ARCHIVE_BRIDGE,ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT:ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT,
     projectArchiveStash:projectArchiveStash,verifyArchiveStashProjection:verifyArchiveStashProjection,buildArchiveStashEnvelope:buildArchiveStashEnvelope,
     buildArchiveConnectionPlan:buildArchiveConnectionPlan,verifyArchiveConnectionPlan:verifyArchiveConnectionPlan,buildArchiveConnectionReceipt:buildArchiveConnectionReceipt,verifyArchiveConnectionReceipt:verifyArchiveConnectionReceipt
