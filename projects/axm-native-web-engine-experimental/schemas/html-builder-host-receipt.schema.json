@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.html-builder-host-receipt/v1",
+  "title": "AXM Live HTML Builder Host Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","origin","builderUrl","capabilityPathBytes","initialSourceDigest","loopbackTransportUsed","externalNetworkUsedByBuilderHost","sourceFileMutationAllowed","browserSessionMutationAllowed","receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.html-builder-host-receipt/v1"},
+    "version": {"const": 1},
+    "status": {"const": "EXPERIMENTAL"},
+    "origin": {"type": "string", "pattern": "^http://127\\.0\\.0\\.1:[0-9]+$"},
+    "builderUrl": {"type": "string", "pattern": "^http://127\\.0\\.0\\.1:[0-9]+/[a-f0-9]{48}/$"},
+    "capabilityPathBytes": {"const": 24},
+    "initialSourceDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "loopbackTransportUsed": {"const": true},
+    "externalNetworkUsedByBuilderHost": {"const": false},
+    "sourceFileMutationAllowed": {"const": false},
+    "browserSessionMutationAllowed": {"const": false},
+    "receiptDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

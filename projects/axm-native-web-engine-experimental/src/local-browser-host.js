@@ -5,10 +5,20 @@ const HostCore = require('./local-browser-host-core');
 const ShellPolicy = require('./shell-policy');
 const BrowserAiControl = require('./browser-ai-control');
 const BrowserAiControlHost = require('./browser-ai-control-host');
+const HtmlLiveBuilderHost = require('./html-live-builder-host');
 const ReferenceLabModule = require('./reference-lab');
 const ReferenceLabHost = require('./reference-lab-host');
 
 const HOST_RECEIPT_SCHEMA = 'axm.web.local-browser-host-receipt/v2';
+
+function currentSourceText(session) {
+  const snapshot = session.snapshot();
+  const pageId = snapshot.state.current.pageId;
+  const record = Array.isArray(session.records)
+    ? session.records.find(function (candidate) { return candidate.pageId === pageId; })
+    : null;
+  return record && Buffer.isBuffer(record.bytes) ? record.bytes.toString('utf8') : '<!doctype html>\n<html><head><title>AXM Builder Draft</title></head><body><main><h1>AXM Builder Draft</h1><p>Start editing.</p></main></body></html>\n';
+}
 
 async function createLocalBrowserHost(session, options) {
   options = options || {};
@@ -22,8 +32,10 @@ async function createLocalBrowserHost(session, options) {
   const shouldStartAiControlHost = options.aiControlHost === true || (
     options.aiControlHost !== false && Boolean(options.aiRegistry || options.aiControlPlane || options.researchRunner || options.researchConfig)
   );
+  const shouldStartBuilderHost = options.builderEnabled === true;
   const shouldStartReferenceLab = options.referenceLab === true || Boolean(options.referenceConfig || options.referenceLabInstance);
   let aiControlHost = null;
+  let builderHost = null;
   let referenceLab = null;
   let referenceHost = null;
   try {
@@ -32,6 +44,12 @@ async function createLocalBrowserHost(session, options) {
         session,
         aiControl,
         options.aiControlHostOptions || {}
+      );
+    }
+    if (shouldStartBuilderHost) {
+      builderHost = await HtmlLiveBuilderHost.createHtmlLiveBuilderHost(
+        options.builderInitialSource == null ? currentSourceText(session) : String(options.builderInitialSource),
+        options.builderHostOptions || {}
       );
     }
     if (shouldStartReferenceLab) {
@@ -56,6 +74,7 @@ async function createLocalBrowserHost(session, options) {
     }
   } catch (error) {
     if (referenceHost) await referenceHost.close().catch(function () {});
+    if (builderHost) await builderHost.close().catch(function () {});
     if (aiControlHost) await aiControlHost.close().catch(function () {});
     await host.close();
     throw error;
@@ -76,6 +95,8 @@ async function createLocalBrowserHost(session, options) {
     aiControl,
     aiControlReceipt: aiControlHost ? aiControlHost.receipt : null,
     aiControlUrl: aiControlHost ? aiControlHost.receipt.controlUrl : null,
+    builderReceipt: builderHost ? builderHost.receipt : null,
+    builderUrl: builderHost ? builderHost.receipt.builderUrl : null,
     referenceLab,
     referenceLabHost: referenceHost,
     referenceLabUrl: referenceHost ? referenceHost.url : null,
@@ -84,6 +105,7 @@ async function createLocalBrowserHost(session, options) {
     visualState: function () { return aiControl.ensureVisualState(session.snapshot()); },
     close: async function () {
       if (referenceHost) await referenceHost.close();
+      if (builderHost) await builderHost.close();
       if (aiControlHost) await aiControlHost.close();
       await host.close();
     }
@@ -92,5 +114,6 @@ async function createLocalBrowserHost(session, options) {
 
 module.exports = Object.assign({}, HostCore, {
   HOST_RECEIPT_SCHEMA,
+  currentSourceText,
   createLocalBrowserHost
 });
