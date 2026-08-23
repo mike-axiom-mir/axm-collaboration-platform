@@ -53,7 +53,7 @@ function fakeFetch() {
     const prompt = body.messages[0].content;
     const answer = String(url).includes(':1235/')
       ? 'Second AI answer.'
-      : (prompt.includes('Earlier question') ? 'Follow-up answer with thread context.' : 'First AI answer.');
+      : (prompt.includes('ASSISTANT: First AI answer.') ? 'Follow-up answer with thread context.' : 'First AI answer.');
     return new Response(JSON.stringify({ choices: [{ message: { content: answer } }] }), {
       status: 200,
       headers: { 'content-type': 'application/json' }
