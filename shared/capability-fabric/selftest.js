@@ -61,6 +61,8 @@ function main(){
   const proposalRecipe=Fabric.clone(recipe);delete proposalRecipe.recipeDigest;proposalRecipe.schema=Fabric.PROPOSAL_RECIPE_SCHEMA;proposalRecipe.id='mirror-proposed-transform';proposalRecipe.activation='INACTIVE_PROPOSAL';proposalRecipe.exampleRequest.id='mirror-proposed-transform-example';proposalRecipe.exampleRequest.recipeId=proposalRecipe.id;const proposal={schema:Fabric.PROPOSAL_SCHEMA,sourceKind:'MIRROR',recipe:proposalRecipe,proposalDigest:Fabric.digest(proposalRecipe)},proposalResult=Fabric.importRecipeProposal(proposal);
   check(proposalResult.ok&&proposalResult.status==='INACTIVE_PROPOSAL'&&proposalResult.active===false,'Mirror recipe proposal remains inactive');
   check(proposalResult.providerCalled===false,'proposal inspection invokes no provider');
+  const humanProposal=Fabric.clone(proposal);humanProposal.sourceKind='HUMAN';const codexProposal=Fabric.clone(proposal);codexProposal.sourceKind='CODEX';
+  check(Fabric.importRecipeProposal(humanProposal).ok&&Fabric.importRecipeProposal(codexProposal).ok,'human and Codex authors retain truthful inactive proposal provenance');
   const activeClaim=Fabric.clone(proposal);activeClaim.recipe.activation=Fabric.ACTIVE_RECIPE;activeClaim.proposalDigest=Fabric.digest(activeClaim.recipe);const activeClaimResult=Fabric.importRecipeProposal(activeClaim);
   check(!activeClaimResult.ok&&activeClaimResult.errors.some(function(row){return row.code==='PROPOSAL_ACTIVATION_REFUSED';}),'proposal inspection refuses an active-recipe claim');
   const malformedProposal={schema:Fabric.PROPOSAL_SCHEMA,sourceKind:'AI',recipe:{},proposalDigest:Fabric.digest({})};

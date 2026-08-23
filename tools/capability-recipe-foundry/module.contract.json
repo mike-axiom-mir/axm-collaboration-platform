@@ -1,0 +1,49 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "capability-recipe-foundry",
+  "version": "v0.1",
+  "provides": [
+    "deterministic-capability-recipe-authoring",
+    "specification-and-verification-plan-binding",
+    "inactive-recipe-proposal-derivation",
+    "builder-contribution-review-packaging",
+    "typed-recipe-authoring-holds"
+  ],
+  "consumes": [
+    "axm.missing-hand-specification/v1",
+    "axm.hand-verification-plan/v1",
+    "human-or-codex-authored-builder-contribution",
+    "capability-fabric:inactive-recipe-proposal-inspection"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.capability-recipe-proposal/v1", "axm.capability-recipe-review-packet/v1", "axm.capability-recipe-foundry-receipt/v1", "application/zip"],
+    "accepts": ["axm.missing-hand-specification/v1", "axm.hand-verification-plan/v1", "axm.capability-recipe-authoring-intent/v1"]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "writes": ["explicit CLI output parent only", "explicit browser download only"],
+    "refuses": [
+      "semantic capability inference",
+      "unbound specification and verification plan",
+      "builder source execution",
+      "generated code execution",
+      "test execution",
+      "recipe activation",
+      "catalog mutation",
+      "automatic installation",
+      "registration",
+      "staging",
+      "promotion",
+      "permission grant",
+      "network access",
+      "Foundation mutation",
+      "CANON change"
+    ]
+  }
+}

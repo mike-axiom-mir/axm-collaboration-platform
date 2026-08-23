@@ -1,0 +1,43 @@
+{
+  "capability": "capability.specify.missing-hand/v1",
+  "capabilityId": "data.validate.closed-json-schema/v1",
+  "compatibilityVersionContract": "The candidate accepts only the source-reviewed schema subset and emits axm.schema-validation-result/v1; unsupported schema keywords are refused during builder review tests.",
+  "failureAndRecovery": "Malformed, oversized, cyclic, wrong-type, or undeclared-property input returns a typed failure result without mutation or retry.",
+  "gapType": "HAND",
+  "inputsAndSchemas": [
+    "one JSON-compatible value",
+    "one source-reviewed closed JSON Schema subset compiled into the candidate"
+  ],
+  "outputsAndSchemas": [
+    "axm.schema-validation-result/v1 with ordered typed validation errors"
+  ],
+  "permissionsAndConsent": [
+    "no permissions; callers explicitly supply the value being validated"
+  ],
+  "promotionGate": "Mike reviews the builder source, generated source, independent test evidence, catalog diff, and authority boundary before any recipe activation or merge.",
+  "provenance": {
+    "foundry": "hand-specification-foundry/v0.1",
+    "generatedAt": "2026-08-23T10:00:00.000Z",
+    "sourceRequirementIds": [
+      "capability-recipe-foundry-pilot"
+    ],
+    "sourceSchema": "axm.capability-gap-report/v1"
+  },
+  "purpose": "Build a bounded deterministic validator for an explicitly supplied closed JSON Schema subset without network access or repeated model compute.",
+  "resourceBudget": "Schema source is at most 16 KiB, one input is at most 64 KiB, recursion is bounded by the reviewed schema, and no network or child process is used by the candidate.",
+  "schema": "axm.missing-hand-specification/v1",
+  "sideEffects": [
+    "none; validation is a pure in-memory operation"
+  ],
+  "status": "DRAFT",
+  "truth": {
+    "authorityGranted": false,
+    "canon": false,
+    "executed": false,
+    "implementationNeutral": true,
+    "installed": false,
+    "promoted": false,
+    "prototypeOrMockClosesGap": false
+  },
+  "verificationContract": "Prove valid input, required-field refusal, type refusal, additional-property refusal, range refusal, size refusal, deterministic rebuild parity, and zero side effects."
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-recipe-authoring-intent/v1",
+  "title": "AXM capability recipe authoring intent v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "sourceKind", "specification", "verificationPlan", "recipe", "contribution", "status", "authority", "intentDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-recipe-authoring-intent/v1" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+    "sourceKind": { "enum": ["HUMAN", "CODEX", "MIRROR", "CODE_FABRIC"] },
+    "specification": { "type": "object" },
+    "verificationPlan": { "type": "object" },
+    "recipe": { "type": "object" },
+    "contribution": { "type": "object" },
+    "status": { "const": "EXPERIMENTAL" },
+    "authority": { "const": "NONE" },
+    "intentDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

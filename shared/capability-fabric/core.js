@@ -409,7 +409,7 @@
     if(!allowedKeys(envelope,['schema','sourceKind','recipe','proposalDigest'],'$',errors))return {ok:false,errors:errors};
     requireKeys(envelope,['schema','sourceKind','recipe','proposalDigest'],'$',errors);
     if(envelope.schema!==PROPOSAL_SCHEMA)errors.push(issue('SCHEMA_MISMATCH','$.schema','Expected '+PROPOSAL_SCHEMA+'.'));
-    if(['MIRROR','CODE_FABRIC','EXTERNAL','AI'].indexOf(envelope.sourceKind)<0)errors.push(issue('PROPOSAL_SOURCE_INVALID','$.sourceKind','Unsupported proposal source.'));
+    if(['HUMAN','CODEX','MIRROR','CODE_FABRIC','EXTERNAL','AI'].indexOf(envelope.sourceKind)<0)errors.push(issue('PROPOSAL_SOURCE_INVALID','$.sourceKind','Unsupported proposal source.'));
     const recipeCheck=validateRecipeProposalDraft(envelope.recipe);recipeCheck.errors.forEach(function(row){errors.push(row);});
     const expectedProposalDigest=isPlain(envelope.recipe)?digest(envelope.recipe):null;
     if(!safeDigest(envelope.proposalDigest)||envelope.proposalDigest!==expectedProposalDigest)errors.push(issue('PROPOSAL_DIGEST_MISMATCH','$.proposalDigest','Proposal digest mismatch.'));

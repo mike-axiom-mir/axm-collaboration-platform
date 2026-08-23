@@ -1,0 +1,186 @@
+{
+  "basis": {
+    "inputsAndSchemas": [
+      "one JSON-compatible value",
+      "one source-reviewed closed JSON Schema subset compiled into the candidate"
+    ],
+    "outputsAndSchemas": [
+      "axm.schema-validation-result/v1 with ordered typed validation errors"
+    ],
+    "purpose": "Build a bounded deterministic validator for an explicitly supplied closed JSON Schema subset without network access or repeated model compute.",
+    "verificationContract": "Prove valid input, required-field refusal, type refusal, additional-property refusal, range refusal, size refusal, deterministic rebuild parity, and zero side effects."
+  },
+  "capability": "capability.verify.missing-hand/v1",
+  "cases": [
+    {
+      "claim": "data.validate.closed-json-schema/v1 accepts and emits only the named schemas in its specification.",
+      "counterevidence": "An undeclared schema is accepted, a declared schema is refused, or an output fails schema validation.",
+      "evidenceRequired": [
+        "verifier transcript",
+        "input and output schema validation results"
+      ],
+      "family": "CONTRACT_SCHEMA_IDENTITY",
+      "id": "verify-01",
+      "passCondition": "A verifier exercises every declared input and checks every produced result against the declared output schema.",
+      "required": true,
+      "title": "Contract and schema identity",
+      "verdict": "NOT_RUN"
+    },
+    {
+      "claim": "data.validate.closed-json-schema/v1 completes its stated purpose for one valid bounded input.",
+      "counterevidence": "The valid operation fails, produces an incomplete output, or performs an undeclared effect.",
+      "evidenceRequired": [
+        "reproducible test command or procedure",
+        "captured result matched to expected output"
+      ],
+      "family": "POSITIVE_HAPPY_PATH",
+      "id": "verify-02",
+      "passCondition": "Prove valid input, required-field refusal, type refusal, additional-property refusal, range refusal, size refusal, deterministic rebuild parity, and zero side effects.",
+      "required": true,
+      "title": "Positive path",
+      "verdict": "NOT_RUN"
+    },
+    {
+      "claim": "data.validate.closed-json-schema/v1 rejects missing, malformed, oversized and wrong-version inputs without partial success.",
+      "counterevidence": "Any invalid input is treated as success, crashes without a bounded receipt, or mutates state.",
+      "evidenceRequired": [
+        "negative fixture list",
+        "refusal results",
+        "before-and-after state comparison"
+      ],
+      "family": "MALFORMED_INPUT_REFUSAL",
+      "id": "verify-03",
+      "passCondition": "Each invalid-input class returns a typed refusal and leaves the source and target state unchanged.",
+      "required": true,
+      "title": "Malformed and missing input refusal",
+      "verdict": "NOT_RUN"
+    },
+    {
+      "claim": "data.validate.closed-json-schema/v1 operates only inside the declared permission and consent boundary.",
+      "counterevidence": "The hand acts without required consent, inherits broader authority, or treats missing authority as success.",
+      "evidenceRequired": [
+        "denied-authority test",
+        "consent-boundary observation",
+        "typed refusal result"
+      ],
+      "family": "PERMISSION_CONSENT_REFUSAL",
+      "id": "verify-04",
+      "passCondition": "no permissions; callers explicitly supply the value being validated",
+      "required": true,
+      "title": "Permission and consent refusal",
+      "verdict": "NOT_RUN"
+    },
+    {
+      "claim": "data.validate.closed-json-schema/v1 creates only the declared side effects.",
+      "counterevidence": "A filesystem, network, process, persistence, publication or deletion effect occurs outside the specification.",
+      "evidenceRequired": [
+        "isolated environment trace",
+        "before-and-after inventory",
+        "unexpected-effect scan"
+      ],
+      "family": "SIDE_EFFECT_CONFINEMENT",
+      "id": "verify-05",
+      "passCondition": "none; validation is a pure in-memory operation",
+      "required": true,
+      "title": "Side-effect confinement",
+      "verdict": "NOT_RUN"
+    },
+    {
+      "claim": "data.validate.closed-json-schema/v1 stays inside its time, size and work budget and refuses excess safely.",
+      "counterevidence": "The budget is exceeded without refusal, work continues unbounded, or partial effects survive a limit breach.",
+      "evidenceRequired": [
+        "boundary fixture measurements",
+        "over-budget refusal",
+        "cleanup observation"
+      ],
+      "family": "RESOURCE_BUDGET_BOUNDARY",
+      "id": "verify-06",
+      "passCondition": "Schema source is at most 16 KiB, one input is at most 64 KiB, recursion is bounded by the reviewed schema, and no network or child process is used by the candidate.",
+      "required": true,
+      "title": "Resource-budget boundary",
+      "verdict": "NOT_RUN"
+    },
+    {
+      "claim": "data.validate.closed-json-schema/v1 fails and recovers according to its declared contract.",
+      "counterevidence": "An interrupted operation corrupts source or target state, loops indefinitely, or lacks a usable recovery receipt.",
+      "evidenceRequired": [
+        "fault-injection procedure",
+        "post-failure state evidence",
+        "recovery or rollback result"
+      ],
+      "family": "FAILURE_RECOVERY",
+      "id": "verify-07",
+      "passCondition": "Malformed, oversized, cyclic, wrong-type, or undeclared-property input returns a typed failure result without mutation or retry.",
+      "required": true,
+      "title": "Failure and recovery",
+      "verdict": "NOT_RUN"
+    },
+    {
+      "claim": "data.validate.closed-json-schema/v1 honors its version contract and refuses unknown major versions.",
+      "counterevidence": "An incompatible major version is silently accepted or a supported version changes behavior without a typed notice.",
+      "evidenceRequired": [
+        "supported-version fixture",
+        "unknown-major fixture",
+        "compatibility results"
+      ],
+      "family": "COMPATIBILITY_MAJOR_VERSION",
+      "id": "verify-08",
+      "passCondition": "The candidate accepts only the source-reviewed schema subset and emits axm.schema-validation-result/v1; unsupported schema keywords are refused during builder review tests.",
+      "required": true,
+      "title": "Compatibility and major-version refusal",
+      "verdict": "NOT_RUN"
+    },
+    {
+      "claim": "data.validate.closed-json-schema/v1 produces sufficient evidence to inspect the claimed outcome and its boundaries.",
+      "counterevidence": "A pass depends on absent, inaccessible, stale, circular or purely asserted evidence.",
+      "evidenceRequired": [
+        "evidence manifest",
+        "freshness and accessibility check",
+        "claim-to-evidence mapping"
+      ],
+      "family": "EVIDENCE_COMPLETENESS",
+      "id": "verify-09",
+      "passCondition": "Every required verification case has a stable evidence pointer, a concrete observation and a reproducible procedure.",
+      "required": true,
+      "title": "Evidence completeness",
+      "verdict": "NOT_RUN"
+    },
+    {
+      "claim": "data.validate.closed-json-schema/v1 cannot promote, release, grant authority or change CANON through a test result.",
+      "counterevidence": "Automation changes promotion, release, authority or CANON state, or bypasses the named human gate.",
+      "evidenceRequired": [
+        "promotion-state comparison",
+        "authority-state comparison",
+        "human gate record when applicable"
+      ],
+      "family": "PROMOTION_CANON_AUTHORITY_HOLD",
+      "id": "verify-10",
+      "passCondition": "Mike reviews the builder source, generated source, independent test evidence, catalog diff, and authority boundary before any recipe activation or merge.",
+      "required": true,
+      "title": "Promotion and CANON authority hold",
+      "verdict": "NOT_RUN"
+    }
+  ],
+  "provenance": {
+    "generatedAt": "2026-08-23T10:01:00.000Z",
+    "lab": "hand-verification-lab/v0.1",
+    "sourceSpecificationGeneratedAt": "2026-08-23T10:00:00.000Z"
+  },
+  "schema": "axm.hand-verification-plan/v1",
+  "status": "DRAFT_VERIFICATION_PLAN",
+  "target": {
+    "capabilityId": "data.validate.closed-json-schema/v1",
+    "specificationFingerprint": "fnv1a32:5eabdcb9",
+    "specificationSchema": "axm.missing-hand-specification/v1"
+  },
+  "truth": {
+    "authorityGranted": false,
+    "canon": false,
+    "evidenceRecorded": false,
+    "executesTests": false,
+    "installed": false,
+    "promoted": false,
+    "released": false,
+    "runtimeProven": false
+  }
+}

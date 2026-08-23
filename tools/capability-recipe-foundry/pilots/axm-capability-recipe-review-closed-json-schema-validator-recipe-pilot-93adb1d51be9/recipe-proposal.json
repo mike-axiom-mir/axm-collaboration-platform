@@ -1,0 +1,113 @@
+{
+  "proposalDigest": "sha256:09d545e584562e10e1f83481421acc5665a5750072fc72a45d1ab9df43c6de36",
+  "recipe": {
+    "activation": "INACTIVE_PROPOSAL",
+    "boundaries": [
+      "pure deterministic generation only",
+      "closed reviewed schema subset only",
+      "generated code is emitted but never executed by Capability Fabric or Recipe Foundry",
+      "no network, install, registration, promotion, permission, Foundation, or CANON authority"
+    ],
+    "builderId": "closed-json-schema-validator-v1",
+    "candidatePolicy": {
+      "defaultCount": 1,
+      "defaultVariantId": "bounded-default",
+      "variants": [
+        {
+          "id": "bounded-default",
+          "parameterOverrides": {},
+          "title": "Bounded default validator"
+        }
+      ]
+    },
+    "exampleRequest": {
+      "family": "schema-validation",
+      "id": "closed-json-schema-validator-example",
+      "parameters": {
+        "inputSchemaId": "axm.example.schema-validation-subject/v1",
+        "maxInputBytes": 4096,
+        "resultSchemaId": "axm.schema-validation-result/v1",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "attempts": {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "name": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "attempts",
+            "enabled"
+          ],
+          "type": "object"
+        }
+      },
+      "purpose": "Build the first bounded validator capability pilot.",
+      "recipeId": "closed-json-schema-validator",
+      "source": {
+        "kind": "HUMAN",
+        "ref": "capability-recipe-foundry-pilot"
+      },
+      "variantId": null
+    },
+    "family": "schema-validation",
+    "id": "closed-json-schema-validator",
+    "parameterSpec": {
+      "inputSchemaId": {
+        "description": "Exact schema contract consumed by the generated validator.",
+        "maxLength": 180,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+        "required": true,
+        "type": "string"
+      },
+      "maxInputBytes": {
+        "description": "Maximum JSON input bytes accepted before typed refusal.",
+        "maximum": 65536,
+        "minimum": 64,
+        "required": true,
+        "type": "integer"
+      },
+      "resultSchemaId": {
+        "description": "Exact validation result contract emitted by the generated validator.",
+        "maxLength": 180,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+        "required": true,
+        "type": "string"
+      },
+      "schema": {
+        "description": "Source-reviewed closed JSON Schema subset embedded into the generated validator.",
+        "maxBytes": 16384,
+        "required": true,
+        "type": "object"
+      }
+    },
+    "reviewPolicy": {
+      "activation": "source-review-and-merge",
+      "canonAuthority": "NONE",
+      "sharedUseRequires": "MIKE_TOBI_MERGE"
+    },
+    "schema": "axm.capability-recipe-draft/v1",
+    "summary": "Compiles one source-reviewed closed JSON Schema subset into a bounded deterministic validation capability.",
+    "title": "Closed JSON Schema Validator",
+    "verifiers": [
+      "Capability Fabric inactive proposal inspection",
+      "independent builder contribution source review",
+      "trusted-host builder contribution selftest",
+      "deterministic rebuild parity",
+      "adversarial generated-validator fixtures"
+    ],
+    "version": "0.1.0"
+  },
+  "schema": "axm.capability-recipe-proposal/v1",
+  "sourceKind": "CODEX"
+}
