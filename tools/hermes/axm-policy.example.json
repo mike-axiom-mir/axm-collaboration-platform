@@ -1,29 +1,16 @@
 {
   "schema": "axm.hermes-policy/v1",
   "posture": "research",
-  "consent": {
-    "enabled": false,
-    "reason": "off by default"
-  },
-  "mode": {
-    "hub_sandbox": true,
-    "external_mode": false
-  },
+  "consent": { "enabled": false, "reason": "off by default" },
+  "mode": { "hub_sandbox": true, "external_mode": false },
   "provider_egress": {
     "mode": "local_only",
     "allowed_secret_env": [],
     "note": "Credential/environment guard only; this is not network namespace isolation."
   },
   "research_tools": [
-    "web_search",
-    "web_extract",
-    "read_file",
-    "search_files",
-    "vision_analyze",
-    "skills_list",
-    "skill_view",
-    "session_search",
-    "clarify"
+    "web_search", "web_extract", "read_file", "search_files", "vision_analyze",
+    "skills_list", "skill_view", "session_search", "clarify"
   ],
   "allowed_tools": [],
   "limits": {
@@ -32,18 +19,11 @@
     "max_files_written_per_session": 5
   },
   "paths": {
-    "read_roots": [
-      "../..",
-      "runtime/workspace"
-    ],
-    "write_roots": [
-      "runtime/workspace",
-      "queue",
-      "outbox",
-      "run-reports"
-    ]
+    "read_roots": ["../..", "runtime/workspace"],
+    "write_roots": ["runtime/workspace", "queue", "outbox", "run-reports"]
   },
   "capabilities": {
+    "allow_file_mutation": false,
     "allow_terminal": false,
     "allow_execute_code": false,
     "allow_computer_use": false,
