@@ -8390,6 +8390,160 @@
         "availableIsAuthorized": false,
         "canon": false,
         "declaredPermissions": [
+          "export",
+          "filesystem-write"
+        ],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
+          "arbitrary-builder-or-test-execution",
+          "automatic-conflict-resolution",
+          "branch-outside-codex-or-agent-prefix",
+          "canon-change",
+          "configured-git-content-filter",
+          "conflicted-change",
+          "detached-target",
+          "dirty-target-worktree",
+          "fetch-or-remote-write",
+          "force-update",
+          "history-rewrite",
+          "main-branch-write",
+          "main-or-master-target",
+          "private-or-local-state-path",
+          "promotion",
+          "rebase",
+          "rename-or-copy",
+          "reset",
+          "roots-change",
+          "secret-shaped-content",
+          "symlink-change",
+          "target-drift",
+          "undeclared-deletion",
+          "undeclared-path"
+        ],
+        "writes": [
+          "explicit-create-new-receipts-outside-repository",
+          "integrated-lane-and-run-branch-cleanup",
+          "one-deterministic-local-run-commit-after-exact-apply-confirmation",
+          "one-exact-local-target-fast-forward",
+          "one-explicit-run-worktree-and-codex-run-branch-after-exact-begin-confirmation"
+        ]
+      },
+      "classification": {
+        "basis": [
+          "effectful declaration"
+        ],
+        "kind": "HAND",
+        "state": "INFERRED_UNCONFIRMED"
+      },
+      "effects": {
+        "capable": [
+          "WRITE_CANDIDATE"
+        ],
+        "declarationInputs": [
+          "explicit-create-new-receipts-outside-repository",
+          "export",
+          "filesystem-write",
+          "integrated-lane-and-run-branch-cleanup",
+          "one-deterministic-local-run-commit-after-exact-apply-confirmation",
+          "one-exact-local-target-fast-forward",
+          "one-explicit-run-worktree-and-codex-run-branch-after-exact-begin-confirmation"
+        ],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": [
+          "integrated-lane-and-run-branch-cleanup",
+          "one-deterministic-local-run-commit-after-exact-apply-confirmation",
+          "one-exact-local-target-fast-forward",
+          "one-explicit-run-worktree-and-codex-run-branch-after-exact-begin-confirmation"
+        ]
+      },
+      "id": "deterministic-run-integrator",
+      "name": "AXM Deterministic Run Integrator",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "tools/deterministic-run-integrator/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "clean-exact-target",
+          "explicit-policy",
+          "local-git-runtime",
+          "new-external-lane-path"
+        ],
+        "uses": [
+          "deterministic-json-core",
+          "explicit-run-integration-policy",
+          "local-git-runtime"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.deterministic-run-integration-policy/v1",
+          "filesystem/clean-codex-or-agent-target",
+          "filesystem/explicit-external-lane-path"
+        ],
+        "consumes": [
+          "deterministic-json-core",
+          "filesystem:clean-codex-or-agent-target",
+          "filesystem:explicit-external-lane-path",
+          "git-run.explicit-integration-policy",
+          "local-git-runtime"
+        ],
+        "emits": [
+          "axm.deterministic-run-integration-plan-verification/v1",
+          "axm.deterministic-run-integration-plan/v1",
+          "axm.deterministic-run-integration-receipt-verification/v1",
+          "axm.deterministic-run-integration-receipt/v1",
+          "git-run/full-verification-required"
+        ],
+        "provides": [
+          "git-run.declared-change-plan",
+          "git-run.deterministic-local-seal",
+          "git-run.exact-target-fast-forward",
+          "git-run.isolated-worktree-begin",
+          "git-run.post-integration-lane-cleanup",
+          "git-run.private-path-refusal",
+          "git-run.target-drift-hold"
+        ]
+      },
+      "source": {
+        "contract": "tools/deterministic-run-integrator/module.contract.json",
+        "declarationFiles": [
+          "tools/deterministic-run-integrator/manifest.json",
+          "tools/deterministic-run-integrator/module.contract.json"
+        ],
+        "declaredId": "deterministic-run-integrator",
+        "digest": "9ff15d9a644edc11cd80b0393e8233b89e2c2d0a62a6e6fc593b6adb48669e13",
+        "manifest": "tools/deterministic-run-integrator/manifest.json",
+        "observedSourceFileCount": 6,
+        "root": "tools/deterministic-run-integrator"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "run-integrator-cli.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [
           "device.listen"
         ],
         "execute": false,
@@ -43975,6 +44129,7 @@
       "consumers": [
         "deterministic-continuation-capsule",
         "deterministic-pr-checkpoint",
+        "deterministic-run-integrator",
         "repairbuddy"
       ],
       "id": "deterministic-json-core",
@@ -46067,6 +46222,13 @@
     },
     {
       "consumers": [
+        "deterministic-run-integrator"
+      ],
+      "id": "filesystem:clean-codex-or-agent-target",
+      "providers": []
+    },
+    {
+      "consumers": [
         "shared/schema-registry"
       ],
       "id": "filesystem:declared-schema-files",
@@ -46121,6 +46283,13 @@
         "shared/artifact-depot"
       ],
       "id": "filesystem:explicit-depot-root",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "deterministic-run-integrator"
+      ],
+      "id": "filesystem:explicit-external-lane-path",
       "providers": []
     },
     {
@@ -47081,6 +47250,62 @@
       "id": "git-pr.sender-receiver-transport-receipt",
       "providers": [
         "deterministic-pr-publisher"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "git-run.declared-change-plan",
+      "providers": [
+        "deterministic-run-integrator"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "git-run.deterministic-local-seal",
+      "providers": [
+        "deterministic-run-integrator"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "git-run.exact-target-fast-forward",
+      "providers": [
+        "deterministic-run-integrator"
+      ]
+    },
+    {
+      "consumers": [
+        "deterministic-run-integrator"
+      ],
+      "id": "git-run.explicit-integration-policy",
+      "providers": []
+    },
+    {
+      "consumers": [],
+      "id": "git-run.isolated-worktree-begin",
+      "providers": [
+        "deterministic-run-integrator"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "git-run.post-integration-lane-cleanup",
+      "providers": [
+        "deterministic-run-integrator"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "git-run.private-path-refusal",
+      "providers": [
+        "deterministic-run-integrator"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "git-run.target-drift-hold",
+      "providers": [
+        "deterministic-run-integrator"
       ]
     },
     {
@@ -50009,6 +50234,7 @@
         "deterministic-pr-base-refresh",
         "deterministic-pr-checkpoint",
         "deterministic-pr-publisher",
+        "deterministic-run-integrator",
         "source-control-merge-workbench"
       ],
       "id": "local-git-runtime",
@@ -59381,6 +59607,21 @@
       "sha256": "df147277f242c117550250b62fd45ae94f0915605f6bd9e5a945e2ae013140a9"
     },
     {
+      "id": "axm.deterministic-run-integration-plan/v1",
+      "path": "shared/deterministic-run-integrator/integration-plan.schema.json",
+      "sha256": "fd22a703ec5df3f03b5427e2fcc1aa182f07f1a40a455c121a13e3f30cceff59"
+    },
+    {
+      "id": "axm.deterministic-run-integration-policy/v1",
+      "path": "shared/deterministic-run-integrator/integration-policy.schema.json",
+      "sha256": "6c013fcf0f73138646da5cb3075189f17805a2409787ca4386258389376a52f2"
+    },
+    {
+      "id": "axm.deterministic-run-integration-receipt/v1",
+      "path": "shared/deterministic-run-integrator/integration-receipt.schema.json",
+      "sha256": "eedb869004dc2175ddb28d88d07e23583dc13d28fad8fff698683f7083402727"
+    },
+    {
       "id": "axm.effect-receipt/v1",
       "path": "shared/hands-rail/effect-receipt.schema.json",
       "sha256": "53d7866f3a2d96a771558e0c68b7352b80b577c234f292f44e40785883478f08"
@@ -62781,36 +63022,36 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "c1d175c5ca60bab3aeecfb19c04c5bc6fee1476490a741d623a46d36cb923f7f",
+  "semanticDigest": "e44fee7f3b0ef206a77d1cae4267c52911ed2813ee5c3fe8b04d3127ab6529b7",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "ea560f4fc3e042f3fa0ca4ca753a2deda8509fb3e85cd76cf0be951ce38c0190",
+    "declarationDigest": "5dbe11b5e8c5c032dac0152a6ff7f668e0d415461ff183143aab4c10e0046796",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "ea560f4fc3e042f3fa0ca4ca753a2deda8509fb3e85cd76cf0be951ce38c0190"
+    "snapshotIdentity": "5dbe11b5e8c5c032dac0152a6ff7f668e0d415461ff183143aab4c10e0046796"
   },
   "summary": {
     "blockKinds": {
       "BRICK": 10,
       "BRIDGE": 31,
-      "HAND": 140,
+      "HAND": 141,
       "ORGAN": 45,
       "ROOM": 40,
       "ROUTE": 29,
       "SENSOR": 5
     },
-    "blocks": 300,
-    "capabilities": 2893,
-    "declaredContracts": 297,
-    "declaredManifests": 249,
+    "blocks": 301,
+    "capabilities": 2903,
+    "declaredContracts": 298,
+    "declaredManifests": 250,
     "edges": 86,
-    "schemas": 817,
-    "unresolved": 1954
+    "schemas": 820,
+    "unresolved": 1961
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -66048,6 +66289,48 @@
       "blockId": "deterministic-pr-sequencer",
       "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.git-pr-sequence-plan-verification/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "deterministic-run-integrator",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "deterministic-json-core",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "deterministic-run-integrator",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "filesystem:clean-codex-or-agent-target",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "deterministic-run-integrator",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "filesystem:explicit-external-lane-path",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "deterministic-run-integrator",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "git-run.explicit-integration-policy",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "deterministic-run-integrator",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "local-git-runtime",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "deterministic-run-integrator",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.deterministic-run-integration-plan-verification/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "deterministic-run-integrator",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.deterministic-run-integration-receipt-verification/v1",
       "state": "UNKNOWN"
     },
     {

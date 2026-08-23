@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.deterministic-run-integration-receipt/v1",
+  "title": "AXM deterministic run integration receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "phase", "state", "planDigest", "result", "checks", "blockers", "error", "recovery", "authority", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.deterministic-run-integration-receipt/v1" },
+    "phase": { "enum": ["BEGIN", "APPLY"] },
+    "state": { "enum": ["PASS", "HELD", "REFUSED", "RECOVERY_REQUIRED"] },
+    "planDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "result": { "type": ["object", "null"] },
+    "checks": { "type": "array" },
+    "blockers": { "type": "array" },
+    "error": { "type": ["string", "null"] },
+    "recovery": { "type": "string" },
+    "authority": { "type": "object" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

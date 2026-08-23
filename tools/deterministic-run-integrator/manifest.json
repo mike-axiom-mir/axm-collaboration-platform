@@ -1,0 +1,32 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "gate",
+  "id": "deterministic-run-integrator",
+  "name": "AXM Deterministic Run Integrator",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "run-integrator-cli.js",
+  "contract": "module.contract.json",
+  "type": "machine-capability",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "HIGH",
+  "tags": ["git", "worktree", "integration", "deterministic", "dirty-workspace", "run-lane"],
+  "uses": ["deterministic-json-core", "local-git-runtime", "explicit-run-integration-policy"],
+  "permissions": ["export", "filesystem-write"],
+  "machine": { "entry": "run-integrator-cli.js", "actions": ["begin", "plan", "verify-plan", "apply", "verify-receipt"] },
+  "actions": [
+    "create one exact isolated run worktree outside the target repository",
+    "hash and bind every changed path to an explicit policy and target head",
+    "hold on target drift, dirty state, undeclared or private paths, configured Git filters, conflicts, symlinks, and secret-shaped content",
+    "with exact confirmation seal one deterministic local commit and fast-forward the unchanged target",
+    "remove the integrated worktree and run branch, or preserve the lane when recovery is required"
+  ],
+  "accepts": ["axm.deterministic-run-integration-policy/v1", "filesystem/clean-codex-or-agent-target", "filesystem/explicit-external-lane-path"],
+  "produces": ["axm.deterministic-run-integration-plan/v1", "axm.deterministic-run-integration-plan-verification/v1", "axm.deterministic-run-integration-receipt/v1", "axm.deterministic-run-integration-receipt-verification/v1"],
+  "readiness": ["clean-exact-target", "explicit-policy", "new-external-lane-path", "local-git-runtime"],
+  "summary": "Turn one isolated builder run into a declared, deterministic local fast-forward transaction without re-dirtying the active Workshop.",
+  "notes": "EXPERIMENTAL high-consequence local Git gate. It executes no builder or tests and cannot write remotes/main, rewrite history, promote, alter roots, or change CANON."
+}

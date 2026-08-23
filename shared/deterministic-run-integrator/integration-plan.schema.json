@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.deterministic-run-integration-plan/v1",
+  "title": "AXM deterministic run integration plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "policyVersion", "state", "action", "policy", "repository", "changes", "summary", "effectsIfExplicitlyAuthorized", "blockers", "planDigest"],
+  "properties": {
+    "schema": { "const": "axm.deterministic-run-integration-plan/v1" },
+    "policyVersion": { "const": "axm-deterministic-run-integrator-policy/0.1" },
+    "state": { "enum": ["READY", "HELD"] },
+    "action": { "enum": ["SEAL_FAST_FORWARD_AND_CLEAN", "NONE"] },
+    "policy": { "type": ["object", "null"] },
+    "repository": { "type": ["object", "null"] },
+    "changes": { "type": "array" },
+    "summary": {
+      "type": "object",
+      "required": ["files", "bytes", "blockers"],
+      "properties": {
+        "files": { "type": "integer", "minimum": 0 },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "blockers": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "effectsIfExplicitlyAuthorized": { "type": "object" },
+    "blockers": { "type": "array" },
+    "planDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

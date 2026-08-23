@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `2f0913a3863370c8a71cc65d020164519e7d1e103483253466b4dfab2e03e365`
+Twin digest: `fd4cf7756bd2db24dae27e98bbbc2d4fb2e0244c518d598e062e6b047f356534`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -73,6 +73,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | deterministic-pr-checkpoint | HAND | EXPERIMENTAL | 7 | WRITE_CANDIDATE | MEDIUM | `ba04356053c73262…` |
 | deterministic-pr-publisher | HAND | EXPERIMENTAL | 7 | NETWORK_READ, WRITE_CANDIDATE | UNKNOWN | `91227e0079d1e6c8…` |
 | deterministic-pr-sequencer | ROUTE | EXPERIMENTAL | 7 | NETWORK_READ, WRITE_CANDIDATE | MEDIUM | `83c2b076d14ac807…` |
+| deterministic-run-integrator | HAND | EXPERIMENTAL | 7 | WRITE_CANDIDATE | UNKNOWN | `b5d2e53eb6552ac2…` |
 | device-handoff | ROUTE | TEST | 8 | WRITE_CANDIDATE | UNKNOWN | `af123a8c903aac1b…` |
 | diagnostics-operations-center | HAND | TEST | 12 | WRITE_CANDIDATE | UNKNOWN | `f0af4233954ac812…` |
 | discord-bridge | BRIDGE | TEST | 3 | NETWORK_READ | UNKNOWN | `94c71ccd05b4647b…` |

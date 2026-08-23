@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `c1d175c5ca60bab3aeecfb19c04c5bc6fee1476490a741d623a46d36cb923f7f`
+Semantic graph digest: `e44fee7f3b0ef206a77d1cae4267c52911ed2813ee5c3fe8b04d3127ab6529b7`
 
-Blocks: 300 · Capabilities: 2893 · Schemas: 817 · Unresolved edges: 1954
+Blocks: 301 · Capabilities: 2903 · Schemas: 820 · Unresolved edges: 1961
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -77,6 +77,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | deterministic-pr-checkpoint | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 7 | 6 | 1 selftest(s) |
 | deterministic-pr-publisher | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, WRITE_CANDIDATE | 7 | 5 | 1 selftest(s) |
 | deterministic-pr-sequencer | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, WRITE_CANDIDATE | 7 | 4 | 1 selftest(s) |
+| deterministic-run-integrator | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 7 | 5 | 1 selftest(s) |
 | device-handoff | ROUTE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 8 | 4 | 1 selftest(s) |
 | diagnostics-operations-center | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 12 | 14 | 1 selftest(s) |
 | discord-bridge | BRIDGE (INFERRED_UNCONFIRMED) | TEST | NETWORK_READ | 3 | 3 | 1 selftest(s) |
@@ -853,6 +854,13 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `deterministic-pr-sequencer` → `axm.chatgpt-platform-merge-handoff/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `deterministic-pr-sequencer` → `axm.git-pr-next-action-handoff-verification/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `deterministic-pr-sequencer` → `axm.git-pr-sequence-plan-verification/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-run-integrator` → `deterministic-json-core` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-run-integrator` → `filesystem:clean-codex-or-agent-target` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-run-integrator` → `filesystem:explicit-external-lane-path` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-run-integrator` → `git-run.explicit-integration-policy` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-run-integrator` → `local-git-runtime` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `deterministic-run-integrator` → `axm.deterministic-run-integration-plan-verification/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `deterministic-run-integrator` → `axm.deterministic-run-integration-receipt-verification/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `device-handoff` → `browser-file-picker` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `device-handoff` → `explicit-command-deck-or-chroma-route` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `device-handoff` → `private-lan` (UNKNOWN)

@@ -1,7 +1,7 @@
 {
   "schema": "axm.twin-surface/v1",
-  "graphDigest": "c1d175c5ca60bab3aeecfb19c04c5bc6fee1476490a741d623a46d36cb923f7f",
-  "schemaRegistryDigest": "ade7e630640328c1009c25c427d75509a0607510f7d04fdfa061ecaca7198ae4",
+  "graphDigest": "e44fee7f3b0ef206a77d1cae4267c52911ed2813ee5c3fe8b04d3127ab6529b7",
+  "schemaRegistryDigest": "29db45ae3cefdb30627c66ba5267a2ca46bc1ef66ba8961d72e332d2cb6c3d76",
   "machinePackets": [
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -2180,6 +2180,42 @@
       "authorityGrants": [],
       "risk": "MEDIUM",
       "packetDigest": "83c2b076d14ac8075ce6110093b8001a1d92cec93f122d861692802bdc92652a"
+    },
+    {
+      "schema": "axm.machine-capability-packet/v1",
+      "blockId": "deterministic-run-integrator",
+      "blockDigest": "9ff15d9a644edc11cd80b0393e8233b89e2c2d0a62a6e6fc593b6adb48669e13",
+      "kind": "HAND",
+      "classificationState": "INFERRED_UNCONFIRMED",
+      "status": "EXPERIMENTAL",
+      "capabilities": [
+        "git-run.declared-change-plan",
+        "git-run.deterministic-local-seal",
+        "git-run.exact-target-fast-forward",
+        "git-run.isolated-worktree-begin",
+        "git-run.post-integration-lane-cleanup",
+        "git-run.private-path-refusal",
+        "git-run.target-drift-hold"
+      ],
+      "consumes": [
+        "deterministic-json-core",
+        "filesystem:clean-codex-or-agent-target",
+        "filesystem:explicit-external-lane-path",
+        "git-run.explicit-integration-policy",
+        "local-git-runtime"
+      ],
+      "effects": [
+        "WRITE_CANDIDATE"
+      ],
+      "unknownEffectDeclarations": [
+        "integrated-lane-and-run-branch-cleanup",
+        "one-deterministic-local-run-commit-after-exact-apply-confirmation",
+        "one-exact-local-target-fast-forward",
+        "one-explicit-run-worktree-and-codex-run-branch-after-exact-begin-confirmation"
+      ],
+      "authorityGrants": [],
+      "risk": "UNKNOWN",
+      "packetDigest": "b5d2e53eb6552ac2ed83c3f84f112e12fb09c966d316c59d009ba35aae01bd67"
     },
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -10579,6 +10615,18 @@
     },
     {
       "schema": "axm.effect-request-template/v1",
+      "blockId": "deterministic-run-integrator",
+      "blockDigest": "9ff15d9a644edc11cd80b0393e8233b89e2c2d0a62a6e6fc593b6adb48669e13",
+      "capabilityPacketDigest": "b5d2e53eb6552ac2ed83c3f84f112e12fb09c966d316c59d009ba35aae01bd67",
+      "effectClass": "WRITE_CANDIDATE",
+      "requiresExactTargetDigest": true,
+      "requiresExactScope": true,
+      "requiresAuthorityDecision": true,
+      "grantsAuthority": false,
+      "packetDigest": "7d0449280ea68efc485bf77a5080038937fb6db1cf2c18610c207d27190227a8"
+    },
+    {
+      "schema": "axm.effect-request-template/v1",
       "blockId": "device-handoff",
       "blockDigest": "76f71f25328a78e494cd6c727bd8c167e5b8a34ea636ab77a8c73ddec4852110",
       "capabilityPacketDigest": "af123a8c903aac1b7124ad5ef73d664f61510fa04ce763e3e4433ba89a00c9d1",
@@ -15310,6 +15358,32 @@
       "effectPacketDigests": [
         "eb132379bd705e500775d35215947b056e9b2f56c48f2413bb352ead2ff6eaba",
         "b61f12b1c9df2cb041a148806609f711ca44a4413448f021e11d6743ba369840"
+      ],
+      "safe": null,
+      "grantsAuthority": false
+    },
+    {
+      "blockId": "deterministic-run-integrator",
+      "name": "AXM Deterministic Run Integrator",
+      "status": "EXPERIMENTAL",
+      "kind": "HAND",
+      "beginnerSummary": "7 declared capability(s); 1 effect class(es); risk UNKNOWN",
+      "capabilities": [
+        "git-run.declared-change-plan",
+        "git-run.deterministic-local-seal",
+        "git-run.exact-target-fast-forward",
+        "git-run.isolated-worktree-begin",
+        "git-run.post-integration-lane-cleanup",
+        "git-run.private-path-refusal",
+        "git-run.target-drift-hold"
+      ],
+      "effects": [
+        "WRITE_CANDIDATE"
+      ],
+      "risk": "UNKNOWN",
+      "machinePacketDigest": "b5d2e53eb6552ac2ed83c3f84f112e12fb09c966d316c59d009ba35aae01bd67",
+      "effectPacketDigests": [
+        "7d0449280ea68efc485bf77a5080038937fb6db1cf2c18610c207d27190227a8"
       ],
       "safe": null,
       "grantsAuthority": false
@@ -21638,5 +21712,5 @@
     "beginnerViewPreservesCapabilities": true,
     "beginnerViewPreservesRisk": true
   },
-  "twinDigest": "2f0913a3863370c8a71cc65d020164519e7d1e103483253466b4dfab2e03e365"
+  "twinDigest": "fd4cf7756bd2db24dae27e98bbbc2d4fb2e0244c518d598e062e6b047f356534"
 }

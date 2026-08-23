@@ -1,0 +1,62 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-run-integrator",
+  "version": "v0.1",
+  "provides": [
+    "git-run.isolated-worktree-begin",
+    "git-run.declared-change-plan",
+    "git-run.deterministic-local-seal",
+    "git-run.exact-target-fast-forward",
+    "git-run.post-integration-lane-cleanup",
+    "git-run.target-drift-hold",
+    "git-run.private-path-refusal"
+  ],
+  "consumes": [
+    "local-git-runtime",
+    "deterministic-json-core",
+    "git-run.explicit-integration-policy",
+    "filesystem:clean-codex-or-agent-target",
+    "filesystem:explicit-external-lane-path"
+  ],
+  "permissions": ["export", "filesystem-write"],
+  "handoffs": {
+    "emits": ["axm.deterministic-run-integration-plan/v1", "axm.deterministic-run-integration-receipt/v1", "git-run/full-verification-required"],
+    "accepts": ["axm.deterministic-run-integration-policy/v1", "filesystem/clean-codex-or-agent-target"]
+  },
+  "lifecycle": { "state_owner": "mixed", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit" },
+  "boundaries": {
+    "writes": [
+      "one-explicit-run-worktree-and-codex-run-branch-after-exact-begin-confirmation",
+      "one-deterministic-local-run-commit-after-exact-apply-confirmation",
+      "one-exact-local-target-fast-forward",
+      "integrated-lane-and-run-branch-cleanup",
+      "explicit-create-new-receipts-outside-repository"
+    ],
+    "refuses": [
+      "arbitrary-builder-or-test-execution",
+      "dirty-target-worktree",
+      "detached-target",
+      "main-or-master-target",
+      "branch-outside-codex-or-agent-prefix",
+      "target-drift",
+      "undeclared-path",
+      "private-or-local-state-path",
+      "secret-shaped-content",
+      "configured-git-content-filter",
+      "symlink-change",
+      "rename-or-copy",
+      "undeclared-deletion",
+      "conflicted-change",
+      "automatic-conflict-resolution",
+      "fetch-or-remote-write",
+      "rebase",
+      "reset",
+      "history-rewrite",
+      "force-update",
+      "main-branch-write",
+      "promotion",
+      "roots-change",
+      "canon-change"
+    ]
+  }
+}
