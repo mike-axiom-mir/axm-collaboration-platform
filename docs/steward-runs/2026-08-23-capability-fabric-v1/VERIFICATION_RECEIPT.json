@@ -1,0 +1,75 @@
+{
+  "$schema": "axm.verification-receipt/v1",
+  "subject": "Capability Fabric v1",
+  "status": "PASS_WITH_EXISTING_WARNINGS_AND_NAMED_HOLDS",
+  "workshopStatus": "EXPERIMENTAL",
+  "baseCommit": "e25d9897e5b83e4c7896916047bde05e1b3c7984",
+  "testedImplementationCommit": "87efa372bb0bc981ab67bced36c15fa74321bc97",
+  "focusedChecks": [
+    {
+      "command": "npm run test:capability-fabric",
+      "result": "PASS",
+      "evidence": {
+        "sharedCoreChecks": 42,
+        "toolChecks": 8,
+        "packageChecks": 45,
+        "svgExactOutputProof": "PASS",
+        "svgCandidateDigest": "sha256:767bb73274000809be0dd9d920b6536b6c51e5fc8a270139824a014d1fd5af88"
+      }
+    },
+    {
+      "command": "npm run test:organ-fabric",
+      "result": "PASS",
+      "evidence": {
+        "sharedCoreChecks": 32,
+        "toolChecks": 6,
+        "packageChecks": 113
+      }
+    },
+    {
+      "command": "node tests/html-script-syntax-test.js",
+      "result": "PASS",
+      "evidence": {
+        "passed": 57,
+        "failed": 0
+      }
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "requiredChecks": [
+    { "command": "node verify.js", "result": "PASS_WITH_20_EXISTING_WARNINGS" },
+    { "command": "node hub/hub-selftest.js", "result": "PASS" },
+    { "command": "node hub/route-selftest.js", "result": "PASS" },
+    { "command": "node hub/graft-selftest.js", "result": "PASS" },
+    { "command": "node hub/skin-selftest.js", "result": "PASS" },
+    { "command": "node hub/verify-plus.js", "result": "PASS" },
+    { "command": "node tests/html-script-syntax-test.js", "result": "PASS" },
+    { "command": "node tests/tool-forge-package-test.js", "result": "PASS" },
+    { "command": "node tools/agent-tool-forge/selftest.js", "result": "PASS_17" },
+    { "command": "node tools/evidence-desk/selftest.js", "result": "PASS_36" }
+  ],
+  "discoveryState": {
+    "tools": 226,
+    "capabilities": 1974,
+    "sourceDigest": "59ba41edd11e9ec0d35d996c62e6d7628d40f822c5cadd6b37e60caadba73ec5",
+    "structuralDigestMatched": true
+  },
+  "namedHolds": [
+    "verify.js retained the same 20 pre-existing warnings observed at the precursor baseline.",
+    "The bounded full tool-readiness audit reported 122 PASS and 13 pre-existing unrelated non-PASS tools; it was not a clean all-tools pass.",
+    "Generated candidate selftests were executed only by an explicit external verifier, never by Capability Fabric itself.",
+    "Live visual fitness was checked for the workbench and the SVG proof fixture, not for every future recipe or possible generated output."
+  ],
+  "authority": {
+    "installed": false,
+    "registered": false,
+    "staged": false,
+    "promoted": false,
+    "canon": false,
+    "foundationAltered": false,
+    "networkOrProviderUsedByFabric": false
+  }
+}
