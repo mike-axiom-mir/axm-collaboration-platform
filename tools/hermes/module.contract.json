@@ -1,91 +1,80 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "hermes-local",
-  "version": "v0.3",
+  "version": "v0.4",
   "provides": [
-    "local-bootstrap-prerequisite-report",
-    "immutable-reviewed-hermes-source-install-and-verification",
+    "immutable-reviewed-hermes-commit-tree-version-verification",
     "explicit-pinned-upstream-dependency-install",
-    "axm-owned-hermes-profile-preparation",
-    "verified-external-hermes-runtime-launch",
+    "repairable-axm-managed-hermes-profile",
+    "provider-credential-egress-guard",
+    "research-and-operator-runtime-postures",
     "fail-closed-pre-tool-policy-gate",
     "axm-pre-llm-context-injection",
-    "metadata-only-tool-receipts",
+    "per-run-isolated-counter-and-evidence-capsules",
+    "metadata-only-hashed-tool-receipts",
+    "metadata-only-provider-model-egress-receipts",
+    "metadata-only-session-outcome-events",
+    "candidate-only-return-packet-finalization",
+    "orphan-run-recovery-finalization",
     "loopback-control-layer-health",
-    "local-consent-state-read-and-write",
-    "consent-gated-task-proposal-creation",
-    "consent-gated-review-proposal-creation",
-    "consent-gated-prompt-pack-creation"
+    "legacy-consent-gated-task-review-and-prompt-proposals"
   ],
   "consumes": [
-    "runtime:node",
-    "runtime:python",
-    "runtime:uv-for-deps-and-start",
-    "runtime:git-for-install-and-verification",
-    "human:explicit-bootstrap-command",
-    "source-lock:hermes-source.lock.json",
-    "local-config:runtime/policy.json",
-    "filesystem:tools/hermes",
-    "filesystem:tools/agent-tool-forge/prompt-packs",
-    "network:reviewed-git-remote-on-explicit-install",
-    "process:pinned-upstream-hermes-on-explicit-start",
-    "hermes-hook:pre_tool_call",
-    "hermes-hook:pre_llm_call",
-    "hermes-hook:post_tool_call"
+    "runtime:node", "runtime:python", "runtime:uv-for-deps-and-start", "runtime:git-for-install-and-verification",
+    "human:explicit-bootstrap-command", "source-lock:hermes-source.lock.json", "local-config:runtime/policy.json",
+    "filesystem:tools/hermes", "network:reviewed-git-remote-on-explicit-install",
+    "process:pinned-upstream-hermes-on-explicit-start", "hermes-hook:pre_tool_call", "hermes-hook:pre_llm_call",
+    "hermes-hook:post_tool_call", "hermes-hook:pre_api_request", "hermes-hook:post_api_request",
+    "hermes-hook:api_request_error", "hermes-hook:on_session_end", "hermes-hook:on_session_finalize"
   ],
-  "permissions": [
-    "files",
-    "network",
-    "machine.execute"
-  ],
+  "permissions": ["files", "network", "machine.execute"],
   "handoffs": {
     "emits": [
-      "axm.hermes-tool-receipt/v1",
-      "axm.hermes-task-proposal/v1",
-      "axm.hermes-review-proposal/v1",
-      "agent-tool-forge:prompt-pack-json",
-      "process:pinned-external-hermes-runtime"
+      "axm.hermes-run-manifest/v1", "axm.hermes-tool-receipt/v1", "axm.hermes-provider-receipt/v1",
+      "axm.hermes-session-event/v1", "axm.hermes-return-packet/v1",
+      "axm.hermes-task-proposal/v1", "axm.hermes-review-proposal/v1", "process:pinned-external-hermes-runtime"
     ],
     "accepts": [
-      "human:explicit-cli-action",
-      "local-file:runtime/policy.json",
-      "http:loopback-json-request",
-      "human:local-consent-toggle",
-      "hermes-hook:pre_tool_call",
-      "hermes-hook:pre_llm_call",
-      "hermes-hook:post_tool_call"
+      "human:explicit-cli-action", "local-file:runtime/policy.json", "http:loopback-json-request",
+      "human:local-consent-toggle", "hermes-hook:lifecycle-json"
     ]
   },
   "boundaries": {
     "automaticWrites": [
-      "tools/hermes/queue:directory-initialization-by-loopback-runner",
-      "tools/hermes/outbox:directory-initialization-by-loopback-runner",
-      "tools/hermes/logs:startup-log-by-loopback-runner",
-      "tools/agent-tool-forge/prompt-packs:directory-initialization-by-loopback-runner"
+      "tools/hermes/queue:directory-initialization-by-legacy-loopback-runner",
+      "tools/hermes/outbox:directory-initialization-by-legacy-loopback-runner",
+      "tools/hermes/logs:startup-log-by-legacy-loopback-runner"
     ],
     "explicitWrites": [
       "tools/hermes/external/hermes-agent:pinned-reviewed-git-clone",
-      "tools/hermes/runtime:local-runtime-directory-tree",
-      "tools/hermes/runtime/hermes-home/config.yaml:axm-generated-hook-profile",
-      "tools/hermes/runtime/policy.json:local-policy-and-consent-state",
-      "tools/hermes/runtime/state:bounded-tool-counter-state",
-      "tools/hermes/runtime/receipts:metadata-only-tool-receipts",
+      "tools/hermes/runtime/policy.json:local-policy-and-runtime-consent",
+      "tools/hermes/runtime/hermes-home/config.yaml:managed-hook-block-plus-preserved-user-config",
+      "tools/hermes/runtime/backups:pre-repair-config-snapshots",
+      "tools/hermes/runtime/audit/consent-events.jsonl:metadata-only-consent-transitions",
+      "tools/hermes/runtime/runs/<run>:run-manifest-state-tool-provider-session-evidence-and-return-packet",
+      "tools/hermes/run-reports:local-candidate-return-packet-copies",
       "tools/hermes/runtime/hermes-home:upstream-hermes-local-state-after-explicit-start",
       "tools/hermes/.hermes-consent.json:legacy-loopback-consent-state",
       "tools/hermes/queue:task-proposal-json",
-      "tools/hermes/outbox:review-proposal-markdown",
-      "tools/agent-tool-forge/prompt-packs:prompt-pack-json"
+      "tools/hermes/outbox:review-proposal-markdown"
     ],
     "refuses": [
-      "automatic-bootstrap-install-deps-prepare-or-start",
+      "automatic-install-deps-or-runtime-start",
       "floating-branch-or-tag-as-source-trust-anchor",
+      "commit-only-verification-without-tree-and-version-check",
       "automatic-source-lock-update",
       "dirty-or-wrong-origin-hermes-checkout-rewrite",
-      "bundled-hermes-runtime",
+      "bundled-hermes-runtime-claim",
       "os-container-or-vm-sandbox-enforcement-claim",
+      "provider-credential-guard-as-network-isolation-claim",
+      "provider-observer-hook-as-provider-request-blocking-claim",
       "foundation-sandbox-enforcement-claim",
-      "high-authority-terminal-code-computer-delegation-scheduling-or-messaging-by-default",
-      "tool-policy-as-model-provider-egress-gate-claim",
+      "research-posture-world-action-authority",
+      "operator-posture-as-blanket-authority",
+      "unknown-future-tool-auto-allow",
+      "file-mutation-without-explicit-capability-and-contained-path",
+      "high-authority-terminal-code-computer-delegation-scheduling-messaging-memory-skill-browser-account-home-project-coordination-generation-by-default",
+      "raw-prompt-response-tool-result-or-path-storage-in-axm-receipts",
       "runtime-policy-consent-as-legacy-loopback-consent-claim",
       "legacy-loopback-consent-as-runtime-tool-permission-claim",
       "hermes-memory-as-axm-canon",
@@ -93,7 +82,6 @@
       "automatic-return-packet-promotion",
       "automatic-merge-gate-approval",
       "identity-or-package-profile-binding-claim",
-      "direct-workshop-source-edit-by-default",
       "automatic-proposal-application",
       "automatic-status-promotion",
       "canon-authority"
@@ -101,8 +89,10 @@
   },
   "lifecycle": {
     "state_owner": "filesystem",
+    "run_state_scope": "fresh-per-launch-capsule",
     "reload": "resume",
     "disconnect": "graceful-degrade",
+    "crash_recovery": "explicit-repair-closes-incomplete-run-as-candidate-return-packet",
     "cleanup": "explicit"
   }
 }
