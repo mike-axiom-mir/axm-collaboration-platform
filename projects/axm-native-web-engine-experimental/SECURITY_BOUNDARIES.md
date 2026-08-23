@@ -32,12 +32,23 @@ separates data preservation from execution authority.
   files, schemes, and HTTP(S) targets stay held. Reload reparses the same
   authorized set and records per-source before/after digests.
 - `serve-local` binds an ephemeral listener to `127.0.0.1`, scopes routes under
-  a random capability path, validates the exact Host header, refuses cross-
-  origin mutations and non-JSON actions, bounds action bytes and server
-  timeouts, and emits no CORS permission.
+  a random capability path, validates the exact Host header, and requires every
+  mutation request to carry the exact loopback shell Origin. Missing Origin,
+  cross-origin mutation, non-JSON action, oversized action, and unknown routes
+  fail before session mutation. The host emits no CORS permission.
+- Loopback HTML and JSON responses use no-store, no-sniff, no-referrer, frame
+  denial, `Cross-Origin-Opener-Policy: same-origin`,
+  `Cross-Origin-Resource-Policy: same-origin`, and a Permissions Policy denying
+  camera, microphone, geolocation, display capture, USB, serial, HID, and
+  Bluetooth. The shell CSP includes `frame-ancestors 'none'` in addition to its
+  deny-by-default resource, worker, base, and form restrictions.
 - The human shell runs one CSP-hash-bound package controller. Page-derived
   values are assigned as DOM text. Page scripts, forms, resources, and unlisted
   link targets do not inherit shell execution authority.
+- Serialized local Browser Sessions can be checked by a read-only verifier that
+  recomputes bundle/session digests and checks bounded structural invariants.
+  Verification does not grant source truth, trust, install, promotion, canon,
+  or mutation authority; CI retains a separately implemented counter-verifier.
 
 ## Not implemented
 
@@ -49,7 +60,7 @@ separates data preservation from execution authority.
 - Race-free privileged filesystem mediation; the CLI is an unprivileged local
   proof and must not be embedded in a privileged host as-is.
 - Fuzzing, sanitizers, fault injection, or a hostile corpus beyond focused
-  parser and output-escaping fixtures.
+  parser and output-escaping fixtures plus independent source/artifact sentinels.
 
 ## Target boundary for later phases
 
@@ -63,8 +74,10 @@ trusted Browser Shell
 ```
 
 The current loopback shell is an experimental trusted-shell adapter in front of
-local bound sources. It is not the Network Broker or an untrusted Web Content
-process and does not close either isolation gate.
+local bound sources. Same-origin headers and exact-Origin mutation checks harden
+that trusted-shell surface; they are not a substitute for the held Network
+Broker or an untrusted Web Content process and do not close either isolation
+gate.
 
 Web content must never inherit provider keys, Mirror private state, Workshop
 filesystem access, local execution, LAN discovery, native adapters, or project
