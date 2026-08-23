@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "code-recipe-foundry",
-  "version": "v0.4",
+  "version": "v0.3",
   "provides": [
     "code.recipe.csv-json.ingest/v1",
     "code.recipe.validate/v1",
@@ -12,8 +12,7 @@
     "code.recipe.intake.receipt/v1",
     "code.recipe.catalog.installed/v1",
     "code.recipe.review.hold/v1",
-    "code.recipe.syntax.audit/v1",
-    "code.recipe.creation-evidence/v1"
+    "code.recipe.syntax.audit/v1"
   ],
   "consumes": [
     "user-selected:text/csv",
@@ -27,7 +26,7 @@
   ],
   "permissions": ["storage", "export", "clipboard-write"],
   "handoffs": {
-    "emits": ["axm.code-recipe-pack/v1", "axm.code-recipe-intake-receipt/v1", "axm.code-recipe-syntax-audit/v1", "axm.code-recipe-evidence-packet/v1"],
+    "emits": ["axm.code-recipe-pack/v1", "axm.code-recipe-intake-receipt/v1", "axm.code-recipe-syntax-audit/v1"],
     "accepts": ["text/csv", "application/json", "axm.code-recipe-pack/v1"]
   },
   "boundaries": {
@@ -55,10 +54,6 @@
       "syntax-pass-as-safety-proof",
       "unavailable-runtime-install",
       "formula-or-command-execution",
-      "snippet-byte-copy-into-evidence-packet",
-      "recipe-as-capability-proof",
-      "recipe-as-provider-proof",
-      "provider-authority-grant",
       "automatic-promotion",
       "canon-write"
     ]
