@@ -4,7 +4,7 @@
   "title": "AXM deterministic capability recipe v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "id", "version", "title", "summary", "family", "capabilityKind", "capabilityContract", "builderId", "activation", "reviewPolicy", "candidatePolicy", "parameterSpec", "exampleRequest", "boundaries", "verifiers", "recipeDigest"],
+  "required": ["schema", "id", "version", "title", "summary", "family", "capabilityKind", "capabilityContract", "builderId", "builderDigest", "activation", "reviewPolicy", "candidatePolicy", "parameterSpec", "exampleRequest", "boundaries", "verifiers", "recipeDigest"],
   "properties": {
     "schema": { "const": "axm.capability-recipe/v1" },
     "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
@@ -15,6 +15,7 @@
     "capabilityKind": { "enum": ["HAND", "SKILL"] },
     "capabilityContract": { "$ref": "modular-capability-recipe-contract.schema.json" },
     "builderId": { "enum": ["pure-json-transform-v1", "svg-status-badge-v1", "workshop-direction-adapter-v1"] },
+    "builderDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
     "activation": { "const": "ACTIVE_SOURCE_REVIEWED" },
     "reviewPolicy": {
       "type": "object",

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-builder-registry/v1",
+  "title": "AXM deterministic capability builder registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "entries", "registryDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-builder-registry/v1" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "capabilityKind", "status", "proposalDigest", "implementationDigest"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+          "capabilityKind": { "enum": ["HAND", "SKILL"] },
+          "status": { "enum": ["ACTIVE_SOURCE_REVIEWED", "REVIEW_CANDIDATE"] },
+          "proposalDigest": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+          "implementationDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "registryDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

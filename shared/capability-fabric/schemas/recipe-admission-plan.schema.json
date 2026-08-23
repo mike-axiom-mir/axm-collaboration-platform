@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-recipe-admission-plan/v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "state", "action", "checks", "holds", "effects", "authority", "planDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-recipe-admission-plan/v1" },
+    "version": { "const": "1.0.0" },
+    "state": { "enum": ["HELD", "AWAITING_SOURCE_REVIEW", "AWAITING_MIKE_DECISION", "READY_FOR_REVIEWED_MERGE"] },
+    "action": { "enum": ["NONE", "REVIEW_EXACT_SOURCE_AND_EVIDENCE", "REVIEW_EXACT_ADMISSION_DIFF", "MERGE_EXACT_REGISTRY_AND_CATALOG_DIFF"] },
+    "checks": { "type": "object" },
+    "holds": { "type": "array" },
+    "effects": { "type": "object" },
+    "authority": { "type": "object" },
+    "planDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

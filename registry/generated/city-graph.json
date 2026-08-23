@@ -791,9 +791,9 @@
           "tools/ai-habitat/module.contract.json"
         ],
         "declaredId": "ai-habitat",
-        "digest": "77b3c0c8bc6cf1ae9621f32ecd6ee2e9fd0c8cccfd2477eeb2de50b0d4dffa02",
+        "digest": "f4b509aae52fda714563568b51c759b9f9daf5aee4651d0b5ab9c5d48a1ed8ec",
         "manifest": "tools/ai-habitat/manifest.json",
-        "observedSourceFileCount": 29,
+        "observedSourceFileCount": 30,
         "root": "tools/ai-habitat"
       },
       "status": "TEST",
@@ -4415,6 +4415,7 @@
           "permission change",
           "promotion",
           "registration",
+          "review-candidate builder execution",
           "staging"
         ],
         "writes": [
@@ -4481,6 +4482,7 @@
         "provides": [
           "detached-nursery-compatible-capability-packages",
           "deterministic-capability-recipe-compilation",
+          "digest-bound-modular-builder-registry",
           "first-class-modular-hand-and-skill-kind-binding",
           "inactive-future-recipe-proposal-inspection",
           "typed-capability-build-holds"
@@ -4493,7 +4495,7 @@
           "tools/capability-fabric/module.contract.json"
         ],
         "declaredId": "capability-fabric",
-        "digest": "54448708caeedbf248fb0d61ab86e0e7f9224ef9b730d62bd85fba7a52862ba6",
+        "digest": "25008d0c412d281b3a2ebf319474dd9641573284d5c3e1fd3efc86f598598e2e",
         "manifest": "tools/capability-fabric/manifest.json",
         "observedSourceFileCount": 10,
         "root": "tools/capability-fabric"
@@ -4612,6 +4614,150 @@
         "audience": "human-machine",
         "entry": "index.html",
         "type": "hub-module"
+      },
+      "version": "v0.1"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [
+          "export",
+          "filesystem-read",
+          "runtime"
+        ],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
+          "automatic-installation",
+          "canon-change",
+          "catalog-write",
+          "environment-secret-inheritance",
+          "foundation-mutation",
+          "network-access",
+          "non-mike-admission-decision",
+          "permission-grant",
+          "promotion",
+          "recipe-self-activation",
+          "registration",
+          "registry-write",
+          "source-file-write",
+          "staging",
+          "unbound-or-tampered-foundry-packet",
+          "unconfirmed-source-execution",
+          "unreviewed-source"
+        ],
+        "writes": [
+          "explicit-create-new-evidence-output-outside-repository"
+        ]
+      },
+      "classification": {
+        "basis": [
+          "effectful declaration"
+        ],
+        "kind": "HAND",
+        "state": "INFERRED_UNCONFIRMED"
+      },
+      "effects": {
+        "capable": [
+          "OBSERVE_LOCAL",
+          "WRITE_CANDIDATE"
+        ],
+        "declarationInputs": [
+          "explicit-create-new-evidence-output-outside-repository",
+          "export",
+          "filesystem-read",
+          "runtime"
+        ],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": [
+          "runtime"
+        ]
+      },
+      "id": "capability-recipe-admission-gate",
+      "name": "Capability Recipe Admission Gate",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "tools/capability-recipe-admission-gate/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "exact-foundry-packet",
+          "explicit-mike-decision",
+          "matching-review-candidate-builder",
+          "source-review-evidence",
+          "trusted-test-confirmation"
+        ],
+        "uses": [
+          "capability-fabric",
+          "capability-recipe-foundry",
+          "explicit-mike-decision",
+          "explicit-review-evidence",
+          "local-node-runtime"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.capability-builder-test-receipt/v1",
+          "axm.capability-recipe-admission-decision/v1",
+          "axm.capability-recipe-proposal/v1",
+          "axm.capability-recipe-review-packet/v1",
+          "axm.capability-recipe-source-review-receipt/v1"
+        ],
+        "consumes": [
+          "capability-fabric:modular-builder-registry",
+          "capability-recipe-foundry:inactive-review-packet",
+          "explicit-mike-decision",
+          "explicit-source-review-evidence",
+          "local-node-runtime"
+        ],
+        "emits": [
+          "axm.capability-builder-test-receipt/v1",
+          "axm.capability-foundry-packet-host-verification/v1",
+          "axm.capability-recipe-admission-decision/v1",
+          "axm.capability-recipe-admission-plan/v1",
+          "axm.capability-recipe-source-review-receipt/v1",
+          "capability-recipe/reviewed-source-diff-required"
+        ],
+        "provides": [
+          "capability-recipe.deterministic-merge-plan",
+          "capability-recipe.exact-foundry-packet-verification",
+          "capability-recipe.explicit-mike-decision-binding",
+          "capability-recipe.self-activation-refusal",
+          "capability-recipe.source-review-evidence-binding",
+          "capability-recipe.trusted-builder-test-receipt"
+        ]
+      },
+      "source": {
+        "contract": "tools/capability-recipe-admission-gate/module.contract.json",
+        "declarationFiles": [
+          "tools/capability-recipe-admission-gate/manifest.json",
+          "tools/capability-recipe-admission-gate/module.contract.json"
+        ],
+        "declaredId": "capability-recipe-admission-gate",
+        "digest": "283ab33c130834f26982303c06501939ee213fef25b0900d66df03b4a18e60c8",
+        "manifest": "tools/capability-recipe-admission-gate/manifest.json",
+        "observedSourceFileCount": 6,
+        "root": "tools/capability-recipe-admission-gate"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "admission-cli.js",
+        "type": "machine-capability"
       },
       "version": "v0.1"
     },
@@ -4867,9 +5013,9 @@
           "tools/challenge-arena/module.contract.json"
         ],
         "declaredId": "challenge-arena",
-        "digest": "e3f6dd9f27cbb90d4a8dcfcd6f77871ad6a46e887025c0525f512fcff50773cb",
+        "digest": "6fcf8073f732e526427f2bffc99c39591f6d144b20cc6c32ef9a1a881c79d07c",
         "manifest": "tools/challenge-arena/manifest.json",
-        "observedSourceFileCount": 105,
+        "observedSourceFileCount": 166,
         "root": "tools/challenge-arena"
       },
       "status": "TEST",
@@ -42234,6 +42380,13 @@
     },
     {
       "consumers": [
+        "capability-recipe-admission-gate"
+      ],
+      "id": "capability-fabric:modular-builder-registry",
+      "providers": []
+    },
+    {
+      "consumers": [
         "hand-specification-foundry"
       ],
       "id": "capability-gap-contract-draft",
@@ -42286,6 +42439,55 @@
       "id": "capability-inventory",
       "providers": [
         "workshop-needs-observatory"
+      ]
+    },
+    {
+      "consumers": [
+        "capability-recipe-admission-gate"
+      ],
+      "id": "capability-recipe-foundry:inactive-review-packet",
+      "providers": []
+    },
+    {
+      "consumers": [],
+      "id": "capability-recipe.deterministic-merge-plan",
+      "providers": [
+        "capability-recipe-admission-gate"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "capability-recipe.exact-foundry-packet-verification",
+      "providers": [
+        "capability-recipe-admission-gate"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "capability-recipe.explicit-mike-decision-binding",
+      "providers": [
+        "capability-recipe-admission-gate"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "capability-recipe.self-activation-refusal",
+      "providers": [
+        "capability-recipe-admission-gate"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "capability-recipe.source-review-evidence-binding",
+      "providers": [
+        "capability-recipe-admission-gate"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "capability-recipe.trusted-builder-test-receipt",
+      "providers": [
+        "capability-recipe-admission-gate"
       ]
     },
     {
@@ -44544,6 +44746,13 @@
     },
     {
       "consumers": [],
+      "id": "digest-bound-modular-builder-registry",
+      "providers": [
+        "capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "digest-bound-same-origin-pack-texture-rendering",
       "providers": [
         "local-3d-game-runtime"
@@ -46001,6 +46210,13 @@
       ]
     },
     {
+      "consumers": [
+        "capability-recipe-admission-gate"
+      ],
+      "id": "explicit-mike-decision",
+      "providers": []
+    },
+    {
       "consumers": [],
       "id": "explicit-model-evaluation-json-export",
       "providers": [
@@ -46111,6 +46327,13 @@
       "providers": [
         "agent-command-center"
       ]
+    },
+    {
+      "consumers": [
+        "capability-recipe-admission-gate"
+      ],
+      "id": "explicit-source-review-evidence",
+      "providers": []
     },
     {
       "consumers": [],
@@ -50407,6 +50630,13 @@
       "providers": [
         "knowledge-canvas"
       ]
+    },
+    {
+      "consumers": [
+        "capability-recipe-admission-gate"
+      ],
+      "id": "local-node-runtime",
+      "providers": []
     },
     {
       "consumers": [],
@@ -59432,9 +59662,19 @@
       "sha256": "70d611015529517f55785d67b18a55dfc8b81ccd437b45f1215c87b51ed4a867"
     },
     {
+      "id": "axm.capability-builder-registry/v1",
+      "path": "shared/capability-fabric/schemas/builder-registry.schema.json",
+      "sha256": "73a51f7459bd357823208bd2574d9dd6e9614284b154e84db1bc752b32349270"
+    },
+    {
+      "id": "axm.capability-builder-test-receipt/v1",
+      "path": "shared/capability-fabric/schemas/builder-test-receipt.schema.json",
+      "sha256": "3a94687a4c1b5f8fce8fbbec7b510c6fa655a7a0dc57aa4b9092e6d8e65d1660"
+    },
+    {
       "id": "axm.capability-candidate-package/v1",
       "path": "shared/capability-fabric/schemas/candidate-package.schema.json",
-      "sha256": "1464b7cbbf3770b173e0493730a593326672447a6514becea8083bf51b9f22fc"
+      "sha256": "df233f44058931c16a45dbe561c263cd707779e234b4c6c0929d6a8e793a3901"
     },
     {
       "id": "axm.capability-fabric.build-request/v1",
@@ -59445,6 +59685,16 @@
       "id": "axm.capability-intervention-link/v2",
       "path": "shared/grounded-growth-human-bridge-v2/capability-intervention-link.schema.json",
       "sha256": "1055ed1f59f9203096dedf53f3894e827c9d7e08a4f6fd7baf2d02ab094412cf"
+    },
+    {
+      "id": "axm.capability-recipe-admission-decision/v1",
+      "path": "shared/capability-fabric/schemas/recipe-admission-decision.schema.json",
+      "sha256": "f47d1b546f685d6587bacc7b4aaf576d2df91e442369b275767b6dcf7eb479a0"
+    },
+    {
+      "id": "axm.capability-recipe-admission-plan/v1",
+      "path": "shared/capability-fabric/schemas/recipe-admission-plan.schema.json",
+      "sha256": "bb43e77c9cbe32538d583dae626b8f441f4bc3f22e616869e31a8d57ddde61b3"
     },
     {
       "id": "axm.capability-recipe-authoring-intent/v1",
@@ -59477,9 +59727,14 @@
       "sha256": "cca785a3cc11953ac7ba13e2897e080c8e8676321a0f4bd322dedf4a6c336c9d"
     },
     {
+      "id": "axm.capability-recipe-source-review-receipt/v1",
+      "path": "shared/capability-fabric/schemas/recipe-source-review-receipt.schema.json",
+      "sha256": "4f5c548e4b2c7cef3513b2f8a55d7806e018300b122f075d59c307bd972b7789"
+    },
+    {
       "id": "axm.capability-recipe/v1",
       "path": "shared/capability-fabric/schemas/capability-recipe.schema.json",
-      "sha256": "b01ae8c580f1e866d7ddb9f187b736e084259e689fa918d06c9be4cf50f22caa"
+      "sha256": "c90654b4b1b1671b6bb3cdf671ff5ff6394c0d263df50c89b3b8f3a91f48f1eb"
     },
     {
       "id": "axm.challenge-arena-capabilities/0.5",
@@ -63307,36 +63562,36 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "50d4fe02cf535babcf4d957a66181efba6bc433968459b26c3b54543ef2d4d9b",
+  "semanticDigest": "5af11c8d6122ff0cf9da45560390894e07360b6b02e7a01485385f8c9fa94db3",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "84278988c83877a169951f4f6c0cf676be8354e8f14ff6bfb2a4b5b0fa35e207",
+    "declarationDigest": "ddc6e7a413d5e56ab5f1d78f303e58c302e309de3aa84912cb6f09c17119a2e0",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "84278988c83877a169951f4f6c0cf676be8354e8f14ff6bfb2a4b5b0fa35e207"
+    "snapshotIdentity": "ddc6e7a413d5e56ab5f1d78f303e58c302e309de3aa84912cb6f09c17119a2e0"
   },
   "summary": {
     "blockKinds": {
       "BRICK": 10,
       "BRIDGE": 31,
-      "HAND": 140,
+      "HAND": 141,
       "ORGAN": 45,
       "ROOM": 40,
       "ROUTE": 30,
       "SENSOR": 5
     },
-    "blocks": 301,
-    "capabilities": 2923,
-    "declaredContracts": 298,
-    "declaredManifests": 250,
+    "blocks": 302,
+    "capabilities": 2935,
+    "declaredContracts": 299,
+    "declaredManifests": 251,
     "edges": 86,
-    "schemas": 835,
-    "unresolved": 1967
+    "schemas": 840,
+    "unresolved": 1973
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -65434,6 +65689,42 @@
       "blockId": "capability-gap-workbench",
       "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.capability-gap-report/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-recipe-admission-gate",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "capability-fabric:modular-builder-registry",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-recipe-admission-gate",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "capability-recipe-foundry:inactive-review-packet",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-recipe-admission-gate",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "explicit-mike-decision",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-recipe-admission-gate",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "explicit-source-review-evidence",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-recipe-admission-gate",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "local-node-runtime",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-recipe-admission-gate",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.capability-foundry-packet-host-verification/v1",
       "state": "UNKNOWN"
     },
     {

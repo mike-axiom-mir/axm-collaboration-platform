@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-recipe-admission-decision/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "decision", "admissionDigest", "proposalDigest", "builderDigest", "baseCatalogDigest", "reviewReceiptDigest", "reviewer", "confirmation", "canon", "authority", "decisionDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-recipe-admission-decision/v1" },
+    "version": { "const": "1.0.0" },
+    "decision": { "const": "ACCEPT_EXPERIMENTAL_RECIPE_FOR_REVIEWED_MERGE" },
+    "admissionDigest": { "$ref": "#/$defs/digest" },
+    "proposalDigest": { "$ref": "#/$defs/digest" },
+    "builderDigest": { "$ref": "#/$defs/digest" },
+    "baseCatalogDigest": { "$ref": "#/$defs/digest" },
+    "reviewReceiptDigest": { "$ref": "#/$defs/digest" },
+    "reviewer": { "const": "Mike Tobi" },
+    "confirmation": { "const": "ACCEPT EXACT EXPERIMENTAL RECIPE FOR REVIEWED MERGE" },
+    "canon": { "const": false },
+    "authority": { "type": "object" },
+    "decisionDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" } }
+}

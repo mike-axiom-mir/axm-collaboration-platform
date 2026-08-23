@@ -1,0 +1,32 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "gate",
+  "id": "capability-recipe-admission-gate",
+  "name": "Capability Recipe Admission Gate",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "admission-cli.js",
+  "contract": "module.contract.json",
+  "type": "machine-capability",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "HIGH",
+  "tags": ["capability", "recipe", "admission", "hand", "skill", "source-review", "deterministic"],
+  "uses": ["capability-fabric", "capability-recipe-foundry", "local-node-runtime", "explicit-review-evidence", "explicit-mike-decision"],
+  "permissions": ["filesystem-read", "runtime", "export"],
+  "machine": { "entry": "admission-cli.js", "actions": ["inspect", "test", "plan", "review", "decision", "verify-plan"] },
+  "actions": [
+    "verify exact inactive Foundry packet directories without executing source",
+    "with exact confirmation execute one bound builder-contribution selftest under a sanitized environment",
+    "bind nine exact source-review evidence cases",
+    "bind Mike's exact proposal, builder, catalog-base, and review decision",
+    "emit a deterministic prospective registry and catalog merge plan without applying it"
+  ],
+  "accepts": ["axm.capability-recipe-review-packet/v1", "axm.capability-recipe-proposal/v1", "axm.capability-builder-test-receipt/v1", "axm.capability-recipe-source-review-receipt/v1", "axm.capability-recipe-admission-decision/v1"],
+  "produces": ["axm.capability-foundry-packet-host-verification/v1", "axm.capability-builder-test-receipt/v1", "axm.capability-recipe-source-review-receipt/v1", "axm.capability-recipe-admission-decision/v1", "axm.capability-recipe-admission-plan/v1"],
+  "readiness": ["exact-foundry-packet", "matching-review-candidate-builder", "trusted-test-confirmation", "source-review-evidence", "explicit-mike-decision"],
+  "summary": "Verify and bind the exact evidence needed for a reviewed HAND or SKILL recipe merge without letting a recipe activate itself.",
+  "notes": "EXPERIMENTAL high-consequence review gate. It produces no source, registry, catalog, installation, promotion, Foundation, or CANON mutation."
+}

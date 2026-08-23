@@ -1,6 +1,7 @@
 'use strict';
 
 const Fabric = require('../../shared/capability-fabric/index.js');
+const BuilderRegistry = require('../../shared/capability-fabric/builder-registry.js');
 
 const ACTIONS = ['catalog.list','request.validate','build.plan','build.run','package.verify','hand-request.adapt','recipe-proposal.inspect'];
 const FORBIDDEN = ['filesystem.write','generated-code.execute','install','register','stage','promote','permission-grant','network','canon','foundation.mutate','recipe.activate'];
@@ -9,7 +10,7 @@ function refusal(code,reason){return response({ok:false,refused:true,code:code,r
 async function run(request){
   request=request||{};const action=String(request.action||''),input=request.input||{},catalog=Fabric.loadCatalog();
   if(ACTIONS.indexOf(action)<0)return refusal(FORBIDDEN.indexOf(action)>=0?'FORBIDDEN_ACTION':'UNSUPPORTED_ACTION','The machine door exposes pure validation, planning, in-memory compilation, and inspection only.');
-  if(action==='catalog.list')return response({ok:true,catalog:{schema:catalog.schema,status:catalog.status,activationPolicy:catalog.activationPolicy,catalogDigest:catalog.catalogDigest,recipes:catalog.recipes.map(function(row){return {id:row.id,version:row.version,title:row.title,family:row.family,capabilityKind:row.capabilityKind,builderId:row.builderId,recipeDigest:row.recipeDigest,defaultCandidates:row.candidatePolicy.defaultCount,defaultVariantId:row.candidatePolicy.defaultVariantId};})}});
+  if(action==='catalog.list')return response({ok:true,catalog:{schema:catalog.schema,status:catalog.status,activationPolicy:catalog.activationPolicy,catalogDigest:catalog.catalogDigest,builderRegistry:BuilderRegistry.inventory(),recipes:catalog.recipes.map(function(row){return {id:row.id,version:row.version,title:row.title,family:row.family,capabilityKind:row.capabilityKind,builderId:row.builderId,builderDigest:row.builderDigest,recipeDigest:row.recipeDigest,defaultCandidates:row.candidatePolicy.defaultCount,defaultVariantId:row.candidatePolicy.defaultVariantId};})}});
   if(action==='request.validate'){const result=Fabric.validateRequest(input.request);return response({ok:result.ok,validation:result});}
   if(action==='build.plan'){const plan=Fabric.planBuild(input.request,catalog);return response({ok:plan.status==='READY',plan:plan});}
   if(action==='build.run'){const result=Fabric.build(input.request,catalog);return response({ok:result.status==='COMPLETE',run:result});}

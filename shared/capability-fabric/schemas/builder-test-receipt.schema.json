@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-builder-test-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "state", "proposalDigest", "builderId", "builderDigest", "capabilityKind", "packetDigest", "commandId", "sourceExecuted", "generatedCapabilityExecuted", "checks", "outputDigest", "authority", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-builder-test-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "state": { "enum": ["PASS", "FAIL"] },
+    "proposalDigest": { "$ref": "#/$defs/digest" },
+    "builderId": { "type": "string" },
+    "builderDigest": { "$ref": "#/$defs/digest" },
+    "capabilityKind": { "enum": ["HAND", "SKILL"] },
+    "packetDigest": { "$ref": "#/$defs/digest" },
+    "commandId": { "const": "NODE_BUILDER_CONTRIBUTION_SELFTEST" },
+    "sourceExecuted": { "type": "boolean" },
+    "generatedCapabilityExecuted": { "type": "boolean" },
+    "checks": { "type": "array", "minItems": 1 },
+    "outputDigest": { "$ref": "#/$defs/digest" },
+    "authority": { "type": "object" },
+    "receiptDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" } }
+}

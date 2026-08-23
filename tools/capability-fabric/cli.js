@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const Fabric = require('../../shared/capability-fabric/index.js');
+const BuilderRegistry = require('../../shared/capability-fabric/builder-registry.js');
 const Nursery = require('../detached-candidate-nursery/core/nursery-core.js');
 
 function fail(code,message,details){const error=new Error(message);error.receipt={schema:'axm.capability-cli-error/v1',ok:false,code:code,message:message,details:details||null};throw error;}
@@ -43,7 +44,7 @@ function requestFrom(args){return readJson(existingFile(args.request,'Request'))
 function main(argv){
   const args=parseArgs(argv),command=args._[0],catalog=Fabric.loadCatalog();
   if(!command||command==='help'||command==='--help'){console.log('Capability Fabric v1\n\ncatalog\nvalidate --request <file>\nplan --request <file>\nbuild --request <file> --output-parent <existing-dir>\n');return;}
-  if(command==='catalog'){console.log(JSON.stringify({schema:catalog.schema,status:catalog.status,activationPolicy:catalog.activationPolicy,catalogDigest:catalog.catalogDigest,recipes:catalog.recipes.map(function(row){return {id:row.id,family:row.family,capabilityKind:row.capabilityKind,version:row.version,recipeDigest:row.recipeDigest};})},null,2));return;}
+  if(command==='catalog'){console.log(JSON.stringify({schema:catalog.schema,status:catalog.status,activationPolicy:catalog.activationPolicy,catalogDigest:catalog.catalogDigest,builderRegistry:BuilderRegistry.inventory(),recipes:catalog.recipes.map(function(row){return {id:row.id,family:row.family,capabilityKind:row.capabilityKind,version:row.version,builderId:row.builderId,builderDigest:row.builderDigest,recipeDigest:row.recipeDigest};})},null,2));return;}
   const request=requestFrom(args);
   if(command==='validate'){const result=Fabric.validateRequest(request);console.log(JSON.stringify(result,null,2));if(!result.ok)process.exitCode=2;return;}
   if(command==='plan'){const result=Fabric.planBuild(request,catalog);console.log(JSON.stringify(result,null,2));if(result.status!=='READY')process.exitCode=2;return;}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-recipe-source-review-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "state", "proposalDigest", "builderId", "builderDigest", "packetDigest", "testReceiptDigest", "reviewer", "confirmation", "cases", "sourceReviewed", "authority", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-recipe-source-review-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "state": { "enum": ["PASS", "FAIL"] },
+    "proposalDigest": { "$ref": "#/$defs/digest" },
+    "builderId": { "type": "string" },
+    "builderDigest": { "$ref": "#/$defs/digest" },
+    "packetDigest": { "$ref": "#/$defs/digest" },
+    "testReceiptDigest": { "$ref": "#/$defs/digest" },
+    "reviewer": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "confirmation": { "const": "I REVIEWED THE EXACT RECIPE SOURCE AND EVIDENCE" },
+    "cases": { "type": "array", "minItems": 9, "maxItems": 9 },
+    "sourceReviewed": { "const": true },
+    "authority": { "type": "object" },
+    "receiptDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" } }
+}

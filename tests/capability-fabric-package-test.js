@@ -28,7 +28,7 @@ function main(){
     check(contract.boundaries.refuses.includes('generated code execution'),'contract refuses generated-code execution');
     check(contract.boundaries.refuses.includes('Foundation mutation')&&contract.boundaries.refuses.includes('CANON change'),'contract refuses Foundation and CANON mutation');
     check(html.includes('Capability Fabric')&&html.includes('ONE CANDIDATE DEFAULT'),'human workbench exposes the intended build model');
-    check(html.includes('/shared/capability-fabric/core.js')&&html.includes('/shared/deterministic-organ-fabric/core.js'),'workbench visibly reuses deterministic Organ kernel');
+    check(html.includes('/shared/capability-fabric/core.js')&&html.includes('/shared/capability-fabric/builder-registry.js')&&html.includes('/shared/deterministic-organ-fabric/core.js'),'workbench visibly reuses deterministic Organ kernel and modular builder registry');
     check(!/openai|anthropic|gemini|api[_ -]?key/i.test(app),'browser workbench has no provider or credential path');
     new Function(app);check(true,'browser workbench script parses');
 

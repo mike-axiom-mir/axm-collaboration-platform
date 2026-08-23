@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `50d4fe02cf535babcf4d957a66181efba6bc433968459b26c3b54543ef2d4d9b`
+Semantic graph digest: `5af11c8d6122ff0cf9da45560390894e07360b6b02e7a01485385f8c9fa94db3`
 
-Blocks: 301 · Capabilities: 2923 · Schemas: 835 · Unresolved edges: 1967
+Blocks: 302 · Capabilities: 2935 · Schemas: 840 · Unresolved edges: 1973
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -45,8 +45,9 @@ This file is generated from the same graph as the machine views. Labels never gr
 | browser-global-surface-observatory | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 5 | 2 | 1 selftest(s) |
 | browser-lan-hardware-qa-lab | ROUTE (INFERRED_UNCONFIRMED) | TEST | PHYSICAL_ACTUATION, WRITE_CANDIDATE | 7 | 5 | 1 selftest(s) |
 | bulk-intake-conveyor | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 7 | 4 | 1 selftest(s) |
-| capability-fabric | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 5 | 4 | 1 selftest(s) |
+| capability-fabric | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 6 | 4 | 1 selftest(s) |
 | capability-gap-workbench | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 3 | 1 selftest(s) |
+| capability-recipe-admission-gate | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | OBSERVE_LOCAL, WRITE_CANDIDATE | 6 | 5 | 1 selftest(s) |
 | capability-recipe-foundry | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 6 | 4 | 3 selftest(s) |
 | challenge-arena | HAND (INFERRED_UNCONFIRMED) | TEST | ROOT_CHANGE, WRITE_CANDIDATE | 5 | 4 | 1 selftest(s) |
 | character-animation-mocap-studio | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
@@ -664,6 +665,12 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `capability-gap-workbench` → `declared-capability-inventory` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `capability-gap-workbench` → `normalized-requirements` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `capability-gap-workbench` → `axm.capability-gap-report/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `capability-recipe-admission-gate` → `capability-fabric:modular-builder-registry` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `capability-recipe-admission-gate` → `capability-recipe-foundry:inactive-review-packet` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `capability-recipe-admission-gate` → `explicit-mike-decision` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `capability-recipe-admission-gate` → `explicit-source-review-evidence` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `capability-recipe-admission-gate` → `local-node-runtime` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `capability-recipe-admission-gate` → `axm.capability-foundry-packet-host-verification/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `capability-recipe-foundry` → `axm.hand-verification-plan/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `capability-recipe-foundry` → `axm.missing-hand-specification/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `capability-recipe-foundry` → `capability-fabric:inactive-recipe-proposal-inspection` (UNKNOWN)

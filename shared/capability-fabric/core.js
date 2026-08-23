@@ -2,17 +2,23 @@
   const dependency = typeof module !== 'undefined' && module.exports
     ? require('../deterministic-organ-fabric/core.js')
     : root.AXMDeterministicOrganFabric;
-  const api = factory(dependency);
+  const builderRegistry = typeof module !== 'undefined' && module.exports
+    ? require('./builder-registry.js')
+    : root.AXMCapabilityBuilderRegistry;
+  const api = factory(dependency, builderRegistry);
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') root.AXMCapabilityFabric = api;
-})(typeof self !== 'undefined' ? self : this, function (deterministicKernel) {
+})(typeof self !== 'undefined' ? self : this, function (deterministicKernel, builderRegistry) {
   'use strict';
 
   if (!deterministicKernel || typeof deterministicKernel.digest !== 'function') {
     throw new Error('AXM deterministic organ kernel is required');
   }
+  if (!builderRegistry || typeof builderRegistry.compileActive !== 'function') {
+    throw new Error('AXM capability builder registry is required');
+  }
 
-  const FABRIC_VERSION = '1.2.0';
+  const FABRIC_VERSION = '1.3.0';
   const REQUEST_SCHEMA = 'axm.capability-fabric.build-request/v1';
   const RECIPE_SCHEMA = 'axm.capability-recipe/v1';
   const CATALOG_SCHEMA = 'axm.capability-recipe-catalog/v1';
@@ -27,7 +33,7 @@
   const MAX_PROPOSAL_BYTES = 131072;
   const MAX_PACKAGE_FILES = 32;
   const MAX_PACKAGE_BYTES = 1048576;
-  const ALLOWED_BUILDERS = Object.freeze(['pure-json-transform-v1', 'svg-status-badge-v1', 'workshop-direction-adapter-v1']);
+  const ALLOWED_BUILDERS = Object.freeze(builderRegistry.activeIds());
   const AUTHORITY = Object.freeze({ installed:false, registered:false, staged:false, promoted:false, canonChanged:false, permissionsChanged:false });
 
   const canonicalJson = deterministicKernel.canonicalJson;
@@ -117,7 +123,7 @@
 
   function validateRecipe(recipe) {
     const errors=[];
-    const keys=['schema','id','version','title','summary','family','capabilityKind','capabilityContract','builderId','activation','reviewPolicy','candidatePolicy','parameterSpec','exampleRequest','boundaries','verifiers','recipeDigest'];
+    const keys=['schema','id','version','title','summary','family','capabilityKind','capabilityContract','builderId','builderDigest','activation','reviewPolicy','candidatePolicy','parameterSpec','exampleRequest','boundaries','verifiers','recipeDigest'];
     if(!allowedKeys(recipe,keys,'$',errors))return {ok:false,errors:errors};
     requireKeys(recipe,keys,'$',errors);
     if(recipe.schema!==RECIPE_SCHEMA)errors.push(issue('SCHEMA_MISMATCH','$.schema','Expected '+RECIPE_SCHEMA+'.'));
@@ -127,7 +133,9 @@
     if(typeof recipe.summary!=='string'||!recipe.summary.trim()||recipe.summary.length>500)errors.push(issue('RECIPE_SUMMARY_INVALID','$.summary','Summary must contain 1 to 500 characters.'));
     if(!safeId(recipe.family))errors.push(issue('RECIPE_FAMILY_INVALID','$.family','Family must be lowercase and hyphenated.'));
     validateCapabilityContract(recipe.capabilityKind,recipe.capabilityContract,'$.capabilityContract',errors);
-    if(ALLOWED_BUILDERS.indexOf(recipe.builderId)<0)errors.push(issue('BUILDER_UNKNOWN','$.builderId','Builder is not compiled into this Fabric.'));
+    const compiledBuilder=builderRegistry.describe(recipe.builderId);
+    if(ALLOWED_BUILDERS.indexOf(recipe.builderId)<0||!compiledBuilder||compiledBuilder.status!==builderRegistry.ACTIVE)errors.push(issue('BUILDER_UNKNOWN','$.builderId','Builder is not active and source reviewed in this Fabric.'));
+    if(!safeDigest(recipe.builderDigest)||!compiledBuilder||recipe.builderDigest!==compiledBuilder.implementationDigest||recipe.capabilityKind!==compiledBuilder.capabilityKind)errors.push(issue('BUILDER_DIGEST_MISMATCH','$.builderDigest','Recipe does not bind the exact active builder implementation and kind.'));
     if(recipe.activation!==ACTIVE_RECIPE)errors.push(issue('RECIPE_INACTIVE','$.activation','Only source-reviewed recipes in the exact catalog are active.'));
     if(allowedKeys(recipe.reviewPolicy,['activation','sharedUseRequires','canonAuthority'],'$.reviewPolicy',errors)){
       requireKeys(recipe.reviewPolicy,['activation','sharedUseRequires','canonAuthority'],'$.reviewPolicy',errors);
@@ -251,28 +259,11 @@
       if(!variant)holds.push(hold('MISSING_VARIANT','Requested recipe variant is unavailable.',{variantId:request.variantId}));
       else {const parameterCheck=validateParameters(mergeParameters(request.parameters,variant.parameterOverrides),recipe);if(!parameterCheck.ok)holds.push(hold('CONTRACT_HOLD','Resolved recipe parameters failed validation.',parameterCheck.errors));}
     }
-    const plan={schema:PLAN_SCHEMA,fabricVersion:FABRIC_VERSION,status:holds.length?'HELD':'READY',requestDigest:request&&request.requestDigest||null,catalogDigest:catalog&&catalog.catalogDigest||null,recipeRef:recipe?{id:recipe.id,version:recipe.version,digest:recipe.recipeDigest,builderId:recipe.builderId,capabilityKind:recipe.capabilityKind}:null,variantId:variant&&variant.id||null,candidateCount:holds.length?0:1,holds:holds,generatedCodeExecuted:false,authority:clone(AUTHORITY),planDigest:''};
+    const plan={schema:PLAN_SCHEMA,fabricVersion:FABRIC_VERSION,status:holds.length?'HELD':'READY',requestDigest:request&&request.requestDigest||null,catalogDigest:catalog&&catalog.catalogDigest||null,recipeRef:recipe?{id:recipe.id,version:recipe.version,digest:recipe.recipeDigest,builderId:recipe.builderId,builderDigest:recipe.builderDigest,capabilityKind:recipe.capabilityKind}:null,variantId:variant&&variant.id||null,candidateCount:holds.length?0:1,holds:holds,generatedCodeExecuted:false,authority:clone(AUTHORITY),planDigest:''};
     plan.planDigest=digest(withoutKey(plan,'planDigest'));
     return plan;
   }
 
-  function jsonTransformSource(parameters) {
-    const config={inputField:parameters.inputField,outputField:parameters.outputField,defaultValue:parameters.defaultValue,outputSchema:parameters.outputSchema,maxInputKeys:parameters.maxInputKeys};
-    return "'use strict';\nconst CONFIG=Object.freeze("+JSON.stringify(config)+");\nfunction own(v,k){return Object.prototype.hasOwnProperty.call(Object(v),k);}\nfunction run(input){if(!input||typeof input!=='object'||Array.isArray(input))return {schema:CONFIG.outputSchema,ok:false,code:'INPUT_OBJECT_REQUIRED'};if(Object.keys(input).length>CONFIG.maxInputKeys)return {schema:CONFIG.outputSchema,ok:false,code:'INPUT_KEY_LIMIT'};const output={};output[CONFIG.outputField]=own(input,CONFIG.inputField)?input[CONFIG.inputField]:CONFIG.defaultValue;return {schema:CONFIG.outputSchema,ok:true,output:output};}\nmodule.exports={CONFIG:CONFIG,run:run};\n";
-  }
-  function jsonTransformSelftest(parameters) {
-    return "'use strict';\nconst assert=require('assert');const capability=require('./capability.js');let input={};input["+JSON.stringify(parameters.inputField)+"]='proof';const result=capability.run(input);assert.equal(result.ok,true);assert.equal(result.output["+JSON.stringify(parameters.outputField)+"],'proof');const fallback=capability.run({});assert.deepStrictEqual(fallback.output["+JSON.stringify(parameters.outputField)+"],"+JSON.stringify(parameters.defaultValue)+");console.log('PASS pure JSON transform capability');\n";
-  }
-  function svgBadgeSource(parameters) {
-    const config={label:parameters.label,value:parameters.value,background:parameters.background,foreground:parameters.foreground,width:parameters.width};
-    return "'use strict';\nconst CONFIG=Object.freeze("+JSON.stringify(config)+");\nfunction esc(v){return String(v).slice(0,48).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\\\"/g,'&quot;').replace(/'/g,'&#39;');}\nfunction render(input){input=input&&typeof input==='object'&&!Array.isArray(input)?input:{};const label=esc(input.label==null?CONFIG.label:input.label),value=esc(input.value==null?CONFIG.value:input.value),split=Math.floor(CONFIG.width*0.58);const svg='<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" width=\\\"'+CONFIG.width+'\\\" height=\\\"28\\\" role=\\\"img\\\" aria-label=\\\"'+label+': '+value+'\\\"><rect width=\\\"'+CONFIG.width+'\\\" height=\\\"28\\\" rx=\\\"5\\\" fill=\\\"'+CONFIG.background+'\\\"/><rect x=\\\"'+split+'\\\" width=\\\"'+(CONFIG.width-split)+'\\\" height=\\\"28\\\" rx=\\\"5\\\" fill=\\\"'+CONFIG.foreground+'\\\"/><text x=\\\"10\\\" y=\\\"19\\\" fill=\\\"#ffffff\\\" font-family=\\\"system-ui,sans-serif\\\" font-size=\\\"13\\\">'+label+'</text><text x=\\\"'+(split+8)+'\\\" y=\\\"19\\\" fill=\\\"#081018\\\" font-family=\\\"system-ui,sans-serif\\\" font-size=\\\"13\\\" font-weight=\\\"700\\\">'+value+'</text></svg>';return {schema:'axm.creation.svg-status-badge/v1',ok:true,mimeType:'image/svg+xml',svg:svg};}\nmodule.exports={CONFIG:CONFIG,render:render};\n";
-  }
-  function svgBadgeSelftest() { return "'use strict';\nconst assert=require('assert');const capability=require('./capability.js');const first=capability.render({label:'A&B',value:'<ok>'}),second=capability.render({label:'A&B',value:'<ok>'});assert.equal(first.ok,true);assert.equal(first.svg,second.svg);assert(first.svg.includes('A&amp;B'));assert(first.svg.includes('&lt;ok&gt;'));console.log('PASS deterministic SVG badge capability');\n"; }
-  function directionAdapterSource(parameters) {
-    const config={targetRecipeId:parameters.targetRecipeId,targetFamily:parameters.targetFamily,targetParameters:parameters.targetParameters,idSuffix:parameters.idSuffix};
-    return "'use strict';\nconst crypto=require('crypto');const CONFIG=Object.freeze("+JSON.stringify(config)+");\nfunction stable(v){if(v===null||typeof v!=='object')return JSON.stringify(v);if(Array.isArray(v))return '['+v.map(stable).join(',')+']';return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}';}\nfunction sha(v){return 'sha256:'+crypto.createHash('sha256').update(typeof v==='string'?v:stable(v)).digest('hex');}\nfunction slug(v){return String(v||'capability').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'capability';}\nfunction adapt(input){if(!input||input.schema!=='axm.workshop-direction.hand-request/v1')return {ok:false,code:'HAND_REQUEST_SCHEMA_REQUIRED'};for(const key of ['handRequestId','targetModuleId','title','reason','desiredContract'])if(!String(input[key]||''))return {ok:false,code:'HAND_REQUEST_FIELD_REQUIRED',field:key};const request={schema:'axm.capability-fabric.build-request/v1',id:slug(input.targetModuleId)+'-'+CONFIG.idSuffix,family:CONFIG.targetFamily,purpose:String(input.title)+' — '+String(input.reason),recipeId:CONFIG.targetRecipeId,variantId:null,parameters:CONFIG.targetParameters,source:{kind:'WORKSHOP_DIRECTION',ref:String(input.handRequestId)},status:'EXPERIMENTAL',authority:'NONE',humanReviewed:false,requestDigest:''};const copy=JSON.parse(JSON.stringify(request));delete copy.requestDigest;request.requestDigest=sha(copy);return {ok:true,status:'HUMAN_REVIEW_REQUIRED',request:request,installed:false,promoted:false};}\nmodule.exports={CONFIG:CONFIG,adapt:adapt};\n";
-  }
-  function directionAdapterSelftest() { return "'use strict';\nconst assert=require('assert');const capability=require('./capability.js');const hand={schema:'axm.workshop-direction.hand-request/v1',handRequestId:'hand-proof',targetModuleId:'proof-module',title:'Build proof module',reason:'Missing bounded hand',desiredContract:'axm.direction-hand/proof/v1'};const one=capability.adapt(hand),two=capability.adapt(hand);assert.equal(one.ok,true);assert.equal(one.status,'HUMAN_REVIEW_REQUIRED');assert.equal(one.request.humanReviewed,false);assert.equal(one.request.requestDigest,two.request.requestDigest);console.log('PASS Workshop Direction adapter capability');\n"; }
   function validateCompiledArtifact(recipe, artifact) {
     const errors=[];
     if(!isPlain(recipe)||!isPlain(artifact))return {ok:false,errors:[issue('COMPILED_ARTIFACT_INVALID','$','Recipe and compiled artifact must be objects.') ]};
@@ -295,10 +286,7 @@
     return {ok:errors.length===0,errors:errors};
   }
   function compileArtifact(recipe, parameters) {
-    if(recipe.builderId==='pure-json-transform-v1')return {capabilityKind:'HAND',source:jsonTransformSource(parameters),selftest:jsonTransformSelftest(parameters),provides:[parameters.outputSchema],consumes:['application/json'],summary:'Pure bounded JSON field transform.'};
-    if(recipe.builderId==='svg-status-badge-v1')return {capabilityKind:'HAND',source:svgBadgeSource(parameters),selftest:svgBadgeSelftest(parameters),provides:['axm.creation.svg-status-badge/v1','image/svg+xml'],consumes:['application/json'],summary:'Deterministic text-only SVG status badge creation hand.'};
-    if(recipe.builderId==='workshop-direction-adapter-v1')return {capabilityKind:'HAND',source:directionAdapterSource(parameters),selftest:directionAdapterSelftest(parameters),provides:[REQUEST_SCHEMA],consumes:['axm.workshop-direction.hand-request/v1'],summary:'Bounded Workshop Direction hand-request adapter; output remains human-review held.'};
-    throw new Error('Unknown compiled builder: '+recipe.builderId);
+    return builderRegistry.compileActive(recipe.builderId,recipe.builderDigest,parameters);
   }
 
   function buildCandidate(request, catalog, plan) {
@@ -358,9 +346,10 @@
     if(descriptor.version!=='v0.1'||descriptor.status!=='EXPERIMENTAL')errors.push(issue('PACKAGE_STATUS_INVALID','$.package','Capability candidates remain v0.1 and EXPERIMENTAL.'));
     if(CAPABILITY_KINDS.indexOf(descriptor.capabilityKind)<0)errors.push(issue('PACKAGE_KIND_INVALID','$.package.capabilityKind','Package must bind a first-class HAND or SKILL kind.'));
     ['requestDigest','catalogDigest','compilationDigest','packageDigest'].forEach(function(key){if(!safeDigest(descriptor[key]))errors.push(issue('PACKAGE_DIGEST_FORMAT_INVALID','$.package.'+key,'Expected sha256 digest text.'));});
-    if(allowedKeys(descriptor.recipeRef,['id','version','digest','builderId','capabilityKind'],'$.package.recipeRef',errors)){
-      requireKeys(descriptor.recipeRef,['id','version','digest','builderId','capabilityKind'],'$.package.recipeRef',errors);
-      if(!safeId(descriptor.recipeRef.id)||!safeVersion(descriptor.recipeRef.version)||!safeDigest(descriptor.recipeRef.digest)||ALLOWED_BUILDERS.indexOf(descriptor.recipeRef.builderId)<0||descriptor.recipeRef.capabilityKind!==descriptor.capabilityKind)errors.push(issue('PACKAGE_RECIPE_REF_INVALID','$.package.recipeRef','Recipe reference is malformed, kind-drifted, or names an unavailable builder.'));
+    if(allowedKeys(descriptor.recipeRef,['id','version','digest','builderId','builderDigest','capabilityKind'],'$.package.recipeRef',errors)){
+      requireKeys(descriptor.recipeRef,['id','version','digest','builderId','builderDigest','capabilityKind'],'$.package.recipeRef',errors);
+      const packagedBuilder=builderRegistry.describe(descriptor.recipeRef.builderId);
+      if(!safeId(descriptor.recipeRef.id)||!safeVersion(descriptor.recipeRef.version)||!safeDigest(descriptor.recipeRef.digest)||!safeDigest(descriptor.recipeRef.builderDigest)||ALLOWED_BUILDERS.indexOf(descriptor.recipeRef.builderId)<0||!packagedBuilder||packagedBuilder.implementationDigest!==descriptor.recipeRef.builderDigest||descriptor.recipeRef.capabilityKind!==descriptor.capabilityKind)errors.push(issue('PACKAGE_RECIPE_REF_INVALID','$.package.recipeRef','Recipe reference is malformed, kind-drifted, or names an unavailable builder implementation.'));
     }
     if(!safeId(descriptor.variantId))errors.push(issue('PACKAGE_VARIANT_INVALID','$.package.variantId','Variant id must be lowercase and hyphenated.'));
     falseAuthority(descriptor.authority,'$.package.authority',errors);
@@ -391,7 +380,7 @@
     try{
       const request=JSON.parse(candidate.files['build-request.json']),recipe=JSON.parse(candidate.files['capability-recipe.json']),compilation=JSON.parse(candidate.files['compilation.receipt.json']),receipt=JSON.parse(candidate.files['candidate.receipt.json']),manifest=JSON.parse(candidate.files['manifest.json']),contract=JSON.parse(candidate.files['module.contract.json']),modularContract=JSON.parse(candidate.files['modular-capability.contract.json']),evidence=JSON.parse(candidate.files['evidence-route.json']);
       if(validateRequest(request).ok!==true||request.requestDigest!==descriptor.requestDigest)errors.push(issue('REQUEST_LINEAGE_DRIFT','$.files.build-request.json','Embedded request is invalid or unbound.'));
-      if(validateRecipe(recipe).ok!==true||recipe.id!==descriptor.recipeRef.id||recipe.version!==descriptor.recipeRef.version||recipe.builderId!==descriptor.recipeRef.builderId||recipe.capabilityKind!==descriptor.capabilityKind||recipe.recipeDigest!==descriptor.recipeRef.digest)errors.push(issue('RECIPE_LINEAGE_DRIFT','$.files.capability-recipe.json','Embedded recipe is invalid, kind-drifted, or unbound.'));
+      if(validateRecipe(recipe).ok!==true||recipe.id!==descriptor.recipeRef.id||recipe.version!==descriptor.recipeRef.version||recipe.builderId!==descriptor.recipeRef.builderId||recipe.builderDigest!==descriptor.recipeRef.builderDigest||recipe.capabilityKind!==descriptor.capabilityKind||recipe.recipeDigest!==descriptor.recipeRef.digest)errors.push(issue('RECIPE_LINEAGE_DRIFT','$.files.capability-recipe.json','Embedded recipe is invalid, builder-drifted, kind-drifted, or unbound.'));
       const compilationKeys=['schema','fabricVersion','status','capabilityKind','requestDigest','catalogDigest','recipeRef','variantId','builderId','generatedCodeExecuted','testsEmitted','authority','compilationDigest'];
       if(allowedKeys(compilation,compilationKeys,'$.files.compilation.receipt.json',errors))requireKeys(compilation,compilationKeys,'$.files.compilation.receipt.json',errors);
       if(compilation.schema!=='axm.capability-compilation-receipt/v1'||compilation.fabricVersion!==FABRIC_VERSION||compilation.status!=='EXPERIMENTAL'||compilation.capabilityKind!==descriptor.capabilityKind||compilation.requestDigest!==descriptor.requestDigest||compilation.catalogDigest!==descriptor.catalogDigest||canonicalJson(compilation.recipeRef)!==canonicalJson(descriptor.recipeRef)||compilation.variantId!==descriptor.variantId||compilation.builderId!==descriptor.recipeRef.builderId||compilation.generatedCodeExecuted!==false||compilation.testsEmitted!==true||compilation.compilationDigest!==descriptor.compilationDigest||compilation.compilationDigest!==digest(withoutKey(compilation,'compilationDigest')))errors.push(issue('COMPILATION_LINEAGE_DRIFT','$.files.compilation.receipt.json','Compilation receipt drifted or weakened its execution boundary.'));

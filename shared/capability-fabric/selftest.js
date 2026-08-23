@@ -3,6 +3,7 @@
 
 const assert = require('assert');
 const Fabric = require('./index.js');
+const BuilderRegistry = require('./builder-registry.js');
 
 let passed=0;
 function check(condition,label){assert(condition,label);passed+=1;}
@@ -22,12 +23,14 @@ function main(){
   check(catalog.recipes.every(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}),'reviewed active recipes are explicitly typed as executable HAND capabilities');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.defaultVariantId==='standard';}),'every initial recipe explicitly defaults to one standard candidate');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
+  check(BuilderRegistry.activeIds().length===3&&BuilderRegistry.reviewCandidateIds().length===2,'modular builder registry separates active builders from review candidates');
+  check(catalog.recipes.every(function(row){const builder=BuilderRegistry.describe(row.builderId);return builder&&row.builderDigest===builder.implementationDigest;}),'every active recipe binds the exact modular builder digest');
 
   const packages={};
   catalog.recipes.forEach(function(recipe){
     const request=Fabric.sealRequest(recipe.exampleRequest,true),requestCheck=Fabric.validateRequest(request),plan=Fabric.planBuild(request,catalog),one=Fabric.build(request,catalog),two=Fabric.build(request,catalog);
     check(requestCheck.ok,recipe.id+' example seals into a valid request');
-    check(plan.status==='READY'&&plan.candidateCount===1&&plan.recipeRef.capabilityKind===recipe.capabilityKind,recipe.id+' exact recipe plans one kind-bound candidate');
+    check(plan.status==='READY'&&plan.candidateCount===1&&plan.recipeRef.capabilityKind===recipe.capabilityKind&&plan.recipeRef.builderDigest===recipe.builderDigest,recipe.id+' exact recipe plans one kind-and-builder-bound candidate');
     check(one.status==='COMPLETE'&&one.candidates.length===1,recipe.id+' builds one detached candidate');
     check(one.generatedCodeExecuted===false,recipe.id+' build does not execute generated code');
     check(Fabric.canonicalJson(one)===Fabric.canonicalJson(two),recipe.id+' rebuild is byte-identical');
@@ -42,6 +45,8 @@ function main(){
   const recipe=catalog.recipes[0],base=Fabric.sealRequest(recipe.exampleRequest,true),changedDraft=Fabric.clone(recipe.exampleRequest);changedDraft.parameters.defaultValue='different';const changed=Fabric.sealRequest(changedDraft,true);
   check(base.requestDigest!==changed.requestDigest,'semantic request change alters request digest');
   check(Fabric.build(base,catalog).candidates[0].package.packageDigest!==Fabric.build(changed,catalog).candidates[0].package.packageDigest,'semantic request change alters package digest');
+  const builderDriftCatalog=Fabric.clone(catalog);builderDriftCatalog.recipes[0].builderDigest=Fabric.digest('wrong builder');delete builderDriftCatalog.recipes[0].recipeDigest;builderDriftCatalog.recipes[0].recipeDigest=Fabric.digest(builderDriftCatalog.recipes[0]);delete builderDriftCatalog.catalogDigest;builderDriftCatalog.catalogDigest=Fabric.digest(builderDriftCatalog);
+  check(Fabric.planBuild(base,builderDriftCatalog).status==='HELD','builder implementation digest drift becomes a catalog hold');
 
   const unreviewed=Fabric.sealRequest(recipe.exampleRequest,false),unreviewedPlan=Fabric.planBuild(unreviewed,catalog);
   check(unreviewedPlan.status==='HELD'&&unreviewedPlan.holds[0].code==='AUTHORITY_HOLD','unreviewed request is held');
@@ -61,7 +66,7 @@ function main(){
   const weakenedPlan=Fabric.clone(Fabric.planBuild(base,catalog));weakenedPlan.candidateCount=0;resealPlan(weakenedPlan);assert.throws(function(){Fabric.buildCandidate(base,catalog,weakenedPlan);});passed+=1;
   check(true,'exported candidate builder refuses forged or weakened READY plans');
 
-  const proposalRecipe=Fabric.clone(recipe);delete proposalRecipe.recipeDigest;proposalRecipe.schema=Fabric.PROPOSAL_RECIPE_SCHEMA;proposalRecipe.id='mirror-proposed-transform';proposalRecipe.activation='INACTIVE_PROPOSAL';proposalRecipe.exampleRequest.id='mirror-proposed-transform-example';proposalRecipe.exampleRequest.recipeId=proposalRecipe.id;const proposal={schema:Fabric.PROPOSAL_SCHEMA,sourceKind:'MIRROR',recipe:proposalRecipe,proposalDigest:Fabric.digest(proposalRecipe)},proposalResult=Fabric.importRecipeProposal(proposal);
+  const proposalRecipe=Fabric.clone(recipe);delete proposalRecipe.recipeDigest;delete proposalRecipe.builderDigest;proposalRecipe.schema=Fabric.PROPOSAL_RECIPE_SCHEMA;proposalRecipe.id='mirror-proposed-transform';proposalRecipe.activation='INACTIVE_PROPOSAL';proposalRecipe.exampleRequest.id='mirror-proposed-transform-example';proposalRecipe.exampleRequest.recipeId=proposalRecipe.id;const proposal={schema:Fabric.PROPOSAL_SCHEMA,sourceKind:'MIRROR',recipe:proposalRecipe,proposalDigest:Fabric.digest(proposalRecipe)},proposalResult=Fabric.importRecipeProposal(proposal);
   check(proposalResult.ok&&proposalResult.status==='INACTIVE_PROPOSAL'&&proposalResult.active===false,'Mirror recipe proposal remains inactive');
   check(proposalResult.providerCalled===false,'proposal inspection invokes no provider');
   const humanProposal=Fabric.clone(proposal);humanProposal.sourceKind='HUMAN';const codexProposal=Fabric.clone(proposal);codexProposal.sourceKind='CODEX';

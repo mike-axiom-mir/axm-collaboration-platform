@@ -1,0 +1,48 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "capability-recipe-admission-gate",
+  "version": "v0.1",
+  "provides": [
+    "capability-recipe.exact-foundry-packet-verification",
+    "capability-recipe.trusted-builder-test-receipt",
+    "capability-recipe.source-review-evidence-binding",
+    "capability-recipe.explicit-mike-decision-binding",
+    "capability-recipe.deterministic-merge-plan",
+    "capability-recipe.self-activation-refusal"
+  ],
+  "consumes": [
+    "capability-fabric:modular-builder-registry",
+    "capability-recipe-foundry:inactive-review-packet",
+    "local-node-runtime",
+    "explicit-source-review-evidence",
+    "explicit-mike-decision"
+  ],
+  "permissions": ["filesystem-read", "runtime", "export"],
+  "handoffs": {
+    "emits": ["axm.capability-recipe-admission-plan/v1", "capability-recipe/reviewed-source-diff-required"],
+    "accepts": ["axm.capability-recipe-review-packet/v1", "axm.capability-recipe-source-review-receipt/v1", "axm.capability-recipe-admission-decision/v1"]
+  },
+  "lifecycle": { "state_owner": "none", "reload": "reset", "disconnect": "not-applicable", "cleanup": "automatic" },
+  "boundaries": {
+    "writes": ["explicit-create-new-evidence-output-outside-repository"],
+    "refuses": [
+      "unconfirmed-source-execution",
+      "environment-secret-inheritance",
+      "unbound-or-tampered-foundry-packet",
+      "unreviewed-source",
+      "non-mike-admission-decision",
+      "recipe-self-activation",
+      "source-file-write",
+      "catalog-write",
+      "registry-write",
+      "automatic-installation",
+      "registration",
+      "staging",
+      "promotion",
+      "permission-grant",
+      "network-access",
+      "foundation-mutation",
+      "canon-change"
+    ]
+  }
+}
