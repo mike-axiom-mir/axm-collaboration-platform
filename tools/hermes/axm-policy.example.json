@@ -1,0 +1,47 @@
+{
+  "schema": "axm.hermes-policy/v1",
+  "consent": {
+    "enabled": false,
+    "reason": "off by default"
+  },
+  "mode": {
+    "hub_sandbox": true,
+    "external_mode": false
+  },
+  "limits": {
+    "max_tool_calls_per_session": 15,
+    "max_files_read_per_session": 20,
+    "max_files_written_per_session": 5
+  },
+  "paths": {
+    "read_roots": [
+      "../..",
+      "runtime/workspace"
+    ],
+    "write_roots": [
+      "runtime/workspace",
+      "queue",
+      "outbox",
+      "run-reports"
+    ]
+  },
+  "capabilities": {
+    "allow_terminal": false,
+    "allow_execute_code": false,
+    "allow_computer_use": false,
+    "allow_delegation": false,
+    "allow_scheduling": false,
+    "allow_messaging": false
+  },
+  "blocked_tools": [],
+  "receipts": {
+    "enabled": true,
+    "redact_arguments": true,
+    "redact_results": true
+  },
+  "canon": {
+    "hermes_memory_is_canon": false,
+    "hermes_skills_are_canon": false,
+    "outputs_are_candidates_only": true
+  }
+}
