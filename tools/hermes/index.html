@@ -1,32 +1,24 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AXM Hermes Runtime Adapter</title>
-<script src="axm-foundation.js"></script>
-<style>
-  :root{--ink:#14171c;--panel:#191e25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--gold:#e8b54a;--green:#63d68a}
-  *{box-sizing:border-box}body{margin:0 auto;max-width:720px;background:var(--ink);color:var(--text);font-family:system-ui,sans-serif;line-height:1.55;padding:20px}
-  .eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
-  h1{font-size:22px;margin:2px 0 0}.status{float:right;font-family:ui-monospace,monospace;font-size:11px;color:var(--gold);border:1px solid #4a3a1c;border-radius:20px;padding:2px 10px}
-  .lead{color:var(--text);margin:14px 0 0}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:16px}.panel h2{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
-  ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}li{background:#1f2731;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:13px}.rule{border-left:3px solid var(--cy);padding:4px 0 4px 12px;color:var(--text);font-size:13px}
-  .chips{display:flex;gap:8px;flex-wrap:wrap}a.chip{text-decoration:none;background:#1f2731;border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--cy)}.note{font-size:12px;color:var(--muted);margin-top:8px}.tags{margin-top:10px}.tag{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-right:10px}.home{display:inline-block;margin-top:18px;font-size:12px;color:var(--muted);text-decoration:none}
-</style></head><body>
-<div class="status">TEST · external runtime adapter</div>
-<div class="eyebrow">AXM module</div><h1>AXM Hermes Runtime Adapter</h1>
-<p class="lead">Pinned upstream Hermes Agent, launched through an AXM-owned profile with explicit action consent, fail-closed pre-tool policy, and redacted receipts.</p>
-<section class="panel"><h2>What exists now</h2><ul>
-<li>Immutable reviewed upstream source lock with origin + SHA verification</li>
-<li>Separate explicit source, dependency, profile-preparation, consent, and start steps</li>
-<li>Fail-closed AXM policy before Hermes tool execution</li>
-<li>High-authority terminal/code/computer/delegation/scheduling/messaging OFF by default</li>
-<li>Metadata-only tool receipts; Hermes output, memory, and skills remain non-canonical</li>
-<li>Existing loopback proposal service remains available as a separate local layer</li>
+<title>AXM Hermes Runtime Adapter v0.4</title><script src="axm-foundation.js"></script>
+<style>:root{--ink:#14171c;--panel:#191e25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--gold:#e8b54a}*{box-sizing:border-box}body{margin:0 auto;max-width:760px;background:var(--ink);color:var(--text);font-family:system-ui,sans-serif;line-height:1.55;padding:20px}.eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}h1{font-size:22px;margin:2px 0}.status{float:right;font:11px ui-monospace,monospace;color:var(--gold);border:1px solid #4a3a1c;border-radius:20px;padding:2px 10px}.lead{margin:14px 0}.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:16px}.panel h2{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}li{background:#1f2731;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:13px}.rule{border-left:3px solid var(--cy);padding:4px 0 4px 12px;font-size:13px}.note{font-size:12px;color:var(--muted);margin-top:8px}.tags{margin-top:10px}.tag{font:10px ui-monospace,monospace;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-right:10px}.home{display:inline-block;margin-top:18px;font-size:12px;color:var(--muted);text-decoration:none}</style></head><body>
+<div class="status">TEST · v0.4</div><div class="eyebrow">AXM external runtime adapter</div><h1>Hermes — bounded power, repairable runs</h1>
+<p class="lead">Pinned Hermes Agent with AXM research/operator postures, credential egress filtering, fail-closed tool authority, per-run evidence capsules, and candidate-only Return Packets.</p>
+<section class="panel"><h2>Default</h2><ul>
+<li><b>Research posture</b> — narrow read/research allowlist</li>
+<li><b>Consent OFF</b> — runtime can exist without tool authority</li>
+<li><b>Provider credentials local-only</b> — inherited secrets stripped before child launch</li>
+<li><b>Mutation/world actions OFF</b> — file writes, terminal, code, browser action, messaging, memory/skill mutation, delegation, scheduling and generation are separate switches</li>
 </ul></section>
-<section class="panel"><h2>Boundary</h2><div class="rule">The AXM tool gate is real authorization, not an OS sandbox. It does not by itself contain a local shell and it does not gate model-provider network egress. Use genuine Docker/VM isolation before enabling host-capable execution.</div><div class="note">The legacy loopback consent store and the runtime policy consent store remain separate until deliberately unified.</div></section>
-<section class="panel"><h2>Works next to</h2><div class="chips"><a class="chip" href="../agent-command-center/">agent-command-center</a><a class="chip" href="../agent-tool-forge/">agent-tool-forge</a></div></section>
-<div class="tags"><span class="tag">runtime</span><span class="tag">source-pinned</span><span class="tag">fail-closed</span><span class="tag">proposal-first</span></div>
-<p class="note">See README.md and HERMES_BOOTSTRAP_README.md for the exact implementation and refusal claims.</p>
-<a class="home" href="/">← back to the library</a>
-<script>/* landing card: spine present + on-backbone; display-only */if (typeof window.AXM === 'undefined') document.querySelector('.status').textContent = 'spine missing';</script>
-</body></html>
+<section class="panel"><h2>Every launch</h2><ul>
+<li>Verifies official source + commit + Git tree + package version</li>
+<li>Creates a fresh run capsule with independent counters</li>
+<li>Records hashed metadata-only tool/provider/session receipts</li>
+<li>Emits a non-canonical Return Packet on exit</li>
+<li><code>repair</code> closes orphaned interrupted capsules instead of deleting evidence</li>
+</ul></section>
+<section class="panel"><h2>Boundary</h2><div class="rule">Tool authorization is not an OS sandbox. Credential filtering is not hard network isolation. Provider observer receipts can expose a policy mismatch but cannot veto an already-dispatched provider request. Use Docker/VM/network isolation when those guarantees matter.</div><div class="note">Hermes memory, generated skills, results, and Return Packets remain candidate material. Legacy loopback consent is still separate from runtime policy.</div></section>
+<div class="tags"><span class="tag">research-first</span><span class="tag">operator-explicit</span><span class="tag">return-packet</span><span class="tag">repairable</span><span class="tag">fail-closed</span></div>
+<p class="note">See README.md for the runtime model and RUN_HERMES_LOCAL.txt for the first local-intake path.</p><a class="home" href="/">← back to the library</a>
+<script>if(typeof window.AXM==='undefined')document.querySelector('.status').textContent='spine missing';</script></body></html>
