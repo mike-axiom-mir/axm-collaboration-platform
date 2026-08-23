@@ -38,6 +38,15 @@ function rawGetWithHost(target, hostHeader) {
   });
 }
 
+function assertIsolationHeaders(response) {
+  assert.equal(response.headers.get('cross-origin-opener-policy'), 'same-origin');
+  assert.equal(response.headers.get('cross-origin-resource-policy'), 'same-origin');
+  const permissions = response.headers.get('permissions-policy');
+  ['camera=()', 'microphone=()', 'geolocation=()', 'display-capture=()', 'usb=()', 'serial=()', 'hid=()', 'bluetooth=()'].forEach(function (directive) {
+    assert.match(permissions, new RegExp(directive.replace(/[()]/g, '\\$&')));
+  });
+}
+
 test('loopback host serves one hash-bound trusted shell over the shared session', async function () {
   const host = await LocalBrowserHost.createLocalBrowserHost(createSession(), { port: 0 });
   try {
@@ -53,11 +62,14 @@ test('loopback host serves one hash-bound trusted shell over the shared session'
     assert.match(html, /AXM LOCAL BROWSER/);
     assert.equal((html.match(/<script>/g) || []).length, 1);
     assert.match(response.headers.get('content-security-policy'), new RegExp("script-src 'sha256-" + LocalBrowserHost.controllerHash().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "'"));
+    assert.match(response.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+    assertIsolationHeaders(response);
     assert.doesNotMatch(html, /About this local bundle/);
 
     const stateResponse = await fetch(host.receipt.shellUrl + 'state');
     const state = await stateResponse.json();
     assert.equal(stateResponse.status, 200);
+    assertIsolationHeaders(stateResponse);
     assert.equal(state.state.current.title, 'AXM Local Home');
     assert.equal(state.bundle.bundleDigest, host.receipt.bundleDigest);
 
@@ -76,12 +88,20 @@ test('loopback host serves one hash-bound trusted shell over the shared session'
   }
 });
 
-test('loopback host refuses cross-origin, wrong-content-type, and unknown-route actions', async function () {
+test('loopback host refuses missing/cross-origin, wrong-content-type, and unknown-route actions', async function () {
   const host = await LocalBrowserHost.createLocalBrowserHost(createSession(), { port: 0, maxActionBytes: 64 });
   try {
     const wrongHost = await rawGetWithHost(host.receipt.shellUrl, 'example.invalid');
     assert.equal(wrongHost.status, 421);
     assert.equal(wrongHost.body.code, 'HOST_HEADER_REFUSED');
+
+    const missingOrigin = await fetch(host.receipt.shellUrl + 'action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'back' })
+    });
+    assert.equal(missingOrigin.status, 403);
+    assert.equal((await missingOrigin.json()).code, 'HOST_ORIGIN_REQUIRED');
 
     const crossOrigin = await fetch(host.receipt.shellUrl + 'action', {
       method: 'POST',
@@ -93,7 +113,7 @@ test('loopback host refuses cross-origin, wrong-content-type, and unknown-route 
 
     const wrongType = await fetch(host.receipt.shellUrl + 'action', {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
+      headers: { 'Content-Type': 'text/plain', Origin: host.receipt.origin },
       body: JSON.stringify({ type: 'back' })
     });
     assert.equal(wrongType.status, 415);
@@ -110,7 +130,9 @@ test('loopback host refuses cross-origin, wrong-content-type, and unknown-route 
     const missing = await fetch(host.receipt.origin + '/not-the-capability-path');
     assert.equal(missing.status, 404);
     assert.equal((await missing.json()).code, 'HOST_ROUTE_NOT_FOUND');
-    const state = await (await fetch(host.receipt.shellUrl + 'state')).json();
+    const stateResponse = await fetch(host.receipt.shellUrl + 'state');
+    const state = await stateResponse.json();
+    assertIsolationHeaders(stateResponse);
     assert.equal(state.state.history.length, 1, 'refused requests do not mutate session state');
   } finally {
     await host.close();
