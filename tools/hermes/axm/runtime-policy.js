@@ -17,31 +17,21 @@ function isSecretKey(name) {
   const key = String(name || '').toUpperCase();
   return ALWAYS_SENSITIVE.has(key) || /(API[_-]?KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL|AUTH_COOKIE|SESSION_COOKIE)/i.test(key);
 }
-
 function isLoopbackUrl(value) {
   try {
     const parsed = new URL(String(value));
     return ['http:', 'https:'].includes(parsed.protocol) && LOOPBACK_HOSTS.has(parsed.hostname.toLowerCase());
-  } catch (_) {
-    return false;
-  }
+  } catch (_) { return false; }
 }
-
 function validatePolicy(policy) {
   const errors = [];
   if (!policy || typeof policy !== 'object' || Array.isArray(policy)) errors.push('policy must be an object');
   if (policy && policy.schema !== 'axm.hermes-policy/v1') errors.push('unsupported policy schema');
   if (policy && !['research', 'operator'].includes(policy.posture)) errors.push('posture must be research or operator');
-  if (policy && (!policy.mode || (policy.mode.hub_sandbox === true) === (policy.mode.external_mode === true))) {
-    errors.push('exactly one of mode.hub_sandbox or mode.external_mode must be true');
-  }
+  if (policy && (!policy.mode || (policy.mode.hub_sandbox === true) === (policy.mode.external_mode === true))) errors.push('exactly one of mode.hub_sandbox or mode.external_mode must be true');
   if (policy && (!policy.consent || typeof policy.consent.enabled !== 'boolean')) errors.push('consent.enabled must be boolean');
-  if (policy && (!policy.provider_egress || !['local_only', 'explicit_remote'].includes(policy.provider_egress.mode))) {
-    errors.push('provider_egress.mode must be local_only or explicit_remote');
-  }
-  if (policy && policy.provider_egress && policy.provider_egress.allowed_secret_env !== undefined && !Array.isArray(policy.provider_egress.allowed_secret_env)) {
-    errors.push('provider_egress.allowed_secret_env must be an array');
-  }
+  if (policy && (!policy.provider_egress || !['local_only', 'explicit_remote'].includes(policy.provider_egress.mode))) errors.push('provider_egress.mode must be local_only or explicit_remote');
+  if (policy && policy.provider_egress && policy.provider_egress.allowed_secret_env !== undefined && !Array.isArray(policy.provider_egress.allowed_secret_env)) errors.push('provider_egress.allowed_secret_env must be an array');
   if (policy && policy.allowed_tools !== undefined && !Array.isArray(policy.allowed_tools)) errors.push('allowed_tools must be an array');
   if (policy && policy.research_tools !== undefined && !Array.isArray(policy.research_tools)) errors.push('research_tools must be an array');
   const caps = policy && policy.capabilities;
@@ -53,62 +43,46 @@ function validatePolicy(policy) {
 function sanitizeEnvironment(baseEnv, policy) {
   const checked = validatePolicy(policy);
   if (!checked.ok) throw new Error('invalid AXM Hermes policy: ' + checked.errors.join('; '));
-
   const source = Object.assign({}, baseEnv || {});
   const env = {};
   const stripped = [];
   const allowedSecrets = new Set((policy.provider_egress.allowed_secret_env || []).map(String));
 
   for (const [key, value] of Object.entries(source)) {
-    if (isSecretKey(key)) {
-      stripped.push(key);
-      continue;
-    }
+    if (isSecretKey(key)) { stripped.push(key); continue; }
     env[key] = value;
   }
 
   if (policy.provider_egress.mode === 'local_only') {
-    // Do not let inherited proxies turn a loopback-only provider posture into
-    // an accidental remote route. Tool/network egress is a separate policy.
     delete env.HTTP_PROXY; delete env.http_proxy;
     delete env.HTTPS_PROXY; delete env.https_proxy;
     delete env.ALL_PROXY; delete env.all_proxy;
     const priorNoProxy = String(source.NO_PROXY || source.no_proxy || '').split(',').map(x => x.trim()).filter(Boolean);
     env.NO_PROXY = Array.from(new Set(priorNoProxy.concat(['127.0.0.1', 'localhost', '::1']))).join(',');
-
     for (const [baseKey, secretKey] of LOCAL_PROVIDER_PAIRS) {
       const baseUrl = source[baseKey];
       if (baseUrl && isLoopbackUrl(baseUrl)) {
         env[baseKey] = baseUrl;
         if (source[secretKey]) env[secretKey] = source[secretKey];
-      } else if (baseUrl) {
-        delete env[baseKey];
-      }
+      } else if (baseUrl) delete env[baseKey];
     }
   } else {
-    // Remote mode remains explicit: inherited secrets are still stripped unless
-    // their variable name is separately allowlisted in local policy.
     for (const key of allowedSecrets) {
       if (Object.prototype.hasOwnProperty.call(source, key) && isSecretKey(key)) env[key] = source[key];
     }
   }
 
+  const restoredCount = Object.keys(env).filter(isSecretKey).length;
   return {
     env,
     report: {
       mode: policy.provider_egress.mode,
       inherited_secret_count: stripped.length,
-      inherited_secret_names: stripped.sort(),
-      explicitly_restored_secret_names: Object.keys(env).filter(isSecretKey).sort(),
+      explicitly_restored_secret_count: restoredCount,
+      secret_variable_names_stored: false,
       network_isolation_claimed: false
     }
   };
 }
 
-module.exports = {
-  LOOPBACK_HOSTS,
-  isSecretKey,
-  isLoopbackUrl,
-  validatePolicy,
-  sanitizeEnvironment
-};
+module.exports = { LOOPBACK_HOSTS, isSecretKey, isLoopbackUrl, validatePolicy, sanitizeEnvironment };
