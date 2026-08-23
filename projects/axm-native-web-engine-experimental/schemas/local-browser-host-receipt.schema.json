@@ -4,7 +4,7 @@
   "title": "AXM Loopback Browser Shell Host Receipt",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema","status","origin","shellUrl","sessionId","bundleDigest","loopbackTransportUsed","externalNetworkUsed","trustedShellScriptActive","pageScriptExecuted","allowedMethods","maxActionBytes","receiptDigest"],
+  "required": ["schema","status","origin","shellUrl","sessionId","bundleDigest","shellPolicySchema","shellPolicyDigest","loopbackTransportUsed","externalNetworkUsed","trustedShellScriptActive","pageScriptExecuted","allowedMethods","maxActionBytes","receiptDigest"],
   "properties": {
     "schema":{"const":"axm.web.local-browser-host-receipt/v1"},
     "status":{"const":"EXPERIMENTAL"},
@@ -12,6 +12,8 @@
     "shellUrl":{"type":"string","pattern":"^http://127\\.0\\.0\\.1:[0-9]+/s/[A-Za-z0-9_-]+/$"},
     "sessionId":{"type":"string","pattern":"^session-[a-f0-9]{24}$"},
     "bundleDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "shellPolicySchema":{"const":"axm.web.local-browser-shell-policy/v1"},
+    "shellPolicyDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
     "loopbackTransportUsed":{"const":true},
     "externalNetworkUsed":{"const":false},
     "trustedShellScriptActive":{"const":true},
