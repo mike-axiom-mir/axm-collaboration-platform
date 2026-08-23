@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.source-record/v1",
+  "title": "AXM Web Source Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","sourceId","requestedUrl","finalUrl","originKind","mimeType","encoding","byteLength","sha256","bytesPreserved","fetchedAt","responseMetadata","networkReceipt","resourceDigests"],
+  "properties": {
+    "schema": {"const":"axm.web.source-record/v1"},
+    "sourceId": {"type":"string","pattern":"^source-[a-f0-9]{24}$"},
+    "requestedUrl": {"type":"string"},
+    "finalUrl": {"type":"string"},
+    "originKind": {"enum":["local-file","stdin"]},
+    "mimeType": {"type":"string"},
+    "encoding": {"const":"utf-8"},
+    "byteLength": {"type":"integer","minimum":0},
+    "sha256": {"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "bytesPreserved": {"const":true},
+    "rawSourceBase64": {"type":"string"},
+    "bytesPreservedInEnvelope": {"const":false},
+    "binding": {
+      "type":"object",
+      "required":["algorithm","digest","byteLength"],
+      "properties": {
+        "algorithm":{"const":"sha256"},
+        "digest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+        "byteLength":{"type":"integer","minimum":0}
+      },
+      "additionalProperties":false
+    },
+    "fetchedAt": {"type":["string","null"]},
+    "responseMetadata": {"type":"null"},
+    "networkReceipt": {"type":"null"},
+    "resourceDigests": {"type":"array","maxItems":0}
+  },
+  "oneOf": [
+    {"required":["rawSourceBase64"],"not":{"required":["binding"]}},
+    {"required":["binding","bytesPreservedInEnvelope"],"not":{"required":["rawSourceBase64"]}}
+  ]
+}

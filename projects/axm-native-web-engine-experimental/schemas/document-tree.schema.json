@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.document-tree/v1",
+  "title": "AXM Web Document Tree",
+  "type": "object",
+  "required": ["schema","sourceDigest","tokenDigest","root","nodeCount","warnings","unsupported","documentDigest"],
+  "properties": {
+    "schema":{"const":"axm.web.document-tree/v1"},
+    "sourceDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "tokenDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "root":{"$ref":"#/$defs/node"},
+    "nodeCount":{"type":"integer","minimum":1},
+    "warnings":{"type":"array"},
+    "unsupported":{"type":"array","items":{"$ref":"#/$defs/unsupported"}},
+    "documentDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "node": {
+      "type":"object",
+      "required":["nodeId","type"],
+      "properties": {
+        "nodeId":{"type":"string","pattern":"^n[0-9]+$"},
+        "type":{"enum":["document","element","text","comment","doctype","unsupported-markup"]},
+        "tagName":{"type":"string"},
+        "attributes":{"type":"array"},
+        "attributeMap":{"type":"object"},
+        "children":{"type":"array","items":{"$ref":"#/$defs/node"}},
+        "support":{"type":"object"},
+        "data":{"type":"string"},
+        "sourceSpan":{"type":["object","null"]}
+      }
+    },
+    "unsupported": {
+      "type":"object",
+      "required":["feature","state","nodeRef","reason"],
+      "properties": {
+        "feature":{"type":"string"},
+        "state":{"enum":["HELD","UNSUPPORTED"]},
+        "nodeRef":{"type":"string"},
+        "reason":{"type":"string"}
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+AXM NATIVE WEB ENGINE — DETACHED PHASE 0/1 LOCAL INTAKE HANDOFF
+Date: 2026-08-23
+Status: EXPERIMENTAL
+installed: false
+promoted: false
+canon: false
+
+PURPOSE
+-------
+Carry a reviewable offline web-engine proof into local AXM intake later without
+silently installing it or changing existing foundations.
+
+EXPECTED PACKAGE ROOT
+---------------------
+projects/axm-native-web-engine-experimental/
+
+VERIFY BEFORE INTAKE
+--------------------
+1. Read README.md, RECONNAISSANCE_MAP.md, ACTION_REPORT.md, KNOWN_LIMITS.md,
+   SECURITY_BOUNDARIES.md, PROVENANCE.md, and module.contract.json.
+2. Confirm the intended upstream checkpoint in manifests/build-manifest.json.
+3. Run from the package root:
+       node --test tests/*.test.js
+       node scripts/verify-schemas.js
+       node scripts/build-source-manifest.js --verify
+4. Compare observed results with ACTION_REPORT.md. Any mismatch becomes HOLD.
+5. Inspect the current local Workshop for newer or conflicting browser work.
+6. Map the package again as EXISTING / EXTEND / ADAPT / NEW / HOLD.
+
+INTAKE BOUNDARY
+---------------
+- Treat every file as data until explicit local review.
+- Do not execute through a privileged host or grant network/local authority.
+- Do not edit Foundation, Hub, registry, server, launcher, Mirror, or existing
+  browser tools merely because this package validates.
+- Do not install, promote, merge, or mark CANON automatically.
+- Preserve source manifest, fixtures, goldens, warnings, and known limits.
+- If local intake chooses a Rust rewrite, retain equivalence fixtures and the
+  same Source Record / Document Tree / Page Model contracts rather than silently
+  replacing the evidence lineage.
+
+FIRST SAFE LOCAL DECISION
+-------------------------
+Choose one:
+  HOLD
+  ACCEPT_FOR_TEST
+  REQUEST_REPAIR
+  REJECT
+
+Only Mike / the explicit AXM Merge Gate may make a promotion or canon decision.
