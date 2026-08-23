@@ -1,0 +1,68 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "testedImplementationCommit": "5599e27eed11087dbdff43ad9f9cacaa4c158f8b",
+  "claims": [
+    {
+      "claimId": "dormant-retention",
+      "claim": "Every hard-gate-valid generated candidate can be retained as a dormant library object even when it has no current implementation use.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "All nine starter candidates produce byte-reproducible stash projections with VALID_DORMANT_LIBRARY, KEEP_WHEN_NO_CURRENT_USE, ARCHIVED_NOT_ADMITTED_TO_RUNTIME, DORMANT, and no authority.",
+      "primarySurface": "npm run test:organ-fabric",
+      "counterevidence": "A valid candidate is dropped, gains active authority, or rebuilds to different projection bytes.",
+      "observedEvidence": "128 focused checks passed; nine projections passed exact rebuild, archive deduplication, fresh-process reload, and portable round-trip checks.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claimId": "selection-overlay",
+      "claim": "Selecting an organ changes only a digest-bound review overlay and does not mutate the archived candidate or activate it.",
+      "kind": "authorization-and-persistence",
+      "risk": "medium",
+      "passCondition": "The immutable object bytes remain identical, a forged selection receipt is refused, and only the selected derived view changes after a valid receipt.",
+      "primarySurface": "focused filesystem archive test",
+      "secondarySurface": "live IndexedDB selection and reload journey",
+      "counterevidence": "Candidate bytes change, an unbound receipt selects, or installed/registered/staged/promoted/CANON fields become true.",
+      "observedEvidence": "Filesystem byte comparison passed; forged receipt was refused; live browser retained three dormant organs while one gained SELECTED FOR REVIEW after reload.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claimId": "mirror-source-handoff",
+      "claim": "A detached handoff is structurally acceptable to the updated Mirror AI Organ Archive without writing to Mirror automatically.",
+      "kind": "transport",
+      "risk": "medium",
+      "passCondition": "The sender binds exact source bytes and an organs/*-organ.js path; an explicit receiver scan creates the exact predicted archive object while remaining dormant and non-admitted.",
+      "primarySurface": "Fabric envelope construction and digest assertions",
+      "secondarySurface": "real modules/ai-organ-archive scanAndArchive call in a temporary root",
+      "counterevidence": "Path refusal, source digest drift, different receiver object identity, organ execution, or runtime admission.",
+      "observedEvidence": "Receiver created organs/verification-route-organ-lean-organ.js as object a6a6ef24bde3097a028fe707d6103f6a6ab6b98f03133b2b4832e602ce6576f9, exactly matching the sender prediction; DORMANT, organExecution false, runtimeAdmission false.",
+      "verdict": "PASS",
+      "namedSeam": "The first temporary harness declared the repository root instead of the required organs source root; it failed visibly and the corrected contract-shaped harness passed."
+    },
+    {
+      "claimId": "browser-archive-surface",
+      "claim": "Desktop and mobile Archive views visibly distinguish dormant, unselected, and selected-for-review states.",
+      "kind": "visual-and-interaction",
+      "risk": "medium",
+      "passCondition": "Three cards render without clipping at default desktop and 390x844, one selection changes only its label, the no-AI/false-authority boundary remains visible, and no browser errors occur.",
+      "primarySurface": "in-app browser DOM snapshots and screenshots",
+      "counterevidence": "Missing cards, clipped controls, active-runtime wording, authority inflation, or console errors.",
+      "observedEvidence": "Desktop and 390x844 frames showed three readable cards, full-width mobile handoff buttons, one DORMANT SELECTED FOR REVIEW label, two DORMANT UNSELECTED labels, and zero warning/error logs.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claimId": "quality-ceiling",
+      "claim": "The archive does not convert deterministic validity into a universal quality or usefulness claim.",
+      "kind": "quality-and-human-judgment",
+      "risk": "high",
+      "passCondition": "Purpose classification remains INFERRED_UNCONFIRMED, qualityProof false, and unresolved human judgments remain explicit.",
+      "primarySurface": "contract/schema inspection plus focused assertions",
+      "counterevidence": "A metric, shelf, or archive admission claims usefulness, taste, fun, wisdom, compatibility, or CANON.",
+      "observedEvidence": "All nine projections retained qualityProof false and unresolved pack human judgments; UI and README state the claim ceiling.",
+      "verdict": "PASS",
+      "namedSeam": "Actual usefulness remains Mike's separate judgment."
+    }
+  ]
+}
