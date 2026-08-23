@@ -5,15 +5,11 @@ const path = require('path');
 const crypto = require('crypto');
 
 function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
-function canonical(value) { return JSON.stringify(value, Object.keys(value || {}).sort()); }
-function hashText(value) { return crypto.createHash('sha256').update(String(value || ''), 'utf8').digest('hex'); }
+function hashText(value) { return crypto.createHash('sha256').update(Buffer.isBuffer(value) ? value : Buffer.from(String(value || ''), 'utf8')).digest('hex'); }
 function hashFile(file) { return fs.existsSync(file) ? hashText(fs.readFileSync(file)) : null; }
 function now() { return new Date().toISOString(); }
 function safeRunId() { return 'run-' + now().replace(/[^0-9]/g, '').slice(0, 14) + '-' + crypto.randomBytes(4).toString('hex'); }
-
-function argvShape(args) {
-  return (args || []).map(arg => String(arg).startsWith('-') ? 'flag' : 'value');
-}
+function argvShape(args) { return (args || []).map(arg => String(arg).startsWith('-') ? 'flag' : 'value'); }
 
 function createRun(options) {
   const runId = safeRunId();
@@ -21,7 +17,8 @@ function createRun(options) {
   const stateDir = path.join(runDir, 'state');
   const receiptDir = path.join(runDir, 'receipts');
   const providerReceiptDir = path.join(runDir, 'provider-receipts');
-  [runDir, stateDir, receiptDir, providerReceiptDir].forEach(ensureDir);
+  const sessionEventDir = path.join(runDir, 'session-events');
+  [runDir, stateDir, receiptDir, providerReceiptDir, sessionEventDir].forEach(ensureDir);
 
   const manifest = {
     schema: 'axm.hermes-run-manifest/v1',
@@ -53,7 +50,7 @@ function createRun(options) {
     review_required: true
   };
   fs.writeFileSync(path.join(runDir, 'run-manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
-  return { runId, runDir, stateDir, receiptDir, providerReceiptDir, manifest };
+  return { runId, runDir, stateDir, receiptDir, providerReceiptDir, sessionEventDir, manifest };
 }
 
 function readJsonFiles(dir) {
@@ -77,9 +74,24 @@ function receiptSetHash(records) {
   return hashText(hashes.join('\n'));
 }
 
+function latestSessionEvidence(records) {
+  const end = records.filter(r => r.event === 'on_session_end').sort((a, b) => Number(a.timestamp_ns || 0) - Number(b.timestamp_ns || 0)).pop();
+  return end ? {
+    completed: end.completed,
+    failed: end.failed,
+    interrupted: end.interrupted,
+    turn_exit_reason: end.turn_exit_reason,
+    model: end.model,
+    platform: end.platform
+  } : null;
+}
+
 function finalizeRun(options) {
   const toolReceipts = readJsonFiles(options.receiptDir);
   const providerReceipts = readJsonFiles(options.providerReceiptDir);
+  const sessionEvents = readJsonFiles(options.sessionEventDir);
+  const providerMismatch = providerReceipts.some(record => record.policy_mismatch === true);
+  const sessionEvidence = latestSessionEvidence(sessionEvents);
   const packet = {
     schema: 'axm.hermes-return-packet/v1',
     run_id: options.runId,
@@ -101,9 +113,21 @@ function finalizeRun(options) {
       receipt_set_sha256: receiptSetHash(providerReceipts),
       by_provider: tally(providerReceipts, 'provider'),
       by_model: tally(providerReceipts, 'model'),
-      remote_base_url_observed: providerReceipts.some(record => record.base_url_scope === 'remote')
+      remote_base_url_observed: providerReceipts.some(record => record.base_url_scope === 'remote'),
+      local_only_policy_mismatch_observed: providerMismatch
     },
-    outcome: options.exitCode === 0 ? 'process-exited-zero' : 'process-exited-nonzero-or-unknown',
+    session_events: {
+      count: sessionEvents.length,
+      receipt_set_sha256: receiptSetHash(sessionEvents),
+      latest_turn_evidence: sessionEvidence
+    },
+    outcome: sessionEvidence && sessionEvidence.failed === true ? 'session-reported-failure' :
+      sessionEvidence && sessionEvidence.interrupted === true ? 'session-reported-interruption' :
+      options.exitCode === 0 ? 'process-exited-zero' : 'process-exited-nonzero-or-unknown',
+    integrity_flags: {
+      provider_policy_mismatch: providerMismatch,
+      source_was_verified_before_launch: options.sourceVerified === true
+    },
     raw_prompt_stored: false,
     raw_response_stored: false,
     raw_tool_arguments_stored: false,
