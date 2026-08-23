@@ -25,13 +25,21 @@ assert.deepStrictEqual(manifest.allowed_seat_types, ['human']);
 assert.strictEqual(manifest.controls.phone_controller, false);
 assert.strictEqual(manifest.controls.gamepad, false);
 assert.strictEqual(manifest.controls.touch, false);
+assert.strictEqual(manifest.media.trailer.status, 'TEST');
+assert.strictEqual(manifest.media.trailer.duration_seconds, 30);
+assert.strictEqual(manifest.media.trailer.deterministic_native_render, true);
+assert.strictEqual(manifest.media.trailer.ai_used, false);
+assert.strictEqual(manifest.media.trailer.outbound_network_used, false);
+assert.strictEqual(manifest.media.trailer.public_distribution, 'HOLD');
+assert.strictEqual(manifest.media.trailer.publish_authority, false);
 
 for (const required of manifest.package.required_paths) assert.ok(fs.existsSync(path.join(ROOT, required)), 'missing required path ' + required);
 const verified = PackageVerifier.verifyGameDir(ROOT);
 assert.deepStrictEqual(verified.errors, [], verified.errors.join('\n'));
 
 const generated = Generator.generate(Generator.buildExampleRequest());
-const contentBytes = fs.readFileSync(path.join(ROOT, Generator.CONTENT_PATH));
+const sourceContentBytes = fs.readFileSync(path.join(ROOT, Generator.CONTENT_PATH));
+const contentBytes = Buffer.from(sourceContentBytes.toString('utf8').replace(/\r\n?/g, '\n'), 'utf8');
 assert.strictEqual(Generator.hashBuffer(contentBytes), generated.packet.contentFile.sha256);
 assert.strictEqual(contentBytes.toString('base64'), generated.packet.contentFile.content);
 assert.strictEqual(contentBytes.length, generated.packet.contentFile.byteLength);
@@ -56,6 +64,8 @@ assert.strictEqual(ancestor.canon, false);
 const html = read('runtime/index.html');
 const app = read('runtime/app.js');
 const styles = read('runtime/styles.css');
+const trailerHtml = read('media/index.html');
+const trailerPlayer = read('media/trailer-player.js');
 assert.match(html, /name="viewport"/);
 assert.match(html, /aria-live="polite"/);
 assert.match(html, /id="help-panel"[^>]*hidden/);
@@ -65,9 +75,14 @@ assert.ok(app.includes("event.key === 'Escape'"));
 assert.ok(app.includes('window.AXM_ADVENTURE_ACTION'));
 assert.ok(styles.includes('button:focus-visible'));
 assert.ok(styles.includes('@media (max-width: 720px)'));
+assert.match(html, /href="trailer\/"/);
+assert.match(trailerHtml, /<video[^>]*controls[^>]*muted[^>]*loop/);
+assert.match(trailerHtml, /<track[^>]*kind="captions"[^>]*default/);
+assert.match(trailerHtml, /public release/i);
+assert.doesNotMatch(trailerPlayer, /fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon/);
 for (const source of [html, app, styles]) {
   assert.doesNotMatch(source, /https?:\/\//i, 'runtime source must not reference remote assets or endpoints');
   assert.doesNotMatch(source, /WebSocket|EventSource|sendBeacon/i, 'runtime source must not add an alternate network channel');
 }
 
-console.log('PASS Four Roots Adventure package selftest (47 assertions)');
+console.log('PASS Four Roots Adventure package selftest (59 assertions)');

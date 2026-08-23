@@ -13,13 +13,32 @@ const GAME_PREFIX = '/games/020/';
 const PORT = Number(process.env.PORT || 8820);
 const HOST = process.env.HOST || '127.0.0.1';
 const RUNTIME_DIR = __dirname;
+const MEDIA_DIR = path.resolve(__dirname, '..', 'media');
+const MEDIA_PREFIX = '/games/020/trailer/';
 const CONTENT_FILE = path.resolve(__dirname, '..', 'content', 'adventure-content.v0.2.json');
 const MAX_BODY_BYTES = 8192;
 const MIME = Object.freeze({
   '.css': 'text/css; charset=utf-8',
   '.html': 'text/html; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8'
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.mp4': 'video/mp4',
+  '.png': 'image/png',
+  '.vtt': 'text/vtt; charset=utf-8',
+  '.webm': 'video/webm'
 });
+const MEDIA_ALLOWLIST = new Set([
+  'index.html', 'trailer.css', 'trailer-player.js',
+  'rendered/four-roots-adventure-trailer.mp4',
+  'rendered/four-roots-adventure-trailer.webm',
+  'rendered/four-roots-adventure-trailer.vtt',
+  'rendered/trailer-plan.json',
+  'rendered/sparse-sequence.json',
+  'rendered/verification-receipt.json',
+  'rendered/proof-first.png',
+  'rendered/proof-middle.png',
+  'rendered/proof-last.png'
+]);
 
 function digestBytes(value) { return 'sha256:' + crypto.createHash('sha256').update(value).digest('hex'); }
 function resolveDataRoot(source) {
@@ -32,6 +51,15 @@ function safeStaticFile(urlPath) {
   try { relative = decodeURIComponent(String(urlPath || '/').split('?')[0]); }
   catch (_) { return null; }
   if (/^[\\/]{2}/.test(relative)) return null;
+  if (relative === '/games/020/trailer') relative = MEDIA_PREFIX;
+  if (relative.startsWith(MEDIA_PREFIX)) {
+    const mediaRelative = relative.slice(MEDIA_PREFIX.length) || 'index.html';
+    if (!MEDIA_ALLOWLIST.has(mediaRelative)) return null;
+    const mediaCandidate = path.resolve(MEDIA_DIR, mediaRelative);
+    const mediaPrefix = MEDIA_DIR.endsWith(path.sep) ? MEDIA_DIR : MEDIA_DIR + path.sep;
+    if (!mediaCandidate.startsWith(mediaPrefix) || !Object.prototype.hasOwnProperty.call(MIME, path.extname(mediaCandidate).toLowerCase())) return null;
+    return mediaCandidate;
+  }
   if (relative === '/' || relative === '/games/020' || relative === GAME_PREFIX) relative = 'index.html';
   else if (relative.startsWith(GAME_PREFIX)) relative = relative.slice(GAME_PREFIX.length);
   else relative = relative.replace(/^\/+/, '');
@@ -49,7 +77,7 @@ function responseHeaders(contentType) {
     'cache-control': 'no-store',
     'x-content-type-options': 'nosniff',
     'referrer-policy': 'no-referrer',
-    'content-security-policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'"
+    'content-security-policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'"
   };
 }
 function sendJson(response, status, value) {
@@ -88,7 +116,8 @@ function loadContent(contentFile) {
   if (raw.length > 262144) throw new Error('content file exceeds byte ceiling');
   const content = JSON.parse(raw.toString('utf8'));
   Engine.validateRuntimeContent(content);
-  return { content, contentDigest: digestBytes(raw) };
+  const normalizedRaw = Buffer.from(raw.toString('utf8').replace(/\r\n?/g, '\n'), 'utf8');
+  return { content, contentDigest: digestBytes(normalizedRaw) };
 }
 
 function createRuntime(options) {
@@ -187,7 +216,7 @@ function createServer(options) {
     }
     fs.readFile(filePath, (error, data) => {
       if (error) { sendJson(response, 404, { error: 'not found' }); return; }
-      response.writeHead(200, responseHeaders(MIME[path.extname(filePath).toLowerCase()]));
+      response.writeHead(200, { ...responseHeaders(MIME[path.extname(filePath).toLowerCase()]), 'content-length': data.length });
       response.end(request.method === 'HEAD' ? undefined : data);
     });
   });
@@ -201,4 +230,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { GAME_ID, GAME_PREFIX, PORT, HOST, CONTENT_FILE, MAX_BODY_BYTES, digestBytes, resolveDataRoot, safeStaticFile, loadContent, createRuntime, createServer };
+module.exports = { GAME_ID, GAME_PREFIX, MEDIA_PREFIX, PORT, HOST, CONTENT_FILE, MAX_BODY_BYTES, digestBytes, resolveDataRoot, safeStaticFile, loadContent, createRuntime, createServer };

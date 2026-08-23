@@ -36,11 +36,30 @@ async function main() {
     for (const asset of ['/styles.css', '/app.js']) {
       result = await call(base, asset); assert.strictEqual(result.response.status, 200, asset);
     }
+    result = await call(base, '/games/020/trailer/');
+    assert.strictEqual(result.response.status, 200);
+    assert.ok(result.value.includes('One adventure'));
+    assert.match(result.value, /public release/i);
+    let mediaResponse = await fetch(base + '/games/020/trailer/rendered/four-roots-adventure-trailer.webm', { method: 'HEAD' });
+    assert.strictEqual(mediaResponse.status, 200);
+    assert.strictEqual(mediaResponse.headers.get('content-type'), 'video/webm');
+    assert.ok(Number(mediaResponse.headers.get('content-length')) > 1000000);
+    mediaResponse = await fetch(base + '/games/020/trailer/rendered/verification-receipt.json');
+    assert.strictEqual(mediaResponse.status, 200);
+    assert.match(mediaResponse.headers.get('content-type'), /^application\/json/);
+    const mediaReceipt = await mediaResponse.json();
+    assert.strictEqual(mediaReceipt.status, 'PASS');
+    assert.strictEqual(mediaReceipt.truth.published, false);
+    assert.strictEqual(mediaReceipt.rights.publicDistribution, 'HOLD');
     for (const blocked of ['/%2e%2e/game.manifest.json', '/C:/Windows/win.ini', '/content/adventure-content.v0.2.json', '/missing.js']) {
+      result = await call(base, blocked); assert.strictEqual(result.response.status, 404, blocked);
+    }
+    for (const blocked of ['/games/020/trailer/build-trailer.js', '/games/020/trailer/%2e%2e/game.manifest.json', '/games/020/trailer/rendered/missing.webm']) {
       result = await call(base, blocked); assert.strictEqual(result.response.status, 404, blocked);
     }
     assert.strictEqual(safeStaticFile('/%2e%2e/game.manifest.json'), null);
     assert.strictEqual(safeStaticFile('//host/share/file.js'), null);
+    assert.strictEqual(safeStaticFile('/games/020/trailer/build-trailer.js'), null);
 
     result = await call(base, '/api/bootstrap');
     assert.strictEqual(result.response.status, 200);
@@ -86,7 +105,7 @@ async function main() {
 
     result = await call(base, '/api/unknown');
     assert.strictEqual(result.response.status, 404);
-    console.log('PASS Four Roots Adventure HTTP boundary (43 assertions)');
+    console.log('PASS Four Roots Adventure HTTP boundary (58 assertions)');
   } finally {
     await new Promise((resolve) => server.close(resolve));
     fs.rmSync(dataRoot, { recursive: true, force: true });

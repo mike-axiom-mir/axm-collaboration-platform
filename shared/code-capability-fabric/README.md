@@ -93,3 +93,17 @@ and run:
 node shared/code-capability-fabric/selftest-deterministic-adventure-content-generator-v1.js
 node tools/game-hub/game-library/020-four-roots-adventure/tests/package-selftest.js
 ```
+
+## Deterministic game trailer planner
+
+The next `TEST` adapter binds a silent, captioned 30-second trailer plan to the
+exact adventure content and Game Hub manifest. Marketing claims are typed and
+source-bound. It plans no publication or lifecycle action and grants no
+authority; a separate trusted native renderer is required.
+
+See [README-deterministic-game-trailer-planner-v1.md](README-deterministic-game-trailer-planner-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-deterministic-game-trailer-planner-v1.js
+```

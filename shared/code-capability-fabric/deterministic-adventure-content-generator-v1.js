@@ -222,18 +222,19 @@ function validateContent(value) {
 }
 
 function readRecipe() {
-  const recipeBytes = fs.readFileSync(RECIPE_FILE);
-  if (recipeBytes.length > 262144) throw new Error('adventure content recipe exceeds hard byte ceiling');
-  const parsed = JSON.parse(recipeBytes.toString('utf8'));
+  const sourceBytes = fs.readFileSync(RECIPE_FILE);
+  if (sourceBytes.length > 262144) throw new Error('adventure content recipe exceeds hard byte ceiling');
+  const parsed = JSON.parse(sourceBytes.toString('utf8'));
   const content = validateContent(parsed);
   if (!same(content, parsed)) throw new Error('adventure content recipe normalization drift');
-  return { content, recipeBytes };
+  const recipeBytes = Buffer.from(sourceBytes.toString('utf8').replace(/\r\n?/g, '\n'), 'utf8');
+  return { content, recipeBytes, sourceByteLength: sourceBytes.length };
 }
 
 function generate(input) {
   const request = normalizeRequest(input);
-  const { content, recipeBytes } = readRecipe();
-  if (recipeBytes.length > request.resources.maxRecipeBytes) throw new Error('recipe exceeds request maxRecipeBytes');
+  const { content, recipeBytes, sourceByteLength } = readRecipe();
+  if (recipeBytes.length > request.resources.maxRecipeBytes || sourceByteLength > request.resources.maxRecipeBytes) throw new Error('recipe exceeds request maxRecipeBytes');
   const contentDigest = hashBuffer(recipeBytes);
   const core = {
     schema: PACKET_SCHEMA, version: VERSION, status: 'TEST_CONTENT_CANDIDATE', releaseId: RECIPE_ID,
