@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.ai-plan/v1",
+  "title": "AXM AI Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","task","registryDigest","mode","providerIds","requests","authority","planDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.ai-plan/v1"},
+    "version": {"const": 1},
+    "status": {"const": "EXPERIMENTAL"},
+    "task": {"type": "string", "minLength": 1, "maxLength": 12000},
+    "registryDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "mode": {"enum": ["single","panel"]},
+    "providerIds": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9._-]*$", "maxLength": 40}},
+    "requests": {
+      "type": "array", "minItems": 1, "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["providerId","adapter","method","url","headers","auth","body","bodyDigest","transportAuthority","visualStateAttached","searchEvidenceAttached"],
+        "properties": {
+          "providerId": {"type": "string", "pattern": "^[a-z][a-z0-9._-]*$", "maxLength": 40},
+          "adapter": {"enum": ["openai-responses","anthropic-messages","openai-compatible-chat"]},
+          "method": {"const": "POST"},
+          "url": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "headers": {"type": "object", "additionalProperties": {"type": "string"}},
+          "auth": {"type": ["object","null"]},
+          "body": {"type": "object"},
+          "bodyDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "transportAuthority": {"const": "REQUIRES_EXPLICIT_AI_EXECUTOR"},
+          "visualStateAttached": {"type": "boolean"},
+          "searchEvidenceAttached": {"type": "boolean"}
+        }
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["networkExecutionGranted","browserMutationAllowed","searchExecutionGranted","toolExecutionGranted","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "networkExecutionGranted": {"const": false},
+        "browserMutationAllowed": {"const": false},
+        "searchExecutionGranted": {"const": false},
+        "toolExecutionGranted": {"const": false},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    },
+    "planDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
