@@ -13,19 +13,23 @@
   "category": "AI Team",
   "layer": "machine",
   "risk": "HIGH",
-  "tags": ["runtime", "local-ai", "source-pinned", "fail-closed-hook", "research-posture", "return-packet", "repairable"],
+  "tags": ["runtime", "local-ai", "source-pinned", "fail-closed-hook", "research-posture", "return-packet", "repairable", "watchdog", "learning-bounded"],
   "uses": [
     "node-runtime", "python-runtime", "uv-runtime", "git-runtime",
     "immutable-hermes-commit-and-tree-lock", "hermes-shell-hooks", "local-filesystem",
-    "provider-credential-egress-guard", "per-run-evidence-capsule", "loopback-http"
+    "provider-credential-egress-guard", "hermes-write-safe-root", "per-run-evidence-capsule", "loopback-http"
   ],
   "permissions": ["files", "network", "machine.execute"],
   "actions": [
     "verify reviewed upstream Hermes origin commit tree version and clean worktree",
+    "fetch only the exact pinned upstream snapshot rather than floating branch history",
     "install pinned upstream dependencies only on explicit deps command",
-    "prepare or repair an AXM-managed Hermes hook block while preserving and backing up user config",
-    "launch each Hermes process inside a fresh AXM run capsule",
+    "start Hermes with uv no-sync and Hermes runtime lazy dependency installation disabled",
+    "prepare or repair AXM-owned Hermes hooks memory skill and background-review controls while backing up conflicting local config",
+    "default built-in Hermes memory and automatic background review off and gate skill/memory writes",
+    "launch each Hermes process inside a fresh AXM run capsule with a bounded wall-clock watchdog",
     "strip inherited secrets and remote provider credentials according to local provider-egress policy",
+    "layer Hermes native write-safe-root underneath AXM fail-closed path and capability checks",
     "enforce research versus operator posture before every Hermes tool dispatch",
     "fail closed on missing authority unknown tools unverifiable file paths or exhausted limits",
     "write metadata-only hashed tool provider and session evidence receipts",
@@ -46,8 +50,8 @@
   "readiness": [
     "node-runtime", "python-runtime", "git-runtime-for-install", "uv-runtime-for-deps-and-start",
     "valid-hermes-source.lock.json", "verified-external-hermes-commit-tree-version",
-    "prepared-runtime/hermes-home/config.yaml", "valid-runtime/policy.json"
+    "prepared-runtime/hermes-home/config.yaml", "valid-runtime/policy.json", "pinned-runtime-venv-present"
   ],
-  "summary": "Pinned external Hermes Agent with AXM research/operator authority postures, credential egress guard, fail-closed tool gate, per-run evidence capsules, Return Packets, and deterministic repair of local config and interrupted runs.",
-  "notes": "Hermes remains external MIT donor/runtime code. Credential stripping is not network isolation; hook authorization is not an OS sandbox. Default posture is research, action consent is OFF, provider credentials are local-only, and all mutation/world-action capabilities are OFF. Hermes outputs/memory/skills remain non-canonical candidates."
+  "summary": "Pinned external Hermes Agent with AXM research/operator authority, bounded learning, credential egress guard, layered write controls, wall-clock watchdog, per-run evidence capsules, Return Packets, and deterministic repair.",
+  "notes": "Hermes remains external MIT donor/runtime code. Credential stripping is not network isolation; hook authorization is not an OS sandbox; watchdog termination is not a process-tree kill guarantee. Default posture is research, action consent is OFF, provider credentials are local-only, runtime lazy installs/background review/built-in memory are OFF, and all mutation/world-action capabilities are OFF. Hermes outputs/memory/skills remain non-canonical candidates."
 }
