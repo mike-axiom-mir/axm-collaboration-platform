@@ -18,5 +18,6 @@ module.exports = {
   sessionVerifier: require('./session-verifier'),
   localBrowserHost: require('./local-browser-host'),
   shellPolicy: require('./shell-policy'),
+  searchBroker: require('./search-broker'),
   engine: require('./engine')
 };
