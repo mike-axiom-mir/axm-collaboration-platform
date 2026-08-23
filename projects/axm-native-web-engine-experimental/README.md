@@ -1,15 +1,16 @@
-# AXM Native Web Engine — semantic core + Structure Browser proof
+# AXM Native Web Engine — shared core + local Browser Shell proof
 
 Status: `EXPERIMENTAL`  
 Installed: `false`  
 Promoted: `false`  
 Canon: `false`  
-Version: `0.3.0-experimental.1`
+Version: `0.4.0-experimental.1`
 
-This detached package now proves two output bodies over one offline core:
+This detached package now proves human and headless bodies over one source-bound
+offline core, including the first bounded local navigation lifecycle:
 
 ```text
-local UTF-8 HTML bytes
+explicitly allowed local UTF-8 HTML bytes
   -> digest-bound Source Record
   -> tokenizer subset
   -> typed Document Tree
@@ -21,6 +22,10 @@ local UTF-8 HTML bytes
              -> renderer-neutral Display List
                   |-> inert SVG snapshot
                   `-> inert local HTML snapshot
+       `-> local Browser Bundle
+             `-> one deterministic Browser Session
+                   |-> headless session JSON + transition trace
+                   `-> trusted loopback human Browser Shell
 ```
 
 Every Structure View carries the same source, document, Page Model, layout, and
@@ -28,11 +33,11 @@ display-list lineage plus a reversible-view Modification Ledger. The ledger
 records `sourceMutation.performed: false`; discarding the derived view restores
 the exact source-bound starting point.
 
-This is not a conventional browser shell, Chromium/WebView wrapper, complete
-HTML parser, CSS/site layout engine, network client, navigation stack, or
-JavaScript runtime. The visual output is explicitly an **AXM Structure View**,
-not a claim that a website has been rendered. Page code, links, forms, remote
-media, and resource URLs remain inert data.
+This is not a Chromium/WebView wrapper, complete HTML parser, CSS/site layout
+engine, Internet client, page JavaScript runtime, hostile-content sandbox, or
+production browser. The local Browser Shell navigates only among files named
+explicitly by the caller. Page code, forms, remote media, external resources,
+and unlisted targets remain inert or held.
 
 ## Why Node in this detached proof
 
@@ -49,6 +54,10 @@ node cli.js parse fixtures/simple.html --pretty
 node cli.js outline fixtures/simple.html --pretty
 node cli.js layout fixtures/simple.html --viewport 1120x760 --pretty
 node cli.js display fixtures/simple.html --viewport 1120x760 --pretty
+node cli.js session fixtures/session-home.html \
+  --allow-local fixtures/session-about.html \
+  --allow-local fixtures/session-details.html \
+  --action activate:entry-0003 --action back --action forward --pretty
 node cli.js profile --pretty
 ```
 
@@ -56,6 +65,30 @@ node cli.js profile --pretty
 `layout` emits the typed Structure Layout and its ledger. `display` emits the
 renderer-neutral Display List and its ledger. All three report the same
 Structure Index digest for the same source and bounds.
+
+`session` emits the complete deterministic local bundle, history state, focus
+and scroll entry references, transition trace, reparse receipts, and session
+digest. Each page in the bundle carries the same shared-engine lineage used by
+`outline` and the Structure Browser.
+
+## Run the local human Browser Shell
+
+```bash
+node cli.js serve-local fixtures/session-home.html \
+  --allow-local fixtures/session-about.html \
+  --allow-local fixtures/session-details.html
+```
+
+Open the ephemeral `shellUrl` printed in the host receipt. The trusted AXM shell
+supports bundled link activation, an allowlist-only address surface,
+back/forward, source-reparsing reload, document-map focus, scroll restoration,
+visible history, and lineage receipts. Stop it with `Ctrl+C`; process-owned
+session state is discarded.
+
+The host binds only to `127.0.0.1`, uses a random capability path and a
+CSP-hash-bound controller, and refuses cross-origin or non-JSON mutations. This
+loopback shell transport is not the held external Network Broker. See
+`LOCAL_BROWSER_SESSION_CONTRACT.md` for the exact authority and evidence ceiling.
 
 ## Create inert visual artifacts
 
@@ -85,7 +118,8 @@ node scripts/build-examples.js --verify
 node scripts/build-source-manifest.js --verify
 ```
 
-`STRUCTURE_VIEW_CONTRACT.md` defines the lineage and non-claims.
+`STRUCTURE_VIEW_CONTRACT.md` and `LOCAL_BROWSER_SESSION_CONTRACT.md` define the
+lineage and non-claims.
 `ACTION_REPORT.md` records the current evidence ceiling. `KNOWN_LIMITS.md` and
 `SECURITY_BOUNDARIES.md` are part of the build, not afterthoughts.
 

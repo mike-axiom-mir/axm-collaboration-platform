@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "axm-native-web-engine-experimental",
-  "version": "v0.3.0-experimental.1",
+  "version": "v0.4.0-experimental.1",
   "status": "EXPERIMENTAL",
   "installed": false,
   "promoted": false,
@@ -16,6 +16,9 @@
     "axm.web.display-list/v1",
     "axm.web.modification-ledger/v1",
     "axm.web.artifact-receipt/v1",
+    "axm.web.local-browser-bundle/v1",
+    "axm.web.local-browser-session/v1",
+    "axm.web.local-browser-host-receipt/v1",
     "offline-html-tokenize-subset",
     "offline-document-tree-subset",
     "offline-semantic-page-model",
@@ -24,13 +27,21 @@
     "semantic-html-document-map",
     "headless-shared-core-cli",
     "offline-axm-structure-view",
-    "inert-svg-and-html-snapshots"
+    "inert-svg-and-html-snapshots",
+    "explicit-local-page-bundle",
+    "deterministic-headless-browser-session",
+    "bounded-local-navigation-history-and-reload",
+    "trusted-loopback-human-browser-shell"
   ],
   "consumes": [
     "caller-supplied-local-utf8-bytes",
+    "caller-explicitly-allowed-local-file-set",
     "node-runtime-sha256"
   ],
-  "permissions": [],
+  "permissions": [
+    "local-files:caller-explicit-list-read-only",
+    "loopback:ephemeral-127.0.0.1-shell-host"
+  ],
   "handoffs": {
     "emits": [
       "axm.web.source-record/v1",
@@ -42,36 +53,42 @@
       "axm.web.structure-layout/v1",
       "axm.web.display-list/v1",
       "axm.web.modification-ledger/v1",
-      "axm.web.artifact-receipt/v1"
+      "axm.web.artifact-receipt/v1",
+      "axm.web.local-browser-bundle/v1",
+      "axm.web.local-browser-session/v1",
+      "axm.web.local-browser-host-receipt/v1"
     ],
-    "accepts": ["local-file:utf8", "stdin:utf8"]
+    "accepts": ["local-file:utf8", "stdin:utf8", "explicit-local-file-set:utf8"]
   },
   "boundaries": {
     "writes": [
       "stdout:explicit-cli-json-output",
-      "caller-selected-file:render-svg-or-browser-snapshot-only"
+      "caller-selected-file:render-svg-or-browser-snapshot-only",
+      "process-memory:bounded-local-session-state",
+      "127.0.0.1:ephemeral-trusted-shell-http"
     ],
     "refuses": [
-      "network-fetch",
+      "external-network-fetch",
+      "unlisted-local-file-navigation",
       "search-provider-query",
-      "javascript-or-wasm-execution",
+      "page-javascript-or-wasm-execution",
       "site-css-cascade-or-site-rendering-claim",
-      "site-navigation-history-or-original-page-target-activation-claim",
+      "arbitrary-site-navigation-or-browser-conformance-claim",
       "implicit-output-overwrite",
       "symbolic-link-output-write",
       "provider-key-access",
       "workshop-state-access",
-      "local-machine-authority",
-      "foundation-registry-hub-or-server-mutation",
+      "implicit-local-machine-authority",
+      "foundation-registry-hub-or-workshop-server-mutation",
       "installation",
       "promotion",
       "canon-change"
     ]
   },
   "lifecycle": {
-    "state_owner": "none",
-    "reload": "exact-reparse-from-caller-input",
-    "disconnect": "not-applicable",
-    "cleanup": "process-owned; caller owns explicit artifact outputs"
+    "state_owner": "local-browser-session-process-memory",
+    "reload": "exact-reparse-of-explicit-local-file-set-with-digest-receipts",
+    "disconnect": "explicit-shell-host-shutdown-or-process-exit",
+    "cleanup": "listener-and-session-discarded; caller owns explicit artifact outputs"
   }
 }

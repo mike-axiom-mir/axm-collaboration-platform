@@ -63,3 +63,33 @@ test('profile reports one engine lineage and honest status', function () {
   assert.equal(body.engine.promoted, false);
   assert.equal(body.capabilities.profile, body.engine.standardsProfile);
 });
+
+test('session command exposes deterministic local navigation and history through the shared engine', function () {
+  const result = run([
+    'session',
+    'fixtures/session-home.html',
+    '--allow-local', 'fixtures/session-about.html',
+    '--allow-local', 'fixtures/session-details.html',
+    '--action', 'activate:entry-0003',
+    '--action', 'back',
+    '--action', 'forward',
+    '--action', 'reload'
+  ]);
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.schema, 'axm.web.local-browser-session/v1');
+  assert.equal(body.bundle.pageCount, 3);
+  assert.equal(body.state.current.title, 'About the AXM Local Session');
+  assert.equal(body.state.reloadCount, 1);
+  assert.deepEqual(body.transitionTrace.map(function (item) { return item.status; }), ['APPLIED', 'APPLIED', 'APPLIED', 'APPLIED']);
+  assert.ok(body.bundle.pages.every(function (page) { return page.structureIndexDigest; }));
+});
+
+test('session CLI refuses implicit network pages and malformed actions', function () {
+  const network = run(['session', 'https://example.invalid/']);
+  assert.equal(network.status, 2);
+  assert.equal(JSON.parse(network.stderr).code, 'SESSION_LOCAL_FILE_REQUIRED');
+  const action = run(['session', 'fixtures/session-home.html', '--action', 'teleport']);
+  assert.equal(action.status, 2);
+  assert.equal(JSON.parse(action.stderr).code, 'INVALID_ARGUMENT');
+});

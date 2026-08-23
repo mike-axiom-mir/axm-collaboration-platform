@@ -27,13 +27,25 @@ separates data preservation from execution authority.
 - Artifact commands require explicit output paths, refuse source-path overwrite,
   refuse final-component symbolic-link outputs (including dangling links), and
   require `--force` for existing regular files.
+- Local sessions accept only the entry file and additional regular files named
+  explicitly by the caller. Links resolve against that closed set; unlisted
+  files, schemes, and HTTP(S) targets stay held. Reload reparses the same
+  authorized set and records per-source before/after digests.
+- `serve-local` binds an ephemeral listener to `127.0.0.1`, scopes routes under
+  a random capability path, validates the exact Host header, refuses cross-
+  origin mutations and non-JSON actions, bounds action bytes and server
+  timeouts, and emits no CORS permission.
+- The human shell runs one CSP-hash-bound package controller. Page-derived
+  values are assigned as DOM text. Page scripts, forms, resources, and unlisted
+  link targets do not inherit shell execution authority.
 
 ## Not implemented
 
-- OS process sandboxing, site isolation, trusted Browser Shell, Network Broker,
+- OS process sandboxing, site isolation, native Browser Shell, external Network Broker,
   Web Content process, decoder process, compositor, or AXM local-authority broker.
 - Decompression, image/font/audio/video decoding, TLS, certificates, DNS,
-  redirects, cookies, cache, downloads, navigation, or site-render hardening.
+  redirects, cookies, cache, downloads, external navigation, or site-render
+  hardening.
 - Race-free privileged filesystem mediation; the CLI is an unprivileged local
   proof and must not be embedded in a privileged host as-is.
 - Fuzzing, sanitizers, fault injection, or a hostile corpus beyond focused
@@ -49,6 +61,10 @@ trusted Browser Shell
   -> renderer/compositor
   -> explicit AXM local-authority broker
 ```
+
+The current loopback shell is an experimental trusted-shell adapter in front of
+local bound sources. It is not the Network Broker or an untrusted Web Content
+process and does not close either isolation gate.
 
 Web content must never inherit provider keys, Mirror private state, Workshop
 filesystem access, local execution, LAN discovery, native adapters, or project

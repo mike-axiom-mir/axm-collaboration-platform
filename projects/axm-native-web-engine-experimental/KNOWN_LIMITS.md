@@ -39,19 +39,30 @@ same as full standards behavior.
   text. No resource is fetched and nothing can be clicked or submitted.
 - SVG and local HTML are generated snapshots. The HTML document map supports
   trusted same-document anchors and target highlighting over generated entries.
-  There is no page lifecycle, original-link activation, history, tabs, editable
-  focus/input model, download, screenshot API, or compositor.
+  It still owns no page lifecycle. The separate local Browser Shell supports
+  only explicitly bundled local-link activation, bounded in-memory history,
+  entry-reference focus/scroll, and allowlist-only address input. There is no
+  tab model, editable page-control model, download, screenshot API, or
+  compositor.
 
 ## Runtime and security
 
-- No HTTP/HTTPS, DNS, redirects, cookies, cache, resource loading, or search.
-- No JavaScript or WebAssembly execution. Script bytes remain inert raw-text
-  nodes and are omitted from visible Page Model text.
+- No external HTTP/HTTPS intake, DNS, redirects, cookies, cache, page resource
+  loading, or search. `serve-local` uses HTTP only as an ephemeral loopback
+  transport for the trusted shell and its bounded session API.
+- No page JavaScript or WebAssembly execution. Script bytes remain inert
+  raw-text nodes and are omitted from visible Page Model text. The local shell
+  has one package-owned CSP-hash-bound controller script; this is trusted shell
+  code, not page code.
 - Node's managed runtime is not an OS sandbox. Process/site isolation, brokered
   decoders, renderer isolation, and operating-system policy remain held.
 - The CLI reads a caller-supplied local file or standard input. Visual writes
   use a caller-selected file and bounded refusal checks; this is not a general
   safe file-picker or privileged-host proof.
+- Local sessions read only the entry file and additional pages explicitly named
+  by the caller. Link presence alone never grants file access. Session state is
+  process memory only and is lost on shutdown; no crash recovery or persistence
+  claim is made.
 - Defaults are 1 MiB source, 100,000 tokens, 128 attributes per element, 256
   open tree levels, 512 structure items, 65,536 structure-text characters, and
   32,768 derived canvas pixels. They are experimental bounds, not proven
@@ -61,10 +72,12 @@ same as full standards behavior.
 
 - Focused deterministic tests and goldens prove behavior only for their inputs.
 - No Web Platform Tests, differential engine comparison, fuzzing, sanitizers,
-  memory profiling, hostile-web campaign, accessibility audit, or real browser
-  render/click test ran.
-- Static raster inspection covers one wide simple fixture and one narrow
-  adversarial fixture. It does not prove motion, interaction, host-independent
-  pixels, Windows/Android behavior, or arbitrary pages.
-- Repository-wide tests were not run because the full repository was not
-  checked out in this working-chat runtime.
+  memory profiling, hostile-web campaign, accessibility audit, or arbitrary-
+  site browser campaign ran.
+- Live local-shell inspection covers declared desktop and mobile viewports plus
+  a bounded navigation/back/forward/reload journey. It does not prove general
+  accessibility, host-independent pixels, Android behavior, hostile input, or
+  arbitrary pages.
+- All ten repository-wide commands required by the root `AGENTS.md` exited 0.
+  `verify.js` still reported 43 tracked warnings; this browser slice does not
+  claim to resolve that existing warning inventory.

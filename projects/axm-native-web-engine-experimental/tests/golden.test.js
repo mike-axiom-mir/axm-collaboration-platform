@@ -6,6 +6,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const Engine = require('../src/engine');
 const Canonical = require('../src/canonical-json');
+const GoldenBuilder = require('../scripts/update-goldens');
 
 const root = path.resolve(__dirname, '..');
 function readJson(relative) { return JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8')); }
@@ -31,4 +32,11 @@ test('simple Structure Layout, Display List, and Modification Ledger match commi
 test('malformed warning tree and held Page Model match committed goldens', function () {
   assert.equal(Canonical.stringify(process('malformed.html').documentTree), Canonical.stringify(readJson('golden/malformed.document-tree.json')));
   assert.equal(Canonical.stringify(process('held-elements.html').pageModel), Canonical.stringify(readJson('golden/held.page-model.json')));
+});
+
+test('local navigation, history, and reload receipts match the committed session golden', function () {
+  assert.equal(
+    Canonical.stringify(GoldenBuilder.localSessionGolden()),
+    Canonical.stringify(readJson('golden/local-session.navigation.json'))
+  );
 });

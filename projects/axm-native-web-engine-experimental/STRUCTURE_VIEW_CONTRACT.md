@@ -71,3 +71,8 @@ The Structure View never edits source bytes. Reversal is to discard it and
 reparse the caller-supplied bound source. The package receives no network,
 provider, Workshop, Foundation, registry, Hub, server, installer, promotion, or
 canon authority.
+
+The state-owning local Browser Shell is governed separately by
+`LOCAL_BROWSER_SESSION_CONTRACT.md`. It reuses this contract's Source Record,
+Page Model, and Structure Index lineage; it does not change Structure View into
+site rendering.

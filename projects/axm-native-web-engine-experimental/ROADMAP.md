@@ -13,10 +13,18 @@ This roadmap records sequence; it grants no installation or promotion authority.
 - Inert SVG and HTML snapshots consuming that Display List.
 - Trusted same-document outline anchors; original page targets remain inert.
 - Reversible Modification Ledger and explicit artifact receipts.
+- Explicit local multi-page bundle over the same per-page Structure Index
+  lineage.
+- Deterministic headless session actions, bounded history, back/forward,
+  allowlist-only address navigation, focus/scroll entry state, and source-
+  reparsing reload receipts.
+- Ephemeral `127.0.0.1` human Browser Shell using the same server-owned session
+  state machine, with a capability path and hash-bound trusted controller.
 
 Gate status: focused fixtures, deterministic goldens/examples, local schema
-identity checks, source manifest, bounds/refusal tests, and two static visual
-inspections pass. Status remains `EXPERIMENTAL`.
+identity checks, source manifest, bounds/refusal tests, static Structure View
+inspection, and bounded live local-shell interaction evidence pass. Status
+remains `EXPERIMENTAL`.
 
 ## Next cheapest hardening step
 
@@ -52,14 +60,20 @@ this gate.
 Gate: redirect/size/timeout/encoding/hostile-URL corpus, authority review, and a
 visible declaration of every boundary not yet isolated.
 
-## Navigation and live browser shell — held
+## Navigation and live browser shell — partial
 
-- One-page lifecycle, links, history, back/forward/reload, address surface.
-- Focus, input, scrolling, cleanup, and failure recovery.
+- Explicitly bundled local pages now have a process-owned lifecycle, resolved
+  links, history, back/forward, source-reparsing reload, an allowlist-only
+  address surface, stable entry focus/scroll state, and explicit shutdown.
+- The trusted loopback human shell and headless `session` command act on the
+  same session object and typed transition trace.
+- Still held: native file-picker authorization, restore after process loss,
+  downloads, editable page controls, richer focus/accessibility behavior,
+  compositor ownership, crash containment, and lifecycle fault injection.
 - Tabs only after lifecycle cleanup and isolation evidence are solid.
 
-The generated document map is not this gate: it navigates only between entries
-inside one already-derived local snapshot and owns no page lifecycle or history.
+The generated static document map remains separate: it navigates only between
+entries inside one already-derived snapshot and owns no page lifecycle.
 
 ## Bounded Workshop seams — held
 

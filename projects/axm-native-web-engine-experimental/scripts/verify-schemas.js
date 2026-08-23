@@ -4,6 +4,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const Engine = require('../src/engine');
+const BrowserSession = require('../src/browser-session');
 
 const root = path.resolve(__dirname, '..');
 const schemaDir = path.join(root, 'schemas');
@@ -51,6 +52,13 @@ function main() {
   assert(outline.structureIndexDigest === structure.structureIndexDigest, 'structure-index representative lineage mismatch');
   assert(structure.displayList.schema === 'axm.web.display-list/v1', 'display-list representative schema mismatch');
   assert(structure.modificationLedger.schema === 'axm.web.modification-ledger/v1', 'ledger representative schema mismatch');
+  const localSession = new BrowserSession.LocalBrowserSession(
+    path.join(root, 'fixtures/session-home.html'),
+    [path.join(root, 'fixtures/session-about.html'), path.join(root, 'fixtures/session-details.html')]
+  ).snapshot();
+  assert(localSession.schema === 'axm.web.local-browser-session/v1', 'local session representative schema mismatch');
+  assert(localSession.bundle.schema === 'axm.web.local-browser-bundle/v1', 'local bundle representative schema mismatch');
+  assert(localSession.bundle.pages.every(function (page) { return page.structureIndexDigest; }), 'local bundle lineage missing');
   process.stdout.write('parsed ' + names.length + ' schema documents and checked representative schema identities\n');
 }
 

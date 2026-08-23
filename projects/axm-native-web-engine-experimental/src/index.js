@@ -14,5 +14,7 @@ module.exports = {
   modificationLedger: require('./modification-ledger'),
   svgRenderer: require('./svg-renderer'),
   browserSnapshot: require('./browser-snapshot'),
+  browserSession: require('./browser-session'),
+  localBrowserHost: require('./local-browser-host'),
   engine: require('./engine')
 };

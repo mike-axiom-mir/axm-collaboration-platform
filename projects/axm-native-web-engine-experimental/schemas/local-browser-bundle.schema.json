@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.local-browser-bundle/v1",
+  "title": "AXM Explicit Local Browser Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","entryPageId","pageCount","totalSourceBytes","bounds","pages","held","bundleDigest"],
+  "properties": {
+    "schema":{"const":"axm.web.local-browser-bundle/v1"},
+    "version":{"const":1},
+    "status":{"const":"EXPERIMENTAL"},
+    "entryPageId":{"type":"string","pattern":"^page-[a-f0-9]{24}$"},
+    "pageCount":{"type":"integer","minimum":1},
+    "totalSourceBytes":{"type":"integer","minimum":0},
+    "bounds":{"type":"object","additionalProperties":false,"required":["maxPages","maxHistory","maxTotalBytes"],"properties":{"maxPages":{"type":"integer","minimum":1},"maxHistory":{"type":"integer","minimum":1},"maxTotalBytes":{"type":"integer","minimum":1}}},
+    "pages":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/page"}},
+    "held":{"type":"array","items":{"$ref":"#/$defs/held"}},
+    "bundleDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "digest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "held":{"type":"object","additionalProperties":false,"required":["feature","state"],"properties":{"feature":{"type":"string","minLength":1},"state":{"const":"HELD"}}},
+    "summary":{"type":"object","additionalProperties":false,"required":["headings","paragraphs","landmarks","links","media","lists","tables","forms","controls"],"properties":{"headings":{"type":"integer","minimum":0},"paragraphs":{"type":"integer","minimum":0},"landmarks":{"type":"integer","minimum":0},"links":{"type":"integer","minimum":0},"media":{"type":"integer","minimum":0},"lists":{"type":"integer","minimum":0},"tables":{"type":"integer","minimum":0},"forms":{"type":"integer","minimum":0},"controls":{"type":"integer","minimum":0}}},
+    "idTarget":{"type":"object","additionalProperties":false,"required":["id","nodeRef"],"properties":{"id":{"type":"string","minLength":1},"nodeRef":{"type":"string","minLength":1}}},
+    "resolution":{"type":"object","additionalProperties":false,"required":["state","targetPageId","targetLocator","fragment","targetEntryRef","rawTarget"],"properties":{"state":{"enum":["AVAILABLE","SAME_DOCUMENT","HELD_MISSING_TARGET","HELD_NETWORK","HELD_SCHEME","HELD_INVALID_TARGET","HELD_UNLISTED_LOCAL"]},"targetPageId":{"type":["string","null"],"pattern":"^page-[a-f0-9]{24}$"},"targetLocator":{"type":["string","null"]},"fragment":{"type":["string","null"]},"targetEntryRef":{"type":["string","null"],"pattern":"^entry-[0-9]{4}$"},"rawTarget":{"type":["string","null"]}}},
+    "link":{"type":"object","additionalProperties":false,"required":["linkId","entryRef","nodeRef","text","rawTarget","rel","target","resolution"],"properties":{"linkId":{"type":"string","pattern":"^link-[0-9]{4}$"},"entryRef":{"type":["string","null"],"pattern":"^entry-[0-9]{4}$"},"nodeRef":{"type":"string","minLength":1},"text":{"type":"string"},"rawTarget":{"type":["string","null"]},"rel":{"type":["string","null"]},"target":{"type":["string","null"]},"resolution":{"$ref":"#/$defs/resolution"}}},
+    "page":{"type":"object","additionalProperties":false,"required":["pageId","locator","title","language","sourceDigest","documentDigest","pageModelDigest","structureIndexDigest","summary","entryCount","defaultEntryRef","entries","idTargets","links"],"properties":{"pageId":{"type":"string","pattern":"^page-[a-f0-9]{24}$"},"locator":{"type":"string","minLength":1},"title":{"type":"string"},"language":{"type":["string","null"]},"sourceDigest":{"$ref":"#/$defs/digest"},"documentDigest":{"$ref":"#/$defs/digest"},"pageModelDigest":{"$ref":"#/$defs/digest"},"structureIndexDigest":{"$ref":"#/$defs/digest"},"summary":{"$ref":"#/$defs/summary"},"entryCount":{"type":"integer","minimum":0},"defaultEntryRef":{"type":["string","null"],"pattern":"^entry-[0-9]{4}$"},"entries":{"type":"array","items":{"$ref":"structure-index.schema.json#/$defs/entry"}},"idTargets":{"type":"array","items":{"$ref":"#/$defs/idTarget"}},"links":{"type":"array","items":{"$ref":"#/$defs/link"}}}}
+  }
+}

@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const Engine = require('../src/engine');
 const Canonical = require('../src/canonical-json');
+const BrowserSession = require('../src/browser-session');
 
 const root = path.resolve(__dirname, '..');
 const outDir = path.join(root, 'golden');
@@ -15,6 +16,19 @@ function processFixture(name) {
 
 function write(name, value) {
   fs.writeFileSync(path.join(outDir, name), Canonical.stringify(value, 2) + '\n', 'utf8');
+}
+
+function localSessionGolden() {
+  const session = new BrowserSession.LocalBrowserSession(
+    'fixtures/session-home.html',
+    ['fixtures/session-about.html', 'fixtures/session-details.html'],
+    { baseDirectory: root }
+  );
+  session.apply({ type: 'activate', entryRef: 'entry-0003' });
+  session.apply({ type: 'back' });
+  session.apply({ type: 'forward' });
+  session.apply({ type: 'reload' });
+  return session.snapshot();
 }
 
 function main(argv) {
@@ -30,8 +44,9 @@ function main(argv) {
   write('simple.modification-ledger.json', structure.modificationLedger);
   write('malformed.document-tree.json', processFixture('malformed.html').documentTree);
   write('held.page-model.json', processFixture('held-elements.html').pageModel);
-  process.stdout.write('wrote 8 deterministic golden files\n');
+  write('local-session.navigation.json', localSessionGolden());
+  process.stdout.write('wrote 9 deterministic golden files\n');
 }
 
 if (require.main === module) main(process.argv.slice(2));
-module.exports = { main };
+module.exports = { localSessionGolden, main };

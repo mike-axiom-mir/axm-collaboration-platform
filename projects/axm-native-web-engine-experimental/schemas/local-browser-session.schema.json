@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.local-browser-session/v1",
+  "title": "AXM Deterministic Local Browser Session",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","sessionId","bundle","state","transitionTrace","held","sessionDigest"],
+  "properties": {
+    "schema":{"const":"axm.web.local-browser-session/v1"},
+    "version":{"const":1},
+    "status":{"const":"EXPERIMENTAL"},
+    "sessionId":{"type":"string","pattern":"^session-[a-f0-9]{24}$"},
+    "bundle":{"$ref":"local-browser-bundle.schema.json"},
+    "state":{"$ref":"#/$defs/state"},
+    "transitionTrace":{"type":"array","items":{"$ref":"#/$defs/transition"}},
+    "held":{"type":"array","items":{"$ref":"#/$defs/held"}},
+    "sessionDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs": {
+    "digest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "held":{"type":"object","additionalProperties":false,"required":["feature","state"],"properties":{"feature":{"type":"string","minLength":1},"state":{"const":"HELD"}}},
+    "current":{"type":"object","additionalProperties":false,"required":["pageId","address","title","sourceDigest","documentDigest","pageModelDigest","structureIndexDigest","fragment","focusEntryRef","scrollEntryRef"],"properties":{"pageId":{"type":"string","pattern":"^page-[a-f0-9]{24}$"},"address":{"type":"string","minLength":1},"title":{"type":"string"},"sourceDigest":{"$ref":"#/$defs/digest"},"documentDigest":{"$ref":"#/$defs/digest"},"pageModelDigest":{"$ref":"#/$defs/digest"},"structureIndexDigest":{"$ref":"#/$defs/digest"},"fragment":{"type":["string","null"]},"focusEntryRef":{"type":["string","null"],"pattern":"^entry-[0-9]{4}$"},"scrollEntryRef":{"type":["string","null"],"pattern":"^entry-[0-9]{4}$"}}},
+    "historyEntry":{"type":"object","additionalProperties":false,"required":["navigationId","pageId","address","fragment","focusEntryRef","scrollEntryRef"],"properties":{"navigationId":{"type":"string","pattern":"^nav-[0-9]{4,}$"},"pageId":{"type":"string","pattern":"^page-[a-f0-9]{24}$"},"address":{"type":"string","minLength":1},"fragment":{"type":["string","null"]},"focusEntryRef":{"type":["string","null"],"pattern":"^entry-[0-9]{4}$"},"scrollEntryRef":{"type":["string","null"],"pattern":"^entry-[0-9]{4}$"}}},
+    "state":{"type":"object","additionalProperties":false,"required":["current","history","historyCursor","canGoBack","canGoForward","reloadCount"],"properties":{"current":{"$ref":"#/$defs/current"},"history":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/historyEntry"}},"historyCursor":{"type":"integer","minimum":0},"canGoBack":{"type":"boolean"},"canGoForward":{"type":"boolean"},"reloadCount":{"type":"integer","minimum":0}}},
+    "action":{"type":"object","additionalProperties":false,"required":["type"],"properties":{"type":{"enum":["activate","open-locator","back","forward","reload","focus-entry","scroll-entry"]},"entryRef":{"type":"string","pattern":"^entry-[0-9]{4}$"},"locator":{"type":"string","minLength":1}}},
+    "endpoint":{"type":"object","additionalProperties":false,"required":["pageId","address","historyCursor"],"properties":{"pageId":{"type":"string","pattern":"^page-[a-f0-9]{24}$"},"address":{"type":"string","minLength":1},"historyCursor":{"type":"integer","minimum":0}}},
+    "reparse":{"type":"object","additionalProperties":false,"required":["pageId","locator","beforeSourceDigest","afterSourceDigest","changed"],"properties":{"pageId":{"type":"string","pattern":"^page-[a-f0-9]{24}$"},"locator":{"type":"string","minLength":1},"beforeSourceDigest":{"oneOf":[{"$ref":"#/$defs/digest"},{"type":"null"}]},"afterSourceDigest":{"$ref":"#/$defs/digest"},"changed":{"type":"boolean"}}},
+    "transition":{"type":"object","additionalProperties":false,"required":["sequence","reparseReceipt","action","status","reason","from","to"],"properties":{"sequence":{"type":"integer","minimum":1},"reparseReceipt":{"oneOf":[{"type":"null"},{"type":"array","items":{"$ref":"#/$defs/reparse"}}]},"action":{"$ref":"#/$defs/action"},"status":{"enum":["APPLIED","HELD","NOOP"]},"reason":{"type":["string","null"]},"from":{"$ref":"#/$defs/endpoint"},"to":{"$ref":"#/$defs/endpoint"}}}
+  }
+}

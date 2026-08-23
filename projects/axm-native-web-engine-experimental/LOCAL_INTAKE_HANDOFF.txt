@@ -88,3 +88,50 @@ FIRST SAFE LOCAL DECISION IS STILL ONE OF
   ACCEPT_FOR_TEST
   REQUEST_REPAIR
   REJECT
+
+THIRD STEWARD PASS ADDENDUM — 2026-08-23
+----------------------------------------
+Package version: 0.4.0-experimental.1
+Status remains: EXPERIMENTAL / installed false / promoted false / canon false
+
+NEW REVIEW SURFACES
+-------------------
+- LOCAL_BROWSER_SESSION_CONTRACT.md
+- src/browser-session.js
+- src/local-browser-host.js
+- schemas/local-browser-bundle.schema.json
+- schemas/local-browser-session.schema.json
+- schemas/local-browser-host-receipt.schema.json
+- golden/local-session.navigation.json
+- headless command: session
+- local human command: serve-local
+
+VERIFY THIS PASS
+----------------
+Run from the package root:
+    npm run verify
+
+Then run the bounded human shell only after reviewing its authority contract:
+    node cli.js serve-local fixtures/session-home.html \
+      --allow-local fixtures/session-about.html \
+      --allow-local fixtures/session-details.html
+
+Confirm the printed origin is 127.0.0.1, open only the printed ephemeral
+shellUrl, and exercise an allowed link, back, forward, reload, a same-document
+target, and a held external address. Stop the host with Ctrl+C and confirm the
+listener closed.
+
+LOCAL-SESSION BOUNDARY
+----------------------
+The entry file and each additional page require explicit caller enumeration.
+The shell may navigate only within that closed set. The package-owned trusted
+controller is active, but page scripts, forms, resources, unlisted files, and
+external network targets remain inert or held. Loopback shell transport is not
+the future Network Broker or content-process isolation.
+
+FIRST SAFE LOCAL DECISION IS STILL ONE OF
+-----------------------------------------
+  HOLD
+  ACCEPT_FOR_TEST
+  REQUEST_REPAIR
+  REJECT
