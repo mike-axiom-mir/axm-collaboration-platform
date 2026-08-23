@@ -89,6 +89,27 @@ and run:
 node shared/code-capability-fabric/selftest-code-recipe-fabric-bridge-v1.js
 ```
 
+## Installed recipe metadata discovery
+
+The additive v1.1 `TEST` adapter accepts a bounded metadata query over the exact
+installed 1,000-recipe Foundry catalog. It verifies the catalog, syntax audit,
+and Foundry contract bytes through the v1.0 bridge, then returns separate
+eligible and held evidence. Source snippets stay absent; exact snippet digests
+and byte lengths remain visible. Discoverability is not copying permission:
+reuse remains `RESEARCH_ONLY_HOLD` and direct reuse remains false.
+
+Its score is only a deterministic mechanical match order. It performs no
+semantic inference, recommendation, or automatic selection. Every packet has
+`selection: null`. Using a result requires a new exact v1.0 selection request
+and all later consent, candidate, sandbox, review, and integration gates.
+
+See [README-code-recipe-discovery-v1.md](README-code-recipe-discovery-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-code-recipe-discovery-v1.js
+```
+
 ## First deterministic game candidate
 
 The next `TEST` rung adds one native, typed game recipe and a byte-bound game
