@@ -23,7 +23,8 @@ Session inputs are bounded by default to:
 - 16 KiB per loopback action request.
 
 Final-component symbolic-link page inputs, non-files, duplicate paths, unlisted
-local targets, URL schemes, HTTP(S) targets, and query-bearing locators fail or remain visibly held.
+local targets, URL schemes, HTTP(S) targets, and query-bearing locators fail or
+remain visibly held.
 
 ## Shared human/headless lineage
 
@@ -40,14 +41,16 @@ second navigation algorithm in browser code.
 Supported actions are:
 
 - activate a current-page link entry;
-- open an exact bundled locator or same-document fragment; query components remain held until they have defined semantics;
+- open an exact bundled locator or same-document fragment; query components
+  remain held until they have defined semantics;
 - back and forward;
 - reload;
 - focus or scroll to a stable Structure Index entry.
 
 The resulting `axm.web.local-browser-session/v1` records bounded history,
 cursor, current lineage, focus/scroll references, every applied/held/no-op
-transition up to the hard 512-transition lifecycle bound, reparse receipts, and a deterministic session digest.
+transition up to the hard 512-transition lifecycle bound, reparse receipts, and
+a deterministic session digest.
 
 ## Reload
 
@@ -56,6 +59,26 @@ history by stable locator-derived page IDs, sanitizes stale focus/scroll entry
 references against the new Structure Index, and emits before/after source
 digests plus a `changed` verdict per page. A failed reparse does not replace the
 previous in-memory bundle.
+
+## Read-only session verification
+
+`src/session-verifier.js` and `scripts/verify-session.js` provide a separate
+read-only verification path for a serialized `axm.web.local-browser-session/v1`.
+The verifier recomputes the bundle and session digests and checks structural
+invariants across pages, entries, active and held link targets, history, current
+state, transition sequence/continuity, reload counts, and the 512-transition
+lifecycle bound.
+
+The verifier accepts at most 8 MiB by default, requires valid UTF-8 and JSON,
+bounds findings to 128, and emits
+`axm.web.local-browser-session-verification/v1`. A verification PASS means only
+that the supplied session record is internally consistent with these checks. It
+does not prove the source pages were truthful, safe, standards-conformant, or
+produced by a trusted machine.
+
+The verification receipt is explicitly unable to mutate, install, promote, or
+canonize anything. CI also retains a separately implemented verifier outside the
+browser package so package code does not become its only judge.
 
 ## Trusted loopback shell
 
