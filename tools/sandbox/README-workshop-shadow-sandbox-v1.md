@@ -37,6 +37,21 @@ This first scope does **not** detect or restore arbitrary missing Workshop files
 Repository recovery and merge reconciliation remain separate evidence-driven
 work.
 
+## Contract repair rung
+
+The additive v0.6 contract-repair host handles one exact legacy state: a target
+manifest whose `schema` and `kind` declarations are both absent while its other
+readiness and module-contract checks pass. It creates five detached alternatives
+for the allowed kinds and adds the fixed `axm.tool-manifest/v1` schema to each.
+It does not rank or select them. Semantic fitness remains `UNKNOWN`, and four
+exact test commands remain `NOT_RUN`.
+
+```powershell
+node shared/code-capability-fabric/selftest-workshop-contract-repair-planner-v1.js
+node tools/sandbox/selftest-workshop-contract-repair-sandbox-v1.js
+node tools/sandbox/workshop-contract-repair-preview-v1.js --source-root <absolute-workshop-path> --session-id <portable-id> --tool-id <portable-tool-id>
+```
+
 Run:
 
 ```powershell

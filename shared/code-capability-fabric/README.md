@@ -148,3 +148,24 @@ See `tools/sandbox/README-workshop-shadow-sandbox-v1.md` and run:
 node shared/code-capability-fabric/selftest-workshop-shadow-improvement-planner-v1.js
 node tools/sandbox/selftest-workshop-shadow-sandbox-v1.js
 ```
+
+## Legacy manifest contract-repair alternatives
+
+The additive v0.6 `TEST` rung handles one evidence-supported declaration defect:
+a legacy target manifest with both `schema` and `kind` absent, while its other
+manifest and module-contract checks pass. It adds the fixed
+`axm.tool-manifest/v1` schema and emits all five allowed `kind` values as equal,
+byte-bound detached alternatives.
+
+No alternative is ranked or selected. Static manifest/contract validation is
+recorded separately from semantic fitness, which remains `UNKNOWN`. Exact test
+commands are declared as inert argv records with status `NOT_RUN`. Candidate
+execution, test execution, source write-back, installation, integration,
+publication, promotion, and CANON remain outside this capability.
+
+See `tools/sandbox/README-workshop-shadow-sandbox-v1.md` and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-workshop-contract-repair-planner-v1.js
+node tools/sandbox/selftest-workshop-contract-repair-sandbox-v1.js
+```
