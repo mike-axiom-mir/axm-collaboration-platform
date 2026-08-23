@@ -7,8 +7,11 @@ model, API key, network request, or repeated reasoning compute.
 
 The existing Deterministic Organ Fabric remains the reused declarative kernel
 and specialized compatibility surface. This layer adds a generic recipe
-catalog and complete candidate materialization for code modules, creation
-hands, and contract adapters.
+catalog and complete candidate materialization for modular capabilities.
+`HAND` recipes bind executable `capability.js`; `SKILL` recipes bind portable
+`SKILL.md` plus an explicit instruction-only, host-mediated, or executable
+runtime. Kind is digest-bound from recipe through plan, compilation, candidate,
+module contract, and receipt.
 
 ## Truth boundary
 
@@ -39,6 +42,10 @@ hands, and contract adapters.
 - `axm.capability-build-receipt/v1`
 - `axm.capability-recipe-proposal/v1`
 - `axm.capability-recipe-draft/v1`
+- `axm.modular-capability-recipe-contract/v1`
+- `axm.modular-capability-contract/v1`
 
-The initial catalog contains a pure JSON transform, an SVG status-badge
-creation hand, and a Workshop Direction hand-request adapter.
+The initial reviewed catalog contains three executable `HAND` recipes: a pure
+JSON transform, an SVG status-badge creation hand, and a Workshop Direction
+hand-request adapter. Portable `SKILL` support is proven by an inactive Recipe
+Foundry pilot; it is not silently added to the active catalog.

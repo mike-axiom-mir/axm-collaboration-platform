@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('assert'),fs=require('fs'),os=require('os'),path=require('path'),childProcess=require('child_process');
+const builder=require('./builder-contribution.js');
+const parameters={skillId:'closed-capability-review',title:'Closed capability review',purpose:'Follow a bounded evidence-first review procedure without inheriting authority.',inputs:['axm.capability-review-input/v1'],outputs:['axm.capability-review-receipt/v1'],procedure:['Confirm exact contract identity.','Map each claim to an admissible evidence surface.','Record PASS, FAIL, or UNKNOWN without promotion.'],boundaries:['No source execution.','No inherited permission.','No install, promotion, merge, or CANON change.'],receiptSchema:'axm.capability-review-receipt/v1',maxSteps:8};
+const first=builder.build(parameters),second=builder.build(parameters);assert.deepStrictEqual(first,second);assert.equal(first.capabilityKind,'SKILL');assert.deepStrictEqual(Object.keys(first.portableFiles).sort(),['SKILL.md','skill.contract.json','skill.selftest.js']);
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'axm-portable-skill-builder-test-'));
+try { Object.keys(first.portableFiles).forEach((file)=>fs.writeFileSync(path.join(root,file),first.portableFiles[file],{flag:'wx'})); const run=childProcess.spawnSync(process.execPath,[path.join(root,'skill.selftest.js')],{cwd:root,encoding:'utf8',timeout:5000}); assert.equal(run.status,0,run.stderr); assert.match(run.stdout,/PASS/); }
+finally { const resolved=path.resolve(root); if(path.dirname(resolved)!==path.resolve(os.tmpdir())||!path.basename(resolved).startsWith('axm-portable-skill-builder-test-')) throw new Error('temporary cleanup boundary refused'); fs.rmSync(resolved,{recursive:true,force:true}); }
+assert.throws(()=>builder.build(Object.assign({},parameters,{maxSteps:2})),/maxSteps/);assert.throws(()=>builder.build(Object.assign({},parameters,{surprise:true})),/unsupported key/);
+process.stdout.write('portable skill builder contribution selftest PASS\n');

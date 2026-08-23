@@ -5,6 +5,11 @@ This is the human and machine front door for
 memory, and offers an explicit deterministic ZIP download. `machine.js`
 exposes the same pure operations without filesystem authority.
 
+Every recipe and candidate is now explicitly typed as `HAND` or `SKILL`.
+Active v1 recipes remain reviewed `HAND` builders. The dependent Capability
+Recipe Foundry carries the first inactive portable `SKILL` pilot through source
+review without activating it.
+
 Explicit local materialization is CLI-only:
 
 ```text

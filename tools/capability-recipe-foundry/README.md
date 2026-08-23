@@ -16,6 +16,8 @@ Foundry validates the closed contract and assembles:
 
 - an `axm.capability-recipe-proposal/v1` whose activation is forced to
   `INACTIVE_PROPOSAL`;
+- an `axm.modular-capability-review-contract/v1` that binds the proposal as a
+  first-class `HAND` or `SKILL`;
 - the exact builder contribution and authored selftest;
 - the source specification and verification plan;
 - a ten-gate source-review checklist;
@@ -26,13 +28,18 @@ execute builder source, generated capability code, or generated tests. A
 trusted host may later run the emitted selftest explicitly; the result is
 external evidence, not Foundry evidence.
 
-## First pilot
+## Modular pilots
 
 The included pilot proposes `closed-json-schema-validator-v1`, a deterministic
 builder that compiles a source-reviewed closed JSON Schema subset into a
 bounded validator capability. The proposal is complete enough for source
 review and independent test execution, but it is not added to Capability
 Fabric's active builder list or recipe catalog.
+
+The second pilot proposes `bounded-review-procedure-skill-v1`. It emits a
+portable `SKILL.md`, a closed `axm.portable-skill-contract/v1`, and an external
+selftest through an explicitly host-mediated runtime contract. It is equally
+inactive and carries no inherited authority.
 
 ## Verify
 

@@ -19,7 +19,7 @@
     throw new Error('Hand Verification core is required');
   }
 
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
   var INTENT_SCHEMA = 'axm.capability-recipe-authoring-intent/v1';
   var PLAN_SCHEMA = 'axm.capability-recipe-foundry-plan/v1';
   var PACKET_SCHEMA = 'axm.capability-recipe-review-packet/v1';
@@ -43,6 +43,7 @@
     proposal: 'recipe-proposal.json',
     specification: 'capability-specification.json',
     verification: 'verification-plan.json',
+    modularContract: 'modular-capability.contract.json',
     builder: 'builder-contribution.js',
     builderSelftest: 'builder-contribution.selftest.js',
     checklist: 'review-checklist.json',
@@ -104,6 +105,8 @@
       title: authored.title,
       summary: authored.summary,
       family: authored.family,
+      capabilityKind: authored.capabilityKind,
+      capabilityContract: clone(authored.capabilityContract),
       builderId: authored.builderId,
       activation: 'INACTIVE_PROPOSAL',
       reviewPolicy: {
@@ -178,7 +181,7 @@
       }
     }
 
-    var recipeKeys = ['id', 'version', 'title', 'summary', 'family', 'builderId', 'candidatePolicy', 'parameterSpec', 'exampleRequest', 'boundaries', 'verifiers'];
+    var recipeKeys = ['id', 'version', 'title', 'summary', 'family', 'capabilityKind', 'capabilityContract', 'builderId', 'candidatePolicy', 'parameterSpec', 'exampleRequest', 'boundaries', 'verifiers'];
     if (exactKeys(intent.recipe, recipeKeys, '$.recipe', errors)) {
       var recipeDraft = recipeFromIntent(intent);
       Fabric.validateRecipeProposalDraft(recipeDraft).errors.forEach(function (row) { errors.push(row); });
@@ -227,8 +230,9 @@
       intentDigest: intent && intent.intentDigest || null,
       targetRecipeId: intent && intent.recipe && intent.recipe.id || null,
       builderId: intent && intent.contribution && intent.contribution.builderId || null,
+      capabilityKind: intent && intent.recipe && intent.recipe.capabilityKind || null,
       outputStatus: 'INACTIVE_PROPOSAL',
-      outputFileCount: validation.ok ? 7 : 0,
+      outputFileCount: validation.ok ? 8 : 0,
       executesBuilderSource: false,
       executesGeneratedCode: false,
       holds: validation.ok ? [] : [hold('AUTHORING_CONTRACT_HOLD', 'Recipe authoring intent failed its closed contract.', validation.errors)],
@@ -274,6 +278,7 @@
       '# ' + proposal.recipe.title + ' — inactive recipe review packet',
       '',
       'Status: `EXPERIMENTAL` · activation: `INACTIVE_PROPOSAL`',
+      'Kind: `'+proposal.recipe.capabilityKind+'` · runtime: `'+proposal.recipe.capabilityContract.runtimeMode+'`',
       '',
       intent.specification.purpose,
       '',
@@ -293,12 +298,38 @@
     ].join('\n');
   }
 
+  function buildModularContract(intent, proposal) {
+    var recipe = proposal.recipe;
+    var contract = {
+      schema: 'axm.modular-capability-review-contract/v1',
+      id: recipe.id,
+      version: recipe.version,
+      kind: recipe.capabilityKind,
+      capabilityId: intent.specification.capabilityId,
+      runtime: { mode: recipe.capabilityContract.runtimeMode, entry: recipe.capabilityContract.entry, operation: recipe.capabilityContract.operation },
+      portable: { form: recipe.capabilityContract.portableForm, path: recipe.capabilityContract.portablePath },
+      resultContractPolicy: recipe.capabilityContract.resultContractPolicy,
+      requiredHostCapabilities: clone(recipe.capabilityContract.requiredHostCapabilities),
+      inputsAndSchemas: clone(intent.specification.inputsAndSchemas),
+      outputsAndSchemas: clone(intent.specification.outputsAndSchemas),
+      permissions: [],
+      status: 'INACTIVE_PROPOSAL',
+      installed: false,
+      promoted: false,
+      canon: false,
+      contractDigest: ''
+    };
+    contract.contractDigest = Fabric.digest(without(contract, 'contractDigest'));
+    return contract;
+  }
+
   function makeFiles(intent, proposal) {
     var checklist = buildChecklist(intent, proposal);
     var files = {};
     files[FILES.proposal] = pretty(proposal);
     files[FILES.specification] = pretty(intent.specification);
     files[FILES.verification] = pretty(intent.verificationPlan);
+    files[FILES.modularContract] = pretty(buildModularContract(intent, proposal));
     files[FILES.builder] = intent.contribution.builderSource;
     files[FILES.builderSelftest] = intent.contribution.builderSelftestSource;
     files[FILES.checklist] = pretty(checklist);
@@ -322,7 +353,7 @@
       id: intent.id,
       status: 'EXPERIMENTAL_REVIEW_PACKET',
       intentRef: { schema: INTENT_SCHEMA, id: intent.id, digest: intent.intentDigest },
-      target: { capabilityId: intent.specification.capabilityId, recipeId: proposal.recipe.id, builderId: proposal.recipe.builderId },
+      target: { capabilityId: intent.specification.capabilityId, recipeId: proposal.recipe.id, builderId: proposal.recipe.builderId, capabilityKind: proposal.recipe.capabilityKind },
       source: { kind: intent.sourceKind, specificationFingerprint: Verification.fingerprint(intent.specification), verificationPlanFingerprint: Verification.fingerprint(intent.verificationPlan) },
       proposalRef: { schema: Fabric.PROPOSAL_SCHEMA, digest: proposal.proposalDigest, activation: 'INACTIVE_PROPOSAL' },
       files: rows,
@@ -352,7 +383,7 @@
       intentRef: clone(packet.intentRef),
       planRef: { schema: PLAN_SCHEMA, digest: planValue.planDigest },
       packetRef: { schema: PACKET_SCHEMA, id: packet.id, digest: packet.packetDigest },
-      output: { recipeId: packet.target.recipeId, builderId: packet.target.builderId, fileCount: packet.files.length, totalBytes: packet.totalBytes },
+      output: { recipeId: packet.target.recipeId, builderId: packet.target.builderId, capabilityKind: packet.target.capabilityKind, fileCount: packet.files.length, totalBytes: packet.totalBytes },
       truth: {
         deterministicAssemblyCompleted: true,
         proposalActive: false,
@@ -400,9 +431,9 @@
     var receipt = result.receipt;
     var files = result.files;
     var planValue = result.plan;
-    var planKeys = ['schema', 'foundryVersion', 'status', 'intentDigest', 'targetRecipeId', 'builderId', 'outputStatus', 'outputFileCount', 'executesBuilderSource', 'executesGeneratedCode', 'holds', 'authority', 'planDigest'];
+    var planKeys = ['schema', 'foundryVersion', 'status', 'intentDigest', 'targetRecipeId', 'builderId', 'capabilityKind', 'outputStatus', 'outputFileCount', 'executesBuilderSource', 'executesGeneratedCode', 'holds', 'authority', 'planDigest'];
     if (exactKeys(planValue, planKeys, '$.plan', errors)) {
-      if (planValue.schema !== PLAN_SCHEMA || planValue.foundryVersion !== VERSION || planValue.status !== 'READY' || planValue.outputStatus !== 'INACTIVE_PROPOSAL' || planValue.outputFileCount !== 7 || planValue.executesBuilderSource !== false || planValue.executesGeneratedCode !== false || !Array.isArray(planValue.holds) || planValue.holds.length !== 0) errors.push(issue('PLAN_INVALID', '$.plan', 'Complete results require an exact READY plan.'));
+      if (planValue.schema !== PLAN_SCHEMA || planValue.foundryVersion !== VERSION || planValue.status !== 'READY' || Fabric.CAPABILITY_KINDS.indexOf(planValue.capabilityKind) < 0 || planValue.outputStatus !== 'INACTIVE_PROPOSAL' || planValue.outputFileCount !== 8 || planValue.executesBuilderSource !== false || planValue.executesGeneratedCode !== false || !Array.isArray(planValue.holds) || planValue.holds.length !== 0) errors.push(issue('PLAN_INVALID', '$.plan', 'Complete results require an exact READY modular capability plan.'));
       falseAuthority(planValue.authority, '$.plan.authority', errors);
       var expectedPlanDigest = Fabric.digest(without(planValue, 'planDigest'));
       if (planValue.planDigest !== expectedPlanDigest) errors.push(issue('PLAN_DIGEST_MISMATCH', '$.plan.planDigest', 'Plan digest mismatch.'));
@@ -413,21 +444,21 @@
     if (plain(packet)) {
       falseAuthority(packet.authority, '$.packet.authority', errors);
       exactKeys(packet.intentRef, ['schema', 'id', 'digest'], '$.packet.intentRef', errors);
-      exactKeys(packet.target, ['capabilityId', 'recipeId', 'builderId'], '$.packet.target', errors);
+      exactKeys(packet.target, ['capabilityId', 'recipeId', 'builderId', 'capabilityKind'], '$.packet.target', errors);
       exactKeys(packet.source, ['kind', 'specificationFingerprint', 'verificationPlanFingerprint'], '$.packet.source', errors);
       exactKeys(packet.proposalRef, ['schema', 'digest', 'activation'], '$.packet.proposalRef', errors);
       if (!safeId(packet.id) || !packet.intentRef || packet.intentRef.schema !== INTENT_SCHEMA || packet.intentRef.id !== packet.id || !safeDigest(packet.intentRef.digest)) errors.push(issue('PACKET_INTENT_REF_INVALID', '$.packet.intentRef', 'Intent reference is malformed.'));
-      if (!packet.target || !safeId(packet.target.recipeId) || !safeId(packet.target.builderId)) errors.push(issue('PACKET_TARGET_INVALID', '$.packet.target', 'Packet target is malformed.'));
+      if (!packet.target || !safeId(packet.target.recipeId) || !safeId(packet.target.builderId) || Fabric.CAPABILITY_KINDS.indexOf(packet.target.capabilityKind) < 0) errors.push(issue('PACKET_TARGET_INVALID', '$.packet.target', 'Packet target is malformed.'));
       if (!packet.source || SOURCE_KINDS.indexOf(packet.source.kind) < 0) errors.push(issue('PACKET_SOURCE_INVALID', '$.packet.source.kind', 'Packet source kind is unsupported.'));
       if (!packet.proposalRef || packet.proposalRef.schema !== Fabric.PROPOSAL_SCHEMA || packet.proposalRef.activation !== 'INACTIVE_PROPOSAL' || !safeDigest(packet.proposalRef.digest)) errors.push(issue('PACKET_PROPOSAL_REF_INVALID', '$.packet.proposalRef', 'Packet proposal reference is malformed or active.'));
       var expectedPacketDigest = Fabric.digest(without(packet, 'packetDigest'));
       if (!safeDigest(packet.packetDigest) || packet.packetDigest !== expectedPacketDigest) errors.push(issue('PACKET_DIGEST_MISMATCH', '$.packet.packetDigest', 'Packet digest mismatch.'));
-      if (plain(planValue) && (planValue.intentDigest !== packet.intentRef.digest || planValue.targetRecipeId !== packet.target.recipeId || planValue.builderId !== packet.target.builderId)) errors.push(issue('PLAN_PACKET_MISMATCH', '$.plan', 'READY plan does not bind this packet target.'));
+      if (plain(planValue) && (planValue.intentDigest !== packet.intentRef.digest || planValue.targetRecipeId !== packet.target.recipeId || planValue.builderId !== packet.target.builderId || planValue.capabilityKind !== packet.target.capabilityKind)) errors.push(issue('PLAN_PACKET_MISMATCH', '$.plan', 'READY plan does not bind this packet target and kind.'));
       var expectedPaths = Array.isArray(packet.files) ? packet.files.map(function (row) { return row.path; }).sort() : [];
       var actualPaths = plain(files) ? Object.keys(files).sort() : [];
       if (Fabric.canonicalJson(expectedPaths) !== Fabric.canonicalJson(actualPaths)) errors.push(issue('FILE_SET_MISMATCH', '$.files', 'File map differs from the authority-bearing packet list.'));
       var requiredPaths = Object.keys(FILES).map(function (key) { return FILES[key]; }).sort();
-      if (Fabric.canonicalJson(expectedPaths) !== Fabric.canonicalJson(requiredPaths)) errors.push(issue('FILE_CONTRACT_MISMATCH', '$.packet.files', 'Review packet must contain the exact seven review files.'));
+      if (Fabric.canonicalJson(expectedPaths) !== Fabric.canonicalJson(requiredPaths)) errors.push(issue('FILE_CONTRACT_MISMATCH', '$.packet.files', 'Review packet must contain the exact eight modular review files.'));
       var total = 0;
       (Array.isArray(packet.files) ? packet.files : []).forEach(function (row, index) {
         var at = '$.packet.files[' + index + ']';
@@ -463,6 +494,18 @@
         if (plain(packet) && (!plain(packet.target) || !plain(packet.source) || packet.target.capabilityId !== specification.capabilityId || packet.source.specificationFingerprint !== Verification.fingerprint(specification) || packet.source.verificationPlanFingerprint !== Verification.fingerprint(verificationPlan))) errors.push(issue('PACKET_SOURCE_REF_MISMATCH', '$.packet.source', 'Packet source references differ from the review files.'));
       } catch (error) { errors.push(issue('SOURCE_FILE_INVALID', '$.files', error.message)); }
     }
+    if (plain(files) && own(files, FILES.modularContract)) {
+      try {
+        var modular = JSON.parse(files[FILES.modularContract]);
+        var modularKeys = ['schema', 'id', 'version', 'kind', 'capabilityId', 'runtime', 'portable', 'resultContractPolicy', 'requiredHostCapabilities', 'inputsAndSchemas', 'outputsAndSchemas', 'permissions', 'status', 'installed', 'promoted', 'canon', 'contractDigest'];
+        exactKeys(modular, modularKeys, '$.files.' + FILES.modularContract, errors);
+        var expectedRuntime = proposal && proposal.recipe ? { mode: proposal.recipe.capabilityContract.runtimeMode, entry: proposal.recipe.capabilityContract.entry, operation: proposal.recipe.capabilityContract.operation } : null;
+        var expectedPortable = proposal && proposal.recipe ? { form: proposal.recipe.capabilityContract.portableForm, path: proposal.recipe.capabilityContract.portablePath } : null;
+        if (modular.schema !== 'axm.modular-capability-review-contract/v1' || !plain(packet) || modular.id !== packet.target.recipeId || modular.kind !== packet.target.capabilityKind || modular.capabilityId !== packet.target.capabilityId || !proposal || modular.version !== proposal.recipe.version || Fabric.canonicalJson(modular.runtime) !== Fabric.canonicalJson(expectedRuntime) || Fabric.canonicalJson(modular.portable) !== Fabric.canonicalJson(expectedPortable) || modular.resultContractPolicy !== proposal.recipe.capabilityContract.resultContractPolicy || Fabric.canonicalJson(modular.requiredHostCapabilities) !== Fabric.canonicalJson(proposal.recipe.capabilityContract.requiredHostCapabilities) || (specification && (Fabric.canonicalJson(modular.inputsAndSchemas) !== Fabric.canonicalJson(specification.inputsAndSchemas) || Fabric.canonicalJson(modular.outputsAndSchemas) !== Fabric.canonicalJson(specification.outputsAndSchemas))) || !Array.isArray(modular.permissions) || modular.permissions.length !== 0 || modular.status !== 'INACTIVE_PROPOSAL' || modular.installed !== false || modular.promoted !== false || modular.canon !== false || modular.contractDigest !== Fabric.digest(without(modular, 'contractDigest'))) errors.push(issue('MODULAR_CONTRACT_INVALID', '$.files.' + FILES.modularContract, 'Modular capability contract is unbound, kind-drifted, authority-bearing, or digest-invalid.'));
+        if (modular.kind === 'HAND' && (!plain(modular.runtime) || modular.runtime.mode !== 'EXECUTABLE' || modular.runtime.entry !== 'capability.js' || !plain(modular.portable) || modular.portable.form !== 'NONE' || modular.portable.path !== null)) errors.push(issue('MODULAR_HAND_CONTRACT_INVALID', '$.files.' + FILES.modularContract, 'HAND review contract must bind executable capability.js and no portable skill form.'));
+        if (modular.kind === 'SKILL' && (!plain(modular.portable) || modular.portable.form !== 'SKILL_MD' || modular.portable.path !== 'SKILL.md')) errors.push(issue('MODULAR_SKILL_CONTRACT_INVALID', '$.files.' + FILES.modularContract, 'SKILL review contract must bind portable SKILL.md.'));
+      } catch (error) { errors.push(issue('MODULAR_CONTRACT_FILE_INVALID', '$.files.' + FILES.modularContract, error.message)); }
+    }
     if (plain(files) && own(files, FILES.checklist)) {
       try {
         var checklist = JSON.parse(files[FILES.checklist]);
@@ -480,9 +523,9 @@
       exactKeys(receipt.intentRef, ['schema', 'id', 'digest'], '$.receipt.intentRef', errors);
       exactKeys(receipt.planRef, ['schema', 'digest'], '$.receipt.planRef', errors);
       exactKeys(receipt.packetRef, ['schema', 'id', 'digest'], '$.receipt.packetRef', errors);
-      exactKeys(receipt.output, ['recipeId', 'builderId', 'fileCount', 'totalBytes'], '$.receipt.output', errors);
+      exactKeys(receipt.output, ['recipeId', 'builderId', 'capabilityKind', 'fileCount', 'totalBytes'], '$.receipt.output', errors);
       if (receipt.planRef.schema !== PLAN_SCHEMA || receipt.planRef.digest !== (planValue && planValue.planDigest)) errors.push(issue('RECEIPT_PLAN_MISMATCH', '$.receipt.planRef', 'Receipt does not bind the exact plan.'));
-      if (!plain(packet) || !plain(packet.target) || !Array.isArray(packet.files) || Fabric.canonicalJson(receipt.intentRef) !== Fabric.canonicalJson(packet.intentRef) || receipt.packetRef.schema !== PACKET_SCHEMA || receipt.packetRef.id !== packet.id || receipt.output.recipeId !== packet.target.recipeId || receipt.output.builderId !== packet.target.builderId || receipt.output.fileCount !== packet.files.length || receipt.output.totalBytes !== packet.totalBytes) errors.push(issue('RECEIPT_OUTPUT_MISMATCH', '$.receipt', 'Receipt output does not bind the exact packet.'));
+      if (!plain(packet) || !plain(packet.target) || !Array.isArray(packet.files) || Fabric.canonicalJson(receipt.intentRef) !== Fabric.canonicalJson(packet.intentRef) || receipt.packetRef.schema !== PACKET_SCHEMA || receipt.packetRef.id !== packet.id || receipt.output.recipeId !== packet.target.recipeId || receipt.output.builderId !== packet.target.builderId || receipt.output.capabilityKind !== packet.target.capabilityKind || receipt.output.fileCount !== packet.files.length || receipt.output.totalBytes !== packet.totalBytes) errors.push(issue('RECEIPT_OUTPUT_MISMATCH', '$.receipt', 'Receipt output does not bind the exact packet and modular kind.'));
       var expectedReceiptDigest = Fabric.digest(without(receipt, 'receiptDigest'));
       if (!safeDigest(receipt.receiptDigest) || receipt.receiptDigest !== expectedReceiptDigest) errors.push(issue('RECEIPT_DIGEST_MISMATCH', '$.receipt.receiptDigest', 'Foundry receipt digest mismatch.'));
       if (!plain(packet) || receipt.packetRef.digest !== packet.packetDigest) errors.push(issue('RECEIPT_PACKET_MISMATCH', '$.receipt.packetRef', 'Receipt does not bind this packet.'));
@@ -557,7 +600,7 @@ function build(parameters) {
   const firstRequired = (parameters.schema.required || [])[0];
   if (!firstRequired) throw new Error('pilot schema needs one required property for its generated refusal proof');
   const config = { inputSchemaId: parameters.inputSchemaId, resultSchemaId: parameters.resultSchemaId, schema: parameters.schema, maxInputBytes: parameters.maxInputBytes, firstRequired, exampleValid: exampleFor(parameters.schema) };
-  return { source: validatorSource(config), selftest: validatorSelftest(config), provides: [parameters.resultSchemaId], consumes: [parameters.inputSchemaId], summary: 'Closed deterministic JSON Schema subset validator.' };
+  return { capabilityKind: 'HAND', source: validatorSource(config), selftest: validatorSelftest(config), provides: [parameters.resultSchemaId], consumes: [parameters.inputSchemaId], summary: 'Closed deterministic JSON Schema subset validator.' };
 }
 module.exports = { id: BUILDER_ID, build, inspectSchema };
 `);
@@ -601,6 +644,77 @@ process.stdout.write('closed JSON schema validator builder contribution selftest
 `);
   }
 
+  function skillBuilderSource() {
+    return normalizedSource(`'use strict';
+const BUILDER_ID = 'bounded-review-procedure-skill-v1';
+function exact(value, keys, label) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(label + ' must be an object');
+  Object.keys(value).forEach((key) => { if (!keys.includes(key)) throw new Error(label + ' contains unsupported key ' + key); });
+  keys.forEach((key) => { if (!Object.prototype.hasOwnProperty.call(value, key)) throw new Error(label + ' is missing ' + key); });
+}
+function list(value, label, max) {
+  if (!Array.isArray(value) || !value.length || value.length > max) throw new Error(label + ' must contain 1 to ' + max + ' entries');
+  const seen = new Set();
+  return value.map((row) => { const text = String(row || '').trim(); if (!text || text.length > 240 || seen.has(text)) throw new Error(label + ' entries must be unique bounded text'); seen.add(text); return text; });
+}
+function id(value, label) { const text=String(value || ''); if (!/^[a-z][a-z0-9-]{2,79}$/.test(text)) throw new Error(label + ' is invalid'); return text; }
+function contractId(value, label) { const text=String(value || ''); if (!/^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$/.test(text)) throw new Error(label + ' is invalid'); return text; }
+function renderMarkdown(config) {
+  return ['---','name: '+config.skillId,'status: EXPERIMENTAL','capability: '+config.receiptSchema,'---','','# '+config.title,'',config.purpose,'','## Inputs',''].concat(config.inputs.map((row)=>'- '+row),['','## Procedure',''],config.procedure.map((row,index)=>(index+1)+'. '+row),['','## Outputs',''],config.outputs.map((row)=>'- '+row),['','## Boundaries',''],config.boundaries.map((row)=>'- '+row),['','## Authority','','- Host mediated: true','- Authority inherited: false','- Installed: false','- Promoted: false','- CANON: false','']).join('\\n');
+}
+function renderSelftest(config) {
+  return "'use strict';\\nconst assert=require('assert'),fs=require('fs');const md=fs.readFileSync('SKILL.md','utf8'),contract=JSON.parse(fs.readFileSync('skill.contract.json','utf8'));assert(md.includes('# "+config.title.replace(/'/g,"\\'")+"'));assert.equal(contract.schema,'axm.portable-skill-contract/v1');assert.equal(contract.kind,'SKILL');assert.equal(contract.authorityInherited,false);assert.equal(contract.installed,false);assert.equal(contract.promoted,false);assert.equal(contract.canon,false);process.stdout.write('portable skill selftest PASS\\\\n');\\n";
+}
+function build(parameters) {
+  exact(parameters, ['skillId','title','purpose','inputs','outputs','procedure','boundaries','receiptSchema','maxSteps'], 'parameters');
+  const config={skillId:id(parameters.skillId,'skillId'),title:String(parameters.title||'').trim(),purpose:String(parameters.purpose||'').trim(),inputs:list(parameters.inputs,'inputs',16),outputs:list(parameters.outputs,'outputs',16),procedure:list(parameters.procedure,'procedure',32),boundaries:list(parameters.boundaries,'boundaries',16),receiptSchema:contractId(parameters.receiptSchema,'receiptSchema'),maxSteps:parameters.maxSteps};
+  if (!config.title || config.title.length > 120 || !config.purpose || config.purpose.length > 500) throw new Error('title or purpose is invalid');
+  if (!Number.isInteger(config.maxSteps) || config.maxSteps < 1 || config.maxSteps > 32 || config.procedure.length > config.maxSteps) throw new Error('maxSteps is outside the bounded range');
+  const descriptor={schema:'axm.portable-skill-contract/v1',id:config.skillId,kind:'SKILL',status:'EXPERIMENTAL',runtimeMode:'HOST_MEDIATED',portableForm:'SKILL.md',operation:'followProcedure',inputs:config.inputs,outputs:config.outputs,receiptSchema:config.receiptSchema,requiredHostCapabilities:['human-or-agent-procedure-runner/v1'],authorityInherited:false,installed:false,promoted:false,canon:false};
+  const portableFiles={'SKILL.md':renderMarkdown(config),'skill.contract.json':JSON.stringify(descriptor,null,2)+'\\n','skill.selftest.js':renderSelftest(config)};
+  return {capabilityKind:'SKILL',portableFiles:portableFiles,provides:[config.receiptSchema],consumes:['axm.capability-review-input/v1'],summary:'Portable bounded review procedure skill.'};
+}
+module.exports={id:BUILDER_ID,build};
+`);
+  }
+
+  function skillBuilderSelftestSource() {
+    return normalizedSource(`'use strict';
+const assert=require('assert'),fs=require('fs'),os=require('os'),path=require('path'),childProcess=require('child_process');
+const builder=require('./builder-contribution.js');
+const parameters={skillId:'closed-capability-review',title:'Closed capability review',purpose:'Follow a bounded evidence-first review procedure without inheriting authority.',inputs:['axm.capability-review-input/v1'],outputs:['axm.capability-review-receipt/v1'],procedure:['Confirm exact contract identity.','Map each claim to an admissible evidence surface.','Record PASS, FAIL, or UNKNOWN without promotion.'],boundaries:['No source execution.','No inherited permission.','No install, promotion, merge, or CANON change.'],receiptSchema:'axm.capability-review-receipt/v1',maxSteps:8};
+const first=builder.build(parameters),second=builder.build(parameters);assert.deepStrictEqual(first,second);assert.equal(first.capabilityKind,'SKILL');assert.deepStrictEqual(Object.keys(first.portableFiles).sort(),['SKILL.md','skill.contract.json','skill.selftest.js']);
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'axm-portable-skill-builder-test-'));
+try { Object.keys(first.portableFiles).forEach((file)=>fs.writeFileSync(path.join(root,file),first.portableFiles[file],{flag:'wx'})); const run=childProcess.spawnSync(process.execPath,[path.join(root,'skill.selftest.js')],{cwd:root,encoding:'utf8',timeout:5000}); assert.equal(run.status,0,run.stderr); assert.match(run.stdout,/PASS/); }
+finally { const resolved=path.resolve(root); if(path.dirname(resolved)!==path.resolve(os.tmpdir())||!path.basename(resolved).startsWith('axm-portable-skill-builder-test-')) throw new Error('temporary cleanup boundary refused'); fs.rmSync(resolved,{recursive:true,force:true}); }
+assert.throws(()=>builder.build(Object.assign({},parameters,{maxSteps:2})),/maxSteps/);assert.throws(()=>builder.build(Object.assign({},parameters,{surprise:true})),/unsupported key/);
+process.stdout.write('portable skill builder contribution selftest PASS\\n');
+`);
+  }
+
+  function exampleSkill() {
+    var specification = {
+      schema: 'axm.missing-hand-specification/v1', capability: 'capability.specify.missing-hand/v1', capabilityId: 'capability.review.closed-procedure-skill/v1', gapType: 'SKILL', status: 'DRAFT',
+      purpose: 'Build a portable bounded capability-review procedure that a human or authorized agent host can follow without repeated model invention.',
+      inputsAndSchemas: ['axm.capability-review-input/v1'], outputsAndSchemas: ['axm.capability-review-receipt/v1'], sideEffects: ['none; the skill is portable instruction and contract material only'], permissionsAndConsent: ['no inherited authority; the host must separately possess and re-check every capability it uses'],
+      resourceBudget: 'At most 32 procedure steps, 16 inputs, 16 outputs, 16 boundaries, and 128 KiB per portable file.', failureAndRecovery: 'Malformed or over-budget declarations are refused before portable files are assembled; no partial files are retained by the Foundry.',
+      compatibilityVersionContract: 'The pilot emits axm.portable-skill-contract/v1 plus SKILL.md and refuses undeclared authoring fields.', verificationContract: 'Prove exact portable files, deterministic bytes, closed input refusal, bounded steps, external selftest behavior, and no authority inheritance.',
+      promotionGate: 'Mike reviews the skill procedure, builder source, evidence, catalog diff, and host boundary before any activation or merge.',
+      provenance: { sourceSchema: 'axm.capability-gap-report/v1', sourceRequirementIds: ['modular-hand-skill-extension'], foundry: 'hand-specification-foundry/v0.1', generatedAt: '2026-08-23T11:20:00.000Z' },
+      truth: { implementationNeutral: true, installed: false, executed: false, authorityGranted: false, promoted: false, canon: false, prototypeOrMockClosesGap: false }
+    };
+    var verificationPlan=Verification.buildPlan(specification,'2026-08-23T11:21:00.000Z');
+    var parameters={skillId:'closed-capability-review',title:'Closed capability review',purpose:'Follow a bounded evidence-first review procedure without inheriting authority.',inputs:['axm.capability-review-input/v1'],outputs:['axm.capability-review-receipt/v1'],procedure:['Confirm exact contract identity.','Map each claim to an admissible evidence surface.','Record PASS, FAIL, or UNKNOWN without promotion.'],boundaries:['No source execution.','No inherited permission.','No install, promotion, merge, or CANON change.'],receiptSchema:'axm.capability-review-receipt/v1',maxSteps:8};
+    return sealIntent({id:'closed-capability-review-skill-recipe-pilot',sourceKind:'CODEX',specification:specification,verificationPlan:verificationPlan,recipe:{
+      id:'closed-capability-review-skill',version:'0.1.0',title:'Closed Capability Review Skill',summary:'Compile a portable bounded evidence-first review procedure and exact skill contract.',family:'capability-review',capabilityKind:'SKILL',
+      capabilityContract:{runtimeMode:'HOST_MEDIATED',entry:null,operation:'followProcedure',portableForm:'SKILL_MD',portablePath:'SKILL.md',resultContractPolicy:'BUILDER_PROVIDES_EXACT',requiredHostCapabilities:['human-or-agent-procedure-runner/v1']},builderId:'bounded-review-procedure-skill-v1',
+      candidatePolicy:{defaultCount:1,defaultVariantId:'portable-default',variants:[{id:'portable-default',title:'Portable host-mediated procedure',parameterOverrides:{}}]},
+      parameterSpec:{skillId:{type:'string',required:true,pattern:'^[a-z][a-z0-9-]{2,79}$',maxLength:80,description:'Portable skill id.'},title:{type:'string',required:true,maxLength:120,description:'Portable skill title.'},purpose:{type:'string',required:true,maxLength:500,description:'Bounded skill purpose.'},inputs:{type:'array',required:true,maxBytes:8192,description:'Exact input contracts.'},outputs:{type:'array',required:true,maxBytes:8192,description:'Exact output contracts.'},procedure:{type:'array',required:true,maxBytes:16384,description:'Ordered bounded procedure.'},boundaries:{type:'array',required:true,maxBytes:8192,description:'Explicit authority and behavior boundaries.'},receiptSchema:{type:'string',required:true,pattern:'^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$',maxLength:180,description:'Exact receipt contract.'},maxSteps:{type:'integer',required:true,minimum:1,maximum:32,description:'Maximum procedure steps.'}},
+      exampleRequest:{id:'closed-capability-review-skill-example',family:'capability-review',purpose:'Build the portable review procedure pilot.',recipeId:'closed-capability-review-skill',variantId:null,parameters:parameters,source:{kind:'HUMAN',ref:'modular-hand-skill-extension'}},
+      boundaries:['portable instruction plus contract only','host re-checks authority at use time','no model, network, filesystem, install, promotion, merge, Foundation, or CANON authority'],verifiers:['Capability Fabric inactive proposal inspection','portable file exact-set verification','trusted-host builder contribution selftest','deterministic rebuild parity','authority inheritance refusal']
+    },contribution:{builderId:'bounded-review-procedure-skill-v1',builderSource:skillBuilderSource(),builderSelftestSource:skillBuilderSelftestSource()}});
+  }
+
   function example() {
     var specification = {
       schema: 'axm.missing-hand-specification/v1',
@@ -634,6 +748,8 @@ process.stdout.write('closed JSON schema validator builder contribution selftest
         title: 'Closed JSON Schema Validator',
         summary: 'Compiles one source-reviewed closed JSON Schema subset into a bounded deterministic validation capability.',
         family: 'schema-validation',
+        capabilityKind: 'HAND',
+        capabilityContract: { runtimeMode: 'EXECUTABLE', entry: 'capability.js', operation: 'validate', portableForm: 'NONE', portablePath: null, resultContractPolicy: 'BUILDER_PROVIDES_EXACT', requiredHostCapabilities: [] },
         builderId: 'closed-json-schema-validator-v1',
         candidatePolicy: { defaultCount: 1, defaultVariantId: 'bounded-default', variants: [{ id: 'bounded-default', title: 'Bounded default validator', parameterOverrides: {} }] },
         parameterSpec: {
@@ -671,6 +787,7 @@ process.stdout.write('closed JSON schema validator builder contribution selftest
     forge: forge,
     verify: verify,
     example: example,
+    exampleSkill: exampleSkill,
     clone: clone,
     digest: Fabric.digest,
     canonicalJson: Fabric.canonicalJson

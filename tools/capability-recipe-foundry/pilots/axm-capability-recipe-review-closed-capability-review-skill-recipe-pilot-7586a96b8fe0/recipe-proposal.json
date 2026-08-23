@@ -1,0 +1,148 @@
+{
+  "proposalDigest": "sha256:acd5678b5327fda7c2a2f1280fb4fa26f41cfd188e4788c1df3c2e539ee532ba",
+  "recipe": {
+    "activation": "INACTIVE_PROPOSAL",
+    "boundaries": [
+      "portable instruction plus contract only",
+      "host re-checks authority at use time",
+      "no model, network, filesystem, install, promotion, merge, Foundation, or CANON authority"
+    ],
+    "builderId": "bounded-review-procedure-skill-v1",
+    "candidatePolicy": {
+      "defaultCount": 1,
+      "defaultVariantId": "portable-default",
+      "variants": [
+        {
+          "id": "portable-default",
+          "parameterOverrides": {},
+          "title": "Portable host-mediated procedure"
+        }
+      ]
+    },
+    "capabilityContract": {
+      "entry": null,
+      "operation": "followProcedure",
+      "portableForm": "SKILL_MD",
+      "portablePath": "SKILL.md",
+      "requiredHostCapabilities": [
+        "human-or-agent-procedure-runner/v1"
+      ],
+      "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+      "runtimeMode": "HOST_MEDIATED"
+    },
+    "capabilityKind": "SKILL",
+    "exampleRequest": {
+      "family": "capability-review",
+      "id": "closed-capability-review-skill-example",
+      "parameters": {
+        "boundaries": [
+          "No source execution.",
+          "No inherited permission.",
+          "No install, promotion, merge, or CANON change."
+        ],
+        "inputs": [
+          "axm.capability-review-input/v1"
+        ],
+        "maxSteps": 8,
+        "outputs": [
+          "axm.capability-review-receipt/v1"
+        ],
+        "procedure": [
+          "Confirm exact contract identity.",
+          "Map each claim to an admissible evidence surface.",
+          "Record PASS, FAIL, or UNKNOWN without promotion."
+        ],
+        "purpose": "Follow a bounded evidence-first review procedure without inheriting authority.",
+        "receiptSchema": "axm.capability-review-receipt/v1",
+        "skillId": "closed-capability-review",
+        "title": "Closed capability review"
+      },
+      "purpose": "Build the portable review procedure pilot.",
+      "recipeId": "closed-capability-review-skill",
+      "source": {
+        "kind": "HUMAN",
+        "ref": "modular-hand-skill-extension"
+      },
+      "variantId": null
+    },
+    "family": "capability-review",
+    "id": "closed-capability-review-skill",
+    "parameterSpec": {
+      "boundaries": {
+        "description": "Explicit authority and behavior boundaries.",
+        "maxBytes": 8192,
+        "required": true,
+        "type": "array"
+      },
+      "inputs": {
+        "description": "Exact input contracts.",
+        "maxBytes": 8192,
+        "required": true,
+        "type": "array"
+      },
+      "maxSteps": {
+        "description": "Maximum procedure steps.",
+        "maximum": 32,
+        "minimum": 1,
+        "required": true,
+        "type": "integer"
+      },
+      "outputs": {
+        "description": "Exact output contracts.",
+        "maxBytes": 8192,
+        "required": true,
+        "type": "array"
+      },
+      "procedure": {
+        "description": "Ordered bounded procedure.",
+        "maxBytes": 16384,
+        "required": true,
+        "type": "array"
+      },
+      "purpose": {
+        "description": "Bounded skill purpose.",
+        "maxLength": 500,
+        "required": true,
+        "type": "string"
+      },
+      "receiptSchema": {
+        "description": "Exact receipt contract.",
+        "maxLength": 180,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+        "required": true,
+        "type": "string"
+      },
+      "skillId": {
+        "description": "Portable skill id.",
+        "maxLength": 80,
+        "pattern": "^[a-z][a-z0-9-]{2,79}$",
+        "required": true,
+        "type": "string"
+      },
+      "title": {
+        "description": "Portable skill title.",
+        "maxLength": 120,
+        "required": true,
+        "type": "string"
+      }
+    },
+    "reviewPolicy": {
+      "activation": "source-review-and-merge",
+      "canonAuthority": "NONE",
+      "sharedUseRequires": "MIKE_TOBI_MERGE"
+    },
+    "schema": "axm.capability-recipe-draft/v1",
+    "summary": "Compile a portable bounded evidence-first review procedure and exact skill contract.",
+    "title": "Closed Capability Review Skill",
+    "verifiers": [
+      "Capability Fabric inactive proposal inspection",
+      "portable file exact-set verification",
+      "trusted-host builder contribution selftest",
+      "deterministic rebuild parity",
+      "authority inheritance refusal"
+    ],
+    "version": "0.1.0"
+  },
+  "schema": "axm.capability-recipe-proposal/v1",
+  "sourceKind": "CODEX"
+}

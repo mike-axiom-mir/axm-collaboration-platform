@@ -1,8 +1,9 @@
-# Closed JSON Schema Validator — inactive recipe review packet
+# Closed Capability Review Skill — inactive recipe review packet
 
 Status: `EXPERIMENTAL` · activation: `INACTIVE_PROPOSAL`
+Kind: `SKILL` · runtime: `HOST_MEDIATED`
 
-Build a bounded deterministic validator for an explicitly supplied closed JSON Schema subset without network access or repeated model compute.
+Build a portable bounded capability-review procedure that a human or authorized agent host can follow without repeated model invention.
 
 This packet binds one exact capability specification and verification plan to one authored builder contribution and one Capability Fabric recipe draft.
 

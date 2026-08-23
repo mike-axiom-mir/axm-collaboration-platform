@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.modular-capability-review-contract/v1",
+  "title": "AXM inactive modular capability review contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "version", "kind", "capabilityId", "runtime", "portable", "resultContractPolicy", "requiredHostCapabilities", "inputsAndSchemas", "outputsAndSchemas", "permissions", "status", "installed", "promoted", "canon", "contractDigest"],
+  "properties": {
+    "schema": { "const": "axm.modular-capability-review-contract/v1" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "kind": { "enum": ["HAND", "SKILL"] },
+    "capabilityId": { "type": "string", "minLength": 3, "maxLength": 180 },
+    "runtime": { "type": "object", "additionalProperties": false, "required": ["mode", "entry", "operation"], "properties": { "mode": { "enum": ["EXECUTABLE", "HOST_MEDIATED", "INSTRUCTION_ONLY"] }, "entry": { "type": ["string", "null"] }, "operation": { "type": "string" } } },
+    "portable": { "type": "object", "additionalProperties": false, "required": ["form", "path"], "properties": { "form": { "enum": ["NONE", "SKILL_MD"] }, "path": { "type": ["string", "null"] } } },
+    "resultContractPolicy": { "const": "BUILDER_PROVIDES_EXACT" },
+    "requiredHostCapabilities": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "inputsAndSchemas": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "outputsAndSchemas": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "permissions": { "type": "array", "maxItems": 0 },
+    "status": { "const": "INACTIVE_PROPOSAL" },
+    "installed": { "const": false },
+    "promoted": { "const": false },
+    "canon": { "const": false },
+    "contractDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

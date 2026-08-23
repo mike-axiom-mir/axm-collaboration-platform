@@ -19,7 +19,7 @@ function resealPacket(packet) { const copy = Foundry.clone(packet); delete copy.
   check(intent.verificationPlan.target.specificationFingerprint === require('../hand-verification-lab/hand-verification-core.js').fingerprint(intent.specification), 'verification plan is bound to the exact specification');
 
   const plan = Foundry.plan(intent);
-  check(plan.status === 'READY' && plan.outputStatus === 'INACTIVE_PROPOSAL' && plan.outputFileCount === 7, 'valid intent plans one inactive seven-file packet');
+  check(plan.status === 'READY' && plan.capabilityKind === 'HAND' && plan.outputStatus === 'INACTIVE_PROPOSAL' && plan.outputFileCount === 8, 'valid HAND intent plans one inactive eight-file modular packet');
   check(plan.executesBuilderSource === false && plan.executesGeneratedCode === false, 'planning executes no authored or generated source');
 
   const first = Foundry.forge(intent);
@@ -27,7 +27,7 @@ function resealPacket(packet) { const copy = Foundry.clone(packet); delete copy.
   check(first.status === 'COMPLETE' && first.packet.status === 'EXPERIMENTAL_REVIEW_PACKET', 'Foundry completes one experimental review packet');
   check(Foundry.canonicalJson(first) === Foundry.canonicalJson(second), 'identical sealed input produces a byte-identical result');
   check(Foundry.verify(first).ok, 'complete review packet verifies');
-  check(first.packet.files.length === 7 && first.packet.totalBytes <= Foundry.MAX_PACKET_BYTES, 'packet stays inside exact file and byte ceilings');
+  check(first.packet.files.length === 8 && first.packet.totalBytes <= Foundry.MAX_PACKET_BYTES, 'packet stays inside exact file and byte ceilings');
   check(Object.values(first.authority).every((value) => value === false) && Object.values(first.packet.authority).every((value) => value === false), 'result and packet carry no authority');
   check(first.receipt.truth.builderSourceExecuted === false && first.receipt.truth.generatedCodeExecuted === false && first.receipt.truth.testsExecuted === false, 'receipt refuses execution claims');
 
@@ -38,6 +38,8 @@ function resealPacket(packet) { const copy = Foundry.clone(packet); delete copy.
   const catalog = Fabric.loadCatalog();
   check(!catalog.recipes.some((recipe) => recipe.id === proposal.recipe.id), 'pilot recipe is absent from the active recipe catalog');
   check(proposal.sourceKind === 'CODEX' && proposal.recipe.activation === 'INACTIVE_PROPOSAL', 'proposal keeps truthful Codex provenance and inactive activation');
+  const handContract = JSON.parse(first.files[Foundry.FILES.modularContract]);
+  check(proposal.recipe.capabilityKind === 'HAND' && handContract.kind === 'HAND' && handContract.runtime.entry === 'capability.js' && handContract.portable.form === 'NONE', 'HAND proposal binds an executable modular contract without a portable skill form');
 
   const stale = Foundry.clone(intent); stale.recipe.summary += ' drift';
   check(!Foundry.validateIntent(stale).ok && Foundry.plan(stale).status === 'HELD', 'stale intent digest becomes a typed authoring hold');
@@ -61,8 +63,22 @@ function resealPacket(packet) { const copy = Foundry.clone(packet); delete copy.
   const injected = Foundry.clone(first); injected.files['install.js'] = "'use strict';\n"; injected.packet.files.push({ path: 'install.js', bytes: Buffer.byteLength(injected.files['install.js']), digest: Foundry.digest(injected.files['install.js']) }); injected.packet.files.sort((left, right) => left.path.localeCompare(right.path)); injected.packet.totalBytes += Buffer.byteLength(injected.files['install.js']); resealPacket(injected.packet); injected.receipt.packetRef.digest = injected.packet.packetDigest; injected.receipt.output.fileCount += 1; injected.receipt.output.totalBytes = injected.packet.totalBytes; const injectedReceipt = Foundry.clone(injected.receipt); delete injectedReceipt.receiptDigest; injected.receipt.receiptDigest = Foundry.digest(injectedReceipt);
   check(!Foundry.verify(injected).ok, 'rehashing cannot add an undeclared executable file to the exact review packet');
 
+  const skillIntent = Foundry.exampleSkill();
+  check(Foundry.validateIntent(skillIntent).ok && skillIntent.recipe.capabilityKind === 'SKILL', 'portable SKILL pilot satisfies the same closed authoring route');
+  const skillFirst = Foundry.forge(skillIntent), skillSecond = Foundry.forge(skillIntent);
+  check(Foundry.canonicalJson(skillFirst) === Foundry.canonicalJson(skillSecond) && Foundry.verify(skillFirst).ok, 'SKILL packet rebuild is byte-identical and verifies');
+  const skillProposal = JSON.parse(skillFirst.files[Foundry.FILES.proposal]), skillContract = JSON.parse(skillFirst.files[Foundry.FILES.modularContract]);
+  check(skillProposal.recipe.capabilityKind === 'SKILL' && skillContract.kind === 'SKILL' && skillContract.portable.form === 'SKILL_MD' && skillContract.portable.path === 'SKILL.md' && skillContract.runtime.mode === 'HOST_MEDIATED' && skillContract.runtime.entry === null, 'SKILL proposal binds portable SKILL.md and an explicit host-mediated runtime');
+  check(Fabric.importRecipeProposal(skillProposal).ok && !Fabric.ALLOWED_BUILDERS.includes(skillProposal.recipe.builderId) && !Fabric.loadCatalog().recipes.some((recipe) => recipe.id === skillProposal.recipe.id), 'SKILL remains an inactive proposal outside compiled builders and active catalog');
+  const skillAuthorityDrift = Foundry.clone(skillFirst), skillModular = JSON.parse(skillAuthorityDrift.files[Foundry.FILES.modularContract]); skillModular.installed = true; skillAuthorityDrift.files[Foundry.FILES.modularContract] = JSON.stringify(skillModular, null, 2) + '\n';
+  check(!Foundry.verify(skillAuthorityDrift).ok, 'portable SKILL contract authority drift is refused');
+  const skillSemanticDrift = Foundry.clone(skillFirst), semanticContract = JSON.parse(skillSemanticDrift.files[Foundry.FILES.modularContract]); semanticContract.runtime.operation = 'promote'; delete semanticContract.contractDigest; semanticContract.contractDigest = Foundry.digest(semanticContract); skillSemanticDrift.files[Foundry.FILES.modularContract] = JSON.stringify(semanticContract, null, 2) + '\n'; const semanticRow = skillSemanticDrift.packet.files.find((row) => row.path === Foundry.FILES.modularContract); const oldBytes = semanticRow.bytes; semanticRow.bytes = Buffer.byteLength(skillSemanticDrift.files[Foundry.FILES.modularContract]); semanticRow.digest = Foundry.digest(skillSemanticDrift.files[Foundry.FILES.modularContract]); skillSemanticDrift.packet.totalBytes += semanticRow.bytes - oldBytes; resealPacket(skillSemanticDrift.packet); skillSemanticDrift.receipt.packetRef.digest = skillSemanticDrift.packet.packetDigest; skillSemanticDrift.receipt.output.totalBytes = skillSemanticDrift.packet.totalBytes; const semanticReceipt = Foundry.clone(skillSemanticDrift.receipt); delete semanticReceipt.receiptDigest; skillSemanticDrift.receipt.receiptDigest = Foundry.digest(semanticReceipt);
+  check(!Foundry.verify(skillSemanticDrift).ok, 'rehashing cannot drift SKILL runtime semantics away from the reviewed proposal');
+
   const machinePilot = await Machine.run({ action: 'pilot.example' });
   check(machinePilot.ok && machinePilot.builderSourceExecuted === false && machinePilot.providerCalled === false, 'machine pilot route is pure and provider-free');
+  const machineSkillPilot = await Machine.run({ action: 'pilot.example', input: { capabilityKind: 'SKILL' } });
+  check(machineSkillPilot.ok && machineSkillPilot.intent.recipe.capabilityKind === 'SKILL' && machineSkillPilot.builderSourceExecuted === false, 'machine pilot route exposes the SKILL contract without execution');
   const machineBuild = await Machine.run({ action: 'packet.forge', input: { intent: intent } });
   check(machineBuild.ok && machineBuild.result.packet.packetDigest === first.packet.packetDigest, 'machine door assembles the exact same packet');
   const forbidden = await Machine.run({ action: 'builder.execute' });

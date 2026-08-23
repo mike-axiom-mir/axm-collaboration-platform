@@ -19,6 +19,7 @@ function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
   check(catalog.recipes.length===3,'initial catalog has code, creation, and adapter recipes');
+  check(catalog.recipes.every(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}),'reviewed active recipes are explicitly typed as executable HAND capabilities');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.defaultVariantId==='standard';}),'every initial recipe explicitly defaults to one standard candidate');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
 
@@ -26,13 +27,15 @@ function main(){
   catalog.recipes.forEach(function(recipe){
     const request=Fabric.sealRequest(recipe.exampleRequest,true),requestCheck=Fabric.validateRequest(request),plan=Fabric.planBuild(request,catalog),one=Fabric.build(request,catalog),two=Fabric.build(request,catalog);
     check(requestCheck.ok,recipe.id+' example seals into a valid request');
-    check(plan.status==='READY'&&plan.candidateCount===1,recipe.id+' exact recipe plans one candidate');
+    check(plan.status==='READY'&&plan.candidateCount===1&&plan.recipeRef.capabilityKind===recipe.capabilityKind,recipe.id+' exact recipe plans one kind-bound candidate');
     check(one.status==='COMPLETE'&&one.candidates.length===1,recipe.id+' builds one detached candidate');
     check(one.generatedCodeExecuted===false,recipe.id+' build does not execute generated code');
     check(Fabric.canonicalJson(one)===Fabric.canonicalJson(two),recipe.id+' rebuild is byte-identical');
     check(Fabric.verifyCandidate(one.candidates[0]).ok,recipe.id+' package verifies');
     check(Object.values(one.candidates[0].package.authority).every(function(value){return value===false;}),recipe.id+' package carries no authority');
     check(one.candidates[0].files['selftest.js']&&one.candidates[0].files['module-bundle.json'],recipe.id+' emits external tests and exact bundle');
+    const modular=JSON.parse(one.candidates[0].files['modular-capability.contract.json']);
+    const modularBody=Fabric.clone(modular);delete modularBody.contractDigest;check(modular.kind===recipe.capabilityKind&&modular.contractDigest===Fabric.digest(modularBody),recipe.id+' emits a digest-bound modular capability contract');
     packages[recipe.id]=one.candidates[0];
   });
 
@@ -63,6 +66,10 @@ function main(){
   check(proposalResult.providerCalled===false,'proposal inspection invokes no provider');
   const humanProposal=Fabric.clone(proposal);humanProposal.sourceKind='HUMAN';const codexProposal=Fabric.clone(proposal);codexProposal.sourceKind='CODEX';
   check(Fabric.importRecipeProposal(humanProposal).ok&&Fabric.importRecipeProposal(codexProposal).ok,'human and Codex authors retain truthful inactive proposal provenance');
+  const skillProposal=Fabric.clone(proposal);skillProposal.recipe.id='portable-review-skill';skillProposal.recipe.family='capability-review';skillProposal.recipe.capabilityKind='SKILL';skillProposal.recipe.capabilityContract={runtimeMode:'HOST_MEDIATED',entry:null,operation:'followProcedure',portableForm:'SKILL_MD',portablePath:'SKILL.md',resultContractPolicy:'BUILDER_PROVIDES_EXACT',requiredHostCapabilities:['human-or-agent-procedure-runner/v1']};skillProposal.recipe.exampleRequest.id='portable-review-skill-example';skillProposal.recipe.exampleRequest.family=skillProposal.recipe.family;skillProposal.recipe.exampleRequest.recipeId=skillProposal.recipe.id;skillProposal.proposalDigest=Fabric.digest(skillProposal.recipe);
+  check(Fabric.importRecipeProposal(skillProposal).ok&&Fabric.importRecipeProposal(skillProposal).active===false,'first-class SKILL proposal is accepted only as inactive review material');
+  const invalidSkill=Fabric.clone(skillProposal);invalidSkill.recipe.capabilityContract.portablePath=null;invalidSkill.proposalDigest=Fabric.digest(invalidSkill.recipe);
+  check(!Fabric.importRecipeProposal(invalidSkill).ok,'SKILL proposal without portable SKILL.md binding is refused');
   const activeClaim=Fabric.clone(proposal);activeClaim.recipe.activation=Fabric.ACTIVE_RECIPE;activeClaim.proposalDigest=Fabric.digest(activeClaim.recipe);const activeClaimResult=Fabric.importRecipeProposal(activeClaim);
   check(!activeClaimResult.ok&&activeClaimResult.errors.some(function(row){return row.code==='PROPOSAL_ACTIVATION_REFUSED';}),'proposal inspection refuses an active-recipe claim');
   const malformedProposal={schema:Fabric.PROPOSAL_SCHEMA,sourceKind:'AI',recipe:{},proposalDigest:Fabric.digest({})};
@@ -86,6 +93,8 @@ function main(){
   check(!promotedCheck.ok&&promotedCheck.errors.some(function(row){return row.code==='DETACHED_AUTHORITY_CONFLICT';}),'rehashing cannot hide descriptor promotion authority');
   const byteLie=Fabric.clone(packages['pure-json-transform']);byteLie.package.files[0].bytes+=1;const byteLieBody=Fabric.clone(byteLie.package);delete byteLieBody.packageDigest;byteLie.package.packageDigest=Fabric.digest(byteLieBody);
   check(!Fabric.verifyCandidate(byteLie).ok,'rehashing cannot hide false file byte declarations');
+  const kindDrift=Fabric.clone(packages['pure-json-transform']),modularDrift=JSON.parse(kindDrift.files['modular-capability.contract.json']);modularDrift.runtime.operation='promote';delete modularDrift.contractDigest;modularDrift.contractDigest=Fabric.digest(modularDrift);kindDrift.files['modular-capability.contract.json']=JSON.stringify(modularDrift,null,2)+'\n';resealCandidate(kindDrift);
+  check(!Fabric.verifyCandidate(kindDrift).ok&&Fabric.verifyCandidate(kindDrift).errors.some(function(row){return row.code==='MODULAR_CONTRACT_DRIFT';}),'rehashing cannot drift modular HAND runtime semantics');
   process.stdout.write('Capability Fabric shared selftest PASS · '+passed+' checks\n');
 }
 

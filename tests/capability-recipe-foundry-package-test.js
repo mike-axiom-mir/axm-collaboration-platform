@@ -37,36 +37,40 @@ function main() {
     check(!/openai|anthropic|gemini|api[_ -]?key/i.test(app), 'browser workbench has no provider or credential path');
     new Function(app); check(true, 'browser workbench script parses');
 
-    ['authoring-intent.schema.json', 'review-packet.schema.json', 'foundry-receipt.schema.json'].forEach((file) => {
+    ['authoring-intent.schema.json', 'modular-capability-review-contract.schema.json', 'review-packet.schema.json', 'foundry-receipt.schema.json'].forEach((file) => {
       JSON.parse(fs.readFileSync(path.join(toolRoot, 'schemas', file), 'utf8'));
       passed += 1; process.stdout.write('PASS ' + file + ' parses\n');
     });
 
     const intent = Foundry.example();
+    const skillIntent = Foundry.exampleSkill();
     const first = Foundry.forge(intent);
     const second = Foundry.forge(intent);
     check(Foundry.canonicalJson(first) === Foundry.canonicalJson(second), 'pilot packet rebuild is byte-identical');
     check(first.receipt.truth.builderSourceExecuted === false && first.receipt.truth.testsExecuted === false, 'Foundry receipt honestly leaves executable evidence unrun');
-    const staticPilotRoot = fs.readdirSync(path.join(toolRoot, 'pilots'), { withFileTypes: true }).filter((entry) => entry.isDirectory() && entry.name.startsWith(Cli.ROOT_PREFIX));
-    check(staticPilotRoot.length === 1, 'repository contains one detached materialized pilot packet');
-    const staticRoot = path.join(toolRoot, 'pilots', staticPilotRoot[0].name);
-    const staticPacket = JSON.parse(fs.readFileSync(path.join(staticRoot, 'packet.json'), 'utf8'));
-    const staticReceipt = JSON.parse(fs.readFileSync(path.join(staticRoot, 'foundry-receipt.json'), 'utf8'));
-    const staticFiles = Object.fromEntries(staticPacket.files.map((row) => [row.path, fs.readFileSync(path.join(staticRoot, row.path), 'utf8')]));
-    const staticResult = { schema: first.schema, version: first.version, status: 'COMPLETE', plan: first.plan, packet: staticPacket, files: staticFiles, receipt: staticReceipt, authority: first.authority };
-    check(Foundry.verify(staticResult).ok && staticPacket.packetDigest === first.packet.packetDigest, 'committed pilot is the exact deterministic Foundry output');
+    const staticPilotRoots = fs.readdirSync(path.join(toolRoot, 'pilots'), { withFileTypes: true }).filter((entry) => entry.isDirectory() && entry.name.startsWith(Cli.ROOT_PREFIX) && fs.existsSync(path.join(toolRoot, 'pilots', entry.name, 'packet.json')));
+    check(staticPilotRoots.length === 2, 'repository contains detached materialized HAND and SKILL pilot packets');
+    [intent, skillIntent].forEach((pilotIntent) => {
+      const expected = Foundry.forge(pilotIntent);
+      const staticRoot = staticPilotRoots.map((entry) => path.join(toolRoot, 'pilots', entry.name)).find((rootPath) => JSON.parse(fs.readFileSync(path.join(rootPath, 'packet.json'), 'utf8')).target.capabilityKind === pilotIntent.recipe.capabilityKind);
+      const staticPacket = JSON.parse(fs.readFileSync(path.join(staticRoot, 'packet.json'), 'utf8'));
+      const staticReceipt = JSON.parse(fs.readFileSync(path.join(staticRoot, 'foundry-receipt.json'), 'utf8'));
+      const staticFiles = Object.fromEntries(staticPacket.files.map((row) => [row.path, fs.readFileSync(path.join(staticRoot, row.path), 'utf8')]));
+      const staticResult = { schema: expected.schema, version: expected.version, status: 'COMPLETE', plan: expected.plan, packet: staticPacket, files: staticFiles, receipt: staticReceipt, authority: expected.authority };
+      check(Foundry.verify(staticResult).ok && staticPacket.packetDigest === expected.packet.packetDigest, 'committed ' + pilotIntent.recipe.capabilityKind + ' pilot is the exact deterministic Foundry output');
+    });
     const materialized = Cli.materialize(first, root);
-    check(materialized.status === 'MATERIALIZED_FOR_SOURCE_REVIEW' && materialized.fileCount === 9, 'CLI materializes exactly seven review files plus packet and receipt');
+    check(materialized.status === 'MATERIALIZED_FOR_SOURCE_REVIEW' && materialized.fileCount === 10, 'CLI materializes exactly eight HAND review files plus packet and receipt');
     check(materialized.builderSourceExecuted === false && materialized.generatedCodeExecuted === false && materialized.testsExecuted === false, 'materialization executes no authored or generated code');
     const names = fs.readdirSync(materialized.directory).sort();
-    check(names.includes('builder-contribution.js') && names.includes('builder-contribution.selftest.js') && names.includes('packet.json') && names.includes('foundry-receipt.json'), 'materialized packet contains source, external selftest, descriptor, and receipt');
+    check(names.includes('builder-contribution.js') && names.includes('builder-contribution.selftest.js') && names.includes('modular-capability.contract.json') && names.includes('packet.json') && names.includes('foundry-receipt.json'), 'materialized packet contains source, modular contract, external selftest, packet, and receipt');
 
     const explicitRun = childProcess.spawnSync(process.execPath, [path.join(materialized.directory, 'builder-contribution.selftest.js')], { encoding: 'utf8', timeout: 10000 });
     check(explicitRun.status === 0 && /builder contribution selftest PASS/.test(explicitRun.stdout), 'pilot builder and generated validator pass when explicitly run by trusted test host');
     const builder = require(path.join(materialized.directory, 'builder-contribution.js'));
     const parameters = intent.recipe.exampleRequest.parameters;
     const built = builder.build(parameters);
-    check(built.source === builder.build(parameters).source && built.selftest === builder.build(parameters).selftest, 'pilot builder output is deterministic under independent host execution');
+    check(built.source === builder.build(parameters).source && built.selftest === builder.build(parameters).selftest && built.capabilityKind === 'HAND', 'HAND pilot builder output is deterministic and explicitly typed');
     check(built.provides[0] === parameters.resultSchemaId && built.consumes[0] === parameters.inputSchemaId, 'pilot builder declares exact consumed and produced contracts');
     assert.throws(() => builder.build(Object.assign({}, parameters, { schema: Object.assign({}, parameters.schema, { additionalProperties: true }) })), /additionalProperties must be false/);
     passed += 1; process.stdout.write('PASS pilot builder refuses an open object schema\n');
@@ -74,9 +78,23 @@ function main() {
     passed += 1; process.stdout.write('PASS pilot builder refuses an excessive input budget\n');
 
     const proposal = JSON.parse(fs.readFileSync(path.join(materialized.directory, 'recipe-proposal.json'), 'utf8'));
+    check(Fabric.validateCompiledArtifact(proposal.recipe, built).ok, 'Capability Fabric accepts the HAND builder artifact contract');
     const inspected = Fabric.importRecipeProposal(proposal);
     check(inspected.ok && inspected.active === false && inspected.requiresSourceReview && inspected.requiresMikeMerge, 'materialized proposal remains inactive and source-review held');
     check(!Fabric.ALLOWED_BUILDERS.includes(proposal.recipe.builderId) && !Fabric.loadCatalog().recipes.some((recipe) => recipe.id === proposal.recipe.id), 'materialization does not activate the builder or catalog recipe');
+
+    const skillResult = Foundry.forge(skillIntent), skillMaterialized = Cli.materialize(skillResult, root);
+    check(skillMaterialized.fileCount === 10 && skillMaterialized.builderSourceExecuted === false, 'CLI materializes the eight-file SKILL review packet without execution');
+    const skillRun = childProcess.spawnSync(process.execPath, [path.join(skillMaterialized.directory, 'builder-contribution.selftest.js')], { cwd: skillMaterialized.directory, encoding: 'utf8', timeout: 10000 });
+    check(skillRun.status === 0 && /portable skill builder contribution selftest PASS/.test(skillRun.stdout), 'portable SKILL builder and emitted skill selftest pass only in the explicit trusted host');
+    const skillBuilder = require(path.join(skillMaterialized.directory, 'builder-contribution.js'));
+    const builtSkill = skillBuilder.build(skillIntent.recipe.exampleRequest.parameters);
+    const skillProposal = JSON.parse(fs.readFileSync(path.join(skillMaterialized.directory, 'recipe-proposal.json'), 'utf8'));
+    check(Fabric.validateCompiledArtifact(skillProposal.recipe, builtSkill).ok && builtSkill.capabilityKind === 'SKILL', 'Capability Fabric accepts the exact portable SKILL artifact contract');
+    check(Object.keys(builtSkill.portableFiles).sort().join(',') === 'SKILL.md,skill.contract.json,skill.selftest.js', 'SKILL builder emits the exact portable three-file set');
+    const portableContract = JSON.parse(builtSkill.portableFiles['skill.contract.json']);
+    check(portableContract.authorityInherited === false && portableContract.installed === false && portableContract.promoted === false && portableContract.canon === false, 'portable SKILL contract inherits no authority');
+    check(!Fabric.ALLOWED_BUILDERS.includes(skillProposal.recipe.builderId) && !Fabric.loadCatalog().recipes.some((recipe) => recipe.id === skillProposal.recipe.id), 'SKILL builder and recipe remain inactive and absent from the active catalog');
     assert.throws(() => Cli.materialize(first, root), (error) => error && error.receipt && error.receipt.code === 'OUTPUT_OVERWRITE_REFUSED');
     passed += 1; process.stdout.write('PASS CLI refuses exact packet overwrite\n');
 

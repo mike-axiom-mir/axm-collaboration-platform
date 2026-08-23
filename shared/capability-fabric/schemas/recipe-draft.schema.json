@@ -4,7 +4,7 @@
   "title": "AXM inactive capability recipe draft v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "id", "version", "title", "summary", "family", "builderId", "activation", "reviewPolicy", "candidatePolicy", "parameterSpec", "exampleRequest", "boundaries", "verifiers"],
+  "required": ["schema", "id", "version", "title", "summary", "family", "capabilityKind", "capabilityContract", "builderId", "activation", "reviewPolicy", "candidatePolicy", "parameterSpec", "exampleRequest", "boundaries", "verifiers"],
   "properties": {
     "schema": { "const": "axm.capability-recipe-draft/v1" },
     "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
@@ -12,6 +12,8 @@
     "title": { "type": "string", "minLength": 1, "maxLength": 120 },
     "summary": { "type": "string", "minLength": 1, "maxLength": 500 },
     "family": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+    "capabilityKind": { "enum": ["HAND", "SKILL"] },
+    "capabilityContract": { "$ref": "modular-capability-recipe-contract.schema.json" },
     "builderId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
     "activation": { "const": "INACTIVE_PROPOSAL" },
     "reviewPolicy": {

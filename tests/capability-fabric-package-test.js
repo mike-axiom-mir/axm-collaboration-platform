@@ -39,6 +39,8 @@ function main(){
       check(Fabric.canonicalJson(first)===Fabric.canonicalJson(second),recipe.id+' complete build receipt is deterministic');
       check(first.candidates.length===1,recipe.id+' creates one candidate by default');
       check(Fabric.verifyCandidate(candidate).ok,recipe.id+' package verification passes');
+      const modular=JSON.parse(candidate.files['modular-capability.contract.json']);
+      check(candidate.package.capabilityKind===recipe.capabilityKind&&modular.kind===recipe.capabilityKind&&modular.installed===false&&modular.promoted===false&&modular.canon===false,recipe.id+' candidate binds its modular HAND kind without authority');
       check(candidate.files['index.html'].includes('executes no generated capability code'),recipe.id+' candidate inspection entry stays static');
       new Function(candidate.files['capability.js']);new Function(candidate.files['selftest.js']);check(true,recipe.id+' emitted JavaScript parses');
       const materialized=Cli.materialize(candidate,root);check(materialized.nursery.status==='READY_FOR_LATER_INTAKE',recipe.id+' materializes as Nursery-ready structure');

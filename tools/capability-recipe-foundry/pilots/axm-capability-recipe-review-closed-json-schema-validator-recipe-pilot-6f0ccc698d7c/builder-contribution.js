@@ -57,6 +57,6 @@ function build(parameters) {
   const firstRequired = (parameters.schema.required || [])[0];
   if (!firstRequired) throw new Error('pilot schema needs one required property for its generated refusal proof');
   const config = { inputSchemaId: parameters.inputSchemaId, resultSchemaId: parameters.resultSchemaId, schema: parameters.schema, maxInputBytes: parameters.maxInputBytes, firstRequired, exampleValid: exampleFor(parameters.schema) };
-  return { source: validatorSource(config), selftest: validatorSelftest(config), provides: [parameters.resultSchemaId], consumes: [parameters.inputSchemaId], summary: 'Closed deterministic JSON Schema subset validator.' };
+  return { capabilityKind: 'HAND', source: validatorSource(config), selftest: validatorSelftest(config), provides: [parameters.resultSchemaId], consumes: [parameters.inputSchemaId], summary: 'Closed deterministic JSON Schema subset validator.' };
 }
 module.exports = { id: BUILDER_ID, build, inspectSchema };

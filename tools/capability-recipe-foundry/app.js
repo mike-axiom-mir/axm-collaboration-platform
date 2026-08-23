@@ -13,10 +13,19 @@
     try { return JSON.parse($('intent-json').value); }
     catch (error) { notice('INVALID JSON · ' + error.message, 'bad'); return null; }
   }
+  function resetOutput(intent) {
+    $('capability-kind').textContent = intent.recipe.capabilityKind;
+    $('recipe-id').textContent = '—';
+    $('builder-id').textContent = '—';
+    $('file-count').textContent = '0 files';
+    $('proposal-digest').textContent = 'No digest';
+    $('packet-digest').textContent = 'No digest';
+  }
   function loadPilot() {
     state.intent = Foundry.example();
     state.result = null;
     $('intent-json').value = JSON.stringify(state.intent, null, 2);
+    resetOutput(state.intent);
     $('packet-result').hidden = true;
     $('output-status').textContent = 'NOT BUILT';
     $('output-status').className = 'chip hold';
@@ -24,6 +33,19 @@
     $('holds').replaceChildren(document.createElement('li'));
     $('holds').firstChild.textContent = 'Pilot loaded. Validate its exact sealed digest and source bindings.';
     notice('SEALED PILOT · ' + state.intent.intentDigest, 'hold');
+  }
+  function loadSkillPilot() {
+    state.intent = Foundry.exampleSkill();
+    state.result = null;
+    $('intent-json').value = JSON.stringify(state.intent, null, 2);
+    resetOutput(state.intent);
+    $('packet-result').hidden = true;
+    $('output-status').textContent = 'NOT BUILT';
+    $('output-status').className = 'chip hold';
+    $('holds').className = 'holds';
+    $('holds').replaceChildren(document.createElement('li'));
+    $('holds').firstChild.textContent = 'Portable SKILL pilot loaded. Validate its exact sealed digest and modular contract.';
+    notice('SEALED SKILL PILOT · ' + state.intent.intentDigest, 'hold');
   }
   function reseal() {
     var parsed = parseEditor();
@@ -40,7 +62,7 @@
     if (plan.status === 'READY') {
       list.className = 'holds good';
       var ready = document.createElement('li');
-      ready.textContent = 'READY · exact specification and verification plan bound · inactive proposal only · 7 review files';
+      ready.textContent = 'READY · exact specification, verification plan, and modular kind bound · inactive proposal only · 8 review files';
       list.append(ready);
       $('output-status').textContent = 'READY';
       $('output-status').className = 'chip good';
@@ -70,6 +92,7 @@
     }
     state.result = Foundry.forge(parsed);
     var result = state.result;
+    $('capability-kind').textContent = result.packet.target.capabilityKind;
     $('recipe-id').textContent = result.packet.target.recipeId;
     $('builder-id').textContent = result.packet.target.builderId;
     $('file-count').textContent = result.packet.files.length + ' files';
@@ -110,6 +133,7 @@
   function start() {
     if (!Foundry || !Zip) throw new Error('Capability Recipe Foundry dependencies are unavailable.');
     $('load-pilot').addEventListener('click', loadPilot);
+    $('load-skill-pilot').addEventListener('click', loadSkillPilot);
     $('reseal').addEventListener('click', reseal);
     $('route').addEventListener('click', route);
     $('download').addEventListener('click', download);

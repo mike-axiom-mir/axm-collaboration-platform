@@ -4,23 +4,25 @@
   "title": "AXM detached capability candidate package v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "id", "version", "status", "requestDigest", "catalogDigest", "recipeRef", "variantId", "compilationDigest", "files", "totalBytes", "authority", "packageDigest"],
+  "required": ["schema", "id", "version", "status", "capabilityKind", "requestDigest", "catalogDigest", "recipeRef", "variantId", "compilationDigest", "files", "totalBytes", "authority", "packageDigest"],
   "properties": {
     "schema": { "const": "axm.capability-candidate-package/v1" },
     "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
     "version": { "const": "v0.1" },
     "status": { "const": "EXPERIMENTAL" },
+    "capabilityKind": { "enum": ["HAND", "SKILL"] },
     "requestDigest": { "$ref": "#/$defs/digest" },
     "catalogDigest": { "$ref": "#/$defs/digest" },
     "recipeRef": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "version", "digest", "builderId"],
+      "required": ["id", "version", "digest", "builderId", "capabilityKind"],
       "properties": {
         "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
         "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
         "digest": { "$ref": "#/$defs/digest" },
-        "builderId": { "enum": ["pure-json-transform-v1", "svg-status-badge-v1", "workshop-direction-adapter-v1"] }
+        "builderId": { "enum": ["pure-json-transform-v1", "svg-status-badge-v1", "workshop-direction-adapter-v1"] },
+        "capabilityKind": { "enum": ["HAND", "SKILL"] }
       }
     },
     "variantId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },

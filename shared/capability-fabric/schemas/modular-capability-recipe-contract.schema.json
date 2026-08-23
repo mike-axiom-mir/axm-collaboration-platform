@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.modular-capability-recipe-contract/v1",
+  "title": "AXM modular capability recipe contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runtimeMode", "entry", "operation", "portableForm", "portablePath", "resultContractPolicy", "requiredHostCapabilities"],
+  "properties": {
+    "runtimeMode": { "enum": ["EXECUTABLE", "HOST_MEDIATED", "INSTRUCTION_ONLY"] },
+    "entry": { "type": ["string", "null"] },
+    "operation": { "type": "string", "pattern": "^[a-z][a-zA-Z0-9]{1,63}$" },
+    "portableForm": { "enum": ["NONE", "SKILL_MD"] },
+    "portablePath": { "type": ["string", "null"] },
+    "resultContractPolicy": { "const": "BUILDER_PROVIDES_EXACT" },
+    "requiredHostCapabilities": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 180 }
+    }
+  }
+}
