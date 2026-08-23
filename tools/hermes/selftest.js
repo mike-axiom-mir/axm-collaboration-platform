@@ -63,6 +63,12 @@ async function stop(child) {
 function testProviderEnvironmentGuard() {
   const policy = json('axm-policy.example.json');
   check(RuntimePolicy.validatePolicy(policy).ok, 'default policy validates');
+  check(policy.limits.max_run_minutes === 15, 'default wall-clock watchdog is 15 minutes');
+  const invalidWatchdog = JSON.parse(JSON.stringify(policy)); invalidWatchdog.limits.max_run_minutes = 0;
+  check(!RuntimePolicy.validatePolicy(invalidWatchdog).ok, 'zero-minute watchdog is rejected');
+  const excessiveWatchdog = JSON.parse(JSON.stringify(policy)); excessiveWatchdog.limits.max_run_minutes = 1441;
+  check(!RuntimePolicy.validatePolicy(excessiveWatchdog).ok, 'watchdog above 24 hours is rejected');
+
   const source = {
     PATH: process.env.PATH || '/usr/bin',
     OPENROUTER_API_KEY: 'REMOTE_SECRET', GH_TOKEN: 'GITHUB_SECRET',
@@ -100,7 +106,7 @@ function testRuntimeBoundary(tempRoot) {
 
   const run = RunLedger.createRun({
     runtimeRoot: path.join(tempRoot, 'runtime'), sourceLock: json('hermes-source.lock.json'), sourceVerified: true,
-    policy, policyFile, configFile, args: ['-q', 'DO_NOT_STORE_PROMPT'], environmentReport: { mode: 'local_only', inherited_secret_count: 2, explicitly_restored_secret_count: 1, secret_variable_names_stored: false, network_isolation_claimed: false }
+    policy, policyFile, configFile, args: ['-q', 'DO_NOT_STORE_PROMPT'], environmentReport: { mode: 'local_only', inherited_secret_count: 2, explicitly_restored_secret_count: 1, secret_variable_names_stored: false, network_isolation_claimed: false }, launcherPid: process.pid
   });
   const env = {
     AXM_HERMES_ROOT: ROOT, AXM_HERMES_POLICY_FILE: policyFile, AXM_HERMES_WORKSPACE: workspace,
@@ -158,13 +164,15 @@ function testRuntimeBoundary(tempRoot) {
   const contextResult = hookCall(context, { hook_event_name: 'pre_llm_call', session_id: 'context', extra: { user_message: 'SECRET' } }, env);
   check(typeof contextResult.context === 'string' && /candidate/.test(contextResult.context) && /bypass/.test(contextResult.context) && !contextResult.context.includes('SECRET'), 'AXM context is static and content-free');
 
-  policy.limits.max_tool_calls_per_session = 3; writeJson(policyFile, policy);
+  policy.limits.max_tool_calls_per_session = 3;
+  policy.consent.enabled = false;
+  writeJson(policyFile, policy);
   hookCall(toolReceipt, {
     hook_event_name: 'post_tool_call', tool_name: 'read_file', tool_input: { path: '/private/secret.txt', token: 'DO_NOT_STORE_ME' }, session_id: 'raw-session',
     extra: { turn_id: 'raw-turn', tool_call_id: 'raw-call', status: 'success', duration_ms: 7, result: 'SECRET_RESULT_DO_NOT_STORE' }
   }, env);
   const toolFiles = fs.readdirSync(run.receiptDir).filter(name => name.endsWith('.json'));
-  check(toolFiles.length === 1, 'one independently hashed tool receipt written');
+  check(toolFiles.length === 1, 'tool completion evidence survives mid-run consent revocation');
   const toolText = fs.readFileSync(path.join(run.receiptDir, toolFiles[0]), 'utf8');
   check(!toolText.includes('DO_NOT_STORE_ME') && !toolText.includes('SECRET_RESULT_DO_NOT_STORE') && !toolText.includes('/private/secret.txt') && !toolText.includes('raw-session'), 'tool receipt excludes raw args/results/paths/ids');
   const toolRecord = JSON.parse(toolText);
@@ -181,11 +189,15 @@ function testRuntimeBoundary(tempRoot) {
       api_request_id: 'remote-api', provider: 'openai', model: 'remote-model', base_url: 'https://api.openai.com/v1', user_message: 'REMOTE_SECRET'
     }
   }, env);
+  hookCall(providerReceipt, {
+    hook_event_name: 'pre_api_request', session_id: 'unknown-base', extra: { api_request_id: 'unknown-api', provider: 'custom', model: 'm' }
+  }, env);
   const providerFiles = fs.readdirSync(run.providerReceiptDir).filter(name => name.endsWith('.json'));
-  check(providerFiles.length === 2, 'provider metadata receipts written without request bodies');
+  check(providerFiles.length === 3, 'provider metadata receipts written without request bodies');
   const providers = providerFiles.map(name => JSON.parse(fs.readFileSync(path.join(run.providerReceiptDir, name), 'utf8')));
   check(providers.some(r => r.base_url_scope === 'loopback' && r.policy_mismatch === false), 'loopback provider recorded as local evidence');
   check(providers.some(r => r.base_url_scope === 'remote' && r.policy_mismatch === true), 'remote provider under local_only flagged as policy mismatch');
+  check(providers.some(r => r.base_url_scope === 'unknown' && r.policy_mismatch === false), 'missing provider base URL remains unknown rather than false-remote');
   check(providerFiles.every(name => !fs.readFileSync(path.join(run.providerReceiptDir, name), 'utf8').includes('DO_NOT_STORE_PROVIDER_PROMPT')), 'provider receipts exclude raw prompts');
 
   hookCall(sessionEvent, {
@@ -195,13 +207,32 @@ function testRuntimeBoundary(tempRoot) {
 
   const packet = RunLedger.finalizeRun({
     runId: run.runId, runDir: run.runDir, receiptDir: run.receiptDir, providerReceiptDir: run.providerReceiptDir, sessionEventDir: run.sessionEventDir,
-    reportDir: path.join(tempRoot, 'reports'), sourceLock: json('hermes-source.lock.json'), policyFile, configFile, sourceVerified: true, exitCode: 0, signal: null
+    reportDir: path.join(tempRoot, 'reports'), sourceLock: json('hermes-source.lock.json'), policyFile, configFile,
+    sourceVerified: true, sourceVerifiedAfter: true, exitCode: 0, signal: null, watchdogTimedOut: false
   });
-  check(packet.tool_receipts.count === 1 && packet.provider_receipts.count === 2 && packet.session_events.count === 1, 'Return Packet aggregates run-local evidence');
+  check(packet.tool_receipts.count === 1 && packet.provider_receipts.count === 3 && packet.session_events.count === 1, 'Return Packet aggregates run-local evidence');
   check(packet.provider_receipts.local_only_policy_mismatch_observed === true && packet.integrity_flags.provider_policy_mismatch === true, 'Return Packet carries provider boundary failure flag');
   check(packet.session_events.latest_turn_evidence.completed === true && packet.canon === false && packet.promotion === 'candidate-only', 'Return Packet preserves outcome evidence without promotion');
+  check(packet.integrity_flags.policy_changed_during_run === true && packet.integrity_flags.profile_changed_during_run === false, 'Return Packet detects policy drift while distinguishing stable profile');
+  check(packet.integrity_flags.source_verified_after_run === true && packet.watchdog.max_run_minutes === 15 && packet.watchdog.timed_out === false, 'Return Packet carries source-after-run and watchdog evidence');
   const manifestText = fs.readFileSync(path.join(run.runDir, 'run-manifest.json'), 'utf8');
-  check(!manifestText.includes('DO_NOT_STORE_PROMPT'), 'run manifest stores invocation shape, never raw CLI values');
+  check(!manifestText.includes('DO_NOT_STORE_PROMPT') && manifestText.includes('"max_run_minutes": 15'), 'run manifest stores watchdog and invocation shape, never raw CLI values');
+
+  const watchdogPolicyFile = path.join(tempRoot, 'watchdog-policy.json');
+  const watchdogPolicy = json('axm-policy.example.json');
+  writeJson(watchdogPolicyFile, watchdogPolicy);
+  const watchdogRun = RunLedger.createRun({
+    runtimeRoot: path.join(tempRoot, 'runtime-watchdog'), sourceLock: json('hermes-source.lock.json'), sourceVerified: true,
+    policy: watchdogPolicy, policyFile: watchdogPolicyFile, configFile, args: [], environmentReport: null, launcherPid: process.pid
+  });
+  const watchdogPacket = RunLedger.finalizeRun({
+    runId: watchdogRun.runId, runDir: watchdogRun.runDir, receiptDir: watchdogRun.receiptDir,
+    providerReceiptDir: watchdogRun.providerReceiptDir, sessionEventDir: watchdogRun.sessionEventDir,
+    sourceLock: json('hermes-source.lock.json'), policyFile: watchdogPolicyFile, configFile,
+    sourceVerified: true, sourceVerifiedAfter: true, exitCode: null, signal: 'SIGTERM', watchdogTimedOut: true
+  });
+  check(watchdogPacket.outcome === 'launcher-watchdog-timeout' && watchdogPacket.integrity_flags.watchdog_timeout === true, 'watchdog timeout becomes explicit Return Packet outcome');
+  check(watchdogPacket.watchdog.process_tree_termination_guaranteed === false, 'watchdog refuses fake process-tree termination claim');
 }
 
 async function testLegacyLoopback(tempRoot) {
@@ -238,6 +269,7 @@ async function main() {
   check(/^[0-9a-f]{40}$/.test(sourceLock.commit) && /^[0-9a-f]{40}$/.test(sourceLock.tree), 'source lock pins commit and exact tree');
   check(sourceLock.observed_version === '0.20.5', 'source lock records reviewed upstream version');
   check(policy.posture === 'research' && policy.provider_egress.mode === 'local_only', 'default posture is research with local-only provider credentials');
+  check(policy.limits.max_run_minutes === 15, 'default policy contains hard 15-minute run watchdog');
   check(policy.consent.enabled === false && policy.mode.hub_sandbox === true && policy.mode.external_mode === false, 'default policy is inert inside hub run space');
   Object.entries(policy.capabilities).forEach(([name, enabled]) => check(enabled === false, name + ' defaults off'));
   check(policy.canon.hermes_memory_is_canon === false && policy.canon.hermes_skills_are_canon === false, 'Hermes learning defaults non-canonical');
@@ -247,6 +279,8 @@ async function main() {
   check(/RunLedger\.createRun/.test(bootstrap) && /RunLedger\.finalizeRun/.test(bootstrap), 'launcher wraps each Hermes execution in run capsule and Return Packet');
   check(/repairInterruptedRuns/.test(bootstrap) && /action === 'repair'/.test(bootstrap), 'launcher has explicit crash/config repair path');
   check(/BEGIN AXM MANAGED HERMES RUNTIME/.test(bootstrap) && /backupFile/.test(bootstrap), 'managed hook block is repairable with config backup');
+  check(/max_run_minutes \* 60 \* 1000/.test(bootstrap) && /killSignal: 'SIGTERM'/.test(bootstrap), 'launcher enforces wall-clock watchdog');
+  check(/\^\[A-Za-z0-9_.-\]\+\\s\*:/.test(bootstrap), 'force-repair YAML remover stops at any next top-level key');
   check(/HERMES_YOLO_MODE: ''/.test(bootstrap) && /HERMES_ENABLE_PROJECT_PLUGINS: 'false'/.test(bootstrap), 'launcher disables YOLO and project plugins');
   check(/fail_closed: true/.test(bootstrap), 'pre-tool AXM gate is fail closed');
   check(/const HOST = '127\.0\.0\.1'/.test(runner), 'legacy runner remains loopback-only');
