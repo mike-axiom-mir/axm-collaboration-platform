@@ -1,0 +1,53 @@
+name: Refresh City Views for Hermes PR
+
+on:
+  pull_request:
+    paths:
+      - 'tools/hermes/**'
+      - '.github/workflows/hermes-city-map-refresh.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-city-views:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out PR head branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 1
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.17.0'
+
+      - name: Regenerate deterministic city views
+        run: node scripts/compile-city-graph.js --write
+
+      - name: Commit generated views if changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            registry/generated/city-graph.json \
+            registry/generated/city-modules.json \
+            registry/generated/city-capabilities.jsonl \
+            registry/generated/city-authority-map.json \
+            registry/generated/city-proof-map.json \
+            registry/generated/city-dependencies.json \
+            registry/generated/city-unresolved-edges.json \
+            registry/generated/city-graph.receipt.json \
+            docs/generated/LEGO_CITY_MAP.md
+          if git diff --cached --quiet; then
+            echo 'City views already current.'
+            exit 0
+          fi
+          git config user.name 'AXM generated-view repair'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'generated: refresh city views for Hermes v0.4'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
