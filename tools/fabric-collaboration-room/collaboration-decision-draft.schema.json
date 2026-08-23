@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.collaboration-decision-draft/v1",
+  "title": "AXM Collaboration Decision Draft v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "decision",
+    "goal",
+    "candidateDigest",
+    "note",
+    "consentTier",
+    "reviewSeat",
+    "authority",
+    "effect",
+    "authenticated",
+    "installed",
+    "integrated",
+    "promoted",
+    "canonChanged",
+    "nextGate"
+  ],
+  "properties": {
+    "schema": { "const": "axm.collaboration-decision-draft/v1" },
+    "status": { "const": "UNAUTHENTICATED_DRAFT" },
+    "decision": { "enum": ["HOLD", "ASK_REPAIR", "PREPARE_SANDBOX_TRIAL"] },
+    "goal": { "type": "string", "minLength": 1, "maxLength": 280 },
+    "candidateDigest": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      ]
+    },
+    "note": { "type": "string", "maxLength": 600 },
+    "consentTier": { "enum": ["TIER_0_INSPECT", "TIER_1_REPAIR_REQUEST", "TIER_2_SANDBOX_TRIAL"] },
+    "reviewSeat": { "const": "LOCAL_HUMAN_INPUT_UNVERIFIED" },
+    "authority": { "const": "NONE" },
+    "effect": { "const": "NONE" },
+    "authenticated": { "const": false },
+    "installed": { "const": false },
+    "integrated": { "const": false },
+    "promoted": { "const": false },
+    "canonChanged": { "const": false },
+    "nextGate": {
+      "enum": [
+        "PROPOSAL_OR_EVIDENCE_MUST_CHANGE",
+        "NEW_BOUNDED_REPAIR_REQUEST_REQUIRED",
+        "AUTHENTICATED_HUMAN_DECISION_REQUIRED"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "decision": { "const": "PREPARE_SANDBOX_TRIAL" } } },
+      "then": { "properties": { "candidateDigest": { "type": "string" } } }
+    }
+  ]
+}
