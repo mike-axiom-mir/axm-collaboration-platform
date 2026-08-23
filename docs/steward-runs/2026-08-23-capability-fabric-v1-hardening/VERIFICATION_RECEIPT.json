@@ -1,0 +1,68 @@
+{
+  "$schema": "axm.verification-receipt/v1",
+  "subject": "Capability Fabric v1 hardening",
+  "status": "PASS_WITH_EXISTING_WARNINGS_AND_DECLARED_LIMITS",
+  "workshopStatus": "EXPERIMENTAL",
+  "baseCommit": "609d425ed47aececacf2045f41bc6deecf464c2e",
+  "testedImplementationCommit": "49287c9240a855983aa7a23d3acf25e14192cc89",
+  "focusedChecks": [
+    {
+      "command": "npm run test:capability-fabric",
+      "result": "PASS",
+      "evidence": {
+        "sharedCoreChecks": 54,
+        "machineDoorChecks": 10,
+        "packageChecks": 46,
+        "svgExactOutputProof": "PASS",
+        "svgCandidateDigest": "sha256:478b4c882b5d8be6fc0804fc28399eb3679bec18dd7a7886326a0449d3a51fd9"
+      }
+    },
+    {
+      "command": "npm run test:organ-fabric",
+      "result": "PASS",
+      "evidence": { "sharedCoreChecks": 32, "toolChecks": 6, "packageChecks": 113 }
+    },
+    {
+      "command": "node tests/html-script-syntax-test.js",
+      "result": "PASS_57_OF_57"
+    },
+    {
+      "command": "schema JSON parse and git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "requiredChecks": [
+    { "command": "node verify.js", "result": "PASS_0_FAIL_20_EXISTING_WARNINGS" },
+    { "command": "node hub/hub-selftest.js", "result": "PASS" },
+    { "command": "node hub/route-selftest.js", "result": "PASS" },
+    { "command": "node hub/graft-selftest.js", "result": "PASS" },
+    { "command": "node hub/skin-selftest.js", "result": "PASS" },
+    { "command": "node hub/verify-plus.js", "result": "PASS_WITH_DECLARED_LIMITS" },
+    { "command": "node tests/html-script-syntax-test.js", "result": "PASS" },
+    { "command": "node tests/tool-forge-package-test.js", "result": "PASS" },
+    { "command": "node tools/agent-tool-forge/selftest.js", "result": "PASS_17" },
+    { "command": "node tools/evidence-desk/selftest.js", "result": "PASS_36" }
+  ],
+  "discoveryState": {
+    "tools": 226,
+    "capabilities": 1974,
+    "sourceDigest": "5bcfdd733e825d5e775d3b80949df3a750c5b969f94589555fa37fdac64d1c23",
+    "structuralDigestMatched": true,
+    "stableGeneratedTimestampsPreserved": true
+  },
+  "limits": [
+    "The 20 Workshop warnings match the established baseline: 17 physical-phone QA warnings and 3 pre-existing promotion reverification warnings.",
+    "The broad full tool-readiness audit was not rerun in this hardening pass; its prior receipt remains the source for the 13 named pre-existing non-PASS tools.",
+    "Human-review identity proof remains outside the Fabric; the request flag is a host-supplied claim.",
+    "Generated capability tests were executed only by the explicit external test host, never by the Fabric or CLI.",
+    "Browser responsiveness was emulated at 390 by 844 CSS pixels, not tested on a physical phone."
+  ],
+  "authority": {
+    "installed": false,
+    "registered": false,
+    "staged": false,
+    "promoted": false,
+    "canon": false,
+    "foundationAltered": false
+  }
+}

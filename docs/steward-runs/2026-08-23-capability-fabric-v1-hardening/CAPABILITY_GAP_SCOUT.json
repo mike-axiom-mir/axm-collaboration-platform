@@ -1,0 +1,64 @@
+{
+  "$schema": "axm.capability-gap-scout-receipt/v1",
+  "subject": "Capability Fabric v1 hardening",
+  "overallRoute": "READY_FOR_THREE_ACTIVE_RECIPES_DEGRADED_FOR_UNDECLARED_FAMILIES",
+  "baseCommit": "609d425ed47aececacf2045f41bc6deecf464c2e",
+  "testedImplementationCommit": "49287c9240a855983aa7a23d3acf25e14192cc89",
+  "closedGaps": [
+    {
+      "capabilityId": "contract.build-plan.exact-lineage",
+      "gapType": "CONTRACT",
+      "priorState": "An exported candidate-builder call could receive a caller-forged READY plan.",
+      "route": "Improve the existing builder while preserving its public contract.",
+      "result": "The builder recomputes the exact plan and refuses forged or weakened lineage."
+    },
+    {
+      "capabilityId": "contract.recipe-variant.plan-resolution",
+      "gapType": "CONTRACT",
+      "priorState": "Variant overrides were applied after planning and could throw during compilation.",
+      "route": "Resolve the explicitly named default variant during planning.",
+      "result": "Merged parameters are validated before READY; invalid overrides produce typed holds."
+    },
+    {
+      "capabilityId": "authority.detached-package.policy-verify",
+      "gapType": "AUTHORITY",
+      "priorState": "Hash verification alone could accept a self-consistently rehashed authority-bearing manifest or contract.",
+      "route": "Compose integrity verification with explicit authority-policy checks.",
+      "result": "Descriptor, manifest, compilation, candidate receipt, contract, bundle, byte counts, and not-proven boundaries are checked."
+    },
+    {
+      "capabilityId": "contract.recipe-proposal.inactive-draft",
+      "gapType": "CONTRACT",
+      "priorState": "Proposal inspection accepted under-specified recipe objects and active-looking payloads.",
+      "route": "Add a bounded inactive draft schema and validator.",
+      "result": "Malformed or active-claiming proposals are refused and valid drafts remain inactive."
+    },
+    {
+      "capabilityId": "state.materialization.rollback-fresh-target",
+      "gapType": "HAND",
+      "priorState": "A failed readback or Nursery scan could leave a partial fresh destination.",
+      "route": "Add bounded rollback inside the existing explicit CLI materializer.",
+      "result": "Failure removes only the newly created candidate directory and preserves its parent."
+    }
+  ],
+  "remainingGaps": [
+    {
+      "capabilityId": "authority.human-review.identity-proof",
+      "gapType": "AUTHORITY",
+      "route": "DEGRADED",
+      "reason": "humanReviewed is a host-supplied claim, not cryptographic identity proof. Mike's review and merge gate remain external."
+    },
+    {
+      "capabilityId": "recipe.family.undeclared",
+      "gapType": "SKILL",
+      "route": "BLOCKED_UNTIL_RECIPE_REVIEW",
+      "reason": "Only three source-reviewed builders are compiled. Other capability families require a new inactive draft, source review, and Mike merge."
+    },
+    {
+      "capabilityId": "runtime.future-candidate.general-safety",
+      "gapType": "EVIDENCE",
+      "route": "EXTERNAL_VERIFIER_REQUIRED",
+      "reason": "Static package verification and emitted tests cannot prove arbitrary future runtime or visual fitness."
+    }
+  ]
+}

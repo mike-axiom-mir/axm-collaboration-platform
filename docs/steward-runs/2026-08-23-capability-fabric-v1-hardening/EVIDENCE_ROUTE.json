@@ -1,0 +1,70 @@
+{
+  "$schema": "axm.evidence-route/v1",
+  "subject": "Capability Fabric v1 hardening claims",
+  "testedImplementationCommit": "49287c9240a855983aa7a23d3acf25e14192cc89",
+  "claims": [
+    {
+      "id": "exact-plan-lineage",
+      "kind": "authorization-and-deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Forged and weakened READY plans cannot reach candidate compilation.",
+      "primarySurface": "Adversarial focused execution",
+      "counterevidence": "buildCandidate accepts a caller-modified plan with a recomputed digest.",
+      "observedEvidence": "Both forged and weakened plan calls were refused.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "variant-planning",
+      "kind": "contract",
+      "risk": "medium",
+      "passCondition": "Default overrides can satisfy declared parameters and invalid overrides become typed catalog holds before compilation.",
+      "primarySurface": "Focused deterministic execution",
+      "counterevidence": "Compilation throws after a READY plan.",
+      "observedEvidence": "A valid default override completed; an undeclared override produced CATALOG_HOLD.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "rehash-does-not-grant-authority",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "Self-consistent rehashing cannot hide installation, promotion, permissions, or erased not-proven boundaries.",
+      "primarySurface": "Adversarial package verification",
+      "secondarySurface": "Closed descriptor and JSON schemas",
+      "counterevidence": "A rehashed conflicting package verifies successfully.",
+      "observedEvidence": "Rehashed installed manifests, permission-bearing contracts, promoted descriptors, false byte counts, and weakened evidence routes were refused.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "materialization-recovery",
+      "kind": "recovery",
+      "risk": "medium",
+      "passCondition": "A forced Nursery hold removes the fresh candidate directory and leaves its parent intact.",
+      "primarySurface": "Filesystem integration test",
+      "counterevidence": "Any partial candidate files remain after failure.",
+      "observedEvidence": "Forced NURSERY_HOLD returned and the explicit parent was empty afterward.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "existing-builds-remain-deterministic",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "All three reviewed recipes rebuild identically, verify, materialize, and pass externally executed emitted tests.",
+      "primarySurface": "Focused and package integration suites",
+      "secondarySurface": "Exact SVG output proof",
+      "counterevidence": "Digest drift, verification failure, or emitted-test failure.",
+      "observedEvidence": "All focused checks passed for all three recipes.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "workbench-remains-usable",
+      "kind": "visual-and-interaction",
+      "risk": "medium",
+      "passCondition": "Unreviewed planning shows AUTHORITY_HOLD; reviewed building shows one 12-file candidate; the 390px layout has no collision or horizontal overflow.",
+      "primarySurface": "Live in-app browser states and screenshots",
+      "secondarySurface": "DOM geometry and console inspection",
+      "counterevidence": "Hidden hold, missing candidate, overlap, overflow, or browser errors.",
+      "observedEvidence": "All named states appeared, recipe labels were separated, scrollWidth 375 was below innerWidth 390, and console error/warn count was zero.",
+      "verdict": "PASS"
+    }
+  ]
+}
