@@ -6,6 +6,12 @@
   <title>Deterministic Organ Fabric</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="responsive.css">
+  <style>
+    .archive-row{grid-template-columns:minmax(180px,1fr) minmax(150px,.75fr) minmax(210px,1.2fr) auto}
+    .archive-identity{display:grid;gap:5px}.archive-meta{color:var(--muted);font:10px/1.4 ui-monospace,monospace;text-transform:uppercase}
+    @media(max-width:880px){.archive-row{grid-template-columns:1fr 1fr}.archive-row code,.archive-row button{grid-column:1/-1}}
+    @media(max-width:600px){.archive-row{grid-template-columns:1fr}.archive-row code,.archive-row button{grid-column:auto}}
+  </style>
 </head>
 <body>
   <header class="masthead">
@@ -69,7 +75,7 @@
     </section>
 
     <section id="view-archive" class="view" aria-labelledby="archive-title">
-      <div class="section-head"><div><p class="section-label">04 · Content-addressed memory</p><h2 id="archive-title">Organ Archive</h2></div><p>Objects are immutable; events are durable; this searchable index is rebuildable.</p></div>
+      <div class="section-head"><div><p class="section-label">04 · Content-addressed dormant library</p><h2 id="archive-title">Organ Archive</h2></div><p>Hard-gate-valid organs stay available even when none is selected or currently needed. Archive admission never means runtime admission.</p></div>
       <div class="archive-actions panel">
         <div><strong id="archive-summary">Archive is loading.</strong><p id="archive-reason" class="helper"></p></div>
         <div class="button-row"><button id="verify-archive" class="secondary">Verify archive</button><button id="export-archive" class="secondary">Export pack</button><label class="file-button">Import verified pack<input id="import-archive" type="file" accept="application/json,.json"></label></div>

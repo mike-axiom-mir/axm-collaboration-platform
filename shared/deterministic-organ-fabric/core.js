@@ -48,6 +48,18 @@
     'choose', 'clamp', 'stable_unique', 'stable_union', 'object',
     'transition', 'seeded_select'
   ]);
+  const ORGAN_ARCHIVE_BRIDGE = Object.freeze({
+    moduleId: 'ai-organ-archive',
+    version: '0.9.0',
+    status: 'TEST',
+    contractSchema: 'axm.ai-native-module-contract/v1',
+    contractFileSha256: '7c630f714a961a924a52bf9b2c0e251ba031e0934b75cc1a9562e348c97f36bf',
+    contractCanonicalDigest: 'sha256:42a91fd899191dfb6ded2f54074d874cbc20c7d7a020c082a252775eaae254da',
+    catalogSchema: 'axm.mirror.ai-organ-catalog/v3',
+    portableLibrarySchema: 'axm.mirror.portable-ai-organ-library/v1',
+    dormantComponentSchema: 'axm.mirror.dormant-organ-component/v1',
+    sourceConvention: 'organs/*-organ.js'
+  });
 
   function clone(value) { return JSON.parse(canonicalJson(value)); }
   function pretty(value) { return JSON.stringify(JSON.parse(canonicalJson(value)), null, 2) + '\n'; }
@@ -561,6 +573,76 @@
     const receipt={schema:'axm.organ-selection-receipt/v1',selectedBy:String(mikeLabel||'Mike Tobi'),comparisonDigest:comparison.comparisonDigest,candidateId:candidate.package.id,packageDigest:candidate.package.packageDigest,decision:'SELECT_FOR_IMPLEMENTATION_REVIEW',applied:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false};
     receipt.selectionDigest=digest(receipt);return receipt;
   }
+  function archiveAuthority(){
+    return {loaded:false,executed:false,connected:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false,foundationChanged:false};
+  }
+  function purposeShelves(packId){
+    const shelves={
+      'software-workshop':{primary:'development-repair',useFields:['development-repair','evidence-verification','planning-coordination'],roles:['planner','verifier']},
+      'games-entertainment':{primary:'world-simulation',useFields:['creativity-exploration','planning-coordination','world-simulation'],roles:['planner','producer','simulator']},
+      'creative-production':{primary:'creativity-exploration',useFields:['creativity-exploration','perception-observation','planning-coordination'],roles:['planner','producer']}
+    };
+    return shelves[packId]||{primary:'general-foundation',useFields:['general-foundation'],roles:['producer']};
+  }
+  function safeOrganSourcePath(candidateId){
+    const slug=String(candidateId||'').toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'');
+    if(!slug)throw new Error('Candidate id cannot produce a safe dormant organ source path.');
+    return 'organs/'+slug+'-organ.js';
+  }
+  function projectArchiveStash(candidate){
+    const verification=verifyPackage(candidate);
+    if(!verification.ok)throw new Error('Only an intact candidate package may be projected into the dormant stash.');
+    if(!candidate.evaluation||candidate.evaluation.status!=='VALID')throw new Error('Only a hard-gate-valid candidate may enter the dormant stash.');
+    const source=candidate.files['organ.js'];
+    if(typeof source!=='string')throw new Error('Dormant stash projection requires the standalone organ.js source.');
+    const sourceBytes=utf8Length(source);
+    if(sourceBytes>2097152)throw new Error('Dormant organ source exceeds the target archive source ceiling.');
+    let intent;
+    try{intent=JSON.parse(candidate.files['organ.intent.json']);}catch(error){throw new Error('Dormant stash projection requires a valid normalized intent file.');}
+    if(intent.intentDigest!==candidate.evaluation.intentDigest)throw new Error('Dormant stash intent lineage does not match the evaluation receipt.');
+    const packId=candidate.definition.lineage.pack.id,shelves=purposeShelves(packId),suggestedSourcePath=safeOrganSourcePath(candidate.package.id),sourceSha256=digest(source).slice(7);
+    const basis={
+      schema:'axm.organ-archive-stash-projection/v1',status:'EXPERIMENTAL',packageDigest:candidate.package.packageDigest,candidateId:candidate.package.id,
+      validity:{state:'HARD_GATES_PASSED',evaluationDigest:candidate.evaluation.receiptDigest,qualityClaim:false,humanJudgmentsUnresolved:clone(candidate.evaluation.limitations||[])},
+      archiveState:{disposition:'VALID_DORMANT_LIBRARY',retentionPolicy:'KEEP_WHEN_NO_CURRENT_USE',admissionStatus:'ARCHIVED_NOT_ADMITTED_TO_RUNTIME',startupPolicy:'DORMANT',implementationStatus:'UNSELECTED'},
+      purposeClassification:{state:'INFERRED_UNCONFIRMED',primaryPurposeCategory:shelves.primary,useFields:shelves.useFields.slice().sort(),functionalRoles:shelves.roles.slice().sort(),basis:{fieldPackId:packId,intentDigest:intent.intentDigest,purpose:String(intent.purpose||'')},semanticAuthority:false,compatibilityProof:false,qualityProof:false},
+      source:{packagePath:'organ.js',suggestedTargetPath:suggestedSourcePath,sourceBytes:sourceBytes,sourceSha256:sourceSha256,targetArchiveObjectIdIfImported:digest({sourcePath:suggestedSourcePath,sourceSha256:sourceSha256}).slice(7)},
+      targetCompatibility:clone(ORGAN_ARCHIVE_BRIDGE),
+      authority:archiveAuthority(),
+      boundary:'This is a deterministic dormant-library projection for a hard-gate-valid detached candidate. It is not execution, connection, installation, runtime admission, implementation selection, promotion, a quality verdict, or CANON.'
+    };
+    const projection=Object.assign({},basis,{stashDigest:digest(basis)});
+    return projection;
+  }
+  function verifyArchiveStashProjection(projection,candidate){
+    const errors=[];
+    if(!projection||projection.schema!=='axm.organ-archive-stash-projection/v1')errors.push(issue('STASH_SCHEMA_INVALID','$.schema','Expected dormant stash projection v1.'));
+    else{
+      if(projection.stashDigest!==digest(withoutKey(projection,'stashDigest')))errors.push(issue('STASH_DIGEST_MISMATCH','$.stashDigest','Dormant stash projection digest mismatch.'));
+      if(!projection.validity||projection.validity.state!=='HARD_GATES_PASSED'||projection.validity.qualityClaim!==false)errors.push(issue('STASH_VALIDITY_INVALID','$.validity','Dormant stash validity must remain limited to hard-gate passage.'));
+      if(!projection.archiveState||projection.archiveState.disposition!=='VALID_DORMANT_LIBRARY'||projection.archiveState.retentionPolicy!=='KEEP_WHEN_NO_CURRENT_USE'||projection.archiveState.admissionStatus!=='ARCHIVED_NOT_ADMITTED_TO_RUNTIME'||projection.archiveState.startupPolicy!=='DORMANT'||projection.archiveState.implementationStatus!=='UNSELECTED')errors.push(issue('STASH_NOT_DORMANT','$.archiveState','Archive projection gained an active or selected state.'));
+      if(canonicalJson(projection.authority||{})!==canonicalJson(archiveAuthority()))errors.push(issue('STASH_AUTHORITY_EXCEEDED','$.authority','Dormant stash projection authority ceiling changed.'));
+      if(!projection.purposeClassification||projection.purposeClassification.state!=='INFERRED_UNCONFIRMED'||projection.purposeClassification.semanticAuthority!==false||projection.purposeClassification.compatibilityProof!==false||projection.purposeClassification.qualityProof!==false)errors.push(issue('STASH_CLASSIFICATION_AUTHORITY_EXCEEDED','$.purposeClassification','Purpose shelves must remain inferred and non-authoritative.'));
+      if(canonicalJson(projection.targetCompatibility||{})!==canonicalJson(ORGAN_ARCHIVE_BRIDGE))errors.push(issue('STASH_TARGET_LINEAGE_STALE','$.targetCompatibility','Organ Archive bridge lineage is not current.'));
+      if(!projection.source||!/^organs\/[a-z0-9-]+-organ\.js$/.test(projection.source.suggestedTargetPath||'')||!/^[a-f0-9]{64}$/.test(projection.source.sourceSha256||'')||!/^[a-f0-9]{64}$/.test(projection.source.targetArchiveObjectIdIfImported||''))errors.push(issue('STASH_SOURCE_INVALID','$.source','Dormant source handoff identity is invalid.'));
+      if(candidate){try{const rebuilt=projectArchiveStash(candidate);if(canonicalJson(rebuilt)!==canonicalJson(projection))errors.push(issue('STASH_REBUILD_DRIFT','$','Dormant stash projection does not reproduce from its candidate.'));}catch(error){errors.push(issue('STASH_CANDIDATE_INVALID','$',String(error.message||error)));}}
+    }
+    return {schema:'axm.organ-archive-stash-verification/v1',ok:errors.length===0,errors:errors,stashDigest:projection&&projection.stashDigest||null};
+  }
+  function buildArchiveStashEnvelope(candidate,projection){
+    const stash=projection||projectArchiveStash(candidate),check=verifyArchiveStashProjection(stash,candidate);
+    if(!check.ok)throw new Error('Dormant stash envelope refused: '+canonicalJson(check.errors));
+    const basis={
+      schema:'axm.organ-archive-stash-envelope/v1',status:'EXPERIMENTAL',envelopeKind:'DORMANT_ORGAN_SOURCE_HANDOFF',
+      sourcePackage:{packageDigest:candidate.package.packageDigest,candidateId:candidate.package.id,definitionDigest:candidate.definition.definitionDigest,evaluationDigest:candidate.evaluation.receiptDigest},
+      stashProjection:clone(stash),
+      sourceArtifact:{path:stash.source.suggestedTargetPath,bytes:stash.source.sourceBytes,sha256:stash.source.sourceSha256,content:candidate.files['organ.js']},
+      target:{moduleId:ORGAN_ARCHIVE_BRIDGE.moduleId,version:ORGAN_ARCHIVE_BRIDGE.version,contractCanonicalDigest:ORGAN_ARCHIVE_BRIDGE.contractCanonicalDigest,acceptance:'EXPLICIT_HOST_IMPORT_AND_NORMAL_ARCHIVE_GATES_REQUIRED'},
+      authority:archiveAuthority(),
+      boundary:'This portable envelope is review material. A receiving host must explicitly place and scan the source through its normal archive gates; this envelope never writes to Mirror and grants no load, execution, connection, admission, installation, selection, promotion, or CANON authority.'
+    };
+    return Object.assign({},basis,{envelopeDigest:digest(basis)});
+  }
   function parseSentence(sentence,packs,preferredPackId){
     const text=String(sentence||'').trim(),lower=text.toLowerCase();
     if(!text)return {schema:'axm.organ-intent-preview/v1',status:'PREVIEW_REQUIRED',draft:null,unresolved:[{code:'PURPOSE_MISSING',message:'Describe the organ purpose.'}],warnings:[]};
@@ -588,6 +670,7 @@
     canonicalJson:canonicalJson,digest:digest,clone:clone,sealIntent:sealIntent,validateIntent:validateIntent,validatePack:validatePack,
     validateGraph:validateGraph,executeGraph:executeGraph,runDefinition:runDefinition,makeDefinition:makeDefinition,evaluateDefinition:evaluateDefinition,
     buildPackage:buildPackage,verifyPackage:verifyPackage,generateCandidates:generateCandidates,compareCandidates:compareCandidates,
-    selectCandidate:selectCandidate,parseSentence:parseSentence,importProposal:importProposal,portSchema:portSchema
+    selectCandidate:selectCandidate,parseSentence:parseSentence,importProposal:importProposal,portSchema:portSchema,
+    ORGAN_ARCHIVE_BRIDGE:ORGAN_ARCHIVE_BRIDGE,projectArchiveStash:projectArchiveStash,verifyArchiveStashProjection:verifyArchiveStashProjection,buildArchiveStashEnvelope:buildArchiveStashEnvelope
   };
 });
