@@ -42,3 +42,14 @@ jobs:
           find . -type f -name '*.js' -print0 | xargs -0 -n1 node --check
           node --check ../../.github/scripts/verify-axm-native-web-session.js
           node --check ../../.github/scripts/audit-axm-native-web-security.js
+      - name: Build source-manifest repair candidate
+        if: failure()
+        run: node scripts/build-source-manifest.js --write
+      - name: Preserve source-manifest repair candidate
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axm-native-web-source-manifest-repair-candidate
+          path: projects/axm-native-web-engine-experimental/manifests/source-manifest.json
+          if-no-files-found: error
+          retention-days: 14
