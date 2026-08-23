@@ -4407,8 +4407,10 @@
         "refuses": [
           "automatic installation",
           "CANON change",
+          "composition node execution",
           "Foundation mutation",
           "generated code execution",
+          "host authority inheritance",
           "implicit recipe inference",
           "inactive recipe execution",
           "network access",
@@ -4416,6 +4418,7 @@
           "promotion",
           "registration",
           "review-candidate builder execution",
+          "runtime payload compatibility claims from contract identity alone",
           "staging"
         ],
         "writes": [
@@ -4461,12 +4464,16 @@
       "schema": "axm.block-view/v1",
       "sockets": {
         "accepts": [
+          "axm.capability-composition.build/v1",
+          "axm.capability-composition.request/v1",
           "axm.capability-fabric.build-request/v1",
           "axm.capability-recipe-draft/v1",
           "axm.capability-recipe-proposal/v1",
           "axm.workshop-direction.hand-request/v1"
         ],
         "consumes": [
+          "axm.capability-composition.build/v1",
+          "axm.capability-composition.request/v1",
           "axm.capability-fabric.build-request/v1",
           "axm.workshop-direction.hand-request/v1",
           "explicit-human-build-review",
@@ -4476,16 +4483,24 @@
           "axm.capability-build-plan/v1",
           "axm.capability-build-receipt/v1",
           "axm.capability-candidate-package/v1",
+          "axm.capability-composition-materialization-receipt/v1",
+          "axm.capability-composition-node-packages/v1",
+          "axm.capability-composition.build/v1",
+          "axm.capability-composition.plan/v1",
+          "axm.capability-composition.verification/v1",
           "axm.modular-capability-contract/v1",
           "axm.module-bundle/v1"
         ],
         "provides": [
+          "detached-composition-materialization",
           "detached-nursery-compatible-capability-packages",
+          "deterministic-capability-composition",
           "deterministic-capability-recipe-compilation",
           "digest-bound-modular-builder-registry",
           "first-class-modular-hand-and-skill-kind-binding",
           "inactive-future-recipe-proposal-inspection",
-          "typed-capability-build-holds"
+          "typed-capability-build-holds",
+          "typed-capability-composition-holds"
         ]
       },
       "source": {
@@ -4495,7 +4510,7 @@
           "tools/capability-fabric/module.contract.json"
         ],
         "declaredId": "capability-fabric",
-        "digest": "25008d0c412d281b3a2ebf319474dd9641573284d5c3e1fd3efc86f598598e2e",
+        "digest": "0614a22e14b275900796a01fecfa82052f8c8eb056135aaf3137dfdc90a483f3",
         "manifest": "tools/capability-fabric/manifest.json",
         "observedSourceFileCount": 10,
         "root": "tools/capability-fabric"
@@ -4506,7 +4521,7 @@
         "entry": "index.html",
         "type": "hub-module"
       },
-      "version": "v0.1"
+      "version": "v0.2"
     },
     {
       "authority": {
@@ -4748,7 +4763,7 @@
           "tools/capability-recipe-admission-gate/module.contract.json"
         ],
         "declaredId": "capability-recipe-admission-gate",
-        "digest": "283ab33c130834f26982303c06501939ee213fef25b0900d66df03b4a18e60c8",
+        "digest": "2b4e6d75dbcde1eaf23742e9ad489744c2fa81b4352620491e6b9a3e0c4cacb4",
         "manifest": "tools/capability-recipe-admission-gate/manifest.json",
         "observedSourceFileCount": 6,
         "root": "tools/capability-recipe-admission-gate"
@@ -4882,7 +4897,7 @@
           "tools/capability-recipe-foundry/module.contract.json"
         ],
         "declaredId": "capability-recipe-foundry",
-        "digest": "c5b6d676a2c851b6853d2def5ade66714067f72fe5d23e55d7b98404bc5e6619",
+        "digest": "51bf3d9312ad996dbc2b57d8f71e70de9f57e9bc9c4196aaf665b5ae21774739",
         "manifest": "tools/capability-recipe-foundry/manifest.json",
         "observedSourceFileCount": 35,
         "root": "tools/capability-recipe-foundry"
@@ -39294,6 +39309,20 @@
       "consumers": [
         "capability-fabric"
       ],
+      "id": "axm.capability-composition.build/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "capability-fabric"
+      ],
+      "id": "axm.capability-composition.request/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "capability-fabric"
+      ],
       "id": "axm.capability-fabric.build-request/v1",
       "providers": []
     },
@@ -44672,6 +44701,13 @@
     },
     {
       "consumers": [],
+      "id": "detached-composition-materialization",
+      "providers": [
+        "capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "detached-nursery-compatible-capability-packages",
       "providers": [
         "capability-fabric"
@@ -44712,6 +44748,13 @@
       ],
       "id": "deterministic-canonical-json",
       "providers": []
+    },
+    {
+      "consumers": [],
+      "id": "deterministic-capability-composition",
+      "providers": [
+        "capability-fabric"
+      ]
     },
     {
       "consumers": [],
@@ -57786,6 +57829,13 @@
     },
     {
       "consumers": [],
+      "id": "typed-capability-composition-holds",
+      "providers": [
+        "capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "typed-claim-evidence-routing",
       "providers": [
         "evidence-desk"
@@ -60342,6 +60392,36 @@
       "id": "axm.capability-candidate-package/v1",
       "path": "shared/capability-fabric/schemas/candidate-package.schema.json",
       "sha256": "df233f44058931c16a45dbe561c263cd707779e234b4c6c0929d6a8e793a3901"
+    },
+    {
+      "id": "axm.capability-composition-materialization-receipt/v1",
+      "path": "shared/capability-fabric/schemas/composition-materialization-receipt.schema.json",
+      "sha256": "0abe66779d2b3ba75bf12ddeb4167ec179bd6712215798b244bc7da4ae2a84f9"
+    },
+    {
+      "id": "axm.capability-composition-node-packages/v1",
+      "path": "shared/capability-fabric/schemas/composition-node-packages.schema.json",
+      "sha256": "ee305d12da9a00e6c2ad7ba62e8e937b8e7a4f40c8027f68d354217ec5bc4662"
+    },
+    {
+      "id": "axm.capability-composition.build/v1",
+      "path": "shared/capability-fabric/schemas/composition-build.schema.json",
+      "sha256": "4a2d11b3547156efd6a6362081a6a2dc75e9c95775aeb0f7662d0ee933d03da3"
+    },
+    {
+      "id": "axm.capability-composition.plan/v1",
+      "path": "shared/capability-fabric/schemas/composition-plan.schema.json",
+      "sha256": "4fdabb63482c3cbf74e3f3ec6e7b4a75ea8b47fd8ea09aea137172fc9c047287"
+    },
+    {
+      "id": "axm.capability-composition.request/v1",
+      "path": "shared/capability-fabric/schemas/composition-request.schema.json",
+      "sha256": "4e267a46b8a401242a87480ea9189aebb4c76c5808a43cd8585bbe13b92faab6"
+    },
+    {
+      "id": "axm.capability-composition.verification/v1",
+      "path": "shared/capability-fabric/schemas/composition-verification.schema.json",
+      "sha256": "cd11bb11dce266bc085aa9d8d6c997eb25102e85f9acd1c2125c320a92e3651f"
     },
     {
       "id": "axm.capability-fabric.build-request/v1",
@@ -64499,18 +64579,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "4ed3fbcd5ed960b076b30c1f18f5ab2648ac46291ceb23f7febb4a7699a185a4",
+  "semanticDigest": "b336a9b80a510bbc0bc3173831a6c46c0c1fb630592a2af0644650141d78fcb1",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "c226cdea3eda46f3a1bfd76573d11498d753d677415ec6b0626f2d23cafbdc63",
+    "declarationDigest": "972efdb61694e1867d1afa395dce3092d823580a33c6a7f79ab7422ff1a1c9ad",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "c226cdea3eda46f3a1bfd76573d11498d753d677415ec6b0626f2d23cafbdc63"
+    "snapshotIdentity": "972efdb61694e1867d1afa395dce3092d823580a33c6a7f79ab7422ff1a1c9ad"
   },
   "summary": {
     "blockKinds": {
@@ -64523,12 +64603,12 @@
       "SENSOR": 6
     },
     "blocks": 304,
-    "capabilities": 2975,
+    "capabilities": 2980,
     "declaredContracts": 301,
     "declaredManifests": 253,
     "edges": 86,
-    "schemas": 901,
-    "unresolved": 1991
+    "schemas": 907,
+    "unresolved": 1993
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -66572,6 +66652,18 @@
       "blockId": "bulk-intake-conveyor",
       "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.bulk-intake-worklist/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.capability-composition.build/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.capability-composition.request/v1",
       "state": "UNKNOWN"
     },
     {

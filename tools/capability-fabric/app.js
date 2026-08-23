@@ -26,7 +26,7 @@
     if(!Fabric||!Zip)throw new Error('Capability Fabric dependencies are unavailable.');
     state.catalog=await fetch('/shared/capability-fabric/recipes/catalog.json').then(function(response){if(!response.ok)throw new Error('Could not load recipe catalog.');return response.json();});const checked=Fabric.validateCatalog(state.catalog);if(!checked.ok)throw new Error('Recipe catalog validation failed: '+checked.errors.map(function(row){return row.code;}).join(', '));renderCatalog();
     $('load-starter').addEventListener('click',loadStarter);$('plan').addEventListener('click',plan);$('build').addEventListener('click',build);$('download').addEventListener('click',download);$('request-json').addEventListener('input',function(){$('human-reviewed').checked=false;notice($('request-state'),'CHANGED · review and reseal required.','hold');});
-    loadStarter();if(window.AXMHub){AXMHub.ready({id:'capability-fabric',name:'Capability Fabric',version:'v0.1',hubApiVersion:'1.0',permissions:[],savesState:false});AXMHub.log('Capability Fabric ready · deterministic recipe path · EXPERIMENTAL','info');}
+    loadStarter();if(window.AXMHub){AXMHub.ready({id:'capability-fabric',name:'Capability Fabric',version:'v0.2',hubApiVersion:'1.0',permissions:[],savesState:false});AXMHub.log('Capability Fabric ready · deterministic recipe and composition paths · EXPERIMENTAL','info');}
   }
   start().catch(function(error){console.error(error);notice($('catalog-state'),'BROKEN · '+error.message,'bad');if(window.AXMHub)AXMHub.error(error.message);});
 }());

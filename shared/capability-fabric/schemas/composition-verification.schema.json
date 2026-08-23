@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-composition.verification/v1",
+  "title": "AXM deterministic capability composition verification v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "kind", "state", "subjectDigest", "checks", "authority", "verificationDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-composition.verification/v1" },
+    "version": { "const": "1.0.0" },
+    "kind": { "enum": ["PLAN", "BUILD"] },
+    "state": { "enum": ["PASS", "FAIL"] },
+    "subjectDigest": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "pass"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "pass": { "type": "boolean" }
+        }
+      }
+    },
+    "authority": { "type": "object" },
+    "verificationDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

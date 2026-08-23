@@ -5,6 +5,12 @@ reviewed, digest-bound build request through one exact source-reviewed recipe
 into a detached capability candidate. Ordinary builds require no provider,
 model, API key, network request, or repeated reasoning compute.
 
+The composition layer can bind two to sixteen reviewed candidate builds into a
+bounded directed acyclic graph. Every edge must name one exact contract emitted
+by its source and consumed by its target. Root inputs, expected outputs, node
+and edge ceilings, aggregate package bytes, topological order, runtime modes,
+and required host capabilities are digest-bound in the composition plan.
+
 The existing Deterministic Organ Fabric remains the reused declarative kernel
 and specialized compatibility surface. This layer adds a generic recipe
 catalog and complete candidate materialization for modular capabilities.
@@ -44,16 +50,36 @@ module contract, and receipt.
 - `axm.capability-recipe-draft/v1`
 - `axm.modular-capability-recipe-contract/v1`
 - `axm.modular-capability-contract/v1`
+- `axm.capability-composition.request/v1`
+- `axm.capability-composition.plan/v1`
+- `axm.capability-composition.build/v1`
+- `axm.capability-composition.verification/v1`
 
-The initial reviewed catalog contains three executable `HAND` recipes: a pure
-JSON transform, an SVG status-badge creation hand, and a Workshop Direction
-hand-request adapter. Portable `SKILL` support is proven by an inactive Recipe
-Foundry pilot; it is not silently added to the active catalog.
+## Composition truth boundary
+
+- Composition proves exact declared contract identity, acyclic order, child
+  request/recipe/builder/package lineage, resource ceilings, and deterministic
+  rebuild parity.
+- It does not claim that equal contract labels guarantee runtime payload
+  semantics. Node selftests and end-to-end behavior require separate trusted
+  host execution and evidence.
+- A host-mediated `SKILL` remains host-mediated inside a graph. Its required
+  host capabilities are surfaced in the plan and never inherited as authority.
+- A held graph emits no partial candidate set. The Fabric never executes a node,
+  installs output, changes permissions, promotes material, touches Foundation,
+  or changes CANON.
+
+The reviewed catalog contains four executable `HAND` recipes—a closed JSON
+Schema validator, a pure JSON transform, an SVG status-badge creation hand,
+and a Workshop Direction hand-request adapter—plus one host-mediated portable
+`SKILL` for bounded evidence-first capability review.
 
 Builder implementations now live behind a digest-bound modular registry.
 Recipes, plans, candidate packages, and verification all bind the exact active
-builder digest. The registry also carries the Foundry validator HAND and
-portable review SKILL as `REVIEW_CANDIDATE`, which the normal Fabric compiler
-refuses to execute. `tools/capability-recipe-admission-gate` verifies their
-packet, trusted test, source review, and Mike decision before it can emit a
-merge-only registry/catalog plan. The gate has no apply or activation action.
+builder digest. The Foundry validator HAND entered the active registry through
+the deterministic admission gate after exact packet inspection, trusted tests,
+nine-case source review, and Mike's merge decision. The portable review SKILL
+entered through the same route and remains instruction material: its authorized
+host must re-check every capability and permission at use time. No review
+candidates remain. `tools/capability-recipe-admission-gate` stays available for
+future Foundry candidates and has no apply or activation action.

@@ -4,6 +4,271 @@
   "activationPolicy": "SOURCE_REVIEW_AND_MIKE_MERGE",
   "recipes": [
     {
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "boundaries": [
+        "portable instruction plus contract only",
+        "host re-checks authority at use time",
+        "no model, network, filesystem, install, promotion, merge, Foundation, or CANON authority"
+      ],
+      "builderId": "bounded-review-procedure-skill-v1",
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "defaultVariantId": "portable-default",
+        "variants": [
+          {
+            "id": "portable-default",
+            "parameterOverrides": {},
+            "title": "Portable host-mediated procedure"
+          }
+        ]
+      },
+      "capabilityContract": {
+        "entry": null,
+        "operation": "followProcedure",
+        "portableForm": "SKILL_MD",
+        "portablePath": "SKILL.md",
+        "requiredHostCapabilities": [
+          "human-or-agent-procedure-runner/v1"
+        ],
+        "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+        "runtimeMode": "HOST_MEDIATED"
+      },
+      "capabilityKind": "SKILL",
+      "exampleRequest": {
+        "family": "capability-review",
+        "id": "closed-capability-review-skill-example",
+        "parameters": {
+          "boundaries": [
+            "No source execution.",
+            "No inherited permission.",
+            "No install, promotion, merge, or CANON change."
+          ],
+          "inputs": [
+            "axm.capability-review-input/v1"
+          ],
+          "maxSteps": 8,
+          "outputs": [
+            "axm.capability-review-receipt/v1"
+          ],
+          "procedure": [
+            "Confirm exact contract identity.",
+            "Map each claim to an admissible evidence surface.",
+            "Record PASS, FAIL, or UNKNOWN without promotion."
+          ],
+          "purpose": "Follow a bounded evidence-first review procedure without inheriting authority.",
+          "receiptSchema": "axm.capability-review-receipt/v1",
+          "skillId": "closed-capability-review",
+          "title": "Closed capability review"
+        },
+        "purpose": "Build the portable review procedure pilot.",
+        "recipeId": "closed-capability-review-skill",
+        "source": {
+          "kind": "HUMAN",
+          "ref": "modular-hand-skill-extension"
+        },
+        "variantId": null
+      },
+      "family": "capability-review",
+      "id": "closed-capability-review-skill",
+      "parameterSpec": {
+        "boundaries": {
+          "description": "Explicit authority and behavior boundaries.",
+          "maxBytes": 8192,
+          "required": true,
+          "type": "array"
+        },
+        "inputs": {
+          "description": "Exact input contracts.",
+          "maxBytes": 8192,
+          "required": true,
+          "type": "array"
+        },
+        "maxSteps": {
+          "description": "Maximum procedure steps.",
+          "maximum": 32,
+          "minimum": 1,
+          "required": true,
+          "type": "integer"
+        },
+        "outputs": {
+          "description": "Exact output contracts.",
+          "maxBytes": 8192,
+          "required": true,
+          "type": "array"
+        },
+        "procedure": {
+          "description": "Ordered bounded procedure.",
+          "maxBytes": 16384,
+          "required": true,
+          "type": "array"
+        },
+        "purpose": {
+          "description": "Bounded skill purpose.",
+          "maxLength": 500,
+          "required": true,
+          "type": "string"
+        },
+        "receiptSchema": {
+          "description": "Exact receipt contract.",
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+          "required": true,
+          "type": "string"
+        },
+        "skillId": {
+          "description": "Portable skill id.",
+          "maxLength": 80,
+          "pattern": "^[a-z][a-z0-9-]{2,79}$",
+          "required": true,
+          "type": "string"
+        },
+        "title": {
+          "description": "Portable skill title.",
+          "maxLength": 120,
+          "required": true,
+          "type": "string"
+        }
+      },
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "canonAuthority": "NONE",
+        "sharedUseRequires": "MIKE_TOBI_MERGE"
+      },
+      "schema": "axm.capability-recipe/v1",
+      "summary": "Compile a portable bounded evidence-first review procedure and exact skill contract.",
+      "title": "Closed Capability Review Skill",
+      "verifiers": [
+        "Capability Fabric inactive proposal inspection",
+        "portable file exact-set verification",
+        "trusted-host builder contribution selftest",
+        "deterministic rebuild parity",
+        "authority inheritance refusal"
+      ],
+      "version": "0.1.0",
+      "builderDigest": "sha256:ecc33f215b679abd21b2c5680bcc5797095474267de370d9c3fff10f8e2913fa",
+      "recipeDigest": "sha256:e907a432e4f1dfa4922b8982c276a6910da03017af25f27380fb23308e74a576"
+    },
+    {
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "boundaries": [
+        "pure deterministic generation only",
+        "closed reviewed schema subset only",
+        "generated code is emitted but never executed by Capability Fabric or Recipe Foundry",
+        "no network, install, registration, promotion, permission, Foundation, or CANON authority"
+      ],
+      "builderId": "closed-json-schema-validator-v1",
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "defaultVariantId": "bounded-default",
+        "variants": [
+          {
+            "id": "bounded-default",
+            "parameterOverrides": {},
+            "title": "Bounded default validator"
+          }
+        ]
+      },
+      "capabilityContract": {
+        "entry": "capability.js",
+        "operation": "validate",
+        "portableForm": "NONE",
+        "portablePath": null,
+        "requiredHostCapabilities": [],
+        "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+        "runtimeMode": "EXECUTABLE"
+      },
+      "capabilityKind": "HAND",
+      "exampleRequest": {
+        "family": "schema-validation",
+        "id": "closed-json-schema-validator-example",
+        "parameters": {
+          "inputSchemaId": "axm.example.schema-validation-subject/v1",
+          "maxInputBytes": 4096,
+          "resultSchemaId": "axm.schema-validation-result/v1",
+          "schema": {
+            "additionalProperties": false,
+            "properties": {
+              "attempts": {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "name": {
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "attempts",
+              "enabled"
+            ],
+            "type": "object"
+          }
+        },
+        "purpose": "Build the first bounded validator capability pilot.",
+        "recipeId": "closed-json-schema-validator",
+        "source": {
+          "kind": "HUMAN",
+          "ref": "capability-recipe-foundry-pilot"
+        },
+        "variantId": null
+      },
+      "family": "schema-validation",
+      "id": "closed-json-schema-validator",
+      "parameterSpec": {
+        "inputSchemaId": {
+          "description": "Exact schema contract consumed by the generated validator.",
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+          "required": true,
+          "type": "string"
+        },
+        "maxInputBytes": {
+          "description": "Maximum JSON input bytes accepted before typed refusal.",
+          "maximum": 65536,
+          "minimum": 64,
+          "required": true,
+          "type": "integer"
+        },
+        "resultSchemaId": {
+          "description": "Exact validation result contract emitted by the generated validator.",
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+          "required": true,
+          "type": "string"
+        },
+        "schema": {
+          "description": "Source-reviewed closed JSON Schema subset embedded into the generated validator.",
+          "maxBytes": 16384,
+          "required": true,
+          "type": "object"
+        }
+      },
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "canonAuthority": "NONE",
+        "sharedUseRequires": "MIKE_TOBI_MERGE"
+      },
+      "schema": "axm.capability-recipe/v1",
+      "summary": "Compiles one source-reviewed closed JSON Schema subset into a bounded deterministic validation capability.",
+      "title": "Closed JSON Schema Validator",
+      "verifiers": [
+        "Capability Fabric inactive proposal inspection",
+        "independent builder contribution source review",
+        "trusted-host builder contribution selftest",
+        "deterministic rebuild parity",
+        "adversarial generated-validator fixtures"
+      ],
+      "version": "0.1.0",
+      "builderDigest": "sha256:d5bbf6fc6c4219fd90987b7b458c2d396ce5d5c421f06c8763b85338e40c38a0",
+      "recipeDigest": "sha256:8840621b497fda2296a370c220de52a6e18147bf5562a0ff1e050965ec454b23"
+    },
+    {
       "schema": "axm.capability-recipe/v1",
       "id": "pure-json-transform",
       "version": "1.0.0",
@@ -312,5 +577,5 @@
       "recipeDigest": "sha256:754d323174787080f5d61c2c5fe515bc74ea126af21a498bbec17a6e4665594d"
     }
   ],
-  "catalogDigest": "sha256:751883806224892a4c20837d1c56635a121374db3a99ec2a6af5ccd473e18c4e"
+  "catalogDigest": "sha256:0ac0af5dc4a816ee9606da9b58a7cab72a8e70ce18d5207ada0c0ff9bdc6fa51"
 }

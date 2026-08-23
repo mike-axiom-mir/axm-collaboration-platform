@@ -28,7 +28,7 @@ function main(){
     check(contract.boundaries.refuses.includes('generated code execution'),'contract refuses generated-code execution');
     check(contract.boundaries.refuses.includes('Foundation mutation')&&contract.boundaries.refuses.includes('CANON change'),'contract refuses Foundation and CANON mutation');
     check(html.includes('Capability Fabric')&&html.includes('ONE CANDIDATE DEFAULT'),'human workbench exposes the intended build model');
-    check(html.includes('/shared/capability-fabric/core.js')&&html.includes('/shared/capability-fabric/builder-registry.js')&&html.includes('/shared/deterministic-organ-fabric/core.js'),'workbench visibly reuses deterministic Organ kernel and modular builder registry');
+    check(html.includes('/shared/capability-fabric/core.js')&&html.includes('/shared/capability-fabric/composition-core.js')&&html.includes('/shared/capability-fabric/builder-registry.js')&&html.includes('/shared/deterministic-organ-fabric/core.js'),'workbench visibly reuses deterministic Organ kernel, modular builder registry, and composition core');
     check(!/openai|anthropic|gemini|api[_ -]?key/i.test(app),'browser workbench has no provider or credential path');
     new Function(app);check(true,'browser workbench script parses');
 
@@ -40,20 +40,23 @@ function main(){
       check(first.candidates.length===1,recipe.id+' creates one candidate by default');
       check(Fabric.verifyCandidate(candidate).ok,recipe.id+' package verification passes');
       const modular=JSON.parse(candidate.files['modular-capability.contract.json']);
-      check(candidate.package.capabilityKind===recipe.capabilityKind&&modular.kind===recipe.capabilityKind&&modular.installed===false&&modular.promoted===false&&modular.canon===false,recipe.id+' candidate binds its modular HAND kind without authority');
+      check(candidate.package.capabilityKind===recipe.capabilityKind&&modular.kind===recipe.capabilityKind&&modular.installed===false&&modular.promoted===false&&modular.canon===false,recipe.id+' candidate binds its modular kind without authority');
       check(candidate.files['index.html'].includes('executes no generated capability code'),recipe.id+' candidate inspection entry stays static');
-      new Function(candidate.files['capability.js']);new Function(candidate.files['selftest.js']);check(true,recipe.id+' emitted JavaScript parses');
+      const selftestFile=recipe.capabilityKind==='HAND'?'selftest.js':'skill.selftest.js';
+      if(recipe.capabilityKind==='HAND'){new Function(candidate.files['capability.js']);}
+      else{check(typeof candidate.files['SKILL.md']==='string'&&JSON.parse(candidate.files['skill.contract.json']).runtimeMode==='HOST_MEDIATED',recipe.id+' emits its portable host-mediated skill contract');}
+      new Function(candidate.files[selftestFile]);check(true,recipe.id+' emitted JavaScript parses');
       const materialized=Cli.materialize(candidate,root);check(materialized.nursery.status==='READY_FOR_LATER_INTAKE',recipe.id+' materializes as Nursery-ready structure');
       check(materialized.nursery.codeExecuted===false,recipe.id+' Nursery scan executes no candidate code');
-      const run=childProcess.spawnSync(process.execPath,[path.join(materialized.directory,'selftest.js')],{encoding:'utf8'});check(run.status===0&&/PASS/.test(run.stdout),recipe.id+' emitted selftest passes when explicitly run by trusted test host');
+      const run=childProcess.spawnSync(process.execPath,[path.join(materialized.directory,selftestFile)],{cwd:materialized.directory,encoding:'utf8'});check(run.status===0&&/PASS/.test(run.stdout),recipe.id+' emitted selftest passes when explicitly run by trusted test host');
       packageDigests.push(candidate.package.packageDigest);
       assert.throws(function(){Cli.materialize(candidate,root);},function(error){return error&&error.receipt&&error.receipt.code==='OUTPUT_OVERWRITE_REFUSED';});passed+=1;process.stdout.write('PASS '+recipe.id+' refuses overwrite of exact materialization\n');
     });
-    check(new Set(packageDigests).size===3,'three capability families produce distinct packages');
-    const registry=Nursery.scanSupply(root);check(registry.summary.total===3&&registry.summary.readyForLaterIntake===3,'Nursery independently sees all three exact candidates ready for later intake');
+    check(new Set(packageDigests).size===5,'five capability recipes produce distinct packages');
+    const registry=Nursery.scanSupply(root);check(registry.summary.total===5&&registry.summary.readyForLaterIntake===5,'Nursery independently sees all five exact candidates ready for later intake');
     check(registry.truth.candidateCodeExecuted===false&&registry.truth.installationPerformed===false,'Nursery proves scan-only authority boundary');
 
-    const request=Fabric.sealRequest(catalog.recipes[0].exampleRequest,true),candidate=Fabric.build(request,catalog).candidates[0],tampered=Fabric.clone(candidate);tampered.files['module-bundle.json']=tampered.files['module-bundle.json'].replace('pure-json-transform','changed-transform');
+    const tamperRecipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),request=Fabric.sealRequest(tamperRecipe.exampleRequest,true),candidate=Fabric.build(request,catalog).candidates[0],tampered=Fabric.clone(candidate);tampered.files['module-bundle.json']=tampered.files['module-bundle.json'].replace('pure-json-transform','changed-transform');
     check(!Fabric.verifyCandidate(tampered).ok,'bundle tampering fails package verification');
     const rollbackParent=path.join(root,'rollback-proof');fs.mkdirSync(rollbackParent);const originalScan=Nursery.scanSupply;let rollbackError=null;
     try{Nursery.scanSupply=function(){return {candidates:[]};};Cli.materialize(candidate,rollbackParent);}catch(error){rollbackError=error;}finally{Nursery.scanSupply=originalScan;}

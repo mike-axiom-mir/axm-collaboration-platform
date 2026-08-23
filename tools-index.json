@@ -1,7 +1,7 @@
 {
   "schema": "axm.tools-index/v1",
-  "generatedAt": "2026-08-23T14:51:55.127Z",
-  "sourceDigest": "e431e1c7d82cf08e8f5221ef30a0ff8691098d133b9c22ea63cdb7c7dc9101d5",
+  "generatedAt": "2026-08-23T21:20:50.110Z",
+  "sourceDigest": "153296e5958338c8378fe56e02bec910a9dab7256752a3813552ad2a1ae548f5",
   "promotionLadder": "shared/readiness/promotion-ladder.json",
   "summary": {
     "tools": 238,
@@ -18,7 +18,7 @@
     "permissionsDeclared": 238,
     "kindsDeclared": 237,
     "readmes": 152,
-    "capabilities": 2265
+    "capabilities": 2270
   },
   "promotionQueue": {
     "readyForHumanReview": [],
@@ -1310,6 +1310,20 @@
       "providers": [],
       "consumers": [
         "bulk-intake-conveyor"
+      ]
+    },
+    {
+      "id": "axm.capability-composition.build/v1",
+      "providers": [],
+      "consumers": [
+        "capability-fabric"
+      ]
+    },
+    {
+      "id": "axm.capability-composition.request/v1",
+      "providers": [],
+      "consumers": [
+        "capability-fabric"
       ]
     },
     {
@@ -5046,6 +5060,13 @@
       "consumers": []
     },
     {
+      "id": "detached-composition-materialization",
+      "providers": [
+        "capability-fabric"
+      ],
+      "consumers": []
+    },
+    {
       "id": "detached-nursery-compatible-capability-packages",
       "providers": [
         "capability-fabric"
@@ -5072,6 +5093,13 @@
       "consumers": [
         "review-inbox"
       ]
+    },
+    {
+      "id": "deterministic-capability-composition",
+      "providers": [
+        "capability-fabric"
+      ],
+      "consumers": []
     },
     {
       "id": "deterministic-capability-recipe-authoring",
@@ -15265,6 +15293,13 @@
       "consumers": []
     },
     {
+      "id": "typed-capability-composition-holds",
+      "providers": [
+        "capability-fabric"
+      ],
+      "consumers": []
+    },
+    {
       "id": "typed-claim-evidence-routing",
       "providers": [
         "evidence-desk"
@@ -16736,7 +16771,7 @@
       "verifiedAt": "2026-07-27T20:47:31.6393762Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 26
+        "ageDays": 27
       },
       "promotion": {
         "state": "CLAIM_NEEDS_REVERIFICATION",
@@ -17014,7 +17049,7 @@
       "verifiedAt": "2026-07-28T19:13:44Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 25
+        "ageDays": 26
       },
       "promotion": {
         "state": "NEEDS_SELFTEST_RUN",
@@ -18891,14 +18926,14 @@
       "id": "capability-fabric",
       "folder": "capability-fabric",
       "name": "Capability Fabric",
-      "version": "v0.1",
+      "version": "v0.2",
       "status": "EXPERIMENTAL",
       "schema": "axm.tool-manifest/v1",
       "kind": "product",
       "audience": "human-machine",
       "manifest": {
         "path": "tools/capability-fabric/manifest.json",
-        "sha256": "8d3382e1bc529a77ccd3a1c09409861d760b52cc056c205fe26236c7d210d6c8",
+        "sha256": "deb38359bbc387a83018d5942869cc851f05b9ef2eaff9b3020b4b8b8fd29452",
         "valid": true,
         "errors": []
       },
@@ -18920,10 +18955,15 @@
           "first-class-modular-hand-and-skill-kind-binding",
           "digest-bound-modular-builder-registry",
           "detached-nursery-compatible-capability-packages",
-          "inactive-future-recipe-proposal-inspection"
+          "inactive-future-recipe-proposal-inspection",
+          "deterministic-capability-composition",
+          "typed-capability-composition-holds",
+          "detached-composition-materialization"
         ],
         "consumes": [
           "axm.capability-fabric.build-request/v1",
+          "axm.capability-composition.request/v1",
+          "axm.capability-composition.build/v1",
           "axm.workshop-direction.hand-request/v1",
           "human-recipe-review",
           "explicit-human-build-review"
@@ -18934,7 +18974,7 @@
           "tools/capability-fabric/selftest.js"
         ],
         "promotionPath": "tools/capability-fabric/selftest.js",
-        "sha256": "3863aee4b9275f9b56a343d34336b8e4d6d039529b7e26b25a07a837af7ac59d",
+        "sha256": "e66330796ef0e007cbd147032ea718b620ea73bc381c4e734a48c56d74ef0831",
         "digestScope": "all-discovered-selftests/v1",
         "result": null
       },
@@ -19059,7 +19099,7 @@
           "tools/capability-recipe-admission-gate/selftest.js"
         ],
         "promotionPath": "tools/capability-recipe-admission-gate/selftest.js",
-        "sha256": "ff6aee23cd19d1531a48756d828ab6b4e34255419eab9472a809dbae3bb46fdd",
+        "sha256": "391628eede8f4fe04ba82fc8fb4dd659d6163271cf04bb305aff3436e057a836",
         "digestScope": "all-discovered-selftests/v1",
         "result": null
       },
@@ -19124,7 +19164,7 @@
           "tools/capability-recipe-foundry/selftest.js"
         ],
         "promotionPath": "tools/capability-recipe-foundry/selftest.js",
-        "sha256": "a9e702c1d85865b6db33db9bcf3b43498c196e75024e13198df7ad2c6e88eedc",
+        "sha256": "8bd097fdba519fa4b48842234c2dd5ac972f9b81e6cec89f1d23624d81c6214b",
         "digestScope": "all-discovered-selftests/v1",
         "result": null
       },
@@ -19673,7 +19713,7 @@
       "verifiedAt": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 29
+        "ageDays": 30
       },
       "promotion": {
         "state": "NEEDS_SELFTEST_RUN",
@@ -27533,7 +27573,7 @@
       "verifiedAt": "2026-07-28T19:01:43.329Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 25
+        "ageDays": 26
       },
       "promotion": {
         "state": "CLAIM_NEEDS_REVERIFICATION",
@@ -29973,7 +30013,7 @@
       "verifiedAt": "2026-07-24T15:30:00.000Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 29
+        "ageDays": 30
       },
       "promotion": {
         "state": "NEEDS_SELFTEST_RUN",
@@ -31953,7 +31993,7 @@
       "verifiedAt": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 29
+        "ageDays": 30
       },
       "promotion": {
         "state": "NEEDS_SELFTEST_RUN",

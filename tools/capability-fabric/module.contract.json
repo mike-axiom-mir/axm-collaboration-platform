@@ -1,25 +1,30 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "capability-fabric",
-  "version": "v0.1",
+  "version": "v0.2",
   "provides": [
     "deterministic-capability-recipe-compilation",
     "typed-capability-build-holds",
     "first-class-modular-hand-and-skill-kind-binding",
     "digest-bound-modular-builder-registry",
     "detached-nursery-compatible-capability-packages",
-    "inactive-future-recipe-proposal-inspection"
+    "inactive-future-recipe-proposal-inspection",
+    "deterministic-capability-composition",
+    "typed-capability-composition-holds",
+    "detached-composition-materialization"
   ],
   "consumes": [
     "axm.capability-fabric.build-request/v1",
+    "axm.capability-composition.request/v1",
+    "axm.capability-composition.build/v1",
     "axm.workshop-direction.hand-request/v1",
     "human-recipe-review",
     "explicit-human-build-review"
   ],
   "permissions": [],
   "handoffs": {
-    "emits": ["axm.capability-build-plan/v1", "axm.capability-candidate-package/v1", "axm.capability-build-receipt/v1", "axm.modular-capability-contract/v1", "axm.module-bundle/v1"],
-    "accepts": ["axm.capability-fabric.build-request/v1", "axm.workshop-direction.hand-request/v1", "axm.capability-recipe-proposal/v1", "axm.capability-recipe-draft/v1"]
+    "emits": ["axm.capability-build-plan/v1", "axm.capability-candidate-package/v1", "axm.capability-build-receipt/v1", "axm.capability-composition.plan/v1", "axm.capability-composition.build/v1", "axm.capability-composition.verification/v1", "axm.capability-composition-node-packages/v1", "axm.capability-composition-materialization-receipt/v1", "axm.modular-capability-contract/v1", "axm.module-bundle/v1"],
+    "accepts": ["axm.capability-fabric.build-request/v1", "axm.capability-composition.request/v1", "axm.capability-composition.build/v1", "axm.workshop-direction.hand-request/v1", "axm.capability-recipe-proposal/v1", "axm.capability-recipe-draft/v1"]
   },
   "lifecycle": {
     "state_owner": "none",
@@ -34,6 +39,9 @@
       "inactive recipe execution",
       "review-candidate builder execution",
       "generated code execution",
+      "composition node execution",
+      "runtime payload compatibility claims from contract identity alone",
+      "host authority inheritance",
       "network access",
       "automatic installation",
       "registration",
