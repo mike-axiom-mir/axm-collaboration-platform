@@ -1,0 +1,35 @@
+name: Verify AXM native web engine
+
+on:
+  pull_request:
+    paths:
+      - 'projects/axm-native-web-engine-experimental/**'
+      - '.github/workflows/axm-native-web-engine.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-engine:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/axm-native-web-engine-experimental
+    steps:
+      - name: Check out the browser candidate
+        uses: actions/checkout@v4
+      - name: Use the declared Node.js line
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.17.0
+      - name: Verify browser tests
+        run: node --test tests/*.test.js
+      - name: Verify schemas
+        run: node scripts/verify-schemas.js
+      - name: Verify committed examples
+        run: node scripts/build-examples.js --verify
+      - name: Verify source manifest
+        run: node scripts/build-source-manifest.js --verify
+      - name: Verify JavaScript syntax
+        run: find . -type f -name '*.js' -print0 | xargs -0 -n1 node --check
