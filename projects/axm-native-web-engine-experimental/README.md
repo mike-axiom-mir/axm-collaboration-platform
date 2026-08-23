@@ -32,7 +32,8 @@ explicitly allowed local UTF-8 HTML bytes
              |-> SearXNG adapter
              |-> Brave Search adapter
              |-> Kagi Search adapter
-             `-> deterministic federated-result fusion
+             |-> deterministic federated-result fusion
+             `-> explicit bounded Search Executor
 ```
 
 Every Structure View carries the same source, document, Page Model, layout, and
@@ -41,10 +42,10 @@ records `sourceMutation.performed: false`; discarding the derived view restores
 the exact source-bound starting point.
 
 This is not a Chromium/WebView wrapper, complete HTML parser, CSS/site layout
-engine, Internet client, page JavaScript runtime, hostile-content sandbox, or
-production browser. The local Browser Shell navigates only among files named
-explicitly by the caller. Page code, forms, remote media, external resources,
-and unlisted targets remain inert or held.
+engine, unrestricted Internet client, page JavaScript runtime, hostile-content
+sandbox, or production browser. The local Browser Shell navigates only among
+files named explicitly by the caller. Page code, forms, remote media, external
+resources, and unlisted targets remain inert or held.
 
 ## Why Node in this detached proof
 
@@ -78,17 +79,12 @@ and scroll entry references, transition trace, reparse receipts, and session
 digest. Each page in the bundle carries the same shared-engine lineage used by
 `outline` and the Structure Browser.
 
-## Plan swappable research search
+## Swappable research search
 
-The provider-neutral Search Broker is exported as `searchBroker` and can build
-a search plan without executing it:
+The provider-neutral Search Broker is exported as `searchBroker`. It can plan a
+query without network execution:
 
 ```bash
-node scripts/search-plan.js "local-first AI browser" \
-  --provider searxng \
-  --searxng http://127.0.0.1:8888/search \
-  --pretty
-
 node scripts/search-plan.js "browser-agent research" \
   --mode federated \
   --searxng http://127.0.0.1:8888/search \
@@ -98,16 +94,45 @@ node scripts/search-plan.js "browser-agent research" \
 ```
 
 The first adapters are SearXNG, Brave Search API, and Kagi Search API. Search
-plans contain only provider endpoints and credential **references**, never API
-key values. The broker normalizes provider result shapes and can combine
-multiple normalized result sets using deterministic Reciprocal Rank Fusion,
+plans contain provider endpoints and credential **references**, never API-key
+values. The broker normalizes provider result shapes and can combine multiple
+normalized result sets with deterministic Reciprocal Rank Fusion,
 URL/tracking deduplication, provider-agreement metadata, and a bounded
 per-domain cap.
 
-This is intentionally a seam, not network authority: the planner performs no
-request and reports `networkExecutionGranted: false`. See
-`SEARCH_PROVIDER_CONTRACT.md` for exact fields, merge behavior, provider
-configuration, and the held requirements for a future bounded network executor.
+The separate `searchExecutor` can make the planned search only after an
+explicit authority grant. The CLI requires `--allow-network`:
+
+```bash
+BRAVE_SEARCH_API_KEY=... \
+node scripts/search-execute.js "browser-agent research" \
+  --provider brave \
+  --brave \
+  --allow-network \
+  --pretty
+```
+
+Or against an explicitly allowlisted self-hosted SearXNG endpoint:
+
+```bash
+node scripts/search-execute.js "local-first AI browser" \
+  --provider searxng \
+  --searxng http://127.0.0.1:8888/search \
+  --allow-network \
+  --pretty
+```
+
+Execution is bounded to at most three provider requests, refuses redirects,
+omits credentials/cookies, validates UTF-8 JSON, uses an 8-second default
+provider timeout and 1 MiB default response ceiling, pins Brave/Kagi to their
+known search endpoints, and requires an exact SearXNG endpoint allowlist. API
+secrets are materialized only into outbound request headers and are not copied
+into receipts/results. Search execution still grants no arbitrary page
+navigation and treats result content as untrusted.
+
+See `SEARCH_PROVIDER_CONTRACT.md` for exact query/plan/result/execution schemas,
+federated merge behavior, current cost estimates, and remaining held network
+boundaries.
 
 ## Verify a serialized Browser Session
 
@@ -163,15 +188,19 @@ visible history, lineage receipts, three visual themes, density/text controls,
 focus-reading mode, metadata toggling, and a local semantic-entry filter. Stop
 it with `Ctrl+C`; process-owned session state is discarded.
 
+The human shell does **not** automatically invoke the new Search Executor. That
+is intentionally separate until its search UX, provider/cost disclosure, and
+host authority policy are reviewed.
+
 The host binds only to `127.0.0.1`, uses a random capability path and a
 CSP-hash-bound controller. Every mutation requires a present `Origin` exactly
 equal to the shell origin; missing-origin, cross-origin, non-JSON, and oversized
 actions are refused before session mutation. Loopback responses also apply
 same-origin opener/resource policies, deny unused device permissions, and use a
 CSP with `frame-ancestors 'none'`. These harden the trusted shell; they do not
-turn it into the held external Network Broker or an untrusted Web Content
-sandbox. See `LOCAL_BROWSER_SESSION_CONTRACT.md` for the exact authority and
-evidence ceiling.
+turn it into an untrusted Web Content sandbox. See
+`LOCAL_BROWSER_SESSION_CONTRACT.md` for the exact authority and evidence
+ceiling.
 
 ## Create inert visual artifacts
 
@@ -205,8 +234,9 @@ node scripts/search-plan.js "test" --searxng http://127.0.0.1:8888/search --pret
 ```
 
 `STRUCTURE_VIEW_CONTRACT.md`, `LOCAL_BROWSER_SESSION_CONTRACT.md`, and
-`SEARCH_PROVIDER_CONTRACT.md` define the lineage, provider seam, and non-claims.
-`ACTION_REPORT.md` records the current evidence ceiling. `KNOWN_LIMITS.md` and
-`SECURITY_BOUNDARIES.md` are part of the build, not afterthoughts.
+`SEARCH_PROVIDER_CONTRACT.md` define the lineage, provider seam, execution
+boundary, and non-claims. `ACTION_REPORT.md` records the current evidence
+ceiling. `KNOWN_LIMITS.md` and `SECURITY_BOUNDARIES.md` are part of the build,
+not afterthoughts.
 
 Passing checks does not install, promote, merge, or mark this package `CANON`.
