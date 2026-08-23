@@ -5,6 +5,7 @@ on:
     paths:
       - 'projects/axm-native-web-engine-experimental/**'
       - '.github/scripts/verify-axm-native-web-session.js'
+      - '.github/scripts/audit-axm-native-web-security.js'
       - '.github/workflows/axm-native-web-engine.yml'
   workflow_dispatch:
 
@@ -34,7 +35,10 @@ jobs:
         run: node scripts/build-source-manifest.js --verify
       - name: Independently verify committed browser session
         run: node ../../.github/scripts/verify-axm-native-web-session.js golden/local-session.navigation.json --selftest
+      - name: Independently audit native web security surface
+        run: node ../../.github/scripts/audit-axm-native-web-security.js . --selftest
       - name: Verify JavaScript syntax
         run: |
           find . -type f -name '*.js' -print0 | xargs -0 -n1 node --check
           node --check ../../.github/scripts/verify-axm-native-web-session.js
+          node --check ../../.github/scripts/audit-axm-native-web-security.js
