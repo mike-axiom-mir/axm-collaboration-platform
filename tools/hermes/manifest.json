@@ -2,8 +2,8 @@
   "schema": "axm.tool-manifest/v1",
   "id": "hermes-local",
   "folderAlias": "hermes",
-  "name": "Hermes Local Runtime Wrapper",
-  "version": "v0.2",
+  "name": "AXM Hermes Runtime Adapter",
+  "version": "v0.3",
   "status": "TEST",
   "entry": "index.html",
   "contract": "module.contract.json",
@@ -19,13 +19,17 @@
     "local-ai",
     "model",
     "consent-gated",
-    "proposal-first"
+    "proposal-first",
+    "source-pinned",
+    "fail-closed-hook"
   ],
   "uses": [
     "node-runtime",
+    "python-runtime",
+    "uv-runtime",
     "git-runtime",
-    "configured-external-hermes-source",
-    "configured-external-command",
+    "immutable-hermes-source-lock",
+    "hermes-shell-hooks",
     "loopback-http",
     "local-filesystem",
     "agent-tool-forge-prompt-packs"
@@ -36,30 +40,42 @@
     "machine.execute"
   ],
   "actions": [
-    "check local bootstrap prerequisites",
-    "clone an explicitly configured external Hermes source on an explicit install command",
-    "start an explicitly configured command from the cloned external folder",
+    "check local bootstrap prerequisites and runtime policy state",
+    "clone and verify the exact reviewed upstream Hermes commit on explicit install",
+    "install pinned upstream dependencies on an explicit deps command",
+    "prepare an AXM-owned local Hermes home and workspace",
+    "launch the verified upstream Hermes CLI through AXM hook configuration",
+    "fail closed before Hermes tool dispatch when AXM policy refuses authority",
+    "write metadata-only local tool receipts when consent and receipts are enabled",
     "serve loopback-only health, consent, and module status",
     "create consent-gated local task, review-proposal, and prompt-pack files"
   ],
   "accepts": [
     "human:explicit-cli-action",
-    "local-file:hermes-source.local.json",
+    "local-file:runtime/policy.json",
     "http:loopback-json-request",
-    "human:local-consent-toggle"
+    "human:local-consent-toggle",
+    "hermes-hook:pre_tool_call",
+    "hermes-hook:pre_llm_call",
+    "hermes-hook:post_tool_call"
   ],
   "produces": [
+    "axm.hermes-tool-receipt/v1",
     "axm.hermes-task-proposal/v1",
     "axm.hermes-review-proposal/v1",
     "agent-tool-forge:prompt-pack-json",
-    "process:configured-external-hermes-command"
+    "process:pinned-external-hermes-runtime"
   ],
   "readiness": [
     "node-runtime",
+    "python-runtime",
     "git-runtime-for-install",
-    "hermes-source.local.json-for-install-or-start",
-    "tools/hermes/external/hermes-agent-for-start"
+    "uv-runtime-for-deps-and-start",
+    "valid-hermes-source.lock.json",
+    "verified-tools/hermes/external/hermes-agent-pin",
+    "prepared-runtime/hermes-home/config.yaml",
+    "valid-runtime/policy.json"
   ],
-  "summary": "Explicit-config bootstrap plus a loopback, consent-gated local proposal service for an external Hermes Agent installation.",
-  "notes": "AXM does not bundle Hermes or connect this control layer to it yet. The source example is configuration, not live source, license, installation, readiness, identity binding, sandbox, or runtime proof. Bootstrap install/start is explicit but separate from the control-layer consent toggle."
+  "summary": "Pinned external Hermes Agent runtime launched through an AXM-owned profile with a fail-closed pre-tool policy gate, non-secret context injection, metadata-only receipts, and the existing proposal-first loopback layer.",
+  "notes": "Hermes remains external MIT-licensed donor/runtime code. The hook gate is an authorization boundary, not an OS sandbox. High-authority tools default OFF. Hermes memory/skills/results are not AXM canon. The older loopback consent state and runtime policy consent remain separate until deliberately unified."
 }
