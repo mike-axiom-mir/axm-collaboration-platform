@@ -1,0 +1,61 @@
+{
+  "schema": "axm.live-visual-receipt/v1",
+  "testedImplementationCommit": "5599e27eed11087dbdff43ad9f9cacaa4c158f8b",
+  "surface": "tools/deterministic-organ-fabric/",
+  "visualBackend": "BROWSER_PRIMARY",
+  "fallbackReason": null,
+  "claims": [
+    {
+      "claim": "Desktop generation places all three valid candidates in a visibly dormant and unselected library.",
+      "viewport": "default desktop viewport",
+      "baselineEvidence": "Fresh origin showed ARCHIVE DURABLE, AI OFF, and zero candidates.",
+      "action": "Loaded the starter proof, confirmed review, generated, and opened Archive.",
+      "expectedVisibleChange": "Three readable archive cards show DORMANT UNSELECTED and advisory purpose shelves.",
+      "observedSequence": "0 objects -> 3 candidates -> 3 archive cards and 3 durable events.",
+      "typedObservation": "Balanced, guarded, and lean cards each showed development-repair, INFERRED_UNCONFIRMED, DORMANT, UNSELECTED, a package digest, and a handoff export control.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claim": "Selection is an overlay and the dormant library survives reload.",
+      "viewport": "default desktop viewport",
+      "baselineEvidence": "Three cards were DORMANT UNSELECTED with 3 events.",
+      "action": "Selected the first compared candidate, reopened Archive, then reloaded the page and reopened Archive.",
+      "expectedVisibleChange": "One card becomes DORMANT SELECTED FOR REVIEW, two remain DORMANT UNSELECTED, and all three persist after reload.",
+      "observedSequence": "3 objects/3 events -> one review selection/4 events -> reload -> same 3 objects/4 events.",
+      "typedObservation": "Candidate generation state reset to zero after reload while the durable archive independently retained all three objects and the selection event.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claim": "Dormant archive controls and cards remain readable on mobile.",
+      "viewport": "390x844",
+      "baselineEvidence": "Reloaded persisted Archive state at desktop size.",
+      "action": "Applied the mobile viewport and scrolled from archive summary to all three cards.",
+      "expectedVisibleChange": "Actions wrap, cards stack, status labels and digests remain readable, and handoff buttons remain reachable.",
+      "observedSequence": "Mobile summary/action panel -> selected card -> two unselected cards.",
+      "typedObservation": "No horizontal clipping was visible; each card used a single column with a full-width handoff button.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claim": "The handoff action visibly preserves the authority ceiling.",
+      "viewport": "default desktop viewport",
+      "baselineEvidence": "Archive card exposed Export dormant source handoff.",
+      "action": "Clicked the first handoff export control.",
+      "expectedVisibleChange": "The page reports export without execution, admission, installation, or registration.",
+      "observedSequence": "Button click -> green EXPORTED notice.",
+      "typedObservation": "Notice read: dormant source handoff, no execution, admission, install, or registration.",
+      "verdict": "PASS",
+      "namedSeam": "The browser controller's download-event observer timed out, so retained-file delivery is not claimed from visual evidence; payload correctness is proven separately by deterministic and CLI checks."
+    }
+  ],
+  "consoleWarningsOrErrors": 0,
+  "selectedProofFramesRetained": 0,
+  "bufferDigest": null,
+  "temporaryPathsDeleted": [],
+  "cleanupComplete": true,
+  "browserTabClosed": true,
+  "localServerStopped": true,
+  "nextCheapestTest": "Mike reviews whether any dormant organ should receive a separate governed implementation route."
+}

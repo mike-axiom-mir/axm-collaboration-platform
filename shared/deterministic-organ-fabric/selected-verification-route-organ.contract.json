@@ -1,0 +1,89 @@
+{
+  "schema": "axm.trusted-verification-route-organ/v1",
+  "id": "selected-workshop-verification-route",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "strategy": "balanced",
+  "selection": {
+    "selectedBy": "Mike Tobi (decision delegated to Codex)",
+    "intentDigest": "sha256:e502b75fa2ba3c577dc5c21d15cb546a907acc7dba66ee7498f505d1cd6c535c",
+    "runDigest": "sha256:1f9864812edd67d1f90a0285fc6ea37c1e70421bc8e71195c2d2629e34e0c342",
+    "comparisonDigest": "sha256:39d490eded34be1c5d1c75da119b052d949e8fe49355ec0021abde3fec5f0fd8",
+    "packageDigest": "sha256:874399d704bf7e68bb1fdbcf4b16609eb5adb262fab8e310c90710bb1106385c",
+    "selectionDigest": "sha256:13c017c25b92e9c44d48feea00d22281c71c898a66b11cc484a280b9c08c769a"
+  },
+  "intent": {
+    "schema": "axm.organ-intent/v1",
+    "id": "workshop-verification-route",
+    "name": "Workshop Change Verification Route v0.2 Challenger",
+    "purpose": "Choose bounded evidence routes for changes spanning the Organ Fabric runtime, archive, Hub, and passive Mirror archive seam, using every declared affected surface.",
+    "fieldPackRef": {"id": "software-workshop", "version": "1.1.0", "digest": "sha256:240a5f38cdaa5469956f4ea880cb6bd885caee3f7f21ad5ba916abdb7c4450a2"},
+    "inputs": [
+      {"name": "changeType", "type": "string", "description": "Declared Workshop change class.", "required": true, "enum": ["config", "code", "ui", "data"]},
+      {"name": "risk", "type": "integer", "description": "Mike-assigned risk from one to five.", "required": true, "minimum": 1, "maximum": 5},
+      {"name": "affectedSurfaces", "type": "array", "description": "Explicit bounded Workshop surface tokens touched by the change.", "required": true, "items": "string"}
+    ],
+    "outputs": [
+      {"name": "route", "type": "array", "description": "Ordered evidence route tokens bound to the exact registry.", "required": true, "items": "string"},
+      {"name": "containment", "type": "string", "description": "Recommended workspace containment.", "required": true},
+      {"name": "explanation", "type": "string", "description": "Bounded rationale for the route.", "required": true}
+    ],
+    "requiredCases": [
+      {
+        "id": "fabric-ui-high-risk",
+        "description": "A high-risk Fabric Hub change requires observed browser evidence, archive reload evidence, and an isolated worktree.",
+        "input": {"changeType": "ui", "risk": 5, "affectedSurfaces": ["organ-fabric-hub", "mobile", "indexeddb-archive"]},
+        "assertions": [
+          {"path": "route", "op": "contains", "value": "browser-render-click"},
+          {"path": "route", "op": "contains", "value": "archive-reload"},
+          {"path": "containment", "op": "eq", "value": "isolated-worktree"}
+        ]
+      },
+      {
+        "id": "archive-connector-code-risk",
+        "description": "A risky archive connector change retains runtime, persistence, transport, and regression evidence.",
+        "input": {"changeType": "code", "risk": 4, "affectedSurfaces": ["organ-runtime", "fabric-archive", "mirror-passive-receiver"]},
+        "assertions": [
+          {"path": "route", "op": "contains", "value": "focused-selftest"},
+          {"path": "route", "op": "contains", "value": "archive-reload"},
+          {"path": "route", "op": "contains", "value": "sender-receiver-parity"},
+          {"path": "route", "op": "contains", "value": "required-regression"}
+        ]
+      }
+    ],
+    "desiredCases": [
+      {
+        "id": "archive-data-round-trip",
+        "description": "Archive data changes include deterministic round-trip and reload evidence.",
+        "input": {"changeType": "data", "risk": 3, "affectedSurfaces": ["portable-pack", "archive-index"]},
+        "assertions": [
+          {"path": "route", "op": "contains", "value": "round-trip-test"},
+          {"path": "route", "op": "contains", "value": "archive-reload"}
+        ]
+      }
+    ],
+    "invariants": [
+      "Every required input is read by the graph or explicitly required as guard-only.",
+      "Every emitted route token resolves through the exact packaged registry.",
+      "Never claim a browser path passed from syntax evidence alone.",
+      "Never install, promote, canonize, or mutate Foundation from an advisory route."
+    ],
+    "boundaries": [
+      "Risk and affected surfaces are explicit human inputs, not inferred.",
+      "Unknown and empty affected-surface sets are refused.",
+      "The route is evidence advice and grants no execution or merge authority."
+    ],
+    "resourceBudget": {"maxNodes": 64, "maxDepth": 16, "maxOperations": 1024, "maxListItems": 256, "maxInputBytes": 32768, "maxOutputBytes": 32768, "maxPackageFiles": 16, "maxPackageBytes": 524288},
+    "metricProfileId": "balanced-v1",
+    "status": "EXPERIMENTAL",
+    "authority": "NONE",
+    "intentDigest": "sha256:e502b75fa2ba3c577dc5c21d15cb546a907acc7dba66ee7498f505d1cd6c535c"
+  },
+  "authority": {"generatedCodeExecuted": false, "wroteState": false, "installed": false, "registered": false, "staged": false, "promoted": false, "canonChanged": false, "foundationChanged": false},
+  "boundaries": [
+    "The selected package is rebuilt and verified in memory from this exact intent and the current field pack.",
+    "Only the trusted declarative runtime evaluates the selected definition; packaged organ.js is never imported or executed.",
+    "Evidence Desk and Verification Spine outputs are prefills with UNKNOWN claims, not proof that checks ran.",
+    "The adapter cannot write archive state, install, register, stage, promote, mutate Foundation, or change CANON."
+  ]
+}

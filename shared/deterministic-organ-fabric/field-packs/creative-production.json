@@ -1,7 +1,7 @@
 {
   "schema": "axm.organ-field-pack/v1",
   "id": "creative-production",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "Creative Production",
   "description": "Build bounded production-route selectors with declared validators, accessibility requirements, and fallbacks.",
   "capability": "creative-production-route-selection",
@@ -11,13 +11,15 @@
   "allowedPrimitives": ["read", "literal", "lookup", "stable_union", "object"],
   "strategies": {
     "lean": {
-      "guards": [{"kind": "enum", "path": "medium", "values": ["visual", "audio"]}, {"kind": "enum", "path": "delivery", "values": ["web", "print", "live"]}],
+      "guards": [{"kind": "required", "path": "medium"}, {"kind": "required", "path": "delivery"}, {"kind": "required", "path": "accessibility"}, {"kind": "enum", "path": "medium", "values": ["visual", "audio"]}, {"kind": "enum", "path": "delivery", "values": ["web", "print", "live"]}],
       "graph": {"nodes": [
         {"id": "medium", "op": "read", "path": "medium"},
         {"id": "delivery", "op": "read", "path": "delivery"},
-        {"id": "route", "op": "lookup", "args": [{"ref": "medium"}], "table": {"visual": ["draft", "contrast-pass", "export"], "audio": ["rough-cut", "level-pass", "export"], "default": ["draft", "review"]}},
+        {"id": "access", "op": "read", "path": "accessibility"},
+        {"id": "baseRoute", "op": "lookup", "args": [{"ref": "medium"}], "table": {"visual": ["draft", "contrast-pass", "export"], "audio": ["rough-cut", "level-pass", "export"], "default": ["draft", "review"]}},
         {"id": "validators", "op": "lookup", "args": [{"ref": "medium"}], "table": {"visual": ["dimensions", "contrast"], "audio": ["duration", "peak-level"], "default": ["format"]}},
         {"id": "fallbacks", "op": "lookup", "args": [{"ref": "delivery"}], "table": {"web": ["static-poster"], "print": ["high-contrast-proof"], "live": ["pre-rendered-playback"], "default": ["manual-review"]}},
+        {"id": "route", "op": "stable_union", "args": [{"ref": "baseRoute"}, {"ref": "access"}]},
         {"id": "output", "op": "object", "fields": {"fallbacks": {"ref": "fallbacks"}, "route": {"ref": "route"}, "validators": {"ref": "validators"}}}
       ], "output": "output"}
     },
@@ -48,7 +50,7 @@
       ], "output": "output"}
     }
   },
-  "validators": ["typed-ports", "accessibility-declared", "fallback-present", "format-bounds", "held-out-cases", "rebuild-parity"],
+  "validators": ["typed-ports", "required-input-usage", "accessibility-declared", "fallback-present", "format-bounds", "held-out-cases", "rebuild-parity"],
   "heldOutCases": [
     {"id": "held-visual-web", "description": "Visual web work carries contrast validation and a static fallback.", "input": {"medium": "visual", "delivery": "web", "accessibility": ["alt-text-check"]}, "assertions": [{"path": "validators", "op": "contains", "value": "contrast"}, {"path": "fallbacks", "op": "contains", "value": "static-poster"}]},
     {"id": "held-audio-live", "description": "Live audio work carries level validation and pre-rendered fallback.", "input": {"medium": "audio", "delivery": "live", "accessibility": ["caption-check"]}, "assertions": [{"path": "validators", "op": "contains", "value": "peak-level"}, {"path": "fallbacks", "op": "contains", "value": "pre-rendered-playback"}]}
@@ -78,5 +80,5 @@
     "resourceBudget": {},
     "metricProfileId": "balanced-v1"
   },
-  "packDigest": "sha256:e8bf09f964b927e4d824bae2462fa05a08193dd1cc11d8b6df49803df740c06a"
+  "packDigest": "sha256:bfea68fbf04add39317a7981ce70c6df3b2272a11ebe3163de6e1a28e6322cc0"
 }

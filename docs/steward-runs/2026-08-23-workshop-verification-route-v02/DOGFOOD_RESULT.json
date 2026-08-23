@@ -1,0 +1,199 @@
+{
+  "schema": "axm.organ-dogfood-result/v1",
+  "status": "TEST",
+  "sourceCheckpoint": {
+    "branch": "codex/deterministic-organ-fabric-v1",
+    "commit": "ba46e3cdb99d87f5e4898ea84c11d645912ecc2a",
+    "worktree": "isolated-worktree"
+  },
+  "selectedAdmission": {
+    "strategy": "balanced",
+    "packageDigest": "sha256:874399d704bf7e68bb1fdbcf4b16609eb5adb262fab8e310c90710bb1106385c",
+    "selectionDigest": "sha256:13c017c25b92e9c44d48feea00d22281c71c898a66b11cc484a280b9c08c769a",
+    "packageVerified": true,
+    "generatedCodeExecuted": false
+  },
+  "reviewedBrief": {
+    "changeType": "code",
+    "risk": 4,
+    "affectedSurfaces": [
+      "archive-index",
+      "fabric-archive",
+      "indexeddb-archive",
+      "mirror-passive-receiver",
+      "mobile",
+      "organ-fabric-hub",
+      "organ-runtime",
+      "portable-pack"
+    ]
+  },
+  "deterministicPlan": {
+    "outputDigest": "sha256:44805ca7fcfe53855736d2f620c20d61859840fa49377cfb847342c894a530f8",
+    "planDigest": "sha256:3c2f002c203e56b8d1c232a8559ecb5abfec11d1dd4406686b6e3a81871f2b4a",
+    "containment": "isolated-worktree",
+    "route": [
+      "focused-selftest",
+      "contract-test",
+      "fixture-parity",
+      "round-trip-test",
+      "archive-reload",
+      "sender-receiver-parity",
+      "syntax-check",
+      "browser-render-click",
+      "required-regression"
+    ],
+    "claimsAtPlanningTime": {
+      "count": 9,
+      "verdict": "UNKNOWN",
+      "checksExecutedByOrgan": false,
+      "writesPerformedByOrgan": false
+    }
+  },
+  "routeResults": [
+    {
+      "token": "focused-selftest",
+      "status": "PASS",
+      "evidence": "Shared runtime 47 checks; Hub tool 11 checks."
+    },
+    {
+      "token": "contract-test",
+      "status": "PASS",
+      "evidence": "Package/contract suite 167 checks; selected package and selection lineage inspect successfully."
+    },
+    {
+      "token": "fixture-parity",
+      "status": "PASS",
+      "evidence": "The 167-check package suite exercises required and held-out fixtures with exact output assertions."
+    },
+    {
+      "token": "round-trip-test",
+      "status": "PASS",
+      "evidence": "Package import/export parity passed and two fresh CLI archive verifier processes returned the same index digest and counts."
+    },
+    {
+      "token": "archive-reload",
+      "status": "PASS",
+      "evidence": "Three browser candidates and three durable events verified, survived reload with identical digests, and reverified."
+    },
+    {
+      "token": "sender-receiver-parity",
+      "status": "PASS",
+      "evidence": "Mirror connection test proved explicit authority, exact bytes, dormant acknowledgement, idempotence, drift refusal, and no organ load."
+    },
+    {
+      "token": "syntax-check",
+      "status": "PASS",
+      "evidence": "Eleven implementation-checkpoint JavaScript files passed node --check; HTML script suite compiled 56 surfaces with 0 FAIL."
+    },
+    {
+      "token": "browser-render-click",
+      "status": "PASS",
+      "evidence": "Live desktop and mobile planning journey, durable archive generation, verification, and reload completed with no console warning or error."
+    },
+    {
+      "token": "required-regression",
+      "status": "PASS",
+      "evidence": "All ten AGENTS.md commands exited 0; verify.js recorded 572 PASS lines, 0 FAIL, 20 warnings, and a matching structural tools index."
+    }
+  ],
+  "liveBrowser": {
+    "desktop": {
+      "viewport": "1280x720",
+      "exactNineStepRouteVisible": true,
+      "unknownClaimsVisibleBeforeProof": 9,
+      "horizontalOverflow": false,
+      "documentScrollWidth": 1265
+    },
+    "mobile": {
+      "viewport": "390x844",
+      "exactNineStepRoutePresent": true,
+      "navigationTabs": 6,
+      "navigationRows": 2,
+      "horizontalOverflow": false,
+      "documentScrollWidth": 375
+    },
+    "archiveReload": {
+      "persistenceAdapter": "IndexedDB",
+      "objectsBefore": 0,
+      "objectsAfterGeneration": 3,
+      "eventsAfterGeneration": 3,
+      "verificationBeforeReload": "PASS",
+      "verificationAfterReload": "PASS",
+      "digestsPreserved": [
+        "sha256:28110533784cbd36055bbfe797df3360a1e215e58a223c1718da10fe4ddc007a",
+        "sha256:71b5e28d3a96cb01c32498c0f30b7ad900101c746df1207f23a65ca98b405f52",
+        "sha256:bef58eb68a2d732ad3bd4bb7c0321fca89e40807c73a5ddbdedb726eb7725e58"
+      ]
+    },
+    "consoleWarningsOrErrors": 0,
+    "noAiStateVisible": true,
+    "rawScreenshotsRetained": false
+  },
+  "filesystemArchive": {
+    "freshVerifierProcesses": 2,
+    "verification": "PASS",
+    "objects": 14,
+    "rejectedAttempts": 1,
+    "events": 28,
+    "indexDigest": "sha256:cab192d2fe8c5add72736b9fad620dcddbb0f1d5f6eb6a1d0f35117a2a0c04b7"
+  },
+  "requiredRegression": {
+    "allExitedZero": true,
+    "commands": [
+      "node verify.js",
+      "node hub/hub-selftest.js",
+      "node hub/route-selftest.js",
+      "node hub/graft-selftest.js",
+      "node hub/skin-selftest.js",
+      "node hub/verify-plus.js",
+      "node tests/html-script-syntax-test.js",
+      "node tests/tool-forge-package-test.js",
+      "node tools/agent-tool-forge/selftest.js",
+      "node tools/evidence-desk/selftest.js"
+    ],
+    "verifyJs": {
+      "passLines": 572,
+      "failLines": 0,
+      "warningLines": 20,
+      "toolsIndexMatches": true
+    }
+  },
+  "verificationSpine": {
+    "exactMappedClaims": [
+      "module.lifecycle",
+      "module.handoff",
+      "module.state-owner",
+      "foundation.route-integrity"
+    ],
+    "unmappedRouteTokens": [
+      "fixture-parity",
+      "sender-receiver-parity",
+      "syntax-check",
+      "browser-render-click"
+    ]
+  },
+  "authority": {
+    "trustedRuntimeEvaluated": true,
+    "generatedCodeExecuted": false,
+    "checksExecutedByOrgan": false,
+    "writesPerformedByOrgan": false,
+    "browserArchiveWrittenByAuthorizedHub": true,
+    "installed": false,
+    "registered": false,
+    "staged": false,
+    "promoted": false,
+    "canonChanged": false,
+    "foundationChanged": false
+  },
+  "limitations": [
+    "The live browser proof covers the in-app browser at the declared desktop and mobile viewports, not every browser or device.",
+    "The browser archive fixture is local test evidence and is not a Mirror receiver acknowledgement.",
+    "The 20 repository warnings remain preserved and are not converted into passes by this receipt.",
+    "No raw logs or screenshots are retained in this compact packet."
+  ],
+  "openHumanJudgments": [
+    "Usefulness of the selected verification route",
+    "Wisdom and merge fitness of the implementation",
+    "CANON status"
+  ]
+}

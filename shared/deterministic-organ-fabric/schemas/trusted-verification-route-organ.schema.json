@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.trusted-verification-route-organ/v1",
+  "title": "AXM Trusted Verification Route Organ Admission v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "version", "status", "strategy", "selection", "intent", "authority", "boundaries"],
+  "properties": {
+    "schema": {"const": "axm.trusted-verification-route-organ/v1"},
+    "id": {"const": "selected-workshop-verification-route"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "EXPERIMENTAL"},
+    "strategy": {"const": "balanced"},
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selectedBy", "intentDigest", "runDigest", "comparisonDigest", "packageDigest", "selectionDigest"],
+      "properties": {
+        "selectedBy": {"type": "string", "minLength": 1},
+        "intentDigest": {"$ref": "#/$defs/digest"},
+        "runDigest": {"$ref": "#/$defs/digest"},
+        "comparisonDigest": {"$ref": "#/$defs/digest"},
+        "packageDigest": {"$ref": "#/$defs/digest"},
+        "selectionDigest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "intent": {"$ref": "axm.organ-intent/v1"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "boundaries": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generatedCodeExecuted", "wroteState", "installed", "registered", "staged", "promoted", "canonChanged", "foundationChanged"],
+      "properties": {
+        "generatedCodeExecuted": {"const": false},
+        "wroteState": {"const": false},
+        "installed": {"const": false},
+        "registered": {"const": false},
+        "staged": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false},
+        "foundationChanged": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.organ-archive-stash-envelope/v1",
+  "title": "AXM Dormant Organ Source Handoff Envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "envelopeKind", "sourcePackage", "stashProjection", "sourceArtifact", "target", "authority", "boundary", "envelopeDigest"],
+  "properties": {
+    "schema": {"const": "axm.organ-archive-stash-envelope/v1"},
+    "status": {"const": "EXPERIMENTAL"},
+    "envelopeKind": {"const": "DORMANT_ORGAN_SOURCE_HANDOFF"},
+    "sourcePackage": {"type": "object", "additionalProperties": false, "required": ["packageDigest", "candidateId", "definitionDigest", "evaluationDigest"], "properties": {"packageDigest": {"$ref": "#/$defs/digest"}, "candidateId": {"type": "string"}, "definitionDigest": {"$ref": "#/$defs/digest"}, "evaluationDigest": {"$ref": "#/$defs/digest"}}},
+    "stashProjection": {"$ref": "organ-archive-stash-projection.schema.json"},
+    "sourceArtifact": {"type": "object", "additionalProperties": false, "required": ["path", "bytes", "sha256", "content"], "properties": {"path": {"type": "string", "pattern": "^organs/[a-z0-9-]+-organ\\.js$"}, "bytes": {"type": "integer", "minimum": 1, "maximum": 2097152}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "content": {"type": "string"}}},
+    "target": {"type": "object", "additionalProperties": false, "required": ["moduleId", "version", "contractCanonicalDigest", "acceptance"], "properties": {"moduleId": {"const": "ai-organ-archive"}, "version": {"type": "string"}, "contractCanonicalDigest": {"$ref": "#/$defs/digest"}, "acceptance": {"const": "EXPLICIT_HOST_IMPORT_AND_NORMAL_ARCHIVE_GATES_REQUIRED"}}},
+    "authority": {"$ref": "organ-archive-stash-projection.schema.json#/$defs/authority"},
+    "boundary": {"type": "string"},
+    "envelopeDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}}
+}

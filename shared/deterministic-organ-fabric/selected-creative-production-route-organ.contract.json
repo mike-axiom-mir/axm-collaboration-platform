@@ -1,0 +1,155 @@
+{
+  "schema": "axm.trusted-creative-production-route-organ/v1",
+  "id": "selected-fabric-review-production-route",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "strategy": "balanced",
+  "selection": {
+    "selectedBy": "Mike Tobi · delegated product choice",
+    "intentDigest": "sha256:2b5e2e711b313030cad84b104dda4c32bb8888ab4ef2a3c33d3fba571c4d23e8",
+    "runDigest": "sha256:bb6c23318ab64a4369cd851662049d1f0f3063b9937b3ff4d1540569451e3311",
+    "comparisonDigest": "sha256:bdb877f8ff48d168796ed3bc0a3e3cc84799bafaf642f1242b317610abb159c7",
+    "packageDigest": "sha256:abfd00672b0476fd6dd1b21d4fe800af12db1fb68f074c8764efb5e05f23b272",
+    "selectionDigest": "sha256:dfffe9066273da6bd31e4d5ce54bbd7d53c4e4b2fbda2eaaa443bef0ae7e9c71"
+  },
+  "intent": {
+    "schema": "axm.organ-intent/v1",
+    "id": "fabric-review-production-route",
+    "name": "Fabric Review Production Route",
+    "purpose": "Choose a bounded production and accessibility route for visual or audio evidence used in Organ Fabric review surfaces.",
+    "fieldPackRef": {
+      "id": "creative-production",
+      "version": "1.1.0",
+      "digest": "sha256:bfea68fbf04add39317a7981ce70c6df3b2272a11ebe3163de6e1a28e6322cc0"
+    },
+    "inputs": [
+      {
+        "name": "medium",
+        "type": "string",
+        "description": "Declared evidence medium.",
+        "required": true,
+        "enum": ["visual", "audio"]
+      },
+      {
+        "name": "delivery",
+        "type": "string",
+        "description": "Declared review delivery context.",
+        "required": true,
+        "enum": ["web", "print", "live"]
+      },
+      {
+        "name": "accessibility",
+        "type": "array",
+        "description": "Explicit accessibility tasks required for the evidence.",
+        "required": true,
+        "items": "string"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "route",
+        "type": "array",
+        "description": "Ordered production route.",
+        "required": true,
+        "items": "string"
+      },
+      {
+        "name": "validators",
+        "type": "array",
+        "description": "Mechanical validators for the evidence.",
+        "required": true,
+        "items": "string"
+      },
+      {
+        "name": "fallbacks",
+        "type": "array",
+        "description": "Declared accessible delivery fallbacks.",
+        "required": true,
+        "items": "string"
+      }
+    ],
+    "requiredCases": [
+      {
+        "id": "hub-visual-evidence",
+        "description": "Fabric Hub visual evidence carries contrast validation and a static web fallback.",
+        "input": {
+          "medium": "visual",
+          "delivery": "web",
+          "accessibility": ["alt-text-check", "keyboard-review"]
+        },
+        "assertions": [
+          {"path": "validators", "op": "contains", "value": "contrast"},
+          {"path": "fallbacks", "op": "contains", "value": "static-poster"}
+        ]
+      },
+      {
+        "id": "live-audio-evidence",
+        "description": "Live audio evidence carries peak-level validation and a pre-rendered fallback.",
+        "input": {
+          "medium": "audio",
+          "delivery": "live",
+          "accessibility": ["transcript-check", "caption-check"]
+        },
+        "assertions": [
+          {"path": "validators", "op": "contains", "value": "peak-level"},
+          {"path": "fallbacks", "op": "contains", "value": "pre-rendered-playback"}
+        ]
+      }
+    ],
+    "desiredCases": [
+      {
+        "id": "accessibility-task-retained",
+        "description": "A declared accessibility task is retained in the production route when supported.",
+        "input": {
+          "medium": "visual",
+          "delivery": "web",
+          "accessibility": ["alt-text-check"]
+        },
+        "assertions": [
+          {"path": "route", "op": "contains", "value": "alt-text-check"}
+        ]
+      }
+    ],
+    "invariants": [
+      "Mechanical validators remain separate from human visual or listening review.",
+      "Every production route declares a delivery fallback."
+    ],
+    "boundaries": [
+      "No taste, originality, finished-asset, visual-quality, or listening-quality claim.",
+      "No asset generation, filesystem access, provider call, or network access."
+    ],
+    "resourceBudget": {
+      "maxNodes": 64,
+      "maxDepth": 16,
+      "maxOperations": 1024,
+      "maxListItems": 256,
+      "maxInputBytes": 32768,
+      "maxOutputBytes": 32768,
+      "maxPackageFiles": 16,
+      "maxPackageBytes": 524288
+    },
+    "metricProfileId": "balanced-v1",
+    "status": "EXPERIMENTAL",
+    "authority": "NONE",
+    "intentDigest": "sha256:2b5e2e711b313030cad84b104dda4c32bb8888ab4ef2a3c33d3fba571c4d23e8"
+  },
+  "authority": {
+    "generatedCodeExecuted": false,
+    "assetGenerated": false,
+    "validatorsExecuted": false,
+    "humanReviewPerformed": false,
+    "wroteState": false,
+    "installed": false,
+    "registered": false,
+    "staged": false,
+    "promoted": false,
+    "canonChanged": false,
+    "foundationChanged": false
+  },
+  "boundaries": [
+    "The selected package is rebuilt and verified in memory from this exact intent and the current Creative Production pack.",
+    "Only the trusted declarative runtime evaluates the definition; packaged organ.js is never imported or executed.",
+    "The output is a production route, validator list, and fallback list—not a generated asset or a quality judgment.",
+    "The adapter cannot execute validators, perform human review, write archive state, install, promote, mutate Foundation, or change CANON."
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "axm.organ-intent/v1",
+  "id": "workshop-verification-route",
+  "name": "Workshop Change Verification Route",
+  "purpose": "Choose bounded evidence routes for changes spanning the Organ Fabric runtime, archive, Hub, and passive Mirror archive seam.",
+  "fieldPackRef": {
+    "id": "software-workshop",
+    "version": "1.0.0",
+    "digest": "sha256:792824d07efea356bf0dc6f2832298dfc2c70a0e0c8bbf9f940c1225dc60bc8c"
+  },
+  "inputs": [
+    {"name": "changeType", "type": "string", "description": "Declared Workshop change class.", "required": true, "enum": ["config", "code", "ui", "data"]},
+    {"name": "risk", "type": "integer", "description": "Mike-assigned risk from one to five.", "required": true, "minimum": 1, "maximum": 5},
+    {"name": "affectedSurfaces", "type": "array", "description": "Explicit Workshop surfaces touched by the change.", "required": true, "items": "string"}
+  ],
+  "outputs": [
+    {"name": "route", "type": "array", "description": "Ordered evidence route.", "required": true, "items": "string"},
+    {"name": "containment", "type": "string", "description": "Recommended workspace containment.", "required": true},
+    {"name": "explanation", "type": "string", "description": "Bounded rationale for the route.", "required": true}
+  ],
+  "requiredCases": [
+    {
+      "id": "fabric-ui-high-risk",
+      "description": "A high-risk Fabric Hub change requires observed browser evidence and an isolated worktree.",
+      "input": {"changeType": "ui", "risk": 5, "affectedSurfaces": ["organ-fabric-hub", "mobile", "indexeddb-archive"]},
+      "assertions": [
+        {"path": "route", "op": "contains", "value": "browser-render-click"},
+        {"path": "containment", "op": "eq", "value": "isolated-worktree"}
+      ]
+    },
+    {
+      "id": "archive-connector-code-risk",
+      "description": "A risky archive connector change retains regression evidence.",
+      "input": {"changeType": "code", "risk": 4, "affectedSurfaces": ["organ-runtime", "fabric-archive", "mirror-passive-receiver"]},
+      "assertions": [
+        {"path": "route", "op": "contains", "value": "focused-selftest"},
+        {"path": "route", "op": "contains", "value": "required-regression"}
+      ]
+    }
+  ],
+  "desiredCases": [
+    {
+      "id": "archive-data-round-trip",
+      "description": "Archive data changes should include a deterministic round trip where supported.",
+      "input": {"changeType": "data", "risk": 3, "affectedSurfaces": ["portable-pack", "archive-index"]},
+      "assertions": [{"path": "route", "op": "contains", "value": "round-trip-test"}]
+    }
+  ],
+  "invariants": [
+    "Never claim a browser path passed from syntax evidence alone.",
+    "Never install, promote, canonize, or mutate Foundation from an advisory route."
+  ],
+  "boundaries": [
+    "Risk and affected surfaces are explicit human inputs, not inferred.",
+    "The route is evidence advice and grants no execution or merge authority."
+  ],
+  "resourceBudget": {"maxNodes": 64, "maxDepth": 16, "maxOperations": 1024, "maxListItems": 256, "maxInputBytes": 32768, "maxOutputBytes": 32768, "maxPackageFiles": 16, "maxPackageBytes": 524288},
+  "metricProfileId": "balanced-v1",
+  "status": "EXPERIMENTAL",
+  "authority": "NONE",
+  "intentDigest": "sha256:ab3f392d41877db82f5d3d241fd3c193aeaa525a96c71923a98f0ff2ae2c10c6"
+}

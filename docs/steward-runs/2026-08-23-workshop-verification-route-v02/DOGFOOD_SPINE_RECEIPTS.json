@@ -1,0 +1,116 @@
+{
+  "schema": "axm.organ-dogfood-spine-receipts/v1",
+  "status": "TEST",
+  "sourceCheckpoint": "git:ba46e3cdb99d87f5e4898ea84c11d645912ecc2a",
+  "receipts": [
+    {
+      "schema": "axm.verification-receipt/v2",
+      "id": "dogfood-selected-balanced-module",
+      "verifier": {
+        "id": "selected-workshop-verification-route",
+        "version": "0.1.0",
+        "category": "module"
+      },
+      "subject": {
+        "id": "deterministic-organ-fabric-v1-selected-balanced",
+        "kind": "module",
+        "version": "0.1.0",
+        "digest": "git:ba46e3cdb99d87f5e4898ea84c11d645912ecc2a"
+      },
+      "target_profile": "workshop-full",
+      "claims": [
+        {
+          "id": "module.lifecycle",
+          "status": "PASS",
+          "required": true,
+          "risk": "high",
+          "summary": "Focused shared-runtime and Hub selftests pass at the bound implementation checkpoint.",
+          "evidence": [
+            "node shared/deterministic-organ-fabric/selftest.js · 47 checks",
+            "node tools/deterministic-organ-fabric/selftest.js · 11 checks"
+          ],
+          "limitations": [
+            "Passing lifecycle checks does not promote or canonize the module."
+          ]
+        },
+        {
+          "id": "module.handoff",
+          "status": "PASS",
+          "required": true,
+          "risk": "high",
+          "summary": "Closed contracts, exact selected lineage, and detached package integrity pass.",
+          "evidence": [
+            "node tests/deterministic-organ-fabric-package-test.js · 167 checks",
+            "selected package sha256:874399d704bf7e68bb1fdbcf4b16609eb5adb262fab8e310c90710bb1106385c"
+          ],
+          "limitations": [
+            "Package validity is not runtime admission."
+          ]
+        },
+        {
+          "id": "module.state-owner",
+          "status": "PASS",
+          "required": true,
+          "risk": "high",
+          "summary": "Filesystem archive views and authorized Hub IndexedDB state survive fresh-process or reload boundaries.",
+          "evidence": [
+            "Two fresh CLI verifier processes matched index sha256:cab192d2fe8c5add72736b9fad620dcddbb0f1d5f6eb6a1d0f35117a2a0c04b7",
+            "Three browser objects and three durable events reverified after page reload"
+          ],
+          "limitations": [
+            "The browser archive fixture is local evidence, not a Mirror receiver acknowledgement."
+          ]
+        }
+      ],
+      "limitations": [
+        "Fixture parity, transport, syntax, and live browser routes have no exact module-category Spine mapping and remain recorded in the Evidence Desk receipt.",
+        "Usefulness and wisdom remain human judgments."
+      ],
+      "created_at": "2026-08-23T00:00:00.000Z"
+    },
+    {
+      "schema": "axm.verification-receipt/v2",
+      "id": "dogfood-selected-balanced-foundation-route-integrity",
+      "verifier": {
+        "id": "selected-workshop-verification-route",
+        "version": "0.1.0",
+        "category": "foundation"
+      },
+      "subject": {
+        "id": "workshop-route-integrity-at-ba46e3cd",
+        "kind": "foundation-checkpoint",
+        "version": "1",
+        "digest": "git:ba46e3cdb99d87f5e4898ea84c11d645912ecc2a"
+      },
+      "target_profile": "workshop-full",
+      "claims": [
+        {
+          "id": "foundation.route-integrity",
+          "status": "PASS",
+          "required": true,
+          "risk": "high",
+          "summary": "All ten repository-required AGENTS.md commands exit zero at the bound checkpoint.",
+          "evidence": [
+            "verify.js · 572 PASS lines · 0 FAIL · 20 warnings · tools index matches",
+            "All nine remaining AGENTS.md commands exited zero"
+          ],
+          "limitations": [
+            "Twenty warnings remain preserved for review.",
+            "Regression success does not grant CANON status."
+          ]
+        }
+      ],
+      "limitations": [
+        "The active Foundation worktree was not modified by this isolated branch.",
+        "Only Mike can make the merge or CANON decision."
+      ],
+      "created_at": "2026-08-23T00:00:00.000Z"
+    }
+  ],
+  "unmappedRouteTokens": [
+    "fixture-parity",
+    "sender-receiver-parity",
+    "syntax-check",
+    "browser-render-click"
+  ]
+}

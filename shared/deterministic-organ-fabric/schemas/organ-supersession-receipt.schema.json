@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.organ-supersession-receipt/v1",
+  "title": "AXM Organ Supersession Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "selectedBy", "priorPackageDigest", "replacementPackageDigest", "replacementSelectionDigest", "decision", "applied", "installed", "registered", "staged", "promoted", "canonChanged", "permissionsChanged", "supersessionDigest"],
+  "properties": {
+    "schema": {"const": "axm.organ-supersession-receipt/v1"},
+    "selectedBy": {"type": "string", "minLength": 1},
+    "priorPackageDigest": {"$ref": "#/$defs/digest"},
+    "replacementPackageDigest": {"$ref": "#/$defs/digest"},
+    "replacementSelectionDigest": {"$ref": "#/$defs/digest"},
+    "decision": {"const": "SUPERSEDE_IMPLEMENTATION_SELECTION"},
+    "applied": {"const": false},
+    "installed": {"const": false},
+    "registered": {"const": false},
+    "staged": {"const": false},
+    "promoted": {"const": false},
+    "canonChanged": {"const": false},
+    "permissionsChanged": {"const": false},
+    "supersessionDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}}
+}

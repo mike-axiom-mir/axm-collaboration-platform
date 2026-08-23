@@ -3,6 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const core = require('./core.js');
+const planner = require('./verification-route-planner.js');
 
 const PACK_NAMES = ['software-workshop', 'games-entertainment', 'creative-production'];
 
@@ -16,4 +17,4 @@ function findPack(id) {
   return loadPacks().find(function (pack) { return pack.id === id; }) || null;
 }
 
-module.exports = Object.assign({}, core, { loadPacks: loadPacks, findPack: findPack, PACK_NAMES: PACK_NAMES });
+module.exports = Object.assign({}, core, planner, { loadPacks: loadPacks, findPack: findPack, PACK_NAMES: PACK_NAMES });

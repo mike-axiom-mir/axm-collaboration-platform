@@ -1,26 +1,26 @@
 {
   "schema": "axm.public-modules/v1",
-  "generated_at": "2026-08-23T12:18:11.903Z",
+  "generated_at": "2026-08-23T14:51:55.127Z",
   "source": {
     "path": "tools-index.json",
-    "digest": "6a89b993bd3d46b6d4a897f65afcfaa2b64e1565ad7798dd7f4dd3617795e81d"
+    "digest": "c932677d0f7429a7a2ae267d93bca9df9ecbaba7be5411774faa6cb3a7ce70be"
   },
   "summary": {
-    "tools": 234,
+    "tools": 235,
     "statuses": {
       "TEST": 131,
       "WORKING": 4,
-      "EXPERIMENTAL": 98,
+      "EXPERIMENTAL": 99,
       "SHELL": 1
     },
-    "contractsPresent": 234,
-    "contractsValid": 234,
-    "topLevelSelftests": 234,
-    "anySelftests": 234,
-    "permissionsDeclared": 234,
-    "kindsDeclared": 233,
-    "readmes": 148,
-    "capabilities": 2188
+    "contractsPresent": 235,
+    "contractsValid": 235,
+    "topLevelSelftests": 235,
+    "anySelftests": 235,
+    "permissionsDeclared": 235,
+    "kindsDeclared": 234,
+    "readmes": 149,
+    "capabilities": 2213
   },
   "truth": {
     "automaticPromotion": false,
@@ -124,10 +124,8 @@
         "ageDays": 26
       },
       "promotion": {
-        "state": "CLAIM_NEEDS_REVERIFICATION",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "CURRENT",
+        "blockers": []
       }
     },
     {
@@ -191,7 +189,7 @@
       "promotion": {
         "state": "BLOCKED",
         "blockers": [
-          "current selftest did not pass"
+          "selftest result is stale for the current selftest digest"
         ]
       }
     },
@@ -340,10 +338,8 @@
         "ageDays": 25
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -517,8 +513,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -696,7 +694,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -963,7 +961,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -1061,7 +1059,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -1108,7 +1106,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -1157,7 +1155,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -1728,7 +1726,8 @@
       "promotion": {
         "state": "BLOCKED",
         "blockers": [
-          "kind is undeclared"
+          "kind is undeclared",
+          "selftest result is stale for the current selftest digest"
         ]
       }
     },
@@ -3051,7 +3050,7 @@
       "entry_path": "tools/deterministic-organ-fabric/index.html",
       "manifest": {
         "path": "tools/deterministic-organ-fabric/manifest.json",
-        "sha256": "543bbe35a92be415df9b4909d5b0f7cbd208b76833c7d0081c669b1053f9aba0",
+        "sha256": "c269ca533ad33d77e684578e766ec8edc179da7c40ef084b7fce20e58cd55f55",
         "valid": true,
         "errors": []
       },
@@ -3062,13 +3061,28 @@
         "provides": [
           "deterministic-organ-generation",
           "candidate-comparison",
+          "trusted-read-only-verification-route-planning",
+          "selected-balanced-verification-route-organ",
+          "selected-balanced-creative-production-route-organ",
+          "evidence-desk-prefill",
+          "verification-spine-prefill",
+          "typed-selection-supersession-lifecycle",
           "content-addressed-organ-archive",
+          "valid-unselected-dormant-organ-stash",
+          "detached-ai-organ-archive-source-handoffs",
+          "explicit-digest-bound-passive-mirror-archive-connection",
           "detached-nursery-compatible-packages"
         ],
         "consumes": [
           "axm.organ-intent/v1",
           "axm.organ-field-pack/v1",
-          "explicit-host-storage-authorization"
+          "axm.organ-selection-receipt/v1",
+          "axm.trusted-verification-route-organ/v1",
+          "axm.trusted-creative-production-route-organ/v1",
+          "axm.trusted-creative-production-route-input/v1",
+          "explicit-host-storage-authorization",
+          "exact-host-mirror-archive-connection-acknowledgement",
+          "ai-organ-archive-0.9.0-bound-receiver"
         ],
         "errors": []
       },
@@ -3268,6 +3282,55 @@
       },
       "tests": [
         "tools/deterministic-pr-sequencer/selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
+        "blockers": []
+      }
+    },
+    {
+      "id": "deterministic-run-integrator",
+      "name": "AXM Deterministic Run Integrator",
+      "status": "EXPERIMENTAL",
+      "kind": "gate",
+      "audience": "human-machine",
+      "source_path": "tools/deterministic-run-integrator",
+      "entry_path": "tools/deterministic-run-integrator/run-integrator-cli.js",
+      "manifest": {
+        "path": "tools/deterministic-run-integrator/manifest.json",
+        "sha256": "a41da9941bfd8d0dc8ef9222327c636af8728f556fdf60707a49bc215a86dce6",
+        "valid": true,
+        "errors": []
+      },
+      "contract": {
+        "path": "tools/deterministic-run-integrator/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "git-run.isolated-worktree-begin",
+          "git-run.declared-change-plan",
+          "git-run.deterministic-local-seal",
+          "git-run.exact-target-fast-forward",
+          "git-run.post-integration-lane-cleanup",
+          "git-run.target-drift-hold",
+          "git-run.private-path-refusal"
+        ],
+        "consumes": [
+          "local-git-runtime",
+          "deterministic-json-core",
+          "git-run.explicit-integration-policy",
+          "filesystem:clean-codex-or-agent-target",
+          "filesystem:explicit-external-lane-path"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/deterministic-run-integrator/selftest.js"
       ],
       "verified_at": null,
       "freshness": {
@@ -4899,8 +4962,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -5305,10 +5370,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -5856,10 +5919,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -5947,10 +6008,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -6848,10 +6907,8 @@
         "ageDays": 26
       },
       "promotion": {
-        "state": "CLAIM_NEEDS_REVERIFICATION",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "CURRENT",
+        "blockers": []
       }
     },
     {
@@ -8913,10 +8970,8 @@
         "ageDays": 26
       },
       "promotion": {
-        "state": "CLAIM_NEEDS_REVERIFICATION",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "CURRENT",
+        "blockers": []
       }
     },
     {
@@ -9227,8 +9282,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -9811,8 +9868,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -10444,10 +10503,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -10625,7 +10682,7 @@
       "promotion": {
         "state": "BLOCKED",
         "blockers": [
-          "current selftest did not pass"
+          "selftest result is stale for the current selftest digest"
         ]
       }
     },
@@ -10818,8 +10875,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -11047,10 +11106,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -11106,10 +11163,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "current selftest did not pass"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -11270,8 +11325,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -11421,8 +11478,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {

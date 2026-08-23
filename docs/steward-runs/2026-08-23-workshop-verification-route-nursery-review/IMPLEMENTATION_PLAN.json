@@ -1,0 +1,58 @@
+{
+  "schema": "axm.organ-repair-and-implementation-plan/v1",
+  "target": "workshop-verification-route-v0.2-challenger",
+  "status": "PLANNED_NOT_APPLIED",
+  "phases": [
+    {
+      "id": "R1",
+      "name": "Strengthen Fabric capability coverage",
+      "changes": [
+        "Add a hard gate proving every required field-pack input is read by the graph or explicitly declared guard-only.",
+        "Add negative fixtures where a declared required input is present but semantically unused.",
+        "Keep the v1 package and receipts immutable; a changed gate triggers revalidation rather than retroactive rewriting."
+      ],
+      "acceptance": ["The current selected v0.1 definition fails the new required-input-usage gate with REQUIRED_INPUT_UNUSED."]
+    },
+    {
+      "id": "R2",
+      "name": "Version bounded surface routing",
+      "changes": [
+        "Introduce a versioned verification-route token registry that binds each token to an Evidence Desk claim kind, native proof surface, and optional Verification Spine category/claim ID.",
+        "Add a bounded stable list-to-route lookup primitive under a new runtime version, or an equivalently closed field-pack representation that can use every affected surface without unbounded iteration.",
+        "Version the Software & Workshop field pack and bind the new runtime, pack, registry, and metric digests."
+      ],
+      "acceptance": ["Unknown surface and route tokens are refused.", "Equivalent surface sets rebuild identically.", "Different semantically relevant surface sets produce appropriately different route tokens."]
+    },
+    {
+      "id": "R3",
+      "name": "Generate and compare a v0.2 challenger",
+      "changes": [
+        "Regenerate lean, balanced, and guarded challengers from the repaired pack.",
+        "Add held-out and metamorphic cases for runtime-only, Hub/mobile, archive/persistence, and passive receiver transport surfaces.",
+        "Compare the challenger against the preserved v0.1 receipt without auto-superseding it."
+      ],
+      "acceptance": ["All hard gates pass, surface sensitivity is proven, ties remain visible, and package rebuild parity holds."]
+    },
+    {
+      "id": "R4",
+      "name": "Add a trusted read-only planning adapter",
+      "changes": [
+        "Expose a pure plan action accepting an explicit typed change brief and exact verified definition lineage.",
+        "Return a typed verification route plan plus an optional Evidence Desk prefill packet.",
+        "Never run tests, operate a browser, write state, stage, install, merge, promote, or change CANON."
+      ],
+      "acceptance": ["Allowed and denied host calls are tested.", "Every emitted token resolves through the exact registry.", "Candidate organ.js is never required or executed by the adapter."]
+    },
+    {
+      "id": "R5",
+      "name": "Repeat Nursery and human selection",
+      "changes": [
+        "Scan the v0.2 package through Nursery and repeat independent behavior, authority, and integration proofs.",
+        "Ask Mike to retain, reject, or select the challenger; record supersession only after explicit choice."
+      ],
+      "acceptance": ["Nursery exact parity passes.", "Mike remains the implementation and merge gate.", "Status remains EXPERIMENTAL until explicitly changed."]
+    }
+  ],
+  "foundationMutation": false,
+  "canon": false
+}

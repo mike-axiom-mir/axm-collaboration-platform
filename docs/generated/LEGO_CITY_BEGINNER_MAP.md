@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `fd4cf7756bd2db24dae27e98bbbc2d4fb2e0244c518d598e062e6b047f356534`
+Twin digest: `bfd301b9ccf796b22e0d7fcdddf0e76f141a55b9817a853415397919905cbcc1`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -13,7 +13,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | aetherfx | HAND | TEST | 18 | WRITE_CANDIDATE | UNKNOWN | `a1dc66141473e5d9…` |
 | agent-command-center | BRIDGE | TEST | 8 | NONE | UNKNOWN | `3d065deca1114cde…` |
 | agent-tool-forge | HAND | TEST | 6 | WRITE_CANDIDATE | UNKNOWN | `082142fa4cab385f…` |
-| ai-habitat | BRIDGE | TEST | 6 | NETWORK_READ | UNKNOWN | `18d6d1e3fbc7a9cb…` |
+| ai-habitat | BRIDGE | TEST | 6 | NETWORK_READ | UNKNOWN | `b2e0b00c67e2481d…` |
 | ai-task-talk | ROUTE | TEST | 3 | NONE | UNKNOWN | `ca912d461fb4a91b…` |
 | ai-team | BRIDGE | TEST | 30 | NONE | UNKNOWN | `2cf51493d4ec51a9…` |
 | ai-team-steward-lab | ROOM | TEST | 8 | NONE | LOW | `8ee9cdc509be33d6…` |
@@ -44,7 +44,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | capability-fabric | BRIDGE | EXPERIMENTAL | 5 | WRITE_CANDIDATE | UNKNOWN | `e9205240c39b3e5e…` |
 | capability-gap-workbench | HAND | TEST | 5 | WRITE_CANDIDATE | MEDIUM | `e8c183f4486ef4ae…` |
 | capability-recipe-foundry | HAND | EXPERIMENTAL | 6 | WRITE_CANDIDATE | UNKNOWN | `d34e2bd0e664ab78…` |
-| challenge-arena | HAND | TEST | 5 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `5ab1c562399aff7e…` |
+| challenge-arena | HAND | TEST | 5 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `f0177c0134c697f5…` |
 | character-animation-mocap-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `2aea59965e3adca5…` |
 | character-creature-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `31530b278d8d7694…` |
 | chatgpt-connector | BRIDGE | TEST | 4 | WRITE_CANDIDATE | UNKNOWN | `dfcb60c697ea2efd…` |
@@ -68,7 +68,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | deterministic-continuation-capsule | HAND | EXPERIMENTAL | 6 | OBSERVE_LOCAL, WRITE_CANDIDATE | MEDIUM | `1a49f4047edf1e23…` |
 | deterministic-job-cache-scheduler | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `d7c59d059ec4865c…` |
 | deterministic-json-core | BRICK | EXPERIMENTAL | 2 | NONE | LOW | `5ce6587723d9943e…` |
-| deterministic-organ-fabric | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | UNKNOWN | `30a84f4785e185b1…` |
+| deterministic-organ-fabric | ROUTE | EXPERIMENTAL | 13 | WRITE_CANDIDATE | UNKNOWN | `665a10eb3a3ffab5…` |
 | deterministic-pr-base-refresh | HAND | EXPERIMENTAL | 5 | NETWORK_READ, WRITE_CANDIDATE | UNKNOWN | `c33cc63a1cf679c2…` |
 | deterministic-pr-checkpoint | HAND | EXPERIMENTAL | 7 | WRITE_CANDIDATE | MEDIUM | `ba04356053c73262…` |
 | deterministic-pr-publisher | HAND | EXPERIMENTAL | 7 | NETWORK_READ, WRITE_CANDIDATE | UNKNOWN | `91227e0079d1e6c8…` |
@@ -219,7 +219,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | shared/deterministic-animation-fabric | BRICK | EXPERIMENTAL | 12 | NONE | LOW | `d03680c39d4e474d…` |
 | shared/deterministic-audio-fabric | BRICK | EXPERIMENTAL | 5 | NONE | LOW | `c4bbf8ea631be508…` |
 | shared/deterministic-material-fabric | BRICK | EXPERIMENTAL | 4 | NONE | LOW | `5f44cb59600fdba4…` |
-| shared/deterministic-organ-fabric | BRICK | EXPERIMENTAL | 5 | NONE | LOW | `daf716a23c9f1f11…` |
+| shared/deterministic-organ-fabric | BRICK | EXPERIMENTAL | 11 | NONE | LOW | `9cbe02ecaf9847f0…` |
 | shared/deterministic-spatial-handoff | BRICK | EXPERIMENTAL | 5 | NONE | LOW | `25babfa185b18a8d…` |
 | shared/deterministic-ui-fabric | BRICK | EXPERIMENTAL | 5 | NONE | LOW | `d190be203cf2e7b0…` |
 | shared/event-journal | ORGAN | EXPERIMENTAL | 3 | WRITE_CANDIDATE | UNKNOWN | `50f70d4749dc628d…` |

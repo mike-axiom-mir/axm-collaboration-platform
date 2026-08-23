@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.verification-spine-prefill/v1",
+  "title": "AXM Verification Spine Prefill v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "targetProfile", "subject", "claims", "unmappedTokens", "limitations"],
+  "properties": {
+    "schema": {"const": "axm.verification-spine-prefill/v1"},
+    "targetProfile": {"const": "workshop-full"},
+    "subject": {"type": "object", "additionalProperties": false, "required": ["id", "kind", "digest"], "properties": {"id": {"type": "string"}, "kind": {"const": "verification-route-plan"}, "digest": {"$ref": "#/$defs/digest"}}},
+    "claims": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["token", "categoryId", "claimId", "status", "required", "risk", "summary", "evidenceRoute"], "properties": {"token": {"type": "string"}, "categoryId": {"type": "string"}, "claimId": {"type": "string"}, "status": {"const": "UNKNOWN"}, "required": {"const": true}, "risk": {"enum": ["low", "medium", "high"]}, "summary": {"type": "string"}, "evidenceRoute": {"type": "object", "additionalProperties": false, "required": ["kind", "surface", "passCondition"], "properties": {"kind": {"type": "string"}, "surface": {"type": "string"}, "passCondition": {"type": "string"}}}}}},
+    "unmappedTokens": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}}
+}

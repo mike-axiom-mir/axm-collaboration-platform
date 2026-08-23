@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `e44fee7f3b0ef206a77d1cae4267c52911ed2813ee5c3fe8b04d3127ab6529b7`
+Semantic graph digest: `50d4fe02cf535babcf4d957a66181efba6bc433968459b26c3b54543ef2d4d9b`
 
-Blocks: 301 · Capabilities: 2903 · Schemas: 820 · Unresolved edges: 1961
+Blocks: 301 · Capabilities: 2923 · Schemas: 835 · Unresolved edges: 1967
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -72,7 +72,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | deterministic-continuation-capsule | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | OBSERVE_LOCAL, WRITE_CANDIDATE | 6 | 5 | 1 selftest(s) |
 | deterministic-job-cache-scheduler | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | deterministic-json-core | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 2 | 1 | 1 selftest(s) |
-| deterministic-organ-fabric | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
+| deterministic-organ-fabric | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 13 | 9 | 1 selftest(s) |
 | deterministic-pr-base-refresh | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, WRITE_CANDIDATE | 5 | 5 | 1 selftest(s) |
 | deterministic-pr-checkpoint | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 7 | 6 | 1 selftest(s) |
 | deterministic-pr-publisher | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, WRITE_CANDIDATE | 7 | 5 | 1 selftest(s) |
@@ -223,7 +223,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/deterministic-animation-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 3 | 2 selftest(s) |
 | shared/deterministic-audio-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 2 selftest(s) |
 | shared/deterministic-material-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 5 | 1 selftest(s) |
-| shared/deterministic-organ-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 1 selftest(s) |
+| shared/deterministic-organ-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 3 | 1 selftest(s) |
 | shared/deterministic-spatial-handoff | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 7 | 1 selftest(s) |
 | shared/deterministic-ui-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
 | shared/event-journal | ORGAN (DECLARED) | EXPERIMENTAL | WRITE_CANDIDATE | 3 | 2 | 1 selftest(s) |
@@ -829,8 +829,14 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `deterministic-job-cache-scheduler` → `axm.deterministic-job-run/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `deterministic-job-cache-scheduler` → `axm.p34-release-verification/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-json-core` → `application/json-compatible-value` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-organ-fabric` → `ai-organ-archive-0.9.0-bound-receiver` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-organ-fabric` → `axm.organ-field-pack/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-organ-fabric` → `axm.organ-intent/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-organ-fabric` → `axm.organ-selection-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-organ-fabric` → `axm.trusted-creative-production-route-input/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-organ-fabric` → `axm.trusted-creative-production-route-organ/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-organ-fabric` → `axm.trusted-verification-route-organ/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `deterministic-organ-fabric` → `exact-host-mirror-archive-connection-acknowledgement` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-organ-fabric` → `explicit-host-storage-authorization` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-pr-base-refresh` → `approved-git-remote` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `deterministic-pr-base-refresh` → `filesystem:explicit-clean-publish-lane-worktree` (UNKNOWN)

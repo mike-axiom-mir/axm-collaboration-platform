@@ -1,0 +1,62 @@
+{
+  "schema": "axm.organ-intent/v1",
+  "id": "fabric-review-production-route",
+  "name": "Fabric Review Production Route",
+  "purpose": "Choose a bounded production and accessibility route for visual or audio evidence used in Organ Fabric review surfaces.",
+  "fieldPackRef": {
+    "id": "creative-production",
+    "version": "1.0.0",
+    "digest": "sha256:e8bf09f964b927e4d824bae2462fa05a08193dd1cc11d8b6df49803df740c06a"
+  },
+  "inputs": [
+    {"name": "medium", "type": "string", "description": "Declared evidence medium.", "required": true, "enum": ["visual", "audio"]},
+    {"name": "delivery", "type": "string", "description": "Declared review delivery context.", "required": true, "enum": ["web", "print", "live"]},
+    {"name": "accessibility", "type": "array", "description": "Explicit accessibility tasks required for the evidence.", "required": true, "items": "string"}
+  ],
+  "outputs": [
+    {"name": "route", "type": "array", "description": "Ordered production route.", "required": true, "items": "string"},
+    {"name": "validators", "type": "array", "description": "Mechanical validators for the evidence.", "required": true, "items": "string"},
+    {"name": "fallbacks", "type": "array", "description": "Declared accessible delivery fallbacks.", "required": true, "items": "string"}
+  ],
+  "requiredCases": [
+    {
+      "id": "hub-visual-evidence",
+      "description": "Fabric Hub visual evidence carries contrast validation and a static web fallback.",
+      "input": {"medium": "visual", "delivery": "web", "accessibility": ["alt-text-check", "keyboard-review"]},
+      "assertions": [
+        {"path": "validators", "op": "contains", "value": "contrast"},
+        {"path": "fallbacks", "op": "contains", "value": "static-poster"}
+      ]
+    },
+    {
+      "id": "live-audio-evidence",
+      "description": "Live audio evidence carries peak-level validation and a pre-rendered fallback.",
+      "input": {"medium": "audio", "delivery": "live", "accessibility": ["transcript-check", "caption-check"]},
+      "assertions": [
+        {"path": "validators", "op": "contains", "value": "peak-level"},
+        {"path": "fallbacks", "op": "contains", "value": "pre-rendered-playback"}
+      ]
+    }
+  ],
+  "desiredCases": [
+    {
+      "id": "accessibility-task-retained",
+      "description": "A declared accessibility task is retained in the production route when supported.",
+      "input": {"medium": "visual", "delivery": "web", "accessibility": ["alt-text-check"]},
+      "assertions": [{"path": "route", "op": "contains", "value": "alt-text-check"}]
+    }
+  ],
+  "invariants": [
+    "Mechanical validators remain separate from human visual or listening review.",
+    "Every production route declares a delivery fallback."
+  ],
+  "boundaries": [
+    "No taste, originality, finished-asset, visual-quality, or listening-quality claim.",
+    "No asset generation, filesystem access, provider call, or network access."
+  ],
+  "resourceBudget": {"maxNodes": 64, "maxDepth": 16, "maxOperations": 1024, "maxListItems": 256, "maxInputBytes": 32768, "maxOutputBytes": 32768, "maxPackageFiles": 16, "maxPackageBytes": 524288},
+  "metricProfileId": "balanced-v1",
+  "status": "EXPERIMENTAL",
+  "authority": "NONE",
+  "intentDigest": "sha256:45d9f77c08a4c08b47e2f65b4e2eec7b23d1727ced9fc0e3748b946d016c1c22"
+}

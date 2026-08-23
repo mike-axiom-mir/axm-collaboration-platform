@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.trusted-creative-production-route-output/v1",
+  "title": "AXM Trusted Creative Production Route Output v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "implementation", "input", "productionPlan", "openHumanJudgments", "authority", "outputDigest"],
+  "properties": {
+    "schema": {"const": "axm.trusted-creative-production-route-output/v1"},
+    "status": {"const": "EXPERIMENTAL"},
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "strategy", "packageDigest", "selectionDigest"],
+      "properties": {
+        "id": {"const": "selected-fabric-review-production-route"},
+        "version": {"const": "0.1.0"},
+        "strategy": {"const": "balanced"},
+        "packageDigest": {"$ref": "#/$defs/digest"},
+        "selectionDigest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "input": {"$ref": "axm.trusted-creative-production-route-input/v1"},
+    "productionPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "validators", "fallbacks"],
+      "properties": {
+        "route": {"type": "array", "items": {"type": "string"}},
+        "validators": {"type": "array", "items": {"type": "string"}},
+        "fallbacks": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "openHumanJudgments": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trustedRuntimeEvaluated", "generatedCodeExecuted", "assetGenerated", "validatorsExecuted", "humanReviewPerformed", "wroteState", "installed", "registered", "staged", "promoted", "canonChanged", "foundationChanged"],
+      "properties": {
+        "trustedRuntimeEvaluated": {"const": true},
+        "generatedCodeExecuted": {"const": false},
+        "assetGenerated": {"const": false},
+        "validatorsExecuted": {"const": false},
+        "humanReviewPerformed": {"const": false},
+        "wroteState": {"const": false},
+        "installed": {"const": false},
+        "registered": {"const": false},
+        "staged": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false},
+        "foundationChanged": {"const": false}
+      }
+    },
+    "outputDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}

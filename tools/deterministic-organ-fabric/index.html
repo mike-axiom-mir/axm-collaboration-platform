@@ -6,6 +6,14 @@
   <title>Deterministic Organ Fabric</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="responsive.css">
+  <link rel="stylesheet" href="selected-route.css">
+  <style>.validation:empty{display:none}</style>
+  <style>
+    .archive-row{grid-template-columns:minmax(180px,1fr) minmax(150px,.75fr) minmax(210px,1.2fr) auto}
+    .archive-identity{display:grid;gap:5px}.archive-meta{color:var(--muted);font:10px/1.4 ui-monospace,monospace;text-transform:uppercase}
+    @media(max-width:880px){.archive-row{grid-template-columns:1fr 1fr}.archive-row code,.archive-row button{grid-column:1/-1}}
+    @media(max-width:600px){.archive-row{grid-template-columns:1fr}.archive-row code,.archive-row button{grid-column:auto}}
+  </style>
 </head>
 <body>
   <header class="masthead">
@@ -25,6 +33,7 @@
     <button class="tab active" data-view="brief" aria-selected="true">Brief</button>
     <button class="tab" data-view="candidates" aria-selected="false">Candidates <span id="candidate-count">0</span></button>
     <button class="tab" data-view="compare" aria-selected="false">Compare</button>
+    <button class="tab" data-view="route" aria-selected="false">Use selected</button>
     <button class="tab" data-view="archive" aria-selected="false">Archive <span id="archive-count">0</span></button>
     <button class="tab" data-view="boundaries" aria-selected="false">Boundaries</button>
   </nav>
@@ -68,21 +77,70 @@
       <div id="selection-receipt" class="receipt" hidden></div>
     </section>
 
+    <section id="view-route" class="view" aria-labelledby="route-title">
+      <div class="section-head"><div><p class="section-label">04 · Trusted implementations</p><h2 id="route-title">Use selected balanced organs</h2></div><p>Each exact selected package is rebuilt and verified in memory. Only the trusted declarative runtime evaluates it; generated <code>organ.js</code> is never loaded.</p></div>
+      <div class="brief-grid">
+        <form id="route-form" class="panel wizard">
+          <div class="panel-head"><div><p class="section-label">Selected admission</p><h3>Workshop verification route</h3></div><span class="status-chip">BALANCED · EXPERIMENTAL</span></div>
+          <p id="selected-lineage" class="helper">Verifying selected lineage…</p>
+          <label for="route-change-type">Change type</label>
+          <select id="route-change-type"><option value="code">Code</option><option value="ui">UI</option><option value="data">Data</option><option value="config">Configuration</option></select>
+          <label for="route-risk">Human-assigned risk</label>
+          <select id="route-risk"><option value="1">1 · low</option><option value="2">2 · low</option><option value="3" selected>3 · medium</option><option value="4">4 · high</option><option value="5">5 · high</option></select>
+          <fieldset class="surface-fieldset"><legend>Affected surfaces</legend><p class="helper">Choose every known surface touched. Unknown or empty sets are refused.</p><div id="route-surfaces" class="surface-grid"></div></fieldset>
+          <button type="submit" class="primary">Plan exact verification route</button>
+          <div id="route-status" class="validation">No route planned yet.</div>
+        </form>
+        <div class="panel route-output-panel">
+          <div class="panel-head"><div><p class="section-label">Evidence route</p><h3 id="route-containment">Awaiting a reviewed brief</h3></div><span id="route-count" class="status-chip">0 STEPS</span></div>
+          <p id="route-explanation" class="helper">The organ will produce Evidence Desk and Verification Spine prefills with every claim kept UNKNOWN until its native proof is gathered.</p>
+          <div id="route-steps" class="route-steps"><p class="empty">Choose the change type, risk, and affected surfaces.</p></div>
+          <details><summary>Exact deterministic output</summary><pre id="route-json" class="route-json">No output.</pre></details>
+        </div>
+      </div>
+      <div class="brief-grid creative-grid">
+        <form id="creative-form" class="panel wizard">
+          <div class="panel-head"><div><p class="section-label">Selected admission</p><h3>Creative production route</h3></div><span class="status-chip">BALANCED · EXPERIMENTAL</span></div>
+          <p id="creative-lineage" class="helper">Verifying selected lineage…</p>
+          <label for="creative-medium">Medium</label>
+          <select id="creative-medium"><option value="visual">Visual</option><option value="audio">Audio</option></select>
+          <label for="creative-delivery">Delivery</label>
+          <select id="creative-delivery"><option value="web">Web</option><option value="print">Print</option><option value="live">Live</option></select>
+          <fieldset class="surface-fieldset"><legend>Accessibility tasks</legend><p class="helper">Choose the explicit checks the production route must retain.</p><div class="surface-grid">
+            <label class="surface-choice"><input type="checkbox" name="creative-accessibility" value="alt-text-check" checked><span>alt-text-check</span></label>
+            <label class="surface-choice"><input type="checkbox" name="creative-accessibility" value="keyboard-review" checked><span>keyboard-review</span></label>
+            <label class="surface-choice"><input type="checkbox" name="creative-accessibility" value="transcript-check"><span>transcript-check</span></label>
+            <label class="surface-choice"><input type="checkbox" name="creative-accessibility" value="caption-check"><span>caption-check</span></label>
+          </div></fieldset>
+          <button type="submit" class="primary">Plan exact production route</button>
+          <div id="creative-status" class="validation">No production route planned yet.</div>
+        </form>
+        <div class="panel route-output-panel">
+          <div class="panel-head"><div><p class="section-label">Production route</p><h3 id="creative-heading">Awaiting a reviewed brief</h3></div><span id="creative-count" class="status-chip">0 STEPS</span></div>
+          <p id="creative-explanation" class="helper">The organ chooses production steps, mechanical validators, and accessible fallbacks. It generates no asset and makes no quality claim.</p>
+          <div id="creative-output" class="route-steps"><p class="empty">Choose the medium, delivery, and accessibility tasks.</p></div>
+          <details><summary>Exact deterministic output</summary><pre id="creative-json" class="route-json">No output.</pre></details>
+        </div>
+      </div>
+    </section>
+
     <section id="view-archive" class="view" aria-labelledby="archive-title">
-      <div class="section-head"><div><p class="section-label">04 · Content-addressed memory</p><h2 id="archive-title">Organ Archive</h2></div><p>Objects are immutable; events are durable; this searchable index is rebuildable.</p></div>
+      <div class="section-head"><div><p class="section-label">05 · Content-addressed dormant library</p><h2 id="archive-title">Organ Archive</h2></div><p>Hard-gate-valid organs stay available even when none is selected or currently needed. Archive admission never means runtime admission.</p></div>
       <div class="archive-actions panel">
         <div><strong id="archive-summary">Archive is loading.</strong><p id="archive-reason" class="helper"></p></div>
         <div class="button-row"><button id="verify-archive" class="secondary">Verify archive</button><button id="export-archive" class="secondary">Export pack</button><label class="file-button">Import verified pack<input id="import-archive" type="file" accept="application/json,.json"></label></div>
       </div>
       <div id="archive-verification" class="validation"></div>
+      <p class="helper">A browser export remains detached. A real Mirror archive connection requires the CLI's exact host acknowledgement; it places exact source bytes and receives a dormant-object acknowledgement without loading the organ.</p>
       <div id="archive-list" class="archive-list"><p class="empty">No archived organs yet.</p></div>
     </section>
 
     <section id="view-boundaries" class="view" aria-labelledby="boundaries-title">
-      <div class="section-head"><div><p class="section-label">05 · Authority ceiling</p><h2 id="boundaries-title">What this Fabric can—and cannot—claim</h2></div></div>
+      <div class="section-head"><div><p class="section-label">06 · Authority ceiling</p><h2 id="boundaries-title">What this Fabric can—and cannot—claim</h2></div></div>
       <div class="boundary-grid">
         <article class="panel"><h3>Allowed grammar</h3><p id="allowed-grammar" class="token-list"></p><p>Reads, literals, comparisons, bounded selection, stable collections, and finite transitions only.</p></article>
-        <article class="panel boundary"><h3>Always refused</h3><ul><li>Unknown operations, cycles, forward references, and unbounded iteration</li><li>Implicit randomness, missing explicit seeds, clock, environment, network, filesystem, and dynamic code</li><li>Install, execute-from-disk, register, stage, promote, permission-grant, Foundation mutation, and CANON actions</li></ul></article>
+        <article class="panel boundary"><h3>Always refused</h3><ul><li>Unknown operations, cycles, forward references, and unbounded iteration</li><li>Implicit randomness, missing explicit seeds, clock, environment, network, filesystem, and dynamic code</li><li>Organ load/execution, runtime connection/admission, install, register, stage, promote, permission-grant, Foundation mutation, and CANON actions</li></ul></article>
+        <article class="panel"><h3>Explicit archive bridge</h3><p>The CLI may copy an exact hard-gate-valid source into the bound Mirror Organ Archive only after an exact host acknowledgement. The receiver must return the predicted object identity, <code>DORMANT</code>, and <code>ARCHIVED_NOT_ADMITTED_TO_RUNTIME</code>; otherwise the connection is refused.</p></article>
         <article class="panel"><h3>Human judgments remain open</h3><ul><li>Usefulness, wisdom, fun, balance, visual quality, listening quality, and taste</li><li>Implementation choice and any later governed intake</li><li>Canon requires an explicit Mike Tobi / AXM merge decision</li></ul></article>
         <article class="panel no-ai"><h3>No-AI path is complete</h3><p>No provider, model, API key, credential, internet connection, or AI button exists in v1. External proposals may enter only as untrusted JSON and pass the identical normalization and gate path.</p></article>
       </div>
@@ -92,6 +150,8 @@
   <footer><span>EXPERIMENTAL</span><span>installed: false</span><span>promoted: false</span><span>canonChanged: false</span></footer>
   <script src="/tools/deterministic-json-core/index.js"></script>
   <script src="/shared/deterministic-organ-fabric/core.js"></script>
+  <script src="/shared/deterministic-organ-fabric/selected-verification-route-organ.js"></script>
+  <script src="/shared/deterministic-organ-fabric/selected-creative-production-route-organ.js"></script>
   <script src="/tools/agent-tool-forge/zip-store.js"></script>
   <script src="browser-archive.js"></script>
   <script src="/hub/axm-hub-module.js"></script>

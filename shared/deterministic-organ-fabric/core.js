@@ -13,10 +13,31 @@
   }
 
   const canonicalJson = deterministicJson.canonicalJson;
-  const FACTORY_VERSION = '1.0.0';
+  const FACTORY_VERSION = '1.1.0';
   const RUNTIME_ID = 'axm.deterministic-organ-runtime';
-  const RUNTIME_VERSION = '1.0.0';
-  const RUNTIME_DIGEST = 'sha256:5bd480a2c3a0020b22cfaeb99003f02b918594011383e3db2fe47a970653ba09';
+  const RUNTIME_VERSION = '1.1.0';
+  const RUNTIME_DIGEST = 'sha256:9b25f775f9b0a2cf18b6d87101a1c2860d5c1c549c449031a998477be8ac2912';
+  const VERIFICATION_ROUTE_TOKEN_REGISTRY = Object.freeze({
+    schema:'axm.verification-route-token-registry/v1',
+    id:'verification-route-tokens',
+    version:'1.0.0',
+    tokens:{
+      'archive-reload':{description:'Prove archived state survives a stop, reload, and comparison.',evidenceDesk:{claimKind:'persistence',primarySurface:'save-stop-reload-and-compare',passCondition:'The reloaded archive state matches the sealed pre-stop state.'},verificationSpine:{categoryId:'module',claimId:'module.state-owner'}},
+      'browser-render-click':{description:'Observe the relevant live browser render and click journey.',evidenceDesk:{claimKind:'interaction-journey',primarySurface:'live-browser-render-and-click',passCondition:'The complete declared interaction journey works at the named viewport and state.'},verificationSpine:null},
+      'contract-test':{description:'Validate the accepted and produced contracts against their schemas.',evidenceDesk:{claimKind:'static-structure',primarySurface:'parsed-contract-validation',passCondition:'The exact contract parses and satisfies its declared closed schema.'},verificationSpine:{categoryId:'module',claimId:'module.handoff'}},
+      'fixture-parity':{description:'Execute declared fixtures and compare exact asserted outputs.',evidenceDesk:{claimKind:'deterministic-behavior',primarySurface:'focused-fixture-execution',passCondition:'Known inputs produce the exact asserted outputs in the trusted runtime.'},verificationSpine:null},
+      'focused-selftest':{description:'Run the smallest trusted selftest covering the changed behavior.',evidenceDesk:{claimKind:'deterministic-behavior',primarySurface:'focused-execution-with-known-inputs',passCondition:'Known inputs exercise the changed seam and all focused assertions pass.'},verificationSpine:{categoryId:'module',claimId:'module.lifecycle'}},
+      'independent-rebuild':{description:'Rebuild independently and compare canonical bytes and digests.',evidenceDesk:{claimKind:'deterministic-behavior',primarySurface:'independent-rebuild-and-digest-compare',passCondition:'An independent rebuild produces byte-identical artifacts and matching digests.'},verificationSpine:null},
+      'required-regression':{description:'Run the repository-required regression checks from the declared checkpoint.',evidenceDesk:{claimKind:'deterministic-behavior',primarySurface:'repository-required-regression-suite',passCondition:'Every repository-required regression command exits successfully.'},verificationSpine:{categoryId:'foundation',claimId:'foundation.route-integrity'}},
+      'round-trip-test':{description:'Serialize, reopen, and compare the exact state.',evidenceDesk:{claimKind:'persistence',primarySurface:'save-restart-reload-and-compare',passCondition:'Serialized state reopens in a fresh process with exact semantic parity.'},verificationSpine:{categoryId:'module',claimId:'module.state-owner'}},
+      'schema-check':{description:'Validate the changed structure against its declared schema.',evidenceDesk:{claimKind:'static-structure',primarySurface:'parsed-schema-validation',passCondition:'The exact artifact parses and satisfies its declared closed schema.'},verificationSpine:{categoryId:'module',claimId:'module.manifest'}},
+      'sender-receiver-parity':{description:'Bind sender and passive-receiver receipts by payload digest and acknowledgement.',evidenceDesk:{claimKind:'transport',primarySurface:'sender-and-receiver-receipts',passCondition:'Sender and receiver receipts name the same payload digest and acknowledgement.'},verificationSpine:null},
+      'syntax-check':{description:'Compile or parse changed scripts without claiming live behavior.',evidenceDesk:{claimKind:'static-structure',primarySurface:'script-compilation-and-parsed-syntax',passCondition:'Every changed script parses or compiles successfully.'},verificationSpine:null},
+      'tamper-check':{description:'Attempt a digest-bound package mutation and prove admission is refused.',evidenceDesk:{claimKind:'authorization',primarySurface:'allowed-and-denied-package-admission',passCondition:'The intact package is accepted for inspection and the tampered package is refused.'},verificationSpine:{categoryId:'module',claimId:'module.permissions'}}
+    },
+    registryDigest:'sha256:98dd708faa719c5354d7106086e36e108e7446479b578b1aa771198e5eb308be'
+  });
+  const VERIFICATION_ROUTE_TOKEN_REGISTRY_REF = Object.freeze({id:VERIFICATION_ROUTE_TOKEN_REGISTRY.id,version:VERIFICATION_ROUTE_TOKEN_REGISTRY.version,digest:VERIFICATION_ROUTE_TOKEN_REGISTRY.registryDigest});
   const STRATEGIES = Object.freeze(['lean', 'balanced', 'guarded']);
   const LIMITS = Object.freeze({
     maxNodes: 64,
@@ -45,9 +66,35 @@
   });
   const ALLOWED_OPERATIONS = Object.freeze([
     'read', 'literal', 'lookup', 'equals', 'gte', 'and', 'or', 'not',
-    'choose', 'clamp', 'stable_unique', 'stable_union', 'object',
+    'choose', 'clamp', 'stable_unique', 'stable_union', 'stable_lookup_union', 'object',
     'transition', 'seeded_select'
   ]);
+  const ORGAN_ARCHIVE_BRIDGE = Object.freeze({
+    moduleId: 'ai-organ-archive',
+    version: '0.9.0',
+    status: 'TEST',
+    contractSchema: 'axm.ai-native-module-contract/v1',
+    contractFileSha256: '7c630f714a961a924a52bf9b2c0e251ba031e0934b75cc1a9562e348c97f36bf',
+    contractCanonicalDigest: 'sha256:42a91fd899191dfb6ded2f54074d874cbc20c7d7a020c082a252775eaae254da',
+    catalogSchema: 'axm.mirror.ai-organ-catalog/v3',
+    portableLibrarySchema: 'axm.mirror.portable-ai-organ-library/v1',
+    dormantComponentSchema: 'axm.mirror.dormant-organ-component/v1',
+    sourceConvention: 'organs/*-organ.js',
+    receiverEntryPoint: 'modules/ai-organ-archive/core/organ-archive.js',
+    receiverEntryPointSha256: 'f7a9a5cc34e0eec45db47f4277ae8524d0a0654f1d0c32e3305e4cf791bc4b5d',
+    receiverFiles: [
+      {path:'kernel/immutable-batch-store.js',sha256:'befe68bebb861ed99245ddf43919efdf2075a017afb26ac47dea225ef8cdb68c'},
+      {path:'modules/ai-organ-archive/core/dormant-organ-component-protocol.js',sha256:'a89ce672d5fb35d931803ab2215828a3b193a07252c1d3814202120d106172cb'},
+      {path:'modules/ai-organ-archive/core/organ-archive.js',sha256:'f7a9a5cc34e0eec45db47f4277ae8524d0a0654f1d0c32e3305e4cf791bc4b5d'},
+      {path:'modules/ai-organ-archive/core/organ-inspector.js',sha256:'0fc8ba70042dc7c3c7d86d3eac2c7864ddbc9cd3ce96ffed4921d60ba4f30bf7'},
+      {path:'modules/ai-organ-archive/core/organ-purpose-taxonomy.js',sha256:'2c0d542d1380ed0605314d2267cbe9dba7969fe67f476ca5711e18773698164b'},
+      {path:'modules/ai-organ-archive/core/organ-verification-evidence.js',sha256:'40d2ec73ca79b8aeed7f0bddbb0d15e1745cceabf5845d821d98adc58f902f9c'},
+      {path:'modules/ai-organ-archive/core/specialist-mirror-incubator.js',sha256:'adf6d00429a277cbaa9b2b825ce0578cdfda498da1c9401e6c64baf24f3eff14'},
+      {path:'modules/ai-organ-archive/core/verification-spine-evidence.js',sha256:'548e42e54138c118543501a64ed311456b0a0350c4dc51a1345724007b759436'}
+    ],
+    receiverBundleDigest: 'sha256:9ce654796b34faa6ddf13ee22bfff83583f7f3222c4d4650590f244a84d59749'
+  });
+  const ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT = 'CONNECT_DORMANT_ORGAN_TO_MIRROR_ARCHIVE';
 
   function clone(value) { return JSON.parse(canonicalJson(value)); }
   function pretty(value) { return JSON.stringify(JSON.parse(canonicalJson(value)), null, 2) + '\n'; }
@@ -213,11 +260,27 @@
   }
   function validatePack(pack) {
     const errors = [];
-    if (!allowedKeys(pack, ['schema','id','version','title','description','capability','vocabulary','requiredInputs','requiredOutputs','allowedPrimitives','strategies','validators','heldOutCases','humanJudgments','exampleIntent','packDigest'], '$', errors)) return {ok:false,errors:errors};
+    if (!allowedKeys(pack, ['schema','id','version','title','description','capability','vocabulary','requiredInputs','requiredOutputs','allowedPrimitives','strategies','validators','heldOutCases','humanJudgments','exampleIntent','routeTokenRegistryRef','packDigest'], '$', errors)) return {ok:false,errors:errors};
     required(pack, ['schema','id','version','title','description','capability','vocabulary','requiredInputs','requiredOutputs','allowedPrimitives','strategies','validators','heldOutCases','humanJudgments','exampleIntent','packDigest'], '$', errors);
     if (pack.schema !== 'axm.organ-field-pack/v1') errors.push(issue('SCHEMA_MISMATCH', '$.schema', 'Expected axm.organ-field-pack/v1.'));
     STRATEGIES.forEach(function (name) { if (!pack.strategies || !pack.strategies[name]) errors.push(issue('STRATEGY_MISSING', '$.strategies.' + name, 'All three strategies are required.')); });
     (pack.allowedPrimitives || []).forEach(function (op) { if (ALLOWED_OPERATIONS.indexOf(op) < 0) errors.push(issue('UNKNOWN_OPERATION', '$.allowedPrimitives', 'Pack declares unsupported operation ' + op + '.')); });
+    STRATEGIES.forEach(function(name){
+      const strategy=pack.strategies&&pack.strategies[name];if(!strategy)return;
+      const guardOnly=strategy.guardOnlyInputs||[];
+      if(!Array.isArray(guardOnly))errors.push(issue('GUARD_ONLY_INPUTS_INVALID','$.strategies.'+name+'.guardOnlyInputs','guardOnlyInputs must be an array.'));
+      else guardOnly.forEach(function(inputName){
+        if((pack.requiredInputs||[]).indexOf(inputName)<0)errors.push(issue('GUARD_ONLY_INPUT_UNKNOWN','$.strategies.'+name+'.guardOnlyInputs','Guard-only input is not a required pack input: '+inputName));
+        if(!(strategy.guards||[]).some(function(guard){return guard.kind==='required'&&String(guard.path).replace(/^\$\.?/,'').split('.')[0]===inputName;}))errors.push(issue('GUARD_ONLY_REQUIRED_GUARD_MISSING','$.strategies.'+name+'.guardOnlyInputs','Guard-only input needs an explicit required guard: '+inputName));
+      });
+    });
+    if(pack.routeTokenRegistryRef){
+      if(canonicalJson(pack.routeTokenRegistryRef)!==canonicalJson(VERIFICATION_ROUTE_TOKEN_REGISTRY_REF))errors.push(issue('ROUTE_TOKEN_REGISTRY_LINEAGE_MISMATCH','$.routeTokenRegistryRef','Pack does not bind the exact verification-route token registry.'));
+      Object.keys(pack.strategies||{}).forEach(function(name){((pack.strategies[name].graph||{}).nodes||[]).forEach(function(node,index){
+        const arrays=[];if(Array.isArray(node.value))arrays.push(node.value);Object.keys(node.table||{}).forEach(function(key){if(Array.isArray(node.table[key]))arrays.push(node.table[key]);});
+        arrays.forEach(function(rows){rows.forEach(function(token){if(typeof token==='string'&&!own(VERIFICATION_ROUTE_TOKEN_REGISTRY.tokens,token))errors.push(issue('ROUTE_TOKEN_UNKNOWN','$.strategies.'+name+'.graph.nodes['+index+']','Unknown verification-route token: '+token));});});
+      });});
+    }
     (pack.heldOutCases || []).forEach(function (row, i) { validateCase(row, '$.heldOutCases[' + i + ']', errors); });
     const expected = digest(withoutKey(pack, 'packDigest'));
     if (pack.packDigest !== expected) errors.push(issue('PACK_DIGEST_MISMATCH', '$.packDigest', 'Pack digest does not match canonical content.', {expected:expected,actual:pack.packDigest}));
@@ -248,7 +311,7 @@
     if (graph.nodes.length > limits.maxNodes) errors.push(issue('GRAPH_NODE_LIMIT', '$.graph.nodes', 'Graph exceeds node limit.'));
     graph.nodes.forEach(function (node, index) {
       const at = '$.graph.nodes[' + index + ']';
-      if (!allowedKeys(node, ['id','op','path','value','table','args','fields','minimum','maximum','states','seedRef','options'], at, errors)) return;
+      if (!allowedKeys(node, ['id','op','path','value','table','args','fields','minimum','maximum','states','seedRef','options','onUnknown'], at, errors)) return;
       required(node, ['id','op'], at, errors);
       if (seen.has(node.id)) errors.push(issue('DUPLICATE_NODE', at + '.id', 'Node id is duplicated.'));
       if (ALLOWED_OPERATIONS.indexOf(node.op) < 0 || (pack && pack.allowedPrimitives.indexOf(node.op) < 0)) errors.push(issue('UNKNOWN_OPERATION', at + '.op', 'Operation is not allowlisted: ' + node.op));
@@ -258,6 +321,12 @@
       if (node.seedRef) references.push(node.seedRef);
       references.forEach(function (ref) { if (!seen.has(ref)) errors.push(issue('CYCLE_OR_FORWARD_REFERENCE', at, 'References must point to an earlier node: ' + ref)); });
       if (node.op === 'seeded_select' && !node.seedRef) errors.push(issue('EXPLICIT_SEED_REQUIRED', at + '.seedRef', 'Seeded selection requires an explicit seed reference.'));
+      if (node.op === 'stable_lookup_union') {
+        if (!isPlain(node.table)) errors.push(issue('LOOKUP_TABLE_REQUIRED', at + '.table', 'Stable lookup union needs a closed lookup table.'));
+        else Object.keys(node.table).forEach(function(key){if(!Array.isArray(node.table[key]))errors.push(issue('LOOKUP_ROUTE_ARRAY_REQUIRED',at+'.table.'+key,'Every stable lookup union mapping must be an array.'));});
+        if (['refuse','default'].indexOf(node.onUnknown)<0) errors.push(issue('LOOKUP_UNKNOWN_POLICY_REQUIRED', at + '.onUnknown', 'Stable lookup union requires onUnknown refuse or default.'));
+        if (node.onUnknown === 'default' && (!node.table || !Array.isArray(node.table.default))) errors.push(issue('LOOKUP_DEFAULT_REQUIRED', at + '.table.default', 'Default policy requires a default route array.'));
+      }
       seen.add(node.id);
     });
     if (!seen.has(graph.output)) errors.push(issue('GRAPH_OUTPUT_UNKNOWN', '$.graph.output', 'Output must name an existing node.'));
@@ -294,6 +363,7 @@
         const args = (node.args || []).map(function (arg) { return resolveArg(arg, values); });
         if (node.op === 'stable_unique') operations += Array.isArray(args[0]) ? args[0].length : 0;
         if (node.op === 'stable_union') operations += (Array.isArray(args[0]) ? args[0].length : 0) + (Array.isArray(args[1]) ? args[1].length : 0);
+        if (node.op === 'stable_lookup_union') operations += Array.isArray(args[0]) ? args[0].length : 0;
         if (node.op === 'seeded_select') operations += (node.options || []).length;
         if (operations > limits.maxOperations) throw issue('OPERATION_LIMIT', '$.graph', 'Operation ceiling reached.', { actual:operations, ceiling:limits.maxOperations });
         let value;
@@ -314,6 +384,18 @@
           case 'clamp': value = Math.max(Number(node.minimum), Math.min(Number(node.maximum), Number(args[0]))); break;
           case 'stable_unique': value = stableUnique(args[0]); break;
           case 'stable_union': value = stableUnique([].concat(args[0] || [], args[1] || [])); break;
+          case 'stable_lookup_union': {
+            if(!Array.isArray(args[0])) throw issue('LOOKUP_KEYS_ARRAY_REQUIRED', '$.graph.nodes[' + index + ']', 'Stable lookup union input must be an array.');
+            const keys=stableUnique(args[0]).map(String).sort(), mapped=[];
+            keys.forEach(function(key){
+              if(own(node.table||{},key)) mapped.push.apply(mapped,clone(node.table[key]));
+              else if(node.onUnknown==='default'&&Array.isArray((node.table||{}).default)) mapped.push.apply(mapped,clone(node.table.default));
+              else throw issue('LOOKUP_KEY_UNKNOWN','$.input','Unknown bounded lookup key.',{key:key,node:node.id});
+            });
+            operations += mapped.length;
+            if(operations>limits.maxOperations) throw issue('OPERATION_LIMIT','$.graph','Operation ceiling reached.',{actual:operations,ceiling:limits.maxOperations});
+            value=stableUnique(mapped);break;
+          }
           case 'object': {
             value = {};
             Object.keys(node.fields || {}).sort().forEach(function (key) { value[key] = resolveArg(node.fields[key], values); });
@@ -368,6 +450,7 @@
     if (guard.kind==='enum') return (guard.values||[]).indexOf(value)>=0;
     if (guard.kind==='minimum') return Number(value)>=Number(guard.value);
     if (guard.kind==='maximum') return Number(value)<=Number(guard.value);
+    if (guard.kind==='minimumItems') return Array.isArray(value) && value.length>=Number(guard.value);
     return false;
   }
   function runDefinition(definition,input) {
@@ -399,10 +482,10 @@
     const strategy=pack.strategies[strategyName];
     if(!strategy) throw new Error('Unknown strategy '+strategyName);
     const definition={
-      schema:'axm.deterministic-organ/v1',id:intent.id+'-'+strategyName,version:'0.1.0',status:'EXPERIMENTAL',
+      schema:'axm.deterministic-organ/v1',id:intent.id+'-'+strategyName,version:'0.2.0',status:'EXPERIMENTAL',
       field:pack.id,strategy:strategyName,purpose:intent.purpose,
-      lineage:{factoryVersion:FACTORY_VERSION,runtime:{id:RUNTIME_ID,version:RUNTIME_VERSION,digest:RUNTIME_DIGEST},pack:{id:pack.id,version:pack.version,digest:pack.packDigest},intentDigest:intent.intentDigest,metricProfileId:intent.metricProfileId,metricProfileDigest:METRIC_PROFILE.digest},
-      interface:{inputs:clone(intent.inputs),outputs:clone(intent.outputs)},graph:clone(strategy.graph),guards:clone(strategy.guards||[]),
+      lineage:{factoryVersion:FACTORY_VERSION,runtime:{id:RUNTIME_ID,version:RUNTIME_VERSION,digest:RUNTIME_DIGEST},pack:{id:pack.id,version:pack.version,digest:pack.packDigest},routeTokenRegistry:pack.routeTokenRegistryRef?clone(pack.routeTokenRegistryRef):null,intentDigest:intent.intentDigest,metricProfileId:intent.metricProfileId,metricProfileDigest:METRIC_PROFILE.digest},
+      interface:{inputs:clone(intent.inputs),outputs:clone(intent.outputs)},graph:clone(strategy.graph),guards:clone(strategy.guards||[]),guardOnlyInputs:clone(strategy.guardOnlyInputs||[]),
       limits:Object.assign({},LIMITS,intent.resourceBudget||{}),invariants:clone(intent.invariants),boundaries:clone(intent.boundaries),
       refusals:['unknown-operation','cycle-or-forward-reference','implicit-randomness','missing-explicit-seed','clock-or-environment-access','network','filesystem','dynamic-code','unbounded-iteration','authority-escalation'],
       implementation:{kind:'pure-json-transformer',status:'EXPERIMENTAL'},installed:false,registered:false,staged:false,promoted:false,canonChanged:false
@@ -410,14 +493,26 @@
     definition.definitionDigest=digest(definition);
     return definition;
   }
+  function requiredInputUsage(definition,pack){
+    const reads=new Set();
+    (definition.graph&&definition.graph.nodes||[]).forEach(function(node){if(node.op==='read'){const root=String(node.path||'').replace(/^\$\.?/,'').split('.').filter(Boolean)[0];if(root)reads.add(root);}});
+    const guardOnly=new Set(definition.guardOnlyInputs||[]),guards=definition.guards||[],errors=[];
+    (pack.requiredInputs||[]).forEach(function(name){
+      const guarded=guardOnly.has(name)&&guards.some(function(guard){return guard.kind==='required'&&String(guard.path).replace(/^\$\.?/,'').split('.')[0]===name;});
+      if(!reads.has(name)&&!guarded)errors.push(issue('REQUIRED_INPUT_UNUSED','$.interface.inputs.'+name,'Required input is neither read by the graph nor explicitly required as guard-only.',{input:name}));
+    });
+    return {ok:errors.length===0,errors:errors,readInputs:Array.from(reads).sort(),guardOnlyInputs:Array.from(guardOnly).sort()};
+  }
   function evaluateDefinition(definition,intent,pack) {
     const gates=[];
     function gate(id,ok,details){gates.push({id:id,ok:Boolean(ok),details:details||[]});}
     const lineage=definition.lineage||{};
-    gate('exact-lineage',lineage.intentDigest===intent.intentDigest && lineage.pack && lineage.pack.digest===pack.packDigest && lineage.runtime && lineage.runtime.version===RUNTIME_VERSION && lineage.runtime.digest===RUNTIME_DIGEST && lineage.metricProfileDigest===METRIC_PROFILE.digest);
+    const registryLineage=pack.routeTokenRegistryRef?canonicalJson(lineage.routeTokenRegistry)===canonicalJson(VERIFICATION_ROUTE_TOKEN_REGISTRY_REF):lineage.routeTokenRegistry===null;
+    gate('exact-lineage',lineage.intentDigest===intent.intentDigest && lineage.pack && lineage.pack.id===pack.id && lineage.pack.version===pack.version && lineage.pack.digest===pack.packDigest && lineage.runtime && lineage.runtime.id===RUNTIME_ID && lineage.runtime.version===RUNTIME_VERSION && lineage.runtime.digest===RUNTIME_DIGEST && lineage.metricProfileId===METRIC_PROFILE.id && lineage.metricProfileDigest===METRIC_PROFILE.digest && registryLineage);
     const intentCheck=validateIntent(intent,pack); gate('schema-and-types',intentCheck.ok,intentCheck.errors);
     const graphCheck=validateGraph(definition.graph,pack,definition.limits); gate('purity-and-graph-bounds',graphCheck.ok,graphCheck.errors);
     gate('capability-coverage',pack.requiredInputs.every(function(n){return intent.inputs.some(function(p){return p.name===n;});}) && pack.requiredOutputs.every(function(n){return intent.outputs.some(function(p){return p.name===n;});}));
+    const usage=requiredInputUsage(definition,pack);gate('required-input-usage',usage.ok,usage.errors);
     const requiredRows=[], desiredRows=[], heldRows=[];
     function runRows(rows,target){(rows||[]).forEach(function(row){const result=runDefinition(definition,row.input),check=assertCase(result,row);target.push({id:row.id,ok:check.ok,failures:check.failures,outputDigest:result.ok?digest(result.output):null,trace:result.trace||[]});});}
     if(graphCheck.ok){runRows(intent.requiredCases,requiredRows);runRows(intent.desiredCases,desiredRows);runRows(pack.heldOutCases,heldRows);}
@@ -465,7 +560,7 @@
       "function stable(v){if(v===null||typeof v!=='object')return JSON.stringify(v);if(Array.isArray(v))return '['+v.map(stable).join(',')+']';return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}';}\n"+
       "function unique(a){const s=new Set();return (a||[]).filter(v=>{const k=stable(v);if(s.has(k))return false;s.add(k);return true;});}\n"+
       "function hash(s){let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}\n"+
-      "function run(input){for(const g of definition.guards||[]){const v=path(input,g.path);const ok=g.kind==='required'?v!==undefined&&v!==null&&v!=='':g.kind==='enum'?g.values.includes(v):g.kind==='minimum'?Number(v)>=Number(g.value):g.kind==='maximum'?Number(v)<=Number(g.value):false;if(!ok)return {ok:false,code:'GUARD_REFUSAL',guard:g};}const v={};for(const n of definition.graph.nodes){const a=(n.args||[]).map(x=>x&&own(x,'ref')?v[x.ref]:x.value);switch(n.op){case'read':v[n.id]=path(input,n.path);break;case'literal':v[n.id]=n.value;break;case'lookup':v[n.id]=own(n.table,String(a[0]))?n.table[String(a[0])]:n.table.default;break;case'equals':v[n.id]=stable(a[0])===stable(a[1]);break;case'gte':v[n.id]=Number(a[0])>=Number(a[1]);break;case'and':v[n.id]=a.every(Boolean);break;case'or':v[n.id]=a.some(Boolean);break;case'not':v[n.id]=!a[0];break;case'choose':v[n.id]=a[0]?a[1]:a[2];break;case'clamp':v[n.id]=Math.max(n.minimum,Math.min(n.maximum,Number(a[0])));break;case'stable_unique':v[n.id]=unique(a[0]);break;case'stable_union':v[n.id]=unique([...(a[0]||[]),...(a[1]||[])]);break;case'object':v[n.id]=Object.fromEntries(Object.keys(n.fields).sort().map(k=>[k,n.fields[k].ref?v[n.fields[k].ref]:n.fields[k].value]));break;case'transition':v[n.id]=n.states[String(a[0])+'|'+String(a[1])]||a[0];break;case'seeded_select':v[n.id]=n.options[hash(stable({options:n.options,seed:v[n.seedRef]}))%n.options.length];break;default:return {ok:false,code:'UNKNOWN_OPERATION'};}}return {ok:true,output:v[definition.graph.output]};}\n"+
+      "function run(input){for(const g of definition.guards||[]){const v=path(input,g.path);const ok=g.kind==='required'?v!==undefined&&v!==null&&v!=='':g.kind==='enum'?g.values.includes(v):g.kind==='minimum'?Number(v)>=Number(g.value):g.kind==='maximum'?Number(v)<=Number(g.value):g.kind==='minimumItems'?Array.isArray(v)&&v.length>=Number(g.value):false;if(!ok)return {ok:false,code:'GUARD_REFUSAL',guard:g};}const v={};for(const n of definition.graph.nodes){const a=(n.args||[]).map(x=>x&&own(x,'ref')?v[x.ref]:x.value);switch(n.op){case'read':v[n.id]=path(input,n.path);break;case'literal':v[n.id]=n.value;break;case'lookup':v[n.id]=own(n.table,String(a[0]))?n.table[String(a[0])]:n.table.default;break;case'equals':v[n.id]=stable(a[0])===stable(a[1]);break;case'gte':v[n.id]=Number(a[0])>=Number(a[1]);break;case'and':v[n.id]=a.every(Boolean);break;case'or':v[n.id]=a.some(Boolean);break;case'not':v[n.id]=!a[0];break;case'choose':v[n.id]=a[0]?a[1]:a[2];break;case'clamp':v[n.id]=Math.max(n.minimum,Math.min(n.maximum,Number(a[0])));break;case'stable_unique':v[n.id]=unique(a[0]);break;case'stable_union':v[n.id]=unique([...(a[0]||[]),...(a[1]||[])]);break;case'stable_lookup_union':{if(!Array.isArray(a[0]))return {ok:false,code:'LOOKUP_KEYS_ARRAY_REQUIRED'};const rows=[];for(const k of unique(a[0]).map(String).sort()){if(own(n.table,k))rows.push(...n.table[k]);else if(n.onUnknown==='default'&&Array.isArray(n.table.default))rows.push(...n.table.default);else return {ok:false,code:'LOOKUP_KEY_UNKNOWN',key:k};}v[n.id]=unique(rows);break;}case'object':v[n.id]=Object.fromEntries(Object.keys(n.fields).sort().map(k=>[k,n.fields[k].ref?v[n.fields[k].ref]:n.fields[k].value]));break;case'transition':v[n.id]=n.states[String(a[0])+'|'+String(a[1])]||a[0];break;case'seeded_select':v[n.id]=n.options[hash(stable({options:n.options,seed:v[n.seedRef]}))%n.options.length];break;default:return {ok:false,code:'UNKNOWN_OPERATION'};}}return {ok:true,output:v[definition.graph.output]};}\n"+
       "module.exports={definition,run};\n";
     return source.replace(/\r\n/g,'\n');
   }
@@ -475,8 +570,8 @@
   function buildPackage(definition,intent,pack,evaluation){
     if(evaluation.status!=='VALID') throw new Error('Rejected candidates cannot be packaged.');
     const moduleId=definition.id;
-    const manifest={schema:'axm.module-manifest/v1',id:moduleId,name:intent.name+' — '+definition.strategy,version:'v0.1',status:'EXPERIMENTAL',entry:'index.html',contract:'module.contract.json',uses:[],installed:false,promoted:false};
-    const contract={schema:'axm.module-contract/v1',id:moduleId,version:'v0.1',provides:intent.outputs.map(function(p){return 'json-output:'+p.name;}),consumes:intent.inputs.map(function(p){return 'json-input:'+p.name;}),permissions:[],handoffs:{emits:['axm.deterministic-organ/v1','axm.organ-evaluation-receipt/v1'],accepts:['json-input','human-implementation-review']},lifecycle:{state_owner:'none',reload:'not-applicable',disconnect:'not-applicable',cleanup:'not-applicable'},boundaries:{writes:[],refuses:['network','filesystem','clock','environment','dynamic-code','implicit-randomness','installation','registration','staging','promotion','permission-change','canon-change','foundation-mutation']}};
+    const manifest={schema:'axm.module-manifest/v1',id:moduleId,name:intent.name+' — '+definition.strategy,version:'v0.2',status:'EXPERIMENTAL',entry:'index.html',contract:'module.contract.json',uses:[],installed:false,promoted:false};
+    const contract={schema:'axm.module-contract/v1',id:moduleId,version:'v0.2',provides:intent.outputs.map(function(p){return 'json-output:'+p.name;}),consumes:intent.inputs.map(function(p){return 'json-input:'+p.name;}),permissions:[],handoffs:{emits:['axm.deterministic-organ/v1','axm.organ-evaluation-receipt/v1'],accepts:['json-input','human-implementation-review']},lifecycle:{state_owner:'none',reload:'not-applicable',disconnect:'not-applicable',cleanup:'not-applicable'},boundaries:{writes:[],refuses:['network','filesystem','clock','environment','dynamic-code','implicit-randomness','installation','registration','staging','promotion','permission-change','canon-change','foundation-mutation']}};
     const files={
       'manifest.json':pretty(manifest),
       'module.contract.json':pretty(contract),
@@ -492,6 +587,7 @@
       'organ.evaluation.json':pretty(evaluation),
       'authority.receipt.json':pretty({schema:'axm.organ-authority-receipt/v1',status:'EXPERIMENTAL',installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false})
     };
+    if(definition.lineage.routeTokenRegistry)files['verification-route-token-registry.json']=pretty(VERIFICATION_ROUTE_TOKEN_REGISTRY);
     const bundleFiles=Object.keys(files).sort().map(function(path){return {path:path,encoding:'utf8',sha256:digest(files[path]).slice(7),content:files[path]};});
     const bundle={schema:'axm.module-bundle/v1',id:manifest.id,version:manifest.version,files:bundleFiles};
     const bundleText=pretty(bundle);
@@ -561,6 +657,190 @@
     const receipt={schema:'axm.organ-selection-receipt/v1',selectedBy:String(mikeLabel||'Mike Tobi'),comparisonDigest:comparison.comparisonDigest,candidateId:candidate.package.id,packageDigest:candidate.package.packageDigest,decision:'SELECT_FOR_IMPLEMENTATION_REVIEW',applied:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false};
     receipt.selectionDigest=digest(receipt);return receipt;
   }
+  function validSelectionReceipt(receipt){
+    return Boolean(receipt&&receipt.schema==='axm.organ-selection-receipt/v1'&&receipt.selectionDigest===digest(withoutKey(receipt,'selectionDigest'))&&!receipt.applied&&!receipt.installed&&!receipt.registered&&!receipt.staged&&!receipt.promoted&&!receipt.canonChanged&&!receipt.permissionsChanged);
+  }
+  function supersedeCandidateSelection(priorPackageDigest,replacementSelectionReceipt,mikeLabel){
+    if(!validSelectionReceipt(replacementSelectionReceipt))throw new Error('Replacement selection receipt is invalid or exceeds its authority ceiling.');
+    if(!/^sha256:[a-f0-9]{64}$/.test(String(priorPackageDigest||'')))throw new Error('Prior package digest is invalid.');
+    if(priorPackageDigest===replacementSelectionReceipt.packageDigest)throw new Error('A selection cannot supersede itself.');
+    const receipt={schema:'axm.organ-supersession-receipt/v1',selectedBy:String(mikeLabel||replacementSelectionReceipt.selectedBy||'Mike Tobi'),priorPackageDigest:String(priorPackageDigest),replacementPackageDigest:replacementSelectionReceipt.packageDigest,replacementSelectionDigest:replacementSelectionReceipt.selectionDigest,decision:'SUPERSEDE_IMPLEMENTATION_SELECTION',applied:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false};
+    receipt.supersessionDigest=digest(receipt);return receipt;
+  }
+  function verifySupersessionReceipt(receipt){
+    const errors=[];
+    if(!receipt||receipt.schema!=='axm.organ-supersession-receipt/v1')errors.push(issue('SUPERSESSION_SCHEMA_INVALID','$.schema','Expected organ supersession receipt v1.'));
+    else{
+      if(receipt.supersessionDigest!==digest(withoutKey(receipt,'supersessionDigest')))errors.push(issue('SUPERSESSION_DIGEST_MISMATCH','$.supersessionDigest','Supersession receipt digest mismatch.'));
+      if(!/^sha256:[a-f0-9]{64}$/.test(String(receipt.priorPackageDigest||''))||!/^sha256:[a-f0-9]{64}$/.test(String(receipt.replacementPackageDigest||''))||!/^sha256:[a-f0-9]{64}$/.test(String(receipt.replacementSelectionDigest||'')))errors.push(issue('SUPERSESSION_LINEAGE_INVALID','$','Supersession receipt digests are invalid.'));
+      if(receipt.priorPackageDigest===receipt.replacementPackageDigest)errors.push(issue('SUPERSESSION_SELF_REFERENCE','$.replacementPackageDigest','A selection cannot supersede itself.'));
+      if(receipt.decision!=='SUPERSEDE_IMPLEMENTATION_SELECTION'||receipt.applied||receipt.installed||receipt.registered||receipt.staged||receipt.promoted||receipt.canonChanged||receipt.permissionsChanged)errors.push(issue('SUPERSESSION_AUTHORITY_EXCEEDED','$','Supersession receipt exceeds its selection-only authority ceiling.'));
+    }
+    return {schema:'axm.organ-supersession-receipt-verification/v1',ok:errors.length===0,errors:errors,supersessionDigest:receipt&&receipt.supersessionDigest||null};
+  }
+  function verificationRefusal(code,message,details){const error=new Error(message);error.code=code;if(details!==undefined)error.details=details;return error;}
+  function normalizeVerificationBrief(input){
+    const brief=clone(input||{});
+    if(!Array.isArray(brief.affectedSurfaces))throw verificationRefusal('AFFECTED_SURFACES_REQUIRED','affectedSurfaces must be an explicit array of bounded surface tokens.');
+    brief.affectedSurfaces=Array.from(new Set(brief.affectedSurfaces.map(String))).sort();return brief;
+  }
+  function assertVerificationCandidate(candidate,pack){
+    const packageCheck=verifyPackage(candidate);
+    if(!packageCheck.ok)throw verificationRefusal('CANDIDATE_PACKAGE_INVALID','The candidate package is not intact.',packageCheck.errors);
+    const definition=candidate.definition||{},lineage=definition.lineage||{};
+    if(candidate.evaluation.status!=='VALID')throw verificationRefusal('CANDIDATE_NOT_VALID','Only a candidate with a VALID evaluation receipt can be planned.');
+    if(!pack||definition.field!==pack.id||lineage.pack.id!==pack.id||lineage.pack.version!==pack.version||lineage.pack.digest!==pack.packDigest)throw verificationRefusal('FIELD_PACK_LINEAGE_STALE','The candidate does not bind the supplied current field pack.');
+    if(pack.id!=='software-workshop')throw verificationRefusal('FIELD_PACK_UNSUPPORTED','Verification route planning requires the Software & Workshop field pack.');
+    if(!lineage.runtime||lineage.runtime.id!==RUNTIME_ID||lineage.runtime.version!==RUNTIME_VERSION||lineage.runtime.digest!==RUNTIME_DIGEST)throw verificationRefusal('RUNTIME_LINEAGE_STALE','The candidate does not bind the current trusted runtime.');
+    if(canonicalJson(lineage.routeTokenRegistry)!==canonicalJson(VERIFICATION_ROUTE_TOKEN_REGISTRY_REF))throw verificationRefusal('ROUTE_TOKEN_REGISTRY_LINEAGE_STALE','The candidate does not bind the current route-token registry.');
+    let intent;try{intent=JSON.parse(candidate.files['organ.intent.json']);}catch(error){throw verificationRefusal('BOUND_INTENT_INVALID','The package does not carry a readable bound intent.');}
+    const reevaluated=evaluateDefinition(definition,intent,pack);
+    if(reevaluated.status!=='VALID')throw verificationRefusal('TRUSTED_REEVALUATION_FAILED','The candidate definition fails a fresh trusted evaluation.',reevaluated.gates.filter(function(gate){return !gate.ok;}));
+    try{if(canonicalJson(JSON.parse(candidate.files['verification-route-token-registry.json']))!==canonicalJson(VERIFICATION_ROUTE_TOKEN_REGISTRY))throw new Error('registry mismatch');}catch(error){throw verificationRefusal('BOUND_ROUTE_TOKEN_REGISTRY_INVALID','The package does not carry the exact bound route-token registry.');}
+    return packageCheck;
+  }
+  function verificationRiskName(value){return Number(value)>=4?'HIGH':Number(value)>=3?'MEDIUM':'LOW';}
+  function planVerificationRouteForPack(candidate,input,pack){
+    assertVerificationCandidate(candidate,pack);const brief=normalizeVerificationBrief(input),result=runDefinition(candidate.definition,brief);
+    if(!result.ok)throw verificationRefusal(result.refusal&&result.refusal.code||'ORGAN_RUNTIME_REFUSAL','The trusted runtime refused the change brief.',result.refusal||result);
+    if(!Array.isArray(result.output.route))throw verificationRefusal('ROUTE_OUTPUT_INVALID','The organ did not emit a route array.');
+    const bindings=result.output.route.map(function(token){const binding=VERIFICATION_ROUTE_TOKEN_REGISTRY.tokens[token];if(!binding)throw verificationRefusal('ROUTE_TOKEN_UNKNOWN','The organ emitted a token outside its bound registry.',{token:token});return {token:token,description:binding.description,evidenceDesk:clone(binding.evidenceDesk),verificationSpine:clone(binding.verificationSpine)};});
+    const observations=bindings.map(function(binding,index){return {id:'route-'+String(index+1),claim:binding.description,kind:binding.evidenceDesk.claimKind,risk:verificationRiskName(brief.risk),verdict:'UNKNOWN',pass_condition:binding.evidenceDesk.passCondition,primary_surface:binding.evidenceDesk.primarySurface,observed_evidence:'',counterevidence:'Not yet tested; record any failing, contradictory, or missing evidence.',source_kind:'deterministic-organ-route-plan',source:candidate.package.packageDigest,named_seam:brief.affectedSurfaces.join(', ')};});
+    const plan={schema:'axm.verification-route-plan/v1',status:'EXPERIMENTAL',candidate:{id:candidate.package.id,packageDigest:candidate.package.packageDigest,definitionDigest:candidate.definition.definitionDigest,evaluationDigest:candidate.evaluation.receiptDigest,runtime:clone(candidate.definition.lineage.runtime),pack:clone(candidate.definition.lineage.pack),routeTokenRegistry:clone(candidate.definition.lineage.routeTokenRegistry)},input:{brief:brief,inputDigest:digest(brief)},output:clone(result.output),bindings:bindings,evidenceDeskPrefill:{schema:'axm.evidence-fields/v2',title:'Verification route · '+candidate.package.id,goal:candidate.definition.purpose,source_checkpoint:candidate.package.packageDigest,actor:{id:'deterministic-organ-fabric',type:'deterministic-planner'},observations:observations,actions:[],checks:[],changes:[],limitations:['This packet contains proposed evidence routes, not observed evidence.','Every verdict remains UNKNOWN until the native proof surface is actually used.'],next_actions:result.output.route.slice()},limitations:(candidate.evaluation.limitations||[]).concat(['This adapter plans only. It does not run tests, operate a browser, write state, or authorize implementation.']),authority:{executed:false,wroteState:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,foundationChanged:false},planDigest:''};
+    plan.planDigest=digest(withoutKey(plan,'planDigest'));return plan;
+  }
+  function verifyVerificationRoutePlanForPack(plan,candidate,input,pack){
+    const errors=[];try{const rebuilt=planVerificationRouteForPack(candidate,input||(plan.input&&plan.input.brief),pack);if(canonicalJson(rebuilt)!==canonicalJson(plan))errors.push(issue('PLAN_REBUILD_MISMATCH','$','Plan does not rebuild identically.'));}catch(error){errors.push(issue(error.code||'PLAN_VERIFY_REFUSAL','$',String(error.message||error),error.details));}
+    return {ok:errors.length===0,errors:errors,planDigest:plan&&plan.planDigest||null};
+  }
+  function archiveAuthority(){
+    return {loaded:false,executed:false,connected:false,installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false,foundationChanged:false};
+  }
+  function purposeShelves(packId){
+    const shelves={
+      'software-workshop':{primary:'development-repair',useFields:['development-repair','evidence-verification','planning-coordination'],roles:['planner','verifier']},
+      'games-entertainment':{primary:'world-simulation',useFields:['creativity-exploration','planning-coordination','world-simulation'],roles:['planner','producer','simulator']},
+      'creative-production':{primary:'creativity-exploration',useFields:['creativity-exploration','perception-observation','planning-coordination'],roles:['planner','producer']}
+    };
+    return shelves[packId]||{primary:'general-foundation',useFields:['general-foundation'],roles:['producer']};
+  }
+  function safeOrganSourcePath(candidateId){
+    const slug=String(candidateId||'').toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'');
+    if(!slug)throw new Error('Candidate id cannot produce a safe dormant organ source path.');
+    return 'organs/'+slug+'-organ.js';
+  }
+  function projectArchiveStash(candidate){
+    const verification=verifyPackage(candidate);
+    if(!verification.ok)throw new Error('Only an intact candidate package may be projected into the dormant stash.');
+    if(!candidate.evaluation||candidate.evaluation.status!=='VALID')throw new Error('Only a hard-gate-valid candidate may enter the dormant stash.');
+    const source=candidate.files['organ.js'];
+    if(typeof source!=='string')throw new Error('Dormant stash projection requires the standalone organ.js source.');
+    const sourceBytes=utf8Length(source);
+    if(sourceBytes>2097152)throw new Error('Dormant organ source exceeds the target archive source ceiling.');
+    let intent;
+    try{intent=JSON.parse(candidate.files['organ.intent.json']);}catch(error){throw new Error('Dormant stash projection requires a valid normalized intent file.');}
+    if(intent.intentDigest!==candidate.evaluation.intentDigest)throw new Error('Dormant stash intent lineage does not match the evaluation receipt.');
+    const packId=candidate.definition.lineage.pack.id,shelves=purposeShelves(packId),suggestedSourcePath=safeOrganSourcePath(candidate.package.id),sourceSha256=digest(source).slice(7);
+    const basis={
+      schema:'axm.organ-archive-stash-projection/v1',status:'EXPERIMENTAL',packageDigest:candidate.package.packageDigest,candidateId:candidate.package.id,
+      validity:{state:'HARD_GATES_PASSED',evaluationDigest:candidate.evaluation.receiptDigest,qualityClaim:false,humanJudgmentsUnresolved:clone(candidate.evaluation.limitations||[])},
+      archiveState:{disposition:'VALID_DORMANT_LIBRARY',retentionPolicy:'KEEP_WHEN_NO_CURRENT_USE',admissionStatus:'ARCHIVED_NOT_ADMITTED_TO_RUNTIME',startupPolicy:'DORMANT',implementationStatus:'UNSELECTED'},
+      purposeClassification:{state:'INFERRED_UNCONFIRMED',primaryPurposeCategory:shelves.primary,useFields:shelves.useFields.slice().sort(),functionalRoles:shelves.roles.slice().sort(),basis:{fieldPackId:packId,intentDigest:intent.intentDigest,purpose:String(intent.purpose||'')},semanticAuthority:false,compatibilityProof:false,qualityProof:false},
+      source:{packagePath:'organ.js',suggestedTargetPath:suggestedSourcePath,sourceBytes:sourceBytes,sourceSha256:sourceSha256,targetArchiveObjectIdIfImported:digest({sourcePath:suggestedSourcePath,sourceSha256:sourceSha256}).slice(7)},
+      targetCompatibility:clone(ORGAN_ARCHIVE_BRIDGE),
+      authority:archiveAuthority(),
+      boundary:'This is a deterministic dormant-library projection for a hard-gate-valid detached candidate. It is not execution, connection, installation, runtime admission, implementation selection, promotion, a quality verdict, or CANON.'
+    };
+    const projection=Object.assign({},basis,{stashDigest:digest(basis)});
+    return projection;
+  }
+  function verifyArchiveStashProjection(projection,candidate){
+    const errors=[];
+    if(!projection||projection.schema!=='axm.organ-archive-stash-projection/v1')errors.push(issue('STASH_SCHEMA_INVALID','$.schema','Expected dormant stash projection v1.'));
+    else{
+      if(projection.stashDigest!==digest(withoutKey(projection,'stashDigest')))errors.push(issue('STASH_DIGEST_MISMATCH','$.stashDigest','Dormant stash projection digest mismatch.'));
+      if(!projection.validity||projection.validity.state!=='HARD_GATES_PASSED'||projection.validity.qualityClaim!==false)errors.push(issue('STASH_VALIDITY_INVALID','$.validity','Dormant stash validity must remain limited to hard-gate passage.'));
+      if(!projection.archiveState||projection.archiveState.disposition!=='VALID_DORMANT_LIBRARY'||projection.archiveState.retentionPolicy!=='KEEP_WHEN_NO_CURRENT_USE'||projection.archiveState.admissionStatus!=='ARCHIVED_NOT_ADMITTED_TO_RUNTIME'||projection.archiveState.startupPolicy!=='DORMANT'||projection.archiveState.implementationStatus!=='UNSELECTED')errors.push(issue('STASH_NOT_DORMANT','$.archiveState','Archive projection gained an active or selected state.'));
+      if(canonicalJson(projection.authority||{})!==canonicalJson(archiveAuthority()))errors.push(issue('STASH_AUTHORITY_EXCEEDED','$.authority','Dormant stash projection authority ceiling changed.'));
+      if(!projection.purposeClassification||projection.purposeClassification.state!=='INFERRED_UNCONFIRMED'||projection.purposeClassification.semanticAuthority!==false||projection.purposeClassification.compatibilityProof!==false||projection.purposeClassification.qualityProof!==false)errors.push(issue('STASH_CLASSIFICATION_AUTHORITY_EXCEEDED','$.purposeClassification','Purpose shelves must remain inferred and non-authoritative.'));
+      if(canonicalJson(projection.targetCompatibility||{})!==canonicalJson(ORGAN_ARCHIVE_BRIDGE))errors.push(issue('STASH_TARGET_LINEAGE_STALE','$.targetCompatibility','Organ Archive bridge lineage is not current.'));
+      if(!projection.source||!/^organs\/[a-z0-9-]+-organ\.js$/.test(projection.source.suggestedTargetPath||'')||!/^[a-f0-9]{64}$/.test(projection.source.sourceSha256||'')||!/^[a-f0-9]{64}$/.test(projection.source.targetArchiveObjectIdIfImported||''))errors.push(issue('STASH_SOURCE_INVALID','$.source','Dormant source handoff identity is invalid.'));
+      if(candidate){try{const rebuilt=projectArchiveStash(candidate);if(canonicalJson(rebuilt)!==canonicalJson(projection))errors.push(issue('STASH_REBUILD_DRIFT','$','Dormant stash projection does not reproduce from its candidate.'));}catch(error){errors.push(issue('STASH_CANDIDATE_INVALID','$',String(error.message||error)));}}
+    }
+    return {schema:'axm.organ-archive-stash-verification/v1',ok:errors.length===0,errors:errors,stashDigest:projection&&projection.stashDigest||null};
+  }
+  function buildArchiveStashEnvelope(candidate,projection){
+    const stash=projection||projectArchiveStash(candidate),check=verifyArchiveStashProjection(stash,candidate);
+    if(!check.ok)throw new Error('Dormant stash envelope refused: '+canonicalJson(check.errors));
+    const basis={
+      schema:'axm.organ-archive-stash-envelope/v1',status:'EXPERIMENTAL',envelopeKind:'DORMANT_ORGAN_SOURCE_HANDOFF',
+      sourcePackage:{packageDigest:candidate.package.packageDigest,candidateId:candidate.package.id,definitionDigest:candidate.definition.definitionDigest,evaluationDigest:candidate.evaluation.receiptDigest},
+      stashProjection:clone(stash),
+      sourceArtifact:{path:stash.source.suggestedTargetPath,bytes:stash.source.sourceBytes,sha256:stash.source.sourceSha256,content:candidate.files['organ.js']},
+      target:{moduleId:ORGAN_ARCHIVE_BRIDGE.moduleId,version:ORGAN_ARCHIVE_BRIDGE.version,contractCanonicalDigest:ORGAN_ARCHIVE_BRIDGE.contractCanonicalDigest,acceptance:'EXPLICIT_HOST_IMPORT_AND_NORMAL_ARCHIVE_GATES_REQUIRED'},
+      authority:archiveAuthority(),
+      boundary:'This portable envelope is review material. A receiving host must explicitly place and scan the source through its normal archive gates; this envelope never writes to Mirror and grants no load, execution, connection, admission, installation, selection, promotion, or CANON authority.'
+    };
+    return Object.assign({},basis,{envelopeDigest:digest(basis)});
+  }
+  function buildArchiveConnectionPlan(candidate,projection){
+    const envelope=buildArchiveStashEnvelope(candidate,projection),basis={
+      schema:'axm.organ-archive-connection-plan/v1',status:'EXPERIMENTAL',operation:'CONNECT_SOURCE_TO_PASSIVE_DORMANT_ARCHIVE',
+      sourcePackage:clone(envelope.sourcePackage),stashDigest:envelope.stashProjection.stashDigest,envelopeDigest:envelope.envelopeDigest,
+      sourceArtifact:{path:envelope.sourceArtifact.path,bytes:envelope.sourceArtifact.bytes,sha256:envelope.sourceArtifact.sha256,targetArchiveObjectId:envelope.stashProjection.source.targetArchiveObjectIdIfImported},
+      target:clone(ORGAN_ARCHIVE_BRIDGE),
+      authorization:{required:true,hostOwned:true,exactAcknowledgement:ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT},
+      expectedReceiverState:{archiveAdmissionStatus:'ARCHIVED_NOT_ADMITTED_TO_RUNTIME',startupPolicy:'DORMANT',runtimeConnection:false,organLoad:false,organExecution:false,runtimeAdmission:false,installation:false,registration:false,promotion:false,canonChange:false},
+      authority:archiveAuthority(),
+      boundary:'This plan authorizes only an exact source-byte handoff to the bound passive archive receiver. It does not authorize organ loading, execution, runtime connection, admission, installation, registration, staging, promotion, permission changes, Foundation mutation, or CANON.'
+    };
+    return Object.assign({},basis,{planDigest:digest(basis)});
+  }
+  function verifyArchiveConnectionPlan(plan,candidate){
+    const errors=[];
+    if(!plan||plan.schema!=='axm.organ-archive-connection-plan/v1')errors.push(issue('CONNECTION_PLAN_SCHEMA_INVALID','$.schema','Expected archive connection plan v1.'));
+    else{
+      if(plan.planDigest!==digest(withoutKey(plan,'planDigest')))errors.push(issue('CONNECTION_PLAN_DIGEST_MISMATCH','$.planDigest','Archive connection plan digest mismatch.'));
+      if(canonicalJson(plan.target||{})!==canonicalJson(ORGAN_ARCHIVE_BRIDGE))errors.push(issue('CONNECTION_TARGET_LINEAGE_STALE','$.target','Archive receiver lineage is not current.'));
+      if(!plan.authorization||plan.authorization.exactAcknowledgement!==ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT||plan.authorization.required!==true||plan.authorization.hostOwned!==true)errors.push(issue('CONNECTION_AUTHORIZATION_INVALID','$.authorization','Exact host authorization is required.'));
+      if(canonicalJson(plan.authority||{})!==canonicalJson(archiveAuthority()))errors.push(issue('CONNECTION_AUTHORITY_EXCEEDED','$.authority','Archive connection plan exceeds its authority ceiling.'));
+      if(!plan.expectedReceiverState||plan.expectedReceiverState.archiveAdmissionStatus!=='ARCHIVED_NOT_ADMITTED_TO_RUNTIME'||plan.expectedReceiverState.startupPolicy!=='DORMANT'||Object.keys(plan.expectedReceiverState).filter(function(key){return ['archiveAdmissionStatus','startupPolicy'].indexOf(key)<0;}).some(function(key){return plan.expectedReceiverState[key]!==false;}))errors.push(issue('CONNECTION_EXPECTED_STATE_ACTIVE','$.expectedReceiverState','Receiver state must remain dormant and non-authoritative.'));
+      if(candidate){try{const rebuilt=buildArchiveConnectionPlan(candidate);if(canonicalJson(rebuilt)!==canonicalJson(plan))errors.push(issue('CONNECTION_PLAN_REBUILD_DRIFT','$','Archive connection plan does not reproduce from its candidate.'));}catch(error){errors.push(issue('CONNECTION_PLAN_CANDIDATE_INVALID','$',String(error.message||error)));}}
+    }
+    return {schema:'axm.organ-archive-connection-plan-verification/v1',ok:errors.length===0,errors:errors,planDigest:plan&&plan.planDigest||null};
+  }
+  function buildArchiveConnectionReceipt(plan,receiverAcknowledgement){
+    const planCheck=verifyArchiveConnectionPlan(plan);
+    if(!planCheck.ok)throw new Error('Archive connection receipt refused: invalid plan.');
+    const acknowledgement=clone(receiverAcknowledgement||{}),ackBasis=withoutKey(acknowledgement,'acknowledgementDigest');
+    if(acknowledgement.schema!=='axm.organ-archive-receiver-acknowledgement/v1'||acknowledgement.acknowledgementDigest!==digest(ackBasis))throw new Error('Archive connection receipt refused: receiver acknowledgement digest is invalid.');
+    if(acknowledgement.targetModuleId!==plan.target.moduleId||acknowledgement.targetVersion!==plan.target.version||acknowledgement.targetContractCanonicalDigest!==plan.target.contractCanonicalDigest)throw new Error('Archive connection receipt refused: receiver lineage differs from the plan.');
+    if(acknowledgement.sourcePath!==plan.sourceArtifact.path||acknowledgement.sourceSha256!==plan.sourceArtifact.sha256||acknowledgement.archiveObjectId!==plan.sourceArtifact.targetArchiveObjectId)throw new Error('Archive connection receipt refused: receiver source identity differs from the plan.');
+    if(acknowledgement.archiveAdmissionStatus!=='ARCHIVED_NOT_ADMITTED_TO_RUNTIME'||acknowledgement.startupPolicy!=='DORMANT'||acknowledgement.objectVerified!==true||acknowledgement.trustedReceiverAdapterLoaded!==true||acknowledgement.organLoaded!==false||acknowledgement.organExecuted!==false||acknowledgement.runtimeConnected!==false||acknowledgement.runtimeAdmitted!==false)throw new Error('Archive connection receipt refused: receiver acknowledgement exceeds the dormant boundary.');
+    const basis={
+      schema:'axm.organ-archive-connection-receipt/v1',status:'EXPERIMENTAL',outcome:'DORMANT_ARCHIVE_CONNECTION_ACKNOWLEDGED',
+      planDigest:plan.planDigest,packageDigest:plan.sourcePackage.packageDigest,stashDigest:plan.stashDigest,envelopeDigest:plan.envelopeDigest,
+      sourceArtifact:clone(plan.sourceArtifact),
+      receiver:{targetModuleId:acknowledgement.targetModuleId,targetVersion:acknowledgement.targetVersion,targetContractCanonicalDigest:acknowledgement.targetContractCanonicalDigest,acknowledgementDigest:acknowledgement.acknowledgementDigest,archiveObjectId:acknowledgement.archiveObjectId,sourceDisposition:acknowledgement.sourceDisposition,archiveObjectDisposition:acknowledgement.archiveObjectDisposition,archiveAdmissionStatus:acknowledgement.archiveAdmissionStatus,startupPolicy:acknowledgement.startupPolicy,objectVerified:true},
+      authority:archiveAuthority(),
+      stateChanges:{sourceArtifactPlaced:true,passiveArchiveObjectPresent:true,runtimeConnection:false,organLoaded:false,organExecuted:false,runtimeAdmitted:false,installed:false,registered:false,staged:false,promoted:false,permissionsChanged:false,foundationChanged:false,canonChanged:false},
+      boundary:'The passive archive receiver acknowledged exact dormant source bytes. This is not a runtime connection, implementation decision, quality proof, compatibility proof, installation, registration, promotion, permission grant, Foundation change, or CANON.'
+    };
+    return Object.assign({},basis,{receiptDigest:digest(basis)});
+  }
+  function verifyArchiveConnectionReceipt(receipt,candidate){
+    const errors=[];
+    if(!receipt||receipt.schema!=='axm.organ-archive-connection-receipt/v1')errors.push(issue('CONNECTION_RECEIPT_SCHEMA_INVALID','$.schema','Expected archive connection receipt v1.'));
+    else{
+      if(receipt.receiptDigest!==digest(withoutKey(receipt,'receiptDigest')))errors.push(issue('CONNECTION_RECEIPT_DIGEST_MISMATCH','$.receiptDigest','Archive connection receipt digest mismatch.'));
+      if(canonicalJson(receipt.authority||{})!==canonicalJson(archiveAuthority()))errors.push(issue('CONNECTION_RECEIPT_AUTHORITY_EXCEEDED','$.authority','Archive connection receipt exceeds its authority ceiling.'));
+      if(!receipt.stateChanges||receipt.stateChanges.sourceArtifactPlaced!==true||receipt.stateChanges.passiveArchiveObjectPresent!==true||Object.keys(receipt.stateChanges).filter(function(key){return ['sourceArtifactPlaced','passiveArchiveObjectPresent'].indexOf(key)<0;}).some(function(key){return receipt.stateChanges[key]!==false;}))errors.push(issue('CONNECTION_RECEIPT_STATE_INVALID','$.stateChanges','Connection receipt claims an active or authority-changing state.'));
+      if(!receipt.receiver||receipt.receiver.targetModuleId!==ORGAN_ARCHIVE_BRIDGE.moduleId||receipt.receiver.targetVersion!==ORGAN_ARCHIVE_BRIDGE.version||receipt.receiver.targetContractCanonicalDigest!==ORGAN_ARCHIVE_BRIDGE.contractCanonicalDigest||receipt.receiver.archiveAdmissionStatus!=='ARCHIVED_NOT_ADMITTED_TO_RUNTIME'||receipt.receiver.startupPolicy!=='DORMANT'||receipt.receiver.objectVerified!==true||receipt.receiver.sourceDisposition!=='SOURCE_ARTIFACT_PRESENT_VERIFIED'||receipt.receiver.archiveObjectDisposition!=='ARCHIVE_OBJECT_PRESENT_VERIFIED')errors.push(issue('CONNECTION_RECEIVER_STATE_INVALID','$.receiver','Receiver acknowledgement is not the current verified dormant archive target.'));
+      if(!receipt.sourceArtifact||receipt.receiver&&receipt.receiver.archiveObjectId!==receipt.sourceArtifact.targetArchiveObjectId||receipt.sourceArtifact&&receipt.sourceArtifact.targetArchiveObjectId!==digest({sourcePath:receipt.sourceArtifact.path,sourceSha256:receipt.sourceArtifact.sha256}).slice(7))errors.push(issue('CONNECTION_RECEIVER_IDENTITY_INVALID','$.sourceArtifact','Receiver archive object identity does not reproduce from the source path and digest.'));
+      if(candidate){try{const plan=buildArchiveConnectionPlan(candidate);if(receipt.packageDigest!==candidate.package.packageDigest||receipt.planDigest!==plan.planDigest||receipt.stashDigest!==plan.stashDigest||receipt.envelopeDigest!==plan.envelopeDigest||canonicalJson(receipt.sourceArtifact)!==canonicalJson(plan.sourceArtifact))errors.push(issue('CONNECTION_RECEIPT_PACKAGE_DRIFT','$','Connection receipt does not reproduce from the archived candidate package.'));}catch(error){errors.push(issue('CONNECTION_RECEIPT_PACKAGE_INVALID','$',String(error.message||error)));}}
+    }
+    return {schema:'axm.organ-archive-connection-receipt-verification/v1',ok:errors.length===0,errors:errors,receiptDigest:receipt&&receipt.receiptDigest||null};
+  }
   function parseSentence(sentence,packs,preferredPackId){
     const text=String(sentence||'').trim(),lower=text.toLowerCase();
     if(!text)return {schema:'axm.organ-intent-preview/v1',status:'PREVIEW_REQUIRED',draft:null,unresolved:[{code:'PURPOSE_MISSING',message:'Describe the organ purpose.'}],warnings:[]};
@@ -585,9 +865,15 @@
   return {
     FACTORY_VERSION:FACTORY_VERSION,RUNTIME_ID:RUNTIME_ID,RUNTIME_VERSION:RUNTIME_VERSION,RUNTIME_DIGEST:RUNTIME_DIGEST,
     LIMITS:LIMITS,METRIC_PROFILE:METRIC_PROFILE,STRATEGIES:STRATEGIES,ALLOWED_OPERATIONS:ALLOWED_OPERATIONS,
+    VERIFICATION_ROUTE_TOKEN_REGISTRY:VERIFICATION_ROUTE_TOKEN_REGISTRY,VERIFICATION_ROUTE_TOKEN_REGISTRY_REF:VERIFICATION_ROUTE_TOKEN_REGISTRY_REF,
     canonicalJson:canonicalJson,digest:digest,clone:clone,sealIntent:sealIntent,validateIntent:validateIntent,validatePack:validatePack,
-    validateGraph:validateGraph,executeGraph:executeGraph,runDefinition:runDefinition,makeDefinition:makeDefinition,evaluateDefinition:evaluateDefinition,
+    validateGraph:validateGraph,executeGraph:executeGraph,runDefinition:runDefinition,makeDefinition:makeDefinition,evaluateDefinition:evaluateDefinition,requiredInputUsage:requiredInputUsage,
     buildPackage:buildPackage,verifyPackage:verifyPackage,generateCandidates:generateCandidates,compareCandidates:compareCandidates,
-    selectCandidate:selectCandidate,parseSentence:parseSentence,importProposal:importProposal,portSchema:portSchema
+    selectCandidate:selectCandidate,validSelectionReceipt:validSelectionReceipt,supersedeCandidateSelection:supersedeCandidateSelection,verifySupersessionReceipt:verifySupersessionReceipt,
+    planVerificationRouteForPack:planVerificationRouteForPack,verifyVerificationRoutePlanForPack:verifyVerificationRoutePlanForPack,normalizeVerificationBrief:normalizeVerificationBrief,
+    parseSentence:parseSentence,importProposal:importProposal,portSchema:portSchema,
+    ORGAN_ARCHIVE_BRIDGE:ORGAN_ARCHIVE_BRIDGE,ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT:ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT,
+    projectArchiveStash:projectArchiveStash,verifyArchiveStashProjection:verifyArchiveStashProjection,buildArchiveStashEnvelope:buildArchiveStashEnvelope,
+    buildArchiveConnectionPlan:buildArchiveConnectionPlan,verifyArchiveConnectionPlan:verifyArchiveConnectionPlan,buildArchiveConnectionReceipt:buildArchiveConnectionReceipt,verifyArchiveConnectionReceipt:verifyArchiveConnectionReceipt
   };
 });
