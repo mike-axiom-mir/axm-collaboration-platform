@@ -23,7 +23,14 @@ const PROFILE_FIELDS = Object.freeze({
 function stableValue(value) {
   if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
   if (typeof value === 'number') { if (!Number.isFinite(value)) throw new Error('non-finite number refused'); return value; }
-  if (Array.isArray(value)) return value.map(stableValue);
+  if (Array.isArray(value)) {
+    const output = [];
+    for (let index = 0; index < value.length; index += 1) {
+      if (!Object.prototype.hasOwnProperty.call(value, index)) throw new Error('sparse arrays are refused');
+      output.push(stableValue(value[index]));
+    }
+    return output;
+  }
   if (!value || typeof value !== 'object' || Object.getPrototypeOf(value) !== Object.prototype) throw new Error('plain JSON objects are required');
   const output = {};
   for (const key of Object.keys(value).sort()) {

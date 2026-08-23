@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "axm.deterministic-organ/v1", "title": "AXM Deterministic Organ v1", "type": "object", "additionalProperties": false,
+  "required": ["schema", "id", "version", "status", "field", "strategy", "purpose", "lineage", "interface", "graph", "guards", "limits", "invariants", "boundaries", "refusals", "implementation", "installed", "registered", "staged", "promoted", "canonChanged", "definitionDigest"],
+  "properties": {
+    "schema": {"const": "axm.deterministic-organ/v1"}, "id": {"type": "string"}, "version": {"type": "string"}, "status": {"const": "EXPERIMENTAL"}, "field": {"type": "string"}, "strategy": {"enum": ["lean", "balanced", "guarded"]}, "purpose": {"type": "string"},
+    "lineage": {"type": "object", "additionalProperties": false, "required": ["factoryVersion", "runtime", "pack", "intentDigest", "metricProfileId", "metricProfileDigest"], "properties": {"factoryVersion": {"type": "string"}, "runtime": {"$ref": "#/$defs/ref"}, "pack": {"$ref": "#/$defs/ref"}, "intentDigest": {"$ref": "#/$defs/digest"}, "metricProfileId": {"const": "balanced-v1"}, "metricProfileDigest": {"$ref": "#/$defs/digest"}}},
+    "interface": {"type": "object", "additionalProperties": false, "required": ["inputs", "outputs"], "properties": {"inputs": {"type": "array", "items": {"$ref": "organ-intent.schema.json#/$defs/port"}}, "outputs": {"type": "array", "items": {"$ref": "organ-intent.schema.json#/$defs/port"}}}},
+    "graph": {"$ref": "organ-field-pack.schema.json#/$defs/graph"}, "guards": {"type": "array", "items": {"$ref": "organ-field-pack.schema.json#/$defs/guard"}}, "limits": {"$ref": "organ-intent.schema.json#/$defs/limits"}, "invariants": {"type": "array", "items": {"type": "string"}}, "boundaries": {"type": "array", "items": {"type": "string"}}, "refusals": {"type": "array", "items": {"type": "string"}},
+    "implementation": {"type": "object", "additionalProperties": false, "required": ["kind", "status"], "properties": {"kind": {"const": "pure-json-transformer"}, "status": {"const": "EXPERIMENTAL"}}},
+    "installed": {"const": false}, "registered": {"const": false}, "staged": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}, "definitionDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "ref": {"type": "object", "additionalProperties": false, "required": ["id", "version", "digest"], "properties": {"id": {"type": "string"}, "version": {"type": "string"}, "digest": {"$ref": "#/$defs/digest"}}}}
+}

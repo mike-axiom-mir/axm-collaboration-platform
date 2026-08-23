@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "axm.organ-archive-event/v1", "title": "AXM Organ Archive Event v1", "type": "object", "additionalProperties": false,
+  "required": ["schema", "sequence", "eventType", "objectDigest", "payload", "eventDigest"],
+  "properties": {"schema": {"const": "axm.organ-archive-event/v1"}, "sequence": {"type": "integer", "minimum": 1}, "eventType": {"enum": ["ARCHIVED", "SELECTED", "SUPERSEDED", "REVALIDATED", "REVALIDATION_REQUIRED", "DELETED", "IMPORTED"]}, "objectDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "payload": {"type": "object"}, "eventDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}}
+}

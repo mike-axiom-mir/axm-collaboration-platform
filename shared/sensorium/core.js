@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function now(value) { return String(value || new Date().toISOString()); }
@@ -9,16 +10,9 @@ function compact(value, maximum) {
   return maximum && out.length > maximum ? out.slice(0, Math.max(0, maximum - 3)) + '...' : out;
 }
 function stable(value) {
-  if (Array.isArray(value)) return value.map(stable);
-  if (value && typeof value === 'object' && !Buffer.isBuffer(value)) {
-    return Object.keys(value).sort().reduce(function (out, key) {
-      if (value[key] !== undefined) out[key] = stable(value[key]);
-      return out;
-    }, {});
-  }
-  return value;
+  return JSON.parse(DeterministicJson.canonicalJson(value));
 }
-function stableStringify(value) { return JSON.stringify(stable(value)); }
+function stableStringify(value) { return DeterministicJson.canonicalJson(value); }
 function digest(value) {
   const material = Buffer.isBuffer(value) ? value : Buffer.from(typeof value === 'string' ? value : stableStringify(value));
   return crypto.createHash('sha256').update(material).digest('hex');

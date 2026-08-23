@@ -1,0 +1,89 @@
+{
+  "schema": "axm.organ-field-pack/v1",
+  "id": "games-entertainment",
+  "version": "1.0.0",
+  "title": "Games & Entertainment",
+  "description": "Build bounded encounter-beat selectors with explicit seed, state, and telegraphing.",
+  "capability": "encounter-beat-selection",
+  "vocabulary": ["game", "entertainment", "encounter", "beat", "telegraph", "seed", "state"],
+  "requiredInputs": ["explicitSeed", "currentState", "intensity", "recentBeats"],
+  "requiredOutputs": ["beat", "nextState", "telegraph", "durationTicks"],
+  "allowedPrimitives": ["read", "literal", "lookup", "clamp", "transition", "seeded_select", "object"],
+  "strategies": {
+    "lean": {
+      "guards": [{"kind": "required", "path": "explicitSeed"}, {"kind": "enum", "path": "currentState", "values": ["calm", "pressure", "recovery"]}, {"kind": "minimum", "path": "intensity", "value": 1}, {"kind": "maximum", "path": "intensity", "value": 5}],
+      "graph": {"nodes": [
+        {"id": "seed", "op": "read", "path": "explicitSeed"},
+        {"id": "state", "op": "read", "path": "currentState"},
+        {"id": "intensity", "op": "read", "path": "intensity"},
+        {"id": "beat", "op": "seeded_select", "seedRef": "seed", "options": ["approach", "feint", "hazard"]},
+        {"id": "event", "op": "literal", "value": "advance"},
+        {"id": "next", "op": "transition", "args": [{"ref": "state"}, {"ref": "event"}], "states": {"calm|advance": "pressure", "pressure|advance": "recovery", "recovery|advance": "calm"}},
+        {"id": "telegraph", "op": "lookup", "args": [{"ref": "beat"}], "table": {"approach": "clear approach lane", "feint": "two-step warning", "hazard": "marked hazard zone", "default": "visible warning"}},
+        {"id": "duration", "op": "clamp", "args": [{"ref": "intensity"}], "minimum": 1, "maximum": 5},
+        {"id": "output", "op": "object", "fields": {"beat": {"ref": "beat"}, "durationTicks": {"ref": "duration"}, "nextState": {"ref": "next"}, "telegraph": {"ref": "telegraph"}}}
+      ], "output": "output"}
+    },
+    "balanced": {
+      "guards": [{"kind": "required", "path": "explicitSeed"}, {"kind": "required", "path": "currentState"}, {"kind": "enum", "path": "currentState", "values": ["calm", "pressure", "recovery"]}, {"kind": "minimum", "path": "intensity", "value": 1}, {"kind": "maximum", "path": "intensity", "value": 5}],
+      "graph": {"nodes": [
+        {"id": "seed", "op": "read", "path": "explicitSeed"},
+        {"id": "state", "op": "read", "path": "currentState"},
+        {"id": "intensity", "op": "read", "path": "intensity"},
+        {"id": "beat", "op": "seeded_select", "seedRef": "seed", "options": ["approach", "feint", "hazard", "breather"]},
+        {"id": "event", "op": "literal", "value": "advance"},
+        {"id": "next", "op": "transition", "args": [{"ref": "state"}, {"ref": "event"}], "states": {"calm|advance": "pressure", "pressure|advance": "recovery", "recovery|advance": "calm"}},
+        {"id": "telegraph", "op": "lookup", "args": [{"ref": "beat"}], "table": {"approach": "clear approach lane", "feint": "two-step warning", "hazard": "marked hazard zone", "breather": "visible recovery window", "default": "visible warning"}},
+        {"id": "duration", "op": "clamp", "args": [{"ref": "intensity"}], "minimum": 2, "maximum": 5},
+        {"id": "output", "op": "object", "fields": {"beat": {"ref": "beat"}, "durationTicks": {"ref": "duration"}, "nextState": {"ref": "next"}, "telegraph": {"ref": "telegraph"}}}
+      ], "output": "output"}
+    },
+    "guarded": {
+      "guards": [{"kind": "required", "path": "explicitSeed"}, {"kind": "required", "path": "currentState"}, {"kind": "required", "path": "recentBeats"}, {"kind": "enum", "path": "currentState", "values": ["calm", "pressure", "recovery"]}, {"kind": "minimum", "path": "intensity", "value": 1}, {"kind": "maximum", "path": "intensity", "value": 5}],
+      "graph": {"nodes": [
+        {"id": "seed", "op": "read", "path": "explicitSeed"},
+        {"id": "state", "op": "read", "path": "currentState"},
+        {"id": "intensity", "op": "read", "path": "intensity"},
+        {"id": "beat", "op": "seeded_select", "seedRef": "seed", "options": ["approach", "feint", "hazard", "breather"]},
+        {"id": "event", "op": "literal", "value": "advance"},
+        {"id": "next", "op": "transition", "args": [{"ref": "state"}, {"ref": "event"}], "states": {"calm|advance": "pressure", "pressure|advance": "recovery", "recovery|advance": "calm"}},
+        {"id": "telegraph", "op": "lookup", "args": [{"ref": "beat"}], "table": {"approach": "clear approach lane plus exit", "feint": "two-step warning plus cancel cue", "hazard": "marked hazard zone plus safe lane", "breather": "visible recovery window", "default": "visible warning plus fallback"}},
+        {"id": "duration", "op": "clamp", "args": [{"ref": "intensity"}], "minimum": 3, "maximum": 5},
+        {"id": "output", "op": "object", "fields": {"beat": {"ref": "beat"}, "durationTicks": {"ref": "duration"}, "nextState": {"ref": "next"}, "telegraph": {"ref": "telegraph"}}}
+      ], "output": "output"}
+    }
+  },
+  "validators": ["explicit-seed", "bounded-state-transition", "telegraph-present", "typed-ports", "held-out-cases", "rebuild-parity"],
+  "heldOutCases": [
+    {"id": "held-seeded-pressure", "description": "Explicit seed produces one declared beat and a bounded next state.", "input": {"explicitSeed": "held-17", "currentState": "pressure", "intensity": 5, "recentBeats": ["approach"]}, "assertions": [{"path": "beat", "op": "in", "value": ["approach", "feint", "hazard", "breather"]}, {"path": "nextState", "op": "eq", "value": "recovery"}]},
+    {"id": "held-telegraph", "description": "Every declared result has a visible telegraph string.", "input": {"explicitSeed": "held-telegraph", "currentState": "calm", "intensity": 2, "recentBeats": []}, "assertions": [{"path": "nextState", "op": "eq", "value": "pressure"}, {"path": "durationTicks", "op": "gte", "value": 1}]}
+  ],
+  "humanJudgments": ["This organ makes no fun, balance, pacing-quality, or player-delight claim.", "A designer must review repetition and context before implementation."],
+  "exampleIntent": {
+    "id": "encounter-beat-organ",
+    "name": "Encounter Beat Organ",
+    "purpose": "Choose a bounded, telegraphed encounter beat from an explicit seed and current state.",
+    "inputs": [
+      {"name": "explicitSeed", "type": "string", "description": "Caller-supplied deterministic seed.", "required": true},
+      {"name": "currentState", "type": "string", "description": "Current bounded encounter state.", "required": true, "enum": ["calm", "pressure", "recovery"]},
+      {"name": "intensity", "type": "integer", "description": "Explicit intensity from one to five.", "required": true, "minimum": 1, "maximum": 5},
+      {"name": "recentBeats", "type": "array", "description": "Explicit recent beat names for later human review.", "required": true, "items": "string"}
+    ],
+    "outputs": [
+      {"name": "beat", "type": "string", "description": "Selected declared beat.", "required": true, "enum": ["approach", "feint", "hazard", "breather"]},
+      {"name": "nextState", "type": "string", "description": "Next bounded state.", "required": true, "enum": ["calm", "pressure", "recovery"]},
+      {"name": "telegraph", "type": "string", "description": "Explicit telegraph requirement.", "required": true},
+      {"name": "durationTicks", "type": "integer", "description": "Bounded abstract duration.", "required": true, "minimum": 1, "maximum": 5}
+    ],
+    "requiredCases": [
+      {"id": "calm-advances", "description": "Calm advances to pressure.", "input": {"explicitSeed": "case-calm", "currentState": "calm", "intensity": 2, "recentBeats": []}, "assertions": [{"path": "nextState", "op": "eq", "value": "pressure"}, {"path": "beat", "op": "in", "value": ["approach", "feint", "hazard", "breather"]}]},
+      {"id": "recovery-cycles", "description": "Recovery advances to calm.", "input": {"explicitSeed": "case-recovery", "currentState": "recovery", "intensity": 4, "recentBeats": ["hazard"]}, "assertions": [{"path": "nextState", "op": "eq", "value": "calm"}, {"path": "durationTicks", "op": "lte", "value": 5}]}
+    ],
+    "desiredCases": [{"id": "bounded-duration", "description": "Duration remains bounded.", "input": {"explicitSeed": "case-duration", "currentState": "pressure", "intensity": 3, "recentBeats": []}, "assertions": [{"path": "durationTicks", "op": "gte", "value": 1}, {"path": "durationTicks", "op": "lte", "value": 5}]}],
+    "invariants": ["Selection uses only an explicit seed and declared options.", "Every beat includes a telegraph and bounded transition."],
+    "boundaries": ["No fun or balance claim.", "No implicit randomness, clock, environment, or player profiling."],
+    "resourceBudget": {},
+    "metricProfileId": "balanced-v1"
+  },
+  "packDigest": "sha256:0fbcd17c7136f5b492629ccfff0028105c01c9e1908339501ad567bdd0fc2044"
+}

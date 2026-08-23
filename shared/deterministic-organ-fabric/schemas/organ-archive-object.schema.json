@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "axm.organ-archive-object/v1", "title": "AXM Organ Archive Object v1", "type": "object", "additionalProperties": false,
+  "required": ["schema", "objectDigest", "objectKind", "status", "package"],
+  "properties": {"schema": {"const": "axm.organ-archive-object/v1"}, "objectDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "objectKind": {"const": "candidate-package"}, "status": {"enum": ["CURRENT", "REVALIDATION_REQUIRED"]}, "package": {"type": "object", "additionalProperties": false, "required": ["package", "files", "definition", "evaluation"], "properties": {"package": {"$ref": "organ-candidate-package.schema.json"}, "files": {"type": "object", "additionalProperties": {"type": "string"}}, "definition": {"$ref": "deterministic-organ.schema.json"}, "evaluation": {"$ref": "organ-evaluation-receipt.schema.json"}}}}
+}

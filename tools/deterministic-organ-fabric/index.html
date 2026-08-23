@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deterministic Organ Fabric</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">AXM WORKSHOP · EXPERIMENTAL · DETACHED OUTPUT</p>
+      <h1>Deterministic Organ Fabric</h1>
+      <p class="lede">Turn a reviewed brief into three bounded, executable organ candidates—then compare, archive, and choose without installing anything.</p>
+    </div>
+    <div class="system-state" aria-label="System state">
+      <span class="signal">DETERMINISTIC v1</span>
+      <span class="signal quiet">AI OFF · OPTIONAL ADAPTER ONLY</span>
+      <span id="archive-mode" class="signal quiet">ARCHIVE STARTING</span>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Organ Fabric views">
+    <button class="tab active" data-view="brief" aria-selected="true">Brief</button>
+    <button class="tab" data-view="candidates" aria-selected="false">Candidates <span id="candidate-count">0</span></button>
+    <button class="tab" data-view="compare" aria-selected="false">Compare</button>
+    <button class="tab" data-view="archive" aria-selected="false">Archive <span id="archive-count">0</span></button>
+    <button class="tab" data-view="boundaries" aria-selected="false">Boundaries</button>
+  </nav>
+
+  <main>
+    <section id="view-brief" class="view active" aria-labelledby="brief-title">
+      <div class="section-head"><div><p class="section-label">01 · Controlled input</p><h2 id="brief-title">Shape the organ before generation</h2></div><p>Vocabulary can prefill a draft. Typed ports, cases, and boundaries stay visible for review.</p></div>
+      <div class="brief-grid">
+        <form id="brief-form" class="panel wizard">
+          <label for="field-pack">Field pack</label>
+          <select id="field-pack"></select>
+          <p id="pack-description" class="helper"></p>
+          <label for="sentence">Controlled sentence</label>
+          <textarea id="sentence" rows="4" placeholder="Choose a verification route for a UI change with explicit risk and affected surfaces."></textarea>
+          <div class="button-row">
+            <button type="button" id="preview-sentence" class="secondary">Preview sentence</button>
+            <button type="button" id="load-starter" class="secondary">Load starter proof</button>
+          </div>
+          <div id="preview-status" class="notice">Choose a field and preview a sentence, or load the reviewed starter proof.</div>
+          <label class="review-check"><input id="reviewed" type="checkbox"> I reviewed the typed ports, cases, invariants, boundaries, and budgets below.</label>
+          <button type="submit" id="generate" class="primary">Generate three candidates</button>
+        </form>
+        <div class="panel intent-panel">
+          <div class="panel-head"><div><p class="section-label">Normalized intent</p><h3>Exact JSON entering the gates</h3></div><button id="validate-intent" type="button" class="text-button">Validate</button></div>
+          <textarea id="intent-json" class="code-editor" spellcheck="false" aria-label="Normalized intent JSON"></textarea>
+          <div id="intent-validation" class="validation">No intent loaded.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-candidates" class="view" aria-labelledby="candidates-title">
+      <div class="section-head"><div><p class="section-label">02 · Hard gates first</p><h2 id="candidates-title">Executable detached candidates</h2></div><p>Invalid strategies receive compact failure receipts and never reach scoring.</p></div>
+      <div id="candidate-list" class="candidate-grid"><p class="empty">Generate a reviewed brief to see lean, balanced, and guarded candidates.</p></div>
+      <div id="failure-list"></div>
+    </section>
+
+    <section id="view-compare" class="view" aria-labelledby="compare-title">
+      <div class="section-head"><div><p class="section-label">03 · Advisory metrics</p><h2 id="compare-title">Compare measurements, keep judgment human</h2></div><p>Integer weights are visible. Ties remain ties. A score cannot select or apply an organ.</p></div>
+      <div id="weights" class="weight-grid"></div>
+      <div id="comparison" class="panel"><p class="empty">No valid candidates to compare yet.</p></div>
+      <div id="selection-receipt" class="receipt" hidden></div>
+    </section>
+
+    <section id="view-archive" class="view" aria-labelledby="archive-title">
+      <div class="section-head"><div><p class="section-label">04 · Content-addressed memory</p><h2 id="archive-title">Organ Archive</h2></div><p>Objects are immutable; events are durable; this searchable index is rebuildable.</p></div>
+      <div class="archive-actions panel">
+        <div><strong id="archive-summary">Archive is loading.</strong><p id="archive-reason" class="helper"></p></div>
+        <div class="button-row"><button id="verify-archive" class="secondary">Verify archive</button><button id="export-archive" class="secondary">Export pack</button><label class="file-button">Import verified pack<input id="import-archive" type="file" accept="application/json,.json"></label></div>
+      </div>
+      <div id="archive-verification" class="validation"></div>
+      <div id="archive-list" class="archive-list"><p class="empty">No archived organs yet.</p></div>
+    </section>
+
+    <section id="view-boundaries" class="view" aria-labelledby="boundaries-title">
+      <div class="section-head"><div><p class="section-label">05 · Authority ceiling</p><h2 id="boundaries-title">What this Fabric can—and cannot—claim</h2></div></div>
+      <div class="boundary-grid">
+        <article class="panel"><h3>Allowed grammar</h3><p id="allowed-grammar" class="token-list"></p><p>Reads, literals, comparisons, bounded selection, stable collections, and finite transitions only.</p></article>
+        <article class="panel boundary"><h3>Always refused</h3><ul><li>Unknown operations, cycles, forward references, and unbounded iteration</li><li>Implicit randomness, missing explicit seeds, clock, environment, network, filesystem, and dynamic code</li><li>Install, execute-from-disk, register, stage, promote, permission-grant, Foundation mutation, and CANON actions</li></ul></article>
+        <article class="panel"><h3>Human judgments remain open</h3><ul><li>Usefulness, wisdom, fun, balance, visual quality, listening quality, and taste</li><li>Implementation choice and any later governed intake</li><li>Canon requires an explicit Mike Tobi / AXM merge decision</li></ul></article>
+        <article class="panel no-ai"><h3>No-AI path is complete</h3><p>No provider, model, API key, credential, internet connection, or AI button exists in v1. External proposals may enter only as untrusted JSON and pass the identical normalization and gate path.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>EXPERIMENTAL</span><span>installed: false</span><span>promoted: false</span><span>canonChanged: false</span></footer>
+  <script src="/tools/deterministic-json-core/index.js"></script>
+  <script src="/shared/deterministic-organ-fabric/core.js"></script>
+  <script src="/tools/agent-tool-forge/zip-store.js"></script>
+  <script src="browser-archive.js"></script>
+  <script src="/hub/axm-hub-module.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

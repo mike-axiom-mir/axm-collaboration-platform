@@ -1,0 +1,122 @@
+{
+  "schema": "axm.organ-field-pack/v1",
+  "id": "software-workshop",
+  "version": "1.0.0",
+  "title": "Software & Workshop",
+  "description": "Build bounded verification-route selectors from explicit change, risk, and surface inputs.",
+  "capability": "verification-route-selection",
+  "vocabulary": ["software", "workshop", "verification", "test", "change", "risk", "surface"],
+  "requiredInputs": ["changeType", "risk", "affectedSurfaces"],
+  "requiredOutputs": ["route", "containment", "explanation"],
+  "allowedPrimitives": ["read", "literal", "lookup", "gte", "choose", "stable_union", "object"],
+  "strategies": {
+    "lean": {
+      "guards": [
+        {"kind": "required", "path": "changeType"},
+        {"kind": "enum", "path": "changeType", "values": ["config", "code", "ui", "data"]},
+        {"kind": "minimum", "path": "risk", "value": 1},
+        {"kind": "maximum", "path": "risk", "value": 5}
+      ],
+      "graph": {
+        "nodes": [
+          {"id": "change", "op": "read", "path": "changeType"},
+          {"id": "risk", "op": "read", "path": "risk"},
+          {"id": "base", "op": "lookup", "args": [{"ref": "change"}], "table": {"config": ["schema-check"], "code": ["focused-selftest"], "ui": ["syntax-check", "browser-render-click"], "data": ["fixture-parity"], "default": ["focused-selftest"]}},
+          {"id": "high", "op": "gte", "args": [{"ref": "risk"}, {"value": 4}]},
+          {"id": "none", "op": "literal", "value": []},
+          {"id": "extra", "op": "literal", "value": ["required-regression"]},
+          {"id": "riskRoute", "op": "choose", "args": [{"ref": "high"}, {"ref": "extra"}, {"ref": "none"}]},
+          {"id": "route", "op": "stable_union", "args": [{"ref": "base"}, {"ref": "riskRoute"}]},
+          {"id": "containment", "op": "lookup", "args": [{"ref": "risk"}], "table": {"1": "local", "2": "local", "3": "review", "4": "isolated-worktree", "5": "isolated-worktree", "default": "review"}},
+          {"id": "explanation", "op": "lookup", "args": [{"ref": "change"}], "table": {"config": "Validate the declared configuration boundary.", "code": "Exercise the smallest trusted code seam.", "ui": "Syntax evidence is separate from live visual evidence.", "data": "Prove fixture and serialization parity.", "default": "Use focused verification."}},
+          {"id": "output", "op": "object", "fields": {"containment": {"ref": "containment"}, "explanation": {"ref": "explanation"}, "route": {"ref": "route"}}}
+        ],
+        "output": "output"
+      }
+    },
+    "balanced": {
+      "guards": [
+        {"kind": "required", "path": "changeType"},
+        {"kind": "required", "path": "affectedSurfaces"},
+        {"kind": "enum", "path": "changeType", "values": ["config", "code", "ui", "data"]},
+        {"kind": "minimum", "path": "risk", "value": 1},
+        {"kind": "maximum", "path": "risk", "value": 5}
+      ],
+      "graph": {
+        "nodes": [
+          {"id": "change", "op": "read", "path": "changeType"},
+          {"id": "risk", "op": "read", "path": "risk"},
+          {"id": "base", "op": "lookup", "args": [{"ref": "change"}], "table": {"config": ["schema-check", "focused-selftest"], "code": ["focused-selftest", "contract-test"], "ui": ["syntax-check", "browser-render-click"], "data": ["fixture-parity", "round-trip-test"], "default": ["focused-selftest"]}},
+          {"id": "elevated", "op": "gte", "args": [{"ref": "risk"}, {"value": 3}]},
+          {"id": "none", "op": "literal", "value": []},
+          {"id": "extra", "op": "literal", "value": ["required-regression"]},
+          {"id": "riskRoute", "op": "choose", "args": [{"ref": "elevated"}, {"ref": "extra"}, {"ref": "none"}]},
+          {"id": "route", "op": "stable_union", "args": [{"ref": "base"}, {"ref": "riskRoute"}]},
+          {"id": "containment", "op": "lookup", "args": [{"ref": "risk"}], "table": {"1": "local", "2": "review", "3": "review", "4": "isolated-worktree", "5": "isolated-worktree", "default": "review"}},
+          {"id": "explanation", "op": "lookup", "args": [{"ref": "change"}], "table": {"config": "Pair schema evidence with a focused behavior check.", "code": "Check the declared contract and the focused behavior.", "ui": "Combine syntax evidence with an observed render and click path.", "data": "Check fixtures and a canonical round trip.", "default": "Use focused and contract evidence."}},
+          {"id": "output", "op": "object", "fields": {"containment": {"ref": "containment"}, "explanation": {"ref": "explanation"}, "route": {"ref": "route"}}}
+        ],
+        "output": "output"
+      }
+    },
+    "guarded": {
+      "guards": [
+        {"kind": "required", "path": "changeType"},
+        {"kind": "required", "path": "risk"},
+        {"kind": "required", "path": "affectedSurfaces"},
+        {"kind": "enum", "path": "changeType", "values": ["config", "code", "ui", "data"]},
+        {"kind": "minimum", "path": "risk", "value": 1},
+        {"kind": "maximum", "path": "risk", "value": 5}
+      ],
+      "graph": {
+        "nodes": [
+          {"id": "change", "op": "read", "path": "changeType"},
+          {"id": "risk", "op": "read", "path": "risk"},
+          {"id": "base", "op": "lookup", "args": [{"ref": "change"}], "table": {"config": ["schema-check", "focused-selftest", "contract-test"], "code": ["focused-selftest", "contract-test", "required-regression"], "ui": ["syntax-check", "browser-render-click", "required-regression"], "data": ["fixture-parity", "round-trip-test", "required-regression"], "default": ["focused-selftest", "required-regression"]}},
+          {"id": "high", "op": "gte", "args": [{"ref": "risk"}, {"value": 4}]},
+          {"id": "baseline", "op": "literal", "value": ["independent-rebuild"]},
+          {"id": "extra", "op": "literal", "value": ["tamper-check", "required-regression"]},
+          {"id": "riskRoute", "op": "choose", "args": [{"ref": "high"}, {"ref": "extra"}, {"ref": "baseline"}]},
+          {"id": "route", "op": "stable_union", "args": [{"ref": "base"}, {"ref": "riskRoute"}]},
+          {"id": "containment", "op": "literal", "value": "isolated-worktree"},
+          {"id": "explanation", "op": "lookup", "args": [{"ref": "change"}], "table": {"config": "Use isolated validation, contract evidence, and a reproducible rebuild.", "code": "Use focused, contract, regression, and rebuild evidence.", "ui": "Observe live behavior and retain separate syntax and regression evidence.", "data": "Prove fixtures, round-trip behavior, regressions, and rebuild parity.", "default": "Use the guarded verification spine."}},
+          {"id": "output", "op": "object", "fields": {"containment": {"ref": "containment"}, "explanation": {"ref": "explanation"}, "route": {"ref": "route"}}}
+        ],
+        "output": "output"
+      }
+    }
+  },
+  "validators": ["typed-ports", "required-fixtures", "held-out-cases", "graph-purity", "resource-bounds", "rebuild-parity"],
+  "heldOutCases": [
+    {"id": "held-ui-high", "description": "High-risk UI work retains live browser evidence.", "input": {"changeType": "ui", "risk": 5, "affectedSurfaces": ["hub", "mobile"]}, "assertions": [{"path": "route", "op": "contains", "value": "browser-render-click"}, {"path": "containment", "op": "in", "value": ["isolated-worktree"]}]},
+    {"id": "held-data-low", "description": "Data changes include fixture parity.", "input": {"changeType": "data", "risk": 1, "affectedSurfaces": ["archive"]}, "assertions": [{"path": "route", "op": "contains", "value": "fixture-parity"}]}
+  ],
+  "humanJudgments": ["Usefulness of the selected route remains a Mike decision.", "Passing checks do not make a change wise, safe to merge, or CANON."],
+  "exampleIntent": {
+    "id": "verification-route-organ",
+    "name": "Verification Route Organ",
+    "purpose": "Choose a bounded verification route from change type, risk, and affected surfaces.",
+    "inputs": [
+      {"name": "changeType", "type": "string", "description": "Declared change class.", "required": true, "enum": ["config", "code", "ui", "data"]},
+      {"name": "risk", "type": "integer", "description": "Human-assigned risk from one to five.", "required": true, "minimum": 1, "maximum": 5},
+      {"name": "affectedSurfaces", "type": "array", "description": "Explicitly named affected surfaces.", "required": true, "items": "string"}
+    ],
+    "outputs": [
+      {"name": "route", "type": "array", "description": "Ordered verification route.", "required": true, "items": "string"},
+      {"name": "containment", "type": "string", "description": "Recommended containment lane.", "required": true},
+      {"name": "explanation", "type": "string", "description": "Bounded explanation.", "required": true}
+    ],
+    "requiredCases": [
+      {"id": "ui-route", "description": "UI work requires live visual evidence.", "input": {"changeType": "ui", "risk": 3, "affectedSurfaces": ["hub"]}, "assertions": [{"path": "route", "op": "contains", "value": "browser-render-click"}]},
+      {"id": "code-route", "description": "Code work includes a focused selftest.", "input": {"changeType": "code", "risk": 2, "affectedSurfaces": ["runtime"]}, "assertions": [{"path": "route", "op": "contains", "value": "focused-selftest"}]}
+    ],
+    "desiredCases": [
+      {"id": "high-risk-regression", "description": "High risk should include regression evidence when available.", "input": {"changeType": "code", "risk": 5, "affectedSurfaces": ["runtime", "archive"]}, "assertions": [{"path": "route", "op": "contains", "value": "required-regression"}]}
+    ],
+    "invariants": ["Never claim a browser path passed from syntax evidence alone.", "Never install, promote, or mutate the Foundation."],
+    "boundaries": ["Risk is explicit human input, not inferred.", "The output is advisory and cannot authorize execution."],
+    "resourceBudget": {},
+    "metricProfileId": "balanced-v1"
+  },
+  "packDigest": "sha256:792824d07efea356bf0dc6f2832298dfc2c70a0e0c8bbf9f940c1225dc60bc8c"
+}

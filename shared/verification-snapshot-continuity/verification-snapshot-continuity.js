@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const RECEIPT_SCHEMA = 'axm.verification-snapshot-continuity-receipt/v1';
 const VERSION = '0.1.0';
@@ -14,17 +15,11 @@ function clone(value) {
 }
 
 function stableValue(value) {
-  if (Array.isArray(value)) return value.map(stableValue);
-  if (value && typeof value === 'object') {
-    const result = {};
-    Object.keys(value).sort().forEach(key => { result[key] = stableValue(value[key]); });
-    return result;
-  }
-  return value;
+  return JSON.parse(DeterministicJson.canonicalJson(value));
 }
 
 function stableStringify(value) {
-  return JSON.stringify(stableValue(value));
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {
@@ -363,4 +358,3 @@ module.exports = {
   build,
   verify
 };
-

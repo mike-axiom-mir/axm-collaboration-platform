@@ -40,19 +40,38 @@
   }
 
   function stableValue(value) {
-    if (Array.isArray(value)) return value.map(stableValue);
-    if (value && typeof value === 'object') {
-      var out = {};
-      Object.keys(value).sort().forEach(function (key) {
-        if (value[key] !== undefined) out[key] = stableValue(value[key]);
-      });
-      return out;
-    }
-    return value;
+    return JSON.parse(stableStringify(value));
   }
 
   function stableStringify(value) {
-    return JSON.stringify(stableValue(value));
+    function encode(item, seen, at) {
+      if (item === null) return 'null';
+      var type = typeof item;
+      if (type === 'string' || type === 'boolean') return JSON.stringify(item);
+      if (type === 'number') {
+        if (!Number.isFinite(item)) throw new TypeError('non-finite number at ' + at);
+        return JSON.stringify(Object.is(item, -0) ? 0 : item);
+      }
+      if (type !== 'object') throw new TypeError('unsupported ' + type + ' at ' + at);
+      if (seen.has(item)) throw new TypeError('cycle at ' + at);
+      seen.add(item);
+      var result;
+      if (Array.isArray(item)) {
+        var rows = [];
+        for (var index = 0; index < item.length; index += 1) {
+          if (!Object.prototype.hasOwnProperty.call(item, index)) throw new TypeError('sparse array at ' + at + '[' + index + ']');
+          rows.push(encode(item[index], seen, at + '[' + index + ']'));
+        }
+        result = '[' + rows.join(',') + ']';
+      } else {
+        var prototype = Object.getPrototypeOf(item);
+        if (prototype !== Object.prototype && prototype !== null) throw new TypeError('non-plain object at ' + at);
+        result = '{' + Object.keys(item).sort().map(function (key) { return JSON.stringify(key) + ':' + encode(item[key], seen, at + '.' + key); }).join(',') + '}';
+      }
+      seen.delete(item);
+      return result;
+    }
+    return encode(value, new Set(), '$');
   }
 
   function digest(value) {

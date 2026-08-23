@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const DeterministicJson = require('../../../tools/deterministic-json-core');
 
 function clone(value) {
   if (value === undefined) return undefined;
@@ -19,19 +20,11 @@ function makeId(prefix) {
 }
 
 function stableValue(value) {
-  if (Array.isArray(value)) return value.map(stableValue);
-  if (value && typeof value === 'object') {
-    const out = {};
-    Object.keys(value).sort().forEach(function (key) {
-      out[key] = stableValue(value[key]);
-    });
-    return out;
-  }
-  return value;
+  return JSON.parse(DeterministicJson.canonicalJson(value));
 }
 
 function stableStringify(value) {
-  return JSON.stringify(stableValue(value));
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {
@@ -69,7 +62,7 @@ function renameAtomicWithRetry(source, destination) {
 function atomicWriteJson(file, value) {
   ensureDir(path.dirname(file));
   const temp = file + '.tmp-' + process.pid + '-' + crypto.randomBytes(3).toString('hex');
-  fs.writeFileSync(temp, JSON.stringify(value, null, 2) + '\n', { mode: 0o600 });
+  fs.writeFileSync(temp, stableStringify(value) + '\n', { mode: 0o600 });
   renameAtomicWithRetry(temp, file);
   return file;
 }

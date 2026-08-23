@@ -1,0 +1,82 @@
+{
+  "schema": "axm.organ-field-pack/v1",
+  "id": "creative-production",
+  "version": "1.0.0",
+  "title": "Creative Production",
+  "description": "Build bounded production-route selectors with declared validators, accessibility requirements, and fallbacks.",
+  "capability": "creative-production-route-selection",
+  "vocabulary": ["creative", "production", "visual", "audio", "accessibility", "validator", "fallback", "asset"],
+  "requiredInputs": ["medium", "delivery", "accessibility"],
+  "requiredOutputs": ["route", "validators", "fallbacks"],
+  "allowedPrimitives": ["read", "literal", "lookup", "stable_union", "object"],
+  "strategies": {
+    "lean": {
+      "guards": [{"kind": "enum", "path": "medium", "values": ["visual", "audio"]}, {"kind": "enum", "path": "delivery", "values": ["web", "print", "live"]}],
+      "graph": {"nodes": [
+        {"id": "medium", "op": "read", "path": "medium"},
+        {"id": "delivery", "op": "read", "path": "delivery"},
+        {"id": "route", "op": "lookup", "args": [{"ref": "medium"}], "table": {"visual": ["draft", "contrast-pass", "export"], "audio": ["rough-cut", "level-pass", "export"], "default": ["draft", "review"]}},
+        {"id": "validators", "op": "lookup", "args": [{"ref": "medium"}], "table": {"visual": ["dimensions", "contrast"], "audio": ["duration", "peak-level"], "default": ["format"]}},
+        {"id": "fallbacks", "op": "lookup", "args": [{"ref": "delivery"}], "table": {"web": ["static-poster"], "print": ["high-contrast-proof"], "live": ["pre-rendered-playback"], "default": ["manual-review"]}},
+        {"id": "output", "op": "object", "fields": {"fallbacks": {"ref": "fallbacks"}, "route": {"ref": "route"}, "validators": {"ref": "validators"}}}
+      ], "output": "output"}
+    },
+    "balanced": {
+      "guards": [{"kind": "required", "path": "medium"}, {"kind": "required", "path": "accessibility"}, {"kind": "enum", "path": "medium", "values": ["visual", "audio"]}, {"kind": "enum", "path": "delivery", "values": ["web", "print", "live"]}],
+      "graph": {"nodes": [
+        {"id": "medium", "op": "read", "path": "medium"},
+        {"id": "delivery", "op": "read", "path": "delivery"},
+        {"id": "access", "op": "read", "path": "accessibility"},
+        {"id": "baseRoute", "op": "lookup", "args": [{"ref": "medium"}], "table": {"visual": ["brief-check", "draft", "contrast-pass", "human-review", "export"], "audio": ["brief-check", "rough-cut", "level-pass", "listening-review", "export"], "default": ["brief-check", "draft", "review"]}},
+        {"id": "validators", "op": "lookup", "args": [{"ref": "medium"}], "table": {"visual": ["dimensions", "contrast", "alt-text-present"], "audio": ["duration", "peak-level", "transcript-present"], "default": ["format"]}},
+        {"id": "fallbacks", "op": "lookup", "args": [{"ref": "delivery"}], "table": {"web": ["static-poster", "text-alternative"], "print": ["high-contrast-proof", "plain-text-copy"], "live": ["pre-rendered-playback", "caption-file"], "default": ["manual-review"]}},
+        {"id": "route", "op": "stable_union", "args": [{"ref": "baseRoute"}, {"ref": "access"}]},
+        {"id": "output", "op": "object", "fields": {"fallbacks": {"ref": "fallbacks"}, "route": {"ref": "route"}, "validators": {"ref": "validators"}}}
+      ], "output": "output"}
+    },
+    "guarded": {
+      "guards": [{"kind": "required", "path": "medium"}, {"kind": "required", "path": "delivery"}, {"kind": "required", "path": "accessibility"}, {"kind": "enum", "path": "medium", "values": ["visual", "audio"]}, {"kind": "enum", "path": "delivery", "values": ["web", "print", "live"]}],
+      "graph": {"nodes": [
+        {"id": "medium", "op": "read", "path": "medium"},
+        {"id": "delivery", "op": "read", "path": "delivery"},
+        {"id": "access", "op": "read", "path": "accessibility"},
+        {"id": "baseRoute", "op": "lookup", "args": [{"ref": "medium"}], "table": {"visual": ["brief-check", "draft", "contrast-pass", "human-review", "fallback-proof", "export", "archive-source"], "audio": ["brief-check", "rough-cut", "level-pass", "listening-review", "fallback-proof", "export", "archive-source"], "default": ["brief-check", "draft", "review", "archive-source"]}},
+        {"id": "validators", "op": "lookup", "args": [{"ref": "medium"}], "table": {"visual": ["dimensions", "contrast", "alt-text-present", "fallback-opens"], "audio": ["duration", "peak-level", "transcript-present", "fallback-plays"], "default": ["format", "fallback-opens"]}},
+        {"id": "fallbacks", "op": "lookup", "args": [{"ref": "delivery"}], "table": {"web": ["static-poster", "text-alternative", "source-export"], "print": ["high-contrast-proof", "plain-text-copy", "source-export"], "live": ["pre-rendered-playback", "caption-file", "operator-cue-sheet"], "default": ["manual-review", "source-export"]}},
+        {"id": "route", "op": "stable_union", "args": [{"ref": "baseRoute"}, {"ref": "access"}]},
+        {"id": "output", "op": "object", "fields": {"fallbacks": {"ref": "fallbacks"}, "route": {"ref": "route"}, "validators": {"ref": "validators"}}}
+      ], "output": "output"}
+    }
+  },
+  "validators": ["typed-ports", "accessibility-declared", "fallback-present", "format-bounds", "held-out-cases", "rebuild-parity"],
+  "heldOutCases": [
+    {"id": "held-visual-web", "description": "Visual web work carries contrast validation and a static fallback.", "input": {"medium": "visual", "delivery": "web", "accessibility": ["alt-text-check"]}, "assertions": [{"path": "validators", "op": "contains", "value": "contrast"}, {"path": "fallbacks", "op": "contains", "value": "static-poster"}]},
+    {"id": "held-audio-live", "description": "Live audio work carries level validation and pre-rendered fallback.", "input": {"medium": "audio", "delivery": "live", "accessibility": ["caption-check"]}, "assertions": [{"path": "validators", "op": "contains", "value": "peak-level"}, {"path": "fallbacks", "op": "contains", "value": "pre-rendered-playback"}]}
+  ],
+  "humanJudgments": ["This organ makes no taste, visual-quality, listening-quality, originality, or finished-asset claim.", "A human must inspect or listen to the produced artifact before acceptance."],
+  "exampleIntent": {
+    "id": "creative-route-organ",
+    "name": "Creative Production Route Organ",
+    "purpose": "Choose a production route, validators, accessibility work, and fallbacks without claiming taste or finished quality.",
+    "inputs": [
+      {"name": "medium", "type": "string", "description": "Declared production medium.", "required": true, "enum": ["visual", "audio"]},
+      {"name": "delivery", "type": "string", "description": "Declared delivery context.", "required": true, "enum": ["web", "print", "live"]},
+      {"name": "accessibility", "type": "array", "description": "Explicit accessibility tasks.", "required": true, "items": "string"}
+    ],
+    "outputs": [
+      {"name": "route", "type": "array", "description": "Ordered production route.", "required": true, "items": "string"},
+      {"name": "validators", "type": "array", "description": "Mechanical validators.", "required": true, "items": "string"},
+      {"name": "fallbacks", "type": "array", "description": "Declared delivery fallbacks.", "required": true, "items": "string"}
+    ],
+    "requiredCases": [
+      {"id": "visual-validator", "description": "Visual work includes contrast validation.", "input": {"medium": "visual", "delivery": "web", "accessibility": ["alt-text-check"]}, "assertions": [{"path": "validators", "op": "contains", "value": "contrast"}]},
+      {"id": "audio-validator", "description": "Audio work includes peak-level validation.", "input": {"medium": "audio", "delivery": "live", "accessibility": ["transcript-check"]}, "assertions": [{"path": "validators", "op": "contains", "value": "peak-level"}]}
+    ],
+    "desiredCases": [{"id": "web-fallback", "description": "Web output includes a static fallback.", "input": {"medium": "visual", "delivery": "web", "accessibility": ["alt-text-check"]}, "assertions": [{"path": "fallbacks", "op": "contains", "value": "static-poster"}]}],
+    "invariants": ["Mechanical validation remains separate from human quality review.", "Every route declares at least one fallback."],
+    "boundaries": ["No taste, visual-quality, listening-quality, or finished-asset claim.", "No asset generation, filesystem access, or network access."],
+    "resourceBudget": {},
+    "metricProfileId": "balanced-v1"
+  },
+  "packDigest": "sha256:e8bf09f964b927e4d824bae2462fa05a08193dd1cc11d8b6df49803df740c06a"
+}
