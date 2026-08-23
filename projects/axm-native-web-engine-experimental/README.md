@@ -26,6 +26,7 @@ explicitly allowed local UTF-8 HTML bytes
              `-> one deterministic Browser Session
                    |-> headless session JSON + transition trace
                    |-> read-only verification receipt
+                   |-> machine-readable trusted shell policy
                    `-> trusted loopback human Browser Shell
 ```
 
@@ -93,6 +94,24 @@ machine. The receipt grants no mutation, installation, promotion, or canon
 authority. GitHub CI also uses a separately implemented verifier outside this
 package as an independent countercheck.
 
+## Inspect the trusted shell policy
+
+```bash
+node scripts/shell-policy.js --pretty
+# or
+npm run shell:policy -- --pretty
+```
+
+This does not start a listener. It emits
+`axm.web.local-browser-shell-policy/v1`, a deterministic digest-bound policy
+that reports the loopback bind address, capability-token size, exact-Origin
+mutation requirement, controller CSP hash, complete CSP, response isolation
+headers, denied device capabilities, no-external-network/page-script facts, and
+closed authority flags. It lets a future host or Workshop inspect what the
+trusted shell promises before launching it instead of inferring policy from
+prose. The policy receipt does not itself grant network, mutation, install,
+promotion, or canon authority.
+
 ## Run the local human Browser Shell
 
 ```bash
@@ -144,6 +163,7 @@ node scripts/verify-schemas.js
 node scripts/build-examples.js --verify
 node scripts/build-source-manifest.js --verify
 node scripts/verify-session.js golden/local-session.navigation.json --pretty
+node scripts/shell-policy.js --pretty
 ```
 
 `STRUCTURE_VIEW_CONTRACT.md` and `LOCAL_BROWSER_SESSION_CONTRACT.md` define the
