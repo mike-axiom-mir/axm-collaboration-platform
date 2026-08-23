@@ -28,6 +28,11 @@ explicitly allowed local UTF-8 HTML bytes
                    |-> read-only verification receipt
                    |-> machine-readable trusted shell policy
                    `-> trusted loopback human Browser Shell
+       `-> provider-neutral Search Broker
+             |-> SearXNG adapter
+             |-> Brave Search adapter
+             |-> Kagi Search adapter
+             `-> deterministic federated-result fusion
 ```
 
 Every Structure View carries the same source, document, Page Model, layout, and
@@ -72,6 +77,37 @@ Structure Index digest for the same source and bounds.
 and scroll entry references, transition trace, reparse receipts, and session
 digest. Each page in the bundle carries the same shared-engine lineage used by
 `outline` and the Structure Browser.
+
+## Plan swappable research search
+
+The provider-neutral Search Broker is exported as `searchBroker` and can build
+a search plan without executing it:
+
+```bash
+node scripts/search-plan.js "local-first AI browser" \
+  --provider searxng \
+  --searxng http://127.0.0.1:8888/search \
+  --pretty
+
+node scripts/search-plan.js "browser-agent research" \
+  --mode federated \
+  --searxng http://127.0.0.1:8888/search \
+  --brave \
+  --kagi \
+  --pretty
+```
+
+The first adapters are SearXNG, Brave Search API, and Kagi Search API. Search
+plans contain only provider endpoints and credential **references**, never API
+key values. The broker normalizes provider result shapes and can combine
+multiple normalized result sets using deterministic Reciprocal Rank Fusion,
+URL/tracking deduplication, provider-agreement metadata, and a bounded
+per-domain cap.
+
+This is intentionally a seam, not network authority: the planner performs no
+request and reports `networkExecutionGranted: false`. See
+`SEARCH_PROVIDER_CONTRACT.md` for exact fields, merge behavior, provider
+configuration, and the held requirements for a future bounded network executor.
 
 ## Verify a serialized Browser Session
 
@@ -123,8 +159,9 @@ node cli.js serve-local fixtures/session-home.html \
 Open the ephemeral `shellUrl` printed in the host receipt. The trusted AXM shell
 supports bundled link activation, an allowlist-only address surface,
 back/forward, source-reparsing reload, document-map focus, scroll restoration,
-visible history, and lineage receipts. Stop it with `Ctrl+C`; process-owned
-session state is discarded.
+visible history, lineage receipts, three visual themes, density/text controls,
+focus-reading mode, metadata toggling, and a local semantic-entry filter. Stop
+it with `Ctrl+C`; process-owned session state is discarded.
 
 The host binds only to `127.0.0.1`, uses a random capability path and a
 CSP-hash-bound controller. Every mutation requires a present `Origin` exactly
@@ -164,10 +201,11 @@ node scripts/build-examples.js --verify
 node scripts/build-source-manifest.js --verify
 node scripts/verify-session.js golden/local-session.navigation.json --pretty
 node scripts/shell-policy.js --pretty
+node scripts/search-plan.js "test" --searxng http://127.0.0.1:8888/search --pretty
 ```
 
-`STRUCTURE_VIEW_CONTRACT.md` and `LOCAL_BROWSER_SESSION_CONTRACT.md` define the
-lineage and non-claims.
+`STRUCTURE_VIEW_CONTRACT.md`, `LOCAL_BROWSER_SESSION_CONTRACT.md`, and
+`SEARCH_PROVIDER_CONTRACT.md` define the lineage, provider seam, and non-claims.
 `ACTION_REPORT.md` records the current evidence ceiling. `KNOWN_LIMITS.md` and
 `SECURITY_BOUNDARIES.md` are part of the build, not afterthoughts.
 
