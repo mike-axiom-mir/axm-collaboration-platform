@@ -395,3 +395,24 @@ and run:
 ```powershell
 node shared/code-capability-fabric/selftest-code-specialist-organ-intent-adapter-v1.js
 ```
+
+## Exact data-schema specialist → detached validator candidate
+
+The additive v1.7 `TEST` rung connects the exact
+`organ.code.data-schema` specialist lane to Capability Fabric's already
+source-reviewed closed JSON Schema validator recipe. Four technical root passes,
+an exact v1.6 intent rebuild, an exact human-reviewed build request, byte-bound
+tier-1 consent, research-only reuse state, and closed resource ceilings are all
+required before one detached `EXPERIMENTAL` candidate is generated in memory.
+
+The generated `capability.js` and `selftest.js` remain data. They are not run,
+written, installed, integrated, published, promoted, or canonized. Runtime
+behavior remains `UNKNOWN`, and unsupported specialists remain typed recipe
+gaps rather than inheriting the schema-validator hand.
+
+See [README-code-specialist-capability-builder-v1.md](README-code-specialist-capability-builder-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-code-specialist-capability-builder-v1.js
+```
