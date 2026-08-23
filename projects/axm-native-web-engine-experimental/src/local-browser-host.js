@@ -4,10 +4,13 @@ const Digest = require('./digest');
 const HostCore = require('./local-browser-host-core');
 const ShellPolicy = require('./shell-policy');
 
+const HOST_RECEIPT_SCHEMA = 'axm.web.local-browser-host-receipt/v2';
+
 async function createLocalBrowserHost(session, options) {
   const host = await HostCore.createLocalBrowserHost(session, options);
   const shellPolicy = ShellPolicy.buildShellPolicy();
   const receiptMaterial = Object.assign({}, host.receipt, {
+    schema: HOST_RECEIPT_SCHEMA,
     shellPolicySchema: shellPolicy.schema,
     shellPolicyDigest: shellPolicy.policyDigest
   });
@@ -24,5 +27,6 @@ async function createLocalBrowserHost(session, options) {
 }
 
 module.exports = Object.assign({}, HostCore, {
+  HOST_RECEIPT_SCHEMA,
   createLocalBrowserHost
 });
