@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.browser-ai-control-host-receipt/v1",
+  "title": "AXM Browser AI Control Host Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","status","origin","controlUrl","sessionId","registryDigest","loopbackTransportUsed","externalNetworkUsedByControlHost","pageScriptExecuted","controllerCspHash","maxControlBytes","authority","receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.browser-ai-control-host-receipt/v1"},
+    "status": {"const": "EXPERIMENTAL"},
+    "origin": {"type": "string", "pattern": "^http://127\\.0\\.0\\.1:[0-9]+$"},
+    "controlUrl": {"type": "string", "pattern": "^http://127\\.0\\.0\\.1:[0-9]+/ai/[A-Za-z0-9_-]+/$"},
+    "sessionId": {"type": "string", "minLength": 1, "maxLength": 128},
+    "registryDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "loopbackTransportUsed": {"const": true},
+    "externalNetworkUsedByControlHost": {"const": false},
+    "pageScriptExecuted": {"const": false},
+    "controllerCspHash": {"type": "string", "pattern": "^sha256-.+$"},
+    "maxControlBytes": {"type": "integer", "minimum": 1},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["browserNavigationGranted","providerExecutionGranted","searchExecutionGranted","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "browserNavigationGranted": {"const": false},
+        "providerExecutionGranted": {"const": false},
+        "searchExecutionGranted": {"const": false},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    },
+    "receiptDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
