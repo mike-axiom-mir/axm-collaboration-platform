@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.html-builder-preview/v1",
+  "title": "AXM Live HTML Builder Preview",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","source","viewport","page","warnings","warningCount","unsupportedCount","digests","preview","authority","previewDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.html-builder-preview/v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PASS", "PASS_WITH_WARNINGS"]},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestedUrl","bytes","sha256"],
+      "properties": {
+        "requestedUrl": {"type": "string", "minLength": 1, "maxLength": 512},
+        "bytes": {"type": "integer", "minimum": 0, "maximum": 1048576},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "viewport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width","height"],
+      "properties": {
+        "width": {"type": "integer", "minimum": 240, "maximum": 3840},
+        "height": {"type": "integer", "minimum": 180, "maximum": 2160}
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title","language","entryCount","summary"],
+      "properties": {
+        "title": {"type": "string"},
+        "language": {"type": ["string","null"]},
+        "entryCount": {"type": "integer", "minimum": 0},
+        "summary": {"type": "object"}
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "maxItems": 100000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code","message"],
+        "properties": {
+          "code": {"type": "string", "minLength": 1},
+          "message": {"type": "string"}
+        }
+      }
+    },
+    "warningCount": {"type": "integer", "minimum": 0},
+    "unsupportedCount": {"type": "integer", "minimum": 0},
+    "digests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document","pageModel","structureIndex","layout","displayList","modificationLedger"],
+      "properties": {
+        "document": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "pageModel": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "structureIndex": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "layout": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "displayList": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "modificationLedger": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "preview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind","html","activePageCodeExecuted","externalResourcesLoaded"],
+      "properties": {
+        "kind": {"const": "INERT_AXM_STRUCTURE_BROWSER_HTML"},
+        "html": {"type": "string", "minLength": 1},
+        "activePageCodeExecuted": {"const": false},
+        "externalResourcesLoaded": {"const": false}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceFileMutationAllowed","browserSessionMutationAllowed","pageCodeExecutionAllowed","externalNetworkAllowed","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "sourceFileMutationAllowed": {"const": false},
+        "browserSessionMutationAllowed": {"const": false},
+        "pageCodeExecutionAllowed": {"const": false},
+        "externalNetworkAllowed": {"const": false},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    },
+    "previewDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
