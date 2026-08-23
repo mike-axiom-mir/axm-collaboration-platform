@@ -1,0 +1,67 @@
+{
+  "schema": "axm.organ-intent/v1",
+  "id": "telegraphed-encounter-beat",
+  "name": "Telegraphed Encounter Beat",
+  "purpose": "Choose a bounded encounter beat for an AXM game prototype from an explicit seed and declared encounter state.",
+  "fieldPackRef": {
+    "id": "games-entertainment",
+    "version": "1.0.0",
+    "digest": "sha256:0fbcd17c7136f5b492629ccfff0028105c01c9e1908339501ad567bdd0fc2044"
+  },
+  "inputs": [
+    {"name": "explicitSeed", "type": "string", "description": "Caller-supplied deterministic encounter seed.", "required": true},
+    {"name": "currentState", "type": "string", "description": "Current bounded encounter state.", "required": true, "enum": ["calm", "pressure", "recovery"]},
+    {"name": "intensity", "type": "integer", "description": "Designer-assigned intensity from one to five.", "required": true, "minimum": 1, "maximum": 5},
+    {"name": "recentBeats", "type": "array", "description": "Recent declared beats retained for designer review.", "required": true, "items": "string"}
+  ],
+  "outputs": [
+    {"name": "beat", "type": "string", "description": "Selected declared encounter beat.", "required": true, "enum": ["approach", "feint", "hazard", "breather"]},
+    {"name": "nextState", "type": "string", "description": "Next bounded encounter state.", "required": true, "enum": ["calm", "pressure", "recovery"]},
+    {"name": "telegraph", "type": "string", "description": "Visible player-facing warning requirement.", "required": true},
+    {"name": "durationTicks", "type": "integer", "description": "Bounded abstract beat duration.", "required": true, "minimum": 1, "maximum": 5}
+  ],
+  "requiredCases": [
+    {
+      "id": "pressure-releases",
+      "description": "Pressure advances to recovery with a declared deterministic beat.",
+      "input": {"explicitSeed": "axm-pilot-pressure-17", "currentState": "pressure", "intensity": 5, "recentBeats": ["approach", "hazard"]},
+      "assertions": [
+        {"path": "nextState", "op": "eq", "value": "recovery"},
+        {"path": "beat", "op": "in", "value": ["approach", "feint", "hazard", "breather"]}
+      ]
+    },
+    {
+      "id": "recovery-resets",
+      "description": "Recovery cycles to calm and stays within the duration ceiling.",
+      "input": {"explicitSeed": "axm-pilot-recovery-09", "currentState": "recovery", "intensity": 4, "recentBeats": ["breather"]},
+      "assertions": [
+        {"path": "nextState", "op": "eq", "value": "calm"},
+        {"path": "durationTicks", "op": "lte", "value": 5}
+      ]
+    }
+  ],
+  "desiredCases": [
+    {
+      "id": "calm-ramp",
+      "description": "Calm advances to pressure without an out-of-range duration.",
+      "input": {"explicitSeed": "axm-pilot-calm-04", "currentState": "calm", "intensity": 2, "recentBeats": []},
+      "assertions": [
+        {"path": "nextState", "op": "eq", "value": "pressure"},
+        {"path": "durationTicks", "op": "gte", "value": 1}
+      ]
+    }
+  ],
+  "invariants": [
+    "Selection uses only the explicit seed and declared bounded options.",
+    "Every beat includes a visible telegraph and bounded state transition."
+  ],
+  "boundaries": [
+    "No fun, balance, pacing-quality, or player-delight claim.",
+    "No implicit randomness, clock, environment access, or player profiling."
+  ],
+  "resourceBudget": {"maxNodes": 64, "maxDepth": 16, "maxOperations": 1024, "maxListItems": 256, "maxInputBytes": 32768, "maxOutputBytes": 32768, "maxPackageFiles": 16, "maxPackageBytes": 524288},
+  "metricProfileId": "balanced-v1",
+  "status": "EXPERIMENTAL",
+  "authority": "NONE",
+  "intentDigest": "sha256:23d3425f01106a8e668f39b55aa026e15ff4930949aeb16b4c52964d1c6c6bed"
+}
