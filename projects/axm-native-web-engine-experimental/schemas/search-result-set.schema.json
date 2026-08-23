@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.search-result-set/v1",
+  "title": "AXM Normalized Search Result Set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","query","provider","providers","resultCount","results","merge","authority","resultSetDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.search-result-set/v1"},
+    "version": {"const": 1},
+    "status": {"const": "EXPERIMENTAL"},
+    "query": {"type": "string", "minLength": 1, "maxLength": 400},
+    "provider": {"enum": ["searxng","brave","kagi","federated"]},
+    "providers": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["searxng","brave","kagi"]}},
+    "resultCount": {"type": "integer", "minimum": 0, "maximum": 100},
+    "results": {"type": "array", "maxItems": 100, "items": {"$ref": "#/$defs/result"}},
+    "merge": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/merge"}]},
+    "authority": {"$ref": "#/$defs/authority"},
+    "resultSetDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "providerRanks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "searxng": {"type": "integer", "minimum": 1},
+        "brave": {"type": "integer", "minimum": 1},
+        "kagi": {"type": "integer", "minimum": 1}
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rank","title","url","snippet","publishedAt","provider","agreementCount","providerRanks"],
+      "properties": {
+        "rank": {"type": "integer", "minimum": 1},
+        "title": {"type": "string"},
+        "url": {"type": "string", "pattern": "^https?://"},
+        "snippet": {"type": "string"},
+        "publishedAt": {"type": ["string","null"]},
+        "provider": {"enum": ["searxng","brave","kagi","federated"]},
+        "providerEngines": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "providers": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["searxng","brave","kagi"]}},
+        "agreementCount": {"type": "integer", "minimum": 1, "maximum": 3},
+        "providerRanks": {"$ref": "#/$defs/providerRanks"},
+        "fusionScore": {"type": "number", "minimum": 0}
+      }
+    },
+    "merge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method","k","maxPerDomain"],
+      "properties": {
+        "method": {"const": "RECIPROCAL_RANK_FUSION"},
+        "k": {"type": "integer", "minimum": 1},
+        "maxPerDomain": {"type": "integer", "minimum": 1}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["navigationGranted","contentTrusted"],
+      "properties": {
+        "navigationGranted": {"const": false},
+        "contentTrusted": {"const": false}
+      }
+    }
+  }
+}
