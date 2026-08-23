@@ -3,8 +3,9 @@
 
    Build hard, fail visibly, repair deterministically.
 
-   Hermes stays external and pinned. AXM owns launch policy, credential guard,
-   evidence capsules, Return Packets, and repair. This is not OS/network isolation.
+   Hermes stays external and pinned. AXM owns launch policy, learning posture,
+   credential guard, evidence capsules, Return Packets, and repair.
+   This is not OS/network isolation.
 */
 'use strict';
 
@@ -37,6 +38,7 @@ const PROVIDER_RECEIPT = path.join(ROOT, 'axm', 'axm_provider_receipt.py');
 const SESSION_EVENT = path.join(ROOT, 'axm', 'axm_session_event.py');
 const MANAGED_BEGIN = '# BEGIN AXM MANAGED HERMES RUNTIME';
 const MANAGED_END = '# END AXM MANAGED HERMES RUNTIME';
+const OWNED_TOP_LEVEL_KEYS = ['hooks', 'memory', 'skills', 'auxiliary'];
 
 function exists(p) { try { fs.accessSync(p); return true; } catch (_) { return false; } }
 function readJson(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (_) { return null; } }
@@ -120,13 +122,15 @@ function quoteCommandPart(value) {
   return "'" + text.replace(/'/g, "'\\''") + "'";
 }
 function hookCommand(python, script) { return quoteCommandPart(python) + ' ' + quoteCommandPart(script); }
-function managedBlock(python) {
+function yamlBool(value) { return value === true ? 'true' : 'false'; }
+function managedBlock(python, policy) {
   const scalar = value => JSON.stringify(value);
   const gate = hookCommand(python, GATE), context = hookCommand(python, CONTEXT), receipt = hookCommand(python, RECEIPT);
   const provider = hookCommand(python, PROVIDER_RECEIPT), session = hookCommand(python, SESSION_EVENT);
+  const learning = policy.learning;
   return [
     MANAGED_BEGIN,
-    '# Generated/repaired by AXM. User provider/model settings may live outside this block.',
+    '# Generated/repaired by AXM. Change these owned controls through runtime/policy.json.',
     'hooks:',
     '  pre_tool_call:', `    - command: ${scalar(gate)}`, '      timeout: 8', '      fail_closed: true',
     '  pre_llm_call:', `    - command: ${scalar(context)}`, '      timeout: 5',
@@ -136,6 +140,15 @@ function managedBlock(python) {
     '  api_request_error:', `    - command: ${scalar(provider)}`, '      timeout: 5',
     '  on_session_end:', `    - command: ${scalar(session)}`, '      timeout: 5',
     '  on_session_finalize:', `    - command: ${scalar(session)}`, '      timeout: 5',
+    'memory:',
+    `  memory_enabled: ${yamlBool(learning.memory_enabled)}`,
+    `  user_profile_enabled: ${yamlBool(learning.user_profile_enabled)}`,
+    `  write_approval: ${yamlBool(learning.memory_write_approval)}`,
+    'skills:',
+    `  write_approval: ${yamlBool(learning.skill_write_approval)}`,
+    'auxiliary:',
+    '  background_review:',
+    `    enabled: ${yamlBool(learning.background_review_enabled)}`,
     MANAGED_END
   ].join('\n');
 }
@@ -152,7 +165,8 @@ function backupFile(file, label, keep) {
 }
 function removeTopLevelYamlBlock(text, key) {
   const lines = String(text || '').split(/\r?\n/);
-  const start = lines.findIndex(line => new RegExp('^' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*:\\s*(?:#.*)?$').test(line));
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const start = lines.findIndex(line => new RegExp('^' + escaped + '\\s*:').test(line));
   if (start < 0) return text;
   let end = lines.length;
   for (let i = start + 1; i < lines.length; i += 1) {
@@ -160,19 +174,23 @@ function removeTopLevelYamlBlock(text, key) {
   }
   return lines.slice(0, start).concat(lines.slice(end)).join('\n').replace(/^\s*\n/, '');
 }
+function topLevelKeyPresent(text, key) {
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp('^' + escaped + '\\s*:', 'm').test(text);
+}
 function mergeManagedConfig(current, block, force) {
   const start = current.indexOf(MANAGED_BEGIN), end = current.indexOf(MANAGED_END);
   if ((start >= 0) !== (end >= 0) || (start >= 0 && end < start)) {
     if (!force) throw new Error('AXM managed config markers are damaged. Run repair --force to back up and rebuild.');
     return block + '\n';
   }
-  if (start >= 0) return current.slice(0, start) + block + current.slice(end + MANAGED_END.length);
-  if (/^hooks\s*:/m.test(current)) {
-    if (!force) throw new Error('Existing unmanaged hooks: block detected. Refusing duplicate YAML key; use repair --force after review.');
-    const preserved = removeTopLevelYamlBlock(current, 'hooks');
-    return block + (preserved.trim() ? '\n\n' + preserved.replace(/^\s+/, '') : '\n');
+  let outside = start >= 0 ? current.slice(0, start) + current.slice(end + MANAGED_END.length) : current;
+  const conflicts = OWNED_TOP_LEVEL_KEYS.filter(key => topLevelKeyPresent(outside, key));
+  if (conflicts.length && !force) {
+    throw new Error('Hermes config contains AXM-owned top-level key(s) outside the managed block: ' + conflicts.join(', ') + '. Use runtime policy or repair --force after review.');
   }
-  return block + (current.trim() ? '\n\n' + current.replace(/^\s+/, '') : '\n');
+  if (force) for (const key of conflicts) outside = removeTopLevelYamlBlock(outside, key);
+  return block + (outside.trim() ? '\n\n' + outside.replace(/^\s+/, '') : '\n');
 }
 
 function prepare(force) {
@@ -183,7 +201,7 @@ function prepare(force) {
   if (!exists(POLICY_FILE)) { fs.copyFileSync(POLICY_EXAMPLE, POLICY_FILE); console.log('Created local policy with consent OFF: ' + POLICY_FILE); }
   const policy = loadPolicy();
   const current = exists(HERMES_CONFIG) ? fs.readFileSync(HERMES_CONFIG, 'utf8') : '';
-  const wanted = mergeManagedConfig(current, managedBlock(py), force);
+  const wanted = mergeManagedConfig(current, managedBlock(py, policy), force);
   if (current !== wanted) {
     if (current && policy.repair && policy.repair.backup_before_managed_config_change !== false) console.log('Config backup: ' + backupFile(HERMES_CONFIG, 'hermes-config', policy.repair.retain_config_backups || 5));
     fs.writeFileSync(HERMES_CONFIG, wanted, 'utf8');
@@ -207,11 +225,24 @@ function verifyHermesHomeCredentialPolicy(policy) {
   if (denied.length) throw new Error('HERMES_HOME/.env contains secret keys not allowlisted by provider_egress.allowed_secret_env: ' + denied.join(', '));
   return { ok: true, secret_keys: keys };
 }
+function resolvePolicyPath(raw) {
+  let p = path.resolve(ROOT, String(raw || ''));
+  if (path.isAbsolute(String(raw || ''))) p = path.resolve(String(raw));
+  return p;
+}
 function guardedEnvironment(policy) {
   const guarded = RuntimePolicy.sanitizeEnvironment(process.env, policy);
+  const safeWriteRoots = (policy.paths && policy.paths.write_roots || []).map(resolvePolicyPath);
   Object.assign(guarded.env, {
-    HERMES_HOME, HERMES_ENABLE_PROJECT_PLUGINS: 'false', HERMES_YOLO_MODE: '',
-    AXM_HERMES_ROOT: ROOT, AXM_HERMES_POLICY_FILE: POLICY_FILE, AXM_HERMES_WORKSPACE: WORKSPACE
+    HERMES_HOME,
+    HERMES_ENABLE_PROJECT_PLUGINS: 'false',
+    HERMES_YOLO_MODE: '',
+    HERMES_REDACT_SECRETS: 'true',
+    HERMES_DISABLE_LAZY_INSTALLS: '1',
+    HERMES_WRITE_SAFE_ROOT: safeWriteRoots.join(path.delimiter),
+    AXM_HERMES_ROOT: ROOT,
+    AXM_HERMES_POLICY_FILE: POLICY_FILE,
+    AXM_HERMES_WORKSPACE: WORKSPACE
   });
   return guarded;
 }
@@ -261,7 +292,7 @@ function repair(force) {
   console.log('Repair report:');
   console.log('  source pin:       ' + (source.ok ? 'verified' : 'not verified / not installed'));
   console.log('  policy:           valid');
-  console.log('  profile:          managed block reconciled');
+  console.log('  profile:          AXM-owned hooks/learning controls reconciled');
   console.log('  credential guard: ok (' + credentials.secret_keys.length + ' approved .env secret keys)');
   console.log('  orphan runs:      ' + recovery.repaired + ' closed; ' + recovery.skippedActive + ' still have a live launcher PID');
 }
@@ -282,6 +313,8 @@ function showDoctor() {
   console.log('policy:            ' + (policyCheck.ok ? 'valid' : 'invalid/missing: ' + policyCheck.errors.join('; ')));
   console.log('posture:           ' + (policy && policy.posture || 'UNKNOWN'));
   console.log('provider egress:   ' + (policy && policy.provider_egress && policy.provider_egress.mode || 'UNKNOWN'));
+  console.log('background review: ' + (policy && policy.learning && policy.learning.background_review_enabled === true ? 'ON' : 'OFF'));
+  console.log('built-in memory:   ' + (policy && policy.learning && (policy.learning.memory_enabled || policy.learning.user_profile_enabled) ? 'ON/PARTIAL' : 'OFF'));
   console.log('run watchdog:      ' + (policy && policy.limits && policy.limits.max_run_minutes || 'UNKNOWN') + ' minute(s)');
   console.log('action consent:    ' + (policy && policy.consent && policy.consent.enabled === true ? 'ON' : 'OFF'));
   console.log('credential guard:  ' + credentialStatus);
@@ -292,14 +325,25 @@ function showDoctor() {
 
 function installPinned() {
   if (!hasCommand('git')) throw new Error('Git is required.');
-  const lock = sourceLock(); ensureDir(EXTERNAL);
-  if (!exists(HERMES_DIR)) { const r = run('git', ['clone', '--no-checkout', lock.repo_url, HERMES_DIR]); if (r.status !== 0) throw new Error('Git clone failed with status ' + r.status); }
+  const lock = sourceLock();
+  ensureDir(EXTERNAL);
+  if (!exists(HERMES_DIR)) ensureDir(HERMES_DIR);
+  if (!exists(path.join(HERMES_DIR, '.git'))) {
+    const entries = fs.readdirSync(HERMES_DIR);
+    if (entries.length) throw new Error('Hermes destination exists but is not an empty Git checkout. Refusing to reuse it.');
+    let r = run('git', ['init'], { cwd: HERMES_DIR });
+    if (r.status !== 0) throw new Error('git init failed with status ' + r.status);
+    r = run('git', ['remote', 'add', 'origin', lock.repo_url], { cwd: HERMES_DIR });
+    if (r.status !== 0) throw new Error('git remote add failed with status ' + r.status);
+  }
   if (normalizeRemote(gitValue(['remote', 'get-url', 'origin'])) !== normalizeRemote(lock.repo_url)) throw new Error('Existing Hermes origin differs from reviewed source lock. Refusing repoint.');
   if (gitValue(['status', '--porcelain']) !== '') throw new Error('Existing Hermes checkout has local changes. Refusing overwrite.');
-  let r = run('git', ['fetch', '--depth', '1', 'origin', lock.commit], { cwd: HERMES_DIR }); if (r.status !== 0) throw new Error('Pinned fetch failed with status ' + r.status);
-  r = run('git', ['checkout', '--detach', lock.commit], { cwd: HERMES_DIR }); if (r.status !== 0) throw new Error('Pinned checkout failed with status ' + r.status);
+  let r = run('git', ['fetch', '--depth', '1', '--no-tags', 'origin', lock.commit], { cwd: HERMES_DIR });
+  if (r.status !== 0) throw new Error('Pinned fetch failed with status ' + r.status);
+  r = run('git', ['checkout', '--detach', lock.commit], { cwd: HERMES_DIR });
+  if (r.status !== 0) throw new Error('Pinned checkout failed with status ' + r.status);
   if (!verifyPinnedSource(true).ok) throw new Error('Hermes commit/tree/version verification failed after checkout.');
-  console.log('Pinned Hermes source installed and verified.');
+  console.log('Pinned Hermes exact snapshot installed and verified without cloning floating branch history.');
 }
 function installDependencies() {
   if (!verifyPinnedSource(true).ok) throw new Error('Refusing deps until Hermes source verifies.');
@@ -314,6 +358,7 @@ function startHermes(extraArgs) {
   const source = verifyPinnedSource(true);
   if (!source.ok) throw new Error('Refusing start: Hermes source commit/tree/version not verified.');
   if (!exists(HERMES_CONFIG)) throw new Error('Runtime not prepared. Run prepare/repair.');
+  if (!exists(path.join(HERMES_DIR, '.venv'))) throw new Error('Pinned Hermes environment missing. Run the explicit deps step first.');
   if (!hasCommand('uv')) throw new Error('uv is required. Run explicit deps step first.');
   const policy = loadPolicy(); verifyHermesHomeCredentialPolicy(policy);
   const guarded = guardedEnvironment(policy), lock = sourceLock();
@@ -331,9 +376,11 @@ function startHermes(extraArgs) {
   console.log('AXM posture:       ' + policy.posture);
   console.log('Action consent:    ' + (policy.consent.enabled ? 'ON' : 'OFF'));
   console.log('Provider egress:   ' + policy.provider_egress.mode + ' (credential guard; not network isolation)');
+  console.log('Background review: ' + (policy.learning.background_review_enabled ? 'ON' : 'OFF'));
+  console.log('Runtime lazy deps: OFF');
   console.log('Run watchdog:      ' + policy.limits.max_run_minutes + ' minute(s)');
   console.log('Inherited secrets stripped from Hermes child: ' + guarded.report.inherited_secret_count);
-  const result = run('uv', ['run', '--project', HERMES_DIR, 'hermes'].concat(extraArgs || []), {
+  const result = run('uv', ['run', '--no-sync', '--project', HERMES_DIR, 'hermes'].concat(extraArgs || []), {
     cwd: WORKSPACE,
     env: guarded.env,
     redactArgs: true,
