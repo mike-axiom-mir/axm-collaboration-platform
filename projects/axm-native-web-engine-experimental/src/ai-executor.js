@@ -1,0 +1,241 @@
+'use strict';
+
+const Digest = require('./digest');
+const Ai = require('./ai-broker');
+
+const AI_EXECUTION_SCHEMA = 'axm.web.ai-execution/v1';
+const NETWORK_AUTHORITY = 'EXPLICIT_ALLOW';
+const DEFAULT_TIMEOUT_MS = 30000;
+const DEFAULT_MAX_RESPONSE_BYTES = 4 * 1024 * 1024;
+const MAX_REQUESTS = 4;
+const FAILURE_MODES = new Set(['require-all', 'best-effort']);
+
+class AxmAiExecutionError extends Error {
+  constructor(code, message, details) {
+    super(message);
+    this.name = 'AxmAiExecutionError';
+    this.code = code;
+    this.details = details || {};
+  }
+}
+
+function planMaterial(plan) {
+  const copy = JSON.parse(JSON.stringify(plan));
+  delete copy.planDigest;
+  return copy;
+}
+
+function validatePlan(plan) {
+  if (!plan || plan.schema !== Ai.AI_PLAN_SCHEMA || typeof plan.planDigest !== 'string') {
+    throw new AxmAiExecutionError('AI_PLAN_INVALID', 'a sealed AXM AI plan is required');
+  }
+  const computed = Digest.canonicalDigest(planMaterial(plan));
+  if (computed !== plan.planDigest) throw new AxmAiExecutionError('AI_PLAN_DIGEST_MISMATCH', 'AI plan digest does not match its material', { declared: plan.planDigest, computed });
+  if (!Array.isArray(plan.requests) || plan.requests.length < 1 || plan.requests.length > MAX_REQUESTS) {
+    throw new AxmAiExecutionError('AI_PLAN_INVALID', 'AI request count is outside the executor bound', { count: Array.isArray(plan.requests) ? plan.requests.length : null, max: MAX_REQUESTS });
+  }
+  if (!plan.authority || plan.authority.networkExecutionGranted !== false || plan.authority.toolExecutionGranted !== false) {
+    throw new AxmAiExecutionError('AI_PLAN_INVALID', 'AI plan must remain non-executing and tool-free');
+  }
+  return plan;
+}
+
+function exactEndpoint(value) {
+  const url = new URL(String(value));
+  return url.protocol + '//' + url.host + url.pathname.replace(/\/+$/, '');
+}
+
+function validateRequestEndpoint(request, options) {
+  let url;
+  try { url = new URL(request.url); }
+  catch (_error) { throw new AxmAiExecutionError('AI_ENDPOINT_REFUSED', 'AI request URL is invalid', { providerId: request.providerId }); }
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hash || url.search) {
+    throw new AxmAiExecutionError('AI_ENDPOINT_REFUSED', 'AI request endpoint has a refused URL shape', { providerId: request.providerId });
+  }
+  if (request.adapter === 'openai-responses') {
+    if (url.toString() !== 'https://api.openai.com/v1/responses') throw new AxmAiExecutionError('AI_ENDPOINT_REFUSED', 'OpenAI Responses execution is pinned to the official endpoint');
+    return;
+  }
+  if (request.adapter === 'anthropic-messages') {
+    if (url.toString() !== 'https://api.anthropic.com/v1/messages') throw new AxmAiExecutionError('AI_ENDPOINT_REFUSED', 'Anthropic Messages execution is pinned to the official endpoint');
+    return;
+  }
+  if (request.adapter === 'openai-compatible-chat') {
+    const allowed = Array.isArray(options.allowedCompatibleEndpoints) ? options.allowedCompatibleEndpoints : [];
+    const requested = exactEndpoint(url);
+    const loopback = ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname);
+    if (loopback && options.allowLoopbackCompatible === true) return;
+    if (!allowed.some(function (candidate) {
+      try { return exactEndpoint(candidate) === requested; } catch (_error) { return false; }
+    })) {
+      throw new AxmAiExecutionError('AI_ENDPOINT_REFUSED', 'openai-compatible endpoint requires exact allowlisting or explicit loopback permission', { providerId: request.providerId, endpoint: requested });
+    }
+    return;
+  }
+  throw new AxmAiExecutionError('AI_ENDPOINT_REFUSED', 'unsupported AI adapter endpoint', { adapter: request.adapter });
+}
+
+function materializeHeaders(request, env) {
+  const headers = Object.assign({}, request.headers || {});
+  if (!request.auth) return headers;
+  const secret = env && env[request.auth.secretEnv];
+  if (typeof secret !== 'string' || !secret) {
+    throw new AxmAiExecutionError('AI_SECRET_MISSING', 'required AI credential is not available', { providerId: request.providerId, secretEnv: request.auth.secretEnv });
+  }
+  headers[request.auth.header] = String(request.auth.prefix || '') + secret;
+  return headers;
+}
+
+function positiveInteger(value, fallback, min, max, name) {
+  if (value == null) return fallback;
+  if (!Number.isInteger(value) || value < min || value > max) throw new AxmAiExecutionError('AI_EXECUTION_OPTIONS', name + ' must be an integer from ' + min + ' to ' + max, { name, value });
+  return value;
+}
+
+async function readBoundedJson(response, maxBytes) {
+  const contentType = String(response.headers.get('content-type') || '').toLowerCase();
+  if (!/(?:^|;)\s*application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) {
+    throw new AxmAiExecutionError('AI_RESPONSE_CONTENT_TYPE', 'AI response is not JSON', { contentType });
+  }
+  const declared = Number(response.headers.get('content-length'));
+  if (Number.isFinite(declared) && declared > maxBytes) throw new AxmAiExecutionError('AI_RESPONSE_BYTES_LIMIT', 'declared AI response exceeds the configured byte bound', { declared, maxBytes });
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (bytes.length > maxBytes) throw new AxmAiExecutionError('AI_RESPONSE_BYTES_LIMIT', 'AI response exceeds the configured byte bound', { bytes: bytes.length, maxBytes });
+  let text;
+  try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+  catch (_error) { throw new AxmAiExecutionError('AI_RESPONSE_UTF8', 'AI response is not valid UTF-8'); }
+  let body;
+  try { body = JSON.parse(text); }
+  catch (_error) { throw new AxmAiExecutionError('AI_RESPONSE_JSON', 'AI response is not valid JSON'); }
+  return { body, bytes: bytes.length, bodyDigest: Digest.sha256Hex(bytes) };
+}
+
+function outputText(adapter, body, request) {
+  let text = '';
+  if (adapter === 'anthropic-messages') {
+    text = Array.isArray(body && body.content) ? body.content.filter(function (item) { return item && item.type === 'text'; }).map(function (item) { return item.text || ''; }).join('\n') : '';
+  } else if (body && typeof body.output_text === 'string') {
+    text = body.output_text;
+  } else if (Array.isArray(body && body.output)) {
+    text = body.output.flatMap(function (item) { return Array.isArray(item && item.content) ? item.content : []; }).filter(function (item) { return item && item.type === 'output_text'; }).map(function (item) { return item.text || ''; }).join('\n');
+  } else if (Array.isArray(body && body.choices) && body.choices[0] && body.choices[0].message) {
+    const content = body.choices[0].message.content;
+    text = typeof content === 'string' ? content : (Array.isArray(content) ? content.map(function (item) { return item && (item.text || item.content) || ''; }).join('\n') : '');
+  }
+  text = String(text || '').trim();
+  if (!text) throw new AxmAiExecutionError('AI_RESPONSE_SHAPE', 'AI provider returned no normalized text output', { providerId: request.providerId, adapter });
+  if (text.length > 200000) throw new AxmAiExecutionError('AI_RESPONSE_LIMIT', 'normalized AI output exceeds the character bound', { providerId: request.providerId, length: text.length });
+  return text;
+}
+
+async function executeOne(request, options) {
+  validateRequestEndpoint(request, options);
+  const fetchImpl = options.fetchImpl || globalThis.fetch;
+  if (typeof fetchImpl !== 'function') throw new AxmAiExecutionError('AI_FETCH_UNAVAILABLE', 'no fetch implementation is available');
+  const timeoutMs = positiveInteger(options.timeoutMs, DEFAULT_TIMEOUT_MS, 100, 120000, 'timeoutMs');
+  const maxResponseBytes = positiveInteger(options.maxResponseBytes, DEFAULT_MAX_RESPONSE_BYTES, 1024, 16 * 1024 * 1024, 'maxResponseBytes');
+  const headers = materializeHeaders(request, options.env || process.env);
+  const controller = new AbortController();
+  const timer = setTimeout(function () { controller.abort(); }, timeoutMs);
+  let response;
+  try {
+    response = await fetchImpl(request.url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(request.body),
+      redirect: 'error',
+      cache: 'no-store',
+      credentials: 'omit',
+      signal: controller.signal
+    });
+  } catch (error) {
+    if (controller.signal.aborted) throw new AxmAiExecutionError('AI_TIMEOUT', 'AI request exceeded the timeout', { providerId: request.providerId, timeoutMs });
+    throw new AxmAiExecutionError('AI_TRANSPORT_ERROR', 'AI provider request failed', { providerId: request.providerId, cause: String(error && error.message || error) });
+  } finally {
+    clearTimeout(timer);
+  }
+  if (!response || !Number.isInteger(response.status)) throw new AxmAiExecutionError('AI_TRANSPORT_ERROR', 'AI provider returned no valid HTTP response', { providerId: request.providerId });
+  if (!response.ok) throw new AxmAiExecutionError('AI_HTTP_STATUS', 'AI provider returned HTTP ' + response.status, { providerId: request.providerId, httpStatus: response.status });
+  const decoded = await readBoundedJson(response, maxResponseBytes);
+  return {
+    providerId: request.providerId,
+    adapter: request.adapter,
+    status: 'PASS',
+    httpStatus: response.status,
+    responseBytes: decoded.bytes,
+    responseBodyDigest: decoded.bodyDigest,
+    visualStateUsed: request.visualStateAttached === true,
+    searchEvidenceUsed: request.searchEvidenceAttached === true,
+    output: outputText(request.adapter, decoded.body, request)
+  };
+}
+
+function safeFailure(request, error) {
+  return {
+    providerId: request.providerId,
+    adapter: request.adapter,
+    status: 'FAIL',
+    code: String(error && error.code || 'AI_PROVIDER_ERROR'),
+    message: String(error && error.message || error),
+    visualStateUsed: false,
+    searchEvidenceUsed: request.searchEvidenceAttached === true
+  };
+}
+
+async function executeAiPlan(plan, options) {
+  options = options || {};
+  validatePlan(plan);
+  if (options.networkAuthority !== NETWORK_AUTHORITY) throw new AxmAiExecutionError('AI_NETWORK_NOT_AUTHORIZED', 'AI execution requires networkAuthority=EXPLICIT_ALLOW');
+  const failureMode = String(options.failureMode || 'require-all');
+  if (!FAILURE_MODES.has(failureMode)) throw new AxmAiExecutionError('AI_EXECUTION_OPTIONS', 'failureMode must be require-all or best-effort');
+  const outputs = [];
+  const failures = [];
+  for (const request of plan.requests) {
+    try {
+      outputs.push(await executeOne(request, options));
+    } catch (error) {
+      const failure = safeFailure(request, error);
+      failures.push(failure);
+      outputs.push(failure);
+      if (failureMode === 'require-all') throw new AxmAiExecutionError('AI_PROVIDER_FAILED', 'AI execution stopped because a required provider failed', { providerId: request.providerId, code: failure.code, outputs });
+    }
+  }
+  const succeeded = outputs.filter(function (item) { return item.status === 'PASS'; });
+  if (!succeeded.length) throw new AxmAiExecutionError('AI_NO_PROVIDER_SUCCEEDED', 'no enabled AI provider completed successfully', { outputs });
+  const material = {
+    schema: AI_EXECUTION_SCHEMA,
+    version: 1,
+    status: failures.length ? 'PARTIAL' : 'PASS',
+    planDigest: plan.planDigest,
+    mode: plan.mode,
+    providerIdsRequested: plan.providerIds.slice(),
+    providerIdsSucceeded: succeeded.map(function (item) { return item.providerId; }),
+    providerIdsFailed: failures.map(function (item) { return item.providerId; }),
+    outputs,
+    authority: {
+      networkExecutionUsed: true,
+      browserMutationAllowed: false,
+      searchExecutionGranted: false,
+      toolExecutionUsed: false,
+      resultContentTrusted: false,
+      installAllowed: false,
+      promotionAllowed: false,
+      canonAllowed: false
+    }
+  };
+  return Object.assign({}, material, { executionDigest: Digest.canonicalDigest(material) });
+}
+
+module.exports = {
+  AI_EXECUTION_SCHEMA,
+  NETWORK_AUTHORITY,
+  DEFAULT_TIMEOUT_MS,
+  DEFAULT_MAX_RESPONSE_BYTES,
+  MAX_REQUESTS,
+  AxmAiExecutionError,
+  validatePlan,
+  validateRequestEndpoint,
+  materializeHeaders,
+  readBoundedJson,
+  executeAiPlan
+};
