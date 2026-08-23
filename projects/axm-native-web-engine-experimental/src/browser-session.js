@@ -10,6 +10,7 @@ const SESSION_SCHEMA = 'axm.web.local-browser-session/v1';
 const DEFAULT_MAX_PAGES = 16;
 const DEFAULT_MAX_HISTORY = 128;
 const DEFAULT_MAX_TOTAL_BYTES = 4 * 1024 * 1024;
+const MAX_TRANSITIONS = 512;
 const ACTION_TYPES = new Set(['activate', 'open-locator', 'back', 'forward', 'reload', 'focus-entry', 'scroll-entry']);
 
 class AxmBrowserSessionError extends Error {
@@ -137,6 +138,7 @@ function resolveLink(record, link, recordsByPath, rootPath) {
   if (value.includes('\\') || /[\u0000-\u001f\u007f]/.test(value)) return heldResolution('HELD_INVALID_TARGET', value);
 
   const parts = splitHref(value);
+  if (parts.query) return heldResolution('HELD_QUERY_UNSUPPORTED', value);
   let targetPath = record.filePath;
   if (parts.pathname) {
     let decodedPath;
@@ -406,26 +408,31 @@ function applyRuntimeAction(bundle, previousState, requestedAction) {
     }
   } else if (action.type === 'open-locator') {
     const parts = splitHref(action.locator);
-    const allowedPage = parts.pathname ? pageByLocator(bundle, action.locator) : currentPage;
-    if (allowedPage) {
-      const fragment = decodeFragment(parts.fragmentRaw);
-      if (parts.fragmentRaw && fragment == null) {
-        status = 'HELD';
-        reason = 'HELD_INVALID_TARGET';
-      } else {
-        pushNavigation(bundle, state, allowedPage, action.locator, fragment,
-          entryForFragment(allowedPage, fragment) || allowedPage.defaultEntryRef,
-          entryForFragment(allowedPage, fragment) || null);
-      }
-    } else if (/^https?:\/\//i.test(action.locator) || /^\/\//.test(action.locator)) {
+    if (/^https?:\/\//i.test(action.locator) || /^\/\//.test(action.locator)) {
       status = 'HELD';
       reason = 'HELD_NETWORK';
     } else if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(action.locator)) {
       status = 'HELD';
       reason = 'HELD_SCHEME';
-    } else {
+    } else if (parts.query) {
       status = 'HELD';
-      reason = 'HELD_UNLISTED_LOCAL';
+      reason = 'HELD_QUERY_UNSUPPORTED';
+    } else {
+      const allowedPage = parts.pathname ? pageByLocator(bundle, action.locator) : currentPage;
+      if (allowedPage) {
+        const fragment = decodeFragment(parts.fragmentRaw);
+        if (parts.fragmentRaw && fragment == null) {
+          status = 'HELD';
+          reason = 'HELD_INVALID_TARGET';
+        } else {
+          pushNavigation(bundle, state, allowedPage, action.locator, fragment,
+            entryForFragment(allowedPage, fragment) || allowedPage.defaultEntryRef,
+            entryForFragment(allowedPage, fragment) || null);
+        }
+      } else {
+        status = 'HELD';
+        reason = 'HELD_UNLISTED_LOCAL';
+      }
     }
   } else if (action.type === 'back') {
     if (state.historyCursor === 0) {
@@ -502,6 +509,13 @@ class LocalBrowserSession {
 
   apply(requestedAction) {
     const action = normalizeAction(requestedAction);
+    if (this.transitionTrace.length >= MAX_TRANSITIONS) {
+      throw new AxmBrowserSessionError(
+        'SESSION_TRANSITION_LIMIT',
+        'session transition trace reached its hard bound',
+        { transitionCount: this.transitionTrace.length, maxTransitions: MAX_TRANSITIONS }
+      );
+    }
     let reparseReceipt = null;
     if (action.type === 'reload') {
       const previousBundle = this.bundle;
@@ -557,6 +571,7 @@ module.exports = {
   DEFAULT_MAX_PAGES,
   DEFAULT_MAX_HISTORY,
   DEFAULT_MAX_TOTAL_BYTES,
+  MAX_TRANSITIONS,
   ACTION_TYPES,
   AxmBrowserSessionError,
   positiveInteger,
