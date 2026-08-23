@@ -1,8 +1,13 @@
 #!/usr/bin/env node
-/* AXM Hermes Bootstrap v0.1
-   Goal: reduce Hermes setup pain.
-   This wrapper does not vendor Hermes into AXM.
-   It prepares a local external runtime folder, checks tools, and gives one start path.
+/* AXM Hermes Runtime Bootstrap v0.3
+
+   Hermes remains an external MIT-licensed runtime. AXM pins the reviewed
+   upstream commit, prepares an isolated Hermes home, installs fail-closed
+   pre-tool policy hooks, and launches Hermes from a bounded AXM workspace.
+
+   This is NOT an OS sandbox. High-authority tools remain disabled in the AXM
+   policy by default; use Docker/VM/another isolated Hermes backend before
+   deliberately enabling host-capable terminal/computer execution.
 */
 'use strict';
 
@@ -13,92 +18,251 @@ const cp = require('child_process');
 const ROOT = __dirname;
 const EXTERNAL = path.join(ROOT, 'external');
 const HERMES_DIR = path.join(EXTERNAL, 'hermes-agent');
-const CONFIG_FILE = path.join(ROOT, 'hermes-source.local.json');
-const EXAMPLE_FILE = path.join(ROOT, 'hermes-source.example.json');
+const SOURCE_LOCK = path.join(ROOT, 'hermes-source.lock.json');
+const RUNTIME = path.join(ROOT, 'runtime');
+const HERMES_HOME = path.join(RUNTIME, 'hermes-home');
+const WORKSPACE = path.join(RUNTIME, 'workspace');
+const STATE_DIR = path.join(RUNTIME, 'state');
+const RECEIPT_DIR = path.join(RUNTIME, 'receipts');
+const POLICY_FILE = path.join(RUNTIME, 'policy.json');
+const POLICY_EXAMPLE = path.join(ROOT, 'axm-policy.example.json');
+const HERMES_CONFIG = path.join(HERMES_HOME, 'config.yaml');
+const GATE = path.join(ROOT, 'axm', 'axm_gate.py');
+const CONTEXT = path.join(ROOT, 'axm', 'axm_context.py');
+const RECEIPT = path.join(ROOT, 'axm', 'axm_receipt.py');
 
-function exists(p) { try { fs.accessSync(p); return true; } catch (e) { return false; } }
+function exists(p) { try { fs.accessSync(p); return true; } catch (_) { return false; } }
+function readJson(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (_) { return null; } }
+function writeJson(p, value) { fs.writeFileSync(p, JSON.stringify(value, null, 2) + '\n', 'utf8'); }
+function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
+
 function run(cmd, args, opts) {
   console.log('> ' + cmd + ' ' + args.join(' '));
   return cp.spawnSync(cmd, args, Object.assign({ stdio: 'inherit', shell: process.platform === 'win32' }, opts || {}));
 }
-function readJson(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (e) { return null; } }
-function writeJson(p, obj) { fs.writeFileSync(p, JSON.stringify(obj, null, 2) + '\n'); }
 
-function ensureExample() {
-  if (!exists(EXAMPLE_FILE)) {
-    writeJson(EXAMPLE_FILE, {
-      note: 'Copy this to hermes-source.local.json and set the real Hermes source once verified.',
-      repo_url: 'https://github.com/REPLACE/WITH-REAL-HERMES-SOURCE.git',
-      branch: 'main',
-      install: 'manual',
-      start_command: 'hermes --help'
-    });
-  }
+function capture(cmd, args, opts) {
+  return cp.spawnSync(cmd, args, Object.assign({ encoding: 'utf8', shell: process.platform === 'win32' }, opts || {}));
 }
-function check(cmd) {
-  const r = cp.spawnSync(cmd, ['--version'], { encoding: 'utf8', shell: process.platform === 'win32' });
+
+function hasCommand(cmd) {
+  const r = capture(cmd, ['--version']);
   return r.status === 0;
 }
 
-const action = process.argv[2] || 'doctor';
-fs.mkdirSync(EXTERNAL, { recursive: true });
-ensureExample();
-
-if (action === 'doctor') {
-  const cfg = readJson(CONFIG_FILE);
-  console.log('AXM Hermes Bootstrap doctor');
-  console.log('git:    ' + (check('git') ? 'ok' : 'missing'));
-  console.log('python: ' + (check('python') || check('python3') ? 'ok' : 'missing'));
-  console.log('node:   ' + (check('node') ? 'ok' : 'missing'));
-  console.log('config: ' + (cfg ? 'ok' : 'missing hermes-source.local.json'));
-  console.log('local Hermes folder: ' + (exists(HERMES_DIR) ? 'present' : 'missing'));
-  if (!cfg) {
-    console.log('\nNext: copy hermes-source.example.json to hermes-source.local.json and set the real Hermes repo URL after source verification.');
-  }
-  process.exit(0);
+function pythonCommand() {
+  if (process.env.AXM_HERMES_PYTHON) return process.env.AXM_HERMES_PYTHON;
+  if (hasCommand('python')) return 'python';
+  if (hasCommand('python3')) return 'python3';
+  return null;
 }
 
-if (action === 'install') {
-  const cfg = readJson(CONFIG_FILE);
-  if (!cfg || !cfg.repo_url || cfg.repo_url.includes('REPLACE/')) {
-    console.error('No verified Hermes source configured. Refusing to guess.');
-    console.error('Create hermes-source.local.json from hermes-source.example.json first.');
-    process.exit(1);
+function sourceLock() {
+  const lock = readJson(SOURCE_LOCK);
+  if (!lock || lock.schema !== 'axm.hermes-source-lock/v1' || !lock.repo_url || !/^[0-9a-f]{40}$/i.test(lock.commit || '')) {
+    throw new Error('Invalid or missing hermes-source.lock.json; refusing a floating/unverified source.');
   }
-  if (!check('git')) {
-    console.error('git is missing. Install Git first.');
-    process.exit(1);
+  return lock;
+}
+
+function normalizeRemote(value) {
+  return String(value || '').trim().replace(/\.git$/i, '').replace(/\/$/, '').toLowerCase();
+}
+
+function gitValue(args) {
+  const r = capture('git', args, { cwd: HERMES_DIR });
+  return r.status === 0 ? String(r.stdout || '').trim() : null;
+}
+
+function verifyPinnedSource(verbose) {
+  if (!exists(HERMES_DIR) || !exists(path.join(HERMES_DIR, '.git'))) return { ok: false, reason: 'Hermes clone missing' };
+  const lock = sourceLock();
+  const head = gitValue(['rev-parse', 'HEAD']);
+  const remote = gitValue(['remote', 'get-url', 'origin']);
+  const clean = gitValue(['status', '--porcelain']);
+  const ok = head === lock.commit && normalizeRemote(remote) === normalizeRemote(lock.repo_url) && clean === '';
+  if (verbose) {
+    console.log('source origin: ' + (remote || 'UNKNOWN'));
+    console.log('source HEAD:   ' + (head || 'UNKNOWN'));
+    console.log('expected SHA:  ' + lock.commit);
+    console.log('worktree:      ' + (clean === '' ? 'clean' : 'modified/unknown'));
   }
+  return {
+    ok,
+    reason: ok ? 'verified immutable pin' : 'origin, commit, or clean-worktree verification failed',
+    head,
+    remote,
+    clean
+  };
+}
+
+function quoteCommandPart(value) {
+  const text = String(value);
+  if (process.platform === 'win32') return '"' + text.replace(/"/g, '""') + '"';
+  return "'" + text.replace(/'/g, "'\\''") + "'";
+}
+
+function expectedConfig(python) {
+  const gateCommand = quoteCommandPart(python) + ' ' + quoteCommandPart(GATE);
+  const contextCommand = quoteCommandPart(python) + ' ' + quoteCommandPart(CONTEXT);
+  const receiptCommand = quoteCommandPart(python) + ' ' + quoteCommandPart(RECEIPT);
+  const scalar = value => JSON.stringify(value);
+  return [
+    '# Generated by AXM Hermes Runtime Bootstrap.',
+    '# Local runtime state: do not commit this file.',
+    '# Security gate: fail-closed pre_tool_call.',
+    'hooks:',
+    '  pre_tool_call:',
+    '    - command: ' + scalar(gateCommand),
+    '      timeout: 8',
+    '      fail_closed: true',
+    '  pre_llm_call:',
+    '    - command: ' + scalar(contextCommand),
+    '      timeout: 5',
+    '  post_tool_call:',
+    '    - command: ' + scalar(receiptCommand),
+    '      timeout: 5',
+    '',
+    '# Third-party project plugins stay off in the AXM launcher environment.',
+    '# Provider/model/tool configuration can be added locally below this line.',
+    ''
+  ].join('\n');
+}
+
+function prepare(force) {
+  const py = pythonCommand();
+  if (!py) throw new Error('Python 3 is required for the AXM Hermes gate.');
+  [RUNTIME, HERMES_HOME, WORKSPACE, STATE_DIR, RECEIPT_DIR].forEach(ensureDir);
+  if (!exists(POLICY_EXAMPLE)) throw new Error('Missing axm-policy.example.json.');
+  if (!exists(POLICY_FILE)) {
+    fs.copyFileSync(POLICY_EXAMPLE, POLICY_FILE);
+    console.log('Created local policy with consent OFF: ' + POLICY_FILE);
+  }
+  const wanted = expectedConfig(py);
+  if (exists(HERMES_CONFIG)) {
+    const current = fs.readFileSync(HERMES_CONFIG, 'utf8');
+    if (current !== wanted && !force) {
+      throw new Error('AXM Hermes config already exists and differs. Refusing silent rewrite; rerun prepare --force only if replacement is intended.');
+    }
+  }
+  fs.writeFileSync(HERMES_CONFIG, wanted, 'utf8');
+  console.log('Prepared AXM Hermes home: ' + HERMES_HOME);
+  console.log('Prepared AXM workspace:   ' + WORKSPACE);
+  console.log('Policy:                   ' + POLICY_FILE);
+}
+
+function runtimeEnv() {
+  return Object.assign({}, process.env, {
+    HERMES_HOME,
+    HERMES_ENABLE_PROJECT_PLUGINS: 'false',
+    HERMES_YOLO_MODE: '',
+    AXM_HERMES_ROOT: ROOT,
+    AXM_HERMES_POLICY_FILE: POLICY_FILE,
+    AXM_HERMES_WORKSPACE: WORKSPACE,
+    AXM_HERMES_STATE_DIR: STATE_DIR,
+    AXM_HERMES_RECEIPT_DIR: RECEIPT_DIR
+  });
+}
+
+function setConsent(enabled, reason) {
+  if (!exists(POLICY_FILE)) prepare(false);
+  const policy = readJson(POLICY_FILE);
+  if (!policy || policy.schema !== 'axm.hermes-policy/v1') throw new Error('Invalid local AXM Hermes policy.');
+  policy.consent = {
+    enabled: Boolean(enabled),
+    reason: reason || (enabled ? 'explicit local CLI enable' : 'explicit local CLI disable'),
+    changed_at: new Date().toISOString()
+  };
+  writeJson(POLICY_FILE, policy);
+  console.log('AXM Hermes action consent: ' + (enabled ? 'ON' : 'OFF'));
+}
+
+function showDoctor() {
+  let lock = null;
+  try { lock = sourceLock(); } catch (_) {}
+  const verification = exists(HERMES_DIR) && hasCommand('git') ? verifyPinnedSource(false) : { ok: false };
+  const policy = readJson(POLICY_FILE);
+  console.log('AXM Hermes Runtime doctor');
+  console.log('git:             ' + (hasCommand('git') ? 'ok' : 'missing'));
+  console.log('python:          ' + (pythonCommand() || 'missing'));
+  console.log('node:            ' + (hasCommand('node') ? 'ok' : 'missing'));
+  console.log('uv:              ' + (hasCommand('uv') ? 'ok' : 'missing (needed for deps/start)'));
+  console.log('source lock:     ' + (lock ? lock.commit : 'invalid/missing'));
+  console.log('Hermes checkout: ' + (verification.ok ? 'PIN VERIFIED' : (exists(HERMES_DIR) ? 'NOT VERIFIED' : 'missing')));
+  console.log('AXM profile:     ' + (exists(HERMES_CONFIG) ? 'prepared' : 'not prepared'));
+  console.log('action consent:  ' + (policy && policy.consent && policy.consent.enabled === true ? 'ON' : 'OFF'));
+  console.log('workspace:       ' + WORKSPACE);
+}
+
+function installPinned() {
+  if (!hasCommand('git')) throw new Error('Git is required.');
+  const lock = sourceLock();
+  ensureDir(EXTERNAL);
   if (!exists(HERMES_DIR)) {
-    const args = ['clone'];
-    if (cfg.branch) args.push('--branch', cfg.branch);
-    args.push(cfg.repo_url, HERMES_DIR);
-    const r = run('git', args);
+    let r = run('git', ['clone', '--no-checkout', lock.repo_url, HERMES_DIR]);
     if (r.status !== 0) process.exit(r.status || 1);
+  }
+  const remote = gitValue(['remote', 'get-url', 'origin']);
+  if (normalizeRemote(remote) !== normalizeRemote(lock.repo_url)) {
+    throw new Error('Existing Hermes clone origin does not match the reviewed AXM source lock. Refusing to repoint it.');
+  }
+  const dirty = gitValue(['status', '--porcelain']);
+  if (dirty !== '') throw new Error('Existing Hermes checkout has local changes. Refusing to overwrite them.');
+  let r = run('git', ['fetch', '--depth', '1', 'origin', lock.commit], { cwd: HERMES_DIR });
+  if (r.status !== 0) process.exit(r.status || 1);
+  r = run('git', ['checkout', '--detach', lock.commit], { cwd: HERMES_DIR });
+  if (r.status !== 0) process.exit(r.status || 1);
+  const verification = verifyPinnedSource(true);
+  if (!verification.ok) throw new Error('Hermes source verification failed after checkout.');
+  console.log('Pinned Hermes source installed and verified. No floating branch was trusted.');
+}
+
+function installDependencies() {
+  const verification = verifyPinnedSource(true);
+  if (!verification.ok) throw new Error('Refusing dependency install until Hermes source pin verifies.');
+  if (!hasCommand('uv')) throw new Error('uv is required for the reviewed upstream lockfile install path.');
+  const r = run('uv', ['sync', '--locked'], { cwd: HERMES_DIR, env: runtimeEnv() });
+  if (r.status !== 0) process.exit(r.status || 1);
+}
+
+function startHermes(extraArgs) {
+  const verification = verifyPinnedSource(true);
+  if (!verification.ok) throw new Error('Refusing start: Hermes source pin is not verified.');
+  if (!exists(HERMES_CONFIG) || !exists(POLICY_FILE)) throw new Error('Runtime not prepared. Run: node hermes-bootstrap.js prepare');
+  if (!hasCommand('uv')) throw new Error('uv is required. Run the explicit deps step first.');
+  const policy = readJson(POLICY_FILE);
+  console.log('AXM action consent: ' + (policy && policy.consent && policy.consent.enabled === true ? 'ON' : 'OFF'));
+  console.log('High-authority capabilities use local policy and default OFF.');
+  console.log('Starting pinned Hermes through AXM profile; workspace=' + WORKSPACE);
+  const args = ['run', '--project', HERMES_DIR, 'hermes'].concat(extraArgs || []);
+  const r = run('uv', args, { cwd: WORKSPACE, env: runtimeEnv() });
+  process.exit(r.status === null ? 1 : r.status);
+}
+
+const action = process.argv[2] || 'doctor';
+const rest = process.argv.slice(3);
+
+try {
+  if (action === 'doctor') {
+    showDoctor();
+  } else if (action === 'install') {
+    installPinned();
+  } else if (action === 'deps') {
+    installDependencies();
+  } else if (action === 'prepare') {
+    prepare(rest.includes('--force'));
+  } else if (action === 'consent') {
+    if (!['on', 'off'].includes(rest[0])) throw new Error('Usage: node hermes-bootstrap.js consent on|off [reason]');
+    setConsent(rest[0] === 'on', rest.slice(1).join(' '));
+  } else if (action === 'verify') {
+    const result = verifyPinnedSource(true);
+    if (!result.ok) process.exitCode = 1;
+  } else if (action === 'start') {
+    startHermes(rest);
   } else {
-    console.log('Hermes folder already exists: ' + HERMES_DIR);
+    console.log('Usage: node hermes-bootstrap.js doctor|install|verify|deps|prepare [--force]|consent on|off [reason]|start [hermes args...]');
   }
-  console.log('\nInstall step finished as far as AXM can safely automate without locking the exact Hermes source/install command.');
-  console.log('If Hermes has its own installer, run it inside: ' + HERMES_DIR);
-  process.exit(0);
+} catch (error) {
+  console.error('AXM Hermes bootstrap refused: ' + (error && error.message || error));
+  process.exitCode = 1;
 }
-
-if (action === 'start') {
-  const cfg = readJson(CONFIG_FILE);
-  if (!cfg || !cfg.start_command) {
-    console.error('Missing start_command in hermes-source.local.json.');
-    process.exit(1);
-  }
-  if (!exists(HERMES_DIR)) {
-    console.error('Hermes folder missing. Run: node hermes-bootstrap.js install');
-    process.exit(1);
-  }
-  console.log('Starting configured Hermes command in: ' + HERMES_DIR);
-  const parts = cfg.start_command.split(' ').filter(Boolean);
-  const cmd = parts.shift();
-  const r = run(cmd, parts, { cwd: HERMES_DIR });
-  process.exit(r.status || 0);
-}
-
-console.log('Usage: node hermes-bootstrap.js doctor|install|start');
-process.exit(0);
