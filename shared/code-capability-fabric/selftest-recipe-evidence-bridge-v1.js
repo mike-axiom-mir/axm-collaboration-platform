@@ -33,16 +33,16 @@ const pack = {
   schema:'axm.code-recipe-pack/v1', generatedAt:'2026-08-23T00:00:00Z', source:{label:'fixture'}, summary:{}, recipes, families:[],
   truth:{recipeSetSha256:'fixture-set', sourceClaimsVerified:false, canon:false, snippetsExecuted:false}
 };
-const audit = {results:[
-  {sourceId:'CC-001', status:'SYNTAX_PASS', verifier:'node-parse-only', message:'Parsed in synthetic context.'},
-  {sourceId:'CC-002', status:'NOT_PROVEN', verifier:null, message:'Runtime unavailable.'}
+const audit = {schema:'axm.code-recipe-syntax-audit/v1', results:[
+  {sourceId:'CC-001', recipeId:'recipe-1111111111111111', status:'SYNTAX_PASS', verifier:'node-parse-only', message:'Parsed in synthetic context.'},
+  {sourceId:'CC-002', recipeId:'recipe-2222222222222222', status:'NOT_PROVEN', verifier:null, message:'Runtime unavailable.'}
 ]};
 
 const packet = Bridge.buildEvidencePacket(pack, {terms:'parse json', maxResults:8}, {syntaxAudit:audit, generatedAt:'2026-08-23T10:00:00Z'});
 check(packet.schema === 'axm.code-recipe-evidence-packet/v1' && packet.status === 'EVIDENCE_ONLY', 'packet schema and evidence-only state are explicit');
 check(packet.summary.eligibleMatches === 2 && packet.candidates.length === 2, 'two non-held parse-json recipes are returned');
 check(packet.candidates[0].match.popularityUsedForScoring === false && packet.candidates[0].match.semanticInferenceUsed === false, 'matching is mechanical and not popularity/semantic inference');
-check(packet.candidates.some(row => row.recipe.syntaxEvidence.status === 'SYNTAX_PASS'), 'parse-only syntax evidence can be attached');
+check(packet.candidates.some(row => row.recipe.syntaxEvidence.status === 'SYNTAX_PASS'), 'identity-bound parse-only syntax evidence can be attached');
 check(packet.boundaries.syntaxPassIsCorrectnessProof === false && packet.boundaries.recipeIsProvider === false, 'syntax and provider truth boundaries are explicit');
 check(packet.candidates.every(row => row.recipe.snippetRef.bytesIncluded === false), 'snippet bytes are omitted from candidate records');
 check(!JSON.stringify(packet).includes('const value = JSON.parse(text);'), 'quick-recipe code is not copied into the evidence packet');
@@ -62,6 +62,23 @@ check(pythonOnly.candidates[0].recipe.evidenceClass === 'STRUCTURE_VALIDATED_SOU
 throws(() => Bridge.buildEvidencePacket(pack, {}, {}), /criterion/, 'empty broad scans are refused');
 throws(() => Bridge.buildEvidencePacket(pack, {terms:'json', maxResults:33}, {}), /between 1 and 32/, 'result bound is enforced');
 throws(() => Bridge.buildEvidencePacket({...pack, schema:'wrong'}, {terms:'json'}, {}), /axm.code-recipe-pack\/v1/, 'wrong pack schema is refused');
+throws(() => Bridge.buildEvidencePacket(pack, {terms:7}, {}), /terms must be a string/, 'terms are not silently coerced');
+throws(() => Bridge.buildEvidencePacket(pack, {terms:'json', maxResults:'4'}, {}), /integer/, 'explicit invalid result bounds are not silently defaulted');
+throws(() => Bridge.buildEvidencePacket(pack, {terms:'json', surprise:true}, {}), /Unknown query field/, 'unknown query fields are refused');
+throws(() => Bridge.buildEvidencePacket(pack, {tags:[{}]}, {}), /must be a string/, 'non-string filters are refused');
+throws(() => Bridge.buildEvidencePacket(pack, {tags:['---']}, {}), /empty value/, 'filters that normalize to empty are refused');
+
+const duplicatePack = JSON.parse(JSON.stringify(pack));
+duplicatePack.recipes.push(JSON.parse(JSON.stringify(pack.recipes[0])));
+throws(() => Bridge.buildEvidencePacket(duplicatePack, {terms:'json'}, {}), /duplicate recipe id/, 'duplicate recipe identities are refused');
+const malformedPack = JSON.parse(JSON.stringify(pack));
+delete malformedPack.recipes[0].title;
+throws(() => Bridge.buildEvidencePacket(malformedPack, {terms:'json'}, {}), /\.title must be a string/, 'malformed recipe records fail closed instead of disappearing');
+const duplicateAudit = {schema:'axm.code-recipe-syntax-audit/v1', results:[audit.results[0], audit.results[0]]};
+throws(() => Bridge.buildEvidencePacket(pack, {terms:'json'}, {syntaxAudit:duplicateAudit}), /duplicate recipeId/, 'ambiguous duplicate syntax identities are refused');
+const mismatchedAudit = {schema:'axm.code-recipe-syntax-audit/v1', results:[{sourceId:'CC-001', recipeId:'recipe-2222222222222222', status:'SYNTAX_PASS'}]};
+throws(() => Bridge.buildEvidencePacket(pack, {terms:'json'}, {syntaxAudit:mismatchedAudit}), /identity conflict|recipeId mismatch/, 'syntax evidence cannot cross recipe identities');
+throws(() => Bridge.buildEvidencePacket(pack, {terms:'json'}, {syntaxAudit:{schema:'wrong', results:[]}}), /Syntax audit must use/, 'wrong syntax-audit schema is refused');
 
 const source = fs.readFileSync(path.join(__dirname, 'recipe-evidence-bridge-v1.js'), 'utf8');
 check(!/\beval\s*\(|new\s+Function\s*\(/.test(source), 'bridge contains no dynamic code execution');
@@ -77,7 +94,7 @@ if (fs.existsSync(installedPath)) {
   const probeTitle = installedPack.recipes[0] && installedPack.recipes[0].title;
   check(Boolean(probeTitle), 'installed catalog exposes a title for deterministic probe selection');
   const installedPacket = Bridge.buildEvidencePacket(installedPack, {terms:probeTitle, maxResults:4}, {syntaxAudit:installedAudit, generatedAt:'2026-08-23T10:00:00Z'});
-  check(installedPacket.summary.recipesScanned === 1000, 'bridge scans the complete installed catalog');
+  check(installedPacket.summary.recipesScanned === 1000, 'bridge validates and scans the complete installed catalog');
   check(installedPacket.summary.eligibleMatches + installedPacket.summary.heldMatches >= 1, 'installed-catalog probe returns visible evidence or a visible hold');
   check(installedPacket.candidates.every(row => row.recipe.snippetRef.bytesIncluded === false) && installedPacket.heldMatches.every(row => row.recipe.snippetRef.bytesIncluded === false), 'installed-catalog evidence never copies snippet bytes');
 }
