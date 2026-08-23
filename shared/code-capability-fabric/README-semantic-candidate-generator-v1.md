@@ -9,6 +9,7 @@ host-supplied data through an exact Fabric v2 provider route.
 
 ```text
 exact blueprint + compiled schemas + scoped consent + four-root PASS
+  + optional exact Code Recipe Foundry selection packet
   -> versioned native recipe
   -> detached EXPERIMENTAL candidate packet
   -> optional, separately identified AI challenger packet
@@ -36,6 +37,18 @@ six typed operations:
 The emitted adapter candidate is source data in an `axm.module-bundle/v1`. Its
 test plan starts entirely `UNRUN`. The generator's selftest statically inspects
 those bytes but never imports or executes `adapter.js`.
+
+## Optional Code Recipe Foundry context
+
+The request may contain one exact
+`axm.code-recipe-selection-packet/v1`. The generator revalidates every selected
+record against the installed 1,000-entry catalog and syntax audit before
+binding the packet digest into candidate lineage and Review Card sources.
+
+This v1 bridge does not apply snippet text to generated source. Context remains
+`RESEARCH_ONLY_HOLD`, unexecuted, and without verified source claims, licenses,
+or direct-reuse authority. See
+[README-code-recipe-fabric-bridge-v1.md](README-code-recipe-fabric-bridge-v1.md).
 
 ## AI challenger boundary
 
@@ -103,7 +116,9 @@ tested because this rung does not modify the live Review Inbox surface.
 - actual Review Inbox rendering and browser/accessibility evidence;
 - versioned capability-lesson admission and held-out regressions;
 - direct reuse rights for AI-supplied source; and
-- domain expansion beyond the first code recipe.
+- typed composition of held Foundry context into future recipe-specific source;
+  and
+- domain expansion beyond the first native generation recipe.
 
 Passing this suite means the `TEST` contracts hold for the tested data. It does
 not make the generated adapter `WORKING`, installed, integrated, promoted, or

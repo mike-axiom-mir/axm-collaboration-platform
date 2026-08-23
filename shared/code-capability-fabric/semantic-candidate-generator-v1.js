@@ -5,6 +5,7 @@ const Fabric = require('./code-capability-fabric-v2');
 const Consent = require('./grounded-consent-scope-v1');
 const Composer = require('./declarative-blueprint-composer-v1');
 const Compiler = require('./blueprint-schema-compiler-v1');
+const RecipeBridge = require('./code-recipe-fabric-bridge-v1');
 const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const VERSION = '0.1.0';
@@ -709,7 +710,7 @@ function normalizeChallengerIngress(value, providerPolicy, blueprintPacket) {
 function normalizeRequestCore(value) {
   exactKeys(value, [
     'schema', 'id', 'goal', 'mode', 'tier', 'recipeId', 'blueprintPacket', 'components',
-    'consent', 'resourceEnvelope', 'reuseRights', 'providerPolicy', 'rootsGate',
+    'codeRecipeSelection', 'consent', 'resourceEnvelope', 'reuseRights', 'providerPolicy', 'rootsGate',
     'challengerIngress', 'instructionRef', 'authority'
   ], 'semantic generation request');
   if (value.schema !== REQUEST_SCHEMA || value.authority !== 'NONE') throw new Error('semantic generation request identity or authority mismatch');
@@ -724,6 +725,8 @@ function normalizeRequestCore(value) {
   const rootsGate = normalizeRootGate(value.rootsGate);
   requirePassingRoots(rootsGate);
   const providerPolicy = normalizeProviderPolicy(value.providerPolicy, value.mode);
+  const codeRecipeSelection = value.codeRecipeSelection == null ? null :
+    RecipeBridge.normalizeInstalledSelectionPacket(value.codeRecipeSelection);
   const challengerIngress = value.challengerIngress == null ? null :
     normalizeChallengerIngress(value.challengerIngress, providerPolicy, blueprintPacket);
   if ((challengerIngress !== null) !== providerPolicy.challenger.enabled) {
@@ -739,6 +742,7 @@ function normalizeRequestCore(value) {
     recipeId: RECIPE_ID,
     blueprintPacket,
     components: normalizeComponents(value.components),
+    codeRecipeSelection,
     consent: null,
     resourceEnvelope: resources,
     reuseRights: normalizeReuseRights(value.reuseRights),
@@ -768,7 +772,7 @@ function sealRequest(value) {
 function normalizeRequest(value) {
   exactKeys(value, [
     'schema', 'id', 'goal', 'mode', 'tier', 'recipeId', 'blueprintPacket', 'components',
-    'consent', 'resourceEnvelope', 'reuseRights', 'providerPolicy', 'rootsGate',
+    'codeRecipeSelection', 'consent', 'resourceEnvelope', 'reuseRights', 'providerPolicy', 'rootsGate',
     'challengerIngress', 'instructionRef', 'authority', 'requestDigest'
   ], 'semantic generation request');
   const { requestDigest, ...core } = value;
@@ -1187,6 +1191,16 @@ function buildReviewCard(request, packet, comparison) {
 
 function generate(input) {
   const request = normalizeRequest(input);
+  const recipeSelectionRef = request.codeRecipeSelection == null ? null :
+    RecipeBridge.selectionPacketRef(request.codeRecipeSelection);
+  const recipeLineage = recipeSelectionRef == null ? [] : [recipeSelectionRef];
+  const recipeLimitations = recipeSelectionRef == null ? [] : [
+    'CODE_RECIPE_CONTEXT_NOT_APPLIED_TO_GENERATED_SOURCE',
+    'CODE_RECIPE_CONTEXT_NOT_EXECUTED',
+    'CODE_RECIPE_DIRECT_REUSE_NOT_AUTHORIZED',
+    'CODE_RECIPE_SOURCE_AND_LICENSE_CLAIMS_UNVERIFIED',
+    'CODE_RECIPE_SYNTAX_IS_NOT_CORRECTNESS_OR_SAFETY_PROOF'
+  ];
   const nativeBundle = buildNativeBundle(request);
   const nativePacket = buildPacket(
     request,
@@ -1196,8 +1210,10 @@ function generate(input) {
     { state: 'RESEARCH_ONLY_HOLD', directReuseAllowed: false, authorityRef: null },
     [
       ...request.components.map((item) => item.ref),
-      { id: request.blueprintPacket.blueprint.ref.id, schema: request.blueprintPacket.blueprint.ref.schema, sha256: request.blueprintPacket.blueprint.value.blueprintDigest }
-    ]
+      { id: request.blueprintPacket.blueprint.ref.id, schema: request.blueprintPacket.blueprint.ref.schema, sha256: request.blueprintPacket.blueprint.value.blueprintDigest },
+      ...recipeLineage
+    ],
+    recipeLimitations
   );
   const packets = [nativePacket];
   if (request.challengerIngress) {
@@ -1211,8 +1227,8 @@ function generate(input) {
         id: request.id + '-challenger-route', schema: Fabric.PLAN_SCHEMA, sha256: ingress.routePlan.planDigest
       } },
       ingress.reuseRights,
-      ingress.lineageRefs,
-      ingress.limitations
+      [...ingress.lineageRefs, ...recipeLineage],
+      [...ingress.limitations, ...recipeLimitations]
     ));
   }
   if (packets.length > request.resourceEnvelope.maxAttempts + 1 || packets.length > MAX_CANDIDATES) {
@@ -1426,6 +1442,7 @@ function buildExampleRequest() {
     recipeId: RECIPE_ID,
     blueprintPacket,
     components: REQUIRED_COMPONENT_IDS.map((id) => component(contractsById[id])),
+    codeRecipeSelection: null,
     consent: { evaluationInput, evaluation: Consent.evaluateGroundedConsent(evaluationInput) },
     resourceEnvelope: resources,
     reuseRights: { nativeRecipe: 'DECLARED_REUSE_ALLOWED', aiChallenger: 'RESEARCH_ONLY_HOLD' },

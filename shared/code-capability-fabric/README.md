@@ -62,6 +62,33 @@ and run:
 node shared/code-capability-fabric/selftest-semantic-candidate-generator-v1.js
 ```
 
+## Code Recipe Foundry context bridge
+
+The additive v1.0 `TEST` bridge gives the Fabric bounded, deterministic access
+to the installed 1,000-entry Code Recipe Foundry catalog. A caller must name
+exact `CC-####` identities; the bridge does not rank or select recipes and does
+not claim the caller is an authenticated human.
+
+`REFERENCE_ONLY` emits metadata and snippet digests without source text.
+`DETACHED_RESEARCH_CONTEXT` may include exact snippet text only for entries
+without a structural hold whose installed synthetic audit is `SYNTAX_PASS`.
+Both modes remain `RESEARCH_ONLY_HOLD`; source and license claims are
+unverified, syntax is not runtime/correctness/security proof, and nothing is
+executed.
+
+The semantic generator can bind the exact selection packet into request,
+candidate, and Review Card lineage. This first bridge deliberately does not
+apply those snippets to generated candidate source. It is not Code Mirror or
+RepairBuddy, and it grants no executor, install, integration, promotion, or
+CANON authority.
+
+See [README-code-recipe-fabric-bridge-v1.md](README-code-recipe-fabric-bridge-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-code-recipe-fabric-bridge-v1.js
+```
+
 ## First deterministic game candidate
 
 The next `TEST` rung adds one native, typed game recipe and a byte-bound game

@@ -3,7 +3,7 @@
   "$id": "axm.semantic-generation-request/v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "id", "goal", "mode", "tier", "recipeId", "blueprintPacket", "components", "consent", "resourceEnvelope", "reuseRights", "providerPolicy", "rootsGate", "challengerIngress", "instructionRef", "authority", "requestDigest"],
+  "required": ["schema", "id", "goal", "mode", "tier", "recipeId", "blueprintPacket", "components", "codeRecipeSelection", "consent", "resourceEnvelope", "reuseRights", "providerPolicy", "rootsGate", "challengerIngress", "instructionRef", "authority", "requestDigest"],
   "properties": {
     "schema": {"const": "axm.semantic-generation-request/v1"},
     "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
@@ -13,6 +13,7 @@
     "recipeId": {"const": "creation-review-card-adapter"},
     "blueprintPacket": {"$ref": "#/$defs/blueprintPacket"},
     "components": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/component"}},
+    "codeRecipeSelection": {"oneOf": [{"type": "null"}, {"$ref": "code-recipe-selection-packet.schema.json"}]},
     "consent": {"$ref": "#/$defs/consent"},
     "resourceEnvelope": {"$ref": "#/$defs/resources"},
     "reuseRights": {"$ref": "#/$defs/reuseRights"},
