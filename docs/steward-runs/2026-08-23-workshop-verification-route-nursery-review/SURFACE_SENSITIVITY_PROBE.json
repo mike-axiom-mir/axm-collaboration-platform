@@ -1,0 +1,21 @@
+{
+  "schema": "axm.organ-nursery-surface-sensitivity-probe/v1",
+  "status": "FAIL",
+  "definitionDigest": "sha256:5df03da45e4fceac62b7e0b16f08eac0dec4d2edeb91f91f735447323ae050a6",
+  "executionSurface": "trusted deterministic Organ Fabric runtime",
+  "fixedInputs": {"changeType": "code", "risk": 4},
+  "changedSurfaceSets": [
+    ["organ-runtime"],
+    ["mirror-passive-receiver"],
+    ["organ-runtime", "fabric-archive", "mirror-passive-receiver"]
+  ],
+  "observedOutputForEveryCase": {
+    "containment": "isolated-worktree",
+    "explanation": "Check the declared contract and the focused behavior.",
+    "route": ["focused-selftest", "contract-test", "required-regression"]
+  },
+  "allOutputsIdentical": true,
+  "graphReadNodes": ["changeType", "risk"],
+  "requiredButUnreadInput": "affectedSurfaces",
+  "counterevidenceToImplementationReadiness": "The declared purpose says affected surfaces shape the route, but changing only affectedSurfaces cannot change any output."
+}

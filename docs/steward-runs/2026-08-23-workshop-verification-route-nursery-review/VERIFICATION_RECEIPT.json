@@ -1,0 +1,21 @@
+{
+  "schema": "axm.organ-nursery-review-verification/v1",
+  "status": "PASS_WITH_IMPLEMENTATION_HOLD",
+  "checks": [
+    {"id": "nursery-default-selftest", "command": "node tools/detached-candidate-nursery/selftest.js", "verdict": "PASS", "checks": 19},
+    {"id": "pilot-candidate-nursery-scan", "surface": "read-only Nursery CLI/core", "verdict": "PASS", "summary": {"total": 3, "readyForLaterIntake": 3, "needsRepair": 0}, "selectedCandidateExactFolderParity": true},
+    {"id": "fabric-shared-selftest", "command": "node shared/deterministic-organ-fabric/selftest.js", "verdict": "PASS", "checks": 36},
+    {"id": "surface-sensitivity", "surface": "trusted Fabric runtime metamorphic probe", "verdict": "FAIL_EXPECTED_HOLD", "detail": "Three distinct affectedSurfaces sets produced identical outputs."},
+    {"id": "capability-comparator", "surface": "deterministic capability-gap comparator", "verdict": "BLOCKED_EXPECTED_HOLD", "missingRequiredCapabilities": 8},
+    {"id": "review-json", "surface": "JSON parsing and git diff check", "verdict": "PASS"}
+  ],
+  "preservedHarnessRoutingFailure": {
+    "attempt": "Nursery selftest invoked with the pilot candidate root",
+    "classification": "HARNESS_INPUT_MISMATCH",
+    "observation": "Nineteen fixture checks passed, then the harness-specific live Workshop Census assertion failed because the supplied pilot root is not the declared live Workshop supply.",
+    "resolution": "Reran the selftest on its declared default supply and used Nursery CLI/core for the pilot root.",
+    "candidateDefect": false
+  },
+  "notRun": ["Generated organ.js", "Generated selftest.js", "Module Installer", "live browser", "persistent Mirror transfer"],
+  "authority": {"candidateLoaded": false, "candidateExecuted": false, "staged": false, "installed": false, "registered": false, "promoted": false, "canonChanged": false, "foundationChanged": false}
+}
