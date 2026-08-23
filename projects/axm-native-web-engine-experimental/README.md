@@ -25,6 +25,7 @@ explicitly allowed local UTF-8 HTML bytes
        `-> local Browser Bundle
              `-> one deterministic Browser Session
                    |-> headless session JSON + transition trace
+                   |-> read-only verification receipt
                    `-> trusted loopback human Browser Shell
 ```
 
@@ -71,6 +72,27 @@ and scroll entry references, transition trace, reparse receipts, and session
 digest. Each page in the bundle carries the same shared-engine lineage used by
 `outline` and the Structure Browser.
 
+## Verify a serialized Browser Session
+
+```bash
+node scripts/verify-session.js golden/local-session.navigation.json --pretty
+# or
+npm run session:verify -- golden/local-session.navigation.json --pretty
+```
+
+The read-only verifier recomputes the bundle and session digests and checks
+page/link/history/current-state/transition invariants. It emits
+`axm.web.local-browser-session-verification/v1` and exits nonzero when the
+record fails verification. Invalid UTF-8, invalid JSON, and oversized verifier
+inputs fail as typed findings rather than becoming trusted session state.
+
+A PASS is deliberately narrow: it proves internal digest and structural
+consistency under the implemented checks. It does **not** prove the original
+page content was truthful, safe, standards-conformant, or produced by a trusted
+machine. The receipt grants no mutation, installation, promotion, or canon
+authority. GitHub CI also uses a separately implemented verifier outside this
+package as an independent countercheck.
+
 ## Run the local human Browser Shell
 
 ```bash
@@ -116,6 +138,7 @@ node --test tests/*.test.js
 node scripts/verify-schemas.js
 node scripts/build-examples.js --verify
 node scripts/build-source-manifest.js --verify
+node scripts/verify-session.js golden/local-session.navigation.json --pretty
 ```
 
 `STRUCTURE_VIEW_CONTRACT.md` and `LOCAL_BROWSER_SESSION_CONTRACT.md` define the
