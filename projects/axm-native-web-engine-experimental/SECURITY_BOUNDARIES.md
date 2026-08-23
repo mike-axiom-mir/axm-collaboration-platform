@@ -45,6 +45,12 @@ separates data preservation from execution authority.
 - The human shell runs one CSP-hash-bound package controller. Page-derived
   values are assigned as DOM text. Page scripts, forms, resources, and unlisted
   link targets do not inherit shell execution authority.
+- `axm.web.local-browser-shell-policy/v1` exposes those trusted-shell controls as
+  a deterministic read-only policy receipt before any listener starts. It is
+  derived from the same host helpers, binds the controller/CSP and response
+  policy, and explicitly grants no mutation, network, install, promotion, or
+  canon authority. A policy receipt describes package intent; it is not proof
+  that a specific host instance is running or isolated.
 - Serialized local Browser Sessions can be checked by a read-only verifier that
   recomputes bundle/session digests and checks bounded structural invariants.
   Verification does not grant source truth, trust, install, promotion, canon,
