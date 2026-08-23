@@ -80,6 +80,29 @@ The verification receipt is explicitly unable to mutate, install, promote, or
 canonize anything. CI also retains a separately implemented verifier outside the
 browser package so package code does not become its only judge.
 
+## Machine-readable shell policy
+
+`src/shell-policy.js` and `scripts/shell-policy.js` expose the trusted shell's
+static security posture without starting a listener. They emit the deterministic
+`axm.web.local-browser-shell-policy/v1` record with its own `policyDigest`.
+
+The policy binds:
+
+- loopback address `127.0.0.1` and 24-byte capability-token size;
+- `EXACT_SHELL_ORIGIN_REQUIRED` for mutations;
+- allowed HTTP methods;
+- the trusted controller's CSP hash and complete CSP text;
+- no-store, COOP, CORP, Permissions Policy, referrer, nosniff, and frame-denial
+  response policy;
+- `externalNetworkUsed: false` and `pageScriptExecuted: false`;
+- closed mutation, network, install, promotion, and canon authority.
+
+The policy is derived from the same host helper functions used at runtime so it
+cannot silently describe a separate set of headers. It is still only a package-
+declared policy: it does not prove that a particular host instance is alive,
+that source content is safe or truthful, that hostile web input is isolated, or
+that a network/sandbox boundary exists. The receipt grants no action authority.
+
 ## Trusted loopback shell
 
 `serve-local` binds an ephemeral HTTP listener to `127.0.0.1` only and prints an
