@@ -132,6 +132,26 @@ and run:
 node shared/code-capability-fabric/selftest-code-recipe-application-planner-v1.js
 ```
 
+## Atlas-backed native game-rule candidate draft
+
+The additive v1.4 `TEST` generator takes that exact v1.2 map/filter application
+plan one bounded step further. It independently emits one byte-bound,
+nine-file JavaScript game-rule candidate bundle in memory and reuses the
+existing semantic bundle/path validator. Atlas snippet bytes remain absent and
+the candidate is not written or executed.
+
+The draft stays `EXPERIMENTAL`; authentication over its exact bytes is the next
+gate before any Detached Candidate Nursery write. Runtime behavior,
+correctness, safety, reuse rights, installation, integration, promotion, and
+`CANON` remain deliberately unresolved.
+
+See [README-native-game-rule-candidate-generator-v1.md](README-native-game-rule-candidate-generator-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-native-game-rule-candidate-generator-v1.js
+```
+
 ## First deterministic game candidate
 
 The next `TEST` rung adds one native, typed game recipe and a byte-bound game
