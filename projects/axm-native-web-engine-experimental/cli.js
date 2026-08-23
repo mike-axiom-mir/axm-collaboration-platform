@@ -33,7 +33,7 @@ function usage() {
     '  node cli.js render-svg <file|-> --out <file.svg> [--viewport 1120x760] [--force]',
     '  node cli.js browser-snapshot <file|-> --out <file.html> [--viewport 1120x760] [--force]',
     '  node cli.js session <entry-file> [--allow-local <file>] [--action <action>] [--pretty]',
-    '  node cli.js serve-local <entry-file> [--allow-local <file>] [--port 0]',
+    '  node cli.js serve-local <entry-file> [--allow-local <file>] [--port 0] [--builder]',
     '  node cli.js profile [--pretty]',
     '',
     'Bounds:',
@@ -51,6 +51,8 @@ function usage() {
     'Session actions: activate:entry-0001, open:local/path.html, back, forward,',
     'reload, focus:entry-0001, or scroll:entry-0001. Repeat --action in order.',
     'serve-local binds only to 127.0.0.1 and prints an ephemeral shell URL.',
+    '--builder starts a separate loopback in-memory HTML editor + live inert preview',
+    'and prints its builder receipt after the normal browser-host receipt.',
     '',
     'Visual artifact writes require an explicit --out path and refuse overwrite',
     'unless --force is present. Network URLs remain intentionally refused.'
@@ -109,13 +111,15 @@ function parseArgs(argv) {
     viewport: null,
     allowedInputs: [],
     actions: [],
-    port: null
+    port: null,
+    builder: false
   };
   for (let i = 1; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--pretty') result.pretty = true;
     else if (arg === '--omit-source-bytes') result.omitSourceBytes = true;
     else if (arg === '--force') result.force = true;
+    else if (arg === '--builder') result.builder = true;
     else if (arg === '--out') { result.out = optionValue(argv, i, arg); i += 1; }
     else if (arg === '--viewport') { result.viewport = parseViewport(optionValue(argv, i, arg)); i += 1; }
     else if (arg === '--allow-local') { result.allowedInputs.push(optionValue(argv, i, arg)); i += 1; }
@@ -151,6 +155,9 @@ function parseArgs(argv) {
   }
   if (command !== 'serve-local' && result.port !== null) {
     throw Object.assign(new Error('--port is only valid for serve-local'), { code: 'INVALID_ARGUMENT' });
+  }
+  if (command !== 'serve-local' && result.builder) {
+    throw Object.assign(new Error('--builder is only valid for serve-local'), { code: 'INVALID_ARGUMENT' });
   }
   return result;
 }
@@ -276,8 +283,12 @@ async function main(argv) {
         print(session.snapshot(), args.pretty);
         return 0;
       }
-      const host = await LocalBrowserHost.createLocalBrowserHost(session, { port: args.port == null ? 0 : args.port });
+      const host = await LocalBrowserHost.createLocalBrowserHost(session, {
+        port: args.port == null ? 0 : args.port,
+        builderEnabled: args.builder
+      });
       print(host.receipt, args.pretty);
+      if (host.builderReceipt) print(host.builderReceipt, args.pretty);
       await waitForHostShutdown(host);
       return 0;
     }
