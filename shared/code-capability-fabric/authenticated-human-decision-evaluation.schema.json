@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.authenticated-human-decision-evaluation/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "subjectRef", "decisionRef", "trustPolicyRef", "revocationSnapshotRef", "evaluatedAt", "holds", "nextGate", "truth", "authority", "evaluationDigest"],
+  "properties": {
+    "schema": {"const": "axm.authenticated-human-decision-evaluation/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"enum": ["READY_FOR_REPLAY_RESERVATION", "TRUST_POLICY_HOLD", "SUBJECT_HOLD", "SIGNATURE_HOLD", "TIME_HOLD", "ROOTS_HOLD", "REVOCATION_HOLD", "REVOKED", "HUMAN_HOLD", "HUMAN_REJECTED"]},
+    "subjectRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "decisionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "trustPolicyRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "revocationSnapshotRef": {"oneOf": [{"type": "null"}, {"$ref": "semantic-common.schema.json#/$defs/reference"}]},
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "holds": {"type": "array", "maxItems": 16, "items": {"type": "string", "minLength": 1, "maxLength": 200}},
+    "nextGate": {"enum": ["HOST_ATOMIC_REPLAY_RESERVATION_AND_DETACHED_WRITE", "NEW_OR_REPAIRED_HUMAN_DECISION_REQUIRED"]},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "evaluationDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["generationRebuilt", "exactCandidateBound", "hostTrustPolicyDigestMatched", "decisionSeatKeyBound", "decisionSignatureVerified", "decisionWindowCurrent", "fourRootPassDecisionsBound", "revocationSignatureVerified", "revocationSnapshotCurrent", "revocationClear", "naturalPersonIdentityProven", "informedUnderstandingProven", "hostClockIndependentlyTrusted", "candidateCodeExecuted", "installed", "integrated", "published", "persistentLearningAdmitted", "promoted", "canonChanged"],
+      "properties": {
+        "generationRebuilt": {"type": "boolean"}, "exactCandidateBound": {"type": "boolean"},
+        "hostTrustPolicyDigestMatched": {"type": "boolean"}, "decisionSeatKeyBound": {"type": "boolean"},
+        "decisionSignatureVerified": {"type": "boolean"}, "decisionWindowCurrent": {"type": "boolean"},
+        "fourRootPassDecisionsBound": {"type": "boolean"}, "revocationSignatureVerified": {"type": "boolean"},
+        "revocationSnapshotCurrent": {"type": "boolean"}, "revocationClear": {"type": "boolean"},
+        "naturalPersonIdentityProven": {"const": false}, "informedUnderstandingProven": {"const": false},
+        "hostClockIndependentlyTrusted": {"const": false}, "candidateCodeExecuted": {"const": false},
+        "installed": {"const": false}, "integrated": {"const": false}, "published": {"const": false},
+        "persistentLearningAdmitted": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}
+      }
+    }
+  }
+}

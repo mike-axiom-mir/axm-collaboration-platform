@@ -1,0 +1,83 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-recipe-application-planner-v1",
+  "version": "v1.2",
+  "status": "TEST",
+  "provides": [
+    "axm.code-recipe-application-request/v1",
+    "axm.code-recipe-application-plan/v1",
+    "code.recipe.application.validate-requester-mapping/v1",
+    "code.recipe.application.plan-independent-native-implementation/v1"
+  ],
+  "consumes": [
+    "axm.fabric-declarative-blueprint-intent/v1",
+    "axm.fabric-declarative-capability-blueprint/v1",
+    "axm.code-recipe-discovery-evidence-packet/v1",
+    "axm.code-recipe-selection-packet/v1",
+    "axm.grounded-consent-policy/v1",
+    "axm.grounded-consent-instance/v1",
+    "axm.grounded-consent-evaluation/v1",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.code-recipe-application-plan/v1"],
+    "accepts": ["axm.code-recipe-application-request/v1"]
+  },
+  "rootsGate": [
+    "truth",
+    "agency-non-domination",
+    "continuity",
+    "wisdom-over-speed"
+  ],
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "reads": [
+      "module-local:code-recipe-foundry/catalog/code-cheats-1000.code-recipes.json",
+      "module-local:code-recipe-foundry/catalog/code-cheats-1000.syntax-audit.json",
+      "module-local:code-recipe-foundry/module.contract.json"
+    ],
+    "writes": [],
+    "refuses": [
+      "arbitrary-recipe-pack",
+      "held-recipe-application",
+      "detached-research-context-source",
+      "snippet-byte-emission",
+      "snippet-copying",
+      "snippet-application",
+      "snippet-execution",
+      "automatic-recipe-selection",
+      "automatic-semantic-mapping",
+      "authenticated-human-decision-claim",
+      "informed-understanding-claim",
+      "trusted-clock-claim",
+      "host-authorization",
+      "direct-reuse-authorization",
+      "source-claim-verification",
+      "license-verification",
+      "provider-call",
+      "network-use",
+      "target-workspace-read",
+      "target-workspace-write",
+      "child-process-spawn",
+      "candidate-generation",
+      "candidate-materialization",
+      "test-execution",
+      "runtime-proof",
+      "correctness-proof",
+      "safety-proof",
+      "installation",
+      "integration",
+      "publication",
+      "promotion",
+      "persistent-learning",
+      "hardware-actuation",
+      "canon-change"
+    ]
+  }
+}

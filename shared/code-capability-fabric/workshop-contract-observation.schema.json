@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axm.workshop-contract-observation/v1",
+  "title": "AXM Workshop Contract Observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "id", "sourceLabel", "evaluatedAt", "scopeId", "target", "inputRefs", "manifest", "contract", "selftest", "allowedKinds", "sourceStateDigest", "resources", "privacy", "truth", "authority", "observationDigest"],
+  "properties": {
+    "schema": {"const": "axm.workshop-contract-observation/v1"}, "version": {"const": "1.0.0"}, "status": {"const": "TEST"}, "id": {"type": "string"}, "sourceLabel": {"type": "string"}, "evaluatedAt": {"type": "string", "format": "date-time"}, "scopeId": {"const": "target-legacy-manifest-contract-selftest-v1"},
+    "target": {"$ref": "#/definitions/target"}, "inputRefs": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/definitions/fileRef"}},
+    "manifest": {"type": "object", "additionalProperties": false, "required": ["ref", "declaredSchema", "schemaState", "id", "kindState", "declaredKind", "validation"], "properties": {"ref": {"$ref": "#/definitions/fileRef"}, "declaredSchema": {"type": ["string", "null"]}, "schemaState": {"enum": ["MISSING", "PRESENT_VALID", "PRESENT_INVALID"]}, "id": {"type": "string"}, "kindState": {"enum": ["MISSING", "PRESENT_VALID", "PRESENT_INVALID"]}, "declaredKind": {"type": ["string", "null"]}, "validation": {"$ref": "#/definitions/validation"}}},
+    "contract": {"type": "object", "additionalProperties": false, "required": ["ref", "schema", "id", "permissionParity", "validation"], "properties": {"ref": {"$ref": "#/definitions/fileRef"}, "schema": {"const": "axm.module-contract/v1"}, "id": {"type": "string"}, "permissionParity": {"type": "boolean"}, "validation": {"$ref": "#/definitions/validation"}}},
+    "selftest": {"type": "object", "additionalProperties": false, "required": ["ref", "state"], "properties": {"ref": {"$ref": "#/definitions/fileRef"}, "state": {"const": "PRESENT_NOT_RUN"}}},
+    "allowedKinds": {"const": ["adapter", "machine-capability", "product", "scaffold", "service"]}, "sourceStateDigest": {"$ref": "#/definitions/digest"},
+    "resources": {"type": "object", "additionalProperties": false, "required": ["inputFiles", "inputBytes", "networkRequests", "childProcesses", "enforced"], "properties": {"inputFiles": {"const": 3}, "inputBytes": {"type": "integer", "minimum": 3, "maximum": 2097152}, "networkRequests": {"const": 0}, "childProcesses": {"const": 0}, "enforced": {"const": true}}},
+    "privacy": {"type": "object", "additionalProperties": false, "required": ["scopeId", "sourceBytesInEvidence", "candidateBytesInOutput", "stdoutRetention", "stderrRetention", "machinePathRetention", "secretsRead"], "properties": {"scopeId": {"const": "target-legacy-manifest-contract-selftest-v1"}, "sourceBytesInEvidence": {"const": false}, "candidateBytesInOutput": {"const": true}, "stdoutRetention": {"const": false}, "stderrRetention": {"const": false}, "machinePathRetention": {"const": false}, "secretsRead": {"const": false}}},
+    "truth": {"type": "object", "additionalProperties": false, "required": ["sourceRead", "sourceWritten", "candidateBytesRetainedInOutput", "candidateExecuted", "testsExecuted", "networkUsed", "childProcessSpawned", "installed", "integrated", "published", "promoted", "canonChanged"], "properties": {"sourceRead": {"const": true}, "sourceWritten": {"const": false}, "candidateBytesRetainedInOutput": {"const": true}, "candidateExecuted": {"const": false}, "testsExecuted": {"const": false}, "networkUsed": {"const": false}, "childProcessSpawned": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "published": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}}},
+    "authority": {"const": "NONE"}, "observationDigest": {"$ref": "#/definitions/digest"}
+  },
+  "definitions": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "fileRef": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "byteLength"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/definitions/digest"}, "byteLength": {"type": "integer", "minimum": 1}}},
+    "target": {"type": "object", "additionalProperties": false, "required": ["toolId", "manifestPath", "contractPath", "selftestPath"], "properties": {"toolId": {"type": "string"}, "manifestPath": {"type": "string"}, "contractPath": {"type": "string"}, "selftestPath": {"type": "string"}}},
+    "validation": {"type": "object", "additionalProperties": false, "required": ["pass", "errors"], "properties": {"pass": {"type": "boolean"}, "errors": {"type": "array", "items": {"type": "string"}}}}
+  }
+}

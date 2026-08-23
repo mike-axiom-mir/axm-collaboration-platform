@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-recipe-discovery-evidence-packet/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "id", "status", "discoveryRequest", "requestRef", "catalogRef", "auditRef", "foundryContractRef", "summary", "eligibleResults", "heldResults", "selection", "reuseRights", "resourceObservation", "lineageRefs", "limitations", "truth", "authority", "packetDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-recipe-discovery-evidence-packet/v1"},
+    "version": {"const": "1.1.0"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "status": {"const": "TEST"},
+    "discoveryRequest": {"$ref": "code-recipe-discovery-request.schema.json"},
+    "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "catalogRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "auditRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "foundryContractRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "summary": {"$ref": "#/$defs/summary"},
+    "eligibleResults": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/result"}},
+    "heldResults": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/result"}},
+    "selection": {"const": null},
+    "reuseRights": {"$ref": "#/$defs/reuseRights"},
+    "resourceObservation": {"$ref": "#/$defs/resourceObservation"},
+    "lineageRefs": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "semantic-common.schema.json#/$defs/reference"}},
+    "limitations": {"type": "array", "minItems": 10, "maxItems": 16, "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}, "uniqueItems": true},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "packetDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "reuseRights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "directReuseAllowed", "reason"],
+      "properties": {
+        "state": {"const": "RESEARCH_ONLY_HOLD"},
+        "directReuseAllowed": {"const": false},
+        "reason": {"const": "SOURCE_AND_LICENSE_CLAIMS_UNVERIFIED"}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recipesScanned", "eligibleMatches", "heldMatches", "returnedEligible", "returnedHeld", "eligibleTruncated", "heldTruncated"],
+      "properties": {
+        "recipesScanned": {"const": 1000},
+        "eligibleMatches": {"type": "integer", "minimum": 0, "maximum": 1000},
+        "heldMatches": {"type": "integer", "minimum": 0, "maximum": 1000},
+        "returnedEligible": {"type": "integer", "minimum": 0, "maximum": 32},
+        "returnedHeld": {"type": "integer", "minimum": 0, "maximum": 32},
+        "eligibleTruncated": {"type": "boolean"},
+        "heldTruncated": {"type": "boolean"}
+      }
+    },
+    "snippetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength", "bytesIncluded"],
+      "properties": {
+        "sha256": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 4000},
+        "bytesIncluded": {"const": false}
+      }
+    },
+    "syntaxEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "verifier", "message", "parseOnly", "runtimeProof", "correctnessProof", "safetyProof"],
+      "properties": {
+        "status": {"enum": ["SYNTAX_PASS", "REVIEW_HOLD", "CONTEXT_UNSUPPORTED", "VERIFIER_UNAVAILABLE"]},
+        "verifier": {"type": "string", "minLength": 1, "maxLength": 160},
+        "message": {"type": "string", "minLength": 1, "maxLength": 500},
+        "parseOnly": {"const": true},
+        "runtimeProof": {"const": false},
+        "correctnessProof": {"const": false},
+        "safetyProof": {"const": false}
+      }
+    },
+    "match": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "matchedFields", "qualityRank", "semanticInference", "popularityUsed"],
+      "properties": {
+        "score": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "matchedFields": {"type": "array", "maxItems": 256, "items": {"type": "string", "pattern": "^[a-z]+:[a-z0-9]+$"}, "uniqueItems": true},
+        "qualityRank": {"const": false},
+        "semanticInference": {"const": false},
+        "popularityUsed": {"const": false}
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "recipeId", "title", "description", "primaryLanguage", "domain", "tags", "familyKey", "versionBasis", "sourceUrl", "reviewState", "holdReasons", "eligibility", "snippetRef", "syntaxEvidence", "mechanicalMatch"],
+      "properties": {
+        "sourceId": {"type": "string", "pattern": "^CC-[0-9]{4}$"},
+        "recipeId": {"type": "string", "pattern": "^recipe-[a-f0-9]{16}$"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "description": {"type": "string", "minLength": 1, "maxLength": 600},
+        "primaryLanguage": {"type": "string", "minLength": 1, "maxLength": 80},
+        "domain": {"type": ["string", "null"], "maxLength": 80},
+        "tags": {"type": "array", "maxItems": 20, "items": {"type": "string", "minLength": 1, "maxLength": 60}, "uniqueItems": true},
+        "familyKey": {"type": "string", "minLength": 1, "maxLength": 120},
+        "versionBasis": {"type": ["string", "null"], "maxLength": 240},
+        "sourceUrl": {"type": "string", "pattern": "^https?://", "maxLength": 1000},
+        "reviewState": {"enum": ["SOURCE_REVIEW_REQUIRED", "STRUCTURE_HOLD"]},
+        "holdReasons": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}, "uniqueItems": true},
+        "eligibility": {"enum": ["UNSELECTED_EVIDENCE_ONLY", "HELD_UNSELECTED_EVIDENCE_ONLY"]},
+        "snippetRef": {"$ref": "#/$defs/snippetRef"},
+        "syntaxEvidence": {"$ref": "#/$defs/syntaxEvidence"},
+        "mechanicalMatch": {"$ref": "#/$defs/match"}
+      }
+    },
+    "resourceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestBytes", "packetBytes", "recipesScanned", "eligibleReturned", "heldReturned", "requestByteCeilingEnforced", "packetByteCeilingEnforced", "scanCeilingEnforced", "resultCeilingEnforced", "attemptCountEnforced", "processesSpawned", "networkUsed"],
+      "properties": {
+        "requestBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "packetBytes": {"type": "integer", "minimum": 1, "maximum": 262144},
+        "recipesScanned": {"const": 1000},
+        "eligibleReturned": {"type": "integer", "minimum": 0, "maximum": 32},
+        "heldReturned": {"type": "integer", "minimum": 0, "maximum": 32},
+        "requestByteCeilingEnforced": {"const": true},
+        "packetByteCeilingEnforced": {"const": true},
+        "scanCeilingEnforced": {"const": true},
+        "resultCeilingEnforced": {"const": true},
+        "attemptCountEnforced": {"const": true},
+        "processesSpawned": {"const": 0},
+        "networkUsed": {"const": false}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["installedCatalogVerified", "installedAuditVerified", "recipeSetDigestVerified", "foundryContractVerified", "metadataOnly", "snippetBytesIncluded", "snippetsExecuted", "mechanicalOrderingUsed", "qualityRankingPerformed", "semanticInferencePerformed", "automaticSelectionMade", "sourceClaimsVerified", "licensesVerified", "runtimeBehaviorProven", "correctnessProven", "safetyProven", "candidateGenerated", "installed", "integrated", "promoted", "canonChanged"],
+      "properties": {
+        "installedCatalogVerified": {"const": true},
+        "installedAuditVerified": {"const": true},
+        "recipeSetDigestVerified": {"const": true},
+        "foundryContractVerified": {"const": true},
+        "metadataOnly": {"const": true},
+        "snippetBytesIncluded": {"const": false},
+        "snippetsExecuted": {"const": false},
+        "mechanicalOrderingUsed": {"const": true},
+        "qualityRankingPerformed": {"const": false},
+        "semanticInferencePerformed": {"const": false},
+        "automaticSelectionMade": {"const": false},
+        "sourceClaimsVerified": {"const": false},
+        "licensesVerified": {"const": false},
+        "runtimeBehaviorProven": {"const": false},
+        "correctnessProven": {"const": false},
+        "safetyProven": {"const": false},
+        "candidateGenerated": {"const": false},
+        "installed": {"const": false},
+        "integrated": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

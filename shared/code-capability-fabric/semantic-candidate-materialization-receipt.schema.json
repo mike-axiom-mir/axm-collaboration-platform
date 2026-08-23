@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.semantic-candidate-materialization-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "subjectRef", "decisionEvaluationRef", "decisionRef", "revocationSnapshotRef", "candidateRef", "moduleBundleRef", "replayReservationRef", "candidate", "candidateRootName", "candidateFiles", "nurseryRecordDigest", "nurseryStatus", "resourceObservation", "limitations", "truth", "authority", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.semantic-candidate-materialization-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "DETACHED_CANDIDATE_WRITTEN_FOR_REVIEW"},
+    "subjectRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "decisionEvaluationRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "decisionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "revocationSnapshotRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "candidateRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "moduleBundleRef": {"$ref": "semantic-common.schema.json#/$defs/artifactReference"},
+    "replayReservationRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "candidate": {"$ref": "semantic-common.schema.json#/$defs/candidate"},
+    "candidateRootName": {"type": "string", "pattern": "^axm-semantic-candidate-[a-z0-9][a-z0-9-]{1,79}-[a-f0-9]{12}$"},
+    "candidateFiles": {"type": "array", "minItems": 7, "maxItems": 17, "items": {"$ref": "semantic-common.schema.json#/$defs/sourceFile"}},
+    "nurseryRecordDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+    "nurseryStatus": {"const": "READY_FOR_LATER_INTAKE"},
+    "resourceObservation": {"$ref": "#/$defs/resources"},
+    "limitations": {"type": "array", "minItems": 21, "maxItems": 21, "items": {"type": "string", "minLength": 1, "maxLength": 200}},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "DISPOSABLE_CANDIDATE_WRITE_ONLY_USED"},
+    "receiptDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "resources": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidateFileCount", "candidateBytes", "replayReservationBytes", "receiptBytes", "evidenceBytes", "totalWrittenBytes", "fileCountEnforced", "candidateByteCeilingEnforced", "evidenceByteCeilingEnforced", "totalByteCeilingEnforced", "attemptCountEnforced", "durationEnforced", "memoryEnforced", "processesSpawned", "networkUsed"],
+      "properties": {
+        "candidateFileCount": {"type": "integer", "minimum": 7, "maximum": 17},
+        "candidateBytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "replayReservationBytes": {"type": "integer", "minimum": 1, "maximum": 131072},
+        "receiptBytes": {"type": "integer", "minimum": 1, "maximum": 131072},
+        "evidenceBytes": {"type": "integer", "minimum": 1, "maximum": 262144},
+        "totalWrittenBytes": {"type": "integer", "minimum": 1, "maximum": 1310720},
+        "fileCountEnforced": {"const": true}, "candidateByteCeilingEnforced": {"const": true},
+        "evidenceByteCeilingEnforced": {"const": true}, "totalByteCeilingEnforced": {"const": true},
+        "attemptCountEnforced": {"const": true}, "durationEnforced": {"const": false},
+        "memoryEnforced": {"const": false}, "processesSpawned": {"const": 0}, "networkUsed": {"const": false}
+      }
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["semanticGenerationRebuilt", "hostTrustPolicyDigestMatched", "decisionSignatureVerified", "revocationSignatureVerified", "revocationSnapshotCurrentAndClear", "replayNonceExclusivelyReserved", "candidateFilesWritten", "candidateFilesReadBack", "candidateStructureInspected", "naturalPersonIdentityProven", "informedUnderstandingProven", "hostClockIndependentlyTrusted", "fabricGrantedWriteAuthority", "candidateCodeExecuted", "runtimeBehaviorProven", "visualBehaviorProven", "installed", "integrated", "published", "persistentLearningAdmitted", "promoted", "canonChanged", "filesRetained"],
+      "properties": {
+        "semanticGenerationRebuilt": {"const": true}, "hostTrustPolicyDigestMatched": {"const": true},
+        "decisionSignatureVerified": {"const": true}, "revocationSignatureVerified": {"const": true},
+        "revocationSnapshotCurrentAndClear": {"const": true}, "replayNonceExclusivelyReserved": {"const": true},
+        "candidateFilesWritten": {"const": true}, "candidateFilesReadBack": {"const": true},
+        "candidateStructureInspected": {"const": true}, "naturalPersonIdentityProven": {"const": false},
+        "informedUnderstandingProven": {"const": false}, "hostClockIndependentlyTrusted": {"const": false},
+        "fabricGrantedWriteAuthority": {"const": false}, "candidateCodeExecuted": {"const": false},
+        "runtimeBehaviorProven": {"const": false}, "visualBehaviorProven": {"const": false},
+        "installed": {"const": false}, "integrated": {"const": false}, "published": {"const": false},
+        "persistentLearningAdmitted": {"const": false}, "promoted": {"const": false},
+        "canonChanged": {"const": false}, "filesRetained": {"const": true}
+      }
+    }
+  }
+}

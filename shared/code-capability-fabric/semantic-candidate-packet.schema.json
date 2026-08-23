@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.semantic-candidate-packet/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "candidate", "lane", "status", "goal", "requestRef", "blueprintRef", "schemaPacketRefs", "consentEvaluationRef", "rootsGate", "generator", "moduleBundle", "moduleBundleRef", "sourceFiles", "testPlanRef", "declaredAuthority", "resourceObservation", "reuseRights", "lineageRefs", "limitations", "truth", "authority", "packetDigest"],
+  "properties": {
+    "schema": {"const": "axm.semantic-candidate-packet/v1"},
+    "version": {"const": "0.1.0"},
+    "candidate": {"$ref": "semantic-common.schema.json#/$defs/candidate"},
+    "lane": {"enum": ["NATIVE", "AI_CHALLENGER"]},
+    "status": {"const": "EXPERIMENTAL"},
+    "goal": {"type": "string", "minLength": 1, "maxLength": 600},
+    "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "blueprintRef": {"$ref": "semantic-common.schema.json#/$defs/artifactReference"},
+    "schemaPacketRefs": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "semantic-common.schema.json#/$defs/artifactReference"}},
+    "consentEvaluationRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "generator": {"$ref": "#/$defs/generator"},
+    "moduleBundle": {"$ref": "semantic-common.schema.json#/$defs/moduleBundle"},
+    "moduleBundleRef": {"$ref": "semantic-common.schema.json#/$defs/artifactReference"},
+    "sourceFiles": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "semantic-common.schema.json#/$defs/sourceFile"}},
+    "testPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "declaredAuthority": {"$ref": "#/$defs/declaredAuthority"},
+    "resourceObservation": {"$ref": "#/$defs/resources"},
+    "reuseRights": {"$ref": "#/$defs/reuseRights"},
+    "lineageRefs": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"$ref": "semantic-common.schema.json#/$defs/reference"}},
+    "limitations": {"type": "array", "minItems": 20, "maxItems": 52, "items": {"type": "string", "minLength": 1, "maxLength": 200}},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "packetDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "generator": {
+      "oneOf": [
+        {"$ref": "#/$defs/nativeGenerator"},
+        {"$ref": "#/$defs/aiGenerator"}
+      ]
+    },
+    "nativeGenerator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lane", "providerId", "recipeLibraryRef", "recipeId"],
+      "properties": {
+        "lane": {"const": "NATIVE"},
+        "providerId": {"const": "axm-native-recipe-engine"},
+        "recipeLibraryRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "recipeId": {"const": "creation-review-card-adapter"}
+      }
+    },
+    "aiGenerator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lane", "providerRef", "routePlanRef"],
+      "properties": {
+        "lane": {"const": "AI_CHALLENGER"},
+        "providerRef": {"$ref": "#/$defs/exactProvider"},
+        "routePlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"}
+      }
+    },
+    "exactProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "descriptorSha256"],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "version": {"type": "string", "minLength": 1, "maxLength": 80},
+        "descriptorSha256": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "declaredAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["permissions", "networkDomains", "lifecycleEffects"],
+      "properties": {
+        "permissions": {"type": "array", "maxItems": 64, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+        "networkDomains": {"type": "array", "maxItems": 32, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+        "lifecycleEffects": {"const": []}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceFileCount", "sourceBytes", "fileCountEnforced", "fileByteCeilingEnforced", "totalByteCeilingEnforced", "attemptCountEnforced", "durationEnforced", "memoryEnforced", "processesSpawned", "networkUsed"],
+      "properties": {
+        "sourceFileCount": {"type": "integer", "minimum": 1, "maximum": 16},
+        "sourceBytes": {"type": "integer", "minimum": 1, "maximum": 524288},
+        "fileCountEnforced": {"const": true},
+        "fileByteCeilingEnforced": {"const": true},
+        "totalByteCeilingEnforced": {"const": true},
+        "attemptCountEnforced": {"const": true},
+        "durationEnforced": {"const": false},
+        "memoryEnforced": {"const": false},
+        "processesSpawned": {"const": 0},
+        "networkUsed": {"const": false}
+      }
+    },
+    "reuseRights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "directReuseAllowed", "authorityRef"],
+      "properties": {
+        "state": {"enum": ["DECLARED_REUSE_ALLOWED", "RESEARCH_ONLY_HOLD"]},
+        "directReuseAllowed": {"type": "boolean"},
+        "authorityRef": {"const": null}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exactBlueprintBytesBound", "compiledSchemasBound", "groundedConsentScopeBound", "fourRootPassDecisionsBound", "fourRootEvidenceContentVerified", "sourceFilesByteBound", "providerCalledByGenerator", "providerCodeLoaded", "candidateCodeExecuted", "runtimeBehaviorProven", "visualBehaviorProven", "authenticatedHumanDecisionVerified", "hostAuthorizationGranted", "installed", "integrated", "published", "persistentLearningAdmitted", "promoted", "canonChanged"],
+      "properties": {
+        "exactBlueprintBytesBound": {"const": true},
+        "compiledSchemasBound": {"const": true},
+        "groundedConsentScopeBound": {"const": true},
+        "fourRootPassDecisionsBound": {"const": true},
+        "fourRootEvidenceContentVerified": {"const": false},
+        "sourceFilesByteBound": {"const": true},
+        "providerCalledByGenerator": {"const": false},
+        "providerCodeLoaded": {"const": false},
+        "candidateCodeExecuted": {"const": false},
+        "runtimeBehaviorProven": {"const": false},
+        "visualBehaviorProven": {"const": false},
+        "authenticatedHumanDecisionVerified": {"const": false},
+        "hostAuthorizationGranted": {"const": false},
+        "installed": {"const": false},
+        "integrated": {"const": false},
+        "published": {"const": false},
+        "persistentLearningAdmitted": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

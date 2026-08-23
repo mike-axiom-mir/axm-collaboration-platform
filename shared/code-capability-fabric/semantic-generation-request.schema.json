@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.semantic-generation-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "goal", "mode", "tier", "recipeId", "blueprintPacket", "components", "codeRecipeSelection", "consent", "resourceEnvelope", "reuseRights", "providerPolicy", "rootsGate", "challengerIngress", "instructionRef", "authority", "requestDigest"],
+  "properties": {
+    "schema": {"const": "axm.semantic-generation-request/v1"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "goal": {"type": "string", "minLength": 1, "maxLength": 600},
+    "mode": {"enum": ["NATIVE_ONLY", "NATIVE_WITH_AI_CHALLENGER"]},
+    "tier": {"const": 1},
+    "recipeId": {"const": "creation-review-card-adapter"},
+    "blueprintPacket": {"$ref": "#/$defs/blueprintPacket"},
+    "components": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/component"}},
+    "codeRecipeSelection": {"oneOf": [{"type": "null"}, {"$ref": "code-recipe-selection-packet.schema.json"}]},
+    "consent": {"$ref": "#/$defs/consent"},
+    "resourceEnvelope": {"$ref": "#/$defs/resources"},
+    "reuseRights": {"$ref": "#/$defs/reuseRights"},
+    "providerPolicy": {"$ref": "#/$defs/providerPolicy"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "challengerIngress": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/challengerIngress"}]},
+    "instructionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "authority": {"const": "NONE"},
+    "requestDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "value"],
+      "properties": {
+        "ref": {"$ref": "semantic-common.schema.json#/$defs/artifactReference"},
+        "value": {}
+      }
+    },
+    "blueprintPacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent", "blueprint", "inputSchema", "outputSchema", "acceptanceMatrix"],
+      "properties": {
+        "intent": {"$ref": "fabric-declarative-blueprint-intent.schema.json"},
+        "blueprint": {"$ref": "#/$defs/artifact"},
+        "inputSchema": {"$ref": "#/$defs/artifact"},
+        "outputSchema": {"$ref": "#/$defs/artifact"},
+        "acceptanceMatrix": {"$ref": "#/$defs/artifact"}
+      }
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "contract"],
+      "properties": {
+        "ref": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "contract": {}
+      }
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evaluationInput", "evaluation"],
+      "properties": {
+        "evaluationInput": {},
+        "evaluation": {"$ref": "grounded-consent-evaluation.schema.json"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxInputBytes", "maxOutputBytes", "maxMemoryBytes", "maxDurationMs", "maxProcesses", "maxAttempts", "maxCostMinorUnits"],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1},
+        "maxDurationMs": {"type": "integer", "minimum": 1},
+        "maxProcesses": {"const": 1},
+        "maxAttempts": {"const": 1},
+        "maxCostMinorUnits": {"const": 0}
+      }
+    },
+    "reuseRights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nativeRecipe", "aiChallenger"],
+      "properties": {
+        "nativeRecipe": {"const": "DECLARED_REUSE_ALLOWED"},
+        "aiChallenger": {"const": "RESEARCH_ONLY_HOLD"}
+      }
+    },
+    "exactProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "descriptorSha256"],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "version": {"type": "string", "minLength": 1, "maxLength": 80},
+        "descriptorSha256": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "challengerPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "exactProvider", "routePlanDigest", "allowedCandidatePermissions", "allowedCandidateNetworkDomains"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "exactProvider": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/exactProvider"}]},
+        "routePlanDigest": {"oneOf": [{"type": "null"}, {"$ref": "semantic-common.schema.json#/$defs/digest"}]},
+        "allowedCandidatePermissions": {"type": "array", "maxItems": 64, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+        "allowedCandidateNetworkDomains": {"type": "array", "maxItems": 32, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}}
+      }
+    },
+    "providerPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nativeProviderId", "recipeLibraryRef", "challenger"],
+      "properties": {
+        "nativeProviderId": {"const": "axm-native-recipe-engine"},
+        "recipeLibraryRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "challenger": {"$ref": "#/$defs/challengerPolicy"}
+      }
+    },
+    "challengerReuse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "directReuseAllowed", "authorityRef"],
+      "properties": {
+        "state": {"const": "RESEARCH_ONLY_HOLD"},
+        "directReuseAllowed": {"const": false},
+        "authorityRef": {"const": null}
+      }
+    },
+    "challengerIngress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateId", "routeInput", "routePlan", "moduleBundle", "reuseRights", "lineageRefs", "limitations"],
+      "properties": {
+        "candidateId": {"$ref": "semantic-common.schema.json#/$defs/candidateId"},
+        "routeInput": {},
+        "routePlan": {"$ref": "code-capability-route-plan-v2.schema.json"},
+        "moduleBundle": {"$ref": "semantic-common.schema.json#/$defs/moduleBundle"},
+        "reuseRights": {"$ref": "#/$defs/challengerReuse"},
+        "lineageRefs": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "semantic-common.schema.json#/$defs/reference"}},
+        "limitations": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}}
+      }
+    }
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.native-game-rule-candidate-packet/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "generationStatus", "candidate", "requestRef", "applicationPlanRef", "blueprintRef", "discoveryEvidenceRef", "recipeSelectionRef", "consentEvaluationRef", "generator", "moduleBundle", "moduleBundleRef", "sourceFiles", "operationBindings", "testPlanRef", "rootsGate", "declaredAuthority", "resourceObservation", "reuseRights", "lineageRefs", "limitations", "nextGate", "truth", "authority", "packetDigest"],
+  "properties": {
+    "schema": {"const": "axm.native-game-rule-candidate-packet/v1"},
+    "version": {"const": "1.4.0"},
+    "status": {"const": "EXPERIMENTAL"},
+    "generationStatus": {"const": "INERT_DRAFT_CREATED_AUTHENTICATION_REQUIRED_BEFORE_WRITE"},
+    "candidate": {"$ref": "semantic-common.schema.json#/$defs/candidate"},
+    "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "applicationPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "blueprintRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "discoveryEvidenceRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "recipeSelectionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "consentEvaluationRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "generator": {"$ref": "#/$defs/generator"},
+    "moduleBundle": {"$ref": "semantic-common.schema.json#/$defs/moduleBundle"},
+    "moduleBundleRef": {"$ref": "semantic-common.schema.json#/$defs/artifactReference"},
+    "sourceFiles": {"type": "array", "minItems": 9, "maxItems": 9, "items": {"$ref": "semantic-common.schema.json#/$defs/sourceFile"}},
+    "operationBindings": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/operationBinding"}},
+    "testPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "declaredAuthority": {"$ref": "#/$defs/declaredAuthority"},
+    "resourceObservation": {"$ref": "#/$defs/resources"},
+    "reuseRights": {"$ref": "#/$defs/reuseRights"},
+    "lineageRefs": {"type": "array", "minItems": 8, "maxItems": 16, "items": {"$ref": "semantic-common.schema.json#/$defs/reference"}},
+    "limitations": {"type": "array", "minItems": 16, "maxItems": 32, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}},
+    "nextGate": {"const": "AUTHENTICATE_EXACT_CANDIDATE_BYTES_BEFORE_NURSERY_WRITE"},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "packetDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "lane", "aiUsed", "implementationOrigin"],
+      "properties": {
+        "id": {"const": "axm-native-game-rule-candidate-generator"},
+        "version": {"const": "1.4.0"},
+        "lane": {"const": "NATIVE"},
+        "aiUsed": {"const": false},
+        "implementationOrigin": {"const": "INDEPENDENT_NATIVE_FROM_TYPED_BLUEPRINT"}
+      }
+    },
+    "snippetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength"],
+      "properties": {
+        "sha256": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 4000}
+      }
+    },
+    "operationBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "recipeId", "snippetRef", "targetStepId", "blueprintOperation", "nativeOperation", "sourceMode"],
+      "properties": {
+        "sourceId": {"type": "string", "pattern": "^CC-[0-9]{4}$"},
+        "recipeId": {"type": "string", "pattern": "^recipe-[a-f0-9]{16}$"},
+        "snippetRef": {"$ref": "#/$defs/snippetRef"},
+        "targetStepId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+        "blueprintOperation": {"enum": ["SELECT", "TRANSFORM"]},
+        "nativeOperation": {"enum": ["FILTER_VALUES", "MAP_VALUES"]},
+        "sourceMode": {"const": "METADATA_REFERENCE_ONLY"}
+      }
+    },
+    "declaredAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["permissions", "networkDomains", "lifecycleEffects"],
+      "properties": {
+        "permissions": {"const": []},
+        "networkDomains": {"const": []},
+        "lifecycleEffects": {"const": []}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestBytes", "packetBytes", "sourceFileCount", "sourceBytes", "fileCountEnforced", "fileByteCeilingEnforced", "totalByteCeilingEnforced", "attemptCountEnforced", "durationEnforced", "memoryEnforced", "processesSpawned", "networkUsed", "targetWorkspaceRead", "targetWorkspaceWrite"],
+      "properties": {
+        "requestBytes": {"type": "integer", "minimum": 1, "maximum": 524288},
+        "packetBytes": {"type": "integer", "minimum": 1, "maximum": 524288},
+        "sourceFileCount": {"const": 9},
+        "sourceBytes": {"type": "integer", "minimum": 1, "maximum": 524288},
+        "fileCountEnforced": {"const": true},
+        "fileByteCeilingEnforced": {"const": true},
+        "totalByteCeilingEnforced": {"const": true},
+        "attemptCountEnforced": {"const": true},
+        "durationEnforced": {"const": false},
+        "memoryEnforced": {"const": false},
+        "processesSpawned": {"const": 0},
+        "networkUsed": {"const": false},
+        "targetWorkspaceRead": {"const": false},
+        "targetWorkspaceWrite": {"const": false}
+      }
+    },
+    "reuseRights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["atlasSource", "candidateSource"],
+      "properties": {
+        "atlasSource": {"$ref": "#/$defs/rightsState"},
+        "candidateSource": {"$ref": "#/$defs/rightsState"}
+      }
+    },
+    "rightsState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "directReuseAllowed", "sourceBytesIncluded", "sourceBytesApplied", "sourceExecuted"],
+      "properties": {
+        "state": {"const": "RESEARCH_ONLY_HOLD"},
+        "directReuseAllowed": {"const": false},
+        "sourceBytesIncluded": {"type": "boolean"},
+        "sourceBytesApplied": {"const": false},
+        "sourceExecuted": {"const": false}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exactApplicationPlanRebuilt", "installedAtlasLineageRebuilt", "requesterMappingsBound", "semanticMappingInferred", "groundedConsentScopeBound", "authenticatedHumanDecisionVerified", "fourRootPassDecisionsBound", "fourRootEvidenceContentVerified", "atlasSourceBytesIncluded", "atlasSourceBytesApplied", "atlasSourceExecuted", "generatedSourceByteBound", "candidateGenerated", "candidateCodeExecuted", "candidateTestsRun", "runtimeBehaviorProven", "correctnessProven", "safetyProven", "providerCalled", "providerCodeLoaded", "hostAuthorizationGranted", "workspaceWritten", "installed", "integrated", "published", "persistentLearningAdmitted", "promoted", "canonChanged"],
+      "properties": {
+        "exactApplicationPlanRebuilt": {"const": true},
+        "installedAtlasLineageRebuilt": {"const": true},
+        "requesterMappingsBound": {"const": true},
+        "semanticMappingInferred": {"const": false},
+        "groundedConsentScopeBound": {"const": true},
+        "authenticatedHumanDecisionVerified": {"const": false},
+        "fourRootPassDecisionsBound": {"const": true},
+        "fourRootEvidenceContentVerified": {"const": false},
+        "atlasSourceBytesIncluded": {"const": false},
+        "atlasSourceBytesApplied": {"const": false},
+        "atlasSourceExecuted": {"const": false},
+        "generatedSourceByteBound": {"const": true},
+        "candidateGenerated": {"const": true},
+        "candidateCodeExecuted": {"const": false},
+        "candidateTestsRun": {"const": false},
+        "runtimeBehaviorProven": {"const": false},
+        "correctnessProven": {"const": false},
+        "safetyProven": {"const": false},
+        "providerCalled": {"const": false},
+        "providerCodeLoaded": {"const": false},
+        "hostAuthorizationGranted": {"const": false},
+        "workspaceWritten": {"const": false},
+        "installed": {"const": false},
+        "integrated": {"const": false},
+        "published": {"const": false},
+        "persistentLearningAdmitted": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "status": "TEST",
+  "claims": [
+    {
+      "claimId": "native-draft-capability-exists",
+      "claim": "The Fabric can emit one inert native game-rule candidate draft from the exact supported v1.2 application plan.",
+      "kind": "static-structure",
+      "risk": "medium",
+      "required": true,
+      "passCondition": "Closed request and packet schemas, a permissionless module contract, and a pure generator implementation are present and mutually bound.",
+      "primarySurface": "Direct source, schema, and contract inspection",
+      "counterevidence": "Missing schema references, open object records, undeclared permissions, or an unsupported handoff",
+      "secondarySurfaceIfNeeded": "Focused generator selftest",
+      "observedEvidence": [
+        "shared/code-capability-fabric/native-game-rule-candidate-generator-v1.js",
+        "shared/code-capability-fabric/native-game-rule-candidate-request.schema.json",
+        "shared/code-capability-fabric/native-game-rule-candidate-packet.schema.json",
+        "shared/code-capability-fabric/module-native-game-rule-candidate-generator-v1.contract.json"
+      ],
+      "verdict": "PASS",
+      "namedSeam": "One fixed map/filter game-rule shape only"
+    },
+    {
+      "claimId": "deterministic-byte-lineage",
+      "claim": "Identical exact input produces byte-identical candidate data whose files, bundle, request, plan, consent, and packet are digest-bound.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "required": true,
+      "passCondition": "A deterministic rebuild matches exactly and digest, byte-length, forged-lineage, malformed-record, and truth-inflation countertests pass.",
+      "primarySurface": "77-check focused generator selftest",
+      "counterevidence": "Different bytes for identical input or acceptance of a forged/re-digested record",
+      "secondarySurfaceIfNeeded": "87-check inherited application-planner selftest",
+      "observedEvidence": [
+        "Native game-rule candidate generator v1.4 selftest passed: 77 checks.",
+        "Code recipe application planner v1.2 selftest passed: 87 checks."
+      ],
+      "verdict": "PASS",
+      "namedSeam": "Determinism is proven for the implemented closed recipe, not arbitrary code generation"
+    },
+    {
+      "claimId": "atlas-source-separation",
+      "claim": "Atlas source is referenced by byte-bound metadata but is not included, copied, applied, or executed by the candidate generator.",
+      "kind": "authorization",
+      "risk": "high",
+      "required": true,
+      "passCondition": "The exact installed plan rebuilds; generated adapter bytes contain no selected Atlas identity, title, or snippet digest; source-smuggling mutations fail.",
+      "primarySurface": "Focused static source and countertest inspection",
+      "counterevidence": "Any snippet content or recipe-source material entering adapter.js, or direct reuse becoming true",
+      "secondarySurfaceIfNeeded": "Permissionless module contract plus deterministic packet rebuild",
+      "observedEvidence": [
+        "atlasSourceBytesIncluded=false",
+        "atlasSourceBytesApplied=false",
+        "atlasSourceExecuted=false",
+        "directReuseAllowed=false"
+      ],
+      "verdict": "PASS",
+      "namedSeam": "Atlas provenance and license claims remain unverified; research-only hold remains"
+    },
+    {
+      "claimId": "inert-authority-ceiling",
+      "claim": "Generation writes no candidate, invokes no provider or network, executes no candidate code or candidate tests, and grants no lifecycle authority.",
+      "kind": "authorization",
+      "risk": "high",
+      "required": true,
+      "passCondition": "Source and contract expose no such entry point; adversarial permission, network, lifecycle, path, receipt, and truth expansion cases fail closed.",
+      "primarySurface": "Source/contract inspection and 77-check focused countertest suite",
+      "counterevidence": "A write, provider call, network use, candidate invocation, PASS test claim, permission, installation, integration, promotion, or CANON effect",
+      "secondarySurfaceIfNeeded": "All 26 Fabric continuity suites and ten AGENTS.md checks",
+      "observedEvidence": [
+        "candidateCodeExecuted=false",
+        "candidateTestsRun=false",
+        "workspaceWritten=false",
+        "providerCalled=false",
+        "networkUsed=false",
+        "authority=NONE"
+      ],
+      "verdict": "PASS",
+      "namedSeam": "The installed Foundry catalog is re-read only through the existing exact planner gate"
+    },
+    {
+      "claimId": "candidate-runtime-correctness",
+      "claim": "The generated game-rule candidate behaves correctly at runtime.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "required": false,
+      "passCondition": "An authenticated exact candidate runs in an authorized disposable sandbox and passes held-out behavior, mutation, budget, interruption, and cleanup tests.",
+      "primarySurface": "Authorized sandbox execution",
+      "counterevidence": "Any held-out failure, mutation, resource breach, or cleanup failure",
+      "secondarySurfaceIfNeeded": "Independent verifier implementation",
+      "observedEvidence": ["JavaScript parse-only check passed; candidate was not invoked"],
+      "verdict": "UNKNOWN",
+      "namedSeam": "Authentication, arbitrary materialization, and authorized runtime verification are not implemented for this recipe"
+    },
+    {
+      "claimId": "browser-visual-behavior",
+      "claim": "A visual surface changed and rendered correctly.",
+      "kind": "visual-appearance",
+      "risk": "low",
+      "required": false,
+      "passCondition": "A changed visual surface is rendered and clicked in a real browser.",
+      "primarySurface": "Live browser render/click",
+      "counterevidence": "Visual or interaction mismatch",
+      "secondarySurfaceIfNeeded": "Narrow viewport journey",
+      "observedEvidence": ["No visual surface changed in v1.4"],
+      "verdict": "UNKNOWN",
+      "namedSeam": "Browser test not applicable; no browser claim made"
+    }
+  ],
+  "overall": "PASS_REQUIRED_CLAIMS_WITH_OPTIONAL_GAPS",
+  "authority": "NONE"
+}

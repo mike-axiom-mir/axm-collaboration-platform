@@ -1,29 +1,43 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "sandbox",
-  "version": "v0.2-session1",
+  "version": "v0.3-session1-plus-disposable-candidate-v1",
   "provides": [
     "portable-project-folder-creation",
     "project-folder-discovery",
     "project-manifest-validation",
     "read-only-project-file-inspection",
-    "loopback-sandbox-host"
+    "loopback-sandbox-host",
+    "sandbox.candidate.build.allowlisted",
+    "sandbox.candidate.repair.immutable-iterations",
+    "sandbox.candidate.preview.static-loopback",
+    "sandbox.host-authority.not-inherited",
+    "sandbox.lesson.candidate.privacy-safe",
+    "sandbox.source-output-evidence.disjoint"
   ],
   "consumes": [
     "filesystem:tools/sandbox/projects",
     "http:declared-loopback-origins",
-    "human:explicit-create-project-action"
+    "human:explicit-create-project-action",
+    "axm.game-candidate-generation-request/v1",
+    "axm.game-candidate-packet/v1",
+    "axm.bounded-sandbox-growth-authorization/v1",
+    "filesystem:state/disposable-candidate-sandboxes"
   ],
   "permissions": [],
   "handoffs": {
-    "emits": ["sandbox-project-folder-format-1", "sandbox-project-status-json"],
-    "accepts": ["explicit-local-project-name"]
+    "emits": ["sandbox-project-folder-format-1", "sandbox-project-status-json", "axm.disposable-candidate-sandbox-session/v1", "axm.sandbox-static-evidence/v1", "axm.capability-lesson-candidate/v1"],
+    "accepts": ["explicit-local-project-name", "axm.game-candidate-generation-request/v1", "axm.game-candidate-packet/v1", "axm.disposable-candidate-repair-plan/v1"]
   },
   "boundaries": {
     "writes": [
       "tools/sandbox/projects/<safe-project-folder>/project.manifest.json",
       "tools/sandbox/projects/<safe-project-folder>/world/scene.json",
-      "tools/sandbox/projects/<safe-project-folder>/saves"
+      "tools/sandbox/projects/<safe-project-folder>/saves",
+      "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/source",
+      "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/output",
+      "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/evidence",
+      "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/lessons"
     ],
     "refuses": [
       "external-browser-origin",
@@ -36,9 +50,25 @@
       "project-folder-overwrite",
       "project-deletion",
       "arbitrary-filesystem-write",
+      "candidate-child-process",
+      "candidate-host-environment",
+      "candidate-host-credentials",
+      "candidate-network",
+      "arbitrary-command",
+      "source-output-evidence-overlap",
+      "source-iteration-mutation",
+      "repair-in-place",
+      "stale-repair-lineage",
+      "raw-source-in-durable-evidence",
+      "stdout-or-stderr-in-durable-evidence",
+      "machine-path-in-durable-evidence",
+      "active-lesson-admission",
+      "automatic-installation",
+      "automatic-integration",
       "remote-network-access",
       "engine-entity-clock-or-renderer-claim",
-      "automatic-promotion"
+      "automatic-promotion",
+      "automatic-canon"
     ]
   },
   "lifecycle": {

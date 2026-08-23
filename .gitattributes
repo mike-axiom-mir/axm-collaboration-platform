@@ -121,5 +121,11 @@ tools/game-hub/game-library/008-district-party/data/maps/tilburg-authored-city-a
 
 # Preserve upstream formatting in vendored code and license payloads.
 shared/asset-hands/vendor/** whitespace=-trailing-space,-space-before-tab,-blank-at-eof
+# The browser wasm-vips manifest binds the upstream JavaScript byte-for-byte.
+# Keep Git from turning its LF blob into CRLF in a Windows checkout.
+shared/asset-hands/vendor/wasm-vips/vips.js text eol=lf
+# Render receipts, plans, sparse sequences, and captions are exact artifacts.
+tools/game-hub/game-library/020-four-roots-adventure/media/rendered/*.json text eol=lf
+tools/game-hub/game-library/020-four-roots-adventure/media/rendered/*.vtt text eol=lf
 tools/**/vendor/** whitespace=-trailing-space,-space-before-tab,-blank-at-eof
 tools/ps2-asset-forge/assets/kenney/** whitespace=-trailing-space,-blank-at-eof

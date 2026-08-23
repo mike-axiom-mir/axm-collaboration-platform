@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-recipe-selection-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "mode", "purposeRef", "selectedSourceIds", "catalogRef", "auditRef", "foundryContractRef", "resourceEnvelope", "rootsGate", "authority", "requestDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-recipe-selection-request/v1"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "mode": {"enum": ["REFERENCE_ONLY", "DETACHED_RESEARCH_CONTEXT"]},
+    "purposeRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "selectedSourceIds": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"type": "string", "pattern": "^CC-[0-9]{4}$"}, "uniqueItems": true},
+    "catalogRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "auditRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "foundryContractRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "resourceEnvelope": {"$ref": "#/$defs/resources"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "authority": {"const": "NONE"},
+    "requestDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxSelectedRecipes", "maxSelectedSnippetBytes", "maxPacketBytes", "maxAttempts", "maxProcesses", "maxCostMinorUnits"],
+      "properties": {
+        "maxSelectedRecipes": {"type": "integer", "minimum": 1, "maximum": 16},
+        "maxSelectedSnippetBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "maxPacketBytes": {"type": "integer", "minimum": 1, "maximum": 131072},
+        "maxAttempts": {"const": 1},
+        "maxProcesses": {"const": 0},
+        "maxCostMinorUnits": {"const": 0}
+      }
+    }
+  }
+}

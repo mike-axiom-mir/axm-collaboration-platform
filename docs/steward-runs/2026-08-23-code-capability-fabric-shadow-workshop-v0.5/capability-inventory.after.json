@@ -1,0 +1,69 @@
+{
+  "capabilities": [
+    {
+      "id": "workshop.shadow.snapshot.byte-bound",
+      "status": "available",
+      "constraints": ["Exact file refs and rebuilt-index digest bind the tools-index-declarations-and-selftests-v1 scope; this is not a full-repository byte snapshot."]
+    },
+    {
+      "id": "workshop.shadow.snapshot.refresh",
+      "status": "available",
+      "constraints": ["Refresh uses the same sealed request time and appends only when the scoped source-state digest changes."]
+    },
+    {
+      "id": "workshop.shadow.snapshot.privacy-scoped",
+      "status": "available",
+      "constraints": ["Reads the promotion ladder, tools index, manifests, contracts, discovered selftests, and derived entry/readme/discovery state; retains no raw source or machine paths."]
+    },
+    {
+      "id": "workshop.improvement.detect.deterministic",
+      "status": "available",
+      "constraints": ["Only detects missing, invalid, or source-digest-stale tools-index.json; it does not claim general code-quality judgment."]
+    },
+    {
+      "id": "workshop.improvement.draft.detached-overlay",
+      "status": "available",
+      "constraints": ["The only supported candidate is one detached tools-index.json under a disjoint shadow-state root."]
+    },
+    {
+      "id": "workshop.improvement.draft.byte-bound-diff",
+      "status": "available",
+      "constraints": ["Plan binds expected current digest, exact replacement digest and bytes, summaries, and tool-id additions/removals."]
+    },
+    {
+      "id": "workshop.improvement.draft.stale-block",
+      "status": "available",
+      "constraints": ["Source is re-observed before and after materialization and again before preview; scoped drift blocks reuse."]
+    },
+    {
+      "id": "workshop.improvement.draft.immutable-iterations",
+      "status": "available",
+      "constraints": ["Direct-child iteration-NNN roots are exclusive-created, contiguous, digest-checked, and never repaired in place."]
+    },
+    {
+      "id": "workshop.improvement.preview.current-snapshot-only",
+      "status": "available",
+      "constraints": ["Preview opens only when current scoped source, deterministic plan, generator refs, and candidate refs still match."]
+    },
+    {
+      "id": "sandbox.source-output-evidence.disjoint",
+      "status": "available",
+      "constraints": ["Workshop source, shadow parent, and source/output/evidence roots are canonicalized and physically disjoint; aliases are rejected."]
+    },
+    {
+      "id": "workshop.improvement.source-writeback.impossible",
+      "status": "available",
+      "constraints": ["The allowlisted adapter has no source writer; pre/post source digests and adversarial tests verify no write-back in this bounded recipe."]
+    },
+    {
+      "id": "workshop.improvement.install.separate-human-gate",
+      "status": "available",
+      "constraints": ["All lifecycle claims remain false and authority NONE; the service exposes no installation or integration operation."]
+    },
+    {
+      "id": "workshop.improvement.preview.no-candidate-execution",
+      "status": "available",
+      "constraints": ["Trusted loopback shell contains no script and serves the candidate as inert JSON; candidate processes and child processes are zero."]
+    }
+  ]
+}

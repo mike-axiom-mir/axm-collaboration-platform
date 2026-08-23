@@ -1,0 +1,55 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "fabric-collaboration-room",
+  "version": "v0.1",
+  "provides": [
+    "collaborator-role-visualization",
+    "declared-versus-observed-state-separation",
+    "scenario-specific-authority-path",
+    "ephemeral-human-decision-draft",
+    "review-inbox-route"
+  ],
+  "consumes": [
+    "human-supplied-goal",
+    "human-supplied-exact-candidate-digest",
+    "human-supplied-decision-note",
+    "declared-workshop-collaborator-map"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.collaboration-decision-draft/v1"
+    ],
+    "accepts": []
+  },
+  "boundaries": {
+    "writes": [
+      "browser-memory:ephemeral-decision-draft"
+    ],
+    "refuses": [
+      "live-presence-claim",
+      "provider-call",
+      "mirror-observation",
+      "workspace-read",
+      "workspace-write",
+      "network-access",
+      "decision-authentication",
+      "identity-proof",
+      "candidate-generation",
+      "candidate-execution",
+      "review-inbox-write",
+      "automatic-apply",
+      "automatic-installation",
+      "automatic-integration",
+      "automatic-promotion",
+      "automatic-learning",
+      "automatic-canon-change"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

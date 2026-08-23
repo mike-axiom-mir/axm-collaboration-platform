@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axm.workshop-contract-repair-plan/v1",
+  "title": "AXM Workshop Contract Repair Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "id", "requestRef", "observationRef", "recipe", "finding", "target", "alternatives", "selectedAlternative", "ranking", "requiredTests", "limitations", "truth", "authority", "planDigest"],
+  "properties": {
+    "schema": {"const": "axm.workshop-contract-repair-plan/v1"}, "version": {"const": "1.0.0"}, "status": {"enum": ["DRAFT_ALTERNATIVES_PLANNED", "CURRENT_NO_DRAFT", "HOLD"]}, "id": {"type": "string"},
+    "requestRef": {"$ref": "#/definitions/reference"}, "observationRef": {"$ref": "#/definitions/reference"}, "recipe": {"const": {"id": "draft-legacy-manifest-schema-kind-alternatives-v1", "repairClass": "LEGACY_MANIFEST_SCHEMA_AND_KIND"}}, "finding": {"enum": ["LEGACY_MANIFEST_SCHEMA_AND_KIND_MISSING", "NONE", "ADDITIONAL_DEFECTS_REQUIRE_SEPARATE_REQUEST", "UNSUPPORTED_DECLARATION_STATE_REQUIRES_SEPARATE_REQUEST"]},
+    "target": {"$ref": "#/definitions/target"}, "alternatives": {"type": "array", "maxItems": 5, "items": {"$ref": "#/definitions/alternative"}}, "selectedAlternative": {"type": "null"}, "ranking": {"const": "NONE"},
+    "requiredTests": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "#/definitions/test"}}, "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}, "truth": {"$ref": "#/definitions/truth"}, "authority": {"const": "NONE"}, "planDigest": {"$ref": "#/definitions/digest"}
+  },
+  "definitions": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "reference": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"type": "string"}, "schema": {"type": "string"}, "sha256": {"$ref": "#/definitions/digest"}}},
+    "target": {"type": "object", "additionalProperties": false, "required": ["toolId", "manifestPath", "contractPath", "selftestPath"], "properties": {"toolId": {"type": "string"}, "manifestPath": {"type": "string"}, "contractPath": {"type": "string"}, "selftestPath": {"type": "string"}}},
+    "patchOperation": {"type": "object", "additionalProperties": false, "required": ["operation", "pointer", "value"], "properties": {"operation": {"const": "JSON_ADD"}, "pointer": {"enum": ["/schema", "/kind"]}, "value": {"type": "string"}}},
+    "alternative": {"type": "object", "additionalProperties": false, "required": ["id", "kind", "patch", "ranking", "semanticFitness", "requiresHumanSelection"], "properties": {"id": {"type": "string"}, "kind": {"enum": ["adapter", "machine-capability", "product", "scaffold", "service"]}, "patch": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/definitions/patchOperation"}}, "ranking": {"type": "null"}, "semanticFitness": {"const": "UNKNOWN"}, "requiresHumanSelection": {"const": true}}},
+    "test": {"type": "object", "additionalProperties": false, "required": ["id", "command", "claim", "status", "evidenceRefs"], "properties": {"id": {"type": "string"}, "command": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string"}}, "claim": {"type": "string"}, "status": {"const": "NOT_RUN"}, "evidenceRefs": {"const": []}}},
+    "truth": {"type": "object", "additionalProperties": false, "required": ["deterministicPlan", "sourceCurrentAtPlanning", "alternativesUnranked", "humanSelectionRequired", "candidateExecuted", "testsExecuted", "sourceWritten", "installed", "integrated", "published", "promoted", "canonChanged"], "properties": {"deterministicPlan": {"const": true}, "sourceCurrentAtPlanning": {"const": true}, "alternativesUnranked": {"const": true}, "humanSelectionRequired": {"const": true}, "candidateExecuted": {"const": false}, "testsExecuted": {"const": false}, "sourceWritten": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "published": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}}}
+  }
+}
