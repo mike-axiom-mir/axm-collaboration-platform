@@ -44,10 +44,10 @@ jobs:
         id: source_manifest
         run: node scripts/build-source-manifest.js --verify
       - name: Build source-manifest repair candidate
-        if: steps.source_manifest.outcome == 'failure'
+        if: ${{ failure() && steps.source_manifest.outcome == 'failure' }}
         run: node scripts/build-source-manifest.js --write
       - name: Preserve source-manifest repair candidate
-        if: steps.source_manifest.outcome == 'failure'
+        if: ${{ failure() && steps.source_manifest.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
           name: axm-native-web-source-manifest-repair-candidate
