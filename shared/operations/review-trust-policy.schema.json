@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-trust-policy/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "policyId", "authorityOrigin", "issuedAt", "expiresAt", "submitterMayReview", "keys", "policyDigest"],
+  "properties": {
+    "schema": { "const": "axm.review-trust-policy/v1" },
+    "policyId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "authorityOrigin": { "const": "HOST_CONFIGURED_LOCAL_TRUST_ROOT" },
+    "issuedAt": { "$ref": "#/$defs/time" },
+    "expiresAt": { "$ref": "#/$defs/time" },
+    "submitterMayReview": { "type": "boolean" },
+    "keys": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": { "$ref": "#/$defs/key" }
+    },
+    "policyDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "time": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "key": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["keyId", "algorithm", "publicKeyPem", "principalDigest", "principalKind", "roles", "kinds", "enabled"],
+      "properties": {
+        "keyId": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "algorithm": { "const": "Ed25519" },
+        "publicKeyPem": { "type": "string", "minLength": 1, "maxLength": 8192 },
+        "principalDigest": { "$ref": "#/$defs/digest" },
+        "principalKind": { "enum": ["human", "machine", "collective", "unknown"] },
+        "roles": { "type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": { "enum": ["review.submit", "review.vote"] } },
+        "kinds": { "type": "array", "minItems": 1, "maxItems": 50, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 80 } },
+        "enabled": { "type": "boolean" }
+      }
+    }
+  }
+}

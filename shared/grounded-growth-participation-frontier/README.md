@@ -2,6 +2,10 @@
 
 Status: `TEST`
 
+Clone, canonical comparison, and digest preparation use the shared strict
+`deterministic-json-core`. Existing JSON-safe participation bytes remain
+unchanged; unsupported JSON state is refused before optional handoff binding.
+
 This additive leaf connects one exact voluntary human-benefit handoff to the
 current Grounded Growth knowledge frontier. It verifies the knowledge frontier,
 research outcome, LIVE named-local protocol, answer-free participant packet,
@@ -17,4 +21,3 @@ bridge package.
 
 The module performs no I/O and grants no execution, network, permission,
 installation, promotion, merge, Foundation, or `CANON` authority.
-

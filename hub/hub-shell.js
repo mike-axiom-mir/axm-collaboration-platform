@@ -1079,9 +1079,13 @@ if (typeof window !== 'undefined') (function () {
         g.appendChild(direction);
       }
       const growth = document.createElement('button'); growth.type = 'button'; growth.className = 'hcard utility-card technical-card growth-home-card';
-      growth.innerHTML = '<div class="hcard-icon">&#10022;</div><h3>Workshop Growth</h3><p>Files, characters, lines, modules, games and milestone snapshots.</p><div class="open">Open infographic &rarr;</div>';
-      growth.onclick = () => { if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.open(); };
+      growth.innerHTML = '<div class="hcard-icon">&#10022;</div><h3>Workshop Growth</h3><p>Active scale, tools, capabilities, worlds, snapshots, history and velocity.</p><div class="open">Open Growth &rarr;</div>';
+      growth.onclick = () => { if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.openGrowth(); };
       g.appendChild(growth);
+      const observatory = document.createElement('button'); observatory.type = 'button'; observatory.className = 'hcard utility-card technical-card observatory-home-card';
+      observatory.innerHTML = '<div class="hcard-icon">&#9673;</div><h3>Workshop Observatory</h3><p>Lifecycle evidence, capability seams, holds, gaps and human-recorded milestones.</p><div class="open">Open Observatory &rarr;</div>';
+      observatory.onclick = () => { if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.openObservatory(); };
+      g.appendChild(observatory);
       /* always-present dashboard visibility control. This never claims to
          install, retire, connect, or stop the underlying module/service. */
       const add = document.createElement('button'); add.type = 'button'; add.className = 'hcard utility-card technical-card';
@@ -1839,7 +1843,10 @@ if (typeof window !== 'undefined') (function () {
       $('homeBtn').onclick = () => this.showHome();
       $('commandCenterNav').onclick = () => this.open('workshop-command-center');
       $('growthNavBtn').onclick = () => {
-        if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.open();
+        if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.openGrowth();
+      };
+      $('observatoryNavBtn').onclick = () => {
+        if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.openObservatory();
       };
       $('sidebarToggle').onclick = () => this.toggleSidebar();
       $('sidebarTopToggle').onclick = () => this.toggleSidebar();

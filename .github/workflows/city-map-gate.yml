@@ -1,0 +1,53 @@
+name: AXM LEGO City Map Gate
+
+on:
+  pull_request:
+    paths:
+      - "tools/**"
+      - "shared/**"
+      - "worlds/**"
+      - "registry/generated/**"
+      - "docs/generated/LEGO_CITY_MAP.md"
+      - "scripts/compile-city-graph.js"
+      - "scripts/compile-schema-registry.js"
+      - "scripts/compile-twin-surfaces.js"
+      - "tests/city-map-gate-test.js"
+      - "tests/schema-registry-gate-test.js"
+      - "tests/city-state-primitives-test.js"
+      - "tests/city-authority-hands-test.js"
+      - "tests/city-workflow-evidence-test.js"
+      - "tests/city-sync-twins-test.js"
+      - "tests/city-intake-gates-test.js"
+      - "tests/lego-city-blueprint-conformance-test.js"
+      - ".github/workflows/city-map-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  city-map:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run focused negative and boundary tests
+        run: node tests/city-map-gate-test.js
+      - name: Refuse omitted modules and generated-view drift
+        run: node scripts/compile-city-graph.js --check
+      - name: Refuse schema identity and registry drift
+        run: node tests/schema-registry-gate-test.js && node scripts/compile-schema-registry.js --check
+      - name: Prove immutable artifact and append-only event boundaries
+        run: node tests/city-state-primitives-test.js
+      - name: Prove exact authority and injected-hand boundaries
+        run: node tests/city-authority-hands-test.js
+      - name: Prove durable route and evidence boundaries
+        run: node tests/city-workflow-evidence-test.js
+      - name: Prove local sync and exact human/machine twins
+        run: node tests/city-sync-twins-test.js && node scripts/compile-twin-surfaces.js --check
+      - name: Prove quarantine, disabled gates, and twelve-block coverage
+        run: node tests/city-intake-gates-test.js && node tests/lego-city-blueprint-conformance-test.js

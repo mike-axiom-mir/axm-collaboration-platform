@@ -1,0 +1,183 @@
+{
+  "schema": "capability-gap-report/v1",
+  "subject": "game-production-runner governed inactive lease-ledger curation",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "curation-planning-is-read-only-and-policy-bounded",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-curation.plan"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-curation.plan": [
+          "explicit dry-run over one validated COMPLETE lease-set observation",
+          "separate minimum ages for released and expired history",
+          "maximum 10000 exact candidates with deferred-count disclosure",
+          "planning has no source-removal authority"
+        ]
+      }
+    },
+    {
+      "id": "application-requires-exact-root-bound-approval",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-curation.approval"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-curation.approval": [
+          "requires explicit application plus the exact sealed proposal digest",
+          "proposal shape, policy derivation, candidate ordering, counts, and authority are validated",
+          "approval is bound to the observed cache-root fingerprint",
+          "no daemon, scheduler, background polling, or automatic curation"
+        ]
+      }
+    },
+    {
+      "id": "active-busy-and-stale-leases-cannot-be-curated",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-curation.lifecycle-fence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-curation.lifecycle-fence": [
+          "ACTIVE leases are never candidates",
+          "each candidate is rechecked under the same per-lease lifecycle lock used by acquire, protect, and release",
+          "busy coordination and changed tails remove no source segment",
+          "only exact released or policy-aged expired live segments can apply"
+        ]
+      }
+    },
+    {
+      "id": "original-hot-ledger-bytes-are-preserved-losslessly",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-archive.lossless-source"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-archive.lossless-source": [
+          "complete original JSONL bytes are gzip-compressed with sealed raw and compressed digests",
+          "source removal follows durable blob, chained receipt, and hot anchor publication",
+          "cold segments remain append-only and are never automatic deletion candidates"
+        ]
+      }
+    },
+    {
+      "id": "routine-discovery-remains-compact-and-semantically-equivalent",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-archive.hot-anchor"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-archive.hot-anchor": [
+          "one small sealed anchor retains owner, exact tail event, semantic history count, archive count, and latest receipt link",
+          "routine discovery reads the anchor, latest receipt, and blob shape rather than every historical event",
+          "tail digest, generation, state, and key-set discovery semantics remain unchanged",
+          "no latency or throughput improvement is claimed"
+        ]
+      }
+    },
+    {
+      "id": "interrupted-source-removal-is-recoverable",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-archive.interrupted-apply"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-archive.interrupted-apply": [
+          "an anchor plus its still-present exact source segment is an explicit REVIEW_REQUIRED compaction window",
+          "reapplying the same approved proposal removes only that already archived source",
+          "exact blob and receipt writes are conflict-detecting and reusable after a retry"
+        ]
+      }
+    },
+    {
+      "id": "released-and-expired-anchors-resume-in-a-fresh-process",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-archive.restart-continuity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-archive.restart-continuity": [
+          "fresh child process continues generation after a released anchor with a new ACQUIRED event",
+          "fresh child process renews an expired anchor and restores its prior protected key set",
+          "continued live events can be archived as the next independently sealed cold segment"
+        ]
+      }
+    },
+    {
+      "id": "cold-history-has-an-independent-bounded-full-audit",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-archive.full-audit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-archive.full-audit": [
+          "separate explicit audit has anchor, segment, compressed-byte, and raw-byte ceilings",
+          "audit walks every receipt, rehashes and decompresses every blob, validates the complete event transition chain, and reconstructs predecessor anchors",
+          "missing blobs, same-size corruption, false predecessor links, cycles, and exceeded ceilings fail closed"
+        ]
+      }
+    },
+    {
+      "id": "receipts-are-path-private-and-cold-deletion-is-outside-authority",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-archive.truth-boundary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-archive.truth-boundary": [
+          "sealed derived receipts expose root, owner, source, and locator digests rather than local paths or raw run identifiers",
+          "routine hot discovery does not claim full historical cold-blob integrity",
+          "cold archive retention, rollup, scheduling, cross-host coordination, authentication, native game execution, promotion, and CANON remain outside this capability"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": [],
+  "outOfScopeGaps": [
+    "cold archive retention or chained rollup",
+    "automatic curation scheduling or background polling",
+    "cross-host or distributed leases",
+    "cryptographic principal authentication",
+    "malicious-code sandboxing",
+    "native game execution, engine construction, installation, promotion, or CANON"
+  ]
+}

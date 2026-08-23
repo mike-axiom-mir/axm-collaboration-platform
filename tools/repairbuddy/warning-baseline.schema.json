@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.repairbuddy.warning-baseline/v1",
+  "title": "AXM RepairBuddy known-open warning baseline",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "status", "source", "messages", "truth", "baselineDigest"],
+  "properties": {
+    "schema": { "const": "axm.repairbuddy.warning-baseline/v1" },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$" },
+    "status": { "const": "KNOWN_OPEN_NOT_ACKNOWLEDGED" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "commit", "verifier"],
+      "properties": {
+        "ref": { "type": "string" },
+        "commit": { "type": "string", "pattern": "^[a-f0-9]{40,64}$" },
+        "verifier": { "const": "node verify.js" }
+      }
+    },
+    "messages": { "type": "array", "maxItems": 10000, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 1200 } },
+    "truth": {
+      "type": "object",
+      "required": ["warningsOpen", "warningsAcknowledged", "warningsSuppressed", "automaticRepair"],
+      "properties": {
+        "warningsOpen": { "const": true },
+        "warningsAcknowledged": { "const": 0 },
+        "warningsSuppressed": { "const": 0 },
+        "automaticRepair": { "const": false }
+      }
+    },
+    "baselineDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

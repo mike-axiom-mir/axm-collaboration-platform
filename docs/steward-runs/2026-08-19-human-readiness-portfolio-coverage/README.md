@@ -44,7 +44,7 @@ Run boundary selftests with an explicit disposable directory outside the
 Workshop repository:
 
 ```text
-$env:AXM_TEST_TEMP='D:\AXM_ACTIVE\mirror\.axm-test-scratch'
+$env:AXM_TEST_TEMP = Join-Path $env:AXM_WORKSHOP '.axm-test-scratch'
 node docs/steward-runs/2026-08-19-human-readiness-portfolio-coverage/selftest.js
 ```
 

@@ -1,0 +1,135 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "v49-authoritative-open-crash",
+      "kind": "behavioral",
+      "claim": "The exact v4.9 product can leave a zero-byte authoritative intent, decision, or result after process exit immediately following exclusive open.",
+      "evidence": [
+        "BASELINE_PUBLICATION_REPRODUCTION.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "This reproduces process termination at one checkpoint, not every write failure or power interruption."
+    },
+    {
+      "id": "staged-publication-order",
+      "kind": "technical",
+      "claim": "The v5.0 publisher writes complete private-stage bytes, fsyncs and closes them, then creates the authoritative name through an exclusive hard link.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "This requires same-filesystem hard-link support and does not prove directory-entry durability after power loss."
+    },
+    {
+      "id": "prelink-crash-visibility",
+      "kind": "behavioral",
+      "claim": "Real child-process exits before publication leave the corresponding authoritative intent, decision, or result absent.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Residual stage files remain and are deliberately not reclaimed automatically."
+    },
+    {
+      "id": "postlink-crash-visibility",
+      "kind": "behavioral",
+      "claim": "Real child-process exits after publication leave complete schema-valid authoritative intent, decision, or result bytes.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "This is one-file process-crash consistency, not a transaction across the retirement sequence."
+    },
+    {
+      "id": "exclusive-no-overwrite",
+      "kind": "behavioral",
+      "claim": "An existing authoritative target wins with EEXIST and its exact bytes are not replaced.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Noncooperating writers may still mutate files by other means and are not excluded."
+    },
+    {
+      "id": "bounded-staging-status",
+      "kind": "technical",
+      "claim": "A closed bounded host-local status reports residual stages as non-authoritative, holds invalid or over-bound entries, and performs no cleanup.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The status is observational and provides no age inference or stale-stage reclamation."
+    },
+    {
+      "id": "inherited-retirement-regression",
+      "kind": "regression",
+      "claim": "Inherited lease, retirement, recovery, convergence, withdrawal, and decision-process checks remain passing at the new publication boundary.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Focused passing checks do not cover every filesystem or external writer."
+    },
+    {
+      "id": "public-authority-boundary",
+      "kind": "authorization",
+      "claim": "Review Inbox remains TEST and grants no execution, adoption, merge, or CANON authority through publication or status evidence.",
+      "evidence": [
+        "NATIVE_SURFACE_RECEIPT.json",
+        "SOURCE_SNAPSHOT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "No Mike Tobi / AXM acceptance or authenticated human review occurred."
+    },
+    {
+      "id": "required-checks",
+      "kind": "technical",
+      "claim": "All ten exact AGENTS.md commands exit zero on the product worktree.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Script checks are not a browser render/click test."
+    },
+    {
+      "id": "clean-product-replay",
+      "kind": "persistence",
+      "claim": "The exact product dependency slice replays ten focused commands with 725 assertions or controls and no tracked-byte changes.",
+      "evidence": [
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The replay is a bounded 104-file dependency slice, not every repository file or host substrate."
+    },
+    {
+      "id": "aggregate-operations-nonpass",
+      "kind": "technical",
+      "claim": "Aggregate operations reaches all product checks and then fails at the unchanged missing curated verification intake.",
+      "evidence": [
+        "AGGREGATE_OPERATIONS_PROBE.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The aggregate command is not claimed as passing and the missing-intake lane remains outside this product diff."
+    },
+    {
+      "id": "browser-scope",
+      "kind": "visual",
+      "claim": "No browser-facing product file changed, so no live browser render/click result is claimed for this host-local seam.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "NATIVE_SURFACE_RECEIPT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "No visual runtime claim is made."
+    }
+  ],
+  "routesDigest": "sha256:b0193db37a189e334275ee2a07ef53b3a81e1c551bc9314f57e6e314713b3697"
+}

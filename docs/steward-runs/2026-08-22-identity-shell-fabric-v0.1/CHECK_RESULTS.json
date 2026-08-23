@@ -1,0 +1,61 @@
+{
+  "schema": "axm.identity-shell.check-results/v1",
+  "status": "EXPERIMENTAL",
+  "checkedAt": "2026-08-22T00:08:08.876Z",
+  "branch": "codex/identity-shell-fabric-v0.1",
+  "baseCommit": "d9066284e45eaedb07d8e7998b7c6a972e67c0c1",
+  "stableSnapshot": {
+    "gitStateBeforeChecks": "only the two lane-owned untracked directories were present",
+    "gitStateAfterChecks": "only the two lane-owned untracked directories were present",
+    "sharedSeamsTouched": [],
+    "filesObservedChangingConcurrently": [],
+    "classification": "STABLE_LANE_SNAPSHOT"
+  },
+  "focusedChecks": [
+    {"command": "node --check shared/identity-shell-fabric/identity-shell-fabric.js", "exitCode": 0, "verdict": "PASS"},
+    {"command": "node --check shared/identity-shell-fabric/independent-verifier.js", "exitCode": 0, "verdict": "PASS"},
+    {"command": "node --check shared/identity-shell-fabric/selftest.js", "exitCode": 0, "verdict": "PASS"},
+    {"command": "parse every JSON file in both lane-owned directories", "exitCode": 0, "verdict": "PASS", "observedAtRun": "24 JSON files before final evidence receipts; final parse is recorded separately at closeout"},
+    {"command": "node shared/identity-shell-fabric/selftest.js", "exitCode": 0, "verdict": "PASS", "assertions": 62},
+    {"command": "capability comparator using the BEFORE inventory", "exitCode": 0, "verdict": "BLOCKED_AS_EXPECTED"},
+    {"command": "capability comparator using the AFTER inventory", "exitCode": 0, "verdict": "DEGRADED_WITH_ALL_REQUIRED_GROUPS_READY"},
+    {"command": "git diff --check", "exitCode": 0, "verdict": "PASS"},
+    {"command": "bounded secret-pattern scan of both lane-owned directories", "exitCode": 0, "verdict": "PASS_NO_MATCHES"},
+    {"command": "compiler and independent-verifier dependency inspection", "exitCode": 0, "verdict": "PASS", "observedDependencies": ["node:crypto", "tools/deterministic-json-core"]}
+  ],
+  "requiredChecks": [
+    {"command": "node verify.js", "exitCode": 0, "verdict": "PASS_WITH_WARNINGS", "failures": 0, "warnings": 41, "warningsRef": "WORKSHOP_WARNINGS.json"},
+    {"command": "node hub/hub-selftest.js", "exitCode": 0, "verdict": "PASS"},
+    {"command": "node hub/route-selftest.js", "exitCode": 0, "verdict": "PASS"},
+    {"command": "node hub/graft-selftest.js", "exitCode": 0, "verdict": "PASS"},
+    {"command": "node hub/skin-selftest.js", "exitCode": 0, "verdict": "PASS"},
+    {"command": "node hub/verify-plus.js", "exitCode": 0, "verdict": "VERIFIED_WITH_LIMITS", "profile": "workshop-full", "receipts": 6, "atomicClaims": 9},
+    {"command": "node tests/html-script-syntax-test.js", "exitCode": 0, "verdict": "PASS", "passes": 55, "failures": 0},
+    {"command": "node tests/tool-forge-package-test.js", "exitCode": 0, "verdict": "PASS", "installed": false},
+    {"command": "node tools/agent-tool-forge/selftest.js", "exitCode": 0, "verdict": "PASS", "passes": 17, "failures": 0},
+    {"command": "node tools/evidence-desk/selftest.js", "exitCode": 0, "verdict": "PASS", "passes": 36, "failures": 0}
+  ],
+  "browserRenderClick": {
+    "verdict": "NOT_RUN",
+    "reason": "No visual editor or rendered UI is implemented and no visual claim is made."
+  },
+  "runtimeModelProviderRobotChecks": {
+    "verdict": "NOT_RUN_BY_DESIGN",
+    "reason": "The v0.1 compiler is inert and explicitly refuses model execution, provider binding, network use, filesystem mutation, and actuation."
+  },
+  "finalCloseoutChecks": [
+    {"command": "node shared/identity-shell-fabric/selftest.js", "exitCode": 0, "verdict": "PASS", "assertions": 62},
+    {"command": "parse every JSON file in both lane-owned directories", "exitCode": 0, "verdict": "PASS", "files": 28},
+    {"command": "recompute PRODUCT_FILE_HASHES.json against the product tree", "exitCode": 0, "verdict": "PASS", "files": 23},
+    {"command": "bounded secret-pattern scan of both lane-owned directories", "exitCode": 0, "verdict": "PASS_NO_MATCHES"},
+    {"command": "git diff --check", "exitCode": 0, "verdict": "PASS"},
+    {"command": "recompute the session segment structural seal", "exitCode": 0, "verdict": "PASS", "sha256": "8e96b314c77eee8fb5aaf91b9e18a64f9730e17a762379698a78dc67a4e3ab56", "parseStatus": "valid"}
+  ],
+  "failures": [],
+  "promotion": {
+    "installed": false,
+    "promoted": false,
+    "canon": false,
+    "mergePerformed": false
+  }
+}

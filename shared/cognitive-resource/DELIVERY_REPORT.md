@@ -5,6 +5,11 @@ Parent: `cognitive-resource-meter`
 Status: `TEST`  
 Claim ceiling: `TEST_MACHINE_BOUND_COGNITIVE_RESOURCE_AND_ECONOMICS_PROFILE_PRODUCER`
 
+The core's exported serialization and clone boundaries route through
+`tools/deterministic-json-core`. Its existing privacy and unsafe-key checks stay
+in front of that shared canonical encoder, so lossy JSON state is refused while
+safe historical bytes remain unchanged.
+
 ## Outcome
 
 The Workshop now has a dependency-free cognitive resource evidence stack under **Hub -> Build -> Cognitive Resource Meter**. The parent supplies guided receipt import, an explicit native local process window, profile/rate vaults, hold explanations, separate resource timelines, exact draft exports, and portable evidence bundles. Five machine-layer children add read-only exploration, calibration comparisons, opted-in human attention evidence, sustainability metrology, and explicit Mirror intake receipt inspection.

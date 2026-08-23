@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-entry/v1",
+  "type": "object",
+  "required": ["schema", "version", "key", "binding", "artifacts", "facts", "verification", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-entry/v1" },
+    "version": { "const": "0.1.0" },
+    "key": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "binding": { "type": "object" },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "bytes", "digest", "entry_relative_path"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "bytes": { "type": "integer", "minimum": 0 },
+          "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "entry_relative_path": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "facts": { "type": "object" },
+    "verification": { "type": "object" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

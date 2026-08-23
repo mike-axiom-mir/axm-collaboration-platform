@@ -2,6 +2,10 @@
 
 Status: `TEST`
 
+Clone, canonical comparison, and digest preparation use the shared strict
+`deterministic-json-core`. Existing JSON-safe lineage bytes remain unchanged;
+unsupported JSON state is refused before signal or proposal binding.
+
 This pure leaf answers one narrow continuity question: for every accepted
 research signal and every rejected or deferred proposal, what exact current
 evidence or explicit non-action state carries it now?

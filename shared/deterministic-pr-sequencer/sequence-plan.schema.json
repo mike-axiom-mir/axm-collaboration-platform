@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-sequence-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "policyVersion", "state", "policy", "remoteMainCommit", "candidates", "unlistedOpen", "next", "globalIssues", "summary", "effects", "nextBoundary", "planDigest"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-sequence-plan/v1" },
+    "policyVersion": { "const": "axm-deterministic-pr-sequencer-policy/0.1" },
+    "state": { "enum": ["NEXT_READY", "HELD", "COMPLETE"] },
+    "policy": { "type": ["object", "null"] },
+    "remoteMainCommit": { "type": ["string", "null"] },
+    "candidates": { "type": "array" },
+    "unlistedOpen": { "type": "array" },
+    "next": { "type": ["object", "null"] },
+    "globalIssues": { "type": "array" },
+    "summary": { "type": "object" },
+    "effects": { "type": "object" },
+    "nextBoundary": { "type": "string" },
+    "planDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

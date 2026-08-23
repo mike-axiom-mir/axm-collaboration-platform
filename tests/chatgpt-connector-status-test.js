@@ -55,7 +55,12 @@ const Status = require('../hub/chatgpt-connector-status');
 
   const presence = fs.readFileSync(path.join(__dirname, '..', 'hub', 'ai-presence.js'), 'utf8');
   const chatgptBlock = presence.slice(presence.indexOf('async function loadChatGPT'), presence.indexOf('async function loadBridgeAndModels'));
-  assert.ok(chatgptBlock.includes("id:'codex',name:'Codex'"), 'verified coding seat uses the Codex identity');
+  assert.ok(
+    chatgptBlock.includes("id:'codex',name:'Keel'") &&
+      chatgptBlock.includes("label:'CODEX'") &&
+      chatgptBlock.includes('Keel identity · Codex coding seat login verified'),
+    'verified coding seat presents the Keel working identity with its Codex substrate',
+  );
   assert.ok(chatgptBlock.includes('platform.connected===true&&platform.safeTunnel===true'), 'ChatGPT READY requires an explicit connected safe tunnel');
   assert.ok(chatgptBlock.includes("label:'APP'"), 'process-only ChatGPT state is labelled APP');
   assert.equal(chatgptBlock.includes("label:'ACTIVE'"), false, 'process-only state is never labelled ACTIVE');

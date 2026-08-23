@@ -1,0 +1,1752 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#10121c">
+<link rel="icon" href="data:,">
+<title>AXM Pocket Adventure Engine</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0b0d14;
+  --panel: rgba(24, 27, 42, 0.88);
+  --panel-strong: rgba(31, 35, 54, 0.98);
+  --line: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.22);
+  --text: #f6f3ff;
+  --muted: #aaa8ba;
+  --accent: #b89cff;
+  --accent-2: #79e7da;
+  --danger: #ff9b9b;
+  --warning: #ffd98b;
+  --ok: #8ff0bd;
+  --shadow: 0 18px 50px rgba(0,0,0,.35);
+  --radius: 18px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+body {
+  background:
+    radial-gradient(circle at 20% -10%, rgba(184,156,255,.22), transparent 34%),
+    radial-gradient(circle at 105% 10%, rgba(121,231,218,.14), transparent 30%),
+    linear-gradient(180deg, #10121c 0%, #0b0d14 55%, #090a10 100%);
+  overflow-x: hidden;
+}
+button, input, textarea, select { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid rgba(184,156,255,.5); outline-offset: 2px; }
+.app { min-height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; }
+.topbar {
+  position: sticky; top: 0; z-index: 30;
+  padding: calc(10px + var(--safe-top)) 12px 10px;
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(180deg, rgba(11,13,20,.96), rgba(11,13,20,.78));
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { min-width: 0; flex: 1; }
+.brand-kicker { color: var(--accent-2); font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.brand-title { margin: 2px 0 0; font-size: 16px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-actions { display: flex; gap: 8px; }
+.action-btn, .secondary-btn, .danger-btn {
+  min-height: 46px; border-radius: 14px; border: 1px solid var(--line-strong); padding: 10px 13px;
+  color: var(--text); background: rgba(255,255,255,.06); font-weight: 800; letter-spacing: .01em;
+}
+.action-btn { background: linear-gradient(135deg, rgba(184,156,255,.27), rgba(121,231,218,.14)); border-color: rgba(184,156,255,.42); }
+.action-btn:active, .secondary-btn:active, .danger-btn:active { transform: translateY(1px) scale(.995); }
+.action-btn:disabled, .secondary-btn:disabled { opacity: .45; }
+.action-btn.compact { font-size: 12px; padding-inline: 10px; }
+.main { width: min(780px, 100%); margin: 0 auto; padding: 14px 12px calc(92px + var(--safe-bottom)); }
+.view { display: none; }
+.view.active { display: block; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+.empty {
+  min-height: 62dvh; display: grid; place-items: center; padding: 28px 18px; text-align: center;
+}
+.empty-symbol { width: 86px; height: 86px; margin: 0 auto 18px; border-radius: 28px; display: grid; place-items: center; font-size: 36px;
+  background: linear-gradient(135deg, rgba(184,156,255,.25), rgba(121,231,218,.12)); border: 1px solid rgba(184,156,255,.32); }
+.empty h2 { margin: 0 0 10px; font-size: 25px; }
+.empty p { color: var(--muted); line-height: 1.55; margin: 0 auto 20px; max-width: 480px; }
+.empty-actions { display: grid; gap: 10px; width: min(360px, 100%); margin: 0 auto; }
+.scene-card { overflow: hidden; }
+.visual-shell { position: relative; width: 100%; aspect-ratio: 4 / 5; min-height: 280px; max-height: 65dvh; background: #151827; overflow: hidden; }
+.visual-shell::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 -80px 80px -72px rgba(0,0,0,.9); z-index: 100; }
+.visual-shell .visual-placeholder { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); text-align: center; padding: 30px;
+  background: radial-gradient(circle at 30% 20%, rgba(184,156,255,.22), transparent 35%), linear-gradient(160deg, #1e2234, #10131e); }
+.visual-layer { position: absolute; object-fit: contain; transform-origin: center; pointer-events: none; user-select: none; }
+.visual-background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; user-select: none; }
+.scene-body { padding: 18px; }
+.scene-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.scene-title { margin: 8px 0 10px; font-size: clamp(24px, 7vw, 34px); line-height: 1.08; }
+.scene-mood { margin: 0 0 14px; color: var(--accent-2); font-style: italic; }
+.scene-narration { color: #ece8f5; line-height: 1.65; font-size: 16px; white-space: pre-wrap; }
+.scene-narration p { margin: 0 0 12px; }
+.selected-tool { margin-top: 14px; display: none; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px; border-radius: 13px; background: rgba(121,231,218,.08); border: 1px solid rgba(121,231,218,.22); }
+.selected-tool.visible { display: flex; }
+.selected-tool strong { color: var(--accent-2); }
+.text-btn { border: 0; background: transparent; color: var(--muted); min-height: 40px; padding: 6px 8px; font-weight: 800; }
+.choices { display: grid; gap: 10px; margin-top: 15px; }
+.choice-btn { width: 100%; min-height: 58px; padding: 13px 14px; border-radius: 15px; border: 1px solid var(--line-strong); background: rgba(255,255,255,.055); color: var(--text); text-align: left; }
+.choice-btn:not(:disabled):active { transform: scale(.994); }
+.choice-label { display: block; font-weight: 850; font-size: 16px; }
+.choice-hint { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.35; }
+.choice-btn:disabled { opacity: .48; }
+.section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; margin: 2px 2px 14px; }
+.section-head h2 { margin: 0; font-size: 26px; }
+.section-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.map-card { position: relative; overflow: hidden; min-height: 360px; }
+.map-canvas { position: relative; width: 100%; aspect-ratio: 1 / 1; min-height: 340px; background: linear-gradient(145deg, #20243a, #111420); overflow: hidden; }
+.map-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .92; }
+.map-node { position: absolute; translate: -50% -50%; min-width: 42px; min-height: 42px; padding: 6px 9px; border-radius: 999px; border: 2px solid rgba(255,255,255,.72); background: rgba(17,20,32,.84); color: white; font-size: 11px; font-weight: 900; box-shadow: 0 8px 20px rgba(0,0,0,.35); }
+.map-node.current { background: var(--accent); color: #111; border-color: white; transform: scale(1.12); }
+.map-node.locked { opacity: .35; }
+.map-list { display: grid; gap: 9px; padding: 14px; }
+.map-list-item, .item-card, .world-card, .pack-row { padding: 14px; border-radius: 15px; border: 1px solid var(--line); background: rgba(255,255,255,.04); }
+.map-list-item strong, .item-card strong { display: block; }
+.map-list-item span, .item-card p { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.item-grid { display: grid; gap: 10px; }
+.item-card { width: 100%; text-align: left; color: var(--text); }
+.item-card.selected { border-color: rgba(121,231,218,.62); background: rgba(121,231,218,.09); }
+.item-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.item-count { min-width: 28px; height: 28px; border-radius: 999px; display: grid; place-items: center; background: rgba(184,156,255,.18); font-weight: 900; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tag { padding: 4px 8px; border-radius: 999px; background: rgba(255,255,255,.06); color: var(--muted); font-size: 11px; }
+.system-grid { display: grid; gap: 12px; }
+.system-card { padding: 16px; }
+.system-card h3 { margin: 0 0 6px; }
+.system-card p { color: var(--muted); line-height: 1.5; margin: 0 0 12px; }
+.form-label { display: block; font-size: 12px; color: var(--muted); font-weight: 800; margin: 12px 0 6px; }
+.textarea, .select { width: 100%; border-radius: 13px; border: 1px solid var(--line-strong); background: rgba(0,0,0,.18); color: var(--text); padding: 12px; }
+.textarea { min-height: 88px; resize: vertical; }
+.button-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.world-list, .pack-list { display: grid; gap: 8px; }
+.world-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.world-card.active { border-color: rgba(184,156,255,.55); }
+.world-title { font-weight: 900; }
+.world-sub, .pack-meta { color: var(--muted); font-size: 12px; margin-top: 3px; }
+.pack-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.pack-type { color: var(--accent-2); font-size: 11px; text-transform: uppercase; font-weight: 900; }
+.danger-btn { border-color: rgba(255,155,155,.3); color: #ffd0d0; background: rgba(255,110,110,.06); }
+.bottom-nav { position: fixed; z-index: 35; left: 0; right: 0; bottom: 0; padding: 8px 10px calc(8px + var(--safe-bottom)); display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px;
+  background: linear-gradient(0deg, rgba(11,13,20,.98), rgba(11,13,20,.86)); backdrop-filter: blur(20px); border-top: 1px solid var(--line); }
+.nav-btn { min-height: 56px; border: 0; border-radius: 14px; background: transparent; color: var(--muted); font-size: 12px; font-weight: 850; }
+.nav-btn span { display: block; font-size: 19px; margin-bottom: 2px; }
+.nav-btn.active { color: var(--text); background: rgba(184,156,255,.12); }
+.nav-btn:disabled { opacity: .3; }
+.modal-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; align-items: end; background: rgba(0,0,0,.62); padding: 12px; }
+.modal-backdrop[hidden] { display: none; }
+.modal { width: min(720px, 100%); max-height: min(88dvh, 900px); margin: 0 auto; overflow: auto; border-radius: 22px 22px 18px 18px; background: var(--panel-strong); border: 1px solid var(--line-strong); box-shadow: 0 30px 90px rgba(0,0,0,.58); }
+.modal-head { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 16px 12px; background: rgba(31,35,54,.97); border-bottom: 1px solid var(--line); }
+.modal-head h2 { margin: 0; font-size: 20px; }
+.modal-close { width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--line); color: var(--text); background: rgba(255,255,255,.05); font-size: 20px; }
+.modal-body { padding: 16px; }
+.modal-actions { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 12px 16px calc(12px + var(--safe-bottom)); background: rgba(31,35,54,.97); border-top: 1px solid var(--line); }
+.prompt-area { width: 100%; min-height: 52dvh; border-radius: 14px; border: 1px solid var(--line-strong); background: #0d0f18; color: #eeeaff; padding: 14px; line-height: 1.45; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; resize: vertical; }
+.outcome-text { font-size: 17px; line-height: 1.65; white-space: pre-wrap; }
+.notice { padding: 11px 12px; border-radius: 13px; background: rgba(255,217,139,.08); border: 1px solid rgba(255,217,139,.25); color: #ffe7b2; font-size: 13px; line-height: 1.45; }
+.notice.ok { background: rgba(143,240,189,.08); border-color: rgba(143,240,189,.25); color: #bff9d9; }
+.progress { height: 8px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden; margin-top: 12px; }
+.progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .18s ease; }
+.toast { position: fixed; z-index: 150; left: 50%; bottom: calc(82px + var(--safe-bottom)); translate: -50% 14px; width: min(540px, calc(100% - 24px)); padding: 12px 14px; border-radius: 14px; color: var(--text); background: rgba(31,35,54,.97); border: 1px solid var(--line-strong); box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: .2s ease; }
+.toast.show { opacity: 1; translate: -50% 0; }
+.toast.error { border-color: rgba(255,155,155,.45); }
+.small { font-size: 12px; color: var(--muted); }
+code.inline { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; background: rgba(255,255,255,.06); padding: 2px 5px; border-radius: 6px; }
+@media (min-width: 680px) {
+  .topbar { padding-inline: 18px; }
+  .main { padding-inline: 18px; }
+  .modal-backdrop { align-items: center; }
+  .modal { border-radius: 22px; }
+  .visual-shell { aspect-ratio: 16 / 11; }
+  .system-grid.two { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-kicker">Permanent shell · content stays outside</div>
+      <div class="brand-title" id="brandTitle">AXM Pocket Adventure</div>
+    </div>
+    <div class="top-actions">
+      <button class="action-btn compact" id="takeInBtn" type="button">TAKE IN</button>
+      <button class="action-btn compact" id="promptBtn" type="button">FIRST PROMPT</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="view active" id="viewStory" aria-label="Story"></section>
+    <section class="view" id="viewMap" aria-label="Map"></section>
+    <section class="view" id="viewItems" aria-label="Items"></section>
+    <section class="view" id="viewSystem" aria-label="System"></section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Adventure sections">
+    <button class="nav-btn active" data-view="story" type="button"><span>✦</span>Story</button>
+    <button class="nav-btn" data-view="map" type="button"><span>⌾</span>Map</button>
+    <button class="nav-btn" data-view="items" type="button"><span>◇</span>Items</button>
+    <button class="nav-btn" data-view="system" type="button"><span>⚙</span>System</button>
+  </nav>
+</div>
+
+<input id="packInput" type="file" accept=".zip,application/zip" hidden>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <header class="modal-head">
+      <h2 id="modalTitle">Dialog</h2>
+      <button class="modal-close" id="modalClose" type="button" aria-label="Close">×</button>
+    </header>
+    <div class="modal-body" id="modalBody"></div>
+    <footer class="modal-actions" id="modalActions"></footer>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+
+const ENGINE = Object.freeze({
+  name: 'AXM Pocket Adventure Engine',
+  version: '0.1.0',
+  packSchema: 'axm.pocket-adventure.pack/1.0',
+  handoffSchema: 'axm.pocket-adventure.handoff/1.0',
+  database: 'axm-pocket-adventure-engine',
+  databaseVersion: 1,
+  maxPackBytes: 96 * 1024 * 1024,
+  maxEntries: 1200,
+  maxEntryBytes: 32 * 1024 * 1024,
+  maxContentBytes: 4 * 1024 * 1024,
+  maxLayersPerScene: 18,
+  maxSceneText: 5000,
+  maxEntityCount: 6000
+});
+
+const ALLOWED_BLEND_MODES = new Set(['normal','multiply','screen','overlay','soft-light','hard-light','darken','lighten']);
+const ID_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{1,159}$/;
+const SAFE_PATH_RE = /^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$))(?!.*\\)[^\0]+$/;
+const ENTITY_DOMAINS = ['locations','items','hooks','scenes'];
+
+const app = {
+  db: null,
+  world: null,
+  worlds: [],
+  packs: [],
+  activeWorldId: null,
+  view: 'story',
+  selectedItemId: null,
+  assetUrls: new Map(),
+  renderToken: 0,
+  busy: false,
+  settings: { direction: '', profile: 'bedtime' }
+};
+
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+const clone = value => globalThis.structuredClone ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+const clamp = (n, min, max) => Math.max(min, Math.min(max, Number(n)));
+const text = value => value == null ? '' : String(value);
+const sleepFrame = () => new Promise(resolve => requestAnimationFrame(() => resolve()));
+
+function idbRequest(request) {
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error('IndexedDB request failed.'));
+  });
+}
+
+function txDone(tx) {
+  return new Promise((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onabort = () => reject(tx.error || new Error('IndexedDB transaction aborted.'));
+    tx.onerror = () => reject(tx.error || new Error('IndexedDB transaction failed.'));
+  });
+}
+
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(ENGINE.database, ENGINE.databaseVersion);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains('worlds')) db.createObjectStore('worlds', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('packs')) {
+        const store = db.createObjectStore('packs', { keyPath: 'key' });
+        store.createIndex('worldId', 'worldId', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('assets')) {
+        const store = db.createObjectStore('assets', { keyPath: 'key' });
+        store.createIndex('worldId', 'worldId', { unique: false });
+        store.createIndex('packId', 'packId', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('snapshots')) {
+        const store = db.createObjectStore('snapshots', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('worldId', 'worldId', { unique: false });
+      }
+      if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'key' });
+      if (!db.objectStoreNames.contains('staging')) {
+        const store = db.createObjectStore('staging', { keyPath: 'key' });
+        store.createIndex('importId', 'importId', { unique: false });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error('Could not open phone storage.'));
+  });
+}
+
+async function dbGet(storeName, key) {
+  const tx = app.db.transaction(storeName, 'readonly');
+  const result = await idbRequest(tx.objectStore(storeName).get(key));
+  await txDone(tx);
+  return result;
+}
+
+async function dbGetAll(storeName) {
+  const tx = app.db.transaction(storeName, 'readonly');
+  const result = await idbRequest(tx.objectStore(storeName).getAll());
+  await txDone(tx);
+  return result;
+}
+
+async function dbGetAllByIndex(storeName, indexName, value) {
+  const tx = app.db.transaction(storeName, 'readonly');
+  const index = tx.objectStore(storeName).index(indexName);
+  const result = await idbRequest(index.getAll(IDBKeyRange.only(value)));
+  await txDone(tx);
+  return result;
+}
+
+async function dbPut(storeName, value) {
+  const tx = app.db.transaction(storeName, 'readwrite');
+  await idbRequest(tx.objectStore(storeName).put(value));
+  await txDone(tx);
+}
+
+async function dbDeleteMany(storeName, keys) {
+  if (!keys.length) return;
+  const tx = app.db.transaction(storeName, 'readwrite');
+  const store = tx.objectStore(storeName);
+  for (const key of keys) store.delete(key);
+  await txDone(tx);
+}
+
+async function getSetting(key, fallback = null) {
+  const record = await dbGet('settings', key);
+  return record ? record.value : fallback;
+}
+
+async function setSetting(key, value) {
+  await dbPut('settings', { key, value });
+}
+
+class ZipReader {
+  constructor(file) {
+    this.file = file;
+    this.entries = new Map();
+  }
+
+  async init() {
+    if (!(this.file instanceof Blob)) throw new Error('The selected item is not a readable file.');
+    if (this.file.size > ENGINE.maxPackBytes) throw new Error(`Pack is too large. Hard limit: ${formatBytes(ENGINE.maxPackBytes)}.`);
+    const tailLength = Math.min(this.file.size, 22 + 65535 + 20);
+    const tailOffset = this.file.size - tailLength;
+    const tail = new Uint8Array(await this.file.slice(tailOffset).arrayBuffer());
+    let eocd = -1;
+    for (let i = tail.length - 22; i >= 0; i--) {
+      if (u32(tail, i) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) throw new Error('ZIP end record not found. The pack may be damaged or use unsupported ZIP64 packaging.');
+    const totalEntries = u16(tail, eocd + 10);
+    const cdSize = u32(tail, eocd + 12);
+    const cdOffset = u32(tail, eocd + 16);
+    if (totalEntries === 0xffff || cdSize === 0xffffffff || cdOffset === 0xffffffff) throw new Error('ZIP64 packs are not supported. Keep each pack below the phone-sized limits.');
+    if (totalEntries > ENGINE.maxEntries) throw new Error(`Pack has ${totalEntries} entries; limit is ${ENGINE.maxEntries}. Split it into smaller patches.`);
+    if (cdOffset + cdSize > this.file.size) throw new Error('ZIP directory points outside the file.');
+    const cd = new Uint8Array(await this.file.slice(cdOffset, cdOffset + cdSize).arrayBuffer());
+    const decoder = new TextDecoder('utf-8');
+    let p = 0;
+    for (let count = 0; count < totalEntries; count++) {
+      if (u32(cd, p) !== 0x02014b50) throw new Error('Invalid ZIP central directory entry.');
+      const flags = u16(cd, p + 8);
+      const method = u16(cd, p + 10);
+      const crc32 = u32(cd, p + 16);
+      const compressedSize = u32(cd, p + 20);
+      const uncompressedSize = u32(cd, p + 24);
+      const nameLength = u16(cd, p + 28);
+      const extraLength = u16(cd, p + 30);
+      const commentLength = u16(cd, p + 32);
+      const localOffset = u32(cd, p + 42);
+      const nameStart = p + 46;
+      const nameEnd = nameStart + nameLength;
+      if (nameEnd > cd.length) throw new Error('Truncated ZIP filename.');
+      const name = decoder.decode(cd.slice(nameStart, nameEnd));
+      if (!SAFE_PATH_RE.test(name)) throw new Error(`Unsafe ZIP path rejected: ${name}`);
+      if (flags & 0x0001) throw new Error(`Encrypted ZIP entries are not supported: ${name}`);
+      if (![0,8].includes(method)) throw new Error(`Unsupported ZIP method ${method} in ${name}. Use STORE, or standard DEFLATE.`);
+      if (uncompressedSize > ENGINE.maxEntryBytes) throw new Error(`${name} is too large after unpacking (${formatBytes(uncompressedSize)}).`);
+      if (this.entries.has(name)) throw new Error(`Duplicate ZIP path: ${name}`);
+      this.entries.set(name, { name, flags, method, crc32, compressedSize, uncompressedSize, localOffset, directory: name.endsWith('/') });
+      p = nameEnd + extraLength + commentLength;
+    }
+    return this;
+  }
+
+  get(name) { return this.entries.get(name); }
+
+  async readBytes(nameOrEntry) {
+    const entry = typeof nameOrEntry === 'string' ? this.get(nameOrEntry) : nameOrEntry;
+    if (!entry || entry.directory) throw new Error(`ZIP entry not found: ${typeof nameOrEntry === 'string' ? nameOrEntry : '(unknown)'}`);
+    const header = new Uint8Array(await this.file.slice(entry.localOffset, entry.localOffset + 30).arrayBuffer());
+    if (u32(header, 0) !== 0x04034b50) throw new Error(`Invalid local ZIP header for ${entry.name}.`);
+    const nameLength = u16(header, 26);
+    const extraLength = u16(header, 28);
+    const dataStart = entry.localOffset + 30 + nameLength + extraLength;
+    const compressed = new Uint8Array(await this.file.slice(dataStart, dataStart + entry.compressedSize).arrayBuffer());
+    if (entry.method === 0) {
+      if (compressed.byteLength !== entry.uncompressedSize) throw new Error(`Stored entry size mismatch: ${entry.name}`);
+      return compressed;
+    }
+    if (!('DecompressionStream' in globalThis)) throw new Error(`This browser cannot open DEFLATE ZIPs. Ask the pack generator to create a ZIP_STORED pack.`);
+    let stream;
+    try { stream = new DecompressionStream('deflate-raw'); }
+    catch { throw new Error(`This browser lacks raw DEFLATE support. Ask the pack generator to create a ZIP_STORED pack.`); }
+    const output = new Uint8Array(await new Response(new Blob([compressed]).stream().pipeThrough(stream)).arrayBuffer());
+    if (output.byteLength !== entry.uncompressedSize) throw new Error(`Unpacked size mismatch: ${entry.name}`);
+    return output;
+  }
+
+  async readText(name) {
+    const bytes = await this.readBytes(name);
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  }
+}
+
+function u16(bytes, offset) { return bytes[offset] | (bytes[offset+1] << 8); }
+function u32(bytes, offset) { return (bytes[offset] | (bytes[offset+1] << 8) | (bytes[offset+2] << 16) | (bytes[offset+3] << 24)) >>> 0; }
+
+function formatBytes(bytes) {
+  const units = ['B','KB','MB','GB'];
+  let n = Number(bytes) || 0;
+  let i = 0;
+  while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
+  return `${n >= 10 || i === 0 ? n.toFixed(0) : n.toFixed(1)} ${units[i]}`;
+}
+
+function semverParts(value) {
+  const match = String(value || '').match(/^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/);
+  if (!match) throw new Error(`Invalid semantic version: ${value}`);
+  return match.slice(1).map(Number);
+}
+
+function compareSemver(a, b) {
+  const aa = semverParts(a), bb = semverParts(b);
+  for (let i = 0; i < 3; i++) if (aa[i] !== bb[i]) return aa[i] < bb[i] ? -1 : 1;
+  return 0;
+}
+
+function maxVersionAllows(current, maximum) {
+  const wildcard = String(maximum || '').match(/^(\d+)\.(\d+)\.[xX*]$/);
+  if (wildcard) {
+    const [major, minor] = semverParts(current);
+    return major < Number(wildcard[1]) || (major === Number(wildcard[1]) && minor <= Number(wildcard[2]));
+  }
+  return compareSemver(current, maximum) <= 0;
+}
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const key of Object.keys(value).sort()) out[key] = canonicalize(value[key]);
+    return out;
+  }
+  return value;
+}
+
+function canonicalString(value) { return JSON.stringify(canonicalize(value)); }
+
+function fnv1a64(value) {
+  const bytes = new TextEncoder().encode(String(value));
+  let hash = 0xcbf29ce484222325n;
+  const prime = 0x100000001b3n;
+  const mask = 0xffffffffffffffffn;
+  for (const byte of bytes) { hash ^= BigInt(byte); hash = (hash * prime) & mask; }
+  return hash.toString(16).padStart(16, '0');
+}
+
+async function sha256Hex(bytes) {
+  if (!globalThis.crypto?.subtle) return null;
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+
+function safeId(value, label) {
+  if (!ID_RE.test(String(value || ''))) throw new Error(`${label} has an invalid ID: ${value}`);
+  return String(value);
+}
+
+function safePath(value, label) {
+  const path = String(value || '');
+  if (!SAFE_PATH_RE.test(path)) throw new Error(`${label} has an unsafe path: ${path}`);
+  return path;
+}
+
+function limitedText(value, max, label) {
+  const out = text(value);
+  if (out.length > max) throw new Error(`${label} exceeds ${max} characters.`);
+  return out;
+}
+
+function assertObject(value, label) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${label} must be an object.`);
+  return value;
+}
+
+function arrayOf(value) { return Array.isArray(value) ? value : []; }
+
+function validateManifest(manifest, zip) {
+  assertObject(manifest, 'manifest.json');
+  if (manifest.schema !== ENGINE.packSchema) throw new Error(`Pack schema ${manifest.schema || '(missing)'} is not compatible with ${ENGINE.packSchema}.`);
+  safeId(manifest.packId, 'packId');
+  safeId(manifest.worldId, 'worldId');
+  semverParts(manifest.packVersion);
+  if (!['world','expansion','patch'].includes(manifest.type)) throw new Error('Pack type must be world, expansion, or patch.');
+  const min = manifest.engine?.min || '0.1.0';
+  if (compareSemver(ENGINE.version, min) < 0) throw new Error(`This pack requires engine ${min} or newer.`);
+  if (manifest.engine?.max && !maxVersionAllows(ENGINE.version, manifest.engine.max)) throw new Error(`This pack supports engine versions only through ${manifest.engine.max}.`);
+  if (!manifest.content?.path) throw new Error('manifest.content.path is required.');
+  safePath(manifest.content.path, 'content.path');
+  if (!zip.get(manifest.content.path)) throw new Error(`Content file is missing: ${manifest.content.path}`);
+  const assets = arrayOf(manifest.assets);
+  if (assets.length > 1000) throw new Error('Pack contains too many assets. Split it into smaller patches.');
+  const assetIds = new Set();
+  for (const asset of assets) {
+    assertObject(asset, 'asset');
+    safeId(asset.id, 'asset.id');
+    safePath(asset.path, `asset ${asset.id}`);
+    if (assetIds.has(asset.id)) throw new Error(`Duplicate asset ID: ${asset.id}`);
+    assetIds.add(asset.id);
+    const entry = zip.get(asset.path);
+    if (!entry) throw new Error(`Asset file is missing: ${asset.path}`);
+    if (entry.uncompressedSize > ENGINE.maxEntryBytes) throw new Error(`Asset is too large: ${asset.path}`);
+    if (!/^[-\w.+]+\/[-\w.+]+$/.test(String(asset.mediaType || ''))) throw new Error(`Asset ${asset.id} needs a valid mediaType.`);
+  }
+  for (const dependency of arrayOf(manifest.dependencies)) {
+    assertObject(dependency, 'dependency');
+    safeId(dependency.packId, 'dependency.packId');
+    if (dependency.minVersion) semverParts(dependency.minVersion);
+  }
+  if (manifest.type !== 'world') {
+    if (!manifest.builtFromStateHash) throw new Error('Expansion and patch packs must include builtFromStateHash from the deterministic prompt.');
+    if (!Number.isInteger(manifest.generation?.sequence) || manifest.generation.sequence < 1) throw new Error('Expansion and patch packs need generation.sequence.');
+  }
+  return manifest;
+}
+
+function validateContentShape(content, manifest) {
+  assertObject(content, 'content JSON');
+  if (manifest.type === 'world') {
+    const world = assertObject(content.world, 'content.world');
+    if (world.id !== manifest.worldId) throw new Error('content.world.id must match manifest.worldId.');
+    safeId(world.id, 'world.id');
+    safeId(world.startSceneId, 'world.startSceneId');
+    limitedText(world.title, 160, 'world.title');
+    limitedText(world.summary, 1200, 'world.summary');
+  }
+  const additions = content.additions || {};
+  for (const domain of ENTITY_DOMAINS) {
+    if (additions[domain] != null && !Array.isArray(additions[domain])) throw new Error(`additions.${domain} must be an array.`);
+  }
+  if (content.operations != null && !Array.isArray(content.operations)) throw new Error('operations must be an array.');
+  if (arrayOf(content.operations).length > 500) throw new Error('Too many patch operations in one pack.');
+  const total = ENTITY_DOMAINS.reduce((sum, d) => sum + arrayOf(additions[d]).length, 0);
+  if (total > 1000) throw new Error('Pack adds too many entities. Split it into smaller patches.');
+}
+
+function defaultWorldState() {
+  return {
+    flags: {},
+    counters: {},
+    inventory: {},
+    visitedScenes: {},
+    sceneStates: {},
+    locationStates: {},
+    hooks: {},
+    turn: 0,
+    day: 1,
+    history: []
+  };
+}
+
+function normalizeWorld(manifest, worldInput) {
+  const continuity = normalizeContinuity(worldInput.continuity || {});
+  return {
+    schema: 'axm.pocket-adventure.world/1.0',
+    id: manifest.worldId,
+    title: limitedText(worldInput.title || manifest.title || manifest.worldId, 160, 'world.title'),
+    summary: limitedText(worldInput.summary || '', 1200, 'world.summary'),
+    tone: limitedText(worldInput.tone || 'Curious, grounded, and surprising.', 400, 'world.tone'),
+    startSceneId: safeId(worldInput.startSceneId, 'world.startSceneId'),
+    currentSceneId: safeId(worldInput.startSceneId, 'world.startSceneId'),
+    currentLocationId: worldInput.startLocationId ? safeId(worldInput.startLocationId, 'world.startLocationId') : null,
+    mapAssetId: worldInput.mapAssetId ? safeId(worldInput.mapAssetId, 'world.mapAssetId') : null,
+    defaultNoEffectText: limitedText(worldInput.defaultNoEffectText || 'It is a curious thought, but nothing clearly changes yet.', 400, 'world.defaultNoEffectText'),
+    generationRules: arrayOf(worldInput.generationRules).map(v => limitedText(v, 500, 'generation rule')).slice(0, 30),
+    continuity,
+    entities: { locations: {}, items: {}, hooks: {}, scenes: {} },
+    assets: {},
+    state: defaultWorldState(),
+    installedPacks: [],
+    nextPackSequence: 1,
+    contentRevision: 0,
+    stateRevision: 0,
+    lastImport: null
+  };
+}
+
+function normalizeContinuity(input) {
+  return {
+    worldBible: limitedText(input.worldBible || '', 5000, 'continuity.worldBible'),
+    currentArc: limitedText(input.currentArc || '', 1200, 'continuity.currentArc'),
+    recap: limitedText(input.recap || '', 2600, 'continuity.recap'),
+    openQuestions: arrayOf(input.openQuestions).map(v => limitedText(v, 400, 'continuity.openQuestions')).slice(0, 30),
+    recentSummaries: arrayOf(input.recentSummaries).map(v => limitedText(v, 600, 'continuity.recentSummaries')).slice(-16)
+  };
+}
+
+function normalizeEntity(domain, raw) {
+  assertObject(raw, `${domain} entity`);
+  const entity = clone(raw);
+  entity.id = safeId(entity.id, `${domain}.id`);
+  entity.revision = Number.isInteger(entity.revision) && entity.revision > 0 ? entity.revision : 1;
+  if (domain === 'locations') {
+    entity.name = limitedText(entity.name || entity.id, 140, 'location.name');
+    entity.description = limitedText(entity.description || '', 900, 'location.description');
+    entity.x = clamp(entity.x ?? 50, 0, 100);
+    entity.y = clamp(entity.y ?? 50, 0, 100);
+    entity.tags = normalizeTags(entity.tags);
+    entity.neighbors = arrayOf(entity.neighbors).map(v => safeId(v, `neighbors of ${entity.id}`));
+  }
+  if (domain === 'items') {
+    entity.name = limitedText(entity.name || entity.id, 140, 'item.name');
+    entity.description = limitedText(entity.description || '', 1200, 'item.description');
+    entity.curiosity = limitedText(entity.curiosity || '', 800, 'item.curiosity');
+    entity.tags = normalizeTags(entity.tags);
+    entity.stackable = entity.stackable !== false;
+  }
+  if (domain === 'hooks') {
+    entity.summary = limitedText(entity.summary || entity.id, 700, 'hook.summary');
+    entity.tags = normalizeTags(entity.tags);
+    if (entity.startLocationId) safeId(entity.startLocationId, 'hook.startLocationId');
+    if (entity.movement) {
+      const movement = assertObject(entity.movement, 'hook.movement');
+      if (!['stationary','wander'].includes(movement.mode || 'stationary')) throw new Error(`Unsupported movement mode for hook ${entity.id}.`);
+      movement.everyTurns = Math.max(1, Math.floor(Number(movement.everyTurns || 2)));
+      movement.allowedLocationTags = normalizeTags(movement.allowedLocationTags);
+    }
+  }
+  if (domain === 'scenes') {
+    entity.title = limitedText(entity.title || entity.id, 180, 'scene.title');
+    entity.mood = limitedText(entity.mood || '', 500, 'scene.mood');
+    entity.narration = normalizeNarration(entity.narration);
+    entity.tags = normalizeTags(entity.tags);
+    entity.locationId = safeId(entity.locationId, 'scene.locationId');
+    entity.choices = arrayOf(entity.choices).map(choice => normalizeChoice(choice, entity.id));
+    if (entity.choices.length > 8) throw new Error(`Scene ${entity.id} has too many choices.`);
+    const ids = new Set();
+    for (const choice of entity.choices) {
+      if (ids.has(choice.id)) throw new Error(`Duplicate choice ${choice.id} in scene ${entity.id}.`);
+      ids.add(choice.id);
+    }
+    entity.visual = normalizeVisual(entity.visual || (entity.imageAssetId ? { backgroundAssetId: entity.imageAssetId } : {}));
+    entity.onEnter = arrayOf(entity.onEnter).map(normalizeEffect);
+  }
+  return entity;
+}
+
+function normalizeTags(value) {
+  return [...new Set(arrayOf(value).map(v => limitedText(v, 64, 'tag').trim().toLowerCase()).filter(Boolean))].slice(0, 32);
+}
+
+function normalizeNarration(value) {
+  const paragraphs = Array.isArray(value) ? value : [value || ''];
+  const clean = paragraphs.map(v => limitedText(v, ENGINE.maxSceneText, 'scene narration')).filter(Boolean);
+  if (clean.join('\n').length > ENGINE.maxSceneText) throw new Error(`Scene narration exceeds ${ENGINE.maxSceneText} characters.`);
+  return clean;
+}
+
+function normalizeVisual(value) {
+  const visual = value && typeof value === 'object' ? clone(value) : {};
+  if (visual.backgroundAssetId) safeId(visual.backgroundAssetId, 'visual.backgroundAssetId');
+  visual.fit = ['cover','contain'].includes(visual.fit) ? visual.fit : 'cover';
+  visual.aspect = limitedText(visual.aspect || '4/5', 20, 'visual.aspect');
+  visual.layers = arrayOf(visual.layers).slice(0, ENGINE.maxLayersPerScene).map((layer, index) => {
+    assertObject(layer, 'visual layer');
+    return {
+      assetId: safeId(layer.assetId, 'layer.assetId'),
+      x: clamp(layer.x ?? 50, -50, 150),
+      y: clamp(layer.y ?? 50, -50, 150),
+      width: clamp(layer.width ?? 100, 1, 250),
+      height: clamp(layer.height ?? 100, 1, 250),
+      rotation: clamp(layer.rotation ?? 0, -1080, 1080),
+      opacity: clamp(layer.opacity ?? 1, 0, 1),
+      z: Number.isFinite(Number(layer.z)) ? Number(layer.z) : index + 1,
+      blendMode: ALLOWED_BLEND_MODES.has(layer.blendMode) ? layer.blendMode : 'normal',
+      fit: ['cover','contain','fill'].includes(layer.fit) ? layer.fit : 'contain'
+    };
+  });
+  return visual;
+}
+
+function normalizeChoice(raw, sceneId) {
+  assertObject(raw, `choice in ${sceneId}`);
+  const choice = clone(raw);
+  choice.id = safeId(choice.id, 'choice.id');
+  choice.label = limitedText(choice.label || choice.id, 220, 'choice.label');
+  choice.hint = limitedText(choice.hint || '', 500, 'choice.hint');
+  choice.lockedText = limitedText(choice.lockedText || '', 300, 'choice.lockedText');
+  if (choice.to) safeId(choice.to, 'choice.to');
+  choice.active = choice.active !== false;
+  choice.effects = arrayOf(choice.effects).map(normalizeEffect);
+  choice.itemResponses = arrayOf(choice.itemResponses).map(response => normalizeItemResponse(response, choice.id));
+  choice.resultText = limitedText(choice.resultText || '', 2200, 'choice.resultText');
+  if (choice.onUnchosen?.hookId) safeId(choice.onUnchosen.hookId, 'choice.onUnchosen.hookId');
+  return choice;
+}
+
+function normalizeItemResponse(raw, choiceId) {
+  assertObject(raw, `item response in ${choiceId}`);
+  const response = clone(raw);
+  response.id = safeId(response.id, 'itemResponse.id');
+  response.match = response.match || {};
+  response.match.itemIds = arrayOf(response.match.itemIds).map(v => safeId(v, 'itemResponse.match.itemIds'));
+  response.match.anyTags = normalizeTags(response.match.anyTags);
+  response.match.allTags = normalizeTags(response.match.allTags);
+  response.resultText = limitedText(response.resultText || '', 2200, 'itemResponse.resultText');
+  response.effects = arrayOf(response.effects).map(normalizeEffect);
+  response.mode = ['replace','augment'].includes(response.mode) ? response.mode : 'replace';
+  response.completesChoice = response.completesChoice !== false;
+  response.advanceTurns = Math.max(0, Math.floor(Number(response.advanceTurns ?? (response.completesChoice ? 1 : 0))));
+  response.consume = Math.max(0, Math.floor(Number(response.consume || 0)));
+  response.priority = Number.isFinite(Number(response.priority)) ? Number(response.priority) : 0;
+  if (response.to) safeId(response.to, 'itemResponse.to');
+  return response;
+}
+
+function normalizeEffect(raw) {
+  assertObject(raw, 'effect');
+  const effect = clone(raw);
+  const allowed = new Set(['setFlag','increment','giveItem','takeItem','activateHook','resolveHook','setSceneState','setLocationState','advanceTime']);
+  if (!allowed.has(effect.type)) throw new Error(`Unsupported effect type: ${effect.type}`);
+  if (effect.itemId) safeId(effect.itemId, 'effect.itemId');
+  if (effect.hookId) safeId(effect.hookId, 'effect.hookId');
+  if (effect.sceneId) safeId(effect.sceneId, 'effect.sceneId');
+  if (effect.locationId) safeId(effect.locationId, 'effect.locationId');
+  if (effect.key) limitedText(effect.key, 120, 'effect.key');
+  return effect;
+}
+
+function addManifestAssets(world, manifest) {
+  for (const asset of arrayOf(manifest.assets)) {
+    if (world.assets[asset.id]) throw new Error(`Asset ID already exists: ${asset.id}`);
+    world.assets[asset.id] = {
+      id: asset.id,
+      path: asset.path,
+      mediaType: asset.mediaType,
+      role: limitedText(asset.role || 'asset', 80, 'asset.role'),
+      sha256: asset.sha256 || null,
+      packId: manifest.packId
+    };
+  }
+}
+
+function applyAdditions(world, additions = {}) {
+  for (const domain of ENTITY_DOMAINS) {
+    const target = world.entities[domain];
+    for (const raw of arrayOf(additions[domain])) {
+      const entity = normalizeEntity(domain, raw);
+      if (target[entity.id]) throw new Error(`${domain} ID already exists: ${entity.id}`);
+      target[entity.id] = entity;
+    }
+  }
+}
+
+function deepMerge(target, changes) {
+  if (!changes || typeof changes !== 'object' || Array.isArray(changes)) return clone(changes);
+  const out = target && typeof target === 'object' && !Array.isArray(target) ? clone(target) : {};
+  for (const [key, value] of Object.entries(changes)) {
+    if (['__proto__','constructor','prototype','id','revision'].includes(key)) continue;
+    out[key] = value && typeof value === 'object' && !Array.isArray(value) ? deepMerge(out[key], value) : clone(value);
+  }
+  return out;
+}
+
+function requireRevision(entity, expected, label) {
+  if (!Number.isInteger(expected)) throw new Error(`${label} needs expectedRevision.`);
+  if (entity.revision !== expected) throw new Error(`${label} expected revision ${expected}, found ${entity.revision}. Generate a fresh prompt.`);
+}
+
+function applyOperations(world, operations = []) {
+  for (const raw of arrayOf(operations)) {
+    const op = assertObject(raw, 'patch operation');
+    if (op.op === 'addChoice') {
+      const scene = world.entities.scenes[safeId(op.sceneId, 'addChoice.sceneId')];
+      if (!scene) throw new Error(`addChoice scene not found: ${op.sceneId}`);
+      requireRevision(scene, op.expectedRevision, `addChoice ${op.sceneId}`);
+      const choice = normalizeChoice(op.choice, scene.id);
+      if (scene.choices.some(v => v.id === choice.id)) throw new Error(`Choice already exists: ${choice.id}`);
+      scene.choices.push(choice); scene.revision++;
+      continue;
+    }
+    if (op.op === 'addItemResponse') {
+      const scene = world.entities.scenes[safeId(op.sceneId, 'addItemResponse.sceneId')];
+      if (!scene) throw new Error(`addItemResponse scene not found: ${op.sceneId}`);
+      requireRevision(scene, op.expectedRevision, `addItemResponse ${op.sceneId}`);
+      const choice = scene.choices.find(v => v.id === op.choiceId);
+      if (!choice) throw new Error(`Choice not found: ${op.choiceId}`);
+      const response = normalizeItemResponse(op.response, choice.id);
+      if (choice.itemResponses.some(v => v.id === response.id)) throw new Error(`Item response already exists: ${response.id}`);
+      choice.itemResponses.push(response); scene.revision++;
+      continue;
+    }
+    if (op.op === 'mergeEntity') {
+      if (!ENTITY_DOMAINS.includes(op.domain)) throw new Error(`mergeEntity has unknown domain: ${op.domain}`);
+      const entity = world.entities[op.domain][safeId(op.id, 'mergeEntity.id')];
+      if (!entity) throw new Error(`mergeEntity target not found: ${op.domain}/${op.id}`);
+      requireRevision(entity, op.expectedRevision, `mergeEntity ${op.id}`);
+      const merged = deepMerge(entity, assertObject(op.changes, 'mergeEntity.changes'));
+      merged.id = entity.id;
+      merged.revision = entity.revision + 1;
+      world.entities[op.domain][entity.id] = normalizeEntity(op.domain, merged);
+      continue;
+    }
+    if (op.op === 'deactivateChoice') {
+      const scene = world.entities.scenes[safeId(op.sceneId, 'deactivateChoice.sceneId')];
+      if (!scene) throw new Error(`deactivateChoice scene not found: ${op.sceneId}`);
+      requireRevision(scene, op.expectedRevision, `deactivateChoice ${op.sceneId}`);
+      const choice = scene.choices.find(v => v.id === op.choiceId);
+      if (!choice) throw new Error(`Choice not found: ${op.choiceId}`);
+      choice.active = false;
+      choice.deactivationReason = limitedText(op.reason || 'Explicitly retired by patch.', 500, 'deactivation reason');
+      scene.revision++;
+      continue;
+    }
+    throw new Error(`Unsupported patch operation: ${op.op}`);
+  }
+}
+
+function applyWorldPatch(world, patch) {
+  if (!patch) return;
+  assertObject(patch, 'worldPatch');
+  if (patch.title != null) world.title = limitedText(patch.title, 160, 'worldPatch.title');
+  if (patch.summary != null) world.summary = limitedText(patch.summary, 1200, 'worldPatch.summary');
+  if (patch.tone != null) world.tone = limitedText(patch.tone, 400, 'worldPatch.tone');
+  if (patch.mapAssetId != null) world.mapAssetId = patch.mapAssetId ? safeId(patch.mapAssetId, 'worldPatch.mapAssetId') : null;
+  if (patch.generationRules != null) world.generationRules = arrayOf(patch.generationRules).map(v => limitedText(v, 500, 'generation rule')).slice(0, 30);
+  if (patch.continuity != null) world.continuity = normalizeContinuity(deepMerge(world.continuity, patch.continuity));
+}
+
+function validateWorldReferences(world) {
+  const counts = ENTITY_DOMAINS.reduce((sum, d) => sum + Object.keys(world.entities[d]).length, 0);
+  if (counts > ENGINE.maxEntityCount) throw new Error(`World exceeds ${ENGINE.maxEntityCount} structured entities. Split or archive before adding more.`);
+  if (!world.entities.scenes[world.startSceneId]) throw new Error(`Start scene does not exist: ${world.startSceneId}`);
+  if (!world.entities.scenes[world.currentSceneId]) throw new Error(`Current scene does not exist: ${world.currentSceneId}`);
+  if (world.mapAssetId && !world.assets[world.mapAssetId]) throw new Error(`Map asset does not exist: ${world.mapAssetId}`);
+  for (const location of Object.values(world.entities.locations)) {
+    for (const neighbor of location.neighbors || []) if (!world.entities.locations[neighbor]) throw new Error(`Location ${location.id} points to missing neighbor ${neighbor}.`);
+  }
+  for (const hook of Object.values(world.entities.hooks)) if (hook.startLocationId && !world.entities.locations[hook.startLocationId]) throw new Error(`Hook ${hook.id} starts at missing location ${hook.startLocationId}.`);
+  for (const scene of Object.values(world.entities.scenes)) {
+    if (!world.entities.locations[scene.locationId]) throw new Error(`Scene ${scene.id} uses missing location ${scene.locationId}.`);
+    const assetRefs = [];
+    if (scene.visual?.backgroundAssetId) assetRefs.push(scene.visual.backgroundAssetId);
+    for (const layer of scene.visual?.layers || []) assetRefs.push(layer.assetId);
+    for (const assetId of assetRefs) if (!world.assets[assetId]) throw new Error(`Scene ${scene.id} uses missing asset ${assetId}.`);
+    for (const choice of scene.choices) {
+      if (choice.to && !world.entities.scenes[choice.to]) throw new Error(`Choice ${choice.id} points to missing scene ${choice.to}.`);
+      if (choice.onUnchosen?.hookId && !world.entities.hooks[choice.onUnchosen.hookId]) throw new Error(`Choice ${choice.id} references missing hook ${choice.onUnchosen.hookId}.`);
+      for (const response of choice.itemResponses) if (response.to && !world.entities.scenes[response.to]) throw new Error(`Item response ${response.id} points to missing scene ${response.to}.`);
+    }
+  }
+  const currentScene = world.entities.scenes[world.currentSceneId];
+  if (!world.currentLocationId) world.currentLocationId = currentScene.locationId;
+  if (!world.entities.locations[world.currentLocationId]) throw new Error(`Current location does not exist: ${world.currentLocationId}`);
+}
+
+async function getInstalledPacks(worldId) {
+  return (await dbGetAllByIndex('packs', 'worldId', worldId)).sort((a,b) => a.installOrder - b.installOrder);
+}
+
+async function planInstall(manifest, content) {
+  const existing = await dbGet('worlds', manifest.worldId);
+  const packs = existing ? await getInstalledPacks(manifest.worldId) : [];
+  if (packs.some(p => p.packId === manifest.packId)) throw new Error(`Pack already installed: ${manifest.packId}`);
+  if (manifest.type === 'world' && existing) throw new Error(`World ${manifest.worldId} already exists. Base packs never overwrite a world.`);
+  if (manifest.type !== 'world' && !existing) throw new Error(`Target world is not installed: ${manifest.worldId}`);
+  for (const dependency of arrayOf(manifest.dependencies)) {
+    const installed = packs.find(p => p.packId === dependency.packId);
+    if (!installed) throw new Error(`Missing dependency: ${dependency.packId}`);
+    if (dependency.minVersion && compareSemver(installed.packVersion, dependency.minVersion) < 0) throw new Error(`Dependency ${dependency.packId} must be ${dependency.minVersion} or newer.`);
+  }
+  if (existing && manifest.type !== 'world') {
+    const snapshot = createHandoffSnapshot(existing, packs);
+    const currentHash = fnv1a64(canonicalString(snapshot));
+    if (manifest.builtFromStateHash !== currentHash) throw new Error(`This pack was built from state ${manifest.builtFromStateHash}, but the phone is now at ${currentHash}. Generate a fresh prompt; nothing was changed.`);
+    if (manifest.generation.sequence !== existing.nextPackSequence) throw new Error(`Pack sequence ${manifest.generation.sequence} does not match expected ${existing.nextPackSequence}.`);
+  }
+  const next = manifest.type === 'world' ? normalizeWorld(manifest, content.world) : clone(existing);
+  const previousWorld = existing ? clone(existing) : null;
+  addManifestAssets(next, manifest);
+  applyAdditions(next, content.additions || {});
+  applyOperations(next, content.operations || []);
+  applyWorldPatch(next, content.worldPatch || null);
+  const installOrder = packs.length + 1;
+  next.installedPacks.push({ packId: manifest.packId, packVersion: manifest.packVersion, type: manifest.type, installOrder });
+  next.contentRevision += 1;
+  next.lastImport = { packId: manifest.packId, contentRevision: next.contentRevision, stateRevision: next.stateRevision };
+  if (manifest.type !== 'world') next.nextPackSequence = manifest.generation.sequence + 1;
+  validateWorldReferences(next);
+  if (manifest.type === 'world') {
+    const scene = next.entities.scenes[next.startSceneId];
+    next.currentSceneId = next.startSceneId;
+    next.currentLocationId = scene.locationId;
+    next.state.visitedScenes[next.startSceneId] = 1;
+    applyEffects(next, scene.onEnter || []);
+  }
+  return { previousWorld, nextWorld: next, packs, installOrder };
+}
+
+async function importPack(file) {
+  if (app.busy) return;
+  app.busy = true;
+  let importId = null;
+  try {
+    openProgress('Reading cartridge', `Checking ${file.name || 'selected ZIP'} without loading the whole pack into memory.`);
+    const zip = await new ZipReader(file).init();
+    updateProgress(5, `Found ${zip.entries.size} ZIP entries.`);
+    const manifestEntry = zip.get('manifest.json');
+    if (!manifestEntry) throw new Error('Compatible packs need manifest.json at the ZIP root.');
+    if (manifestEntry.uncompressedSize > 512 * 1024) throw new Error('manifest.json is unexpectedly large.');
+    const manifest = validateManifest(JSON.parse(await zip.readText('manifest.json')), zip);
+    updateProgress(12, `Checking ${manifest.packId} ${manifest.packVersion}.`);
+    const contentEntry = zip.get(manifest.content.path);
+    if (contentEntry.uncompressedSize > ENGINE.maxContentBytes) throw new Error(`Content JSON exceeds ${formatBytes(ENGINE.maxContentBytes)}.`);
+    const contentBytes = await zip.readBytes(contentEntry);
+    if (manifest.content.sha256) {
+      const hash = await sha256Hex(contentBytes);
+      if (hash && hash !== String(manifest.content.sha256).toLowerCase()) throw new Error('Content hash mismatch. The pack may be incomplete or altered.');
+    }
+    const content = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(contentBytes));
+    validateContentShape(content, manifest);
+    const plan = await planInstall(manifest, content);
+    importId = `${manifest.packId}::${Date.now()}::${Math.random().toString(36).slice(2)}`;
+    const assets = arrayOf(manifest.assets);
+    let done = 0;
+    for (const asset of assets) {
+      updateProgress(15 + Math.round((done / Math.max(1, assets.length)) * 68), `Taking in ${done + 1}/${assets.length}: ${asset.role || asset.id}`);
+      const bytes = await zip.readBytes(asset.path);
+      if (asset.sha256) {
+        const hash = await sha256Hex(bytes);
+        if (hash && hash !== String(asset.sha256).toLowerCase()) throw new Error(`Asset hash mismatch: ${asset.id}`);
+      }
+      await dbPut('staging', {
+        key: `${importId}::${asset.id}`,
+        importId,
+        worldId: manifest.worldId,
+        packId: manifest.packId,
+        assetId: asset.id,
+        mediaType: asset.mediaType,
+        role: asset.role || 'asset',
+        sha256: asset.sha256 || null,
+        blob: new Blob([bytes], { type: asset.mediaType })
+      });
+      done++;
+      await sleepFrame();
+    }
+    updateProgress(86, 'Validating links, choices, items, and patch revisions.');
+    await commitInstall(manifest, file, plan, importId);
+    importId = null;
+    updateProgress(100, `${manifest.title || manifest.packId} is ready.`);
+    await loadAllState(manifest.worldId);
+    setTimeout(closeModal, 450);
+    toast(`${manifest.type === 'world' ? 'World' : 'Patch'} taken in: ${manifest.title || manifest.packId}`);
+  } catch (error) {
+    if (importId) await cleanupStaging(importId).catch(() => {});
+    closeModal();
+    showError('Take In stopped safely', error);
+  } finally {
+    app.busy = false;
+    $('#packInput').value = '';
+  }
+}
+
+async function commitInstall(manifest, file, plan, importId) {
+  const staged = await dbGetAllByIndex('staging', 'importId', importId);
+  if (staged.length !== arrayOf(manifest.assets).length) throw new Error('Staged asset count does not match manifest.');
+  const world = plan.nextWorld;
+  const packKey = `${manifest.worldId}::${manifest.packId}`;
+  const assetKeys = staged.map(s => `${manifest.worldId}::${s.assetId}`);
+  const tx = app.db.transaction(['worlds','packs','assets','snapshots','staging','settings'], 'readwrite');
+  const worlds = tx.objectStore('worlds');
+  const packs = tx.objectStore('packs');
+  const assets = tx.objectStore('assets');
+  const snapshots = tx.objectStore('snapshots');
+  const staging = tx.objectStore('staging');
+  const settings = tx.objectStore('settings');
+  for (const record of staged) {
+    assets.put({
+      key: `${manifest.worldId}::${record.assetId}`,
+      worldId: manifest.worldId,
+      packId: manifest.packId,
+      assetId: record.assetId,
+      mediaType: record.mediaType,
+      role: record.role,
+      sha256: record.sha256,
+      blob: record.blob
+    });
+    staging.delete(record.key);
+  }
+  worlds.put(world);
+  packs.put({
+    key: packKey,
+    worldId: manifest.worldId,
+    packId: manifest.packId,
+    packVersion: manifest.packVersion,
+    type: manifest.type,
+    title: limitedText(manifest.title || manifest.packId, 180, 'manifest.title'),
+    installOrder: plan.installOrder,
+    builtFromStateHash: manifest.builtFromStateHash || null,
+    sequence: manifest.generation?.sequence || 0,
+    sourceSize: file.size,
+    assetKeys,
+    manifest: clone(manifest)
+  });
+  snapshots.add({
+    worldId: manifest.worldId,
+    packKey,
+    packId: manifest.packId,
+    assetKeys,
+    worldBefore: plan.previousWorld,
+    contentRevisionAfter: world.contentRevision,
+    stateRevisionAfter: world.stateRevision,
+    installOrder: plan.installOrder
+  });
+  settings.put({ key: 'activeWorldId', value: manifest.worldId });
+  await txDone(tx);
+}
+
+async function cleanupStaging(importId) {
+  const records = await dbGetAllByIndex('staging', 'importId', importId);
+  await dbDeleteMany('staging', records.map(r => r.key));
+}
+
+function openProgress(title, message) {
+  const body = document.createElement('div');
+  const p = document.createElement('p');
+  p.id = 'progressMessage'; p.className = 'small'; p.textContent = message;
+  const bar = document.createElement('div'); bar.className = 'progress';
+  const fill = document.createElement('div'); fill.id = 'progressFill'; bar.append(fill);
+  body.append(p, bar);
+  openModal(title, body, [], false);
+}
+
+function updateProgress(percent, message) {
+  const fill = $('#progressFill'); if (fill) fill.style.width = `${clamp(percent,0,100)}%`;
+  const p = $('#progressMessage'); if (p) p.textContent = message;
+}
+
+async function loadAllState(preferredWorldId = null) {
+  clearAssetUrls();
+  app.worlds = (await dbGetAll('worlds')).sort((a,b) => a.title.localeCompare(b.title));
+  const storedActive = preferredWorldId || await getSetting('activeWorldId', null);
+  app.activeWorldId = app.worlds.some(w => w.id === storedActive) ? storedActive : (app.worlds[0]?.id || null);
+  if (app.activeWorldId) {
+    app.world = await dbGet('worlds', app.activeWorldId);
+    app.packs = await getInstalledPacks(app.activeWorldId);
+    if (storedActive !== app.activeWorldId) await setSetting('activeWorldId', app.activeWorldId);
+  } else {
+    app.world = null; app.packs = [];
+  }
+  app.settings.direction = await getSetting('promptDirection', '');
+  app.settings.profile = await getSetting('promptProfile', 'bedtime');
+  app.selectedItemId = null;
+  renderAll();
+}
+
+async function switchWorld(worldId) {
+  if (worldId === app.activeWorldId) return;
+  await setSetting('activeWorldId', worldId);
+  await loadAllState(worldId);
+  setView('story');
+}
+
+function renderAll() {
+  $('#brandTitle').textContent = app.world ? app.world.title : 'AXM Pocket Adventure';
+  $('#promptBtn').textContent = app.world ? 'NEXT PROMPT' : 'FIRST PROMPT';
+  for (const button of $$('.nav-btn')) {
+    button.disabled = !app.world && button.dataset.view !== 'system';
+    button.classList.toggle('active', button.dataset.view === app.view);
+  }
+  renderStory();
+  renderMap();
+  renderItems();
+  renderSystem();
+}
+
+function setView(view) {
+  if (!app.world && view !== 'system') view = 'system';
+  app.view = view;
+  for (const section of $$('.view')) section.classList.toggle('active', section.id === `view${capitalize(view)}`);
+  for (const button of $$('.nav-btn')) button.classList.toggle('active', button.dataset.view === view);
+  if (view === 'story') renderStory();
+  if (view === 'map') renderMap();
+  if (view === 'items') renderItems();
+  if (view === 'system') renderSystem();
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function capitalize(value) { return value.charAt(0).toUpperCase() + value.slice(1); }
+
+function renderStory() {
+  const root = $('#viewStory');
+  root.textContent = '';
+  if (!app.world) {
+    const card = el('div', 'card empty');
+    const inner = document.createElement('div');
+    inner.append(el('div', 'empty-symbol', '✦'), el('h2', '', 'The engine is empty on purpose'));
+    const p = el('p', '', 'Adventures, images, maps, items, and patches stay in external ZIP cartridges. Take one in, or generate the deterministic first-pack prompt.');
+    const actions = el('div', 'empty-actions');
+    actions.append(button('TAKE IN A ZIP', 'action-btn', () => $('#packInput').click()), button('GENERATE FIRST ADVENTURE PROMPT', 'secondary-btn', showPrompt));
+    inner.append(p, actions); card.append(inner); root.append(card); return;
+  }
+  const scene = app.world.entities.scenes[app.world.currentSceneId];
+  if (!scene) { root.append(el('div','card empty','Current scene is missing. Import a repair patch.')); return; }
+  const card = el('article', 'card scene-card');
+  const visual = el('div', 'visual-shell'); visual.id = 'sceneVisual';
+  card.append(visual);
+  const body = el('div','scene-body');
+  const location = app.world.entities.locations[scene.locationId];
+  const meta = el('div','scene-meta');
+  meta.append(el('span','',location?.name || scene.locationId), el('span','',`Turn ${app.world.state.turn}`));
+  body.append(meta, el('h1','scene-title',scene.title));
+  if (scene.mood) body.append(el('p','scene-mood',scene.mood));
+  const narration = el('div','scene-narration');
+  for (const paragraph of scene.narration) narration.append(el('p','',paragraph));
+  body.append(narration);
+  const selected = el('div','selected-tool'); selected.id = 'selectedTool';
+  const selectedItem = getSelectedItem();
+  if (selectedItem) {
+    selected.classList.add('visible');
+    const info = document.createElement('div'); info.append('Trying: ', el('strong','',selectedItem.name));
+    selected.append(info, button('Clear','text-btn',() => { app.selectedItemId = null; renderStory(); renderItems(); }));
+  }
+  body.append(selected);
+  const choices = el('div','choices');
+  const visibleChoices = scene.choices.filter(c => c.active !== false && evalCondition(c.visibleWhen, app.world));
+  for (const choice of visibleChoices) {
+    const enabled = evalCondition(choice.enabledWhen, app.world);
+    const b = el('button','choice-btn'); b.type = 'button'; b.disabled = !enabled;
+    b.append(el('span','choice-label',choice.label));
+    const hint = enabled ? choice.hint : (choice.lockedText || choice.hint || 'Not available yet.');
+    if (hint) b.append(el('span','choice-hint',hint));
+    if (enabled) b.addEventListener('click', () => choose(scene, choice));
+    choices.append(b);
+  }
+  if (!visibleChoices.length) choices.append(el('div','notice','No available choices are visible. The generated next-patch prompt will mark this as a repair priority.'));
+  body.append(choices); card.append(body); root.append(card);
+  renderSceneVisual(scene, visual);
+}
+
+async function renderSceneVisual(scene, visualRoot) {
+  const token = ++app.renderToken;
+  clearAssetUrls();
+  visualRoot.textContent = '';
+  visualRoot.style.aspectRatio = String(scene.visual?.aspect || '4 / 5').replace('/', ' / ');
+  const placeholder = el('div','visual-placeholder','Loading scene…'); visualRoot.append(placeholder);
+  const refs = [];
+  if (scene.visual?.backgroundAssetId) refs.push({ kind: 'background', assetId: scene.visual.backgroundAssetId });
+  for (const layer of [...(scene.visual?.layers || [])].sort((a,b) => a.z - b.z)) refs.push({ kind: 'layer', assetId: layer.assetId, layer });
+  if (!refs.length) { placeholder.textContent = 'This scene has no visual asset yet.'; return; }
+  try {
+    for (const ref of refs) {
+      const url = await getAssetUrl(ref.assetId);
+      if (token !== app.renderToken) return;
+      const img = document.createElement('img'); img.alt = ''; img.src = url;
+      if (ref.kind === 'background') {
+        img.className = 'visual-background';
+        img.style.objectFit = scene.visual?.fit || 'cover';
+      } else {
+        const l = ref.layer; img.className = 'visual-layer';
+        img.style.left = `${l.x}%`; img.style.top = `${l.y}%`;
+        img.style.width = `${l.width}%`; img.style.height = `${l.height}%`;
+        img.style.opacity = String(l.opacity); img.style.zIndex = String(l.z);
+        img.style.objectFit = l.fit; img.style.mixBlendMode = l.blendMode;
+        img.style.transform = `translate(-50%, -50%) rotate(${l.rotation}deg)`;
+      }
+      visualRoot.append(img);
+    }
+    placeholder.remove();
+  } catch (error) {
+    placeholder.textContent = `Visual unavailable: ${error.message}`;
+  }
+}
+
+async function getAssetUrl(assetId) {
+  if (app.assetUrls.has(assetId)) return app.assetUrls.get(assetId);
+  const record = await dbGet('assets', `${app.world.id}::${assetId}`);
+  if (!record?.blob) throw new Error(`asset ${assetId} is missing from phone storage`);
+  const url = URL.createObjectURL(record.blob);
+  app.assetUrls.set(assetId, url);
+  return url;
+}
+
+function clearAssetUrls() {
+  for (const url of app.assetUrls.values()) URL.revokeObjectURL(url);
+  app.assetUrls.clear();
+}
+
+function renderMap() {
+  const root = $('#viewMap'); root.textContent = '';
+  if (!app.world) return;
+  const head = el('div','section-head');
+  const title = document.createElement('div'); title.append(el('h2','','World map'), el('p','',`Current position: ${app.world.entities.locations[app.world.currentLocationId]?.name || app.world.currentLocationId}`));
+  head.append(title); root.append(head);
+  const card = el('section','card map-card');
+  const canvas = el('div','map-canvas');
+  const locations = Object.values(app.world.entities.locations).sort((a,b) => a.name.localeCompare(b.name));
+  if (app.world.mapAssetId) renderMapBackground(canvas, app.world.mapAssetId);
+  for (const location of locations) {
+    const unlocked = evalCondition(location.unlockedWhen, app.world);
+    const b = el('button', `map-node${location.id === app.world.currentLocationId ? ' current' : ''}${unlocked ? '' : ' locked'}`, location.id === app.world.currentLocationId ? '●' : '○');
+    b.type = 'button'; b.style.left = `${location.x}%`; b.style.top = `${location.y}%`; b.title = location.name; b.disabled = !unlocked;
+    if (unlocked) b.addEventListener('click', () => showLocation(location));
+    canvas.append(b);
+  }
+  card.append(canvas);
+  const list = el('div','map-list');
+  for (const location of locations) {
+    if (!evalCondition(location.unlockedWhen, app.world)) continue;
+    const row = el('button','map-list-item'); row.type = 'button'; row.style.textAlign = 'left'; row.style.color = 'inherit';
+    row.append(el('strong','',`${location.id === app.world.currentLocationId ? '● ' : ''}${location.name}`), el('span','',location.description || location.tags.join(' · ')));
+    row.addEventListener('click', () => showLocation(location)); list.append(row);
+  }
+  card.append(list); root.append(card);
+}
+
+async function renderMapBackground(canvas, assetId) {
+  try {
+    const url = await getAssetUrl(assetId);
+    if (!canvas.isConnected) return;
+    const img = document.createElement('img'); img.className = 'map-bg'; img.alt = ''; img.src = url; canvas.prepend(img);
+  } catch (error) { console.warn(error); }
+}
+
+function showLocation(location) {
+  const body = document.createElement('div');
+  body.append(el('p','outcome-text',location.description || 'No additional description has been added yet.'));
+  if (location.tags?.length) { const tags = el('div','tags'); location.tags.forEach(t => tags.append(el('span','tag',t))); body.append(tags); }
+  const state = app.world.state.locationStates[location.id];
+  if (state && Object.keys(state).length) body.append(el('pre','small',JSON.stringify(state,null,2)));
+  openModal(location.name, body, [modalButton('Close','secondary-btn',closeModal)]);
+}
+
+function renderItems() {
+  const root = $('#viewItems'); root.textContent = '';
+  if (!app.world) return;
+  const inventory = Object.entries(app.world.state.inventory).filter(([,count]) => count > 0);
+  const head = el('div','section-head');
+  const title = document.createElement('div'); title.append(el('h2','','Curious items'), el('p','','Tap an item, then try it on a story choice. No glow marks the “correct” answer.'));
+  head.append(title); root.append(head);
+  const grid = el('div','item-grid');
+  if (!inventory.length) grid.append(el('div','card empty','Nothing is in your pocket yet.'));
+  for (const [itemId, count] of inventory.sort((a,b) => (app.world.entities.items[a[0]]?.name || a[0]).localeCompare(app.world.entities.items[b[0]]?.name || b[0]))) {
+    const item = app.world.entities.items[itemId];
+    if (!item) continue;
+    const card = el('button', `item-card${app.selectedItemId === itemId ? ' selected' : ''}`); card.type = 'button';
+    const top = el('div','item-top'); top.append(el('strong','',item.name), el('span','item-count',String(count))); card.append(top);
+    card.append(el('p','',item.description));
+    if (item.curiosity) card.append(el('p','',item.curiosity));
+    const tags = el('div','tags'); item.tags.forEach(t => tags.append(el('span','tag',t))); card.append(tags);
+    card.addEventListener('click', () => { app.selectedItemId = app.selectedItemId === itemId ? null : itemId; renderItems(); renderStory(); });
+    grid.append(card);
+  }
+  root.append(grid);
+}
+
+function renderSystem() {
+  const root = $('#viewSystem'); root.textContent = '';
+  const head = el('div','section-head');
+  const title = document.createElement('div'); title.append(el('h2','','System'), el('p','',`Engine ${ENGINE.version} · Pack contract ${ENGINE.packSchema}`));
+  head.append(title); root.append(head);
+  const grid = el('div','system-grid');
+
+  const generator = el('section','card system-card');
+  generator.append(el('h3','','Deterministic next-pack handoff'), el('p','',app.world ? 'The prompt contains a compact continuity capsule, current state, active hooks, item tags, focused scene revisions, installed pack versions, and the exact ZIP contract.' : 'With no world installed, this creates the fixed bootstrap prompt for a first compatible cartridge.'));
+  generator.append(label('Optional one-line direction'));
+  const direction = el('textarea','textarea'); direction.placeholder = 'Leave blank for a grounded surprise, or add one line for the next patch.'; direction.value = app.settings.direction;
+  direction.addEventListener('change', async () => { app.settings.direction = direction.value.trim(); await setSetting('promptDirection', app.settings.direction); });
+  generator.append(direction, label('Next pack size'));
+  const profile = el('select','select');
+  for (const [value,name] of [['bedtime','Bedtime · 6–8 scenes · ≤35 MB'],['small','Small · 4–6 scenes · ≤22 MB'],['deep','Deep · 9–12 scenes · ≤60 MB']]) {
+    const option = document.createElement('option'); option.value = value; option.textContent = name; option.selected = app.settings.profile === value; profile.append(option);
+  }
+  profile.addEventListener('change', async () => { app.settings.profile = profile.value; await setSetting('promptProfile', profile.value); });
+  generator.append(profile);
+  const genButtons = el('div','button-row'); genButtons.append(button(app.world ? 'GENERATE NEXT PACK PROMPT' : 'GENERATE FIRST ADVENTURE PROMPT','action-btn',showPrompt));
+  if (app.world) genButtons.append(button('EXPORT HANDOFF JSON','secondary-btn',exportHandoff));
+  generator.append(genButtons); grid.append(generator);
+
+  const intake = el('section','card system-card');
+  intake.append(el('h3','','Cartridge intake'), el('p','','ZIPs are inspected before commit. Duplicate IDs, stale state hashes, missing dependencies, unsafe paths, and silent replacements are rejected. Images remain outside the HTML in phone storage.'));
+  const intakeButtons = el('div','button-row');
+  intakeButtons.append(button('TAKE IN ZIP','action-btn',() => $('#packInput').click()));
+  if (app.world) intakeButtons.append(button('UNDO LAST TAKE-IN','danger-btn',undoLastTakeIn));
+  intake.append(intakeButtons); grid.append(intake);
+
+  if (app.worlds.length) {
+    const worlds = el('section','card system-card'); worlds.append(el('h3','','Worlds'));
+    const list = el('div','world-list');
+    for (const world of app.worlds) {
+      const row = el('div',`world-card${world.id === app.activeWorldId ? ' active' : ''}`);
+      const meta = document.createElement('div'); meta.append(el('div','world-title',world.title), el('div','world-sub',`${world.id} · ${Object.keys(world.entities.scenes).length} scenes`));
+      row.append(meta);
+      if (world.id !== app.activeWorldId) row.append(button('Open','secondary-btn',() => switchWorld(world.id)));
+      else row.append(el('span','small','Active'));
+      list.append(row);
+    }
+    worlds.append(list); grid.append(worlds);
+  }
+
+  if (app.world) {
+    const packs = el('section','card system-card'); packs.append(el('h3','','Installed cartridges'));
+    const list = el('div','pack-list');
+    for (const pack of app.packs) {
+      const row = el('div','pack-row');
+      const meta = document.createElement('div'); meta.append(el('div','pack-type',pack.type), el('strong','',pack.title || pack.packId), el('div','pack-meta',`${pack.packId} · v${pack.packVersion} · ${formatBytes(pack.sourceSize)}`));
+      row.append(meta, el('span','small',`#${pack.installOrder}`)); list.append(row);
+    }
+    packs.append(list); grid.append(packs);
+  }
+
+  const storage = el('section','card system-card'); storage.append(el('h3','','Phone storage'), el('p','','The engine stores JSON state and imported binary assets separately in IndexedDB. Scene images are loaded only when visible.'));
+  const storageLine = el('div','small','Checking browser storage…'); storage.append(storageLine); estimateStorage(storageLine);
+  grid.append(storage);
+  root.append(grid);
+}
+
+function label(value) { return el('label','form-label',value); }
+
+async function estimateStorage(node) {
+  try {
+    if (!navigator.storage?.estimate) { node.textContent = 'Storage estimate is not exposed by this browser.'; return; }
+    const { usage = 0, quota = 0 } = await navigator.storage.estimate();
+    node.textContent = `${formatBytes(usage)} used · ${formatBytes(quota)} available quota`;
+  } catch { node.textContent = 'Storage estimate unavailable.'; }
+}
+
+function getSelectedItem() {
+  if (!app.world || !app.selectedItemId || !(app.world.state.inventory[app.selectedItemId] > 0)) return null;
+  return app.world.entities.items[app.selectedItemId] || null;
+}
+
+function evalCondition(condition, world) {
+  if (condition == null || condition === true) return true;
+  if (condition === false) return false;
+  if (Array.isArray(condition)) return condition.every(c => evalCondition(c, world));
+  if (typeof condition !== 'object') return Boolean(condition);
+  if (condition.all) return arrayOf(condition.all).every(c => evalCondition(c, world));
+  if (condition.any) return arrayOf(condition.any).some(c => evalCondition(c, world));
+  if (condition.not) return !evalCondition(condition.not, world);
+  if (condition.flag) return compareValue(world.state.flags[condition.flag], condition);
+  if (condition.counter) return compareValue(Number(world.state.counters[condition.counter] || 0), condition);
+  if (condition.hasItem) return Number(world.state.inventory[condition.hasItem] || 0) >= Number(condition.count || 1);
+  if (condition.visitedScene) return Number(world.state.visitedScenes[condition.visitedScene] || 0) >= Number(condition.count || 1);
+  if (condition.currentLocation) return world.currentLocationId === condition.currentLocation;
+  if (condition.hookActive) return world.state.hooks[condition.hookActive]?.status === 'active';
+  if (condition.hookAtLocation) {
+    const runtime = world.state.hooks[condition.hookAtLocation];
+    return runtime?.status === 'active' && runtime.locationId === (condition.locationId || world.currentLocationId);
+  }
+  return true;
+}
+
+function compareValue(actual, condition) {
+  if ('equals' in condition) return actual === condition.equals;
+  if ('notEquals' in condition) return actual !== condition.notEquals;
+  if ('gte' in condition && !(actual >= condition.gte)) return false;
+  if ('lte' in condition && !(actual <= condition.lte)) return false;
+  if ('gt' in condition && !(actual > condition.gt)) return false;
+  if ('lt' in condition && !(actual < condition.lt)) return false;
+  return true;
+}
+
+function matchingItemResponse(choice, item, world) {
+  if (!item) return null;
+  const candidates = choice.itemResponses.filter(response => {
+    if (!evalCondition(response.when, world)) return false;
+    const match = response.match || {};
+    const idMatch = !match.itemIds?.length || match.itemIds.includes(item.id);
+    const allMatch = !match.allTags?.length || match.allTags.every(tag => item.tags.includes(tag));
+    const anyMatch = !match.anyTags?.length || match.anyTags.some(tag => item.tags.includes(tag));
+    return idMatch && allMatch && anyMatch && (match.itemIds?.length || match.allTags?.length || match.anyTags?.length);
+  });
+  return candidates.sort((a,b) => scoreResponse(b,item) - scoreResponse(a,item))[0] || null;
+}
+
+function scoreResponse(response, item) {
+  let score = Number(response.priority || 0) * 100;
+  if (response.match.itemIds?.includes(item.id)) score += 50;
+  score += (response.match.allTags?.length || 0) * 8;
+  score += (response.match.anyTags?.filter(t => item.tags.includes(t)).length || 0) * 3;
+  return score;
+}
+
+async function choose(scene, choice) {
+  if (app.busy) return;
+  const world = app.world;
+  const item = getSelectedItem();
+  const response = matchingItemResponse(choice, item, world);
+  if (item && !response) {
+    world.state.history.push({ turn: world.state.turn, type: 'item-attempt', sceneId: scene.id, choiceId: choice.id, itemId: item.id, summary: `${item.name} did not clearly change ${choice.label}.` });
+    trimHistory(world);
+    world.stateRevision++;
+    await saveWorld();
+    showOutcome(world.defaultNoEffectText, false);
+    return;
+  }
+
+  const usingResponse = Boolean(response);
+  const completesChoice = usingResponse ? response.completesChoice : true;
+  const mode = response?.mode || 'replace';
+  const effects = usingResponse ? (mode === 'augment' ? [...choice.effects, ...response.effects] : response.effects) : choice.effects;
+  const to = usingResponse ? (response.to || (completesChoice ? choice.to : null)) : choice.to;
+  const resultText = usingResponse ? (response.resultText || choice.resultText) : choice.resultText;
+  const advanceTurns = usingResponse ? response.advanceTurns : 1;
+
+  if (completesChoice) registerUnchosenHooks(scene, choice.id, world);
+  applyEffects(world, effects);
+  if (usingResponse && response.consume > 0) removeItem(world, item.id, response.consume);
+  const previousSceneId = world.currentSceneId;
+  if (to) {
+    world.currentSceneId = to;
+    const nextScene = world.entities.scenes[to];
+    world.currentLocationId = nextScene.locationId;
+    const firstVisit = !world.state.visitedScenes[to];
+    world.state.visitedScenes[to] = Number(world.state.visitedScenes[to] || 0) + 1;
+    if (firstVisit) applyEffects(world, nextScene.onEnter || []);
+  }
+  if (advanceTurns > 0) {
+    world.state.turn += advanceTurns;
+    world.state.day = 1 + Math.floor(world.state.turn / 12);
+    advanceWanderingHooks(world);
+  }
+  world.state.history.push({
+    turn: world.state.turn,
+    type: usingResponse ? 'item-choice' : 'choice',
+    sceneId: previousSceneId,
+    choiceId: choice.id,
+    itemId: item?.id || null,
+    to: to || previousSceneId,
+    summary: limitedHistory(resultText || choice.label)
+  });
+  trimHistory(world);
+  world.stateRevision++;
+  app.selectedItemId = null;
+  await saveWorld();
+  showOutcome(resultText || (to ? 'The world shifts around your decision.' : 'Something changes, even if only slightly.'), true);
+}
+
+function registerUnchosenHooks(scene, chosenChoiceId, world) {
+  for (const choice of scene.choices) {
+    if (choice.id === chosenChoiceId || !choice.active || !evalCondition(choice.visibleWhen, world)) continue;
+    const hookId = choice.onUnchosen?.hookId;
+    if (!hookId || world.state.hooks[hookId]?.status === 'resolved') continue;
+    const def = world.entities.hooks[hookId];
+    world.state.hooks[hookId] ||= {
+      status: 'active',
+      locationId: choice.onUnchosen.locationId || def.startLocationId || scene.locationId,
+      createdTurn: world.state.turn,
+      lastMovedTurn: world.state.turn,
+      sourceSceneId: scene.id,
+      sourceChoiceId: choice.id
+    };
+  }
+}
+
+function applyEffects(world, effects) {
+  for (const effect of arrayOf(effects)) {
+    if (effect.type === 'setFlag') world.state.flags[effect.key] = effect.value;
+    if (effect.type === 'increment') world.state.counters[effect.key] = Number(world.state.counters[effect.key] || 0) + Number(effect.amount || 1);
+    if (effect.type === 'giveItem') addItem(world, effect.itemId, Number(effect.count || 1));
+    if (effect.type === 'takeItem') removeItem(world, effect.itemId, Number(effect.count || 1));
+    if (effect.type === 'activateHook') {
+      const def = world.entities.hooks[effect.hookId];
+      if (def) world.state.hooks[effect.hookId] = { status: 'active', locationId: effect.locationId || def.startLocationId || world.currentLocationId, createdTurn: world.state.turn, lastMovedTurn: world.state.turn };
+    }
+    if (effect.type === 'resolveHook' && world.state.hooks[effect.hookId]) world.state.hooks[effect.hookId].status = 'resolved';
+    if (effect.type === 'setSceneState') {
+      world.state.sceneStates[effect.sceneId || world.currentSceneId] ||= {};
+      world.state.sceneStates[effect.sceneId || world.currentSceneId][effect.key] = effect.value;
+    }
+    if (effect.type === 'setLocationState') {
+      world.state.locationStates[effect.locationId || world.currentLocationId] ||= {};
+      world.state.locationStates[effect.locationId || world.currentLocationId][effect.key] = effect.value;
+    }
+    if (effect.type === 'advanceTime') {
+      world.state.turn += Math.max(0, Number(effect.turns || 0));
+      world.state.day = 1 + Math.floor(world.state.turn / 12);
+    }
+  }
+}
+
+function addItem(world, itemId, count) {
+  if (!world.entities.items[itemId]) throw new Error(`Effect gives unknown item: ${itemId}`);
+  world.state.inventory[itemId] = Number(world.state.inventory[itemId] || 0) + Math.max(0, count);
+}
+
+function removeItem(world, itemId, count) {
+  world.state.inventory[itemId] = Math.max(0, Number(world.state.inventory[itemId] || 0) - Math.max(0, count));
+}
+
+function advanceWanderingHooks(world) {
+  const turn = world.state.turn;
+  for (const [hookId, runtime] of Object.entries(world.state.hooks)) {
+    if (runtime.status !== 'active') continue;
+    const def = world.entities.hooks[hookId];
+    const movement = def?.movement;
+    if (!movement || movement.mode !== 'wander') continue;
+    const every = Math.max(1, Number(movement.everyTurns || 2));
+    if (turn - Number(runtime.lastMovedTurn || runtime.createdTurn || 0) < every) continue;
+    const location = world.entities.locations[runtime.locationId];
+    if (!location) continue;
+    const allowedTags = movement.allowedLocationTags || [];
+    const candidates = (location.neighbors || []).map(id => world.entities.locations[id]).filter(Boolean).filter(loc => !allowedTags.length || allowedTags.some(tag => loc.tags.includes(tag))).sort((a,b) => a.id.localeCompare(b.id));
+    if (!candidates.length) continue;
+    const index = parseInt(fnv1a64(`${hookId}|${turn}|${runtime.locationId}`).slice(-8), 16) % candidates.length;
+    runtime.locationId = candidates[index].id;
+    runtime.lastMovedTurn = turn;
+  }
+}
+
+function trimHistory(world) { if (world.state.history.length > 120) world.state.history = world.state.history.slice(-120); }
+function limitedHistory(value) { const v = text(value).replace(/\s+/g,' ').trim(); return v.length > 320 ? `${v.slice(0,317)}…` : v; }
+
+async function saveWorld() {
+  await dbPut('worlds', app.world);
+  app.worlds = app.worlds.map(w => w.id === app.world.id ? clone(app.world) : w);
+  renderAll();
+}
+
+function showOutcome(message, renderAfterClose) {
+  const body = el('div','outcome-text',message);
+  openModal('What happened', body, [modalButton('Continue','action-btn',() => { closeModal(); if (renderAfterClose) { setView('story'); } })]);
+}
+
+function createHandoffSnapshot(world, packs) {
+  const state = world.state;
+  const history = state.history.slice(-20);
+  const recentSceneIds = [...new Set([world.currentSceneId, ...history.map(h => h.sceneId), ...history.map(h => h.to)].filter(Boolean))];
+  const currentLocation = world.entities.locations[world.currentLocationId];
+  const nearbyLocations = new Set([world.currentLocationId, ...(currentLocation?.neighbors || [])]);
+  for (const scene of Object.values(world.entities.scenes)) if (nearbyLocations.has(scene.locationId)) recentSceneIds.push(scene.id);
+  const focusSceneIds = [...new Set(recentSceneIds)].slice(-80).sort();
+  const inventory = Object.entries(state.inventory).filter(([,count]) => count > 0).sort(([a],[b]) => a.localeCompare(b)).map(([id,count]) => {
+    const item = world.entities.items[id];
+    return { id, count, name: item?.name || id, tags: item?.tags || [], revision: item?.revision || 0 };
+  });
+  const activeHooks = Object.entries(state.hooks).filter(([,runtime]) => runtime.status === 'active').sort(([a],[b]) => a.localeCompare(b)).map(([id,runtime]) => {
+    const def = world.entities.hooks[id];
+    return { id, summary: def?.summary || id, tags: def?.tags || [], locationId: runtime.locationId, createdTurn: runtime.createdTurn, sourceSceneId: runtime.sourceSceneId || null, sourceChoiceId: runtime.sourceChoiceId || null, revision: def?.revision || 0 };
+  });
+  const sceneIndex = focusSceneIds.map(id => world.entities.scenes[id]).filter(Boolean).map(scene => ({
+    id: scene.id,
+    title: scene.title,
+    locationId: scene.locationId,
+    tags: scene.tags,
+    revision: scene.revision,
+    choices: scene.choices.filter(c => c.active !== false).map(c => ({ id: c.id, label: c.label, to: c.to || null, itemResponseIds: c.itemResponses.map(r => r.id), onUnchosenHookId: c.onUnchosen?.hookId || null }))
+  }));
+  const allIds = {};
+  const omitted = {};
+  for (const domain of ENTITY_DOMAINS) {
+    const ids = Object.keys(world.entities[domain]).sort();
+    allIds[domain] = ids.slice(0, 600).map(id => `${id}@${world.entities[domain][id].revision || 0}`);
+    omitted[domain] = Math.max(0, ids.length - allIds[domain].length);
+  }
+  const fullRegistry = ENTITY_DOMAINS.flatMap(domain => Object.keys(world.entities[domain]).sort().map(id => `${domain}:${id}@${world.entities[domain][id].revision || 0}`));
+  return canonicalize({
+    schema: ENGINE.handoffSchema,
+    engineVersion: ENGINE.version,
+    packSchema: ENGINE.packSchema,
+    world: {
+      id: world.id,
+      title: world.title,
+      summary: world.summary,
+      tone: world.tone,
+      currentSceneId: world.currentSceneId,
+      currentLocationId: world.currentLocationId,
+      turn: state.turn,
+      day: state.day,
+      contentRevision: world.contentRevision,
+      stateRevision: world.stateRevision,
+      nextPackSequence: world.nextPackSequence,
+      continuity: world.continuity,
+      generationRules: world.generationRules
+    },
+    installedPacks: packs.slice().sort((a,b) => a.installOrder - b.installOrder).map(p => ({ packId: p.packId, packVersion: p.packVersion, type: p.type, installOrder: p.installOrder })),
+    liveState: {
+      flags: canonicalize(state.flags),
+      counters: canonicalize(state.counters),
+      inventory,
+      activeHooks,
+      currentLocationState: canonicalize(state.locationStates[world.currentLocationId] || {}),
+      currentSceneState: canonicalize(state.sceneStates[world.currentSceneId] || {}),
+      recentHistory: history.map(h => ({ turn: h.turn, type: h.type, sceneId: h.sceneId, choiceId: h.choiceId || null, itemId: h.itemId || null, to: h.to || null, summary: h.summary }))
+    },
+    focusedCompatibilityIndex: {
+      scenes: sceneIndex,
+      locations: Object.values(world.entities.locations).filter(loc => nearbyLocations.has(loc.id)).sort((a,b) => a.id.localeCompare(b.id)).map(loc => ({ id: loc.id, name: loc.name, tags: loc.tags, neighbors: loc.neighbors, revision: loc.revision })),
+      inventoryItems: inventory,
+      activeHooks
+    },
+    registry: {
+      counts: Object.fromEntries(ENTITY_DOMAINS.map(domain => [domain, Object.keys(world.entities[domain]).length])),
+      registryHash: fnv1a64(fullRegistry.join('\n')),
+      ids: allIds,
+      omitted
+    }
+  });
+}
+
+function profileRules(profile) {
+  if (profile === 'small') return { scenes: '4–6', locations: '0–2', items: '0–2', interactions: '3–6', maxMb: 22 };
+  if (profile === 'deep') return { scenes: '9–12', locations: '1–4', items: '1–4', interactions: '7–14', maxMb: 60 };
+  return { scenes: '6–8', locations: '1–3', items: '1–3', interactions: '5–10', maxMb: 35 };
+}
+
+function buildPrompt() {
+  const rules = profileRules(app.settings.profile);
+  const direction = app.settings.direction || 'Continue with a grounded surprise that fits the established tone and unresolved world state.';
+  const snapshot = app.world ? createHandoffSnapshot(app.world, app.packs) : null;
+  const stateHash = snapshot ? fnv1a64(canonicalString(snapshot)) : 'NEW_WORLD';
+  const sequence = app.world ? app.world.nextPackSequence : 0;
+  const requestedPackId = app.world ? `${app.world.id}.patch.${String(sequence).padStart(4,'0')}` : 'axm.world.first.core';
+  const requestedType = app.world ? 'expansion' : 'world';
+  const worldId = app.world ? app.world.id : 'axm.world.first';
+  return `AXM POCKET ADVENTURE — DETERMINISTIC PACK BUILD REQUEST\n\nDO THE WORK IN THIS CHAT. Create the complete downloadable ZIP cartridge; do not merely describe it. The phone engine is permanent and content-free. This request is only for a compatible external story cartridge.\n\nREQUEST\n- Pack type: ${requestedType}\n- Required pack ID: ${requestedPackId}\n- Required world ID: ${worldId}\n- Required pack schema: ${ENGINE.packSchema}\n- Minimum engine version: ${ENGINE.version}\n- Generation sequence: ${sequence}\n- builtFromStateHash: ${stateHash}\n- Direction: ${direction}\n- Budget: ${rules.scenes} new scenes, ${rules.locations} new locations, ${rules.items} curious reusable items, ${rules.interactions} meaningful cross-item interactions, total ZIP at or below ${rules.maxMb} MB.\n\nNON-NEGOTIABLE EXPERIENCE RULES\n1. Make it an entertaining image-led choice adventure: each scene gets an AI-generated visual, concise atmospheric storytelling, and 2–4 genuinely different choices.\n2. Preserve continuity. Use the handoff below as authority; never silently rewrite established IDs, facts, state, item ownership, map position, or resolved history.\n3. Curiosity items are world tools, not single-use designer keys. New items should have multiple plausible uses across different choices, contexts, or future hooks. Add new responses to existing inventory items when natural. A failed experiment may be funny, revealing, risky, delayed, or simply do nothing; it must not fake a forced puzzle answer.\n4. Unchosen possibilities may remain alive. Use declared hook entities plus choice.onUnchosen so missed paths can stay local, wander through mapped neighbors, or reappear later.\n5. Keep pacing lean. No filler scenes, duplicate images, fake currencies, grinding, artificial scarcity, daily-pressure loops, or exposition dumps.\n6. This is a patch/content job only. Do not include HTML, JavaScript, a replacement engine, Base64 assets, external URLs, trackers, or network dependencies.\n7. Additive by default. Existing entities may change only through explicit operations with the exact expectedRevision shown in the focused compatibility index. Do not guess revisions for omitted entities.\n8. Update worldPatch.continuity with a compact recap/current arc/open questions so the next deterministic prompt remains useful without carrying the full adventure text.\n\nZIP RULES\n- ZIP root must contain manifest.json.\n- Put structured content in content/world.json.\n- Put images under assets/. Use WebP/JPEG/PNG/SVG as appropriate; prefer phone-friendly 4:5 scene art around 1024–1350 px, and a square map image when needed.\n- Create the ZIP with STORE/no compression (Python zipfile.ZIP_STORED). Images are already compressed and this keeps the permanent phone engine dependency-free. Standard DEFLATE may work on newer browsers but STORE is required for broad compatibility.\n- All JSON is UTF-8. All paths are relative, use forward slashes, and contain no .. segments.\n- Compute lowercase SHA-256 for content/world.json and every listed asset after final bytes are written.\n- Use globally namespaced IDs beginning with the required pack ID for new entities and assets.\n- Keep each file below 32 MB and the whole ZIP within the stated budget.\n\nREQUIRED manifest.json SHAPE\n{\n  "schema": "${ENGINE.packSchema}",\n  "packId": "${requestedPackId}",\n  "packVersion": "1.0.0",\n  "type": "${requestedType}",\n  "worldId": "${worldId}",\n  "title": "spoiler-free pack title",\n  "engine": { "min": "${ENGINE.version}", "max": "0.1.x" },\n  "content": { "path": "content/world.json", "sha256": "lowercase sha256" },\n  "assets": [\n    { "id": "namespaced.asset.id", "path": "assets/file.webp", "mediaType": "image/webp", "role": "scene|map|layer|item", "sha256": "lowercase sha256" }\n  ],\n  "dependencies": [ { "packId": "installed pack ID", "minVersion": "installed version" } ],\n  "builtFromStateHash": ${app.world ? `"${stateHash}"` : 'null'},\n  "generation": { "sequence": ${sequence} },\n  "installPolicy": { "mode": "append-only", "allowStale": false }\n}\nFor a first world pack, dependencies may be empty, builtFromStateHash is null, and generation.sequence is 0. For every continuation pack, builtFromStateHash and sequence must match this request exactly.\n\nREQUIRED content/world.json SHAPE\n{\n  "world": ${app.world ? 'omit this field for continuation packs' : '{ "id": "axm.world.first", "title": "...", "summary": "...", "tone": "...", "startSceneId": "...", "startLocationId": "...", "mapAssetId": "optional asset ID", "defaultNoEffectText": "...", "generationRules": [], "continuity": { "worldBible": "...", "currentArc": "...", "recap": "...", "openQuestions": [], "recentSummaries": [] } }'},\n  "additions": {\n    "locations": [ { "id": "...", "revision": 1, "name": "...", "description": "...", "x": 0, "y": 0, "tags": [], "neighbors": [], "unlockedWhen": null } ],\n    "items": [ { "id": "...", "revision": 1, "name": "...", "description": "...", "curiosity": "...", "tags": ["tool","social"], "stackable": false } ],\n    "hooks": [ { "id": "...", "revision": 1, "summary": "...", "tags": [], "startLocationId": "...", "movement": { "mode": "stationary|wander", "everyTurns": 2, "allowedLocationTags": [] } } ],\n    "scenes": [\n      {\n        "id": "...", "revision": 1, "title": "...", "mood": "...", "narration": ["paragraph"], "locationId": "...", "tags": [],\n        "visual": { "backgroundAssetId": "...", "fit": "cover", "aspect": "4/5", "layers": [ { "assetId": "...", "x": 50, "y": 50, "width": 100, "height": 100, "rotation": 0, "opacity": 1, "z": 1, "blendMode": "normal", "fit": "contain" } ] },\n        "onEnter": [],\n        "choices": [\n          {\n            "id": "...", "label": "...", "hint": "...", "to": "scene ID or null", "resultText": "...", "visibleWhen": null, "enabledWhen": null, "lockedText": "...",\n            "effects": [ { "type": "setFlag|increment|giveItem|takeItem|activateHook|resolveHook|setSceneState|setLocationState|advanceTime", "key": "...", "value": true } ],\n            "onUnchosen": { "hookId": "declared hook ID", "locationId": "optional location ID" },\n            "itemResponses": [\n              { "id": "...", "match": { "itemIds": [], "anyTags": ["tool"], "allTags": [] }, "mode": "replace|augment", "completesChoice": true, "advanceTurns": 1, "consume": 0, "priority": 0, "resultText": "...", "effects": [], "to": "optional scene ID", "when": null }\n            ]\n          }\n        ]\n      }\n    ]\n  },\n  "operations": [\n    { "op": "addChoice", "sceneId": "existing focused scene ID", "expectedRevision": 1, "choice": { } },\n    { "op": "addItemResponse", "sceneId": "existing focused scene ID", "choiceId": "existing choice ID", "expectedRevision": 1, "response": { } },\n    { "op": "mergeEntity", "domain": "locations|items|hooks|scenes", "id": "existing focused ID", "expectedRevision": 1, "changes": { }, "reason": "explicit reason" },\n    { "op": "deactivateChoice", "sceneId": "...", "choiceId": "...", "expectedRevision": 1, "reason": "explicit reason" }\n  ],\n  "worldPatch": { "summary": "optional", "tone": "optional", "mapAssetId": "optional", "generationRules": [], "continuity": { "worldBible": "bounded", "currentArc": "bounded", "recap": "bounded", "openQuestions": [], "recentSummaries": [] } }\n}\nOnly include operation types actually needed. Revisions advance in operation order, so later operations on the same entity must use the newly incremented revision. Every scene/location/item/hook/choice/asset reference must resolve after the complete pack is applied.\n\nCURRENT AUTHORITATIVE HANDOFF\n${snapshot ? JSON.stringify(snapshot, null, 2) : JSON.stringify({ schema: ENGINE.handoffSchema, engineVersion: ENGINE.version, packSchema: ENGINE.packSchema, world: null, instruction: 'Create a new world pack. The engine contains no adventure data.' }, null, 2)}\n\nFINAL VERIFICATION BEFORE RETURNING\n- Open the ZIP programmatically and re-read manifest.json and content/world.json.\n- Verify every listed path exists, every SHA-256 matches, every new ID is unique, every reference resolves, and ZIP compression is STORE.\n- For a continuation pack, verify builtFromStateHash=${stateHash} and generation.sequence=${sequence}.\n- Do not reveal scene pictures, plot twists, full narration, or choice outcomes in the chat. Return only the downloadable ZIP, pack ID/version, compatibility result, and one spoiler-free sentence.\n`;
+}
+
+function showPrompt() {
+  const prompt = buildPrompt();
+  const body = document.createElement('div');
+  const notice = el('div','notice ok', app.world ? 'This prompt was generated entirely from the phone’s current structured state. Same state + same direction + same size setting produces the same prompt.' : 'This is the stable bootstrap prompt. Import the returned base cartridge, then future prompts will carry the world forward.');
+  const area = el('textarea','prompt-area'); area.value = prompt; area.readOnly = true;
+  body.append(notice, area);
+  openModal(app.world ? 'Next pack prompt' : 'First adventure prompt', body, [
+    modalButton('Download .txt','secondary-btn',() => downloadText(app.world ? `${app.world.id}_next_pack_prompt.txt` : 'AXM_first_adventure_prompt.txt', prompt)),
+    modalButton('Copy prompt','action-btn',async () => { const ok = await copyText(prompt, area); toast(ok ? 'Prompt copied.' : 'Copy blocked; the prompt remains selected.'); })
+  ]);
+  setTimeout(() => area.scrollTop = 0, 0);
+}
+
+async function copyText(value, fallbackArea) {
+  try { if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(value); return true; } } catch {}
+  try { fallbackArea.focus(); fallbackArea.select(); return document.execCommand('copy'); } catch { return false; }
+}
+
+async function exportHandoff() {
+  if (!app.world) return;
+  const snapshot = createHandoffSnapshot(app.world, app.packs);
+  const payload = { stateHash: fnv1a64(canonicalString(snapshot)), handoff: snapshot };
+  downloadText(`${app.world.id}_handoff.json`, JSON.stringify(payload,null,2), 'application/json');
+}
+
+function downloadText(filename, value, mime = 'text/plain;charset=utf-8') {
+  const url = URL.createObjectURL(new Blob([value], { type: mime }));
+  const a = document.createElement('a'); a.href = url; a.download = filename; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function undoLastTakeIn() {
+  if (!app.world) return;
+  const snapshots = (await dbGetAllByIndex('snapshots','worldId',app.world.id)).sort((a,b) => b.installOrder - a.installOrder || b.id - a.id);
+  const snapshot = snapshots[0];
+  if (!snapshot) { toast('No intake snapshot is available.'); return; }
+  if (app.world.contentRevision !== snapshot.contentRevisionAfter || app.world.stateRevision !== snapshot.stateRevisionAfter) {
+    showError('Undo protected', new Error('The world has changed since that cartridge was installed. Automatic undo is blocked so later play is not silently erased.'));
+    return;
+  }
+  const body = el('div','outcome-text',`Remove ${snapshot.packId} and restore the exact world state from before it was taken in?`);
+  openModal('Undo last take-in', body, [
+    modalButton('Cancel','secondary-btn',closeModal),
+    modalButton('Undo safely','danger-btn',async () => {
+      closeModal();
+      const tx = app.db.transaction(['worlds','packs','assets','snapshots','settings'],'readwrite');
+      if (snapshot.worldBefore) tx.objectStore('worlds').put(snapshot.worldBefore); else tx.objectStore('worlds').delete(snapshot.worldId);
+      tx.objectStore('packs').delete(snapshot.packKey);
+      for (const key of snapshot.assetKeys) tx.objectStore('assets').delete(key);
+      tx.objectStore('snapshots').delete(snapshot.id);
+      if (!snapshot.worldBefore) tx.objectStore('settings').put({ key:'activeWorldId', value:null });
+      await txDone(tx);
+      await loadAllState(snapshot.worldBefore?.id || null);
+      toast(`Undid ${snapshot.packId}.`);
+    })
+  ]);
+}
+
+function showError(title, error) {
+  const body = document.createElement('div');
+  body.append(el('div','notice',error?.message || String(error)));
+  openModal(title, body, [modalButton('Close','secondary-btn',closeModal)]);
+  console.warn(error);
+}
+
+function openModal(title, body, actions = [], closable = true) {
+  $('#modalTitle').textContent = title;
+  const modalBody = $('#modalBody'); modalBody.textContent = ''; modalBody.append(body);
+  const modalActions = $('#modalActions'); modalActions.textContent = ''; actions.forEach(action => modalActions.append(action));
+  $('#modalClose').hidden = !closable;
+  $('#modalBackdrop').hidden = false;
+}
+
+function closeModal() { if (!app.busy || !$('#modalClose').hidden) $('#modalBackdrop').hidden = true; }
+function modalButton(label, className, handler) { return button(label, className, handler); }
+function button(labelText, className, handler) { const b = el('button',className,labelText); b.type = 'button'; b.addEventListener('click',handler); return b; }
+function el(tag, className = '', content = null) { const node = document.createElement(tag); if (className) node.className = className; if (content != null) node.textContent = String(content); return node; }
+
+let toastTimer = null;
+function toast(message, isError = false) {
+  const node = $('#toast'); node.textContent = message; node.classList.toggle('error',isError); node.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => node.classList.remove('show'), 2600);
+}
+
+async function init() {
+  try {
+    if (!('indexedDB' in globalThis)) throw new Error('This browser does not expose IndexedDB storage.');
+    app.db = await openDatabase();
+    await loadAllState();
+    $('#takeInBtn').addEventListener('click', () => $('#packInput').click());
+    $('#promptBtn').addEventListener('click', showPrompt);
+    $('#packInput').addEventListener('change', event => { const file = event.target.files?.[0]; if (file) importPack(file); });
+    for (const b of $$('.nav-btn')) b.addEventListener('click', () => setView(b.dataset.view));
+    $('#modalClose').addEventListener('click', closeModal);
+    $('#modalBackdrop').addEventListener('click', event => { if (event.target === $('#modalBackdrop') && !app.busy) closeModal(); });
+    addEventListener('beforeunload', clearAssetUrls);
+  } catch (error) {
+    $('#viewStory').textContent = '';
+    const card = el('div','card empty');
+    const inner = document.createElement('div'); inner.append(el('h2','','Storage could not start'), el('p','',error.message)); card.append(inner); $('#viewStory').append(card);
+    showError('Engine start failed', error);
+  }
+}
+
+init();
+</script>
+</body>
+</html>

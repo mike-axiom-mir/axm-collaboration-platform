@@ -2,6 +2,7 @@
 
 const path = require('path');
 const ReviewService = require('./review-service');
+const ReviewAuthorityService = require('./review-authority-service');
 const PermissionService = require('./permission-service');
 const SecretsService = require('./secrets-service');
 const MachineHost = require('./machine-host');
@@ -39,6 +40,7 @@ function create(options) {
   const hubLifecycle = HubLifecycleService.create(options);
   const githubSync = GitHubSyncService.create(options);
   const review = ReviewService.create(options);
+  const reviewAuthority = ReviewAuthorityService.create(Object.assign({}, options, { reviewService:review }));
   const codeDraftTechnicalReviewer = CodeDraftTechnicalReviewer.create({ root: options.root, reviewService: review });
   const permissions = PermissionService.create(options);
   const secrets = SecretsService.create(options);
@@ -52,7 +54,7 @@ function create(options) {
   const modularIntake = ModularIntakeService.create(Object.assign({}, options, { reviewService: review, installerService: installer }));
   const needsObservatory = NeedsObservatoryService.create(Object.assign({}, options, { modularIntakeService: modularIntake }));
   const readinessObserver = ReadinessObserver.create({ root: options.root, stateRoot: options.stateRoot, humanGate: 'Mike' });
-  const qa = QaLabService.create(options);
+  const qa = QaLabService.create(Object.assign({}, options, { reviewService: review }));
   const templates = TemplateRuntimeService.create(options);
   const sources = SourceConnectorService.create(Object.assign({}, options, { reviewService: review }));
   const media = MediaRenderService.create(Object.assign({}, options, { reviewService: review }));
@@ -75,7 +77,7 @@ function create(options) {
   function explicit(req, name, value) { if (String(req.headers[name] || '') !== value) throw new Error(name + ': ' + value + ' header required'); }
   function actor(req, parsed) { return String(parsed && parsed.actor || req.headers['x-axm-actor'] || 'local-user').slice(0, 120); }
   function mutationAllowed() { if (options.isProductionSession) throw new Error('operations mutations are unavailable inside a temporary production session'); }
-  function reply(res, promise, successCode) { Promise.resolve(promise).then(result => options.send(res, successCode || 200, { ok: true, result })).catch(error => options.send(res, /required|refused|locked|approved|confirmation|declared|not found|unavailable|expired|invalid|unsafe|limit/i.test(error.message) ? 400 : 500, { ok: false, error: String(error.message || error).slice(0, 2000) })); }
+  function reply(res, promise, successCode) { Promise.resolve(promise).then(result => options.send(res, successCode || 200, { ok: true, result })).catch(error => options.send(res, (error && error.code === 'REVIEW_OPERATION_BUSY') || /required|refused|locked|approved|confirmation|declared|not found|unavailable|expired|invalid|unsafe|limit/i.test(String(error && error.message || error)) ? 400 : 500, { ok: false, error: String(error && error.message || error).slice(0, 2000) })); }
   function requirePermission(moduleId, permission) { if (!permissions.allowed(moduleId, permission)) throw new Error(moduleId + ' requires an explicit ' + permission + ' grant in Secrets & Permissions Console'); }
   function mime(ext) { return ({ '.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.svg':'image/svg+xml','.wav':'audio/wav','.mp3':'audio/mpeg','.ogg':'audio/ogg','.mp4':'video/mp4','.webm':'video/webm','.json':'application/json; charset=utf-8','.txt':'text/plain; charset=utf-8' })[ext] || 'application/octet-stream'; }
 
@@ -115,9 +117,11 @@ function create(options) {
     if (url === '/api/machine-host/run' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-machine-host', 'explicit-run'); requirePermission('machine-host','machine.execute'); return machine.run(String(parsed.action || ''), parsed); }), 202); return true; }
     if (url === '/api/machine-host/stop' && req.method === 'POST') { reply(res, body(req, 10000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-machine-host', 'explicit-stop'); requirePermission('machine-host','machine.execute'); return machine.stop(parsed.id); })); return true; }
 
-    if (url === '/api/reviews' && req.method === 'GET') { reply(res, { items: review.list({ state: query(req).get('state') || '' }), summary: review.summary(), structuralReview: readinessObserver.snapshot() }); return true; }
+    if (url === '/api/reviews' && req.method === 'GET') { const items = review.list({ state: query(req).get('state') || '' }); reply(res, { items, summary: review.summary(), operationLease:review.operationLeaseStatus(), structuralReview: readinessObserver.snapshot(), authority: reviewAuthority.assessAll(items) }); return true; }
     if (url === '/api/reviews' && req.method === 'POST') { reply(res, body(req, 200000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'explicit-submit'); return review.submit(parsed); })); return true; }
+    if (url === '/api/reviews/authenticated-submit' && req.method === 'POST') { reply(res, body(req, 2300000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'authenticated-submit'); return reviewAuthority.submit(parsed.candidate, parsed.envelope); })); return true; }
     if (url === '/api/reviews/vote' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'exact-digest-vote'); if (parsed.confirmation !== 'REVIEW EXACT DIGEST') throw new Error('exact review confirmation is required'); return review.vote(parsed.id, parsed); })); return true; }
+    if (url === '/api/reviews/authenticated-vote' && req.method === 'POST') { reply(res, body(req, 200000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'authenticated-vote'); return reviewAuthority.vote(parsed.envelope); })); return true; }
     if (url === '/api/reviews/technical-check' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'deterministic-technical-check'); if (parsed.confirmation !== 'RUN READ-ONLY TECHNICAL CHECK') throw new Error('read-only technical check confirmation is required'); return codeDraftTechnicalReviewer.review(parsed.id, parsed.artifactDigest); })); return true; }
     if (url === '/api/reviews/technical-check-pending' && req.method === 'POST') { reply(res, body(req, 10000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'deterministic-technical-check-batch'); if (parsed.confirmation !== 'RUN BOUNDED READ-ONLY TECHNICAL CHECKS') throw new Error('bounded technical-check confirmation is required'); return codeDraftTechnicalReviewer.reviewPending(); })); return true; }
     if (url === '/api/reviews/discuss' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'explicit-discussion'); return review.discuss(parsed.id, parsed); })); return true; }
@@ -181,6 +185,8 @@ function create(options) {
     if (url === '/api/qa-lab' && req.method === 'GET') { reply(res, qa.status()); return true; }
     if (url === '/api/qa-lab/run' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'explicit-run'); requirePermission('browser-lan-hardware-qa-lab','qa.run'); return qa.run(Object.assign({}, parsed, { originPort: typeof options.getPort === 'function' ? options.getPort() : options.port })); }), 202); return true; }
     if (url === '/api/qa-lab/evidence' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'device-evidence'); requirePermission('browser-lan-hardware-qa-lab','qa.run'); return qa.recordDeviceEvidence(parsed); })); return true; }
+    if (url === '/api/qa-lab/phone-review/open' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'explicit-phone-review-open'); if (parsed.confirmation !== 'OPEN EXACT PHONE CANDIDATE REVIEW') throw new Error('exact phone candidate review confirmation is required'); return qa.openPhoneReview({ evidenceId: parsed.evidenceId }); })); return true; }
+    if (url === '/api/qa-lab/phone-review' && req.method === 'GET') { const q=query(req); reply(res, qa.phoneReviewHandoff({ evidenceId:q.get('evidenceId'), reviewId:q.get('reviewId') || null })); return true; }
 
     if (url === '/api/template-runtime' && req.method === 'GET') { reply(res, templates.status()); return true; }
     if (url === '/api/template-runtime/pack' && req.method === 'POST') { reply(res, body(req, 500000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-template', 'explicit-save'); return templates.savePack(parsed, actor(req, parsed)); })); return true; }
@@ -263,7 +269,7 @@ function create(options) {
   }
 
   function stop() { platformCourier.stop(); recovery.stopSchedule(); assets.stopWatcher(); multiplayer.stop('server-shutdown'); handoff.stop(); cognitiveResources.stop(); const evidence = evidenceRetention.seal('server-shutdown'); return { stopped: true, evidence }; }
-  return { handle, stop, services: { review, codeDraftTechnicalReviewer, permissions, secrets, machine, recovery, installer, workbench, modularIntake, needsObservatory, search, assets, handoff, diagnostics, windowsOffline, qa, templates, sources, media, world, multiplayer, adapters, mirror, novelty, releases, cognitiveResources, cognitiveLabs, evidenceRetention, platformCourier } };
+  return { handle, stop, services: { review, reviewAuthority, codeDraftTechnicalReviewer, permissions, secrets, machine, recovery, installer, workbench, modularIntake, needsObservatory, search, assets, handoff, diagnostics, windowsOffline, qa, templates, sources, media, world, multiplayer, adapters, mirror, novelty, releases, cognitiveResources, cognitiveLabs, evidenceRetention, platformCourier } };
 }
 
 module.exports = { create };

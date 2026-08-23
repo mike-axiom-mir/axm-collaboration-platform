@@ -19,3 +19,6 @@ rewrites a historical receipt and does not claim that current broad verification
 passed. It performs no I/O and grants no write, execution, permission,
 installation, promotion, merge, Foundation, or `CANON` authority.
 
+Its exported serialization and clone boundaries use the shared deterministic
+JSON core. Unsupported or lossy states are refused instead of being silently
+removed, coerced, or emitted as invalid JSON.

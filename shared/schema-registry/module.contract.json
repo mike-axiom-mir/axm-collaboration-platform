@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "schema-registry",
+  "version": "v0.1",
+  "provides": [
+    "city.schema.resolve-exact",
+    "city.schema.compatibility-conservative",
+    "city.schema.adapter-route-explicit",
+    "city.schema.registry-drift-check"
+  ],
+  "consumes": ["axm.city-graph/v1", "filesystem:declared-schema-files"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.schema-registry/v1", "axm.schema-compatibility/v1"],
+    "accepts": ["axm.city-graph/v1", "json-schema:draft-2020-12"]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "recompile-from-city-graph",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": ["explicit-generated-schema-registry-under-registry/generated"],
+    "refuses": [
+      "schema-migration",
+      "version-label-as-compatibility-proof",
+      "undeclared-loss",
+      "adapter-execution",
+      "module-rewrite",
+      "installation",
+      "execution",
+      "network-write",
+      "promotion",
+      "merge",
+      "canon-change",
+      "root-change"
+    ]
+  }
+}

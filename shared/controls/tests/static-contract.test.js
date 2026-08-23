@@ -38,7 +38,7 @@ test('manifest keeps connected AI separate from optional built-in Host AI', () =
   assert.equal(manifest.githubModified, false);
 });
 
-test('dormant physical-controller route changes the hand, not the seat authority', () => {
+test('migrating physical-controller route changes the hand, not the seat authority', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'BUILD_MANIFEST.json')));
   const route = JSON.parse(fs.readFileSync(path.join(root, 'PHYSICAL_CONTROLLER_ROUTE.json')));
   const bindingSchema = JSON.parse(fs.readFileSync(path.join(root, 'schemas', 'input-source-binding.schema.json')));
@@ -50,7 +50,12 @@ test('dormant physical-controller route changes the hand, not the seat authority
   assert.equal(route.coreDecision.gamepadIsInputSource, true);
   assert.equal(route.coreDecision.changingInputPreservesSeatIdentity, true);
   assert.equal(route.assignment.gamepadIndexIsPlayerNumber, false);
-  assert.equal(route.assignment.partyScreenPollsGamepads, false);
+  assert.equal(route.assignment.partyScreenPollsGamepads, true);
+  assert.equal(
+    route.assignment.partyScreenPollingScope,
+    'qualifying shared-screen co-op games with an integrated semantic mapping',
+  );
+  assert.deepEqual(route.platformDefault.integratedGames, ['004-relaybound', '013-toonfall-gatewatch']);
   assert.equal(route.sourceLease.exactlyOneActivePerHumanSeat, true);
   assert.equal(route.sourceLease.rawGamepadIdPersisted, false);
   assert.equal(route.authorityTransitions.connectedAiIsHumanInputSource, false);

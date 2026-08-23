@@ -8,11 +8,20 @@ const assert = require('node:assert/strict');
 
 const root = path.join(__dirname, '..');
 const exportRoot = path.join(root, 'exports', 'tilburg-authored-city-world-tile-source');
-const manifest = JSON.parse(fs.readFileSync(path.join(exportRoot, 'world-source.json'), 'utf8'));
+const manifestPath = path.join(exportRoot, 'world-source.json');
+const exportAvailable = fs.existsSync(manifestPath);
+const manifest = exportAvailable ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : null;
 const layers = ['ground', 'road', 'sidewalk', 'building', 'park', 'water', 'rail'];
 const sha256 = (buffer) => crypto.createHash('sha256').update(buffer).digest('hex');
 
-test('neutral world source is an exact 12x8 semantic companion to the raster', () => {
+function requireLocalExport(context) {
+  if (exportAvailable) return true;
+  context.skip('TEST_HOLD: generated neutral world-source export is intentionally absent from the clean public source checkout');
+  return false;
+}
+
+test('neutral world source is an exact 12x8 semantic companion to the raster', (context) => {
+  if (!requireLocalExport(context)) return;
   assert.equal(manifest.schema, 'axm-neutral-world-tile-source/v1');
   assert.equal(manifest.catalogSlot, 1);
   assert.deepEqual(manifest.world, {
@@ -28,7 +37,8 @@ test('neutral world source is an exact 12x8 semantic companion to the raster', (
   assert.equal(manifest.rasterAlignment.height, 8192);
 });
 
-test('every semantic feature has bounded world/local geometry and explicit navigation flags', () => {
+test('every semantic feature has bounded world/local geometry and explicit navigation flags', (context) => {
+  if (!requireLocalExport(context)) return;
   const totals = Object.fromEntries(layers.map((layer) => [layer, 0]));
   for (const entry of manifest.chunking.chunks) {
     const buffer = fs.readFileSync(path.join(exportRoot, entry.file));
@@ -57,7 +67,8 @@ test('every semantic feature has bounded world/local geometry and explicit navig
   assert.ok(totals.road > 0 && totals.sidewalk > 0 && totals.building > 0 && totals.park > 0 && totals.water > 0 && totals.rail > 0);
 });
 
-test('source and semantic digests reproduce independently', () => {
+test('source and semantic digests reproduce independently', (context) => {
+  if (!requireLocalExport(context)) return;
   const sourceDigest = crypto.createHash('sha256');
   sourceDigest.update(fs.readFileSync(path.join(root, 'data', 'maps', 'tilburg-authored-city-alpha', 'map.json')));
   for (const name of fs.readdirSync(path.join(root, 'data', 'maps', 'tilburg-authored-city-alpha', 'map-chunks')).filter((name) => name.endsWith('.json')).sort()) {

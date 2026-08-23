@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const ReturnGate = require('../../tools/branch-module-return-gate/return-gate-core');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const HOST_PROFILE_SCHEMA = 'axm.simulation-lab-host-profile/v1';
 const EXTENSION_SCHEMA = 'axm.simulation-lab-extension/v1';
@@ -93,18 +94,8 @@ const CANDIDATE_REFUSALS = Object.freeze([
   'model-weight-training-claim'
 ]);
 
-function stableValue(value) {
-  if (Array.isArray(value)) return value.map(stableValue);
-  if (value && typeof value === 'object') {
-    const output = {};
-    Object.keys(value).sort().forEach((key) => { output[key] = stableValue(value[key]); });
-    return output;
-  }
-  return value;
-}
-
 function stableStringify(value) {
-  return JSON.stringify(stableValue(value));
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {
@@ -113,7 +104,7 @@ function sha256(value) {
 }
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(DeterministicJson.canonicalJson(value));
 }
 
 function exactKeys(value, allowed, label) {

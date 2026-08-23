@@ -1,0 +1,50 @@
+{
+  "schema": "axm.git-pr-sequencer-live-read-receipt/v1",
+  "status": "PASS",
+  "mode": "GITHUB_REMOTE_READ_ONLY",
+  "repository": "github.com/mike-axiom-mir/axm-collaboration-platform",
+  "observedMain": "a4f99fbfc05268173458bf3fb8f3fe616919e376",
+  "sequence": {
+    "state": "NEXT_READY",
+    "planDigest": "4aa2f2abd8692518f87263b1cc3839278779bab1508fe371a2dbd64fc78f10fe",
+    "verificationState": "PASS",
+    "verificationDigest": "874c676ea05c112029bb835555a8c65a9dd65224bb4362373460994019eec8d8",
+    "nextPullRequest": 32,
+    "nextExpectedHead": "1dc6b83eecf8428ca23a19685ef5398495341857",
+    "waiting": [33, 29, 30],
+    "ifNextIsMerged": {
+      "refreshRequired": [33],
+      "alreadyHeld": [29, 30]
+    },
+    "unlistedOpen": []
+  },
+  "observedClassifications": [
+    { "pullRequest": 32, "intrinsic": "READY", "sequence": "READY_NEXT" },
+    { "pullRequest": 33, "intrinsic": "DRAFT_REVIEW_REQUIRED", "sequence": "WAIT_FOR_PREDECESSOR" },
+    { "pullRequest": 29, "intrinsic": "HANDOFF_MISSING", "alsoObserved": ["OBSERVED_BASE_DRIFT", "DRAFT_REVIEW_REQUIRED"], "sequence": "WAIT_FOR_PREDECESSOR" },
+    { "pullRequest": 30, "intrinsic": "HANDOFF_MISSING", "alsoObserved": ["OBSERVED_BASE_DRIFT", "DRAFT_REVIEW_REQUIRED"], "sequence": "WAIT_FOR_PREDECESSOR" }
+  ],
+  "platformHandoff": {
+    "state": "NEXT_READY",
+    "handoffDigest": "89fa0e3860c5e9821e6d125f9c24fb856263d8b3f03d1580f6b67173b720116e",
+    "verificationState": "PASS",
+    "verificationDigest": "18b4c53ef154a1a32abe22c02dddb052538863147593e0454ac67ad812a178cc"
+  },
+  "externalArtifactSha256": {
+    "sequence-plan.json": "7b42bfeb28310a3de1a715e785ff5e86ed04a5da9db9a07b2ac28d3baeba643c",
+    "sequence-plan-verification.json": "3880c0bfa8e3e292f49de2c2974705e2d4541ef7f71679391e35afaa664c706a",
+    "platform-next-action.json": "2aaf2137057a4e17f0e1aa94785eb7daaf53cd858466af3d5999df303a317035",
+    "platform-next-action-verification.json": "97b922ccd74dd960b3e78bd1734a80c87b1732f8d1b87c63ef4eeac18cf15420"
+  },
+  "writes": {
+    "repository": false,
+    "branch": false,
+    "pullRequest": false,
+    "readyTransition": false,
+    "merge": false
+  },
+  "limitations": [
+    "GitHub receiver state can change after this observation and must be reprobed before any action.",
+    "The sequencer provides technical ordering evidence only; platform Axiom/Mir still performs independent review."
+  ]
+}

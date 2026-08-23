@@ -33,6 +33,11 @@ SHA-256 digests and candidate source paths. Keeping the schema fixtures with the
 adapter makes a clean checkout testable without installing or partially
 promoting the much larger experimental GEI tool candidate.
 
+The adapter now applies `deterministic-json-core` before cloning or canonical
+comparison. Its safe packet bytes remain historical-compatible, while
+undefined and other non-JSON-representable source state is refused before need
+mapping or digest construction.
+
 Run focused checks with:
 
 ```powershell

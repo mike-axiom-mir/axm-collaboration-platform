@@ -1,0 +1,154 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "v50-stage-accumulation",
+      "kind": "behavioral",
+      "claim": "At 200 syntactically valid residual names v5.0 status reports STAGED; at 201 it holds and truncates, while invalid JSON with a valid name is still reported as staged.",
+      "evidence": [
+        "BASELINE_STAGE_ACCUMULATION.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The baseline is synthetic name/status evidence and does not claim every residual stage is safe to archive."
+    },
+    {
+      "id": "exact-stage-artifact-plan",
+      "kind": "technical",
+      "claim": "The v5.1 single-stage plan validates exact intent, decision, or result JSON against the lowercase filename retirement id and artifact kind.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Malformed, oversized, missing, uppercase, symlink-shaped, or unreadable evidence stays held."
+    },
+    {
+      "id": "target-and-archive-classification",
+      "kind": "behavioral",
+      "claim": "The plan classifies authoritative target and archive evidence and refuses conflicting or invalid targets and archives without changing them.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Classification is bounded local filesystem observation and does not exclude noncooperating writers."
+    },
+    {
+      "id": "closed-archival-request",
+      "kind": "authorization",
+      "claim": "Archival requires a closed publisher-abandonment assertion, exact lowercase stage filename, stage digest, filename/digest confirmation, and trimmed 20-to-500-character reason.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The assertion is not authenticated and its truth is not established."
+    },
+    {
+      "id": "lossless-archive-order",
+      "kind": "behavioral",
+      "claim": "Exact staged bytes are exclusively hard-linked into the separate archive, verified, and only then removed from the active staging path.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The bytes remain stored; this is not deletion or space reclamation."
+    },
+    {
+      "id": "authoritative-target-preservation",
+      "kind": "behavioral",
+      "claim": "Archival leaves an absent authoritative target absent and preserves exact already-published target bytes.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "A concurrent publisher may independently create the target; archival itself never targets it."
+    },
+    {
+      "id": "archive-crash-convergence",
+      "kind": "persistence",
+      "claim": "Nine real child-process exits cover pre-link, post-link, and post-unlink archival checkpoints for intent, decision, and result stages; exact retry converges.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "These are process exits, not power interruption or directory-entry durability evidence."
+    },
+    {
+      "id": "archive-caller-convergence",
+      "kind": "behavioral",
+      "claim": "Reentrant and two real cooperating single-host callers converge through the exclusive digest-verified archive checkpoint.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "This does not prove multi-host, network-filesystem, or noncooperating-writer safety."
+    },
+    {
+      "id": "bounded-status-restoration",
+      "kind": "behavioral",
+      "claim": "Direct exact archival of one stage from a 201-stage fixture restores bounded aggregate visibility to 200 active stages.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The archive is unbounded and no storage-retention policy is provided."
+    },
+    {
+      "id": "inherited-retirement-regression",
+      "kind": "regression",
+      "claim": "Inherited lease, retirement, publication, recovery, convergence, withdrawal, and decision-process checks remain passing.",
+      "evidence": [
+        "CHECK_RESULTS.json",
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Focused tests do not cover every filesystem or external writer."
+    },
+    {
+      "id": "required-checks",
+      "kind": "technical",
+      "claim": "All ten exact AGENTS.md commands exit zero on the product worktree.",
+      "evidence": [
+        "CHECK_RESULTS.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "Script checks are separate from browser render/click evidence."
+    },
+    {
+      "id": "clean-product-replay",
+      "kind": "persistence",
+      "claim": "The exact 108-file product dependency slice replays eleven focused commands with 930 assertions or controls and no tracked-byte changes.",
+      "evidence": [
+        "CLEAN_PRODUCT_REPLAY.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The replay is a bounded dependency slice, not every repository file or host substrate."
+    },
+    {
+      "id": "aggregate-operations-nonpass",
+      "kind": "technical",
+      "claim": "Aggregate operations reaches the archival and inherited product checks and then fails at the unchanged missing curated verification intake.",
+      "evidence": [
+        "AGGREGATE_OPERATIONS_PROBE.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "The aggregate command is not claimed as passing and the intake lane remains outside this product diff."
+    },
+    {
+      "id": "authority-and-browser-boundary",
+      "kind": "visual",
+      "claim": "No browser-facing product file or archival route changed; Review Inbox remains TEST and no browser pass, human review, merge, or CANON authority is claimed.",
+      "evidence": [
+        "SOURCE_SNAPSHOT.json",
+        "NATIVE_SURFACE_RECEIPT.json"
+      ],
+      "verdict": "PASS",
+      "counterevidence": "No Mike Tobi / AXM acceptance or authenticated human review occurred."
+    }
+  ],
+  "routesDigest": "sha256:30b1918cb1e9ea9672779d16675d972711d5d47646868dce1cc1e32a2bf6094e"
+}

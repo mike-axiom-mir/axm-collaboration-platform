@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.lineage-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "lineageId", "eventKind", "shellId", "parentManifestRefs", "continuityEvidenceRefs", "humanDecisionReceiptRef", "disclosureKinds", "state", "truth", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.lineage-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "lineageId": {"$ref": "common.schema.json#/$defs/id"},
+    "eventKind": {"enum": ["ORIGIN", "FORK", "MIGRATION", "RECONSTRUCTION", "SUCCESSION_PROPOSAL", "RETIREMENT_PROPOSAL"]},
+    "shellId": {"$ref": "common.schema.json#/$defs/id"},
+    "parentManifestRefs": {"type": "array", "maxItems": 8, "items": {"$ref": "common.schema.json#/$defs/reference"}},
+    "continuityEvidenceRefs": {"type": "array", "maxItems": 64, "items": {"$ref": "common.schema.json#/$defs/reference"}},
+    "humanDecisionReceiptRef": {"oneOf": [{"type": "null"}, {"$ref": "common.schema.json#/$defs/reference"}]},
+    "disclosureKinds": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"enum": ["FORK", "MIGRATION", "RECONSTRUCTION", "SUCCESSION", "RETIREMENT", "ADAPTER_SWAP", "BODY_SWAP", "MODEL_OR_CONNECTOR_SWAP"]}},
+    "state": {"enum": ["ORIGIN_RECORDED", "FORK_RECORDED", "MIGRATION_RECORDED", "RECONSTRUCTION_RECORDED", "PROPOSED_FOR_EXTERNAL_GATE"]},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["parentManifestBytesMutated", "nameOrProfileResemblanceEstablishesContinuity", "successionEffective", "retirementEffective", "automaticInheritance", "automaticPromotion"],
+      "properties": {"parentManifestBytesMutated": {"const": false}, "nameOrProfileResemblanceEstablishesContinuity": {"const": false}, "successionEffective": {"const": false}, "retirementEffective": {"const": false}, "automaticInheritance": {"const": false}, "automaticPromotion": {"const": false}}
+    },
+    "receiptDigest": {"$ref": "common.schema.json#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"eventKind": {"const": "ORIGIN"}}, "required": ["eventKind"]},
+      "then": {"properties": {"state": {"const": "ORIGIN_RECORDED"}, "parentManifestRefs": {"maxItems": 0}, "humanDecisionReceiptRef": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"eventKind": {"const": "FORK"}}, "required": ["eventKind"]},
+      "then": {"properties": {"state": {"const": "FORK_RECORDED"}, "parentManifestRefs": {"minItems": 1, "maxItems": 1}, "humanDecisionReceiptRef": {"type": "null"}, "disclosureKinds": {"contains": {"const": "FORK"}, "minContains": 1}}}
+    },
+    {
+      "if": {"properties": {"eventKind": {"const": "MIGRATION"}}, "required": ["eventKind"]},
+      "then": {"properties": {"state": {"const": "MIGRATION_RECORDED"}, "parentManifestRefs": {"minItems": 1, "maxItems": 1}, "continuityEvidenceRefs": {"minItems": 1}, "humanDecisionReceiptRef": {"type": "null"}, "disclosureKinds": {"contains": {"const": "MIGRATION"}, "minContains": 1}}}
+    },
+    {
+      "if": {"properties": {"eventKind": {"const": "RECONSTRUCTION"}}, "required": ["eventKind"]},
+      "then": {"properties": {"state": {"const": "RECONSTRUCTION_RECORDED"}, "parentManifestRefs": {"minItems": 1, "maxItems": 1}, "continuityEvidenceRefs": {"minItems": 1}, "humanDecisionReceiptRef": {"type": "null"}, "disclosureKinds": {"contains": {"const": "RECONSTRUCTION"}, "minContains": 1}}}
+    },
+    {
+      "if": {"properties": {"eventKind": {"const": "SUCCESSION_PROPOSAL"}}, "required": ["eventKind"]},
+      "then": {"properties": {"state": {"const": "PROPOSED_FOR_EXTERNAL_GATE"}, "parentManifestRefs": {"minItems": 1, "maxItems": 1}, "continuityEvidenceRefs": {"minItems": 1}, "humanDecisionReceiptRef": {"$ref": "common.schema.json#/$defs/reference"}, "disclosureKinds": {"contains": {"const": "SUCCESSION"}, "minContains": 1}}}
+    },
+    {
+      "if": {"properties": {"eventKind": {"const": "RETIREMENT_PROPOSAL"}}, "required": ["eventKind"]},
+      "then": {"properties": {"state": {"const": "PROPOSED_FOR_EXTERNAL_GATE"}, "parentManifestRefs": {"minItems": 1, "maxItems": 1}, "humanDecisionReceiptRef": {"$ref": "common.schema.json#/$defs/reference"}, "disclosureKinds": {"contains": {"const": "RETIREMENT"}, "minContains": 1}}}
+    }
+  ]
+}

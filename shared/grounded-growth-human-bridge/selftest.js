@@ -168,6 +168,11 @@ ok(bundleSchema.$id === Bridge.BUNDLE_SCHEMA, 'bridge bundle schema identity mat
 ok(closureSchema.$id === Bridge.CLOSURE_SCHEMA, 'bridge closure schema identity matches the implementation');
 ok(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'module stays TEST with no permissions or writes');
 ok(contract.boundaries.refuses.includes('synthetic-fixture-as-human-benefit'), 'contract explicitly refuses synthetic fixtures as human benefit');
+ok(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
+ok(Bridge.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+assert.throws(() => Bridge.stableStringify({ lost: undefined }), /unsupported undefined/i);
+checks += 1;
+console.log('PASS unsafe canonical state is refused');
 
 const input = buildInput();
 const bundle = Bridge.build(input);

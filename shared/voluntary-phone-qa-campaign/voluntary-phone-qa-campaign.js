@@ -20,10 +20,6 @@ const CHECKLIST = [
   { id: 'SAME_CONTROLLER_RECOVERED', claim: 'The same controller recovered after the interruption.' }
 ];
 
-function stableValue(value) {
-  return JSON.parse(DeterministicJson.canonicalJson(value));
-}
-
 function stableStringify(value) {
   return DeterministicJson.canonicalJson(value);
 }
@@ -34,7 +30,7 @@ function sha256(value) {
 }
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(stableStringify(value));
 }
 
 function exactKeys(value, allowed, label) {
@@ -82,13 +78,13 @@ function validateSeamReport(report) {
 
 function validateQaLab(manifest, contract) {
   if (!manifest || manifest.id !== 'browser-lan-hardware-qa-lab' || manifest.status !== 'TEST') throw new Error('QA Lab manifest identity or status mismatch');
-  if (manifest.version !== 'v0.2' || manifest.entry !== 'index.html' || manifest.contract !== 'module.contract.json') throw new Error('QA Lab manifest route mismatch');
+  if (manifest.version !== 'v0.3' || manifest.entry !== 'index.html' || manifest.contract !== 'module.contract.json') throw new Error('QA Lab manifest route mismatch');
   if (!Array.isArray(manifest.permissions) || stableStringify(manifest.permissions) !== stableStringify(['qa.run'])) throw new Error('QA Lab manifest permission mismatch');
   if (!Array.isArray(manifest.produces) || !manifest.produces.includes('axm.device-qa-evidence/v1')) throw new Error('QA Lab device evidence handoff missing');
   if (!Array.isArray(manifest.actions) || !manifest.actions.includes('record physical-phone observation candidates')) throw new Error('QA Lab candidate capture action missing');
   if (!contract || contract.schema !== 'axm.module-contract/v1' || contract.id !== manifest.id || contract.version !== manifest.version) throw new Error('QA Lab contract identity mismatch');
   if (stableStringify(contract.permissions) !== stableStringify(manifest.permissions)) throw new Error('QA Lab manifest and contract permissions differ');
-  if (!contract.boundaries || stableStringify(contract.boundaries.writes) !== stableStringify(['state/browser-lan-hardware-qa'])) throw new Error('QA Lab state boundary mismatch');
+  if (!contract.boundaries || stableStringify(contract.boundaries.writes) !== stableStringify(['state/browser-lan-hardware-qa', 'state/review-inbox'])) throw new Error('QA Lab state boundary mismatch');
   for (const refusal of ['self-attested-physical-proof', 'manifest-warning-mutation']) {
     if (!contract.boundaries.refuses.includes(refusal)) throw new Error('QA Lab missing refusal: ' + refusal);
   }

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-archive-receipt/v1",
+  "type": "object",
+  "required": ["schema", "version", "lease_id", "owner_digest", "previous_archive_receipt_digest", "previous_anchor_digest", "source_segment_digest", "source_segment_bytes", "source_event_count", "source_first_generation", "source_last_generation", "source_tail_event_digest", "archive_blob_digest", "archive_blob_bytes", "recorded_at_ms", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-archive-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "lease_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "owner_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "previous_archive_receipt_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "previous_anchor_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "source_segment_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source_segment_bytes": { "type": "integer", "minimum": 1 },
+    "source_event_count": { "type": "integer", "minimum": 1 },
+    "source_first_generation": { "type": "integer", "minimum": 1 },
+    "source_last_generation": { "type": "integer", "minimum": 1 },
+    "source_tail_event_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "archive_blob_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "archive_blob_bytes": { "type": "integer", "minimum": 1 },
+    "recorded_at_ms": { "type": "integer", "minimum": 0 },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

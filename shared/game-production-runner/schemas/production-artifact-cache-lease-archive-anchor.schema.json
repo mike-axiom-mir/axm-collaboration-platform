@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-archive-anchor/v1",
+  "type": "object",
+  "required": ["schema", "version", "lease_id", "owner", "tail_event", "history_event_count", "archived_segment_count", "latest_archive_receipt_digest", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-archive-anchor/v1" },
+    "version": { "const": "0.1.0" },
+    "lease_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "owner": { "type": "object" },
+    "tail_event": { "type": "object" },
+    "history_event_count": { "type": "integer", "minimum": 1 },
+    "archived_segment_count": { "type": "integer", "minimum": 1 },
+    "latest_archive_receipt_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

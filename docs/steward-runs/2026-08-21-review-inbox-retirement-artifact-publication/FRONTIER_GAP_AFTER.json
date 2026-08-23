@@ -1,0 +1,265 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "atomic-authoritative-visibility",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.json.authoritative-path-atomic-visibility"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.json.authoritative-path-atomic-visibility": [
+          "cooperating processes on one host",
+          "one retirement JSON artifact at a time",
+          "same-filesystem hard-link semantics required"
+        ]
+      }
+    },
+    {
+      "id": "exclusive-no-overwrite-publication",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.json.exclusive-no-overwrite-publication"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.json.exclusive-no-overwrite-publication": [
+          "hard-link publication returns EEXIST rather than replacing existing authoritative bytes"
+        ]
+      }
+    },
+    {
+      "id": "prepublication-crash-retryability",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.json.prepublication-crash-retryable"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.json.prepublication-crash-retryable": [
+          "authoritative target remains absent",
+          "residual complete stage is non-authoritative and not reclaimed automatically"
+        ]
+      }
+    },
+    {
+      "id": "postpublication-crash-observation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.json.postpublication-crash-observable"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.json.postpublication-crash-observable": [
+          "authoritative target contains complete schema-valid bytes",
+          "residual stage may remain visible"
+        ]
+      }
+    },
+    {
+      "id": "artifact-coverage",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.json.intent-decision-result-coverage"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.json.intent-decision-result-coverage": [
+          "owner-evidence quarantine still uses a separate rename checkpoint"
+        ]
+      }
+    },
+    {
+      "id": "real-process-crash-evidence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.json.real-process-crash-evidence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.json.real-process-crash-evidence": [
+          "six child-process exits exercise pre-link and post-link boundaries for intent, decision, and result"
+        ]
+      }
+    },
+    {
+      "id": "closed-local-contract",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.retirement.json.closed-local-publication-contract"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.retirement.json.closed-local-publication-contract": [
+          "bounded read-only host-local publication status",
+          "no API or browser route",
+          "TEST status and zero authority"
+        ]
+      }
+    },
+    {
+      "id": "power-loss-durability",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "storage.power-loss-durability.proven"
+      ],
+      "declaredConstraints": {
+        "storage.power-loss-durability.proven": [
+          "no power interruption test",
+          "directory-entry durability is not asserted"
+        ]
+      }
+    },
+    {
+      "id": "cross-file-atomicity",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "storage.cross-file.atomicity"
+      ],
+      "declaredConstraints": {
+        "storage.cross-file.atomicity": [
+          "intent, decision, owner quarantine, and result remain independent checkpoints"
+        ]
+      }
+    },
+    {
+      "id": "stale-stage-reclamation",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.json.stale-stage-reclamation"
+      ],
+      "declaredConstraints": {
+        "review.retirement.json.stale-stage-reclamation": [
+          "status reports residual stages but performs no deletion, age inference, or reclamation"
+        ]
+      }
+    },
+    {
+      "id": "hard-link-free-fallback",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.retirement.json.atomic-publication-without-hard-links"
+      ],
+      "declaredConstraints": {
+        "review.retirement.json.atomic-publication-without-hard-links": [
+          "same-filesystem hard-link support is required and no fallback is claimed"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "review.retirement.json.atomic-publication-without-hard-links",
+    "review.retirement.json.stale-stage-reclamation",
+    "storage.cross-file.atomicity",
+    "storage.power-loss-durability.proven"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "review.retirement.json.atomic-publication-without-hard-links",
+      "requiredBy": [
+        "hard-link-free-fallback"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.retirement.json.stale-stage-reclamation",
+      "requiredBy": [
+        "stale-stage-reclamation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "storage.cross-file.atomicity",
+      "requiredBy": [
+        "cross-file-atomicity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "storage.power-loss-durability.proven",
+      "requiredBy": [
+        "power-loss-durability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "axm-workshop",
-  "version": "0.5.0-experimental",
+  "version": "0.7.0-experimental",
   "private": true,
   "engines": {
     "node": ">=20 <25"
@@ -13,6 +13,7 @@
     "preverify": "node scripts/generate-tools-index.js && node scripts/generate-public-discovery.js",
     "verify": "node verify.js",
     "index:tools": "node scripts/generate-tools-index.js",
+    "index:tools:refresh": "node scripts/generate-tools-index.js --refresh-clock",
     "index:tools:verify": "node scripts/generate-tools-index.js --verify --workers=2",
     "discovery:generate": "node scripts/generate-public-discovery.js",
     "discovery:verify": "node scripts/generate-public-discovery.js --verify && node tests/public-discovery-selftest.js",
@@ -36,7 +37,7 @@
     "sync:github:verify": "node tools/source-control-merge-workbench/sync-runner.js --verify-plan",
     "sync:github:run": "node tools/source-control-merge-workbench/sync-runner.js --manual-reviewed-push",
     "test": "npm run verify && npm run test:elements && npm run test:readiness && npm run test:raster-compositor && npm run test:pixel-asset-workshop && npm run test:pixel-animation-workshop && npm run test:neural-visual && npm run test:game-animation && npm run test:workshop && npm run test:operations && npm run test:foundation && npm run test:asset-hands-completion && npm run test:asset-hands-upgrades && npm run test:workspaces",
-    "test:readiness": "node shared/readiness/selftest.js && node shared/readiness/readiness-observer-selftest.js && node scripts/package-script-path-selftest.js && node worlds/world-registry-selftest.js",
+    "test:readiness": "node shared/readiness/diagnostic-redaction-selftest.js && node shared/readiness/tools-index-diagnostic-privacy-selftest.js && node shared/readiness/selftest.js && node shared/readiness/readiness-observer-selftest.js && node scripts/generate-tools-index-selftest.js && node tests/workshop-continuity-gate-test.js && node scripts/package-script-path-selftest.js && node worlds/world-registry-selftest.js",
     "test:raster-compositor": "node shared/asset-hands/raster-compositor-selftest.js",
     "test:pixel-asset-workshop": "node shared/asset-hands/pixel-asset-workshop-selftest.js",
     "test:pixel-animation-workshop": "node shared/asset-hands/pixel-animation-workshop-selftest.js",
@@ -47,7 +48,7 @@
     "test:world-tile-foundry": "node tools/world-tile-foundry/selftest.js && node tools/world-tile-foundry/discovery-seam-review.js",
     "test:game-capability-atlas": "node shared/game-capability-atlas/selftest.js && node tools/game-capability-atlas/selftest.js",
     "test:elements": "node shared/elements/selftest.js && node shared/elements/discovery-seam-review.js && node tools/element-foundry/selftest.js && node tools/element-foundry/discovery-seam-review.js",
-    "test:operations": "node shared/evidence-retention/selftest.js && node shared/operations/selftest.js && node tools/diagnostics-operations-center/selftest.js && node tools/diagnostics-operations-center/discovery-seam-review.js && node tools/module-installer/selftest.js && node tools/module-installer/discovery-seam-review.js && node tools/secrets-permissions-console/selftest.js && node tools/secrets-permissions-console/discovery-seam-review.js && node tools/recovery-center/selftest.js && node tools/recovery-center/discovery-seam-review.js && node shared/operations/wave2-selftest.js && node shared/operations/roadmap-selftest.js && npm run test:modular-intake && npm run test:cognitive-resource",
+    "test:operations": "node shared/evidence-retention/selftest.js && node shared/operations/review-operation-lease-selftest.js && node shared/operations/review-operation-lease-retirement-selftest.js && node shared/operations/review-operation-lease-retirement-publication-selftest.js && node shared/operations/review-operation-lease-retirement-publication-stage-archival-selftest.js && node shared/operations/review-operation-lease-retirement-recovery-selftest.js && node shared/operations/review-operation-lease-retirement-recovery-convergence-selftest.js && node shared/operations/review-operation-lease-retirement-recovery-process-convergence-selftest.js && node shared/operations/review-operation-lease-retirement-intent-withdrawal-selftest.js && node shared/operations/review-operation-lease-retirement-decision-process-selftest.js && node shared/operations/selftest.js && node tools/diagnostics-operations-center/selftest.js && node tools/diagnostics-operations-center/discovery-seam-review.js && node tools/module-installer/selftest.js && node tools/module-installer/discovery-seam-review.js && node tools/secrets-permissions-console/selftest.js && node tools/secrets-permissions-console/discovery-seam-review.js && node tools/recovery-center/selftest.js && node tools/recovery-center/discovery-seam-review.js && node shared/operations/wave2-selftest.js && node shared/operations/roadmap-selftest.js && npm run test:modular-intake && npm run test:cognitive-resource",
     "test:modular-intake": "node shared/modular-intake/selftest.js && node tools/modular-intake-gate/selftest.js && node tools/workshop-needs-observatory/selftest.js && node tools/verification-proof-lab/selftest.js && npm run test:accessibility-adaptation && npm run test:ai-team-steward",
     "test:accessibility-adaptation": "node tools/accessibility-adaptation-lab/selftest.js",
     "test:ai-team-steward": "node shared/ai-team-steward/source-intake-v1/intake-selftest.js && node tools/ai-team-steward-lab/selftest.js",

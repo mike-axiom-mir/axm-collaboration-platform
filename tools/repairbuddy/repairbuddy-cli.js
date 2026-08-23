@@ -5,6 +5,7 @@
      node tools/repairbuddy/repairbuddy-cli.js scan            live verifier scan, propose only
      node tools/repairbuddy/repairbuddy-cli.js scan --apply    apply matched mechanical fixes (backup, verify, receipt, rollback on fail)
      node tools/repairbuddy/repairbuddy-cli.js warnings        list verifier warnings routed to RepairBuddy
+     node tools/repairbuddy/repairbuddy-cli.js warning-delta   compare every current warning with the known-open baseline
      node tools/repairbuddy/repairbuddy-cli.js packet <id>     emit one bounded human/AI warning action packet
      node tools/repairbuddy/repairbuddy-cli.js eyes <moduleId> look underneath one module's files and code
    Escalation prompts for unmatched failures are written to exports/repairbuddy/escalations/. */
@@ -55,6 +56,39 @@ const ROOT = path.resolve(__dirname, '..', '..');
     return queue;
   }
 
+  function loadWarningDelta() {
+    const Delta = require('./verifier-warning-delta');
+    const reportFile = path.join(ROOT, 'exports', 'verify-report.json');
+    const baselineFile = path.join(__dirname, 'verifier-warning-baseline.json');
+    const outputFile = path.join(ROOT, 'exports', 'repairbuddy-warning-delta.json');
+    const startedAt = Date.now();
+    const verification = childProcess.spawnSync(process.execPath, [path.join(ROOT, 'verify.js')], {
+      cwd:ROOT,
+      encoding:'utf8',
+      shell:false,
+      windowsHide:true,
+      timeout:180000,
+      maxBuffer:32 * 1024 * 1024
+    });
+    if (verification.error || verification.status !== 0) {
+      throw new Error('fresh root verification failed: ' + String(verification.stderr || verification.stdout || verification.error).slice(-1200));
+    }
+    if (!fs.existsSync(reportFile)) throw new Error('fresh verifier produced no report');
+    const stat = fs.statSync(reportFile);
+    if (stat.mtimeMs + 2000 < startedAt) throw new Error('verify report is not bound to the current warning-delta run');
+    const report = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
+    const baseline = JSON.parse(fs.readFileSync(baselineFile, 'utf8'));
+    const delta = Delta.compareWarnings(Delta.messagesFromVerifyReport(report), baseline);
+    delta.verification = { invokedFresh:true, reportMtime:new Date(stat.mtimeMs).toISOString(), verifier:'node verify.js' };
+    const body = JSON.parse(JSON.stringify(delta)); delete body.deltaDigest;
+    delta.deltaDigest = Delta.canonicalDigest(body);
+    const checked = Delta.validateDelta(delta);
+    if (!checked.pass) throw new Error('warning delta is invalid: ' + checked.errors.join('; '));
+    fs.mkdirSync(path.dirname(outputFile), { recursive:true });
+    fs.writeFileSync(outputFile, JSON.stringify(delta, null, 2) + '\n', 'utf8');
+    return delta;
+  }
+
   function verifierSeams() {
     const report = Verifier.verifyDeclaredContracts(ROOT);
     const seams = [];
@@ -103,6 +137,22 @@ const ROOT = path.resolve(__dirname, '..', '..');
       console.log('\nUse warnings --details for exact next actions or warnings --json for the machine-readable queue.');
     }
     if (!s.replayable) console.log('No current warning has a frozen replay recipe, so RepairBuddy will not pretend to auto-fix one.');
+    return;
+  }
+
+  if (cmd === 'warning-delta') {
+    const delta = loadWarningDelta();
+    if (args.includes('--json')) console.log(JSON.stringify(delta, null, 2));
+    else {
+      console.log(`RepairBuddy warning delta · ${delta.state} · ${delta.current.warnings} current known-open warning(s)`);
+      console.log(`  ${delta.summary.added} added · ${delta.summary.resolved} resolved · ${delta.summary.changed} changed · ${delta.summary.unchanged} unchanged`);
+      console.log('  baseline: ' + delta.baseline.id + ' · ' + delta.baseline.digest);
+      delta.added.forEach(item => console.log('  ADDED    ' + item.message));
+      delta.resolved.forEach(item => console.log('  RESOLVED ' + item.message));
+      delta.changed.forEach(item => console.log('  CHANGED  ' + item.before + ' -> ' + item.after));
+      console.log('Known-open means tracked, not acknowledged or suppressed.');
+    }
+    if (args.includes('--strict') && delta.state !== 'MATCH') process.exitCode = 2;
     return;
   }
 
@@ -215,6 +265,6 @@ const ROOT = path.resolve(__dirname, '..', '..');
     return;
   }
 
-  console.error('unknown command: ' + cmd + ' (use scan | warnings [--details|--json] | packet <warningId> [--human|--ai] | replay <recipeId> <moduleId> | eyes <moduleId>)');
+  console.error('unknown command: ' + cmd + ' (use scan | warnings [--details|--json] | warning-delta [--json|--strict] | packet <warningId> [--human|--ai] | replay <recipeId> <moduleId> | eyes <moduleId>)');
   process.exit(2);
 })().catch(e => { console.error(e.stack || e.message); process.exitCode = 1; });

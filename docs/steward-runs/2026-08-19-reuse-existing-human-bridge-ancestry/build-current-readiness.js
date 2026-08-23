@@ -277,6 +277,17 @@ function writeAll() {
   return result;
 }
 
+function loadRecordedRoutes() {
+  return Prior.loadRecordedRoutes().map((route) => {
+    const link = JSON.parse(fs.readFileSync(path.join(__dirname, 'links', route.definition.slug + '-intervention-link.json'), 'utf8'));
+    const linkCheck = Bridge.verifyInterventionLink(link, route.current.outcome.cycleReceipt, route.protocol);
+    if (!linkCheck.pass) {
+      throw new Error('recorded intervention link invalid for ' + route.definition.capabilityId + ': ' + linkCheck.errors.join('; '));
+    }
+    return { ...route, link };
+  });
+}
+
 function verifyRecorded() {
   const result = buildAll();
   for (const [relativePath, expected] of outputFiles(result)) {
@@ -309,4 +320,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { buildAll, verifyRecorded, writeAll };
+module.exports = { buildAll, loadRecordedRoutes, verifyRecorded, writeAll };

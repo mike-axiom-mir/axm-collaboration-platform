@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-tier-restore/v1",
+  "type": "object",
+  "required": ["schema", "version", "package_digest", "approved_digest", "status", "explicit", "recorded_at_ms", "tier_root_fingerprint", "target_cache_root_fingerprint", "package_audit_digest", "payload_files_written", "source_files_removed", "full_audit_equivalence", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-tier-restore/v1" },
+    "version": { "const": "0.1.0" },
+    "package_digest": { "type": "string" },
+    "approved_digest": { "type": ["string", "null"] },
+    "status": { "enum": ["NOT_REQUESTED", "NOT_APPROVED", "APPROVAL_MISMATCH", "PACKAGE_REVIEW_REQUIRED", "RESTORED", "ALREADY_RESTORED"] },
+    "explicit": { "type": "boolean" },
+    "recorded_at_ms": { "type": "integer", "minimum": 0 },
+    "tier_root_fingerprint": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "target_cache_root_fingerprint": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "package_audit_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "payload_files_written": { "type": "integer", "minimum": 0 },
+    "source_files_removed": { "const": 0 },
+    "full_audit_equivalence": { "type": ["object", "null"] },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

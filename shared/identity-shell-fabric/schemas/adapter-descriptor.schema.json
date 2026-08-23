@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.adapter-descriptor/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "descriptorId", "descriptorVersion", "status", "role", "providerBinding", "contracts", "requestedPermissions", "resourceRequest", "execution", "evidenceCeiling", "truth"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.adapter-descriptor/v1"},
+    "version": {"const": "0.1.0"},
+    "descriptorId": {"$ref": "common.schema.json#/$defs/id"},
+    "descriptorVersion": {"$ref": "common.schema.json#/$defs/semver"},
+    "status": {"const": "EXPERIMENTAL"},
+    "role": {"enum": ["NEURAL_REASONER", "DETERMINISTIC_TOOL", "HUMAN_INPUT", "SENSOR", "BODY", "OUTPUT"]},
+    "providerBinding": {
+      "type": "object", "additionalProperties": false, "required": ["state", "providerFamily", "modelId", "connectorId"],
+      "properties": {"state": {"const": "UNBOUND"}, "providerFamily": {"type": "null"}, "modelId": {"type": "null"}, "connectorId": {"type": "null"}}
+    },
+    "contracts": {"type": "object", "additionalProperties": false, "required": ["accepts", "produces"], "properties": {"accepts": {"$ref": "common.schema.json#/$defs/contracts"}, "produces": {"$ref": "common.schema.json#/$defs/contracts"}}},
+    "requestedPermissions": {"$ref": "common.schema.json#/$defs/ids"},
+    "resourceRequest": {"$ref": "common.schema.json#/$defs/resourceRequest"},
+    "execution": {"$ref": "common.schema.json#/$defs/execution"},
+    "evidenceCeiling": {"type": "string", "minLength": 1, "maxLength": 800},
+    "truth": {
+      "type": "object", "additionalProperties": false, "required": ["neuralOutputAuthority", "memoryAuthority", "identityAuthority", "verificationAuthority", "truthAuthority"],
+      "properties": {"neuralOutputAuthority": {"enum": ["PROPOSAL_ONLY", "NOT_APPLICABLE"]}, "memoryAuthority": {"const": false}, "identityAuthority": {"const": false}, "verificationAuthority": {"const": false}, "truthAuthority": {"const": false}}
+    }
+  }
+}

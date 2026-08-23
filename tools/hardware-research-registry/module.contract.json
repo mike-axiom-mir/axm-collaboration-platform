@@ -1,0 +1,12 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"hardware-research-registry",
+  "version":"v0.1",
+  "status":"EXPERIMENTAL",
+  "provides":["hardware-research-package-cli","hardware-package-conflict-check","hardware-evidence-ledger-cli","hardware-research-snapshot-cli"],
+  "consumes":["service:hardware-research-registry-core","service:deterministic-research-foundry","axm.hardware-research-intake/v1","axm.research-observation/v1"],
+  "permissions":["files"],
+  "handoffs":{"emits":["axm.hardware-research-package/v1","axm.hardware-research-snapshot/v1","axm.research-evidence-ledger/v1"],"accepts":["axm.hardware-research-intake/v1","axm.hardware-research-package/v1","axm.research-observation/v1","axm.compute-hardware-reference/v1"]},
+  "boundaries":{"writes":["explicit-user-selected-external-output-file"],"refuses":["source-tree-write","implicit-output-write","physical-hardware-execution","automatic-build","automatic-procurement","automatic-safety-approval","research-source-as-trusted-instruction","automatic-promotion","automatic-canon"]},
+  "lifecycle":{"state_owner":"filesystem","reload":"resume","disconnect":"graceful-degrade","cleanup":"explicit"}
+}

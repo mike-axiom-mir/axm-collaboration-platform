@@ -1,0 +1,304 @@
+name: Publish AXM v0.7.0 experimental release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/release-requests/v0.7.0-experimental.md
+      - .github/workflows/release-v0.7.0-experimental.yml
+
+permissions: {}
+
+concurrency:
+  group: axm-v0.7.0-experimental-release
+  cancel-in-progress: false
+
+env:
+  TAG: v0.7.0-experimental
+  TITLE: AXM Workshop v0.7.0 Experimental
+  NOTES_FILE: .github/release-requests/v0.7.0-experimental.md
+
+jobs:
+  source-gates:
+    name: v0.7.0 exact source gates
+    if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.17.0
+
+      - run: npm ci
+
+      - name: Verify the release contract
+        run: node tests/v0.7.0-release-selftest.js
+
+      - name: Re-run source-facing gates
+        run: |
+          set -euo pipefail
+          node verify.js
+          node hub/hub-selftest.js
+          node hub/route-selftest.js
+          node hub/graft-selftest.js
+          node hub/skin-selftest.js
+          node hub/verify-plus.js
+          node tests/html-script-syntax-test.js
+          node tests/tool-forge-package-test.js
+          node tools/agent-tool-forge/selftest.js
+          node tools/evidence-desk/selftest.js
+          npm run discovery:verify
+          npm test
+          npm run test:public-surface
+          git diff --check
+          git diff --exit-code -- registry tools-index.json AXM_DISCOVERY_ROOT.md AXM_CAPABILITY_MAP.md
+
+      - name: Build source evidence
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          cat > release-assets/source-gates-receipt.json <<JSON
+          {
+            "schema": "axm.release-source-gates/v1",
+            "release": "v0.7.0-experimental",
+            "commit": "${GITHUB_SHA}",
+            "workflow_run": "${GITHUB_RUN_ID}",
+            "conclusion": "PASS",
+            "authority": {"release": false, "promotion": false, "canon": false}
+          }
+          JSON
+          test -f exports/verify-report.json && cp exports/verify-report.json release-assets/verify-report.json
+
+      - name: Preserve source evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: axm-v0.7.0-source-release-evidence
+          path: release-assets
+          if-no-files-found: error
+          retention-days: 90
+
+  windows-package:
+    name: v0.7.0 exact Windows package
+    if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Enable Windows long-path checkout support
+        shell: powershell
+        run: git config --system core.longpaths true
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.17.0
+
+      - run: npm ci
+
+      - name: Build the exact public package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path release-assets | Out-Null
+          $output = @(& .\tools\workshop-packager\package-workshop.ps1 -Mode public -KeepCopy false 2>&1)
+          $output | Set-Content -LiteralPath release-assets\packager-output.txt -Encoding UTF8
+          $jsonLine = $output | Where-Object { ([string]$_).Trim().StartsWith('{') } | Select-Object -Last 1
+          if (-not $jsonLine) { throw 'Packager returned no JSON receipt.' }
+          $receipt = $jsonLine | ConvertFrom-Json
+          if ($receipt.ok -ne $true -or $receipt.secret_scan -ne 'pass' -or $receipt.restore_test -ne 'pass') { throw 'Packager gates did not pass.' }
+          $name = 'AXM-Workshop-v0.7.0-experimental-Windows-source.zip'
+          $zip = Join-Path (Resolve-Path release-assets) $name
+          Copy-Item -LiteralPath $receipt.zip_path -Destination $zip
+          $receipt | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath release-assets\package-receipt.json -Encoding UTF8
+          $restore = Join-Path (Split-Path -Parent $receipt.zip_path) ([string]$receipt.restore_report)
+          Copy-Item -LiteralPath $restore -Destination release-assets\package-restore-receipt.json
+          $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLowerInvariant()
+          "$hash  $name" | Set-Content -NoNewline -LiteralPath ("$zip.sha256") -Encoding ascii
+
+      - name: Launch the exact extracted package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = Resolve-Path release-assets\AXM-Workshop-v0.7.0-experimental-Windows-source.zip
+          $extract = Join-Path (Resolve-Path release-assets) extracted
+          Expand-Archive -LiteralPath $zip -DestinationPath $extract
+          $roots = @(Get-ChildItem -LiteralPath $extract -Directory)
+          if ($roots.Count -ne 1) { throw "Expected one package root, observed $($roots.Count)." }
+          & .\tests\windows-clean-launch-smoke.ps1 `
+            -CandidateSource $roots[0].FullName `
+            -ReceiptPath (Join-Path (Resolve-Path release-assets) 'windows-package-launch-receipt.json')
+
+      - name: Build release inventory
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = @(
+            'AXM-Workshop-v0.7.0-experimental-Windows-source.zip',
+            'AXM-Workshop-v0.7.0-experimental-Windows-source.zip.sha256',
+            'package-receipt.json',
+            'package-restore-receipt.json',
+            'windows-package-launch-receipt.json'
+          )
+          $rows = foreach ($name in $files) {
+            $file = Join-Path (Resolve-Path release-assets) $name
+            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Missing release asset: $name" }
+            $item = Get-Item -LiteralPath $file
+            [ordered]@{ name=$name; bytes=$item.Length; sha256=(Get-FileHash -Algorithm SHA256 -LiteralPath $file).Hash.ToLowerInvariant() }
+          }
+          [ordered]@{
+            schema='axm.release-asset-inventory/v1'
+            release='v0.7.0-experimental'
+            commit=$env:GITHUB_SHA
+            workflow_run=$env:GITHUB_RUN_ID
+            assets=$rows
+            package_launch='PASS'
+            public_secret_scan='PASS'
+            restore_test='PASS'
+            authority=[ordered]@{ release=$false; promotion=$false; canon=$false }
+          } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath release-assets\release-asset-inventory.json -Encoding UTF8
+
+      - name: Preserve Windows release assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: axm-v0.7.0-windows-release-assets
+          path: |
+            release-assets/AXM-Workshop-v0.7.0-experimental-Windows-source.zip
+            release-assets/AXM-Workshop-v0.7.0-experimental-Windows-source.zip.sha256
+            release-assets/package-receipt.json
+            release-assets/package-restore-receipt.json
+            release-assets/windows-package-launch-receipt.json
+            release-assets/release-asset-inventory.json
+            release-assets/packager-output.txt
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    name: Publish and verify v0.7.0 receiver
+    needs: [source-gates, windows-package]
+    if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: axm-v0.7.0-source-release-evidence
+          path: source-artifact
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: axm-v0.7.0-windows-release-assets
+          path: windows-artifact
+
+      - name: Converge and verify candidate assets
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          cp -R source-artifact/. release-assets/
+          cp -R windows-artifact/. release-assets/
+          cd release-assets
+          sha256sum -c AXM-Workshop-v0.7.0-experimental-Windows-source.zip.sha256
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const inventory = JSON.parse(fs.readFileSync('release-asset-inventory.json', 'utf8'));
+          const packageReceipt = JSON.parse(fs.readFileSync('package-receipt.json', 'utf8'));
+          const launch = JSON.parse(fs.readFileSync('windows-package-launch-receipt.json', 'utf8'));
+          const source = JSON.parse(fs.readFileSync('source-gates-receipt.json', 'utf8'));
+          if (inventory.commit !== process.env.GITHUB_SHA) throw new Error('asset inventory commit mismatch');
+          if (inventory.package_launch !== 'PASS' || inventory.public_secret_scan !== 'PASS' || inventory.restore_test !== 'PASS') throw new Error('asset inventory gate mismatch');
+          if (packageReceipt.ok !== true || packageReceipt.secret_scan !== 'pass' || packageReceipt.restore_test !== 'pass') throw new Error('package receipt mismatch');
+          if (launch.verdict !== 'PASS' || launch.health_ok !== true) throw new Error('exact package launch receipt mismatch');
+          if (source.commit !== process.env.GITHUB_SHA || source.conclusion !== 'PASS') throw new Error('source gate receipt mismatch');
+          NODE
+
+      - name: Refuse an existing tag or release
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::error::Tag ${TAG} already exists; refusing to retarget it."
+            exit 1
+          fi
+          if gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::error::Release ${TAG} already exists; refusing a duplicate."
+            exit 1
+          fi
+
+      - name: Create the exact prerelease
+        run: |
+          set -euo pipefail
+          gh release create "${TAG}" \
+            --target "${GITHUB_SHA}" \
+            --title "${TITLE}" \
+            --notes-file "${NOTES_FILE}" \
+            --prerelease \
+            release-assets/AXM-Workshop-v0.7.0-experimental-Windows-source.zip \
+            release-assets/AXM-Workshop-v0.7.0-experimental-Windows-source.zip.sha256 \
+            release-assets/package-receipt.json \
+            release-assets/package-restore-receipt.json \
+            release-assets/windows-package-launch-receipt.json \
+            release-assets/release-asset-inventory.json \
+            release-assets/source-gates-receipt.json \
+            release-assets/verify-report.json
+
+      - name: Verify receiver and attach its receipt
+        run: |
+          set -euo pipefail
+          release="${RUNNER_TEMP}/v070-release.json"
+          receipt="release-assets/release-receiver-receipt.json"
+          gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" > "$release"
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const release = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/v070-release.json', 'utf8'));
+          const required = [
+            'AXM-Workshop-v0.7.0-experimental-Windows-source.zip',
+            'AXM-Workshop-v0.7.0-experimental-Windows-source.zip.sha256',
+            'package-receipt.json',
+            'package-restore-receipt.json',
+            'windows-package-launch-receipt.json',
+            'release-asset-inventory.json',
+            'source-gates-receipt.json',
+            'verify-report.json'
+          ];
+          const assets = new Map((release.assets || []).map(asset => [asset.name, asset]));
+          if (release.tag_name !== process.env.TAG) throw new Error('published tag mismatch');
+          if (release.target_commitish !== process.env.GITHUB_SHA) throw new Error('published target mismatch');
+          if (release.name !== process.env.TITLE || release.draft !== false || release.prerelease !== true) throw new Error('release state mismatch');
+          for (const name of required) {
+            const asset = assets.get(name);
+            if (!asset || !(asset.size > 0)) throw new Error('missing or empty release asset: ' + name);
+          }
+          fs.writeFileSync('release-assets/release-receiver-receipt.json', JSON.stringify({
+            schema:'axm.release-receiver-receipt/v1',
+            release:'v0.7.0-experimental',
+            tag:release.tag_name,
+            target_commit:release.target_commitish,
+            prerelease:release.prerelease,
+            draft:release.draft,
+            asset_names:[...assets.keys()].sort(),
+            receiver_verified:true,
+            workflow_run:process.env.GITHUB_RUN_ID,
+            authority:{promotion:false,canon:false,productionCertification:false}
+          }, null, 2) + '\n');
+          NODE
+          gh release upload "${TAG}" "$receipt" --clobber
+          gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.assets[].name' | grep -Fx 'release-receiver-receipt.json'

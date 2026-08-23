@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.common/v1",
+  "$defs": {
+    "id": {"type": "string", "minLength": 2, "maxLength": 160, "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"},
+    "semver": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9a-z]+(?:[.-][0-9a-z]+)*)?$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "contract": {"type": "string", "minLength": 1, "maxLength": 180, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "text": {"type": "string", "minLength": 1, "maxLength": 1600},
+    "ids": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "contracts": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/contract"}},
+    "digests": {"type": "array", "maxItems": 256, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "schema": {"$ref": "#/$defs/contract"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "resourceRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["computeUnits", "memoryBytes", "storageBytes", "timeMilliseconds", "networkDomains", "energyMilliwattHours", "actuationOperations"],
+      "properties": {
+        "computeUnits": {"type": "integer", "minimum": 0},
+        "memoryBytes": {"type": "integer", "minimum": 0},
+        "storageBytes": {"type": "integer", "minimum": 0},
+        "timeMilliseconds": {"type": "integer", "minimum": 0},
+        "networkDomains": {"$ref": "#/$defs/ids"},
+        "energyMilliwattHours": {"type": "integer", "minimum": 0},
+        "actuationOperations": {"const": 0}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "codeIncluded", "loadable", "executable"],
+      "properties": {
+        "mode": {"const": "INERT_DESCRIPTOR_ONLY"},
+        "codeIncluded": {"const": false},
+        "loadable": {"const": false},
+        "executable": {"const": false}
+      }
+    },
+    "knownMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "unit", "requested", "permitted"],
+      "properties": {
+        "state": {"const": "KNOWN"},
+        "unit": {"type": "string"},
+        "requested": {"type": "integer", "minimum": 0},
+        "permitted": {"type": "integer", "minimum": 0}
+      }
+    },
+    "unknownMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "unit", "requested", "permitted"],
+      "properties": {
+        "state": {"const": "UNKNOWN"},
+        "unit": {"type": "string"},
+        "requested": {"type": "null"},
+        "permitted": {"type": "null"}
+      }
+    }
+  }
+}

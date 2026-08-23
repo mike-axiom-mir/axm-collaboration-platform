@@ -5,7 +5,9 @@ const path = require('path');
 const crypto = require('crypto');
 
 const TEXT_EXT = new Set(['.js', '.cjs', '.mjs', '.html', '.css', '.json', '.md', '.txt', '.bat', '.cmd', '.ps1', '.svg', '.csv', '.tsv', '.xml', '.yml', '.yaml']);
-const EXCLUDED = new Set(['.git', 'node_modules', 'exports', 'backups', 'logs', 'state', 'local-data', '.cache', 'coverage', 'tmp']);
+const EXCLUDED = new Set(['.git', 'node_modules', 'exports', 'backups', 'logs', 'state', 'local-data', 'intakes', '.cache', 'coverage', 'tmp']);
+const MEASUREMENT_VERSION = 8;
+const SCOPE_RULES_VERSION = 2;
 const COMPONENT_KEYS = ['hands', 'schemas', 'protocols', 'validators'];
 const METRIC_KEYS = ['totalFiles', 'textFiles', 'binaryFiles', 'characters', 'lines', 'bytes', 'modules', 'worlds', 'games', 'tests', 'hands', 'schemas', 'protocols', 'validators', 'exactCapabilities', 'capabilityDeclarations', 'codeFiles', 'codeLines', 'testLines', 'documentLines', 'otherTextLines', 'assetFiles', 'assetBytes'];
 const MIRROR_METRIC_KEYS = ['totalFiles', 'bytes', 'bodyFiles', 'bodyBytes', 'characters', 'lines', 'stateFiles', 'stateBytes', 'substrateFiles', 'substrateBytes', 'historyFiles', 'historyBytes', 'outputFiles', 'outputBytes', 'logFiles', 'logBytes', 'modules', 'organs', 'tests', 'contracts', 'trainingFiles', 'specializationCount'];
@@ -262,7 +264,7 @@ function scanMirror(root) {
 }
 
 function attachMirror(metrics, mirror) {
-  const out = Object.assign({}, metrics, { measurementVersion:7, mirror:mirror || null });
+  const out = Object.assign({}, metrics, { measurementVersion:MEASUREMENT_VERSION, scopeRulesVersion:SCOPE_RULES_VERSION, mirror:mirror || null });
   out.fingerprint = crypto.createHash('sha256').update(JSON.stringify({ workshop:metrics.fingerprint, mirror:mirror && mirror.fingerprint || null })).digest('hex').slice(0, 16);
   return out;
 }
@@ -375,8 +377,8 @@ function scanRoot(root, inputCache, retainCache) {
   } catch (_) {}
   const capabilityCounts = scanCapabilities(root);
   const scanHealth = { partial:walked.unreadableDirectoryCount > 0 || unreadableFileCount > 0, unreadableDirectoryCount:walked.unreadableDirectoryCount, unreadableDirectories:walked.unreadableDirectories, unreadableFileCount, unreadableFiles };
-  const measured = { measurementVersion:7, scope: 'active-workshop-source', excluded: Array.from(EXCLUDED), totalFiles: processedFiles, textFiles, binaryFiles, characters, lines, bytes, modules, worlds, games, tests, hands, handBreakdown:{ creation:creationHands, aiNative:aiNativeHands, sensoryAdapters, sensoryOverlapNote:'Sensorium Eye reuses the ephemeral-vision AI-native hand.' }, schemas, protocols, validators, exactCapabilities:capabilityCounts.exactCapabilities, capabilityDeclarations:capabilityCounts.capabilityDeclarations, codeFiles, codeLines, testLines, documentLines, otherTextLines, assetFiles, assetBytes, moduleFingerprints, moduleActivity, worldFingerprints, worldActivity, extensions, largest: largest.slice(0, 8), activity: { windowHours:24, lastHour, hourly, latest:latest.slice(0,16), truth:{ filesystemModificationSignal:true, completedWorkClaim:false, linesCurrentInTouchedFilesNotLinesAdded:true, verifiedGoalCompletionSeparate:true } }, scanHealth, measuredAt: new Date(activityNow).toISOString() };
-  measured.fingerprint = crypto.createHash('sha256').update(JSON.stringify({ totalFiles: measured.totalFiles, characters: measured.characters, lines: measured.lines, bytes: measured.bytes, modules, worlds, games, tests, hands, schemas, protocols, validators, exactCapabilities:measured.exactCapabilities, capabilityDeclarations:measured.capabilityDeclarations, codeLines, testLines, assetFiles, assetBytes, moduleFingerprints, worldFingerprints })).digest('hex').slice(0, 16);
+  const measured = { measurementVersion:MEASUREMENT_VERSION, scopeRulesVersion:SCOPE_RULES_VERSION, scope: 'active-workshop-source', excluded: Array.from(EXCLUDED), totalFiles: processedFiles, textFiles, binaryFiles, characters, lines, bytes, modules, worlds, games, tests, hands, handBreakdown:{ creation:creationHands, aiNative:aiNativeHands, sensoryAdapters, sensoryOverlapNote:'Sensorium Eye reuses the ephemeral-vision AI-native hand.' }, schemas, protocols, validators, exactCapabilities:capabilityCounts.exactCapabilities, capabilityDeclarations:capabilityCounts.capabilityDeclarations, codeFiles, codeLines, testLines, documentLines, otherTextLines, assetFiles, assetBytes, moduleFingerprints, moduleActivity, worldFingerprints, worldActivity, extensions, largest: largest.slice(0, 8), activity: { windowHours:24, lastHour, hourly, latest:latest.slice(0,16), truth:{ filesystemModificationSignal:true, completedWorkClaim:false, linesCurrentInTouchedFilesNotLinesAdded:true, verifiedGoalCompletionSeparate:true } }, scanHealth, measuredAt: new Date(activityNow).toISOString() };
+  measured.fingerprint = crypto.createHash('sha256').update(JSON.stringify({ scope:measured.scope, scopeRulesVersion:measured.scopeRulesVersion, totalFiles: measured.totalFiles, characters: measured.characters, lines: measured.lines, bytes: measured.bytes, modules, worlds, games, tests, hands, schemas, protocols, validators, exactCapabilities:measured.exactCapabilities, capabilityDeclarations:measured.capabilityDeclarations, codeLines, testLines, assetFiles, assetBytes, moduleFingerprints, worldFingerprints })).digest('hex').slice(0, 16);
   if (!retainCache) return { metrics:measured, cache:null, cacheChanged:false, cacheStats:{ cacheHits:0, contentReads:textFiles, eligibleTextFiles:textFiles, mode:'full-content-scan', scanHealth } };
   const priorEntries = cacheWasValid ? Object.keys(sourceCache).length : 0, currentEntries = Object.keys(nextCacheFiles).length;
   if (priorEntries !== currentEntries) cacheChanged = true;
@@ -422,7 +424,8 @@ function compactSnapshot(value) {
     capturedAt: String(value.capturedAt || value.measuredAt || new Date().toISOString()).slice(0, 40),
     scope: 'active-workshop-source',
     fingerprint: cleanText(value.fingerprint, 'missing-fingerprint', 80),
-    measurementVersion: Number(value.measurementVersion || 1)
+    measurementVersion: Number(value.measurementVersion || 1),
+    scopeRulesVersion: Number(value.scopeRulesVersion || 0)
   };
   METRIC_KEYS.forEach(key => { snapshot[key] = Number(value[key] || 0); });
   if (snapshot.measurementVersion >= 4) snapshot.moduleFingerprints = compactModuleFingerprints(value.moduleFingerprints);
@@ -462,7 +465,7 @@ function compactMirrorSnapshot(value) {
 
 function compactVelocitySample(value) {
   value = value && typeof value === 'object' ? value : {};
-  const sample = { sampledAt: String(value.sampledAt || value.measuredAt || new Date().toISOString()).slice(0, 40), measurementVersion: 4 };
+  const sample = { sampledAt: String(value.sampledAt || value.measuredAt || new Date().toISOString()).slice(0, 40), measurementVersion: 5, scopeRulesVersion:Number(value.scopeRulesVersion || 0) };
   VELOCITY_KEYS.forEach(key => { sample[key] = Number(value[key] || 0); });
   return sample;
 }
@@ -470,8 +473,8 @@ function compactVelocitySample(value) {
 function state(input) {
   input = input && typeof input === 'object' ? input : {};
   return {
-    schema: 'axm.workshop-growth/v7',
-    version: 7,
+    schema: 'axm.workshop-growth/v8',
+    version: 8,
     retention: {
       snapshots: SNAPSHOT_RETENTION,
       velocitySamples: 'rolling-744-aggregate-samples'
@@ -493,6 +496,8 @@ function recordVelocity(input, metrics, options) {
 }
 
 function velocity(current, samples, at) {
+  const currentRules = Number(current && current.scopeRulesVersion || 0);
+  samples = (Array.isArray(samples) ? samples : []).filter(item => currentRules > 0 && Number(item && item.scopeRulesVersion || 0) === currentRules);
   const now = Date.parse(at || current.measuredAt || new Date().toISOString()), rows = (Array.isArray(samples) ? samples : []).map(compactVelocitySample).filter(item => Date.parse(item.sampledAt) < now).sort((a,b) => Date.parse(a.sampledAt) - Date.parse(b.sampledAt));
   if (!rows.length) return { ready:false, reason:'A local aggregate baseline has been started; a second sample is needed.', sampleCount:0, automaticLocalAggregateOnly:true };
   const withinHour = rows.filter(item => Date.parse(item.sampledAt) >= now - 3600000), baseline = withinHour[0] || rows[rows.length - 1], baselineIndex = rows.indexOf(baseline), prior = baselineIndex > 0 ? rows[baselineIndex - 1] : null, gapBeforeBaselineMinutes = prior ? (Date.parse(baseline.sampledAt) - Date.parse(prior.sampledAt)) / 60000 : null, elapsedHours = Math.max(1 / 60, (now - Date.parse(baseline.sampledAt)) / 3600000), out = { ready:true, baselineAt:baseline.sampledAt, measuredAt:new Date(now).toISOString(), elapsedHours, sampleCount:rows.length, automaticLocalAggregateOnly:true, coverage:{ state:gapBeforeBaselineMinutes != null && gapBeforeBaselineMinutes > 45 ? 'RESUMED_AFTER_GAP' : 'CONTINUOUS', priorSampleAt:prior && prior.sampledAt || null, gapBeforeBaselineMinutes:gapBeforeBaselineMinutes == null ? null : Math.round(gapBeforeBaselineMinutes * 10) / 10, observedMinutes:Math.round(elapsedHours * 600) / 10 } };
@@ -503,6 +508,8 @@ function velocity(current, samples, at) {
 }
 
 function hourlyVelocity(current, samples, at) {
+  const currentRules = Number(current && current.scopeRulesVersion || 0);
+  samples = (Array.isArray(samples) ? samples : []).filter(item => currentRules > 0 && Number(item && item.scopeRulesVersion || 0) === currentRules);
   const now = Date.parse(at || current.measuredAt || new Date().toISOString()), hourMs = 3600000, start = Math.floor((now - 23 * hourMs) / hourMs) * hourMs, buckets = [];
   for (let offset=0; offset<24; offset++) buckets.push({ startedAt:new Date(start + offset * hourMs).toISOString(), codeLines:0, testLines:0, assets:0, measured:false });
   const points = (Array.isArray(samples) ? samples : []).map(compactVelocitySample).filter(item => { const time=Date.parse(item.sampledAt); return time >= start - hourMs && time < now; }).sort((a,b) => Date.parse(a.sampledAt) - Date.parse(b.sampledAt));
@@ -546,6 +553,14 @@ function delta(current, baseline) {
   const out = {};
   METRIC_KEYS.forEach(key => { out[key] = Number(current && current[key] || 0) - Number(baseline && baseline[key] || 0); });
   return out;
+}
+
+function scopeComparison(current, baseline) {
+  if (!baseline) return { ready:false, reason:'NO_BASELINE', message:'Save the first scope-compatible snapshot to begin measuring growth.' };
+  const currentScope = String(current && current.scope || ''), baselineScope = String(baseline.scope || '');
+  const currentRules = Number(current && current.scopeRulesVersion || 0), baselineRules = Number(baseline.scopeRulesVersion || 0);
+  if (currentScope !== baselineScope || !currentRules || currentRules !== baselineRules) return { ready:false, reason:'COUNTING_SCOPE_CHANGED', currentScope, baselineScope, currentRules, baselineRules, message:'Counting scope changed: raw intake carriers are now excluded from active Workshop source. The previous snapshot remains in history; the next saved snapshot becomes the comparable baseline.' };
+  return { ready:true, reason:'COMPARABLE_SCOPE', currentScope, baselineScope, currentRules, baselineRules };
 }
 
 function mirrorDelta(current, baseline) {
@@ -596,4 +611,4 @@ function worldChanges(current, baseline) {
   return { exact:false, mode:baseline ? 'legacy-timestamp-fallback' : 'no-baseline', added:baseline ? Math.max(0, Number(current && current.worlds || 0) - Number(baseline.worlds || 0)) : null, removed:baseline ? Math.max(0, Number(baseline.worlds || 0) - Number(current && current.worlds || 0)) : null, updated:null, touched:baseline ? touchedIds.length : null, ids:{ touched:touchedIds } };
 }
 
-module.exports = { TEXT_EXT, CODE_EXT, ASSET_EXT, EXCLUDED, COMPONENT_KEYS, METRIC_KEYS, MIRROR_METRIC_KEYS, VELOCITY_KEYS, DEFAULT_SCHEDULE, SNAPSHOT_RETENTION, SCAN_CACHE_SCHEMA, scan, scanWithCache, scanCapabilities, scanMirror, attachMirror, state, capture, delta, mirrorDelta, mirrorSpecializationChanges, moduleChanges, worldChanges, configureSchedule, compactSnapshot, compactMirrorSnapshot, compactVelocitySample, recordVelocity, velocity, hourlyVelocity, validTime, activityKind, componentKind };
+module.exports = { TEXT_EXT, CODE_EXT, ASSET_EXT, EXCLUDED, MEASUREMENT_VERSION, SCOPE_RULES_VERSION, COMPONENT_KEYS, METRIC_KEYS, MIRROR_METRIC_KEYS, VELOCITY_KEYS, DEFAULT_SCHEDULE, SNAPSHOT_RETENTION, SCAN_CACHE_SCHEMA, scan, scanWithCache, scanCapabilities, scanMirror, attachMirror, state, capture, delta, scopeComparison, mirrorDelta, mirrorSpecializationChanges, moduleChanges, worldChanges, configureSchedule, compactSnapshot, compactMirrorSnapshot, compactVelocitySample, recordVelocity, velocity, hourlyVelocity, validTime, activityKind, componentKind };

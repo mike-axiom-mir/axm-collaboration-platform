@@ -27,6 +27,9 @@ const SharedProfileProvider = require("./shared/profile/axm-profile-provider");
 const ExplorationGarden = require("./shared/exploration/axm-exploration-core");
 const GrowthMetrics = require("./shared/growth/axm-growth-metrics");
 const GrowthWorkerRunner = require("./shared/growth/growth-worker-runner");
+const GrowthScopeTransitions = require("./shared/growth/scope-transition-receipts");
+const WorkshopObservatory = require("./shared/growth/axm-workshop-observatory");
+const WorkshopObservatoryRunner = require("./shared/growth/observatory-worker-runner");
 const SpecialistLibrary = require("./shared/specialists/axm-specialist-library");
 const SpecialistRouter = require("./shared/specialists/specialist-router");
 const PhysicsCore = require("./shared/physics/axm-physics-core");
@@ -145,6 +148,27 @@ const GROWTH_SCAN_CACHE_FILE = path.join(
   GROWTH_STATE_DIR,
   "text-scan-cache.json",
 );
+const GROWTH_SCOPE_TRANSITION_LEDGER_FILE = path.join(
+  ROOT,
+  "registry",
+  "workshop-scope-transitions.json",
+);
+const GROWTH_ARCHIVE_VERIFICATION_FILE = path.join(
+  GROWTH_STATE_DIR,
+  "archive-verification.json",
+);
+const GROWTH_SCOPE_AUDIT_WORKER_FILE = path.join(
+  ROOT,
+  "shared",
+  "growth",
+  "scope-transition-audit-worker.cjs",
+);
+const OBSERVATORY_STATE_DIR = path.join(STATE_ROOT, "workshop-observatory");
+const OBSERVATORY_CACHE_FILE = path.join(OBSERVATORY_STATE_DIR, "latest.json");
+const OBSERVATORY_MILESTONES_FILE = path.join(
+  OBSERVATORY_STATE_DIR,
+  "milestones.json",
+);
 const SPECIALIST_STATE_DIR = path.join(STATE_ROOT, "specialist-library");
 const SPECIALIST_STATE_FILE = path.join(SPECIALIST_STATE_DIR, "library.json");
 const BODY_PULSE_STATE_DIR = path.join(STATE_ROOT, "body-pulse");
@@ -240,6 +264,23 @@ const MIRROR_VISION_INBOX_FILE = path.join(
   "perception-inbox",
   "vision-observations.jsonl",
 );
+const WORKSHOP_OBSERVATORY_RUNNER = WorkshopObservatoryRunner.create({
+  root: ROOT,
+  cacheFile: OBSERVATORY_CACHE_FILE,
+  verificationReceiptFile: path.join(
+    STATE_ROOT,
+    "tool-readiness",
+    "latest-selftests.json",
+  ),
+  workerFile: path.join(
+    ROOT,
+    "shared",
+    "growth",
+    "observatory-scan-worker.cjs",
+  ),
+  timeoutMs: 120000,
+  staleAfterMs: 5 * 60 * 1000,
+});
 let MIRROR_RUNTIME = null;
 let VISION_BUSY = false;
 let VISION_STATUS = {
@@ -266,6 +307,19 @@ let GROWTH_SCAN_STATUS = {
   execution: "not-started",
   mainThreadFileWalk: false,
 };
+let GROWTH_SCOPE_AUDIT_STATUS = {
+  state: "NOT_STARTED",
+  inFlight: false,
+  startedAt: null,
+  deadlineAt: null,
+  verifiedAt: null,
+  durationMs: null,
+  error: null,
+};
+let GROWTH_SCOPE_AUDIT_WORKER = null;
+let GROWTH_SCOPE_AUDIT_FINISH = null;
+const GROWTH_SCOPE_AUDIT_FRESHNESS_MS = 15 * 60 * 1000;
+const GROWTH_SCOPE_AUDIT_TIMEOUT_MS = 10 * 60 * 1000;
 let TECHNICAL_GLASSES_TIMER = null;
 let PRODUCTION_SESSION_LAST_HEARTBEAT = Date.now();
 let PRODUCTION_SESSION_DOWNLOAD = null;
@@ -508,6 +562,99 @@ async function scanGrowthBodies() {
   }
   GROWTH_SCAN_STATUS = result.status;
   return result.metrics;
+}
+
+async function scanGrowthDisplay() {
+  const result = await GROWTH_SCAN_RUNNER.scanWorkshopFirst();
+  GROWTH_SCAN_STATUS = result.status;
+  return result;
+}
+
+function growthScopeTransitionStatus() {
+  startGrowthScopeAudit();
+  const result = GrowthScopeTransitions.evaluate({
+    workshopRoot: ROOT,
+    ledgerFile: GROWTH_SCOPE_TRANSITION_LEDGER_FILE,
+    historyFile: GROWTH_STATE_FILE,
+    auditReceiptFile: GROWTH_ARCHIVE_VERIFICATION_FILE,
+  });
+  result.auditRunner = Object.assign({}, GROWTH_SCOPE_AUDIT_STATUS);
+  if (GROWTH_SCOPE_AUDIT_STATUS.state !== "VERIFIED") {
+    result.state = GROWTH_SCOPE_AUDIT_STATUS.state === "BROKEN" ? "BROKEN" : "VERIFYING";
+    result.transitions = result.transitions.map((transition) => Object.assign({}, transition, {
+      state: result.state,
+      errors: Array.from(new Set((transition.errors || []).concat(result.state === "BROKEN" ? [GROWTH_SCOPE_AUDIT_STATUS.error || "CURRENT_BOOT_ARCHIVE_AUDIT_FAILED"] : ["CURRENT_BOOT_ARCHIVE_AUDIT_PENDING"]))),
+    }));
+  }
+  return result;
+}
+
+function startGrowthScopeAudit() {
+  const now = Date.now();
+  if (GROWTH_SCOPE_AUDIT_STATUS.inFlight) {
+    if (GROWTH_SCOPE_AUDIT_STATUS.deadlineAt && now >= Date.parse(GROWTH_SCOPE_AUDIT_STATUS.deadlineAt) && GROWTH_SCOPE_AUDIT_FINISH) {
+      GROWTH_SCOPE_AUDIT_FINISH({ ok: false, error: "CURRENT_BOOT_ARCHIVE_AUDIT_TIMEOUT" });
+    }
+    return;
+  }
+  if (GROWTH_SCOPE_AUDIT_STATUS.state === "BROKEN") return;
+  if (GROWTH_SCOPE_AUDIT_STATUS.state === "VERIFIED" && now - Date.parse(GROWTH_SCOPE_AUDIT_STATUS.verifiedAt) < GROWTH_SCOPE_AUDIT_FRESHNESS_MS) return;
+  const startedAt = new Date(now).toISOString();
+  GROWTH_SCOPE_AUDIT_STATUS = {
+    state: "VERIFYING",
+    inFlight: true,
+    startedAt,
+    deadlineAt: new Date(now + GROWTH_SCOPE_AUDIT_TIMEOUT_MS).toISOString(),
+    verifiedAt: GROWTH_SCOPE_AUDIT_STATUS.verifiedAt,
+    durationMs: null,
+    error: null,
+  };
+  let worker;
+  try {
+    worker = new ThreadWorker(GROWTH_SCOPE_AUDIT_WORKER_FILE, { workerData: { workshopRoot: ROOT, ledgerFile: GROWTH_SCOPE_TRANSITION_LEDGER_FILE, outputFile: GROWTH_ARCHIVE_VERIFICATION_FILE } });
+    GROWTH_SCOPE_AUDIT_WORKER = worker;
+  } catch (error) {
+    GROWTH_SCOPE_AUDIT_STATUS = { state: "BROKEN", inFlight: false, startedAt, deadlineAt: null, verifiedAt: null, durationMs: Date.now() - now, error: String(error.message || error).slice(0, 240) };
+    return;
+  }
+  let settled = false;
+  const timer = setTimeout(() => finish({ ok: false, error: "CURRENT_BOOT_ARCHIVE_AUDIT_TIMEOUT" }), GROWTH_SCOPE_AUDIT_TIMEOUT_MS);
+  function finish(message) {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timer);
+    worker.removeAllListeners();
+    try { const ending = worker.terminate(); if (ending && typeof ending.catch === "function") ending.catch(() => {}); } catch (_) {}
+    GROWTH_SCOPE_AUDIT_WORKER = null;
+    GROWTH_SCOPE_AUDIT_FINISH = null;
+    const durationMs = Date.now() - now;
+    if (message && message.ok === true && message.receipt && message.receipt.pass === true) {
+      GROWTH_SCOPE_AUDIT_STATUS = { state: "VERIFIED", inFlight: false, startedAt, deadlineAt: null, verifiedAt: message.receipt.verifiedAt, durationMs, error: null };
+    } else {
+      GROWTH_SCOPE_AUDIT_STATUS = { state: "BROKEN", inFlight: false, startedAt, deadlineAt: null, verifiedAt: null, durationMs, error: String(message && message.error || "CURRENT_BOOT_ARCHIVE_AUDIT_FAILED").slice(0, 240) };
+    }
+  }
+  GROWTH_SCOPE_AUDIT_FINISH = finish;
+  worker.once("message", finish);
+  worker.once("error", (error) => finish({ ok: false, error: String(error.message || error) }));
+  worker.once("exit", (code) => { if (!settled) finish({ ok: false, error: `CURRENT_BOOT_ARCHIVE_AUDIT_WORKER_EXIT_${code}` }); });
+}
+
+function loadObservatoryMilestones() {
+  try {
+    return WorkshopObservatory.milestoneState(
+      JSON.parse(fs.readFileSync(OBSERVATORY_MILESTONES_FILE, "utf8")),
+    );
+  } catch (_) {
+    return WorkshopObservatory.milestoneState();
+  }
+}
+
+function saveObservatoryMilestones(value) {
+  OperationsUtils.atomicJson(
+    OBSERVATORY_MILESTONES_FILE,
+    WorkshopObservatory.milestoneState(value),
+  );
 }
 
 function localDateKey(date) {
@@ -3596,17 +3743,102 @@ const server = http.createServer((req, res) => {
     });
     return;
   }
+  if (url === "/api/workshop-observatory" && req.method === "GET") {
+    const current = WORKSHOP_OBSERVATORY_RUNNER.read();
+    if (!current.ready || current.freshness.stale) {
+      void WORKSHOP_OBSERVATORY_RUNNER.refresh().catch((error) => {
+        slog(
+          `Workshop Observatory refresh failed · ${String(error.message || error).slice(0, 160)}`,
+        );
+      });
+    }
+    return send(res, 200, {
+      ok: true,
+      ready: current.ready,
+      observatory: current.observatory,
+      freshness: current.freshness,
+      scanStatus: current.scanStatus,
+      observatoryRunner: current.stats,
+      error: current.error,
+      milestones: loadObservatoryMilestones().milestones,
+      truth: {
+        measuringDoesNotClaimCompletion: true,
+        milestonesAreHumanRecorded: true,
+        canonChanged: false,
+      },
+    });
+  }
+  if (url === "/api/workshop-observatory/refresh" && req.method === "POST") {
+    if (req.headers["x-axm-observatory"] !== "explicit-local-refresh")
+      return send(res, 403, {
+        ok: false,
+        error: "explicit local Observatory refresh required",
+      });
+    void WORKSHOP_OBSERVATORY_RUNNER.refresh().catch((error) => {
+      slog(
+        `Explicit Workshop Observatory refresh failed · ${String(error.message || error).slice(0, 160)}`,
+      );
+    });
+    return send(res, 202, {
+      ok: true,
+      accepted: true,
+      state: "MEASURING",
+      automaticPromotion: false,
+    });
+  }
+  if (url === "/api/workshop-observatory/milestones" && req.method === "POST") {
+    if (req.headers["x-axm-observatory"] !== "explicit-local-milestone")
+      return send(res, 403, {
+        ok: false,
+        error: "explicit local milestone intent required",
+      });
+    return readJsonBody(req, 8192, (error, input) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        const current = WORKSHOP_OBSERVATORY_RUNNER.read();
+        if (!current.ready || !current.observatory)
+          return send(res, 409, {
+            ok: false,
+            error: "measure the Workshop Observatory before recording a milestone",
+          });
+        const result = WorkshopObservatory.recordMilestone(
+          loadObservatoryMilestones(),
+          current.observatory,
+          {
+            label: input.label,
+            note: input.note,
+            actor: input.actor || "local-human",
+          },
+        );
+        if (!result.duplicate) saveObservatoryMilestones(result.state);
+        return send(res, 200, {
+          ok: true,
+          duplicate: result.duplicate,
+          milestone: result.milestone,
+          milestones: result.state.milestones,
+        });
+      } catch (milestoneError) {
+        return send(res, 400, {
+          ok: false,
+          error: String(milestoneError.message || milestoneError).slice(0, 500),
+        });
+      }
+    });
+  }
   if (url === "/api/workshop-growth" && req.method === "GET") {
     void (async () => {
       try {
-        const current = await scanGrowthBodies(),
+        const displayMeasurement = await scanGrowthDisplay(),
+        current = displayMeasurement.metrics,
         history = loadGrowthState(),
         baseline = history.snapshots[0] || null,
         previous = history.snapshots[history.snapshots.length - 1] || null;
-      const deltaFromPrevious = GrowthMetrics.delta(current, previous),
-        moduleChanges = GrowthMetrics.moduleChanges(current, previous),
-        worldChanges = GrowthMetrics.worldChanges(current, previous),
-        elapsedHours = previous
+      const deltaComparison = GrowthMetrics.scopeComparison(current, previous),
+        comparablePrevious = deltaComparison.ready ? previous : null,
+        deltaFromPrevious = deltaComparison.ready ? GrowthMetrics.delta(current, previous) : null,
+        moduleChanges = GrowthMetrics.moduleChanges(current, comparablePrevious),
+        worldChanges = GrowthMetrics.worldChanges(current, comparablePrevious),
+        elapsedHours = comparablePrevious
           ? Math.max(
               1 / 60,
               (Date.now() - Date.parse(previous.capturedAt)) / 3600000,
@@ -3640,11 +3872,14 @@ const server = http.createServer((req, res) => {
         ok: true,
         current,
         measurementReuse: GROWTH_SCAN_STATUS,
+        mirrorMeasurement: displayMeasurement.mirrorStatus,
+        scopeTransitions: growthScopeTransitionStatus(),
         history: history.snapshots,
         historyRetention: history.retention,
         schedule: history.schedule,
-        deltaFromBaseline: GrowthMetrics.delta(current, baseline),
+        deltaFromBaseline: GrowthMetrics.scopeComparison(current, baseline).ready ? GrowthMetrics.delta(current, baseline) : null,
         deltaFromPrevious,
+        deltaComparison,
         mirrorDeltaFromPrevious: GrowthMetrics.mirrorDelta(
           current.mirror,
           previous && previous.mirror,
@@ -3659,11 +3894,11 @@ const server = http.createServer((req, res) => {
           previous.mirror.available
         ),
         componentDeltaReady:
-          !!previous && Number(previous.measurementVersion || 0) >= 4,
+          !!comparablePrevious && Number(comparablePrevious.measurementVersion || 0) >= 4,
         worldDeltaReady:
-          !!previous && Number(previous.measurementVersion || 0) >= 6,
+          !!comparablePrevious && Number(comparablePrevious.measurementVersion || 0) >= 6,
         capabilityDeltaReady:
-          !!previous && Number(previous.measurementVersion || 0) >= 7,
+          !!comparablePrevious && Number(comparablePrevious.measurementVersion || 0) >= 7,
         moduleChanges,
         worldChanges,
         rateFromPrevious,
@@ -3689,6 +3924,8 @@ const server = http.createServer((req, res) => {
             "compact aggregate metrics plus short per-tool fingerprints; no screenshot, source content, extension table, or largest-file list",
           snapshotRetention:
             "all compact workshop snapshots remain in chronological history and the Hub groups them by month; aggregate velocity samples remain rolling",
+          scopeChangeSignal:
+            "raw intake carriers are excluded from active source; a counting-rule change starts a new comparable baseline instead of reporting archive movement as negative growth",
           moduleChangeSignal:
             "path, byte-size and modification-stamp fingerprints per top-level tool; legacy snapshots use a clearly labelled timestamp fallback",
           worldChangeSignal:
@@ -3710,6 +3947,33 @@ const server = http.createServer((req, res) => {
       }
     })();
     return;
+  }
+  if (url === "/api/workshop-growth/mirror" && req.method === "GET") {
+    const cached = GROWTH_SCAN_RUNNER.mirrorResult();
+    if (!cached.status.ready) {
+      if (!cached.status.inFlight) void GROWTH_SCAN_RUNNER.scanMirror().catch(() => {});
+      return send(res, 202, { ok: true, ready: false, mirrorMeasurement: GROWTH_SCAN_RUNNER.mirrorResult().status });
+    }
+    const history = loadGrowthState();
+    const previous = history.snapshots[history.snapshots.length - 1] || null;
+    const mirror = cached.result.metrics;
+    return send(res, 200, {
+      ok: true,
+      ready: true,
+      mirror,
+      mirrorMeasurement: cached.status,
+      mirrorDeltaFromPrevious: GrowthMetrics.mirrorDelta(mirror, previous && previous.mirror),
+      mirrorSpecializationChanges: GrowthMetrics.mirrorSpecializationChanges(mirror, previous && previous.mirror),
+      mirrorDeltaReady: !!(previous && previous.mirror && previous.mirror.available),
+    });
+  }
+  if (url === "/api/workshop-growth/scope-transition" && req.method === "GET") {
+    const scopeTransitions = growthScopeTransitionStatus();
+    return send(res, scopeTransitions.state === "VERIFYING" ? 202 : 200, {
+      ok: true,
+      ready: scopeTransitions.state !== "VERIFYING",
+      scopeTransitions,
+    });
   }
   if (url === "/api/workshop-growth/capture" && req.method === "POST") {
     if (req.headers["x-axm-growth"] !== "explicit-local-snapshot")
@@ -4375,6 +4639,12 @@ const server = http.createServer((req, res) => {
     });
     return;
   }
+
+  if (url.startsWith("/api/"))
+    return send(res, 404, {
+      ok: false,
+      error: "unknown Workshop API route: " + url,
+    });
 
   let fp = url === "/" ? "/launcher/index.html" : url;
   if (url === "/hub" || url === "/hub/") fp = "/hub/index.html";

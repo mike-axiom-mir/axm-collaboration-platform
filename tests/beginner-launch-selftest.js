@@ -64,6 +64,7 @@ check(/Do not run[\s\S]*?launcher from[\s\S]*?inside the ZIP/i.test(startHere), 
 check(/No\s+administrator permission/i.test(readme) && /first bootstrap needs an internet connection/i.test(readme), 'README states the no-admin and first-run network boundary');
 check(/24\.17\.0/.test(bootstrap) && /f2aa33b35b75aca5f3f7b85675a6f6423201053e9381911e64961f3bda2528ab/.test(bootstrap), 'bootstrap pins the Windows x64 Node.js archive and SHA-256');
 check(/4957712f67fce55779cc794d9b4df9e0e802a18c841ad5a4e42f17be490e634d/.test(bootstrap), 'bootstrap pins the Windows ARM64 Node.js archive and SHA-256');
+check(/System\.Security\.Cryptography\.SHA256/.test(bootstrap) && !/Get-FileHash/.test(bootstrap), 'bootstrap verifies SHA-256 without ambient PowerShell module auto-loading');
 check(/Get-Command node\.exe/.test(cleanLaunch) && /api\/health/.test(cleanLaunch) && /AXM Public Candidate With Spaces/.test(cleanLaunch), 'clean-launch proof removes system Node, uses a spaced path, and polls real health');
 check(/MODULE_NOT_FOUND/.test(optionalVips) && /return null/.test(optionalVips), 'optional raster runtime cannot crash the dependency-free core Hub');
 check(/vendor\/jspdf\/jspdf\.umd\.min\.js/.test(jspdfLoader), 'dependency-free core can use the reviewed vendored jsPDF runtime');

@@ -1,0 +1,100 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "trusted Hand process-confinement substrate probe",
+  "status": "EXPERIMENTAL",
+  "claims": [
+    {
+      "claim_id": "probe.confinement.explicit-only",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Inspection or an unflagged CLI call performs no capability probes and grants no execution authority.",
+      "primary_surface": "Core inspection and separate CLI process without --explicit-probe",
+      "counterevidence": "A probe starts implicitly, installs anything, or reports execution authority.",
+      "observed_evidence": "Both routes returned sealed NOT_PROBED receipts with false execution authority and HOLD activation.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "probe.confinement.receipt-deterministic",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "pass_condition": "Repeated probes with the same observed runtime behavior and fixed clock produce the same sealed digest without machine paths.",
+      "primary_surface": "Two explicit core probes with exact runtime and clock",
+      "counterevidence": "Equivalent observations produce different digests or disclose a local path.",
+      "observed_evidence": "Repeated explicit probes produced the same digest and the sealed receipt contains runtime identity but no temporary-root or source path.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "confinement.filesystem-denied",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Permission-mode children cannot read or write their disposable sentinel paths.",
+      "primary_surface": "Actual child-process readFileSync and writeFileSync attempts",
+      "counterevidence": "Either attempt succeeds or returns an unrelated error.",
+      "observed_evidence": "Both attempts returned ERR_ACCESS_DENIED with FileSystemRead and FileSystemWrite permissions respectively.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "confinement.process-expansion-denied",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Permission-mode children cannot spawn another process or create a worker thread.",
+      "primary_surface": "Actual child_process.spawnSync and Worker construction attempts",
+      "counterevidence": "Either expansion succeeds or returns an unrelated error.",
+      "observed_evidence": "Both attempts returned ERR_ACCESS_DENIED with ChildProcess and WorkerThreads permissions respectively.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "confinement.network-denied",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "A permission-mode child cannot connect to an ephemeral local-loopback listener.",
+      "primary_surface": "Actual child net.connect call to a parent-owned ephemeral listener",
+      "counterevidence": "The connection succeeds.",
+      "observed_evidence": "The loopback connection succeeded under the supported local Node 24 permission mode.",
+      "verdict": "FAIL",
+      "named_seam": "NODE_24_PERMISSION_MODE_DOES_NOT_DENY_NETWORK"
+    },
+    {
+      "claim_id": "probe.confinement.cleanup",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "The exact safe temporary root is removed and the local listener is closed after success or denial observations.",
+      "primary_surface": "Post-probe filesystem and listener cleanup receipt",
+      "counterevidence": "The root remains, the listener remains open, or cleanup targets an unsafe path.",
+      "observed_evidence": "The sealed receipt reports exact temporary-root removal and listener closure; cleanup validates the OS temp prefix before recursive removal.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "activation.fails-closed-on-denial-gap",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Any failed or unknown required denial prevents process-Hand activation and grants no execution authority.",
+      "primary_surface": "Status and activation fields derived from the complete check set",
+      "counterevidence": "A failed network denial produces an eligible or authorized result.",
+      "observed_evidence": "The failed network denial produced DEGRADED, trusted_hand_process HOLD, untrusted_code REFUSED, and false execution authority.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "sandbox.malicious-code-secure",
+      "kind": "authorization",
+      "risk": "critical",
+      "pass_condition": "An independent OS isolation boundary survives native-addon, WASI, FFI, inspector, external-network, separate-user, and escape adversaries.",
+      "primary_surface": "Host-level adversarial sandbox campaign",
+      "counterevidence": "Node permission mode is the only boundary or any escape succeeds.",
+      "observed_evidence": "No OS sandbox or adversarial campaign exists; the runtime receipt explicitly refuses this claim.",
+      "verdict": "UNKNOWN",
+      "named_seam": "ACCIDENTAL_CAPABILITY_CONTAINMENT_IS_NOT_MALICIOUS_CODE_ISOLATION"
+    },
+    {
+      "claim_id": "confinement.external-network-denied",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "A permission-mode child cannot reach an explicitly authorized controlled external endpoint.",
+      "primary_surface": "Controlled external endpoint with network tracing",
+      "counterevidence": "The child reaches the endpoint or the test causes undeclared traffic.",
+      "observed_evidence": "External network was deliberately not exercised; only local loopback was used.",
+      "verdict": "UNKNOWN",
+      "named_seam": "LOCAL_LOOPBACK_OBSERVATION_IS_NOT_EXTERNAL_NETWORK_PROOF"
+    }
+  ]
+}

@@ -11,7 +11,7 @@ const MUTABLE_DERIVED_SCHEMA = 'axm.verification-spine-report/v2';
 const DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/;
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(DeterministicJson.canonicalJson(value));
 }
 
 function stableValue(value) {

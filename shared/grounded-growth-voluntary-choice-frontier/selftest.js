@@ -19,8 +19,8 @@ function clone(value) {
 }
 
 function sources() {
-  const signal = SignalBuilder.checkRecorded();
-  const routes = RouteBuilder.checkRecorded();
+  const signal = SignalBuilder.loadRecordedCurrentRoute();
+  const routes = RouteBuilder.loadRecordedCoverageRoute();
   return {
     frontierId: 'fixture-current-voluntary-choice-frontier',
     generatedAt: '2026-08-20T01:20:00.000Z',
@@ -49,6 +49,50 @@ const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contrac
 check(schema.$id === Choice.RECEIPT_SCHEMA, 'schema identity matches implementation');
 check(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.reads.length === 0 && contract.boundaries.writes.length === 0, 'contract remains permissionless TEST');
 check(contract.boundaries.refuses.includes('default-human-choice') && contract.boundaries.refuses.includes('automatic-prompting'), 'contract refuses default selection and automatic prompting');
+check(contract.requires.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
+
+const safeCanonicalCases = [
+  [{ z: 1, a: [true, null, 'x'] }, '{"a":[true,null,"x"],"z":1}'],
+  [{ 'line\nkey': 'snowman ☃ and quote "' }, '{"line\\nkey":"snowman ☃ and quote \\""}'],
+  [{ value: -0 }, '{"value":0}'],
+  [[{ b: 2, a: 1 }, [], { deep: [false, 0, null] }], '[{"a":1,"b":2},[],{"deep":[false,0,null]}]']
+];
+for (const [value, expected] of safeCanonicalCases) {
+  check(Choice.stableStringify(value) === expected, 'safe canonical value preserves exact historical bytes');
+  check(Choice.stableStringify(JSON.parse(expected)) === expected, 'safe canonical value roundtrips exactly');
+}
+const nullPrototype = Object.create(null);
+nullPrototype.b = 2;
+nullPrototype.a = 1;
+check(Choice.stableStringify(nullPrototype) === '{"a":1,"b":2}', 'null-prototype maps remain canonical JSON');
+const repeated = { x: 1 };
+check(Choice.stableStringify({ left: repeated, right: repeated }) === '{"left":{"x":1},"right":{"x":1}}', 'repeated non-cyclic references remain supported');
+
+const sparse = [];
+sparse.length = 1;
+const cycle = {};
+cycle.self = cycle;
+const unsafeCanonicalCases = [
+  undefined,
+  { lost: undefined },
+  { nested: { lost: undefined } },
+  [1, undefined],
+  sparse,
+  { number: NaN },
+  { number: Infinity },
+  { number: -Infinity },
+  { number: 1n },
+  { value: Symbol('x') },
+  { value: function () {} },
+  { value: new Date('2026-08-20T00:00:00.000Z') },
+  cycle
+];
+for (const value of unsafeCanonicalCases) {
+  assert.throws(() => Choice.stableStringify(value), TypeError);
+  checks += 1;
+}
+assert.throws(() => Choice.sha256({ lost: undefined }), /unsupported undefined/i);
+checks += 1;
 
 const input = sources();
 const frontier = Choice.build(input);
@@ -71,6 +115,11 @@ check(frontier.truth.oldSingleReviewCandidateIsCompleteCurrentMenu === false, 'o
 check(frontier.truth.participationOccurred === false && frontier.truth.humanBenefitEstablished === false, 'availability is not relabeled participation or benefit');
 check(frontier.truth.automaticPrompt === false && frontier.truth.automaticExecution === false && frontier.truth.automaticCanon === false, 'frontier has no prompt, execution, or CANON authority');
 check(Choice.verifyCatalog(input.routeCatalog, input.humanRouteCoverageReceipt).pass, 'catalog verifies against exact coverage');
+
+const unsafeBuildInput = sources();
+unsafeBuildInput.routeCatalog.readyRoutes[0].lost = undefined;
+assert.throws(() => Choice.build(unsafeBuildInput), /unsupported undefined/i);
+checks += 1;
 
 const badCatalogDigest = sources();
 badCatalogDigest.routeCatalog.catalogDigest = 'sha256:' + '0'.repeat(64);

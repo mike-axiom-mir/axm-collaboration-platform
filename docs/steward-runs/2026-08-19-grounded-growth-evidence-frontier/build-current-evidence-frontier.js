@@ -151,14 +151,21 @@ const after = {
 };
 
 const receipt = Frontier.buildEvidenceFrontier(evidenceInput);
-writeJson('CAPABILITY_REQUIREMENTS.json', requirements);
-writeJson('CAPABILITY_INVENTORY_BEFORE.json', before);
-writeJson('CAPABILITY_INVENTORY_AFTER.json', after);
-writeJson('CURRENT_EVIDENCE_FRONTIER_RECEIPT.json', receipt);
 
-console.log('PASS current integrated Grounded Growth evidence frontier built');
-console.log('portfolioCapabilities=' + receipt.counts.portfolioCapabilityChains + ' supplementalPhoneRoutes=' + receipt.counts.supplementalPhoneEvidenceRoutes);
-console.log('phoneDevicePass=' + receipt.counts.phoneDeviceBehaviorPass + ' phoneHumanPass=' + receipt.counts.phoneHumanUsefulnessPass + ' phoneTwoKey=' + receipt.counts.phoneTwoKeyEvidencePresent);
-console.log('autonomousActions=' + receipt.decision.autonomousActionCount + ' reviewableActions=' + receipt.decision.reviewableActionCount);
+function writeAll() {
+  writeJson('CAPABILITY_REQUIREMENTS.json', requirements);
+  writeJson('CAPABILITY_INVENTORY_BEFORE.json', before);
+  writeJson('CAPABILITY_INVENTORY_AFTER.json', after);
+  writeJson('CURRENT_EVIDENCE_FRONTIER_RECEIPT.json', receipt);
+  return receipt;
+}
 
-module.exports = { frontierInput, phoneEvidenceInput, evidenceInput, requirements, before, after, receipt };
+if (require.main === module) {
+  writeAll();
+  console.log('PASS current integrated Grounded Growth evidence frontier built');
+  console.log('portfolioCapabilities=' + receipt.counts.portfolioCapabilityChains + ' supplementalPhoneRoutes=' + receipt.counts.supplementalPhoneEvidenceRoutes);
+  console.log('phoneDevicePass=' + receipt.counts.phoneDeviceBehaviorPass + ' phoneHumanPass=' + receipt.counts.phoneHumanUsefulnessPass + ' phoneTwoKey=' + receipt.counts.phoneTwoKeyEvidencePresent);
+  console.log('autonomousActions=' + receipt.decision.autonomousActionCount + ' reviewableActions=' + receipt.decision.reviewableActionCount);
+}
+
+module.exports = { frontierInput, phoneEvidenceInput, evidenceInput, requirements, before, after, receipt, writeAll };

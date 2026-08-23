@@ -1,0 +1,39 @@
+{
+  "capabilities": [
+    {
+      "id": "probe.hand-process.confinement",
+      "status": "available",
+      "constraints": ["explicit opt-in only", "diagnostic authority only", "disposable child processes and local loopback"]
+    },
+    {
+      "id": "confinement.filesystem-read.deny",
+      "status": "available",
+      "constraints": ["observed on local Node 24 permission mode", "single disposable sentinel"]
+    },
+    {
+      "id": "confinement.filesystem-write.deny",
+      "status": "available",
+      "constraints": ["observed on local Node 24 permission mode", "single disposable sentinel"]
+    },
+    {
+      "id": "confinement.child-process.deny",
+      "status": "available",
+      "constraints": ["observed on local Node 24 permission mode", "spawnSync attempt only"]
+    },
+    {
+      "id": "confinement.worker-thread.deny",
+      "status": "available",
+      "constraints": ["observed on local Node 24 permission mode", "eval worker attempt only"]
+    },
+    {
+      "id": "confinement.network.deny",
+      "status": "unavailable",
+      "constraints": ["local Node 24 permission mode allowed loopback networking", "external networking was not exercised"]
+    },
+    {
+      "id": "sandbox.hand-process.malicious-code",
+      "status": "unavailable",
+      "constraints": ["Node permission mode is not treated as a malicious-code security boundary", "OS isolation and escape adversaries remain missing"]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "game-production-runner portable cold-history tier export and restore",
+  "claims": [
+    {
+      "claim_id": "tier-plan-no-write",
+      "claim": "Tier planning is read-only and obeys independent history, package, aggregate, and candidate bounds.",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Planning leaves an absent tier root absent; threshold and byte ceilings yield NO_CHANGES or HELD with no candidate.",
+      "primary_surface": "native core assertions over disposable cache and tier roots",
+      "counterevidence": "any tier file appears or an over-budget candidate becomes applicable",
+      "secondary_surface_if_needed": "CLI plan output plus filesystem absence",
+      "observed_evidence": "core and CLI focused suites pass deletion-free plan, threshold, per-package, aggregate, and no-root assertions",
+      "verdict": "PASS",
+      "named_seam": "candidate-count deferral is contract-checked; the named fixture contains one eligible owner"
+    },
+    {
+      "claim_id": "exact-export-approval",
+      "claim": "Only an exact root-bound proposal can write a tier package.",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Wrong approval, copied source root, changed source history, or overlapping tier root writes nothing.",
+      "primary_surface": "wrong-identity and stale-state adversarial execution",
+      "counterevidence": "a package root is created after any refused application",
+      "secondary_surface_if_needed": "sealed application authority receipt",
+      "observed_evidence": "wrong approval, copied-root, post-plan history, and overlap assertions pass",
+      "verdict": "PASS",
+      "named_seam": "local owner digests are continuity evidence, not authentication"
+    },
+    {
+      "claim_id": "source-history-preserved",
+      "claim": "Export preserves every source archive file and its deep-audit meaning.",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "Application reports zero removals and source archive summaries are identical before and after export.",
+      "primary_surface": "before/export/after deep-audit comparison",
+      "counterevidence": "missing source file, changed storage snapshot, or nonzero source removal",
+      "secondary_surface_if_needed": "contract and CLI absence of semantic-deletion route",
+      "observed_evidence": "source_files_removed is zero and exact source anchor arrays compare equal",
+      "verdict": "PASS",
+      "named_seam": "history is duplicated, so source storage growth is not solved"
+    },
+    {
+      "claim_id": "package-integrity-and-recovery",
+      "claim": "The content-addressed package survives interruption and exposes mutation.",
+      "kind": "deterministic behavior",
+      "risk": "high",
+      "pass_condition": "A partial exact payload resumes to COMPLETE; same-size mutation yields REVIEW_REQUIRED and cannot restore.",
+      "primary_surface": "partial-publication replay and same-size corruption adversaries",
+      "counterevidence": "partial bytes are overwritten, corruption audits COMPLETE, or corrupt restore writes a target",
+      "secondary_surface_if_needed": "fresh-process package reopen",
+      "observed_evidence": "partial export recovers, corruption holds, and fresh child package audit passes",
+      "verdict": "PASS",
+      "named_seam": "content addressing detects mutation but is not an immutable-storage substrate"
+    },
+    {
+      "claim_id": "fresh-restore-equivalence",
+      "claim": "Exact approved restore into a fresh root reconstructs the same full archive summary.",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "Package approval is exact, anchor is published last, target deep audit and discovery match the manifest source summary, and restart repeats the proof.",
+      "primary_surface": "fresh-root restore plus native deep audit",
+      "counterevidence": "wrong approval creates target state, target accepts extra files, or any source/target summary field differs",
+      "secondary_surface_if_needed": "fresh child process reopens package and target",
+      "observed_evidence": "wrong approval and collision refuse; fresh and partial restore pass; fresh child observes 33 history events",
+      "verdict": "PASS",
+      "named_seam": "fresh local process is not a fresh machine or remote receiver"
+    },
+    {
+      "claim_id": "truth-ceiling",
+      "claim": "Tiering claims neither external immutability nor semantic-retention authority.",
+      "kind": "static structure",
+      "risk": "medium",
+      "pass_condition": "All manifests and receipts keep external immutability and source deletion false; contracts refuse both claims.",
+      "primary_surface": "runtime receipt assertions and parsed module contracts",
+      "counterevidence": "any route deletes source history or labels a local folder immutable",
+      "secondary_surface_if_needed": "README and capability-gap review",
+      "observed_evidence": "runtime, schema, CLI, manifest, contract, and gap report agree on the boundary",
+      "verdict": "PASS",
+      "named_seam": "external durable substrate and user-owned semantic retention remain open gaps"
+    }
+  ],
+  "overall": "VERIFIED_WITH_LIMITS"
+}

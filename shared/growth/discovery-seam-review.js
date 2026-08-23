@@ -7,7 +7,7 @@ const assert=require('assert'),fs=require('fs'),path=require('path'),root=path.r
   [hub.includes('id="growthScreen"')&&hub.includes('id="growthHistory"'),'Hub infographic screen exists'],
   [hub.includes('id="growthYear"')&&hub.includes('id="growthMonth"')&&core.includes("SNAPSHOT_RETENTION = 'all-compact-history'")&&!core.includes('snapshots.slice(-365)'),'year/month journey keeps all compact snapshots'],
   [hub.includes('id="growthActionStatus"')&&/button\.textContent\s*=\s*'Saving…'/.test(ui)&&ui.includes('Already saved · nothing changed.'),'snapshot action gives immediate visible feedback'],
-  [shell.includes('Workshop Growth')&&shell.includes('AXMWorkshopGrowth.open'),'Home card opens infographic'],
+  [shell.includes('Workshop Observatory')&&shell.includes('AXMWorkshopGrowth.open')&&shell.includes("$('growthNavBtn').onclick"),'Home card and sidebar open the Observatory'],
   [ui.includes('deltaFromPrevious')&&ui.includes('countingRules.excluded'),'growth and rules render visibly'],
   [core.includes('worldFingerprints')&&core.includes('worldChanges')&&server.includes('worldChangeSignal')&&server.includes('worldDeltaReady')&&ui.includes('Existing worlds updated')&&ui.includes('old and new modules and worlds all count'),'living-world characters stay in totals while deep world upgrades remain explicit'],
   [core.includes('scanMirror')&&core.includes('mirrorSpecializations')&&server.includes('scanGrowthBodies'),'Mirror family measurement reaches the API'],

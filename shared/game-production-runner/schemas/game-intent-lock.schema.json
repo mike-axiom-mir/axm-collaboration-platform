@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-intent-lock/v1",
+  "type": "object",
+  "required": ["schema", "id", "version", "status", "human_goal", "target", "required_features", "forbidden_substitutions", "constraints", "change_policy", "digest"],
+  "properties": {
+    "schema": { "const": "axm.game-intent-lock/v1" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$" },
+    "version": { "type": "string" },
+    "status": { "const": "LOCKED" },
+    "human_goal": { "type": "string", "minLength": 1 },
+    "target": { "type": "object" },
+    "required_features": { "type": "array", "minItems": 1 },
+    "forbidden_substitutions": { "type": "array" },
+    "constraints": { "type": "object" },
+    "change_policy": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

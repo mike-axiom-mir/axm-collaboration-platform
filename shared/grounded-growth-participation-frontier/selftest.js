@@ -6,9 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const Participation = require('./grounded-growth-participation-frontier');
 const KnowledgeCurrent = require('../../docs/steward-runs/2026-08-19-grounded-growth-knowledge-frontier/build-current-knowledge-frontier');
-const HandoffCurrent = require('../../docs/steward-runs/2026-08-19-human-handoff-operational-readiness/build-current-handoff-readiness');
 const PortfolioHuman = require('../../docs/steward-runs/2026-08-19-human-readiness-portfolio-coverage/build-portfolio-readiness');
-const BridgeCurrent = require('../../docs/steward-runs/2026-08-19-reuse-existing-human-bridge-ancestry/build-current-readiness');
 
 let checks = 0;
 
@@ -28,25 +26,26 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function routeByCapability(routes, capabilityId) {
-  const matches = routes.filter(route => route.definition.capabilityId === capabilityId);
-  if (matches.length !== 1) throw new Error('expected one route for ' + capabilityId);
-  return matches[0];
-}
-
 function currentInput() {
   const capabilityId = 'simulation.run-envelope.verify';
-  const portfolioRoute = routeByCapability(PortfolioHuman.verifyRecorded().routes, capabilityId);
-  const bridgeRoute = routeByCapability(BridgeCurrent.verifyRecorded().routes, capabilityId);
+  const portfolioRoute = PortfolioHuman.loadRecordedRoute(capabilityId);
+  const interventionLink = JSON.parse(fs.readFileSync(path.join(
+    __dirname,
+    '../../docs/steward-runs/2026-08-19-reuse-existing-human-bridge-ancestry/links/research-grounded-disposition-intervention-link.json'
+  ), 'utf8'));
+  const humanHandoffReadiness = JSON.parse(fs.readFileSync(path.join(
+    __dirname,
+    '../../docs/steward-runs/2026-08-19-human-handoff-operational-readiness/CURRENT_HANDOFF_READINESS.json'
+  ), 'utf8'));
   return {
     participationFrontierId: 'current-grounded-growth-participation-frontier-20260819',
     generatedAt: '2026-08-19T18:25:00.000Z',
     knowledgeFrontierReceipt: KnowledgeCurrent.current(),
     knowledgeFrontierInput: KnowledgeCurrent.currentInput(),
-    humanHandoffReadiness: HandoffCurrent.verifyRecorded().readiness,
+    humanHandoffReadiness,
     protocol: portfolioRoute.protocol,
     participantPacket: portfolioRoute.packet,
-    interventionLink: bridgeRoute.link
+    interventionLink
   };
 }
 
@@ -59,6 +58,9 @@ check(contract.provides.includes('growth.participation-frontier.intervention-lin
 check(contract.provides.includes('growth.participation-frontier.ai-human-evidence-separate'), 'contract separates AI and human evidence');
 check(contract.boundaries.refuses.includes('packet-readiness-as-human-evidence'), 'contract refuses packet readiness as human evidence');
 check(contract.boundaries.refuses.includes('automatic-participation') && contract.boundaries.refuses.includes('automatic-canon'), 'contract refuses automatic participation and CANON');
+check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
+check(Participation.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+checkThrows(() => Participation.stableStringify({ lost: undefined }), /unsupported undefined/i, 'unsafe canonical state is refused');
 check(schema.$id === Participation.PARTICIPATION_FRONTIER_SCHEMA && schema.additionalProperties === false, 'receipt schema id and closed top level match');
 
 const input = currentInput();
@@ -176,4 +178,3 @@ falseParticipation.lanes[6].reviewIsParticipation = true;
 check(!Participation.verifyParticipationFrontier(falseParticipation, input).pass, 'fabricated participation fails exact verification');
 
 console.log('Grounded Growth Participation Frontier selftest passed: ' + checks + ' checks.');
-

@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const CapabilityLoop = require('../verified-capability-loop/verified-capability-loop');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const OUTCOME_SCHEMA = 'axm.grounded-growth-outcome-receipt/v1';
 const PORTFOLIO_SCHEMA = 'axm.grounded-growth-portfolio/v1';
@@ -77,13 +78,11 @@ const BENEFICIARY_SURFACES = {
 };
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(stableStringify(value));
 }
 
 function stableStringify(value) {
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
-  return '{' + Object.keys(value).sort().map((key) => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {

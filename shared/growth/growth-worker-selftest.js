@@ -87,6 +87,12 @@ async function main() {
     assert.strictEqual(changed.status.cacheHits, 2);
     assert.notStrictEqual(changed.metrics.fingerprint, second.metrics.fingerprint);
 
+    const workshopFirst = await runner.scanWorkshopFirst();
+    assert.strictEqual(workshopFirst.metrics.totalFiles, changed.metrics.totalFiles);
+    assert.strictEqual(workshopFirst.mirrorStatus.state, "REFRESHING");
+    assert.strictEqual(workshopFirst.mirrorStatus.ready, false);
+    assert.match(workshopFirst.metrics.mirror.reason, /refreshing separately/);
+
     const bodies = await runner.scanBodies();
     assert.ok(bodies.metrics.mirror, "body scan must attach Mirror measurements");
     assert.strictEqual(bodies.metrics.mirror.available, true);
@@ -94,6 +100,10 @@ async function main() {
       bodies.metrics.mirror.boundaries.privateStateContentsRead,
       false,
     );
+    const cachedMirror = runner.mirrorResult();
+    assert.strictEqual(cachedMirror.status.ready, true);
+    assert.strictEqual(cachedMirror.result.metrics.available, true);
+    assert.ok(runner.status().stats.mirrorBackgroundRefreshes >= 1);
 
     const broken = GrowthWorkerRunner.create({
       root: workshopRoot,

@@ -1,0 +1,12 @@
+{
+  "schema": "axm.gate-registry/v1",
+  "adapters": [
+    { "id": "mcp", "protocol": "MCP", "enabled": false, "effects": ["NETWORK_READ", "NETWORK_WRITE"], "internalAuthority": false, "transportBundled": false, "knownGaps": ["runtime transport not selected"] },
+    { "id": "a2a", "protocol": "A2A", "enabled": false, "effects": ["NETWORK_READ", "NETWORK_WRITE"], "internalAuthority": false, "transportBundled": false, "knownGaps": ["runtime transport not selected"] },
+    { "id": "github-draft", "protocol": "GitHub", "enabled": false, "effects": ["NETWORK_WRITE"], "internalAuthority": false, "transportBundled": false, "knownGaps": ["receiver identity authentication external"], "receiverAssertions": ["exact-head", "exact-base", "exact-title", "exact-body", "open", "unmerged", "draft-true"] },
+    { "id": "oci-export", "protocol": "OCI/ORAS", "enabled": false, "effects": ["PUBLIC_RELEASE"], "internalAuthority": false, "transportBundled": false, "knownGaps": ["registry and signing substrate not selected"] },
+    { "id": "public-attestation", "protocol": "in-toto/Sigstore-style", "enabled": false, "effects": ["PUBLIC_RELEASE"], "internalAuthority": false, "transportBundled": false, "knownGaps": ["attestation and transparency substrate not selected"] }
+  ],
+  "privateLocalOperationRequiresGate": false,
+  "externalProtocolIsInternalCanon": false
+}

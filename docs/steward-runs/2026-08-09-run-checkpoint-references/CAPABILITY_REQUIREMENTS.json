@@ -1,0 +1,14 @@
+{
+  "schema": "axm.capability-requirements/v1",
+  "subject": "game-production-runner graceful interruption checkpoints and cache references",
+  "requirements": [
+    { "id": "graceful-interruption-is-sealed", "capabilities": ["run.production.checkpoint.sealed"], "required": true, "gapType": "EVIDENCE" },
+    { "id": "checkpoint-history-is-append-only", "capabilities": ["run.production.checkpoint.chain"], "required": true, "gapType": "CONTRACT" },
+    { "id": "checkpoint-history-binds-ledger-prefixes", "capabilities": ["run.production.checkpoint.ledger-prefix"], "required": true, "gapType": "EVIDENCE" },
+    { "id": "legacy-interruption-remains-resumable", "capabilities": ["run.production.checkpoint.legacy-resume"], "required": true, "gapType": "CONTRACT" },
+    { "id": "checkpoint-references-are-discoverable", "capabilities": ["cache.production.reference.checkpoint"], "required": true, "gapType": "HAND" },
+    { "id": "unsafe-checkpoint-evidence-fails-closed", "capabilities": ["cache.production.reference.checkpoint-hold"], "required": true, "gapType": "AUTHORITY" },
+    { "id": "checkpoint-discovery-is-bounded-and-private", "capabilities": ["cache.production.reference.checkpoint-bounded-private"], "required": true, "gapType": "SUBSTRATE" },
+    { "id": "retention-protects-checkpoint-bindings", "capabilities": ["cache.production.retention.checkpoint-binding"], "required": true, "gapType": "CONTRACT" }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "status": "VERIFIED_WITH_LIMITS",
+  "coveredImplementationCommit": "0cab12b09789503e9fc5e0fd55d6e35941f1dc5c",
+  "claims": [
+    {
+      "id": "twelve-block-coverage",
+      "claim": "All twelve blueprint infrastructure blocks are represented by live EXPERIMENTAL modules.",
+      "evidenceClass": "structural",
+      "probe": "node tests/lego-city-blueprint-conformance-test.js",
+      "result": "PASS_15_ASSERTIONS",
+      "limits": ["presence does not prove runtime quality or promotion"]
+    },
+    {
+      "id": "truthful-city-map",
+      "claim": "Declared modules and generated human/machine map views match the deterministic live graph.",
+      "evidenceClass": "structural_and_negative",
+      "probe": "node tests/city-map-gate-test.js && node scripts/compile-city-graph.js --check",
+      "result": "PASS_32_ASSERTIONS_AND_NO_DRIFT",
+      "limits": ["unresolved sockets remain explicit", "classification may remain inferred for legacy modules"]
+    },
+    {
+      "id": "schema-identity",
+      "claim": "Schema identities resolve deterministically and compatibility is not inferred from version labels.",
+      "evidenceClass": "structural_and_negative",
+      "probe": "node tests/schema-registry-gate-test.js && node scripts/compile-schema-registry.js --check",
+      "result": "PASS_14_ASSERTIONS_AND_NO_DRIFT",
+      "limits": ["not a complete JSON Schema 2020-12 validator", "622 schema sockets unresolved"]
+    },
+    {
+      "id": "state-primitives",
+      "claim": "Complete artifacts are content-addressed and journal projections replay from a verified append-only chain.",
+      "evidenceClass": "behavioral_local_fixture",
+      "probe": "node tests/city-state-primitives-test.js",
+      "result": "PASS_19_ASSERTIONS",
+      "limits": ["no multi-process stress test", "no cross-filesystem crash proof", "no deletion API"]
+    },
+    {
+      "id": "authority-before-hands",
+      "claim": "Injected hands require exact fresh authority and emit typed outcomes without a bundled real executor.",
+      "evidenceClass": "behavioral_and_negative",
+      "probe": "node tests/city-authority-hands-test.js",
+      "result": "PASS_22_ASSERTIONS",
+      "limits": ["decision-maker authentication is caller-supplied", "no OS sandbox proof", "duration limit is post-hoc"]
+    },
+    {
+      "id": "durable-route-evidence",
+      "claim": "Routes cannot skip unverified work and evidence preserves stale, unknown, partial, and conflicting states.",
+      "evidenceClass": "behavioral_and_negative",
+      "probe": "node tests/city-workflow-evidence-test.js",
+      "result": "PASS_29_ASSERTIONS",
+      "limits": ["workflow persistence and execution are external", "verifier identity is not authenticated here"]
+    },
+    {
+      "id": "sync-and-twins",
+      "claim": "Sensitive state never auto-merges and every human label is digest-bound to a complete machine packet.",
+      "evidenceClass": "behavioral_structural_and_negative",
+      "probe": "node tests/city-sync-twins-test.js && node scripts/compile-twin-surfaces.js --check",
+      "result": "PASS_24_ASSERTIONS_AND_NO_DRIFT",
+      "limits": ["only G-Set CRDT behavior is proven", "no browser render/click test"]
+    },
+    {
+      "id": "quarantine-and-disabled-gates",
+      "claim": "The fifteen-step Harbor keeps imports inert and all committed external gates remain disabled and transport-free.",
+      "evidenceClass": "behavioral_structural_and_negative",
+      "probe": "node tests/city-intake-gates-test.js",
+      "result": "PASS_26_ASSERTIONS",
+      "limits": ["Harbor records but performs no intake effect", "no network or external-protocol test"]
+    },
+    {
+      "id": "workshop-regression",
+      "claim": "The implementation does not break the required Workshop verification suite.",
+      "evidenceClass": "repository_regression",
+      "probe": "all ten AGENTS.md required commands",
+      "result": "PASS_10_OF_10",
+      "limits": ["verify.js retains 43 named warnings", "verification spine is VERIFIED_WITH_LIMITS"]
+    }
+  ],
+  "authority": {
+    "install": false,
+    "execute": false,
+    "networkWrite": false,
+    "promote": false,
+    "merge": false,
+    "canon": false,
+    "roots": false
+  }
+}

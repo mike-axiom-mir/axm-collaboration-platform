@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-next-action-handoff/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "state", "sequencePlanDigest", "remoteMainCommit", "next", "holds", "authority", "preparedBy", "independentReviewer", "handoffDigest"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-next-action-handoff/v1" },
+    "state": { "enum": ["NEXT_READY", "HELD", "COMPLETE"] },
+    "sequencePlanDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "remoteMainCommit": { "type": ["string", "null"] },
+    "next": { "type": ["object", "null"] },
+    "holds": { "type": ["object", "null"] },
+    "authority": { "type": "object" },
+    "preparedBy": { "const": "Keel/local AXM" },
+    "independentReviewer": { "const": "platform Axiom/Mir" },
+    "handoffDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

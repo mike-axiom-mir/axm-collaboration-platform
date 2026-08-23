@@ -11,7 +11,7 @@
   <header>
     <a href="../../hub/index.html">← Hub</a>
     <div>
-      <span class="eyebrow">ONE HUMAN REVIEW SURFACE · SEPARATE EVIDENCE DOMAINS · NO AUTO-APPLY</span>
+      <span class="eyebrow">ONE REVIEW SURFACE · SEPARATE EVIDENCE DOMAINS · NO AUTO-APPLY</span>
       <h1>Review &amp; Promotion Inbox</h1>
       <p>Structural module checks and exact-artifact decisions meet here without becoming the same kind of approval.</p>
     </div>
@@ -36,6 +36,7 @@
       <article class="panel">
         <span class="eyebrow">EXACT-DIGEST DECISION QUEUE</span>
         <h2>Review queue</h2>
+        <div id="authorityStatus" class="authority-status" aria-live="polite">Checking host-key authority and the single-host review mutation lease…</div>
         <div id="facts" class="facts"></div>
         <label for="filter">State filter</label>
         <select id="filter">
@@ -49,20 +50,25 @@
         <div id="items" class="grid review-items"></div>
       </article>
       <article class="panel vote-panel">
-        <span class="eyebrow">ATTRIBUTED HUMAN OR MACHINE SEAT</span>
+        <span class="eyebrow">ATTRIBUTED SEAT · IDENTITY UNPROVEN</span>
         <h2>Vote on exact artifact</h2>
-        <div id="selected" class="code">Select an exact-digest review item.</div>
+        <div id="typedReview" aria-live="polite"></div>
+        <h3 id="rawEvidenceHeading" class="raw-evidence-heading">Raw exact-item evidence</h3>
+        <div id="selected" class="code" aria-labelledby="rawEvidenceHeading">Select an exact-digest review item.</div>
         <label>Reviewer<input id="actor" value="Mike"></label>
         <label>Reviewer kind<select id="actorKind"><option>human</option><option>machine</option><option>collective</option><option>unknown</option></select></label>
         <label>Verdict<select id="verdict"><option>APPROVE</option><option>HOLD</option><option>REJECT</option></select></label>
         <label>Review note<textarea id="note" placeholder="What evidence supports this decision?"></textarea></label>
         <label>Type REVIEW EXACT DIGEST<input id="confirmation" autocomplete="off"></label>
         <button id="vote" disabled>Record attributed vote</button>
-        <p class="truth">A changed artifact creates a new digest and supersedes the previous open item. Approval still does not apply its action.</p>
+        <p class="truth">This ordinary route records a caller-supplied label. It cannot satisfy host-key authority. Cooperating single-host Review Inbox mutations share a bounded lease; a held or invalid lease fails closed and has no browser unlock route. Signed submission and vote envelopes use the separate authenticated API path; neither path applies an action. Interrupted signed projections stay held and require an explicit host-only recovery method—there is no browser recovery or automatic replay.</p>
       </article>
     </section>
   </main>
   <script src="../../shared/operations/operations-client.js"></script>
+  <script src="../deterministic-json-core/index.js"></script>
+  <script src="retention-audit-review-view.js"></script>
+  <script src="history-reconciliation-review-view.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

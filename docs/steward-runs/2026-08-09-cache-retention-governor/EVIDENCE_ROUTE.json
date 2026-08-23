@@ -1,0 +1,150 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "game-production-runner on-demand artifact-cache retention governor",
+  "status": "EXPERIMENTAL",
+  "claims": [
+    {
+      "claim_id": "cache.production.retention.inventory.readonly",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Inventory reads an explicit external cache without creating an absent root or changing any entry.",
+      "primary_surface": "Absent-root and populated-root filesystem observations before and after inventory",
+      "counterevidence": "Inventory creates a directory, changes an entry, or runs from candidate execution.",
+      "secondary_surface_if_needed": "CLI process inventory followed by exact entry-count readback",
+      "observed_evidence": "An absent root remained absent and emitted a sealed empty inventory; a three-entry CLI cache remained at three entries after inventory.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.scan.bounded",
+      "kind": "resource-safety",
+      "risk": "medium",
+      "pass_condition": "Inventory has finite entry/file ceilings and returns LIMIT_EXCEEDED rather than traversing past them.",
+      "primary_surface": "Focused execution with a one-entry scan ceiling over three entries",
+      "counterevidence": "The inventory silently scans beyond the declared ceiling or hashes all artifact bytes as a prerequisite.",
+      "secondary_surface_if_needed": "Static inspection of fixed maximum limits and lstat-only logical-byte accounting",
+      "observed_evidence": "The one-entry fixture returned LIMIT_EXCEEDED; runtime caps are 100000 entries and 1000000 files and inventory does not hash artifact content.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.policy.separate",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "pass_condition": "Entry count, logical bytes, and observed filesystem age independently select oldest-first candidates with explicit reasons.",
+      "primary_surface": "Three controlled-mtime entries evaluated under separate policies",
+      "counterevidence": "One budget masks another, ordering changes for the same inventory, or a selection has no reason.",
+      "secondary_surface_if_needed": "Exact candidate key and reason assertions",
+      "observed_evidence": "Logical-byte pressure selected the oldest exact entry; the combined policy separately emitted FILESYSTEM_AGE and ENTRY_COUNT reasons in oldest-first order.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.reference.protect",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Every exact protected key is excluded from candidates even when satisfying policy would otherwise require deleting it.",
+      "primary_surface": "Count and age pressure with the middle entry protected",
+      "counterevidence": "A protected key appears as a candidate or policy satisfaction is claimed by silently ignoring its age.",
+      "secondary_surface_if_needed": "READY_WITH_LIMITS result when the protected entry alone violates age policy",
+      "observed_evidence": "The protected key remained outside both candidates and deletion outcomes; a protected age violation produced READY_WITH_LIMITS rather than fake satisfaction.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.proposal.sealed",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "pass_condition": "Planning emits a canonical sealed dry-run and apply reproduces the official plan before accepting its candidates.",
+      "primary_surface": "Canonical digest validation plus filesystem no-change checks",
+      "counterevidence": "Planning deletes state or a resealed arbitrary candidate substitution is accepted.",
+      "secondary_surface_if_needed": "Official-planner replay during apply",
+      "observed_evidence": "The dry-run was sealed and left all entries present; a validly resealed protected-key substitution returned PROPOSAL_NOT_REPRODUCIBLE.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.apply.authorized",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "No deletion occurs without both explicit apply authority and the exact proposal digest.",
+      "primary_surface": "Missing-explicit and wrong-digest API and CLI attempts",
+      "counterevidence": "Either partial credential deletes an entry or creates an absent root.",
+      "secondary_surface_if_needed": "Filesystem existence checks for every entry after refusal",
+      "observed_evidence": "NOT_REQUESTED, NOT_APPROVED, and APPROVAL_MISMATCH paths deleted nothing; the unrequested CLI path created no cache root.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.apply.stale-refuse",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "Any new, removed, or changed cache entry after planning invalidates the approved snapshot before deletion.",
+      "primary_surface": "Separate child-process publication between plan and apply",
+      "counterevidence": "The old proposal deletes any originally selected key after the inventory changed.",
+      "secondary_surface_if_needed": "Post-refusal existence checks for every original entry",
+      "observed_evidence": "A separate publisher added one entry; application returned STALE and every originally selected entry remained present.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.delete.selective",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "Exact approval deletes only official proposal candidates through the link-refusing selective invalidation boundary.",
+      "primary_surface": "Approved two-candidate application over a three-entry cache",
+      "counterevidence": "The protected key disappears, an undeclared path is targeted, or an invalidation is not sealed.",
+      "secondary_surface_if_needed": "Each outcome binds its exact invalidation receipt digest",
+      "observed_evidence": "Two candidates returned REMOVED with valid invalidation digests; the protected third key remained present.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.readback",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "Application inventories again after deletion and recomputes policy satisfaction from observed remaining state.",
+      "primary_surface": "Post-application inventory and usage assertions",
+      "counterevidence": "Receipt claims success without observing absence or reports predicted rather than actual usage.",
+      "secondary_surface_if_needed": "CLI application in a separate process",
+      "observed_evidence": "The application receipt reported one observed remaining entry and policy_satisfied true; the CLI route independently reproduced two removals and one protected remainder.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.unclassified-hold",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Undeclared content, links, special files, active publishers, and exhausted scan budgets cannot become automatic deletion candidates.",
+      "primary_surface": "Extra-file and active-publisher fixtures plus scan-limit execution",
+      "counterevidence": "Any such layout produces an applicable deletion proposal.",
+      "secondary_surface_if_needed": "Inventory and proposal status assertions",
+      "observed_evidence": "An undeclared file and an active publisher each produced REVIEW_REQUIRED and HELD; scan exhaustion produced LIMIT_EXCEEDED.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.scheduler",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "A user-owned persisted policy authorizes a declared schedule without hiding deletion proposals or receipts.",
+      "primary_surface": "Persisted-policy and scheduler authority receipts",
+      "counterevidence": "Retention runs merely because a cache exists or a candidate executes.",
+      "observed_evidence": "No policy is persisted and nothing schedules retention; every plan and apply is an explicit standalone action.",
+      "verdict": "UNKNOWN",
+      "named_seam": "ON_DEMAND_GOVERNOR_IS_NOT_AUTOMATIC_RETENTION_AUTHORITY"
+    },
+    {
+      "claim_id": "cache.production.reference.discovery",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "Validated run ledgers are scanned read-only and their live cache keys become a sealed protected reference set.",
+      "primary_surface": "Run-ledger adapter plus reference-set receipt",
+      "counterevidence": "Unverified files grant protection authority or a live validated reference is omitted.",
+      "observed_evidence": "Exact protected keys work, but the caller must currently supply them; no run-ledger discovery adapter exists.",
+      "verdict": "UNKNOWN",
+      "named_seam": "REFERENCE_PROTECTION_DOES_NOT_PROVE_REFERENCE_DISCOVERY"
+    },
+    {
+      "claim_id": "cache.production.retention.performance",
+      "kind": "performance",
+      "risk": "medium",
+      "pass_condition": "Named large-cache workloads stay within declared wall-time, memory, and I/O budgets across repeated runs.",
+      "primary_surface": "Measured telemetry under representative cache sizes and file distributions",
+      "counterevidence": "Traversal cost or memory use exceeds the named budget before scan limits stop it.",
+      "observed_evidence": "Work is structurally bounded and content hashing is avoided, but no representative timing or memory benchmark was run.",
+      "verdict": "UNKNOWN",
+      "named_seam": "STRUCTURAL_SCAN_LIMITS_ARE_NOT_PERFORMANCE_TELEMETRY"
+    }
+  ]
+}

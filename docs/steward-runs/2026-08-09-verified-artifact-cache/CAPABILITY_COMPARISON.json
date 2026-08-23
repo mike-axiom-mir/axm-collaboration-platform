@@ -1,0 +1,15 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    { "id": "cache-key-is-exact", "required": true, "status": "READY", "available": ["cache.production.key.exact"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": { "cache.production.key.exact": ["package, dependency package/path/digest/bytes, executor, verifier, and seed digest", "local SHA-256 canonical contract"] } },
+    { "id": "cross-run-reuse-is-real", "required": true, "status": "READY", "available": ["cache.production.cross-run.verified"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": { "cache.production.cross-run.verified": ["explicit external local cache root", "deterministic-v1 executors only", "EXPERIMENTAL"] } },
+    { "id": "hits-use-current-verifier", "required": true, "status": "READY", "available": ["cache.production.hit.current-verifier"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": { "cache.production.hit.current-verifier": ["appointed verifier runs on every hit", "prior verifier testimony is not reused"] } },
+    { "id": "tamper-fails-to-fresh-work", "required": true, "status": "READY", "available": ["cache.production.tamper.fallback"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": { "cache.production.tamper.fallback": ["manifest and artifact byte integrity", "fresh execution fallback", "poisoned entry requires explicit invalidation"] } },
+    { "id": "publication-is-concurrent-safe", "required": true, "status": "READY", "available": ["cache.production.publish.atomic"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": { "cache.production.publish.atomic": ["same-machine filesystem directory rename", "two separate Node publisher processes tested"] } },
+    { "id": "invalidation-is-selective-and-explicit", "required": true, "status": "READY", "available": ["cache.production.invalidate.explicit"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": { "cache.production.invalidate.explicit": ["one exact digest entry", "explicit CLI or API authority", "no automatic eviction"] } },
+    { "id": "nondeterminism-is-counterevidence", "required": true, "status": "READY", "available": ["cache.production.conflict.preserve"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": { "cache.production.conflict.preserve": ["same key and different manifest returns CONFLICT", "existing entry is not overwritten"] } }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

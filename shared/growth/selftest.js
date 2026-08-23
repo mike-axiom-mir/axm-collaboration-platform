@@ -12,7 +12,8 @@ assert.equal(current.scope, 'active-workshop-source');
 assert.ok(current.totalFiles > 100);
 assert.ok(current.characters > 100000);
 assert.ok(current.lines > 1000);
-assert.equal(current.measurementVersion, 7);
+assert.equal(current.measurementVersion, 8);
+assert.equal(current.scopeRulesVersion, 2);
 assert.ok(current.codeLines > 1000);
 assert.ok(current.testLines > 100);
 assert.ok(current.codeFiles > 10);
@@ -42,7 +43,7 @@ assert.equal(G.componentKind('shared/example/example.schema.json', '.json'), 'sc
 assert.equal(G.componentKind('shared/example/host-protocol.mjs', '.mjs'), 'protocols');
 assert.equal(G.componentKind('shared/example/external-verifier.js', '.js'), 'validators');
 assert.equal(G.componentKind('shared/example/external-verifier-selftest.js', '.js'), null);
-assert.ok(current.excluded.includes('exports') && current.excluded.includes('node_modules') && current.excluded.includes('state') && current.excluded.includes('local-data') && current.excluded.includes('tmp'));
+assert.ok(current.excluded.includes('exports') && current.excluded.includes('node_modules') && current.excluded.includes('state') && current.excluded.includes('local-data') && current.excluded.includes('intakes') && current.excluded.includes('tmp'));
 assert.equal(current.scanHealth.partial, false);
 
 const cacheFixture = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-growth-cache-'));
@@ -51,6 +52,8 @@ try {
   fs.writeFileSync(path.join(cacheFixture, 'tools', 'fixture', 'manifest.json'), '{"id":"fixture"}\n');
   fs.writeFileSync(path.join(cacheFixture, 'tools', 'fixture', 'index.js'), 'const first = true;\n');
   fs.writeFileSync(path.join(cacheFixture, 'asset.bin'), Buffer.alloc(64, 1));
+  fs.mkdirSync(path.join(cacheFixture, 'intakes', 'raw-carrier'), { recursive:true });
+  fs.writeFileSync(path.join(cacheFixture, 'intakes', 'raw-carrier', 'duplicate.js'), 'const mustNotCountAsActiveSource = true;\n');
   const unreadableFixture = path.join(cacheFixture, 'opaque-cache');
   fs.mkdirSync(unreadableFixture);
   fs.writeFileSync(path.join(unreadableFixture, 'ignored.txt'), 'must be skipped when the directory is unreadable\n');
@@ -138,7 +141,8 @@ try {
   assert.equal(mirror.characters < 1000, true);
 
   const joined = G.attachMirror(current, mirror);
-  assert.equal(joined.measurementVersion, 7);
+  assert.equal(joined.measurementVersion, 8);
+  assert.equal(joined.scopeRulesVersion, 2);
   assert.equal(joined.mirror.specializations[0].displayName, 'Creative Mirror');
   const joinedCapture = G.capture(null, joined, 'Workshop and Mirror baseline', 'selftest');
   assert.equal(joinedCapture.snapshot.mirror.available, true);
@@ -159,7 +163,10 @@ assert.equal(first.state.schedule.localTime, '05:00');
 assert.equal('extensions' in first.snapshot, false);
 assert.equal('largest' in first.snapshot, false);
 assert.equal('activity' in first.snapshot, false);
-assert.equal(first.snapshot.measurementVersion, 7);
+assert.equal(first.snapshot.measurementVersion, 8);
+assert.equal(first.snapshot.scopeRulesVersion, 2);
+assert.equal(G.scopeComparison(current, first.snapshot).ready, true);
+assert.equal(G.scopeComparison(current, Object.assign({}, first.snapshot, { scopeRulesVersion:0 })).reason, 'COUNTING_SCOPE_CHANGED');
 assert.equal(first.snapshot.exactCapabilities, current.exactCapabilities);
 assert.equal(first.snapshot.capabilityDeclarations, current.capabilityDeclarations);
 assert.equal(Object.keys(first.snapshot.moduleFingerprints).length, current.modules);
@@ -206,5 +213,6 @@ const configured = G.configureSchedule(daily.state, { enabled: false, localTime:
 assert.equal(configured.schedule.enabled, false);
 assert.equal(configured.schedule.localTime, '21:15');
 assert.equal(G.delta(current, current).characters, 0);
+assert.ok(require('./scope-transition-selftest').run() >= 15, 'scope transition receipts must fail closed across migration, restart, and archive movement');
 
 console.log('Workshop Growth selftest: PASS · ' + current.codeLines + ' code lines · aggregate velocity meter');

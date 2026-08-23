@@ -3,6 +3,7 @@
 
 const assert = require('assert');
 const Intake = require('./research-contribution-intake');
+const contract = require('./module.contract.json');
 
 let checks = 0;
 function check(condition, message) {
@@ -16,6 +17,11 @@ function rejects(mutator, pattern, message) {
   checks += 1;
   assert.throws(() => Intake.buildAssessment(input), pattern, message);
 }
+
+check(contract.version === 'v0.2' && contract.status === 'TEST' && contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'v0.2 contract declares strict representation closure');
+check(Intake.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+assert.throws(() => Intake.stableStringify({ lost: undefined }), /unsupported undefined/i);
+checks += 1;
 
 function ref(id, schema, bytes) {
   return { id, schema, sha256: Intake.sha256(Buffer.from(bytes, 'utf8')) };

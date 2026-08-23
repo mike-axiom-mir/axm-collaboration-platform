@@ -1,0 +1,86 @@
+#!/usr/bin/env node
+'use strict';
+
+const assert = require('assert');
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+const Core = require('../../../tools/deterministic-json-core');
+const dir = __dirname;
+const root = path.resolve(dir, '../../..');
+const read = name => JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'));
+let checks = 0;
+function check(value, label) { assert.ok(value, label); checks += 1; console.log('PASS ' + label); }
+const bytes = fs.readFileSync(path.join(dir, 'SESSION_SEGMENT.jsonl'));
+const events = bytes.toString('utf8').trimEnd().split(/\r?\n/).map(line => JSON.parse(line));
+const addendumBytes = fs.readFileSync(path.join(dir, 'SESSION_SEGMENT_ADDENDUM.jsonl'));
+const addendumEvents = addendumBytes.toString('utf8').trimEnd().split(/\r?\n/).map(line => JSON.parse(line));
+const seal = read('SESSION_SEGMENT.seal.json');
+const addendumSeal = read('SESSION_SEGMENT_ADDENDUM.seal.json');
+const receipt = read('CURATION_RECEIPT.json');
+const index = read('SESSION_INDEX.json');
+const sources = read('SOURCE_SNAPSHOT.json');
+const results = read('CHECK_RESULTS.json');
+const before = read('CAPABILITY_GAP_BEFORE.json');
+const after = read('CAPABILITY_GAP_AFTER.json');
+const routes = read('EVIDENCE_ROUTES.json');
+const visual = read('VISUAL_RECEIPT.json');
+
+check(seal.schema === 'session-seal/v1' && seal.parseStatus === 'valid' && seal.invalidJsonLines === 0, 'session seal is structurally valid');
+check(crypto.createHash('sha256').update(bytes).digest('hex') === seal.sha256, 'session seal matches exact segment bytes');
+check(seal.byteLength === bytes.length && seal.eventLines === events.length && seal.validJsonLines === events.length, 'session seal counts exact bytes and events');
+check(events.length === 49 && events.every((event, i) => event.eventId === 'evt-' + String(i + 1).padStart(3, '0')), 'forty-nine semantic events remain ordered');
+check(events.every(event => event.status === 'TEST' && event.timeAuthority === 'SESSION_ORDER_ONLY_NOT_EXTERNALLY_TRUSTED'), 'all events retain TEST and untrusted-time boundaries');
+['specialist_zip_lane_excluded','signed_submission_prerequisite_added','incorrect_inherited_test_paths_failed','actual_inherited_test_paths_resolved','atomicity_boundary_made_explicit','broad_grounded_growth_goal_remains_active'].forEach(name => check(events.some(event => event.event === name), name + ' remains durable'));
+check(addendumSeal.schema === 'session-seal/v1' && addendumSeal.parseStatus === 'valid' && addendumSeal.invalidJsonLines === 0, 'continuation seal is structurally valid');
+check(crypto.createHash('sha256').update(addendumBytes).digest('hex') === addendumSeal.sha256, 'continuation seal matches exact addendum bytes');
+check(addendumEvents.length === 11 && addendumEvents.every((event, i) => event.eventId === 'evt-' + String(i + 50).padStart(3, '0')), 'eleven continuation events preserve primary ordering');
+check(addendumEvents.every(event => event.status === 'TEST' && event.timeAuthority === 'SESSION_ORDER_ONLY_NOT_EXTERNALLY_TRUSTED'), 'continuation events retain TEST and untrusted-time boundaries');
+['long_temp_detached_checkout_failed','short_detached_checkout_interrupted','exact_locked_worktree_cleanup_succeeded','exact_commit_detached_replay_passed','review_branch_reattached_clean'].forEach(name => check(addendumEvents.some(event => event.event === name), name + ' remains durable in continuation'));
+check(receipt.sealDigest === 'sha256:' + seal.sha256 && receipt.durableEventsPreserved === events.length + addendumEvents.length, 'curation receipt binds both exact segments');
+check(receipt.continuationSegments.length === 1 && receipt.continuationSegments[0].sealDigest === 'sha256:' + addendumSeal.sha256 && receipt.continuationSegments[0].durableEventsPreserved === addendumEvents.length, 'curation receipt binds append-only continuation seal');
+check(receipt.telemetryAggregation.commandOutcomes === 61 && receipt.telemetryAggregation.passedCommands === 61 && receipt.telemetryAggregation.failedCommands === 0, 'curation retains exact successful command outcomes');
+check(receipt.telemetryAggregation.focusedAssertions === 5798 && receipt.telemetryAggregation.exploratoryFailuresPreservedAsSemanticEvents === 2, 'curation retains exact assertions and exploratory diagnostics');
+check(receipt.telemetryAggregation.postSealDiagnosticsPreservedAsSemanticEvents === 5, 'curation retains five distinct post-seal failure diagnostics');
+check(receipt.temporaryMaterialDeleted.inMemoryScreenshotBuffersCleared === 7 && receipt.temporaryMaterialDeleted.selectedScreenshotDigestsRetained === 7 && !receipt.temporaryMaterialDeleted.screenshotsRetained, 'curation retains frame commitments without screenshots');
+check(receipt.temporaryMaterialDeleted.generatedPrivateTestKeysRetained === false && receipt.telemetryAggregation.rawBrowserTelemetryRetained === false, 'curation retains no private test keys or raw browser telemetry');
+check(receipt.temporaryMaterialDeleted.failedDetachedWorktreeRootsRemoved === 1 && receipt.temporaryMaterialDeleted.failedDetachedWorktreeRootAlreadyAbsent === 1, 'curation records exact failed-worktree cleanup outcomes');
+check(receipt.explicitRetentionExceptions.length === 0 && receipt.unclassifiedItems.length === 0, 'curation has no retention exceptions or unclassified items');
+check(/No shared-main mutation/.test(receipt.authorityUsed) && /CANON authority used/.test(receipt.authorityUsed), 'curation preserves unused consequential authority');
+check(index.status === 'TEST' && index.openEvidence.length === 13 && index.evidenceRoutes === 'EVIDENCE_ROUTES.json', 'session index resolves evidence and thirteen open seams');
+check(index.continuationSegments.length === 1 && index.continuationSegments[0].seal === 'SESSION_SEGMENT_ADDENDUM.seal.json', 'session index resolves append-only continuation');
+check(index.openEvidence.includes('atomic review and authentication persistence') && index.openEvidence.includes('actual human participation or informed human review'), 'atomicity and human-review seams stay open');
+check(receipt.detachedReplay.commit === '8ce0e4fd8b59dd58572fc453466cee4ceaf40ba2' && receipt.detachedReplay.tree === '790e8727430dc9a82d38143c66110fc89897966e' && receipt.detachedReplay.cleanAfterReplay, 'curation records exact clean detached replay');
+
+const resultPayload = JSON.parse(Core.canonicalJson(results)); delete resultPayload.resultsDigest;
+check(results.resultsDigest === 'sha256:' + crypto.createHash('sha256').update(Core.canonicalJson(resultPayload)).digest('hex'), 'verification receipt digest matches canonical content');
+check(results.status === 'PASS' && results.summary.commands === 61 && results.summary.passed === 61 && results.summary.failed === 0, 'all sixty-one recorded commands passed');
+check(results.summary.focusedAssertions === 5798 && results.commands.filter(item => item.phase === 'REQUIRED').length === 10, 'verification retains exact focused assertions and ten required checks');
+check(results.commands.some(item => item.command === 'node shared/operations/review-authority-service-selftest.js' && item.assertions === 59), 'authority service contributes fifty-nine assertions');
+check(results.commands.some(item => item.command === 'node shared/operations/review-authority-api-selftest.js' && item.assertions === 18), 'authority API contributes eighteen assertions');
+
+check(before.overall === 'BLOCKED', 'v4.0 baseline is blocked for the selected authority seam');
+check(after.overall === 'DEGRADED' && after.requirements.filter(item => item.required).every(item => item.status === 'READY'), 'all bounded required v4.1 capabilities are ready');
+check(after.requirements.filter(item => !item.required).length === 13 && after.requirements.filter(item => !item.required).every(item => item.status === 'OPTIONAL_UNKNOWN'), 'thirteen real-world capabilities remain optional unknowns');
+check(routes.routes.length === 6 && routes.routes.every(route => route.verdict === 'PASS' && route.counterevidence), 'six evidence routes retain counterevidence and PASS verdicts');
+check(visual.status === 'PASS' && visual.surfaces.length === 7 && visual.surfaces.every(surface => /^sha256:[a-f0-9]{64}$/.test(surface.sha256)), 'visual receipt binds seven frame commitments');
+check(visual.interaction.writeRoutesAvailable === false && visual.interaction.writeRoutesAttempted === false && visual.interaction.consoleWarnings === 0 && visual.interaction.consoleErrors === 0, 'visual harness stayed read only and console clean');
+check(visual.retention.screenshotsRetained === false && visual.notProven.includes('actual human participation'), 'visual receipt retains no image bytes and no human claim');
+
+check(sources.sources.length === 345 && sources.sources.every(item => { const normalized = fs.readFileSync(path.join(root, item.path), 'utf8').replace(/\r\n?/g, '\n'); return item.sha256 === 'sha256:' + crypto.createHash('sha256').update(normalized).digest('hex'); }), 'all 345 normalized source commitments still match');
+const contract = JSON.parse(fs.readFileSync(path.join(root, 'tools/review-inbox/module.contract.json'), 'utf8'));
+check(contract.version === 'v0.5' && contract.boundaries.refuses.includes('legacy-approved-state-as-host-key-authority'), 'Review Inbox v0.5 refuses legacy approval as host authority');
+check(contract.boundaries.refuses.includes('separate-review-and-authentication-files-as-atomic-transaction') && contract.boundaries.refuses.includes('local-authentication-ledger-as-protected-storage-rollback-prevention-or-external-custody'), 'contract refuses atomic and protected-storage claims');
+const service = fs.readFileSync(path.join(root, 'shared/operations/review-authority-service.js'), 'utf8');
+const api = fs.readFileSync(path.join(root, 'shared/operations/operations-api.js'), 'utf8');
+check(service.includes('HOST_CONFIGURED_LOCAL_TRUST_ROOT') && service.includes("fs.statSync(policyFile).size > MAX_POLICY_BYTES"), 'service uses explicit host origin and preparse policy bound');
+check(service.includes('requires a current valid authenticated submission') && service.includes('authenticated review envelope id was already used'), 'service refuses unsigned-upgrade and envelope replay');
+check(!/generateKeyPair|generateKey|\bfetch\s*\(|XMLHttpRequest/.test(service), 'production verifier generates no keys and opens no browser network');
+check(api.includes("'/api/reviews/authenticated-submit'") && api.includes("'/api/reviews/authenticated-vote'") && !api.includes('authenticatedApproved('), 'API exposes explicit signed routes without downstream authority consumption');
+const example = JSON.parse(fs.readFileSync(path.join(root, 'shared/operations/review-trust-policy.example.json'), 'utf8'));
+check(example.keys.length === 0 && Date.parse(example.expiresAt) < Date.parse('2026-08-21T00:00:00.000Z'), 'committed policy example is empty and expired');
+['review-trust-policy.schema.json','authenticated-review-envelope.schema.json','review-authority-view.schema.json'].forEach(name => { const schema = JSON.parse(fs.readFileSync(path.join(root, 'shared/operations', name), 'utf8')); check(schema.$schema === 'https://json-schema.org/draft/2020-12/schema' && schema.additionalProperties === false, name + ' is a closed Draft 2020-12 schema'); });
+const evidenceJson = fs.readdirSync(dir).filter(name => name.endsWith('.json')).map(name => fs.readFileSync(path.join(dir, name), 'utf8')).join('\n');
+check(!/[A-Za-z]:\\/.test(evidenceJson), 'evidence JSON contains no absolute Windows path');
+check(!/sk-[A-Za-z0-9_-]{20,}|authorization\s*[:=]\s*bearer\s+[A-Za-z0-9._~+/-]{10,}/i.test(evidenceJson), 'evidence JSON contains no credential pattern');
+console.log('\nReview Inbox host-key authority evidence: PASS (' + checks + ' checks)');

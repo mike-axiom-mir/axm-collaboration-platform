@@ -1,0 +1,224 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "primary-receipt-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.receipt.verify.primary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.receipt.verify.primary": [
+          "pure static verification of build/gap and lineage receipts; referenced evidence is not fetched"
+        ]
+      }
+    },
+    {
+      "id": "independent-receipt-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.receipt.verify.independent"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.receipt.verify.independent": [
+          "fresh-process static verification without importing the compiler; referenced evidence and human authorship are not authenticated"
+        ]
+      }
+    },
+    {
+      "id": "exact-continuity-acceptance-reference",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.continuity.acceptance-reference.exact"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.continuity.acceptance-reference.exact": [
+          "accepted continuity events require axm.human-acceptance/v1 by exact schema name; this checks a reference, not human authenticity"
+        ]
+      }
+    },
+    {
+      "id": "human-decision-evidence-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.human-decision.evidence-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.human-decision.evidence-bind": [
+          "authorization decision, subject event, parent manifest, and continuity evidence are digest-bound; no external authorship authentication"
+        ]
+      }
+    },
+    {
+      "id": "compilation-result-replay",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.compilation.replay.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.compilation.replay.verify": [
+          "exact canonical result replay detects re-signed manifest, lineage, and build-receipt drift"
+        ]
+      }
+    },
+    {
+      "id": "schema-topology-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "identity.shell.schema.topology.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "identity.shell.schema.topology.verify": [
+          "local schema graph and published conditional boundaries are checked; no external schema registry is contacted"
+        ]
+      }
+    },
+    {
+      "id": "workshop-regression-verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "workshop.regression.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "workshop.regression.verify": [
+          "all ten AGENTS.md commands exit 0; verify.js reports zero failures and 41 repository-wide warnings"
+        ]
+      }
+    },
+    {
+      "id": "authenticated-human-acceptance",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.human.authenticate"
+      ],
+      "declaredConstraints": {
+        "identity.shell.human.authenticate": [
+          "no external authenticated human-decision or human-acceptance service"
+        ]
+      }
+    },
+    {
+      "id": "live-host-binding",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.host.bind"
+      ],
+      "declaredConstraints": {
+        "identity.shell.host.bind": [
+          "outside the inert v0.1 compiler and verifier boundary"
+        ]
+      }
+    },
+    {
+      "id": "runtime-continuity-observation",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.shell.runtime.continuity.observe"
+      ],
+      "declaredConstraints": {
+        "identity.shell.runtime.continuity.observe": [
+          "no live shell host or restart-bound runtime continuity surface"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "identity.shell.host.bind",
+    "identity.shell.human.authenticate",
+    "identity.shell.runtime.continuity.observe"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "identity.shell.host.bind",
+      "requiredBy": [
+        "live-host-binding"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "identity.shell.human.authenticate",
+      "requiredBy": [
+        "authenticated-human-acceptance"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "identity.shell.runtime.continuity.observe",
+      "requiredBy": [
+        "runtime-continuity-observation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

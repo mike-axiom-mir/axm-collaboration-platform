@@ -43,6 +43,11 @@ updated summary from silently skipping a held or failed generation. A
 substantive outcome forward as the effective state; it is refused when the
 capability-cycle digest changed or refresh is due.
 
+Cloning, canonical comparison, and object digests reuse the strict
+`deterministic-json-core`. JSON-safe historical receipts keep the same bytes;
+undefined and other non-JSON-representable state is rejected before it can be
+silently dropped or bound into an invalid digest.
+
 Run:
 
 ```powershell

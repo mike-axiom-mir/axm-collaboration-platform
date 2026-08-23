@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.identity-root/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "shellId", "display", "purpose", "roots", "authority", "disclosure", "ownership"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.identity-root/v1"},
+    "version": {"const": "0.1.0"},
+    "shellId": {"$ref": "common.schema.json#/$defs/id"},
+    "display": {
+      "type": "object", "additionalProperties": false, "required": ["label", "description", "tags"],
+      "properties": {
+        "label": {"type": "string", "minLength": 1, "maxLength": 160},
+        "description": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "tags": {"$ref": "common.schema.json#/$defs/ids"}
+      }
+    },
+    "purpose": {"$ref": "common.schema.json#/$defs/text"},
+    "roots": {
+      "type": "array", "minItems": 1, "maxItems": 32,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["id", "statement"],
+        "properties": {"id": {"$ref": "common.schema.json#/$defs/id"}, "statement": {"type": "string", "minLength": 1, "maxLength": 1000}}
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scopeId", "permittedPermissions", "forbiddenActions", "humanGates", "automaticExpansion"],
+      "properties": {
+        "scopeId": {"$ref": "common.schema.json#/$defs/id"},
+        "permittedPermissions": {"$ref": "common.schema.json#/$defs/ids"},
+        "forbiddenActions": {"$ref": "common.schema.json#/$defs/ids"},
+        "humanGates": {"type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "common.schema.json#/$defs/id"}},
+        "automaticExpansion": {"const": false}
+      }
+    },
+    "disclosure": {
+      "type": "object", "additionalProperties": false,
+      "required": ["technicalSubstrateDisclosureRequired", "modelOrConnectorSwapDisclosureRequired", "consciousnessClaimed", "personhoodClaimed", "subjectiveContinuityClaimed", "neutralityStatement"],
+      "properties": {
+        "technicalSubstrateDisclosureRequired": {"const": true},
+        "modelOrConnectorSwapDisclosureRequired": {"const": true},
+        "consciousnessClaimed": {"const": false},
+        "personhoodClaimed": {"const": false},
+        "subjectiveContinuityClaimed": {"const": false},
+        "neutralityStatement": {"type": "string", "minLength": 1, "maxLength": 600}
+      }
+    },
+    "ownership": {
+      "type": "object", "additionalProperties": false,
+      "required": ["controllerKind", "controllerId", "exportPolicy", "forkPolicy", "automaticInheritance", "automaticPromotion"],
+      "properties": {
+        "controllerKind": {"enum": ["USER", "HUMAN_STEWARD", "ORGANIZATION"]},
+        "controllerId": {"$ref": "common.schema.json#/$defs/id"},
+        "exportPolicy": {"enum": ["PORTABLE_REDACTED", "PRIVATE_NO_EXPORT"]},
+        "forkPolicy": {"enum": ["ALLOWED_WITH_NEW_ID", "HUMAN_DECISION_REQUIRED"]},
+        "automaticInheritance": {"const": false},
+        "automaticPromotion": {"const": false}
+      }
+    }
+  }
+}

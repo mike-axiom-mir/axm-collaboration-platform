@@ -1,0 +1,400 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "exact-baseline-reproduction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.exact-parent-leak-reproduction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.exact-parent-leak-reproduction": [
+          "exact parent Git blobs; raw leaked path is not retained"
+        ]
+      }
+    },
+    {
+      "id": "known-root-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.known-root-portable-placeholder"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.known-root-portable-placeholder": [
+          "workspace home temp and declared roots become typed placeholders while suffix context remains"
+        ]
+      }
+    },
+    {
+      "id": "residual-windows-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.residual-windows-absolute-path"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.residual-windows-absolute-path": [
+          "unknown drive-rooted paths become ABSOLUTE_PATH"
+        ]
+      }
+    },
+    {
+      "id": "unc-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.unc-host-share-path"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.unc-host-share-path": [
+          "UNC host/share paths become UNC_PATH"
+        ]
+      }
+    },
+    {
+      "id": "posix-and-file-url-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.posix-and-file-url-path"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.posix-and-file-url-path": [
+          "POSIX absolute paths and file URLs become ABSOLUTE_PATH"
+        ]
+      }
+    },
+    {
+      "id": "relative-context-preserved",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.relative-diagnostic-context"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.relative-diagnostic-context": [
+          "relative repository paths web URLs messages codes and stack line coordinates remain available"
+        ]
+      }
+    },
+    {
+      "id": "bounded-tail-preserved",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.bounded-failure-tail"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.bounded-failure-tail": [
+          "generator already bounded tails to 1200 characters but retained absolute paths"
+        ]
+      }
+    },
+    {
+      "id": "raw-output-digest-preserved",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.raw-output-digest-continuity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.raw-output-digest-continuity": [
+          "raw command output SHA-256 already remained separate from the diagnostic tail"
+        ]
+      }
+    },
+    {
+      "id": "input-receipt-immutability",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.input-result-not-mutated"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.input-result-not-mutated": [
+          "sanitized verification result is a shallow copy and the source failure tail stays unchanged"
+        ]
+      }
+    },
+    {
+      "id": "receipt-creation-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.generator-and-daily-writer-redaction"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.generator-and-daily-writer-redaction": [
+          "both receipt writers call the shared bounded redactor before persistence"
+        ]
+      }
+    },
+    {
+      "id": "index-ingestion-redaction",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.readiness-ingestion-defense"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.readiness-ingestion-defense": [
+          "buildIndex sanitizes supplied verification results even when an older local receipt is raw"
+        ]
+      }
+    },
+    {
+      "id": "derived-index-clean",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.current-tools-index-clean"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.current-tools-index-clean": [
+          "27-assertion artifact selftest checks all 12 current retained tails"
+        ]
+      }
+    },
+    {
+      "id": "clean-product-replay",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.clean-product-replay"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.clean-product-replay": [
+          "five commands and synthetic readiness ingestion pass over 15 unchanged archived files"
+        ]
+      }
+    },
+    {
+      "id": "zero-consequential-authority",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.zero-promotion-merge-or-canon-authority"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.zero-promotion-merge-or-canon-authority": [
+          "readiness evidence grants no consequential authority"
+        ]
+      }
+    },
+    {
+      "id": "specialist-lane-excluded",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "readiness.diagnostic-redaction.specialist-package-lane-not-inspected"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "readiness.diagnostic-redaction.specialist-package-lane-not-inspected": [
+          "excluded by task scope"
+        ]
+      }
+    },
+    {
+      "id": "secret-token-redaction",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-redaction.secret-or-token-redaction"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "all-diagnostic-fields-redaction",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-redaction.all-diagnostic-fields"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "external-history-retroactive-sanitization",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-redaction.external-or-untracked-history-retroactive-sanitization"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "historical-git-rewrite",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-redaction.historical-git-rewrite"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "full-repository-privacy-audit",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "readiness.diagnostic-redaction.full-repository-privacy-audit"
+      ],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "readiness.diagnostic-redaction.all-diagnostic-fields",
+    "readiness.diagnostic-redaction.external-or-untracked-history-retroactive-sanitization",
+    "readiness.diagnostic-redaction.full-repository-privacy-audit",
+    "readiness.diagnostic-redaction.historical-git-rewrite",
+    "readiness.diagnostic-redaction.secret-or-token-redaction"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "readiness.diagnostic-redaction.all-diagnostic-fields",
+      "requiredBy": [
+        "all-diagnostic-fields-redaction"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "readiness.diagnostic-redaction.external-or-untracked-history-retroactive-sanitization",
+      "requiredBy": [
+        "external-history-retroactive-sanitization"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "readiness.diagnostic-redaction.full-repository-privacy-audit",
+      "requiredBy": [
+        "full-repository-privacy-audit"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "readiness.diagnostic-redaction.historical-git-rewrite",
+      "requiredBy": [
+        "historical-git-rewrite"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "readiness.diagnostic-redaction.secret-or-token-redaction",
+      "requiredBy": [
+        "secret-token-redaction"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

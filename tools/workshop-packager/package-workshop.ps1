@@ -199,6 +199,30 @@ try {
       Remove-Item -LiteralPath $candidate -Force
     }
 
+    # The public snapshot intentionally omits local/private declaration roots.
+    # Rebuild the deterministic City dependency chain against the curated copy
+    # before its manifest is hashed so restored verification measures the
+    # package itself. Ordering matters: the registry binds the graph digest and
+    # the twin surfaces bind both upstream views.
+    if ($Mode -in @('public','offline-windows')) {
+      $cityNode = (Get-Command node.exe -ErrorAction Stop).Source
+      $cityCompilers = @(
+        'scripts\compile-city-graph.js',
+        'scripts\compile-schema-registry.js',
+        'scripts\compile-twin-surfaces.js'
+      )
+      foreach ($relativeCompiler in $cityCompilers) {
+        $cityCompiler = Join-Path $CopyPath $relativeCompiler
+        if (-not (Test-Path -LiteralPath $cityCompiler -PathType Leaf)) {
+          throw ("Public package City compiler is missing: $relativeCompiler")
+        }
+        $cityOutput = @(& $cityNode $cityCompiler "--root=$CopyPath" '--write' 2>&1)
+        if ($LASTEXITCODE -ne 0) {
+          throw ("Public package City dependency refresh failed ($relativeCompiler): " + (($cityOutput | Select-Object -Last 8) -join ' '))
+        }
+      }
+    }
+
     $textExtensions = @('.js','.cjs','.mjs','.html','.css','.json','.txt','.md','.bat','.cmd','.ps1','.sh','.yml','.yaml','.xml','.toml','.ini')
     $patterns = @(
       @{ Name='private-key'; Regex='-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----\r?\n[A-Za-z0-9+/=\r\n]{32,}' },

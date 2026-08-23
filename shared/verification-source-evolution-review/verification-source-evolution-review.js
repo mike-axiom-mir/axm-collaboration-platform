@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const DeterministicJson = require('../../tools/deterministic-json-core');
 const Continuity = require('../verification-snapshot-continuity/verification-snapshot-continuity');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const REVIEW_SCHEMA = 'axm.verification-source-evolution-review/v1';
 const ANCHOR_SCHEMA = 'axm.verification-legacy-external-anchor/v1';
@@ -16,7 +17,7 @@ const CURRENT_TRACKED_CLASSIFICATIONS = new Set([
 ]);
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(DeterministicJson.canonicalJson(value));
 }
 
 function stableValue(value) {

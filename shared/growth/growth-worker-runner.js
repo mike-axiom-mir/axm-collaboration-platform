@@ -17,10 +17,13 @@ function create(options) {
     workshopCoalesced: 0,
     mirrorLaunches: 0,
     mirrorCoalesced: 0,
+    mirrorBackgroundRefreshes: 0,
   };
   let workshopInFlight = null;
   let mirrorInFlight = null;
   let lastWorkshopStatus = null;
+  let lastMirrorResult = null;
+  let lastMirrorError = null;
 
   function spawn(kind) {
     if (kind !== "workshop" && kind !== "mirror") {
@@ -93,10 +96,50 @@ function create(options) {
       stats.mirrorCoalesced += 1;
       return mirrorInFlight;
     }
-    mirrorInFlight = spawn("mirror").finally(() => {
-      mirrorInFlight = null;
-    });
+    mirrorInFlight = spawn("mirror")
+      .then((result) => {
+        lastMirrorResult = result;
+        lastMirrorError = null;
+        return result;
+      })
+      .catch((error) => {
+        lastMirrorError = String(error && error.message || error).slice(0, 240);
+        throw error;
+      })
+      .finally(() => {
+        mirrorInFlight = null;
+      });
     return mirrorInFlight;
+  }
+
+  function mirrorStatus() {
+    return {
+      state: mirrorInFlight ? (lastMirrorResult ? "CACHED_REFRESHING" : "REFRESHING") : lastMirrorResult ? "READY" : lastMirrorError ? "ERROR" : "NOT_MEASURED",
+      ready: !!lastMirrorResult,
+      inFlight: !!mirrorInFlight,
+      measuredAt: lastMirrorResult && lastMirrorResult.metrics && lastMirrorResult.metrics.measuredAt || null,
+      error: lastMirrorError,
+    };
+  }
+
+  async function scanWorkshopFirst() {
+    const workshop = await scanWorkshop();
+    if (!mirrorInFlight) {
+      stats.mirrorBackgroundRefreshes += 1;
+      void scanMirror().catch(() => {});
+    }
+    const mirror = lastMirrorResult && lastMirrorResult.metrics || {
+      schema: "axm.mirror-growth/v1",
+      available: false,
+      measuredAt: null,
+      reason: lastMirrorError ? `Mirror measurement unavailable: ${lastMirrorError}` : "Mirror measurement is refreshing separately; Workshop growth is already available.",
+      specializations: [],
+    };
+    return {
+      metrics: GrowthMetrics.attachMirror(workshop.metrics, mirror),
+      status: workshop.status,
+      mirrorStatus: mirrorStatus(),
+    };
   }
 
   async function scanBodies() {
@@ -113,13 +156,18 @@ function create(options) {
   return {
     scanWorkshop,
     scanMirror,
+    scanWorkshopFirst,
     scanBodies,
+    mirrorResult() {
+      return { result: lastMirrorResult, status: mirrorStatus() };
+    },
     status() {
       return {
         stats: { ...stats },
         workshopInFlight: !!workshopInFlight,
         mirrorInFlight: !!mirrorInFlight,
         lastWorkshopStatus,
+        mirror: mirrorStatus(),
       };
     },
   };

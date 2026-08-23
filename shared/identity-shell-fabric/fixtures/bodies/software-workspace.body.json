@@ -1,0 +1,45 @@
+{
+  "schema": "axm.identity-shell.body-descriptor/v1",
+  "version": "0.1.0",
+  "descriptorId": "software-workspace-body",
+  "descriptorVersion": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "bodyClass": "SOFTWARE",
+  "interfaces": [
+    {
+      "id": "observation-input",
+      "direction": "OBSERVATION_IN",
+      "schema": "axm.identity-shell.observation/v1"
+    },
+    {
+      "id": "proposal-output",
+      "direction": "OUTPUT_OUT",
+      "schema": "axm.identity-shell.neural-proposal/v1"
+    }
+  ],
+  "requestedPermissions": ["observation.receive", "proposal.emit"],
+  "resourceRequest": {
+    "computeUnits": 2,
+    "memoryBytes": 65536,
+    "storageBytes": 1024,
+    "timeMilliseconds": 100,
+    "networkDomains": [],
+    "energyMilliwattHours": 0,
+    "actuationOperations": 0
+  },
+  "observationBoundary": {
+    "allowedInterfaceIds": ["observation-input", "proposal-output"],
+    "undeclaredObservationAllowed": false
+  },
+  "actuationBoundary": {
+    "mode": "UNAVAILABLE_V0_1",
+    "allowedInterfaceIds": []
+  },
+  "execution": {
+    "mode": "INERT_DESCRIPTOR_ONLY",
+    "codeIncluded": false,
+    "loadable": false,
+    "executable": false
+  },
+  "evidenceCeiling": "Declares software observation and proposal interfaces only. No UI, process, filesystem, network, or model runtime is attached."
+}

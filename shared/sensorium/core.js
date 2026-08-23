@@ -3,7 +3,7 @@
 const crypto = require('crypto');
 const DeterministicJson = require('../../tools/deterministic-json-core');
 
-function clone(value) { return JSON.parse(JSON.stringify(value)); }
+function clone(value) { return JSON.parse(DeterministicJson.canonicalJson(value)); }
 function now(value) { return String(value || new Date().toISOString()); }
 function compact(value, maximum) {
   const out = String(value == null ? '' : value).replace(/\s+/g, ' ').trim();

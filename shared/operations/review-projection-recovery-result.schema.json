@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-projection-recovery-result/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "envelopeId", "operation", "result", "item", "authority", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-projection-recovery-result/v1" },
+    "status": { "const": "TEST" },
+    "envelopeId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "operation": { "enum": ["SUBMIT", "VOTE"] },
+    "result": { "enum": ["PROJECTED", "ALREADY_PROJECTED"] },
+    "item": { "type": "object" },
+    "authority": { "$ref": "review-authority-view.schema.json" },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signedIntentReverified", "explicitHostConfirmationReceived", "automaticRecovery", "browserRecoveryRoute", "crossFileAtomicityProven", "rollbackPreventionProven", "externalCustodyProven", "realWorldIdentityProven", "actualHumanParticipationProven", "reconciliationAuthorized", "executionAuthorized", "canonAuthorized"],
+      "properties": {
+        "signedIntentReverified": { "const": true },
+        "explicitHostConfirmationReceived": { "const": true },
+        "automaticRecovery": { "const": false },
+        "browserRecoveryRoute": { "const": false },
+        "crossFileAtomicityProven": { "const": false },
+        "rollbackPreventionProven": { "const": false },
+        "externalCustodyProven": { "const": false },
+        "realWorldIdentityProven": { "const": false },
+        "actualHumanParticipationProven": { "const": false },
+        "reconciliationAuthorized": { "const": false },
+        "executionAuthorized": { "const": false },
+        "canonAuthorized": { "const": false }
+      }
+    }
+  }
+}

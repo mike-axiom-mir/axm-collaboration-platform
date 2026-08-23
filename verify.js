@@ -11,7 +11,7 @@
    0 = all pass · 1 = failures found.
    ============================================================ */
 'use strict';
-const fs = require('fs'), path = require('path'), crypto = require('crypto');
+const fs = require('fs'), path = require('path'), crypto = require('crypto'), childProcess = require('child_process');
 const ToolReadiness = require('./shared/readiness/tool-readiness');
 const ROOT = __dirname;
 const out = [], records = []; let fails = 0, warns = 0;
@@ -199,7 +199,10 @@ try {
 /* 13 - TOOL READINESS INDEX: promotion evidence and missing declarations stay
    visible without automatically promoting, archiving, or granting authority. */
 try {
-  const verificationResults = JSON.parse(read('state/tool-readiness/latest-selftests.json')||'null');
+  const localVerificationResults = JSON.parse(read('state/tool-readiness/latest-selftests.json')||'null');
+  const stored = JSON.parse(read('tools-index.json')||'null');
+  const storedCheck = ToolReadiness.validateIndex(stored);
+  const verificationResults = localVerificationResults || (storedCheck.pass ? ToolReadiness.verificationResultsFromIndex(stored) : null);
   const liveIndex = ToolReadiness.buildIndex(ROOT, { verificationResults });
   const checked = ToolReadiness.validateIndex(liveIndex);
   if(!checked.pass) checked.errors.forEach(error => fail('tools index: '+error));
@@ -219,12 +222,100 @@ try {
   if(missingKinds.length) warn('manifest kind migration backlog: '+missingKinds.length+' tool(s) remain legacy UNDECLARED');
   else ok('all tool manifests declare kind');
   liveIndex.promotionQueue.claimsNeedingReverification.forEach(item => warn('promotion claim needs reverification: '+item.id+' · '+item.blockers.join('; ')));
-  const stored = JSON.parse(read('tools-index.json')||'null');
-  const storedCheck = ToolReadiness.validateIndex(stored);
   if(!storedCheck.pass) warn('tools-index.json missing or invalid; run npm run index:tools');
   else if(stored.sourceDigest !== liveIndex.sourceDigest) warn('tools-index.json is stale for current manifests/contracts/selftests; run npm run index:tools');
   else ok('tools-index.json matches current structural source digest');
 } catch(e) { fail('tool readiness index could not run: '+e.message); }
+
+/* 14 - LEGO CITY MAP: all human and machine city views are derived from one
+   omission-aware graph. This is read-only and grants no runtime authority. */
+try {
+  const cityHost = require('./shared/city-graph/city-map-host');
+  const city = cityHost.checkRepository(ROOT);
+  if (city.state !== 'PASS') city.failures.forEach(item => fail('LEGO city map '+item.code+': '+(item.path || (item.modules || []).join(','))));
+  else ok('LEGO city map exact: '+city.graphDigest+'; no omitted declared module or generated-view drift');
+} catch(e) { fail('LEGO city map gate could not run: '+(e.code ? e.code+': ' : '')+e.message); }
+
+/* 15 - CITY SCHEMA REGISTRY: exact identities and conservative compatibility
+   stay derived from the current city graph; no migration is performed. */
+try {
+  const schemaHost = require('./shared/schema-registry/schema-registry-host');
+  const schemas = schemaHost.check(ROOT);
+  if (schemas.state !== 'PASS') fail('city schema registry '+schemas.code);
+  else ok('city schema registry exact: '+schemas.registry.registryDigest+'; '+schemas.registry.entries.length+' schema identities; '+schemas.registry.unresolvedSockets.length+' unresolved socket(s) retained');
+} catch(e) { fail('city schema registry gate could not run: '+(e.code ? e.code+': ' : '')+e.message); }
+
+/* 16 - CITY STATE PRIMITIVES: content-addressed candidate storage and the
+   append-only journal prove their negative boundaries in temporary roots. */
+try {
+  const artifactAssertions = require('./shared/artifact-depot/selftest').run();
+  const eventAssertions = require('./shared/event-journal/selftest').run();
+  ok('city state primitives focused suite: '+(artifactAssertions+eventAssertions)+' assertion(s); no delete, rewrite, or event-as-authority path');
+} catch(e) { fail('city state primitives focused suite failed: '+(e.code ? e.code+': ' : '')+e.message); }
+
+/* 17 - AUTHORITY/HANDS SEAM: run in a child because the injected-handler tests
+   are asynchronous. No real executor is bundled or called. */
+try {
+  const authorityHands = childProcess.spawnSync(process.execPath, ['tests/city-authority-hands-test.js'], { cwd: ROOT, encoding: 'utf8', windowsHide: true });
+  if (authorityHands.status !== 0) fail('city authority/hands focused suite failed: '+String(authorityHands.stderr || authorityHands.stdout || '').trim());
+  else ok('city authority/hands focused suite: 22 assertion(s); external decision-maker verification required; no real executor bundled');
+} catch(e) { fail('city authority/hands focused suite could not run: '+e.message); }
+
+/* 18 - WORKFLOW/EVIDENCE: route state cannot skip unverified work and proof
+   summaries preserve stale, partial, unknown, and conflicting evidence. */
+try {
+  const workflowAssertions = require('./shared/workflow-transit/selftest').run();
+  const evidenceAssertions = require('./shared/evidence-grid/selftest').run();
+  ok('city workflow/evidence focused suite: '+(workflowAssertions+evidenceAssertions)+' assertion(s); workflow execution remains external');
+} catch(e) { fail('city workflow/evidence focused suite failed: '+(e.code ? e.code+': ' : '')+e.message); }
+
+/* 19 - LOCAL SYNC/TWINS: merge results remain unapplied candidates and both
+   human and machine surfaces byte-match one generated twin. */
+try {
+  const syncAssertions = require('./shared/local-sync/selftest').run();
+  const twinAssertions = require('./shared/twin-surfaces/selftest').run();
+  const twinHost = require('./shared/twin-surfaces/twin-surfaces-host');
+  const twins = twinHost.check(ROOT);
+  if (twins.state !== 'PASS') twins.failures.forEach(item => fail('city twin '+item.code+': '+item.path));
+  else ok('city local-sync/twins focused suite: '+(syncAssertions+twinAssertions)+' assertion(s); '+twins.twin.machinePackets.length+' human/machine packets bind twin '+twins.twin.twinDigest);
+} catch(e) { fail('city local-sync/twins gate failed: '+(e.code ? e.code+': ' : '')+e.message); }
+
+/* 20 - INTAKE/GATES/BLUEPRINT: imports remain inert, committed external gates
+   stay disabled, and all twelve infrastructure blocks remain represented. */
+try {
+  const intakeAssertions = require('./shared/intake-harbor/selftest').run();
+  const gateAssertions = require('./shared/city-gates/selftest').run();
+  const blueprintAssertions = require('./tests/lego-city-blueprint-conformance-test').run();
+  ok('city intake/gates/blueprint focused suite: '+(intakeAssertions+gateAssertions+blueprintAssertions)+' assertion(s); all external transports disabled');
+} catch(e) { fail('city intake/gates/blueprint gate failed: '+(e.code ? e.code+': ' : '')+e.message); }
+
+/* 21 - WORKSHOP CONTINUITY: a merge may add or edit material, but it may not
+   silently drop protected source, tools, or exact capability declarations.
+   Retirement requires a narrow Mike-authored registry record. */
+try {
+  const continuity = require('./shared/continuity/workshop-inventory-continuity');
+  const result = continuity.auditFiles(
+    ROOT,
+    path.join(ROOT, 'registry', 'workshop-continuity-baseline.json'),
+    path.join(ROOT, 'registry', 'workshop-continuity-retirements.json')
+  );
+  if (!result.pass) result.errors.forEach(error => fail('Workshop continuity: '+error));
+  else ok('Workshop continuity intact: '+result.summary.protectedPaths+' protected paths · '+result.summary.protectedTools+' tools · '+result.summary.protectedProvidedCapabilities+' provided capabilities · no unauthorized disappearance');
+} catch(e) { fail('Workshop continuity gate could not run: '+e.message); }
+
+/* 22 - SCOPE TRANSITION RECEIPTS: a cleanup or counting-rule migration must
+   retain its old snapshot, comparable baseline, archive proof and fail-closed
+   movement behavior. The fixture never touches the live archive. */
+try {
+  const scopeReceipts = require('./shared/growth/scope-transition-receipts');
+  const scopeSelftest = require('./shared/growth/scope-transition-selftest');
+  const ledger = JSON.parse(fs.readFileSync(path.join(ROOT, 'registry', 'workshop-scope-transitions.json'), 'utf8'));
+  const ledgerCheck = scopeReceipts.validateLedger(ledger);
+  if (!ledgerCheck.pass) ledgerCheck.errors.forEach(error => fail('Workshop scope transition: '+error));
+  else ok('Workshop scope transition ledger is structurally bound: '+ledger.transitions.length+' permanent receipt(s)');
+  const assertions = scopeSelftest.run();
+  ok('Workshop scope transition fail-closed suite: '+assertions+' assertion(s) passed');
+} catch(e) { fail('Workshop scope transition gate could not run: '+e.message); }
 
 /* ---- report ---- */
 const generatedAt = new Date().toISOString();

@@ -1,0 +1,84 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "claims": [
+    {
+      "claimId": "refresh-plan-is-exact",
+      "claim": "A READY plan binds the verified checkpoint, old feature head, current remote main, unchanged remote review head, and prospective merge tree.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Real Git fixture facts produce a digest-verifiable READY plan and any bound-field tamper fails verification.",
+      "primarySurface": "real temporary Git fixture with asserted plan fields",
+      "counterevidence": "a changed head, main, tree, checkpoint, or digest still verifies",
+      "secondarySurfaceIfNeeded": "source and schema inspection",
+      "observedEvidence": "selftest exact-field assertions and tamper case",
+      "verdict": "PASS",
+      "namedSeam": "immutable object preparation writes object database entries but no ref, index, or worktree state"
+    },
+    {
+      "claimId": "planning-preserves-visible-repository-state",
+      "claim": "Planning does not move HEAD or the current branch and does not change the index or worktree.",
+      "kind": "persistence",
+      "risk": "high",
+      "passCondition": "branch, HEAD, and porcelain status are identical before and after real planning",
+      "primarySurface": "before/after Git inspection in a real temporary clone",
+      "counterevidence": "any ref, index, or worktree delta",
+      "secondarySurfaceIfNeeded": "host command-source inspection",
+      "observedEvidence": "selftest before/after branch, HEAD, and status assertions plus live PR #33 NO_CHANGE plan with visibleGitStateBeforeAfterMatch=true",
+      "verdict": "PASS",
+      "namedSeam": "unreachable immutable objects are intentionally outside visible state"
+    },
+    {
+      "claimId": "same-inputs-same-merge",
+      "claim": "Equivalent exact inputs produce the same local merge commit.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "two independently cloned review branches produce the same merge commit, tree, and parents",
+      "primarySurface": "two real Git clones with fixed merge metadata",
+      "counterevidence": "different merge commit identifiers for the same parents and tree",
+      "secondarySurfaceIfNeeded": "receipt tree/parent verification",
+      "observedEvidence": "selftest compares independent merge commit identifiers and receipt fields",
+      "verdict": "PASS",
+      "namedSeam": "repeatability assumes compatible Git merge semantics"
+    },
+    {
+      "claimId": "conflict-held-before-mutation",
+      "claim": "A prospective merge conflict is typed and held before application.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "a real conflicting history yields HELD plus MERGE_CONFLICT while HEAD and status remain unchanged",
+      "primarySurface": "real conflicting Git fixture",
+      "counterevidence": "conflicting input yields READY or changes visible repository state",
+      "secondarySurfaceIfNeeded": "core blocker tests",
+      "observedEvidence": "selftest conflict fixture assertions",
+      "verdict": "PASS",
+      "namedSeam": "a later external state change invalidates the plan and is refused by digest reprobe"
+    },
+    {
+      "claimId": "remote-remains-unchanged",
+      "claim": "Application creates no remote branch or pull-request write.",
+      "kind": "transport",
+      "risk": "high",
+      "passCondition": "remote branch receiver SHA remains the old checkpoint head and source contains no push or GitHub write invocation",
+      "primarySurface": "remote ls-remote receiver observation before/after apply",
+      "counterevidence": "remote review branch advances or a push/PR-write command is invoked",
+      "secondarySurfaceIfNeeded": "host source scan and contract inspection",
+      "observedEvidence": "selftest remote receiver assertion plus source command scan",
+      "verdict": "PASS",
+      "namedSeam": "the separate publisher owns later remote transport"
+    },
+    {
+      "claimId": "governance-remains-closed",
+      "claim": "The adapter has no main, merge-acceptance, promotion, roots, or CANON authority.",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "contract, plan, and receipt all keep those effects false and no matching write command exists",
+      "primarySurface": "contract and executable source inspection",
+      "counterevidence": "an authority field becomes true or a prohibited write path exists",
+      "secondarySurfaceIfNeeded": "runtime command trace and receipt verification",
+      "observedEvidence": "selftest contract/effect assertions",
+      "verdict": "PASS",
+      "namedSeam": "Mike/AXM and platform Axiom/Mir retain acceptance and stewardship seats"
+    }
+  ],
+  "overall": "PASS"
+}

@@ -1,8 +1,8 @@
 # Inventory
 
-Generated: 2026-07-28T20:34:42.491Z
-Files: 170
-Bytes: 15101011
+Generated: 2026-08-23T02:10:02.609Z
+Files: 165
+Bytes: 15084024
 Catalog modules: 64
 Kinds: effect 36, mold 6, organ 7, primitive 11, scene 4
 
@@ -108,17 +108,12 @@ Kinds: effect 36, mold 6, organ 7, primitive 11, scene 4
 - `reports/baselines/studio_desktop_v1_3_0.png` — 870522 bytes — `64719a6f6bd432d4edf911e6edc7e6bd2b8b66acbb39aef3b55a13afd7a24563`
 - `reports/browser_smoke_v1_3_0.json` — 7989 bytes — `f7eccf2c36ec06c3fd81d0b619182a29ff5298fae389cb24a203eea199fe60d3`
 - `reports/BROWSER_SMOKE.json` — 917 bytes — `d9700049b51983b9e3e9a81440a13f7aad6ff2c98744f834a40a34741949ba20`
-- `reports/historical-v1.2/BROWSER_SMOKE_RUN_v1_2_0.log` — 1621 bytes — `66a8ded80a2c0a433a7e8f8ba2480a3cce0635363936cccd22dbe53ebc6dbc70`
-- `reports/historical-v1.2/NPM_VERIFY_v1_2_0.log` — 7844 bytes — `770086396c6891d70c5141044281d9634e0f68b5553224fd78591cbf8f373b80`
 - `reports/historical-v1.2/README.md` — 257 bytes — `d46ac0c3da9b6aff3e8ca9eda237a3ae235bc8c896233b253f3f4b1fb9ce5e26`
 - `reports/historical-v1.2/studio_browser_smoke_v1_2_0.png` — 708458 bytes — `3ad3285bc69d7f9880d8ba99c0795a4e52fd8e42ff35c2435d9ec56d37b2b14b`
 - `reports/historical-v1.2/studio_clean_preview_v1_2_0.png` — 836574 bytes — `f97234ea8f3237f40d98a8fbb247817b528279371dfdb9d6f36c48c4cc2ea96f`
 - `reports/historical-v1.2/studio_mobile_smoke_v1_2_0.png` — 547777 bytes — `9119d3879db1a7b6326d8898eb83ab5a233180391d861c239ed611b6316703a5`
 - `reports/historical-v1.2/studio_visual_regression_current_v1_2_0.png` — 870274 bytes — `6a02abaa951aa8cc26674a28c22a8ae673dc1ca97b20220a881f501cbbc40d61`
-- `reports/historical-v1.2/VISUAL_BASELINE_UPDATE_v1_2_0.log` — 109 bytes — `de49a19024c77558f2a11920b7ed3726a0b17ab605154bd07ebf309ef900df41`
-- `reports/historical-v1.2/VISUAL_REGRESSION_RUN_v1_2_0.log` — 414 bytes — `9a1d7b2c578add8cc3846fa12130f8127362253fafbd97a8007281fc91254dec`
 - `reports/MOBILE_SMOKE.json` — 966 bytes — `2aedd6c4fecdfa5d90c32db434a997a6b3ad64c4daf15b9749a50d113a081cc3`
-- `reports/NPM_VERIFY_v1_3_0.log` — 7063 bytes — `aa36f66b9ee8db2feee4180fe614c3b61ac2708d96c82c0b2ef93f0a88b3d67f`
 - `reports/studio_desktop_v1_3_0.png` — 892490 bytes — `03caf7eb32c354efc867623d6417d44d3c20020bd820f6ccc74d6c6a65276123`
 - `reports/studio_mobile_v1_3_0.png` — 555510 bytes — `88bb6d3240ec36623f762d7abe6667037fa79833f3f2584cd0bc3450920cdbc0`
 - `reports/studio_visual_regression_v1_3_0_current.png` — 870522 bytes — `64719a6f6bd432d4edf911e6edc7e6bd2b8b66acbb39aef3b55a13afd7a24563`
@@ -166,7 +161,7 @@ Kinds: effect 36, mold 6, organ 7, primitive 11, scene 4
 - `tests/truth.test.mjs` — 4914 bytes — `21a122ddfd7aafd4acb8c720611255cd83e187576a1a1de8f7fa2f7971d5f10a`
 - `tools/axmfx-cli.mjs` — 3287 bytes — `0beb243591f8547282ea59d08c9b24d7c023a25dbb27d061f987471110dba4cc`
 - `tools/build-catalog-js.mjs` — 1419 bytes — `65790d5570b0559533a759f996871133567237d3abf8aee3e621b8d843caa03f`
-- `tools/build-inventory.mjs` — 2261 bytes — `58d0d48767f42c2703c404e52a0f69e62ee97b399f7634654d6171adc875a09e`
+- `tools/build-inventory.mjs` — 2325 bytes — `746164f7b920820c38b3b0a7e04f99708e56be4652df50368b1ea98e34a0ae21`
 - `tools/build-module-index.mjs` — 1420 bytes — `dbcf98e0c74abb70320c9c49ac772dd6bf0a7dfad2183ad23a127d2b4e2104be`
 - `tools/build-runtime-css.mjs` — 981 bytes — `2bd17d24e352c6bb13f6f6631e191a8c78fd09806f89bc0fb01d9445e1ef8d55`
 - `tools/build-runtime-kit.mjs` — 1673 bytes — `c7f07c04a69137a196823b6add0cdbb4d29a802bac277011653fe9a15044f375`

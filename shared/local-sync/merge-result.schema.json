@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.merge-result/v1",
+  "type": "object",
+  "required": ["schema", "state", "semantics", "localDigest", "remoteDigest", "candidate", "reconciliation", "applied", "resultDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.merge-result/v1" },
+    "state": { "enum": ["IDENTICAL", "CANDIDATE", "HOLD", "CONFLICT"] },
+    "semantics": { "type": "string" },
+    "localDigest": { "type": "string" },
+    "remoteDigest": { "type": "string" },
+    "candidate": { "type": ["object", "null"] },
+    "reconciliation": { "type": ["object", "null"] },
+    "applied": { "const": false },
+    "resultDigest": { "type": "string" }
+  }
+}

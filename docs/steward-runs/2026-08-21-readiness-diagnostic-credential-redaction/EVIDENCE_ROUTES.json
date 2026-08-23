@@ -1,0 +1,137 @@
+{
+  "schema": "axm.evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "exact-parent-gap",
+      "claim": "The exact v4.6 parent leaves five synthetic recognized credential forms unchanged.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "All five cases are unchanged through the diagnostic-redaction module loaded from the parent Git blob.",
+      "primarySurface": "BOUNDARY_PROBES.json baseline cases",
+      "counterevidence": "Any baseline case changes or contains the explicit marker.",
+      "secondarySurface": "Parent tools-index truth lacks the recognized-credential declaration.",
+      "observedEvidence": "Five of five baseline cases are unchanged and the qualified truth flag is absent.",
+      "verdict": "PASS",
+      "namedSeam": "Synthetic evidence proves the bounded gap, not an observed live credential leak."
+    },
+    {
+      "id": "recognized-redaction",
+      "claim": "Recognized credential evidence is replaced before persistence.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Direct fixtures, product Git-blob probes, readiness ingestion, and clean replay all remove fixture values and retain the marker.",
+      "primarySurface": "49-assertion direct selftest and BOUNDARY_PROBES.json",
+      "counterevidence": "A supported fixture value remains or the marker is missing.",
+      "secondarySurface": "CLEAN_PRODUCT_REPLAY.json synthetic ingestion",
+      "observedEvidence": "All direct, Git-blob, and clean-ingestion checks pass.",
+      "verdict": "PASS",
+      "namedSeam": "Novel, encoded, split, or semantically inferred secrets are not covered."
+    },
+    {
+      "id": "context-continuity",
+      "claim": "Useful non-credential diagnostic context remains available.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "Relative paths, URI host/path context, non-credential query/CLI values, and ordinary token/secret prose remain asserted.",
+      "primarySurface": "shared/readiness/diagnostic-redaction-selftest.js",
+      "counterevidence": "Ordinary context disappears or is rewritten as a credential marker.",
+      "secondarySurface": "Current tools-index tail projection remains exact.",
+      "observedEvidence": "Direct preservation assertions pass and all twelve existing tails are unchanged.",
+      "verdict": "PASS",
+      "namedSeam": "Some conservative false-positive redaction remains possible."
+    },
+    {
+      "id": "receipt-continuity",
+      "claim": "Redaction does not mutate the source receipt or replace its raw-output digest.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Source object bytes remain equal and outputSha256 passes through exactly in direct and clean-ingestion checks.",
+      "primarySurface": "direct selftest",
+      "counterevidence": "Input receipt changes or outputSha256 differs.",
+      "secondarySurface": "CLEAN_PRODUCT_REPLAY.json",
+      "observedEvidence": "Both surfaces record immutability and exact digest continuity.",
+      "verdict": "PASS",
+      "namedSeam": "The hash proves raw-output identity, not that raw output is safe to retain elsewhere."
+    },
+    {
+      "id": "writer-ingestion-coverage",
+      "claim": "Every production readiness failureTail writer and readiness ingestion route uses the shared sanitizer.",
+      "kind": "static-structure",
+      "risk": "medium",
+      "passCondition": "Repository search finds only the generator and daily writer, both call failureTail, and tool-readiness sanitizes supplied results.",
+      "primarySurface": "source inspection and SOURCE_SNAPSHOT.json",
+      "counterevidence": "An unredacted production failureTail assignment exists.",
+      "secondarySurface": "Synthetic buildIndex ingestion check.",
+      "observedEvidence": "The two writers reuse the sanitizer and ingestion independently re-sanitizes.",
+      "verdict": "PASS",
+      "namedSeam": "Other diagnostic field names are outside this route."
+    },
+    {
+      "id": "current-artifact",
+      "claim": "The current tools-index failure tails contain no evidence recognized by the product redactor.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "All twelve retained tails are idempotent under the product redactor and the qualified truth flag is true.",
+      "primarySurface": "28-assertion artifact selftest",
+      "counterevidence": "Any tail changes on re-sanitization or the truth flag is absent.",
+      "secondarySurface": "BOUNDARY_PROBES.json current-tail scan",
+      "observedEvidence": "Both surfaces pass across twelve tails.",
+      "verdict": "PASS",
+      "namedSeam": "Idempotence cannot prove absence of unrecognized secrets."
+    },
+    {
+      "id": "required-verification",
+      "claim": "The product satisfies the repository's required scripted checks.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "All ten AGENTS.md commands exit zero against the product state.",
+      "primarySurface": "CHECK_RESULTS.json",
+      "counterevidence": "Any required command exits nonzero.",
+      "secondarySurface": "Clean archived product replay for the changed seam.",
+      "observedEvidence": "Ten of ten required commands pass.",
+      "verdict": "PASS",
+      "namedSeam": "Script success is not browser usability, human review, or CANON."
+    },
+    {
+      "id": "clean-replay",
+      "claim": "The committed product slice replays without relying on dirty workspace state.",
+      "kind": "persistence",
+      "risk": "high",
+      "passCondition": "An exact Git archive passes five checks and synthetic ingestion while all tracked slice files remain unchanged.",
+      "primarySurface": "CLEAN_PRODUCT_REPLAY.json",
+      "counterevidence": "Archive identity mismatch, a command failure, ingestion failure, or changed tracked file.",
+      "secondarySurface": "Product commit and tree identity in SOURCE_SNAPSHOT.json.",
+      "observedEvidence": "Five of five commands and ingestion pass across fifteen unchanged files.",
+      "verdict": "PASS",
+      "namedSeam": "This is an isolated product slice, not a full clean-repository replay."
+    },
+    {
+      "id": "aggregate-nonpass",
+      "claim": "The operations aggregate non-pass is foreign to v4.7 and remains visible.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "Recovery tests pass first; failure occurs at the missing curated intake; service and npm script are exact across baseline/product; intake is absent in all three states.",
+      "primarySurface": "AGGREGATE_PROBE.json",
+      "counterevidence": "Changed failing source, a v4.7 stack path, present intake, or earlier regression.",
+      "secondarySurface": "Immutable Git blob digests.",
+      "observedEvidence": "The result is classified FOREIGN_FAILURE with CURATED_VERIFICATION_INTAKE_MISSING.",
+      "verdict": "PASS",
+      "namedSeam": "The aggregate itself remains non-passing."
+    },
+    {
+      "id": "authority-boundary",
+      "claim": "The seam grants no promotion, merge, CANON, human, or provider authority.",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "Only diagnostic source, tests, truth metadata, and a derived index change; no authority route is added; Mike Tobi / AXM remains gate.",
+      "primarySurface": "SOURCE_SNAPSHOT.json and SESSION_INDEX.json",
+      "counterevidence": "An execution, promotion, merge, provider, identity, or CANON route appears.",
+      "secondarySurface": "Human governance decision remains externally required.",
+      "observedEvidence": "No consequential authority surface changed.",
+      "verdict": "PASS",
+      "namedSeam": "Only Mike Tobi / AXM can supply the human merge or CANON decision."
+    }
+  ]
+}
+

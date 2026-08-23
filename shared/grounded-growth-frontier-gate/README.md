@@ -2,6 +2,10 @@
 
 Status: `TEST`
 
+All frontier clone, canonical comparison, and digest paths use the shared
+strict `deterministic-json-core`. Existing JSON-safe frontier bytes remain
+unchanged; unsupported JSON state is refused before lane composition.
+
 This additive leaf answers one scoped question: given the exact current
 Grounded Growth portfolio, direction handoff, voluntary human handoff
 readiness, and simulation-extension intake readiness, what action is actually

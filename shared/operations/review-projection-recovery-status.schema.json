@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-projection-recovery-status/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "state", "reasonCode", "totalOperations", "projectedOperations", "supersededOperations", "pendingOperations", "blockedOperations", "invalidOperations", "operations", "operationsTruncated", "confirmationRequired", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-projection-recovery-status/v1" },
+    "status": { "const": "TEST" },
+    "state": { "enum": ["CURRENT", "RECOVERY_REQUIRED", "HELD"] },
+    "reasonCode": { "type": "string", "minLength": 1 },
+    "totalOperations": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "projectedOperations": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "supersededOperations": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "pendingOperations": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "blockedOperations": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "invalidOperations": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "operations": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["envelopeId", "operation", "reviewId", "state", "reasonCode", "recoveryAvailable"],
+        "properties": {
+          "envelopeId": { "type": "string", "minLength": 1, "maxLength": 180 },
+          "operation": { "enum": ["SUBMIT", "VOTE"] },
+          "reviewId": { "type": ["string", "null"], "maxLength": 180 },
+          "state": { "enum": ["PROJECTED", "SUPERSEDED", "PENDING", "BLOCKED", "INVALID"] },
+          "reasonCode": { "type": "string", "minLength": 1 },
+          "recoveryAvailable": { "type": "boolean" }
+        }
+      }
+    },
+    "operationsTruncated": { "type": "boolean" },
+    "confirmationRequired": { "const": "RECOVER SIGNED REVIEW PROJECTION" },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automaticRecovery", "browserRecoveryRoute", "explicitHostConfirmationRequired", "crossFileAtomicityProven", "multiProcessSerializationProven", "rollbackPreventionProven", "externalCustodyProven", "realWorldIdentityProven", "actualHumanParticipationProven", "executionAuthorized", "reconciliationAuthorized", "canonAuthorized"],
+      "properties": {
+        "automaticRecovery": { "const": false },
+        "browserRecoveryRoute": { "const": false },
+        "explicitHostConfirmationRequired": { "const": true },
+        "crossFileAtomicityProven": { "const": false },
+        "multiProcessSerializationProven": { "const": false },
+        "rollbackPreventionProven": { "const": false },
+        "externalCustodyProven": { "const": false },
+        "realWorldIdentityProven": { "const": false },
+        "actualHumanParticipationProven": { "const": false },
+        "executionAuthorized": { "const": false },
+        "reconciliationAuthorized": { "const": false },
+        "canonAuthorized": { "const": false }
+      }
+    }
+  }
+}

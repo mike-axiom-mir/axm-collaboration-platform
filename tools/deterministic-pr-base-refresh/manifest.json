@@ -1,0 +1,32 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "gate",
+  "id": "deterministic-pr-base-refresh",
+  "name": "AXM Deterministic PR Base Refresh",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "base-refresh-cli.js",
+  "contract": "module.contract.json",
+  "type": "machine-capability",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "HIGH",
+  "tags": ["pull-request", "git", "base-refresh", "merge-tree", "deterministic", "reasoning-cost"],
+  "uses": ["deterministic-pr-checkpoint", "local-git-runtime", "explicit-clean-publish-lane-worktree"],
+  "permissions": ["network", "export", "filesystem-write"],
+  "machine": { "entry": "base-refresh-cli.js", "actions": ["plan", "verify-plan", "apply", "verify-receipt"] },
+  "actions": [
+    "bind one checkpointed review head to one exact newer remote main commit",
+    "prepare immutable Git objects and prove the exact merge tree without moving refs",
+    "hold on drift, divergence, missing remote branch, conflict, or dirty state",
+    "with exact confirmation create one local non-rewriting merge commit",
+    "prove the remote branch was not changed and require full re-verification and re-checkpointing"
+  ],
+  "accepts": ["axm.git-pr-checkpoint/v1", "axm.git-pr-checkpoint-verification/v1", "filesystem/explicit-clean-publish-lane-worktree"],
+  "produces": ["axm.git-pr-base-refresh-plan/v1", "axm.git-pr-base-refresh-plan-verification/v1", "axm.git-pr-base-refresh-receipt/v1", "axm.git-pr-base-refresh-receipt-verification/v1"],
+  "readiness": ["exact-ready-checkpoint", "passing-checkpoint-verification", "clean-isolated-feature-worktree", "exact-remote-main-and-review-branch-observation"],
+  "summary": "Create one evidence-bound local merge commit after main advances, without rewriting or publishing history.",
+  "notes": "EXPERIMENTAL high-consequence local Git adapter. Success requires new tests, checkpoint, independent review, and bounded publication. It is not merge acceptance, promotion, roots, or CANON."
+}

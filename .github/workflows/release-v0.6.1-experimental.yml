@@ -1,0 +1,542 @@
+name: Publish AXM v0.6.1 experimental release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/release-requests/v0.6.1-experimental.md
+
+permissions: {}
+
+concurrency:
+  group: axm-v0.6.1-experimental-release
+  cancel-in-progress: false
+
+env:
+  TAG: v0.6.1-experimental
+  TITLE: AXM Workshop v0.6.1 Experimental
+  NOTES_FILE: .github/release-requests/v0.6.1-experimental.md
+  AUDIT_FILE: .github/release-requests/v0.6.0-post-publication-audit.md
+
+jobs:
+  source-gates:
+    name: Exact merged source gates
+    if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Enable Windows long-path checkout support
+        shell: powershell
+        run: git config --system core.longpaths true
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci
+
+      - name: Validate release request and version binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const expected = '0.6.1-experimental';
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          const notes = fs.readFileSync(process.env.NOTES_FILE, 'utf8');
+          const audit = fs.readFileSync(process.env.AUDIT_FILE, 'utf8');
+          const checks = [
+            [pkg.version === expected, 'package.json version mismatch'],
+            [lock.version === expected, 'package-lock root version mismatch'],
+            [lock.packages && lock.packages[''] && lock.packages[''].version === expected, 'package-lock package version mismatch'],
+            [notes.startsWith('# AXM Workshop v0.6.1 Experimental\n'), 'release notes title mismatch'],
+            [audit.includes('AXM-V0.6.0-POST-PUBLICATION-AUDIT-2026-08-16'), 'v0.6.0 audit marker missing'],
+            [!notes.includes('TBD') && !notes.includes('TODO'), 'release notes contain placeholder text']
+          ];
+          for (const [pass, message] of checks) if (!pass) throw new Error(message);
+          NODE
+
+      - name: Re-run every source-facing release gate
+        run: |
+          node tests/v0.6.1-hardening-selftest.js
+          node tools/game-production-runner/selftest.js
+          node tools/hardware-research-registry/selftest.js
+          node tools/compute-substrate-lab/selftest.js
+          node tools/deterministic-pr-publisher/selftest.js
+          node tools/repairbuddy/selftest.js
+          node verify.js
+          node tools/repairbuddy/repairbuddy-cli.js warning-delta --strict
+          npm run discovery:verify
+          npm test
+          npm run test:public-surface
+          git diff --check
+          git diff --exit-code -- registry tools-index.json AXM_DISCOVERY_ROOT.md AXM_CAPABILITY_MAP.md
+
+      - name: Create source-gate receipt
+        shell: bash
+        run: |
+          mkdir -p release-source-evidence
+          cat > release-source-evidence/source-gates-receipt.json <<JSON
+          {
+            "schema": "axm.release-source-gates/v1",
+            "release": "v0.6.1-experimental",
+            "commit": "${GITHUB_SHA}",
+            "workflow_run": "${GITHUB_RUN_ID}",
+            "conclusion": "PASS",
+            "exact_merge_commit_verified": true,
+            "authority": {"release": false, "promotion": false, "canon": false}
+          }
+          JSON
+
+      - name: Preserve source gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axm-v0.6.1-source-release-evidence
+          path: |
+            release-source-evidence/source-gates-receipt.json
+            exports/verify-report.json
+            exports/repairbuddy-warning-delta.json
+          if-no-files-found: warn
+          retention-days: 90
+  windows-package:
+    name: Exact merged Windows package
+    if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci
+
+      - name: Build the exact public package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path release-assets | Out-Null
+          $output = @(& .\tools\workshop-packager\package-workshop.ps1 -Mode public -KeepCopy false 2>&1)
+          $output | Set-Content -LiteralPath release-assets\packager-output.txt -Encoding UTF8
+          $jsonLine = $output | Where-Object { ([string]$_).Trim().StartsWith('{') } | Select-Object -Last 1
+          if (-not $jsonLine) { throw 'Packager returned no JSON receipt.' }
+          $receipt = $jsonLine | ConvertFrom-Json
+          if ($receipt.ok -ne $true -or $receipt.secret_scan -ne 'pass' -or $receipt.restore_test -ne 'pass') { throw 'Packager gates did not pass.' }
+          $name = 'AXM-Workshop-v0.6.1-experimental-Windows-source.zip'
+          $zip = Join-Path (Resolve-Path release-assets) $name
+          Copy-Item -LiteralPath $receipt.zip_path -Destination $zip
+          $receipt | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath release-assets\package-receipt.json -Encoding UTF8
+          $restore = Join-Path (Split-Path -Parent $receipt.zip_path) ([string]$receipt.restore_report)
+          Copy-Item -LiteralPath $restore -Destination release-assets\package-restore-receipt.json
+          $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLowerInvariant()
+          "$hash  $name" | Set-Content -NoNewline -LiteralPath ("$zip.sha256") -Encoding ascii
+
+      - name: Launch the exact extracted package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = Resolve-Path release-assets\AXM-Workshop-v0.6.1-experimental-Windows-source.zip
+          $extract = Join-Path (Resolve-Path release-assets) extracted
+          Expand-Archive -LiteralPath $zip -DestinationPath $extract
+          $roots = @(Get-ChildItem -LiteralPath $extract -Directory)
+          if ($roots.Count -ne 1) { throw "Expected one package root, observed $($roots.Count)." }
+          & .\tests\windows-clean-launch-smoke.ps1 `
+            -CandidateSource $roots[0].FullName `
+            -ReceiptPath (Join-Path (Resolve-Path release-assets) 'windows-package-launch-receipt.json')
+
+      - name: Build exact release inventory
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = @(
+            'AXM-Workshop-v0.6.1-experimental-Windows-source.zip',
+            'AXM-Workshop-v0.6.1-experimental-Windows-source.zip.sha256',
+            'package-receipt.json',
+            'package-restore-receipt.json',
+            'windows-package-launch-receipt.json'
+          )
+          $rows = foreach ($name in $files) {
+            $file = Join-Path (Resolve-Path release-assets) $name
+            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Missing release asset: $name" }
+            $item = Get-Item -LiteralPath $file
+            [ordered]@{ name=$name; bytes=$item.Length; sha256=(Get-FileHash -Algorithm SHA256 -LiteralPath $file).Hash.ToLowerInvariant() }
+          }
+          [ordered]@{
+            schema='axm.release-asset-inventory/v1'
+            release='v0.6.1-experimental'
+            commit=$env:GITHUB_SHA
+            workflow_run=$env:GITHUB_RUN_ID
+            assets=$rows
+            package_launch='PASS'
+            public_secret_scan='PASS'
+            restore_test='PASS'
+            authority=[ordered]@{ release=$false; promotion=$false; canon=$false }
+          } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath release-assets\release-asset-inventory.json -Encoding UTF8
+
+      - name: Preserve exact Windows release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axm-v0.6.1-windows-release-assets
+          path: |
+            release-assets/AXM-Workshop-v0.6.1-experimental-Windows-source.zip
+            release-assets/AXM-Workshop-v0.6.1-experimental-Windows-source.zip.sha256
+            release-assets/package-receipt.json
+            release-assets/package-restore-receipt.json
+            release-assets/windows-package-launch-receipt.json
+            release-assets/release-asset-inventory.json
+            release-assets/packager-output.txt
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    name: Publish and verify receiver state
+    needs: [source-gates, windows-package]
+    if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: axm-v0.6.1-source-release-evidence
+          path: release-assets
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: axm-v0.6.1-windows-release-assets
+          path: release-assets
+
+      - name: Verify candidate assets locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd release-assets
+          sha256sum -c AXM-Workshop-v0.6.1-experimental-Windows-source.zip.sha256
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const inventory = JSON.parse(fs.readFileSync('release-asset-inventory.json', 'utf8'));
+          const packageReceipt = JSON.parse(fs.readFileSync('package-receipt.json', 'utf8'));
+          const launch = JSON.parse(fs.readFileSync('windows-package-launch-receipt.json', 'utf8'));
+          const source = JSON.parse(fs.readFileSync('source-gates-receipt.json', 'utf8'));
+          if (inventory.commit !== process.env.GITHUB_SHA) throw new Error('asset inventory commit mismatch');
+          if (inventory.package_launch !== 'PASS' || inventory.public_secret_scan !== 'PASS' || inventory.restore_test !== 'PASS') throw new Error('asset inventory gate mismatch');
+          if (packageReceipt.ok !== true || packageReceipt.secret_scan !== 'pass' || packageReceipt.restore_test !== 'pass') throw new Error('package receipt mismatch');
+          if (launch.verdict !== 'PASS' || launch.health_ok !== true) throw new Error('exact package launch receipt mismatch');
+          if (source.commit !== process.env.GITHUB_SHA || source.conclusion !== 'PASS') throw new Error('source gate receipt mismatch');
+          NODE
+
+      - name: Append the v0.6.0 audit note without moving history
+        shell: bash
+        run: |
+          set -euo pipefail
+          before="${RUNNER_TEMP}/v060-before.json"
+          after="${RUNNER_TEMP}/v060-after.json"
+          payload="${RUNNER_TEMP}/v060-payload.json"
+          gh api "repos/${GITHUB_REPOSITORY}/releases/tags/v0.6.0-experimental" > "$before"
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const before = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/v060-before.json', 'utf8'));
+          const note = fs.readFileSync(process.env.AUDIT_FILE, 'utf8').trim();
+          const marker = 'AXM-V0.6.0-POST-PUBLICATION-AUDIT-2026-08-16';
+          const body = String(before.body || '');
+          fs.writeFileSync(process.env.RUNNER_TEMP + '/v060-payload.json', JSON.stringify({ body: body.includes(marker) ? body : body.trimEnd() + '\n\n' + note + '\n' }));
+          NODE
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/releases/$(jq -r .id "$before")" --input "$payload" > "$after"
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const before = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/v060-before.json', 'utf8'));
+          const after = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/v060-after.json', 'utf8'));
+          if (after.tag_name !== before.tag_name || after.target_commitish !== before.target_commitish) throw new Error('v0.6.0 history target changed');
+          if (!String(after.body || '').includes('AXM-V0.6.0-POST-PUBLICATION-AUDIT-2026-08-16')) throw new Error('v0.6.0 audit marker missing after append');
+          NODE
+
+      - name: Refuse any existing v0.6.1 tag or release
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::error::Tag ${TAG} already exists; refusing to retarget it."
+            exit 1
+          fi
+          if gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::error::Release ${TAG} already exists; refusing a duplicate."
+            exit 1
+          fi
+
+      - name: Create the exact prerelease with checked assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "${TAG}" \
+            --target "${GITHUB_SHA}" \
+            --title "${TITLE}" \
+            --notes-file "${NOTES_FILE}" \
+            --prerelease \
+            release-assets/AXM-Workshop-v0.6.1-experimental-Windows-source.zip \
+            release-assets/AXM-Workshop-v0.6.1-experimental-Windows-source.zip.sha256 \
+            release-assets/package-receipt.json \
+            release-assets/package-restore-receipt.json \
+            release-assets/windows-package-launch-receipt.json \
+            release-assets/release-asset-inventory.json \
+            release-assets/source-gates-receipt.json \
+            release-assets/verify-report.json \
+            release-assets/repairbuddy-warning-delta.json
+
+      - name: Verify the release receiver and attach its receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          release="${RUNNER_TEMP}/v061-release.json"
+          receipt="release-assets/release-receiver-receipt.json"
+          gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" > "$release"
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const release = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/v061-release.json', 'utf8'));
+          const required = [
+            'AXM-Workshop-v0.6.1-experimental-Windows-source.zip',
+            'AXM-Workshop-v0.6.1-experimental-Windows-source.zip.sha256',
+            'package-receipt.json',
+            'package-restore-receipt.json',
+            'windows-package-launch-receipt.json',
+            'release-asset-inventory.json',
+            'source-gates-receipt.json',
+            'verify-report.json',
+            'repairbuddy-warning-delta.json'
+          ];
+          const assets = new Map((release.assets || []).map(asset => [asset.name, asset]));
+          if (release.tag_name !== process.env.TAG) throw new Error('published tag mismatch');
+          if (release.target_commitish !== process.env.GITHUB_SHA) throw new Error('published target mismatch');
+          if (release.name !== process.env.TITLE || release.draft !== false || release.prerelease !== true) throw new Error('release state mismatch');
+          for (const name of required) {
+            const asset = assets.get(name);
+            if (!asset || !(asset.size > 0)) throw new Error('missing or empty release asset: ' + name);
+          }
+          const receipt = {
+            schema:'axm.release-receiver-receipt/v1',
+            release:'v0.6.1-experimental',
+            tag:release.tag_name,
+            target_commit:release.target_commitish,
+            prerelease:release.prerelease,
+            draft:release.draft,
+            asset_names:[...assets.keys()].sort(),
+            receiver_verified:true,
+            workflow_run:process.env.GITHUB_RUN_ID,
+            authority:{promotion:false,canon:false,productionCertification:false}
+          };
+          fs.writeFileSync('release-assets/release-receiver-receipt.json', JSON.stringify(receipt, null, 2) + '\n');
+          NODE
+          gh release upload "${TAG}" "$receipt" --clobber
+          gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.assets[].name' | grep -Fx 'release-receiver-receipt.json'
+
+  repository-administration:
+    name: Repository protection attempt and receipt
+    needs: [publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ secrets.AXM_REPO_ADMIN_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Attempt exact repository administration only with an explicit admin token
+        id: admin
+        shell: bash
+        run: |
+          set -u
+          mkdir -p admin-evidence
+          state="HOLD"
+          reason="AXM_REPO_ADMIN_TOKEN is not configured; source/release authority cannot silently become repository-administration authority."
+          safety='.github/repository-safety/v0.6.1.json'
+          ownership_state=$(jq -r '.review_ownership.state // "HOLD"' "$safety")
+          repository_owner=$(jq -r '.review_ownership.repository_owner // ""' "$safety")
+          independent_owner=$(jq -r '.review_ownership.independent_code_owner // ""' "$safety")
+
+          if [ "$ownership_state" != "READY" ] || [ -z "$independent_owner" ]; then
+            reason="Repository protection is held until Mike explicitly names an independent CODEOWNER or explicitly disables the CODEOWNER-review requirement."
+          elif ! [[ "$independent_owner" =~ ^[A-Za-z0-9-]{1,39}$ ]]; then
+            reason="The declared independent CODEOWNER login is malformed; no repository setting was changed."
+          elif [ "$independent_owner" = "$repository_owner" ]; then
+            reason="The declared independent CODEOWNER is the repository owner and cannot independently approve the owner's pull request; no repository setting was changed."
+          elif ! awk -v owner="@${independent_owner}" '
+            /^[[:space:]]*(#|$)/ { next }
+            { found=0; for (i=2; i<=NF; i++) if ($i == owner) found=1; if (!found) missing=1 }
+            END { exit missing ? 1 : 0 }
+          ' .github/CODEOWNERS; then
+            reason="The declared independent CODEOWNER is not assigned to every protected CODEOWNERS rule; no repository setting was changed."
+          elif [ -z "${GH_TOKEN:-}" ]; then
+            reason="AXM_REPO_ADMIN_TOKEN is not configured; source/release authority cannot silently become repository-administration authority."
+          else
+            permission=$(gh api "repos/${GITHUB_REPOSITORY}/collaborators/${independent_owner}/permission" --jq '.permission' 2>/dev/null || true)
+            if ! [[ "$permission" =~ ^(admin|maintain|write)$ ]]; then
+              reason="The declared independent CODEOWNER does not have verified write-level repository permission; no repository setting was changed."
+            else
+              cat > "${RUNNER_TEMP}/branch-protection.json" <<'JSON'
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": [
+                "v0.6.1 corrective source gates",
+                "v0.6.1 exact Windows package gate",
+                "discovery-and-static-gates",
+                "windows-clean-launch"
+              ]
+            },
+            "enforce_admins": true,
+            "required_pull_request_reviews": {
+              "dismiss_stale_reviews": true,
+              "require_code_owner_reviews": true,
+              "required_approving_review_count": 1
+            },
+            "restrictions": null,
+            "required_linear_history": false,
+            "allow_force_pushes": false,
+            "allow_deletions": false,
+            "block_creations": false,
+            "required_conversation_resolution": true,
+            "lock_branch": false,
+            "allow_fork_syncing": true
+          }
+          JSON
+              cat > "${RUNNER_TEMP}/tag-ruleset.json" <<'JSON'
+          {
+            "name": "Protect AXM release tags",
+            "target": "tag",
+            "enforcement": "active",
+            "conditions": {"ref_name": {"include": ["refs/tags/v*"], "exclude": []}},
+            "rules": [
+              {"type": "deletion"},
+              {"type": "non_fast_forward"}
+            ],
+            "bypass_actors": []
+          }
+          JSON
+
+              apply_administration() {
+                gh api --method PATCH "repos/${GITHUB_REPOSITORY}" -F is_template=false >/dev/null || return 1
+                gh api --method PUT "repos/${GITHUB_REPOSITORY}/branches/main/protection" --input "${RUNNER_TEMP}/branch-protection.json" >/dev/null || return 1
+                rulesets_json=$(gh api "repos/${GITHUB_REPOSITORY}/rulesets") || return 1
+                existing=$(printf '%s' "$rulesets_json" | jq -r '.[] | select(.name == "Protect AXM release tags") | .id' | head -n 1) || return 1
+                if [ -n "$existing" ]; then
+                  gh api --method PUT "repos/${GITHUB_REPOSITORY}/rulesets/${existing}" --input "${RUNNER_TEMP}/tag-ruleset.json" >/dev/null || return 1
+                else
+                  gh api --method POST "repos/${GITHUB_REPOSITORY}/rulesets" --input "${RUNNER_TEMP}/tag-ruleset.json" >/dev/null || return 1
+                fi
+              }
+
+              verify_administration() {
+                gh api "repos/${GITHUB_REPOSITORY}" > "${RUNNER_TEMP}/repository-after.json" || return 1
+                gh api "repos/${GITHUB_REPOSITORY}/branches/main/protection" > "${RUNNER_TEMP}/protection-after.json" || return 1
+                rulesets_json=$(gh api "repos/${GITHUB_REPOSITORY}/rulesets") || return 1
+                ruleset_id=$(printf '%s' "$rulesets_json" | jq -r '.[] | select(.name == "Protect AXM release tags") | .id' | head -n 1) || return 1
+                [ -n "$ruleset_id" ] || return 1
+                gh api "repos/${GITHUB_REPOSITORY}/rulesets/${ruleset_id}" > "${RUNNER_TEMP}/ruleset-after.json" || return 1
+                node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const root = process.env.RUNNER_TEMP;
+          const repository = JSON.parse(fs.readFileSync(root + '/repository-after.json', 'utf8'));
+          const protection = JSON.parse(fs.readFileSync(root + '/protection-after.json', 'utf8'));
+          const releaseRules = JSON.parse(fs.readFileSync(root + '/ruleset-after.json', 'utf8'));
+          const expectedChecks = [
+            'discovery-and-static-gates',
+            'v0.6.1 corrective source gates',
+            'v0.6.1 exact Windows package gate',
+            'windows-clean-launch'
+          ];
+          const observedChecks = [...(protection.required_status_checks && protection.required_status_checks.contexts || [])].sort();
+          const releaseRuleTypes = new Set(releaseRules && releaseRules.rules ? releaseRules.rules.map(row => row.type) : []);
+          const include = releaseRules && releaseRules.conditions && releaseRules.conditions.ref_name && releaseRules.conditions.ref_name.include || [];
+          const reviews = protection.required_pull_request_reviews || {};
+          const pass = repository.is_template === false &&
+            protection.required_status_checks && protection.required_status_checks.strict === true &&
+            JSON.stringify(observedChecks) === JSON.stringify(expectedChecks) &&
+            protection.enforce_admins && protection.enforce_admins.enabled === true &&
+            reviews.dismiss_stale_reviews === true && reviews.require_code_owner_reviews === true && reviews.required_approving_review_count === 1 &&
+            protection.required_conversation_resolution && protection.required_conversation_resolution.enabled === true &&
+            protection.allow_force_pushes && protection.allow_force_pushes.enabled === false &&
+            protection.allow_deletions && protection.allow_deletions.enabled === false &&
+            releaseRules && releaseRules.name === 'Protect AXM release tags' && releaseRules.target === 'tag' &&
+            releaseRules.enforcement === 'active' && include.includes('refs/tags/v*') &&
+            releaseRuleTypes.has('deletion') && releaseRuleTypes.has('non_fast_forward');
+          if (!pass) throw new Error('live repository administration does not match the exact reviewed policy');
+          NODE
+              }
+
+              if apply_administration && verify_administration; then
+                state="PASS"
+                reason="Template state, main protection, and v* tag rules were applied and independently re-read with explicit repository-admin authority."
+              else
+                reason="Repository administration did not verify after the bounded attempt. External state may be partial; inspect the live API before retrying."
+              fi
+            fi
+          fi
+          printf '{"schema":"axm.repository-administration-receipt/v1","state":"%s","reason":%s,"workflow_run":"%s","source_release_succeeded":true}\n' \
+            "$state" "$(jq -Rn --arg v "$reason" '$v')" "$GITHUB_RUN_ID" > admin-evidence/repository-administration-receipt.json
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update a visible HOLD issue when admin authority is absent
+        if: steps.admin.outputs.state != 'PASS'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title='Admin gate: protect main and v* tags; disable template mode'
+          body=$(cat <<'EOF'
+          The v0.6.1 source and release gates completed, but repository-administration authority is intentionally separate.
+
+          Required exact settings:
+          - Explicitly name an authorized independent CODEOWNER, or explicitly choose not to require CODEOWNER review. The repository owner cannot approve their own pull request.
+          - Disable **Template repository**.
+          - Protect `main` against direct/force pushes and deletion.
+          - Require the current source/public/Windows launch checks before merge.
+          - Require one review, CODEOWNERS review, and resolved conversations.
+          - Protect `v*` tags against deletion and non-fast-forward updates.
+
+          This issue may be closed only after the live GitHub API reports those protections as active. No source file or release receipt may substitute for that evidence.
+          EOF
+          )
+          existing=$(gh issue list --state open --search "$title in:title" --json number,title --jq '.[] | select(.title == "'"$title"'") | .number' | head -n 1)
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: axm-v0.6.1-repository-administration
+          path: admin-evidence/repository-administration-receipt.json
+          if-no-files-found: error
+          retention-days: 90

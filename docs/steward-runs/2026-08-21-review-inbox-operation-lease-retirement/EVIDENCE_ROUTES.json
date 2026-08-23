@@ -1,0 +1,78 @@
+{
+  "schema": "axm.claim-evidence-routes/v1",
+  "status": "TEST",
+  "routes": [
+    {
+      "id": "baseline-crash-residue-operability-gap",
+      "kind": "behavioral",
+      "claim": "The exact v4.3 lease implementation retains crash residue, rejects the next mutation, and exports no retirement mechanism.",
+      "evidence": ["BASELINE_OPERABILITY_REPRODUCTION.json", "run-baseline-operability-reproduction.js"],
+      "verdict": "PASS",
+      "counterevidence": "Production crash frequency, holder termination, and manual deletion safety remain unproven."
+    },
+    {
+      "id": "read-only-exact-plan",
+      "kind": "technical",
+      "claim": "A read-only plan binds the current raw owner evidence to a SHA-256 digest and exact confirmation challenge without mutating the lock.",
+      "evidence": ["shared/operations/review-operation-lease.js", "shared/operations/review-operation-lease-retirement-selftest.js", "CHECK_RESULTS.json"],
+      "verdict": "PASS",
+      "counterevidence": "The plan does not infer process liveness or authenticate the operator."
+    },
+    {
+      "id": "explicit-evidence-preserving-retirement",
+      "kind": "persistence",
+      "claim": "A valid exact assertion writes intent, rechecks owner bytes, quarantines those bytes, verifies their digest, and writes a typed result.",
+      "evidence": ["shared/operations/review-operation-lease.js", "shared/operations/review-operation-lease-retirement-selftest.js", "SOURCE_SNAPSHOT.json"],
+      "verdict": "PASS",
+      "counterevidence": "The multi-file sequence is not ACID, protected custody, or proof that retirement was safe."
+    },
+    {
+      "id": "refusal-and-collision-preservation",
+      "kind": "behavioral",
+      "claim": "Wrong, open, stale, current-process, and collision cases refuse without deleting the lock or pre-existing evidence.",
+      "evidence": ["shared/operations/review-operation-lease-retirement-selftest.js", "CHECK_RESULTS.json"],
+      "verdict": "PASS",
+      "counterevidence": "A malicious noncooperating writer remains outside the contract."
+    },
+    {
+      "id": "restart-continuity-after-explicit-retirement",
+      "kind": "persistence",
+      "claim": "A new ReviewService instance can complete a synthetic mutation after exact evidence retirement while the retirement evidence remains readable.",
+      "evidence": ["shared/operations/review-operation-lease-retirement-selftest.js", "CLEAN_PRODUCT_REPLAY.json"],
+      "verdict": "PASS",
+      "counterevidence": "The fixture does not prove recovery safety in a live deployment."
+    },
+    {
+      "id": "bounded-windows-contention",
+      "kind": "behavioral",
+      "claim": "Transient EPERM is retried and persistent unreadable evidence fails held without mutation.",
+      "evidence": ["shared/operations/review-operation-lease-selftest.js", "CHECK_RESULTS.json"],
+      "verdict": "PASS",
+      "counterevidence": "Deterministic injected errors do not prove fairness or all filesystem implementations."
+    },
+    {
+      "id": "local-cli-and-route-boundary",
+      "kind": "authorization",
+      "claim": "Retirement is exposed only through the explicit local CLI with an exact non-root state path, not through Review Inbox API or browser routes.",
+      "evidence": ["shared/operations/review-operation-lease-admin.js", "NATIVE_SURFACE_RECEIPT.json", "tools/review-inbox/module.contract.json"],
+      "verdict": "PASS",
+      "counterevidence": "Local CLI access is not authenticated real-world identity or policy authorization."
+    },
+    {
+      "id": "clean-product-continuity",
+      "kind": "technical",
+      "claim": "Ten selected review commands pass in a clean 590-file archive slice of the exact product commit without tracked-file drift.",
+      "evidence": ["CLEAN_PRODUCT_REPLAY.json", "run-clean-product-replay.js"],
+      "verdict": "PASS",
+      "counterevidence": "This is a selected slice, not a full-repository clean archive replay."
+    },
+    {
+      "id": "authority-boundary",
+      "kind": "authorization",
+      "claim": "The seam grants no execution, adoption, promotion, merge, Foundation mutation, or CANON authority.",
+      "evidence": ["SOURCE_SNAPSHOT.json", "CAPABILITY_GAP_AFTER.json", "FRONTIER_AUDIT.md"],
+      "verdict": "PASS",
+      "counterevidence": "Identity, actual holder death, live human review, benefit, learning, merge, and CANON remain unproven."
+    }
+  ]
+}

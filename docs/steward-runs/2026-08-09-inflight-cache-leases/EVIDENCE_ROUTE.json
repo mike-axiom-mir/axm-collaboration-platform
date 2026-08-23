@@ -1,0 +1,87 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "game-production-runner in-flight artifact-cache leases",
+  "claims": [
+    {
+      "claim_id": "cache.production.lease.append-only",
+      "claim_type": "persistence",
+      "pass_condition": "Each owner has one sealed digest-chained event ledger whose legal transitions preserve keys and monotonic generation.",
+      "primary_surface": "artifact-cache-lease runtime plus transition and tamper assertions in shared self-test",
+      "counterevidence": "Invalid shape, digest, owner, transition, previous digest, generation, key set, or truncated append is accepted.",
+      "observed_evidence": "Acquire, protect, renew, release, tamper hold, event ceiling, byte ceiling, and maximum-duration assertions pass.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease.crash-expiry-recovery",
+      "claim_type": "persistence",
+      "pass_condition": "Protection written by a separate process survives abrupt exit, expires without rewriting evidence, and the same run can append a recovery session.",
+      "primary_surface": "fresh child-process lease fixture in shared/game-production-runner/selftest.js",
+      "counterevidence": "Protection disappears immediately, remains authoritative after expiry, requires a daemon, or cannot recover.",
+      "observed_evidence": "Child PROTECTED event is active before expiry, non-protective after expiry with the same raw snapshot, and a later acquire appends RENEWED.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease.owner-session-fence",
+      "claim_type": "authorization",
+      "pass_condition": "Only the current digest-bound session may append protection or release events for a run owner.",
+      "primary_surface": "owner/session validation and superseding-session adversary",
+      "counterevidence": "Local paths or raw run id leak, or an older session mutates the ledger after a newer acquisition.",
+      "observed_evidence": "Serialized discovery contains neither drive path nor run id, and the superseded handle fails with CACHE_LEASE_SESSION_STALE.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease.runner-lifecycle",
+      "claim_type": "behavioral",
+      "pass_condition": "Runner protection precedes every eligible cache load or publish, and release follows durable terminal or checkpoint evidence.",
+      "primary_surface": "runner integration plus terminal and one-step checkpoint executions",
+      "counterevidence": "A used cache key is absent from the release, an unleased cache access occurs, or release precedes the durable anchor.",
+      "observed_evidence": "Terminal run releases all three exact keys at generation five; graceful interruption returns a sealed checkpoint then releases its one key.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease.discovery-load",
+      "claim_type": "performance",
+      "pass_condition": "Lease work adds no background loop and every explicit discovery has independent directory, ledger, event, and byte ceilings.",
+      "primary_surface": "runtime constants, CLI route, limit assertions, and absence of timer or daemon creation",
+      "counterevidence": "Unbounded enumeration, implicit polling, or a performance claim unsupported by measurements.",
+      "observed_evidence": "Low event and byte budgets return LIMIT_EXCEEDED; leases append only on acquire, key protection, recovery, or release. No throughput or latency improvement is claimed.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease.discovery-privacy",
+      "claim_type": "privacy",
+      "pass_condition": "The sealed lease set exposes digests and counts but no local cache/job path or private run identifier.",
+      "primary_surface": "serialized shared and CLI lease-set assertions",
+      "counterevidence": "Drive path, local run directory, or raw run id appears in the derived view.",
+      "observed_evidence": "Shared discovery absence assertions and CLI path-private released-ledger discovery pass.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.lease-authorization",
+      "claim_type": "authorization",
+      "pass_condition": "Active leased keys cannot become candidates, and any lease change after planning prevents deletion.",
+      "primary_surface": "separate retention race fixture in shared self-test",
+      "counterevidence": "Active key is proposed, stale proposal deletes, malformed lease evidence is ignored, or expired lease protects forever.",
+      "observed_evidence": "Active key records ACTIVE_CACHE_LEASE and is excluded; post-plan acquire returns LEASES_STALE with no deletion; released and expired states grant no protection.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.key-race",
+      "claim_type": "concurrency",
+      "pass_condition": "Final lease check and exact retention deletion occur while the same key lock excludes runner protection.",
+      "primary_surface": "held-key-lock adversary followed by released-lease approved application",
+      "counterevidence": "Deletion proceeds while the key lock is held, or protection can be appended between final check and deletion.",
+      "observed_evidence": "Held lock yields LEASE_COORDINATION_BUSY with entry intact; released lease then permits exact approved deletion and binds the guarded snapshot.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease.checkpoint-handoff",
+      "claim_type": "authorization",
+      "pass_condition": "After graceful interruption, immutable checkpoint-derived references replace the released mutable lease without a protection gap in retained evidence.",
+      "primary_surface": "checkpoint run, lease discovery, reference discovery, and retention plan composition",
+      "counterevidence": "Lease remains active after checkpoint, checkpoint lacks the exact key, or retention proposes the key.",
+      "observed_evidence": "Lease set has no active protection, checkpoint reference set contains the key, and retention records SEALED_RUN_EVIDENCE while excluding it.",
+      "decision": "PASS"
+    }
+  ]
+}

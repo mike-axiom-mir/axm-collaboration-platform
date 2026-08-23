@@ -1,0 +1,58 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-pr-base-refresh",
+  "version": "v0.1",
+  "provides": [
+    "git-pr.exact-base-refresh-plan",
+    "git-pr.merge-tree-conflict-gate",
+    "git-pr.non-rewriting-local-feature-merge",
+    "git-pr.post-refresh-recheckpoint-boundary",
+    "git-pr.remote-write-refusal"
+  ],
+  "consumes": [
+    "git-pr.read-only-local-checkpoint",
+    "git-pr.checkpoint-verification",
+    "filesystem:explicit-clean-publish-lane-worktree",
+    "local-git-runtime",
+    "approved-git-remote"
+  ],
+  "permissions": ["network", "export", "filesystem-write"],
+  "handoffs": {
+    "emits": ["axm.git-pr-base-refresh-plan/v1", "axm.git-pr-base-refresh-receipt/v1", "git-pr/new-checkpoint-required"],
+    "accepts": ["axm.git-pr-checkpoint/v1", "axm.git-pr-checkpoint-verification/v1", "filesystem/explicit-clean-publish-lane-worktree"]
+  },
+  "lifecycle": { "state_owner": "mixed", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit" },
+  "boundaries": {
+    "writes": [
+      "immutable-git-objects-during-plan",
+      "one-local-merge-commit-on-exact-checkpointed-feature-branch-after-explicit-confirmation",
+      "explicit-create-new-receipt-outside-repository"
+    ],
+    "refuses": [
+      "live-workshop-worktree",
+      "dirty-worktree",
+      "detached-head",
+      "main-or-master-branch",
+      "branch-outside-codex-or-agent-prefix",
+      "checkpoint-or-verification-tamper",
+      "remote-main-divergence",
+      "remote-review-branch-missing-or-drift",
+      "merge-conflict",
+      "rebase",
+      "reset",
+      "history-rewrite",
+      "force-push",
+      "git-stage",
+      "remote-push",
+      "pull-request-create-or-edit",
+      "pull-request-ready-transition",
+      "pull-request-close",
+      "main-branch-write",
+      "automatic-platform-merge",
+      "credential-storage-or-output",
+      "promotion",
+      "roots-change",
+      "canon-change"
+    ]
+  }
+}

@@ -1,17 +1,24 @@
 (function (root, factory) {
   'use strict';
-  var api = factory();
+  var deterministicJson = typeof module !== 'undefined' && module.exports
+    ? require('../../tools/deterministic-json-core')
+    : root && root.AXMDeterministicJson;
+  var api = factory(deterministicJson);
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.AXMHolodeckCore = api;
-})(typeof self !== 'undefined' ? self : globalThis, function () {
+})(typeof self !== 'undefined' ? self : globalThis, function (DeterministicJson) {
   'use strict';
+
+  if (!DeterministicJson || typeof DeterministicJson.canonicalJson !== 'function') {
+    throw new Error('AXM deterministic JSON core is required');
+  }
 
   var ID_PATTERN = /^[a-z0-9][a-z0-9._:-]{0,119}$/;
   var HASH_SEEDS = [0x811c9dc5, 0x9e3779b9, 0x85ebca6b, 0xc2b2ae35];
   var HASH_PRIMES = [0x01000193, 0x27d4eb2d, 0x165667b1, 0x85ebca77];
 
   function clone(value) {
-    return JSON.parse(JSON.stringify(value));
+    return JSON.parse(DeterministicJson.canonicalJson(value));
   }
 
   function text(value, max) {
@@ -44,34 +51,7 @@
   }
 
   function stableStringify(value) {
-    function encode(item, seen, at) {
-      if (item === null) return 'null';
-      var type = typeof item;
-      if (type === 'string' || type === 'boolean') return JSON.stringify(item);
-      if (type === 'number') {
-        if (!Number.isFinite(item)) throw new TypeError('non-finite number at ' + at);
-        return JSON.stringify(Object.is(item, -0) ? 0 : item);
-      }
-      if (type !== 'object') throw new TypeError('unsupported ' + type + ' at ' + at);
-      if (seen.has(item)) throw new TypeError('cycle at ' + at);
-      seen.add(item);
-      var result;
-      if (Array.isArray(item)) {
-        var rows = [];
-        for (var index = 0; index < item.length; index += 1) {
-          if (!Object.prototype.hasOwnProperty.call(item, index)) throw new TypeError('sparse array at ' + at + '[' + index + ']');
-          rows.push(encode(item[index], seen, at + '[' + index + ']'));
-        }
-        result = '[' + rows.join(',') + ']';
-      } else {
-        var prototype = Object.getPrototypeOf(item);
-        if (prototype !== Object.prototype && prototype !== null) throw new TypeError('non-plain object at ' + at);
-        result = '{' + Object.keys(item).sort().map(function (key) { return JSON.stringify(key) + ':' + encode(item[key], seen, at + '.' + key); }).join(',') + '}';
-      }
-      seen.delete(item);
-      return result;
-    }
-    return encode(value, new Set(), '$');
+    return DeterministicJson.canonicalJson(value);
   }
 
   function digest(value) {

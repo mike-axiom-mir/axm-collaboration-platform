@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-production-plan/v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "intent_ref", "graph_ref", "source_anchor", "execution_order", "package_refs", "capability_gaps", "policy", "digest"],
+  "properties": {
+    "schema": { "const": "axm.game-production-plan/v1" },
+    "version": { "type": "string" },
+    "status": { "enum": ["READY", "HELD"] },
+    "intent_ref": { "type": "object" },
+    "graph_ref": { "type": "object" },
+    "source_anchor": { "type": "string" },
+    "execution_order": { "type": "array", "minItems": 1, "uniqueItems": true },
+    "package_refs": { "type": "array", "minItems": 1 },
+    "capability_gaps": { "type": "array" },
+    "policy": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "state", "reasonCode", "ownerDigest", "ownerEvidenceValid", "processId", "acquiredAt", "assertionRequired", "exactConfirmation", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-plan/v1" },
+    "status": { "const": "TEST" },
+    "state": { "enum": ["FREE", "HELD_UNREADABLE", "HELD_BY_CURRENT_PROCESS", "RETIREMENT_REQUIRES_OPERATOR_ASSERTION"] },
+    "reasonCode": { "enum": ["NO_REVIEW_OPERATION_LEASE", "LEASE_EVIDENCE_UNREADABLE", "CURRENT_PROCESS_OWNER_RETIREMENT_REFUSED", "EXACT_OWNER_EVIDENCE_REQUIRES_ASSERTION", "INVALID_OWNER_EVIDENCE_REQUIRES_ASSERTION"] },
+    "ownerDigest": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+    "ownerEvidenceValid": { "type": "boolean" },
+    "processId": { "type": ["integer", "null"], "minimum": 1 },
+    "acquiredAt": { "type": ["string", "null"], "format": "date-time" },
+    "assertionRequired": { "type": ["string", "null"] },
+    "exactConfirmation": { "type": ["string", "null"] },
+    "truth": { "$ref": "#/$defs/truth" }
+  },
+  "$defs": {
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["holderTerminatedOrAbandonedProven", "retirementSafetyProven", "falseAssertionCanViolateSerialization", "callerAssertionRequired", "exactOwnerDigestRequired", "ownerEvidenceQuarantineRequired", "ownerEvidenceQuarantined", "currentProcessOwnerRetirementRefused", "automaticRetirement", "processLivenessInference", "browserRoute", "apiRoute", "crossFileAtomicityProven", "nonCooperatingExternalWritersExcluded", "protectedStorageOrRollbackPreventionProven", "executionAuthorized", "adoptionAuthorized", "promotionAuthorized", "mergeAuthorized", "canonAuthorized"],
+      "properties": {
+        "holderTerminatedOrAbandonedProven": { "const": false },
+        "retirementSafetyProven": { "const": false },
+        "falseAssertionCanViolateSerialization": { "const": true },
+        "callerAssertionRequired": { "const": true },
+        "exactOwnerDigestRequired": { "const": true },
+        "ownerEvidenceQuarantineRequired": { "const": true },
+        "ownerEvidenceQuarantined": { "type": "boolean" },
+        "currentProcessOwnerRetirementRefused": { "const": true },
+        "automaticRetirement": { "const": false },
+        "processLivenessInference": { "const": false },
+        "browserRoute": { "const": false },
+        "apiRoute": { "const": false },
+        "crossFileAtomicityProven": { "const": false },
+        "nonCooperatingExternalWritersExcluded": { "const": false },
+        "protectedStorageOrRollbackPreventionProven": { "const": false },
+        "executionAuthorized": { "const": false },
+        "adoptionAuthorized": { "const": false },
+        "promotionAuthorized": { "const": false },
+        "mergeAuthorized": { "const": false },
+        "canonAuthorized": { "const": false }
+      }
+    }
+  }
+}

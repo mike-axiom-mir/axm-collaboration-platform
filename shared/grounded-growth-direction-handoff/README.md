@@ -2,6 +2,10 @@
 
 Status: `TEST`
 
+Clone, canonical comparison, and digest preparation use the shared strict
+`deterministic-json-core`. Existing JSON-safe handoff bytes remain unchanged;
+unsupported JSON state is refused before proposal mapping or digest binding.
+
 This leaf closes one contract gap between verified Grounded Growth feedback and
 Grounded Evolution Intelligence. It converts feedback needs into digest-bound,
 GEI-compatible direction drafts without accepting or executing them.
@@ -28,4 +32,3 @@ Run focused checks with:
 ```powershell
 node shared/grounded-growth-direction-handoff/selftest.js
 ```
-

@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const RECEIPT_SCHEMA = 'axm.grounded-growth-signal-lineage-receipt/v1';
 const VERSION = '0.1.0';
@@ -17,21 +18,11 @@ const PROPOSAL_STATES = [
 ];
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-
-function stableValue(value) {
-  if (Array.isArray(value)) return value.map(stableValue);
-  if (value && typeof value === 'object') {
-    const result = {};
-    Object.keys(value).sort().forEach((key) => { result[key] = stableValue(value[key]); });
-    return result;
-  }
-  return value;
+  return JSON.parse(stableStringify(value));
 }
 
 function stableStringify(value) {
-  return JSON.stringify(stableValue(value));
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {

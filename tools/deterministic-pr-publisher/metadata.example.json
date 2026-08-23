@@ -1,0 +1,18 @@
+{
+  "schema": "axm.git-pr-review-metadata/v1",
+  "title": "feat: add deterministic PR publisher",
+  "summary": "Adds the bounded network-writing adapter that publishes an exact checkpointed feature branch and draft PR for independent platform merge review.",
+  "changeNotes": [
+    "Composes the read-only deterministic checkpoint with the existing publish-lane guard and a host-authenticated GitHub CLI session.",
+    "Allows only ordinary feature-branch push plus draft PR create or title/body update.",
+    "Binds sender and GitHub receiver state into a verifiable transport receipt."
+  ],
+  "riskNotes": [
+    "This is an EXPERIMENTAL HIGH-risk network-writing adapter and requires an exact one-use confirmation.",
+    "If push succeeds but PR confirmation fails, it preserves a typed partial receipt and never rewinds remote state automatically."
+  ],
+  "followUps": [
+    "Platform Axiom/Mir independently reviews and may merge; local Keel preserves supply for engineering.",
+    "Technical merge does not promote the module or change AXM roots or CANON."
+  ]
+}

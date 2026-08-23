@@ -1,0 +1,61 @@
+{
+  "schema": "axm.workshop.scope-transition-ledger.v1",
+  "status": "TEST",
+  "transitions": [
+    {
+      "id": "workshop-active-source-v0-to-v2-20260823",
+      "effectiveAt": "2026-08-23T03:00:08.760Z",
+      "title": "Raw intake archive and Workshop continuity recovery",
+      "reason": "Raw intake carriers moved to recoverable sibling storage while active-source counting changed from rules v0 to v2. A separate integration regression was repaired before the first v2 baseline.",
+      "receiptPath": "docs/steward-runs/2026-08-23-workshop-continuity-recovery/WORKSHOP_CONTINUITY_RECOVERY_RECEIPT.md",
+      "previousSnapshot": {
+        "id": "growth-mt3sr41t",
+        "capturedAt": "2026-08-22T03:06:30.593Z",
+        "scopeRulesVersion": 0,
+        "totalFiles": 59999,
+        "exactCapabilities": 1768,
+        "capabilityDeclarations": 1989
+      },
+      "comparableBaseline": {
+        "id": "growth-mt57ys3c",
+        "capturedAt": "2026-08-23T03:00:08.760Z",
+        "scopeRulesVersion": 2,
+        "totalFiles": 23945,
+        "exactCapabilities": 2031,
+        "capabilityDeclarations": 2256
+      },
+      "archive": {
+        "manifestPath": "../workshop-intake-archive/2026-08-22-cleared-for-2026-08-23/ARCHIVE_MANIFEST.json",
+        "manifestSha256": "64937e914d7631b2ae9e4435392067bfceb01c15695daace696061f29f9bd9d7",
+        "itemCount": 21,
+        "fileCount": 41258,
+        "byteCount": 1441627208,
+        "admittedCount": 18,
+        "heldCount": 3,
+        "inventoryDigestAlgorithm": "sha256(relative_path_utf8 + tab + byte_length + lf)",
+        "movement": "same-volume move per exact reviewed root; no deletion"
+      },
+      "recovery": {
+        "damagedTreeObservation": {
+          "topLevelTools": 224,
+          "exactCapabilities": 1778,
+          "capabilityDeclarations": 1999
+        },
+        "recoveredBaseline": {
+          "topLevelTools": 232,
+          "exactCapabilities": 2031,
+          "capabilityDeclarations": 2256
+        },
+        "continuityGate": "registry/workshop-continuity-baseline.json"
+      },
+      "truth": {
+        "automaticLossInferencePrevented": true,
+        "arithmeticBalanceRequired": false,
+        "arithmeticBalanceReason": "The two snapshots use different active-source scopes. Archived carrier counts and active-source counts can overlap with admitted material and therefore must not be added or subtracted as if they were one inventory.",
+        "archiveMovementIsNotDeletion": true,
+        "sourceRecoveryIsSeparateFromScopeChange": true,
+        "automaticPromotion": false
+      }
+    }
+  ]
+}

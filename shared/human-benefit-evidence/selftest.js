@@ -115,6 +115,9 @@ ok(evaluationSchema.$id === Human.EVALUATION_SCHEMA, 'evaluation schema identity
 ok(judgmentSchema.$id === Human.JUDGMENT_SCHEMA, 'judgment schema identity matches the implementation');
 ok(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'module contract stays TEST with no permissions or writes');
 ok(contract.boundaries.refuses.includes('numeric-signal-as-human-judgment'), 'contract refuses numeric evidence as automatic human judgment');
+ok(contract.version === 'v0.2' && contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'v0.2 contract declares strict representation closure');
+ok(Human.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+throws(() => Human.stableStringify({ lost: undefined }), /unsupported undefined/i, 'unsafe canonical state is refused');
 
 const protocol = makeProtocol();
 ok(Human.verifyProtocol(protocol).pass, 'predeclared synthetic protocol verifies');

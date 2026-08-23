@@ -59,6 +59,9 @@ check(contract.boundaries.refuses.includes('research-intake-as-runtime-evidence'
 check(contract.boundaries.refuses.includes('planning-readiness-as-candidate-presence'), 'contract refuses planning readiness as candidate presence');
 check(contract.boundaries.refuses.includes('ai-workflow-evidence-as-human-benefit'), 'contract refuses AI evidence as human benefit');
 check(contract.boundaries.refuses.includes('automatic-canon') && contract.boundaries.refuses.includes('foundation-mutation'), 'contract refuses automatic CANON and Foundation mutation');
+check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
+check(Knowledge.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+checkThrows(() => Knowledge.stableStringify({ lost: undefined }), /unsupported undefined/i, 'unsafe canonical state is refused');
 
 const input = Builder.currentInput();
 const receipt = Knowledge.buildKnowledgeFrontier(input);

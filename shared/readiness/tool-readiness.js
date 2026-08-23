@@ -4,13 +4,16 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const ContractVerifier = require('../../hub/module-contract-verifier');
+const DiagnosticRedaction = require('./diagnostic-redaction');
 
 const INDEX_SCHEMA = 'axm.tools-index/v1';
 const MANIFEST_SCHEMA = 'axm.tool-manifest/v1';
+const SELFTEST_RESULTS_SCHEMA = 'axm.tool-selftest-results/v1';
 const STATUSES = new Set(['EXPERIMENTAL', 'TEST', 'WORKING', 'CANON', 'SHELL', 'BROKEN']);
-const KINDS = new Set(['product', 'service', 'scaffold', 'adapter', 'machine-capability']);
+const KINDS = new Set(['product', 'service', 'scaffold', 'adapter', 'machine-capability', 'organ', 'gate']);
 const VERIFICATION_STATUSES = new Set(['TEST', 'WORKING', 'CANON']);
 const SKIP_WALK = new Set(['node_modules', 'vendor', 'exports', 'state', 'logs', 'backups']);
+const DIGEST_CONTRACT = 'sha256-canonical-text-lf-v1';
 const SELFTEST_DIGEST_SCOPE = 'all-discovered-selftests/v1';
 
 function readJson(file, fallback) {
@@ -26,8 +29,20 @@ function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
 
+function canonicalTextBytes(value) {
+  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(value);
+  const output = Buffer.allocUnsafe(bytes.length);
+  let writeOffset = 0;
+  for (let readOffset = 0; readOffset < bytes.length; readOffset += 1) {
+    if (bytes[readOffset] === 13 && bytes[readOffset + 1] === 10) continue;
+    output[writeOffset] = bytes[readOffset];
+    writeOffset += 1;
+  }
+  return output.subarray(0, writeOffset);
+}
+
 function digestFile(file) {
-  try { return sha256(fs.readFileSync(file)); }
+  try { return sha256(canonicalTextBytes(fs.readFileSync(file))); }
   catch (error) { return null; }
 }
 
@@ -88,9 +103,12 @@ function validateTargetManifest(manifest, folder) {
   return errors;
 }
 
-function normalizeVerificationResults(input) {
+function normalizeVerificationResults(input, root) {
   const rows = input && Array.isArray(input.results) ? input.results : [];
-  return new Map(rows.map(row => [row.id, row]));
+  return new Map(rows.map(row => {
+    const sanitized = DiagnosticRedaction.sanitizeVerificationResult(row, { workspaceRoot:root });
+    return [sanitized.id, sanitized];
+  }));
 }
 
 function isVerificationTarget(tool) {
@@ -103,7 +121,7 @@ function buildIndex(root, options) {
   const now = new Date(options.now || Date.now());
   const ladderFile = path.resolve(options.promotionLadderFile || path.join(__dirname, 'promotion-ladder.json'));
   const ladder = readJson(ladderFile, { freshnessDays: 30 });
-  const resultById = normalizeVerificationResults(options.verificationResults);
+  const resultById = normalizeVerificationResults(options.verificationResults, root);
   const toolsRoot = path.join(root, 'tools');
   const sourceHash = crypto.createHash('sha256');
   sourceHash.update('promotion-ladder:' + (digestFile(ladderFile) || 'MISSING') + '\n');
@@ -231,6 +249,8 @@ function buildIndex(root, options) {
       structuralEligibilityIsRuntimeProof: false,
       selftestPassIsHumanApproval: false,
       selftestReceiptBindsDiscoveredSuite: true,
+      failureDiagnosticsMachinePathRedacted: true,
+      failureDiagnosticsRecognizedCredentialEvidenceRedacted: true,
       capabilityCatalogGrantsAuthority: false,
       missingValuesRemainVisible: true
     }
@@ -246,6 +266,9 @@ function validateIndex(index) {
   if (!Array.isArray(index.capabilities)) errors.push('capabilities must be an array');
   if (!index.promotionQueue || typeof index.promotionQueue !== 'object') errors.push('promotionQueue is required');
   if (!index.truth || index.truth.automaticPromotion !== false) errors.push('automaticPromotion must remain false');
+  if (!index.truth || index.truth.selftestReceiptBindsDiscoveredSuite !== true) errors.push('selftest receipts must bind the discovered selftest suite');
+  if (!index.truth || index.truth.failureDiagnosticsMachinePathRedacted !== true) errors.push('failure diagnostics must declare machine-path redaction');
+  if (!index.truth || index.truth.failureDiagnosticsRecognizedCredentialEvidenceRedacted !== true) errors.push('failure diagnostics must declare recognized credential-evidence redaction');
   if (Array.isArray(index.tools)) {
     index.tools.forEach(tool => {
       if (!tool || !tool.promotion || !['READY_FOR_HUMAN_REVIEW', 'CURRENT'].includes(tool.promotion.state)) return;
@@ -258,4 +281,21 @@ function validateIndex(index) {
   return { pass: errors.length === 0, errors };
 }
 
-module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, STATUSES, KINDS, SELFTEST_DIGEST_SCOPE, buildIndex, validateIndex, validateTargetManifest, digestFile, digestSelftestSuite, isVerificationTarget };
+function verificationResultsFromIndex(index) {
+  const checked = validateIndex(index);
+  if (!checked.pass) throw new Error('tools index cannot provide verification evidence: ' + checked.errors.join('; '));
+  const results = [];
+  index.tools.forEach(tool => {
+    const result = tool && tool.selftest && tool.selftest.result;
+    if (!result) return;
+    if (result.id !== tool.id) throw new Error('tools index result id does not match tool: ' + tool.id);
+    results.push(result);
+  });
+  return {
+    schema: SELFTEST_RESULTS_SCHEMA,
+    generatedAt: index.generatedAt,
+    results
+  };
+}
+
+module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, SELFTEST_RESULTS_SCHEMA, DIGEST_CONTRACT, SELFTEST_DIGEST_SCOPE, STATUSES, KINDS, buildIndex, validateIndex, verificationResultsFromIndex, validateTargetManifest, digestFile, digestSelftestSuite, isVerificationTarget };

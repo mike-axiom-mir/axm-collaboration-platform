@@ -23,12 +23,17 @@ jobs:
         run: node tests/public-discovery-selftest.js
       - name: Verify the beginner launch contract
         run: node tests/beginner-launch-selftest.js
+      - name: Fail closed on unauthorized Workshop disappearance
+        run: node tests/workshop-continuity-gate-test.js && node -e "const path=require('path');const gate=require('./shared/continuity/workshop-inventory-continuity');const root=process.cwd();const result=gate.auditFiles(root,path.join(root,'registry/workshop-continuity-baseline.json'),path.join(root,'registry/workshop-continuity-retirements.json'));if(!result.pass){console.error(result.errors.join('\\n'));process.exit(1)}console.log('Workshop continuity: PASS')"
       - name: Verify the public GitHub surface
         run: npm run test:public-surface
 
   windows-clean-launch:
     runs-on: windows-latest
     steps:
+      - name: Enable Windows long-path checkout support
+        shell: powershell
+        run: git config --system core.longpaths true
       - name: Check out the public candidate
         uses: actions/checkout@v4
       - name: Launch from a clean path with no Node.js on PATH

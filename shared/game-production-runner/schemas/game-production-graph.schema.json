@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-production-graph/v1",
+  "type": "object",
+  "required": ["schema", "id", "version", "status", "intent_ref", "nodes", "edges", "policy", "digest"],
+  "properties": {
+    "schema": { "const": "axm.game-production-graph/v1" },
+    "id": { "type": "string" },
+    "version": { "type": "string" },
+    "status": { "const": "READY" },
+    "intent_ref": { "type": "object", "required": ["id", "version", "digest"] },
+    "nodes": { "type": "array", "minItems": 1 },
+    "edges": { "type": "array" },
+    "policy": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

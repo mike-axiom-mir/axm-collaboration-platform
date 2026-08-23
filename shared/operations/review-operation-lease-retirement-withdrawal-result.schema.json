@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-withdrawal-result/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "state", "retirementId", "ownerDigest", "recordedAt", "reason", "retirementDecision", "truth"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-withdrawal-result/v1" },
+    "status": { "const": "TEST" },
+    "state": { "enum": ["WITHDRAWN", "ALREADY_WITHDRAWN"] },
+    "retirementId": { "type": "string", "format": "uuid" },
+    "ownerDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "reason": { "type": "string", "minLength": 20, "maxLength": 500 },
+    "retirementDecision": { "$ref": "review-operation-lease-retirement-decision.schema.json" },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intentExact", "decisionExact", "ownerEvidenceDigestVerifiedAtObservation", "appendOnlyWithdrawalEvidence", "ownerLockMutatedByWithdrawal", "cooperatingSingleHostProceedWithdrawArbitration", "generalRetirementCancellationSafetyProven", "holderTerminatedOrAbandonedProven", "holderLivenessProven", "crossFileAtomicityProven", "nonCooperatingExternalWritersExcluded", "protectedStorageOrRollbackPreventionProven", "realWorldIdentityProven", "actualHumanParticipationProven", "browserRoute", "apiRoute", "executionAuthorized", "adoptionAuthorized", "promotionAuthorized", "mergeAuthorized", "canonAuthorized"],
+      "properties": {
+        "intentExact": { "const": true },
+        "decisionExact": { "const": true },
+        "ownerEvidenceDigestVerifiedAtObservation": { "type": "boolean" },
+        "appendOnlyWithdrawalEvidence": { "const": true },
+        "ownerLockMutatedByWithdrawal": { "const": false },
+        "cooperatingSingleHostProceedWithdrawArbitration": { "const": true },
+        "generalRetirementCancellationSafetyProven": { "const": false },
+        "holderTerminatedOrAbandonedProven": { "const": false },
+        "holderLivenessProven": { "const": false },
+        "crossFileAtomicityProven": { "const": false },
+        "nonCooperatingExternalWritersExcluded": { "const": false },
+        "protectedStorageOrRollbackPreventionProven": { "const": false },
+        "realWorldIdentityProven": { "const": false },
+        "actualHumanParticipationProven": { "const": false },
+        "browserRoute": { "const": false },
+        "apiRoute": { "const": false },
+        "executionAuthorized": { "const": false },
+        "adoptionAuthorized": { "const": false },
+        "promotionAuthorized": { "const": false },
+        "mergeAuthorized": { "const": false },
+        "canonAuthorized": { "const": false }
+      }
+    }
+  }
+}

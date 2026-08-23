@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.block-view/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "source", "classification", "status", "sockets", "effects", "authority", "proof", "boundaries"],
+  "properties": {
+    "schema": { "const": "axm.block-view/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "source": {
+      "type": "object",
+      "required": ["root", "manifest", "contract", "digest"],
+      "properties": {
+        "root": { "type": "string" },
+        "manifest": { "type": ["string", "null"] },
+        "contract": { "type": ["string", "null"] },
+        "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "required": ["kind", "state", "basis"],
+      "properties": {
+        "kind": { "enum": ["BRICK", "SENSOR", "ORGAN", "HAND", "ROOM", "BRIDGE", "ROUTE", "DISTRICT", "UNKNOWN"] },
+        "state": { "enum": ["DECLARED", "INFERRED_UNCONFIRMED", "UNKNOWN"] },
+        "basis": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "status": { "type": "string" },
+    "sockets": { "type": "object" },
+    "effects": { "type": "object" },
+    "authority": { "type": "object" },
+    "proof": { "type": "object" },
+    "boundaries": { "type": "object" }
+  }
+}

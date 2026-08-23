@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.review-operation-lease-retirement-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assertion", "confirmation", "ownerDigest", "reason"],
+  "properties": {
+    "schema": { "const": "axm.review-operation-lease-retirement-request/v1" },
+    "assertion": { "const": "HOLDER_TERMINATED_OR_ABANDONED" },
+    "confirmation": { "type": "string", "pattern": "^RETIRE REVIEW OPERATION LEASE sha256:[a-f0-9]{64}$" },
+    "ownerDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reason": { "type": "string", "minLength": 20, "maxLength": 500 }
+  }
+}

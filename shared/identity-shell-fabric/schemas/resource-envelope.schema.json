@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.identity-shell.resource-envelope/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "envelopeId", "compute", "memory", "storage", "time", "network", "energy", "actuation"],
+  "properties": {
+    "schema": {"const": "axm.identity-shell.resource-envelope/v1"},
+    "version": {"const": "0.1.0"},
+    "envelopeId": {"$ref": "common.schema.json#/$defs/id"},
+    "compute": {"$ref": "#/$defs/metric"},
+    "memory": {"$ref": "#/$defs/metric"},
+    "storage": {"$ref": "#/$defs/metric"},
+    "time": {"$ref": "#/$defs/metric"},
+    "energy": {"$ref": "#/$defs/metric"},
+    "network": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["state", "mode", "requestedDomains", "permittedDomains"], "properties": {"state": {"const": "KNOWN"}, "mode": {"enum": ["DISABLED", "ALLOWLIST"]}, "requestedDomains": {"$ref": "common.schema.json#/$defs/ids"}, "permittedDomains": {"$ref": "common.schema.json#/$defs/ids"}}},
+        {"type": "object", "additionalProperties": false, "required": ["state", "mode", "requestedDomains", "permittedDomains"], "properties": {"state": {"const": "UNKNOWN"}, "mode": {"const": "DISABLED"}, "requestedDomains": {"type": "null"}, "permittedDomains": {"type": "null"}}}
+      ]
+    },
+    "actuation": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["state", "mode", "requestedOperations", "permittedOperations"], "properties": {"state": {"const": "KNOWN"}, "mode": {"const": "UNAVAILABLE_V0_1"}, "requestedOperations": {"const": 0}, "permittedOperations": {"const": 0}}},
+        {"type": "object", "additionalProperties": false, "required": ["state", "mode", "requestedOperations", "permittedOperations"], "properties": {"state": {"const": "UNKNOWN"}, "mode": {"const": "UNAVAILABLE_V0_1"}, "requestedOperations": {"type": "null"}, "permittedOperations": {"type": "null"}}}
+      ]
+    }
+  },
+  "$defs": {"metric": {"oneOf": [{"$ref": "common.schema.json#/$defs/knownMetric"}, {"$ref": "common.schema.json#/$defs/unknownMetric"}]}}
+}

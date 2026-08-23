@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-invalidation/v1",
+  "type": "object",
+  "required": ["schema", "key", "status", "entry_removed", "explicit", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-invalidation/v1" },
+    "key": { "type": "string" },
+    "status": { "enum": ["NOT_REQUESTED", "REFUSED", "INVALID_KEY", "ABSENT", "REFUSED_LINK", "FAILED", "REMOVED"] },
+    "entry_removed": { "type": "boolean" },
+    "explicit": { "type": "boolean" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

@@ -2,23 +2,32 @@
 
 const path = require('path');
 const U = require('./operations-utils');
+const ReviewOperationLease = require('./review-operation-lease');
 
 const SCHEMA = 'axm.review-inbox/v1';
 
 function create(options) {
   const stateFile = path.join(options.stateRoot, 'review-inbox', 'reviews.json');
   const auditFile = path.join(options.stateRoot, 'review-inbox', 'audit.jsonl');
+  const operationLease = ReviewOperationLease.create({
+    stateRoot:options.stateRoot,
+    timeoutMs:options.reviewOperationLeaseTimeoutMs,
+    retryMs:options.reviewOperationLeaseRetryMs
+  });
+  function withExclusive(callback) { return operationLease.withExclusive(callback); }
+  function operationLeaseStatus() { return operationLease.inspect(); }
   function read() { return U.loadJson(stateFile, { schema: SCHEMA, version: 1, items: [] }); }
   function write(state) { state.updatedAt = U.now(); U.atomicJson(stateFile, state); }
   function audit(event) { U.appendJsonl(auditFile, Object.assign({ at: U.now() }, event)); }
   function normalizeSeats(value) { return value === 'dual' ? 2 : Math.max(1, Math.min(10, Math.round(Number(value) || 1))); }
 
-  function submit(input) {
+  function submitCore(input, reservedId) {
     const body = input || {}, digest = String(body.artifactDigest || '').toLowerCase();
     if (!/^[a-f0-9]{64}$/.test(digest)) throw new Error('artifactDigest must be a SHA-256 digest');
     const state = read(), sourceRef = String(body.sourceRef || '').slice(0, 300), kind = String(body.kind || 'proposal').slice(0, 80);
     const existing = state.items.find(item => item.kind === kind && item.sourceRef === sourceRef && item.artifactDigest === digest && !['REJECTED','SUPERSEDED','EXPIRED'].includes(item.state));
     if (existing) {
+      if (reservedId && existing.id !== reservedId) throw new Error('reserved review projection id conflicts with an existing exact candidate');
       if (existing.state === 'REPAIR') throw new Error('repair needs a changed plan digest before review can reopen');
       return existing;
     }
@@ -28,13 +37,25 @@ function create(options) {
       }
     }
     const item = {
-      schema: 'axm.review-item/v1', id: U.uid('review'), kind, title: String(body.title || 'Untitled proposal').slice(0, 180),
+      schema: 'axm.review-item/v1', id: reservedId || U.uid('review'), kind, title: String(body.title || 'Untitled proposal').slice(0, 180),
       sourceRef, artifactDigest: digest, summary: String(body.summary || '').slice(0, 2000), requiredSeats: normalizeSeats(body.requiredSeats),
       action: body.action && typeof body.action === 'object' ? U.clone(body.action) : null, state: 'PENDING', votes: [], discussion: [],
       createdAt: U.now(), updatedAt: U.now(), expiresAt: body.expiresAt && Number.isFinite(Date.parse(body.expiresAt)) ? new Date(body.expiresAt).toISOString() : null
     };
     state.items.unshift(item); write(state); audit({ type: 'submitted', id: item.id, digest, kind, sourceRef });
     return item;
+  }
+  function submit(input) { return submitCore(input, null); }
+  function submitReserved(input, reservedId) {
+    const id = String(reservedId || '').trim().toLowerCase();
+    if (!/^review-auth-[a-f0-9]{64}$/.test(id)) throw new Error('reserved authenticated review id is invalid');
+    const state = read(), collision = state.items.find(item => item.id === id);
+    if (collision) {
+      const body = input || {}, digest = String(body.artifactDigest || '').toLowerCase();
+      const sourceRef = String(body.sourceRef || '').slice(0, 300), kind = String(body.kind || 'proposal').slice(0, 80);
+      if (collision.kind !== kind || collision.sourceRef !== sourceRef || collision.artifactDigest !== digest) throw new Error('reserved authenticated review id collision');
+    }
+    return submitCore(input, id);
   }
 
   function vote(id, input) {
@@ -168,7 +189,19 @@ function create(options) {
   }
   function approved(id, digest) { const item = get(id); return !!(item && item.state === 'APPROVED' && item.artifactDigest === String(digest || '').toLowerCase()); }
   function summary() { const items = list(), byState = {}; items.forEach(item => { byState[item.state] = (byState[item.state] || 0) + 1; }); return { total: items.length, byState }; }
-  return { schema: SCHEMA, submit, vote, recordTechnicalReview, recordTechnicalRefusal, discuss, route, list, get, expireBefore, approved, summary, stateFile, auditFile };
+  return {
+    schema:SCHEMA,
+    submit:input => withExclusive(() => submit(input)),
+    submitReserved:(input, reservedId) => withExclusive(() => submitReserved(input, reservedId)),
+    vote:(id, input) => withExclusive(() => vote(id, input)),
+    recordTechnicalReview:(id, assessment) => withExclusive(() => recordTechnicalReview(id, assessment)),
+    recordTechnicalRefusal:(id, refusal) => withExclusive(() => recordTechnicalRefusal(id, refusal)),
+    discuss:(id, input) => withExclusive(() => discuss(id, input)),
+    route:(id, input) => withExclusive(() => route(id, input)),
+    expireBefore:(kind, before, actor) => withExclusive(() => expireBefore(kind, before, actor)),
+    list, get, approved, summary, withExclusive, operationLeaseStatus,
+    stateFile, auditFile, operationLeaseFile:operationLease.leaseFile
+  };
 }
 
 module.exports = { SCHEMA, create };

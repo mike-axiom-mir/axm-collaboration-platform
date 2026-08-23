@@ -12,7 +12,16 @@ Choose the shortest route that answers your question:
 | Find the authoritative Hub | [Hub Map](HUB_MAP.md) |
 | Review listeners and LAN seams | [Ports](PORTS.md) |
 | Understand retention | [Retention](RETENTION.md) |
-| Read the current release | [v0.3.0 Experimental](releases/v0.3.0-experimental.md) |
+| Read the current source checkpoint | [v0.6.0 Experimental](releases/v0.6.0-experimental.md) |
+
+## Release history
+
+- [v0.6.0 Experimental](releases/v0.6.0-experimental.md) — newest reviewed
+  source checkpoint; GitHub-generated source archives.
+- [v0.5.0 Experimental](releases/v0.5.0-experimental.md)
+- [v0.4.1 Experimental](releases/v0.4.1-experimental.md)
+- [v0.3.0 Experimental](releases/v0.3.0-experimental.md) — last separately
+  packaged Windows source ZIP with a checksum; older than the current source.
 
 `docs/from-github/` is an imported reference snapshot, not an automatically
 synchronized source of truth. Current manifests, contracts, generated

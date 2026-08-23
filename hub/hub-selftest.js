@@ -27,6 +27,7 @@ const productionSessionJs = fs.readFileSync(path.join(__dirname, 'production-ses
 const productionSessionCss = fs.readFileSync(path.join(__dirname, 'production-session.css'), 'utf8');
 const powerJs = fs.readFileSync(path.join(__dirname, 'power-control.js'), 'utf8');
 const powerCss = fs.readFileSync(path.join(__dirname, 'power-control.css'), 'utf8');
+const growthJs = fs.readFileSync(path.join(__dirname, 'growth.js'), 'utf8');
 const serverJs = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
 const operationsApiJs = fs.readFileSync(path.join(__dirname, '..', 'shared', 'operations', 'operations-api.js'), 'utf8');
 const productionSessionCoreJs = fs.readFileSync(path.join(__dirname, '..', 'shared', 'production-session', 'production-session-core.js'), 'utf8');
@@ -50,6 +51,16 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
   ? ok('radio: diverse picker choices have matching primary and fallback stream definitions') : bad('radio: station source map is incomplete');
 /growth-worker-runner/.test(serverJs) && /GROWTH_SCAN_RUNNER\.scanBodies\(\)/.test(serverJs) && /measurementReuse: GROWTH_SCAN_STATUS/.test(serverJs)
   ? ok('growth: exact cached measurements run off the request thread and remain source-content-free') : bad('growth: isolated incremental measurement reuse is not wired');
+/scanWorkshopFirst\(\)/.test(serverJs) && /\/api\/workshop-growth\/mirror/.test(serverJs) && /scheduleMirrorPoll/.test(growthJs)
+  ? ok('growth: Workshop responds before the separately loaded Mirror inventory') : bad('growth: slow Mirror inventory can still block the Workshop response');
+/id="growthReconciliation"/.test(hubHtml) && /scopeTransitions: growthScopeTransitionStatus\(\)/.test(serverJs) && /PERMANENT SCOPE-TRANSITION RECEIPT/.test(growthJs) && /Manifest SHA-256/.test(growthJs)
+  ? ok('growth: permanent scope-transition reconciliation is bound into API and UI') : bad('growth: archive reconciliation still depends on human memory');
+/scope-transition-audit-worker\.cjs/.test(serverJs) && /\/api\/workshop-growth\/scope-transition/.test(serverJs) && /CURRENT_BOOT_ARCHIVE_AUDIT_PENDING/.test(serverJs) && /scheduleScopePoll/.test(growthJs) && /growth-reconciliation\.css/.test(hubHtml)
+  ? ok('growth: archive proof is re-audited for the current server run before the UI reports verified') : bad('growth: a stale local archive receipt can still appear verified');
+/id="growthNavBtn"[\s\S]*?<b>Workshop Growth<\/b>/.test(hubHtml) && /id="observatoryNavBtn"[\s\S]*?<b>Workshop Observatory<\/b>/.test(hubHtml) && /openGrowth/.test(growthJs) && /openObservatory/.test(growthJs)
+  ? ok('growth: Growth and Observatory remain two explicit destinations') : bad('growth: Growth or Observatory destination was replaced');
+/returned a webpage instead of data/.test(growthJs) && /url\.startsWith\("\/api\/"\)/.test(serverJs) && /unknown Workshop API route/.test(serverJs)
+  ? ok('growth: stale or unknown API routes fail as JSON instead of leaking Hub HTML') : bad('growth: API/HTML mismatch can still surface as a JSON syntax error');
 /presentation-policy\.js/.test(hubHtml) && /presentation-recipe\.js/.test(hubHtml) && /id="presentationModeQuick"/.test(hubHtml) && /applyPresentationToFrame/.test(hubJs)
   ? ok('presentation: Hub owns a visible shared/module control plane') : bad('presentation: control plane wiring missing');
 /setSharedPresentationLayer/.test(hubJs) && /downloadPresentationRecipe/.test(hubJs) && /hub:presentation:recipe/.test(hubJs) && /Portable skin recipe/.test(hubJs)

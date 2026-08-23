@@ -1,0 +1,522 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "submission-intent-first",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.intent-before-submission-projection"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.intent-before-submission-projection": [
+          "TEST single-process source order plus injected projection interruption; not cross-file atomicity"
+        ]
+      }
+    },
+    {
+      "id": "vote-intent-first",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.intent-before-vote-projection"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.intent-before-vote-projection": [
+          "TEST single-process source order plus injected projection interruption; not multi-process serialization"
+        ]
+      }
+    },
+    {
+      "id": "reserved-id",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.deterministic-reserved-review-id"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.deterministic-reserved-review-id": [
+          "new signed submissions only; legacy ordinary items retain their existing exact id"
+        ]
+      }
+    },
+    {
+      "id": "pending-holds-authority",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.pending-intent-visible-and-zero-seat"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.pending-intent-visible-and-zero-seat": [
+          "current policy and unexpired signatures are still required"
+        ]
+      }
+    },
+    {
+      "id": "explicit-recovery",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.exact-confirmation-host-only-recovery"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.exact-confirmation-host-only-recovery": [
+          "service-local method only; no browser route or automatic replay"
+        ]
+      }
+    },
+    {
+      "id": "recovery-reverification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.recovery-revalidates-policy-signature-bindings-and-separation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.recovery-revalidates-policy-signature-bindings-and-separation": [
+          "local host clock is not externally trusted time"
+        ]
+      }
+    },
+    {
+      "id": "idempotent-recovery",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.idempotent-recovery-without-ledger-append"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.idempotent-recovery-without-ledger-append": [
+          "bounded single-process fixture and fresh-service reload"
+        ]
+      }
+    },
+    {
+      "id": "no-browser-or-auto-replay",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.no-browser-route-or-automatic-replay"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.no-browser-route-or-automatic-replay": [
+          "API source contract and live UI expose observation only"
+        ]
+      }
+    },
+    {
+      "id": "duplicate-pending-refusal",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.duplicate-pending-exact-candidate-refusal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.duplicate-pending-exact-candidate-refusal": [
+          "exact normalized candidate scope"
+        ]
+      }
+    },
+    {
+      "id": "signed-order-supersession",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.same-principal-signed-order-supersession"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.same-principal-signed-order-supersession": [
+          "signed issuedAt plus envelopeId order; unsigned reversal fails closed"
+        ]
+      }
+    },
+    {
+      "id": "v1-v2-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.v1-read-v2-write-continuity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.v1-read-v2-write-continuity": [
+          "v1 finalized evidence is readable; a later signed mutation writes v2"
+        ]
+      }
+    },
+    {
+      "id": "bounded-closed-contracts",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.bounded-ledger-and-closed-runtime-shape-contracts"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.bounded-ledger-and-closed-runtime-shape-contracts": [
+          "runtime exact-key agreement tested; independent JSON Schema metaschema validator unavailable"
+        ]
+      }
+    },
+    {
+      "id": "read-only-api-observation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.read-only-api-status-without-recovery-mutation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.read-only-api-status-without-recovery-mutation": [
+          "GET observation only"
+        ]
+      }
+    },
+    {
+      "id": "visible-states",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.live-current-recovery-required-and-held-states"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.live-current-recovery-required-and-held-states": [
+          "synthetic read-only localhost fixtures"
+        ]
+      }
+    },
+    {
+      "id": "responsive-layout",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.desktop-and-narrow-no-overflow-layout"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.desktop-and-narrow-no-overflow-layout": [
+          "1280x720 and 390x844 browser evidence; no assistive-technology study"
+        ]
+      }
+    },
+    {
+      "id": "inherited-review-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.inherited-v29-v40-and-generic-review-nondisruption"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.inherited-v29-v40-and-generic-review-nondisruption": [
+          "62-command replay includes inherited typed and generic review checks"
+        ]
+      }
+    },
+    {
+      "id": "zero-consequential-authority",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "review.projection.zero-reconciliation-execution-adoption-promotion-merge-foundation-or-canon-authority"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "review.projection.zero-reconciliation-execution-adoption-promotion-merge-foundation-or-canon-authority": [
+          "Mike remains merge and CANON gate; no downstream action route added"
+        ]
+      }
+    },
+    {
+      "id": "cross-file-atomicity",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.projection.cross-file-atomicity"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "multi-process-serialization",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.projection.multi-process-serialization"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "rollback-resistance",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.projection.protected-monotonic-storage-and-rollback-prevention"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "external-custody",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.projection.external-custody"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "live-host-policy",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.projection.actual-host-policy-and-live-signed-review"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "identity-human-time",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.projection.real-world-identity-human-participation-and-trusted-time"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "schema-meta-validation",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.projection.independent-draft-2020-12-meta-validation"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "human-benefit",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "review.projection.assistive-technology-usability-human-benefit-or-learning-proof"
+      ],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "review.projection.actual-host-policy-and-live-signed-review",
+    "review.projection.assistive-technology-usability-human-benefit-or-learning-proof",
+    "review.projection.cross-file-atomicity",
+    "review.projection.external-custody",
+    "review.projection.independent-draft-2020-12-meta-validation",
+    "review.projection.multi-process-serialization",
+    "review.projection.protected-monotonic-storage-and-rollback-prevention",
+    "review.projection.real-world-identity-human-participation-and-trusted-time"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "review.projection.actual-host-policy-and-live-signed-review",
+      "requiredBy": [
+        "live-host-policy"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.projection.assistive-technology-usability-human-benefit-or-learning-proof",
+      "requiredBy": [
+        "human-benefit"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.projection.cross-file-atomicity",
+      "requiredBy": [
+        "cross-file-atomicity"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.projection.external-custody",
+      "requiredBy": [
+        "external-custody"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.projection.independent-draft-2020-12-meta-validation",
+      "requiredBy": [
+        "schema-meta-validation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.projection.multi-process-serialization",
+      "requiredBy": [
+        "multi-process-serialization"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.projection.protected-monotonic-storage-and-rollback-prevention",
+      "requiredBy": [
+        "rollback-resistance"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "review.projection.real-world-identity-human-participation-and-trusted-time",
+      "requiredBy": [
+        "identity-human-time"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}
