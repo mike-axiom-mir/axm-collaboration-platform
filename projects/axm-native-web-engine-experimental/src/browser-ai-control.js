@@ -173,10 +173,10 @@ class LocalBrowserAiControl {
         throw new AxmBrowserAiControlError('BROWSER_RESEARCH_RESULT_INVALID', 'Research Mode runner returned no valid AXM research run');
       }
       this.lastResearchRun = result;
-      return this.state();
     } finally {
       this.researchRunning = false;
     }
+    return this.state();
   }
 }
 
