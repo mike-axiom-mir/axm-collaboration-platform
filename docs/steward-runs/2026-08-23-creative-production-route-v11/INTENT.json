@@ -1,0 +1,121 @@
+{
+  "authority": "NONE",
+  "boundaries": [
+    "No taste, originality, finished-asset, visual-quality, or listening-quality claim.",
+    "No asset generation, filesystem access, provider call, or network access."
+  ],
+  "desiredCases": [
+    {
+      "assertions": [
+        {"op": "contains", "path": "route", "value": "alt-text-check"}
+      ],
+      "description": "A declared accessibility task is retained in the production route when supported.",
+      "id": "accessibility-task-retained",
+      "input": {
+        "accessibility": ["alt-text-check"],
+        "delivery": "web",
+        "medium": "visual"
+      }
+    }
+  ],
+  "id": "fabric-review-production-route",
+  "inputs": [
+    {
+      "description": "Declared evidence medium.",
+      "enum": ["visual", "audio"],
+      "name": "medium",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "description": "Declared review delivery context.",
+      "enum": ["web", "print", "live"],
+      "name": "delivery",
+      "required": true,
+      "type": "string"
+    },
+    {
+      "description": "Explicit accessibility tasks required for the evidence.",
+      "items": "string",
+      "name": "accessibility",
+      "required": true,
+      "type": "array"
+    }
+  ],
+  "invariants": [
+    "Mechanical validators remain separate from human visual or listening review.",
+    "Every production route declares a delivery fallback."
+  ],
+  "metricProfileId": "balanced-v1",
+  "name": "Fabric Review Production Route",
+  "outputs": [
+    {
+      "description": "Ordered production route.",
+      "items": "string",
+      "name": "route",
+      "required": true,
+      "type": "array"
+    },
+    {
+      "description": "Mechanical validators for the evidence.",
+      "items": "string",
+      "name": "validators",
+      "required": true,
+      "type": "array"
+    },
+    {
+      "description": "Declared accessible delivery fallbacks.",
+      "items": "string",
+      "name": "fallbacks",
+      "required": true,
+      "type": "array"
+    }
+  ],
+  "purpose": "Choose a bounded production and accessibility route for visual or audio evidence used in Organ Fabric review surfaces.",
+  "requiredCases": [
+    {
+      "assertions": [
+        {"op": "contains", "path": "validators", "value": "contrast"},
+        {"op": "contains", "path": "fallbacks", "value": "static-poster"}
+      ],
+      "description": "Fabric Hub visual evidence carries contrast validation and a static web fallback.",
+      "id": "hub-visual-evidence",
+      "input": {
+        "accessibility": ["alt-text-check", "keyboard-review"],
+        "delivery": "web",
+        "medium": "visual"
+      }
+    },
+    {
+      "assertions": [
+        {"op": "contains", "path": "validators", "value": "peak-level"},
+        {"op": "contains", "path": "fallbacks", "value": "pre-rendered-playback"}
+      ],
+      "description": "Live audio evidence carries peak-level validation and a pre-rendered fallback.",
+      "id": "live-audio-evidence",
+      "input": {
+        "accessibility": ["transcript-check", "caption-check"],
+        "delivery": "live",
+        "medium": "audio"
+      }
+    }
+  ],
+  "resourceBudget": {
+    "maxNodes": 64,
+    "maxDepth": 16,
+    "maxOperations": 1024,
+    "maxListItems": 256,
+    "maxInputBytes": 32768,
+    "maxOutputBytes": 32768,
+    "maxPackageFiles": 16,
+    "maxPackageBytes": 524288
+  },
+  "schema": "axm.organ-intent/v1",
+  "status": "EXPERIMENTAL",
+  "fieldPackRef": {
+    "id": "creative-production",
+    "version": "1.1.0",
+    "digest": "sha256:bfea68fbf04add39317a7981ce70c6df3b2272a11ebe3163de6e1a28e6322cc0"
+  },
+  "intentDigest": "sha256:2b5e2e711b313030cad84b104dda4c32bb8888ab4ef2a3c33d3fba571c4d23e8"
+}

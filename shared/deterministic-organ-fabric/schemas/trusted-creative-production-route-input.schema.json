@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.trusted-creative-production-route-input/v1",
+  "title": "AXM Trusted Creative Production Route Input v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["medium", "delivery", "accessibility"],
+  "properties": {
+    "medium": {"enum": ["visual", "audio"]},
+    "delivery": {"enum": ["web", "print", "live"]},
+    "accessibility": {
+      "type": "array",
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

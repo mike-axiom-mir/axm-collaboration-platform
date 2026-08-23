@@ -9,6 +9,7 @@ node tools/deterministic-organ-fabric/cli.js validate --intent <file>
 node tools/deterministic-organ-fabric/cli.js generate --intent <file> --output-parent <existing-dir> --archive-root <existing-dir>
 node tools/deterministic-organ-fabric/cli.js compare --run <generated-run-dir>
 node tools/deterministic-organ-fabric/cli.js plan-selected --brief <file>
+node tools/deterministic-organ-fabric/cli.js plan-selected-creative --brief <file>
 node tools/deterministic-organ-fabric/cli.js archive list|verify|revalidate --archive-root <dir>
 node tools/deterministic-organ-fabric/cli.js archive export|import --archive-root <dir> --pack <file>
 node tools/deterministic-organ-fabric/cli.js archive stash-export --archive-root <dir> --package-digest <sha256:...> --pack <new-file>
@@ -26,6 +27,8 @@ Software & Workshop v1.1 reads every declared affected surface through the bound
 The pure machine action `verification.route.plan` accepts an intact current candidate plus a typed change brief and emits `axm.verification-route-plan/v1` with an Evidence Desk prefill. It executes only the trusted in-memory declarative runtime; it never imports generated `organ.js`, runs checks, controls a browser, writes state, installs, registers, stages, promotes, changes CANON, or mutates the Foundation.
 
 The Hub, CLI `plan-selected`, and machine action `verification.route.plan-selected` use the admitted balanced organ in `selected-verification-route-organ.contract.json`. Each call rebuilds the exact intent, run, comparison, package, and selection digests before evaluating the definition in the trusted runtime. Output includes an Evidence Desk v2 prefill and exact Verification Spine mappings; all claims remain `UNKNOWN` until their native proof surfaces are actually used.
+
+The second admitted implementation is the balanced Creative Production route organ in `selected-creative-production-route-organ.contract.json`. The Hub, CLI `plan-selected-creative`, and machine action `creative.production.plan-selected` accept an explicit medium, delivery context, and accessibility tasks. They return ordered production steps, mechanical validators, and accessible fallbacks. They do not generate an asset, execute validators, perform human review, make a taste or quality claim, or write state.
 
 `stash-export` emits a content-bound `axm.organ-archive-stash-envelope/v1` containing the standalone `organ.js` source under an `organs/*-organ.js` suggested path. It remains a detached handoff and performs no write.
 

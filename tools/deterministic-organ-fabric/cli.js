@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const fabric = require('../../shared/deterministic-organ-fabric/index.js');
 const selectedRouteOrgan = require('../../shared/deterministic-organ-fabric/selected-verification-route-organ.js');
+const selectedCreativeOrgan = require('../../shared/deterministic-organ-fabric/selected-creative-production-route-organ.js');
 const archiveApi = require('../../shared/deterministic-organ-fabric/archive-store.js');
 const mirrorConnector = require('../../shared/deterministic-organ-fabric/mirror-archive-connector.js');
 const zipStore = require('../agent-tool-forge/zip-store.js');
@@ -54,6 +55,7 @@ function commandGenerate(args){
 }
 function commandCompare(args){const root=existingDirectory(args.run,'Generated run'),file=path.join(root,'generation-run.json');if(!fs.existsSync(file))fail('RUN_RECEIPT_MISSING','Run directory has no generation-run.json.');const run=readJson(file),comparison=fabric.compareCandidates(run);console.log(JSON.stringify(comparison,null,2));}
 function commandPlanSelected(args){const brief=readJson(existingFile(args.brief,'Change brief'));try{console.log(JSON.stringify(selectedRouteOrgan.plan(brief),null,2));}catch(error){fail(error.code||'SELECTED_VERIFICATION_ROUTE_REFUSED',error.message,error.details);}}
+function commandPlanSelectedCreative(args){const brief=readJson(existingFile(args.brief,'Creative Production brief'));try{console.log(JSON.stringify(selectedCreativeOrgan.plan(brief),null,2));}catch(error){fail(error.code||'SELECTED_CREATIVE_PRODUCTION_ROUTE_REFUSED',error.message,error.details);}}
 function commandArchive(args){
   const action=args._[1],root=existingDirectory(args['archive-root'],'Archive root'),archive=archiveApi.openArchive(root);
   if(action==='list')console.log(JSON.stringify(archive.list(),null,2));
@@ -76,8 +78,8 @@ function commandArchive(args){
   }
   else fail('ARCHIVE_ACTION_UNKNOWN','Expected archive list, verify, revalidate, export, import, stash-export, connection-plan, supersede, or connect-mirror.');
 }
-function usage(){return 'Deterministic Organ Fabric v1\n\nvalidate --intent <file>\ngenerate --intent <file> --output-parent <existing-dir> --archive-root <existing-dir>\ncompare --run <generated-run-dir>\nplan-selected --brief <file>\narchive list|verify|revalidate --archive-root <dir>\narchive export|import --archive-root <dir> --pack <file>\narchive stash-export --archive-root <dir> --package-digest <sha256:...> --pack <new-file>\narchive connection-plan --archive-root <dir> --package-digest <sha256:...>\narchive supersede --archive-root <dir> --prior-package-digest <sha256:...> --replacement-selection <file> [--selected-by <label>]\narchive connect-mirror --archive-root <dir> --package-digest <sha256:...> --mirror-root <dir> --mirror-archive-root <dir> --acknowledge '+fabric.ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT+'\n';}
-function main(argv){const args=parseArgs(argv),command=args._[0];if(!command||command==='help'||command==='--help'){console.log(usage());return;}if(command==='validate')return commandValidate(args);if(command==='generate')return commandGenerate(args);if(command==='compare')return commandCompare(args);if(command==='plan-selected')return commandPlanSelected(args);if(command==='archive')return commandArchive(args);fail('COMMAND_UNKNOWN','Unknown command: '+command);}
+function usage(){return 'Deterministic Organ Fabric v1\n\nvalidate --intent <file>\ngenerate --intent <file> --output-parent <existing-dir> --archive-root <existing-dir>\ncompare --run <generated-run-dir>\nplan-selected --brief <file>\nplan-selected-creative --brief <file>\narchive list|verify|revalidate --archive-root <dir>\narchive export|import --archive-root <dir> --pack <file>\narchive stash-export --archive-root <dir> --package-digest <sha256:...> --pack <new-file>\narchive connection-plan --archive-root <dir> --package-digest <sha256:...>\narchive supersede --archive-root <dir> --prior-package-digest <sha256:...> --replacement-selection <file> [--selected-by <label>]\narchive connect-mirror --archive-root <dir> --package-digest <sha256:...> --mirror-root <dir> --mirror-archive-root <dir> --acknowledge '+fabric.ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT+'\n';}
+function main(argv){const args=parseArgs(argv),command=args._[0];if(!command||command==='help'||command==='--help'){console.log(usage());return;}if(command==='validate')return commandValidate(args);if(command==='generate')return commandGenerate(args);if(command==='compare')return commandCompare(args);if(command==='plan-selected')return commandPlanSelected(args);if(command==='plan-selected-creative')return commandPlanSelectedCreative(args);if(command==='archive')return commandArchive(args);fail('COMMAND_UNKNOWN','Unknown command: '+command);}
 
 if(require.main===module){try{main(process.argv.slice(2));}catch(error){console.error(JSON.stringify(error.receipt||{schema:'axm.organ-cli-error/v1',ok:false,code:'UNEXPECTED_ERROR',message:error.message},null,2));process.exitCode=1;}}
 module.exports={main:main,parseArgs:parseArgs,materialize:materialize,safeFilePath:safeFilePath,isWithin:isWithin};
