@@ -5,7 +5,9 @@ const http = require('node:http');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const BrowserSession = require('../src/browser-session');
+const Digest = require('../src/digest');
 const LocalBrowserHost = require('../src/local-browser-host');
+const ShellPolicy = require('../src/shell-policy');
 
 const root = path.resolve(__dirname, '..');
 function local(name) { return path.join(root, 'fixtures', name); }
@@ -47,11 +49,22 @@ function assertIsolationHeaders(response) {
   });
 }
 
+function receiptDigest(receipt) {
+  const material = JSON.parse(JSON.stringify(receipt));
+  delete material.receiptDigest;
+  return Digest.canonicalDigest(material);
+}
+
 test('loopback host serves one hash-bound trusted shell over the shared session', async function () {
   const host = await LocalBrowserHost.createLocalBrowserHost(createSession(), { port: 0 });
   try {
+    const expectedPolicy = ShellPolicy.buildShellPolicy();
     assert.equal(host.receipt.schema, 'axm.web.local-browser-host-receipt/v1');
     assert.match(host.receipt.origin, /^http:\/\/127\.0\.0\.1:[0-9]+$/);
+    assert.equal(host.receipt.shellPolicySchema, expectedPolicy.schema);
+    assert.equal(host.receipt.shellPolicyDigest, expectedPolicy.policyDigest);
+    assert.equal(host.shellPolicy.policyDigest, expectedPolicy.policyDigest);
+    assert.equal(host.receipt.receiptDigest, receiptDigest(host.receipt));
     assert.equal(host.receipt.externalNetworkUsed, false);
     assert.equal(host.receipt.trustedShellScriptActive, true);
     assert.equal(host.receipt.pageScriptExecuted, false);
