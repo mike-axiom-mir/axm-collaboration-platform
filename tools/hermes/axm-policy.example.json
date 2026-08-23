@@ -1,5 +1,6 @@
 {
   "schema": "axm.hermes-policy/v1",
+  "posture": "research",
   "consent": {
     "enabled": false,
     "reason": "off by default"
@@ -8,6 +9,23 @@
     "hub_sandbox": true,
     "external_mode": false
   },
+  "provider_egress": {
+    "mode": "local_only",
+    "allowed_secret_env": [],
+    "note": "Credential/environment guard only; this is not network namespace isolation."
+  },
+  "research_tools": [
+    "web_search",
+    "web_extract",
+    "read_file",
+    "search_files",
+    "vision_analyze",
+    "skills_list",
+    "skill_view",
+    "session_search",
+    "clarify"
+  ],
+  "allowed_tools": [],
   "limits": {
     "max_tool_calls_per_session": 15,
     "max_files_read_per_session": 20,
@@ -45,7 +63,13 @@
   "receipts": {
     "enabled": true,
     "redact_arguments": true,
-    "redact_results": true
+    "redact_results": true,
+    "record_provider_metadata": true,
+    "record_session_outcome_metadata": true
+  },
+  "repair": {
+    "backup_before_managed_config_change": true,
+    "retain_config_backups": 5
   },
   "canon": {
     "hermes_memory_is_canon": false,
