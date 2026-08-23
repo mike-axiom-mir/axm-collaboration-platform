@@ -12,6 +12,7 @@ const PERMISSIONS_POLICY = 'camera=(), microphone=(), geolocation=(), display-ca
 const CONTROLLER_SOURCE = `(function () {
   'use strict';
   const byId = function (id) { return document.getElementById(id); };
+  const root = document.documentElement;
   const back = byId('back');
   const forward = byId('forward');
   const reload = byId('reload');
@@ -24,6 +25,15 @@ const CONTROLLER_SOURCE = `(function () {
   const cards = byId('cards');
   const history = byId('history-list');
   const status = byId('status');
+  const theme = byId('theme');
+  const density = byId('density');
+  const textScale = byId('text-scale');
+  const focusMode = byId('focus-mode');
+  const metadata = byId('metadata');
+  const filter = byId('filter');
+  const clearFilter = byId('clear-filter');
+  const resetView = byId('reset-view');
+  const visibleCount = byId('visible-count');
   let snapshot = null;
   let busy = false;
 
@@ -41,6 +51,34 @@ const CONTROLLER_SOURCE = `(function () {
   function setStatus(message, kind) {
     status.textContent = message;
     status.dataset.kind = kind || 'info';
+  }
+
+  function allowed(value, values, fallback) {
+    return values.includes(value) ? value : fallback;
+  }
+
+  function applyVisualPreferences() {
+    root.dataset.theme = allowed(theme.value, ['midnight', 'paper', 'contrast'], 'midnight');
+    root.dataset.density = allowed(density.value, ['comfortable', 'compact'], 'comfortable');
+    root.dataset.scale = allowed(textScale.value, ['small', 'normal', 'large'], 'normal');
+    root.dataset.focus = focusMode.checked ? 'reading' : 'full';
+    root.dataset.meta = metadata.checked ? 'show' : 'hide';
+  }
+
+  function applyFilter() {
+    const needle = String(filter.value || '').trim().toLowerCase();
+    let visible = 0;
+    let total = 0;
+    cards.querySelectorAll('.semantic-card').forEach(function (card) {
+      total += 1;
+      const match = !needle || String(card.dataset.searchText || '').includes(needle);
+      card.hidden = !match;
+      if (match) visible += 1;
+    });
+    map.querySelectorAll('li').forEach(function (item) {
+      item.hidden = Boolean(needle) && !String(item.dataset.searchText || '').includes(needle);
+    });
+    visibleCount.textContent = String(visible) + '/' + String(total) + ' visible';
   }
 
   async function requestAction(action) {
@@ -81,6 +119,7 @@ const CONTROLLER_SOURCE = `(function () {
     map.replaceChildren();
     page.entries.forEach(function (entry) {
       const item = element('li');
+      item.dataset.searchText = (entry.label + ' ' + entry.text + ' ' + entry.meta).toLowerCase();
       const button = element('button', 'map-button');
       button.type = 'button';
       button.dataset.entryRef = entry.entryId;
@@ -97,6 +136,7 @@ const CONTROLLER_SOURCE = `(function () {
       card.id = entry.entryId;
       card.tabIndex = -1;
       card.dataset.entryRef = entry.entryId;
+      card.dataset.searchText = (entry.label + ' ' + entry.text + ' ' + entry.meta).toLowerCase();
       const header = element('header');
       header.append(element('span', 'kind-label', entry.label), element('code', null, entry.entryId + (entry.nodeRef ? ' / ' + entry.nodeRef : '')));
       card.append(header, element('p', 'entry-text', entry.text), element('p', 'entry-meta', entry.meta));
@@ -153,6 +193,7 @@ const CONTROLLER_SOURCE = `(function () {
     renderMap(page);
     renderCards(page);
     renderHistory();
+    applyFilter();
     restoreView();
   }
 
@@ -170,6 +211,41 @@ const CONTROLLER_SOURCE = `(function () {
     if (button) requestAction({ type: 'activate', entryRef: button.dataset.entryRef });
   });
 
+  [theme, density, textScale, focusMode, metadata].forEach(function (control) {
+    control.addEventListener('change', applyVisualPreferences);
+  });
+  filter.addEventListener('input', applyFilter);
+  clearFilter.addEventListener('click', function () {
+    filter.value = '';
+    applyFilter();
+    filter.focus();
+  });
+  resetView.addEventListener('click', function () {
+    theme.value = 'midnight';
+    density.value = 'comfortable';
+    textScale.value = 'normal';
+    focusMode.checked = false;
+    metadata.checked = true;
+    filter.value = '';
+    applyVisualPreferences();
+    applyFilter();
+    setStatus('VIEW RESET \u00b7 shell-only preferences', 'ready');
+  });
+
+  document.addEventListener('keydown', function (event) {
+    const active = document.activeElement;
+    const typing = active && ['INPUT', 'SELECT', 'TEXTAREA'].includes(active.tagName);
+    if (event.key === '/' && !typing) {
+      event.preventDefault();
+      filter.focus();
+    }
+    if (event.key === 'Escape' && focusMode.checked && !typing) {
+      focusMode.checked = false;
+      applyVisualPreferences();
+    }
+  });
+
+  applyVisualPreferences();
   fetch('state', { cache: 'no-store', credentials: 'omit' })
     .then(function (response) { if (!response.ok) throw new Error('state request failed: ' + response.status); return response.json(); })
     .then(function (body) { snapshot = body; render(); setStatus('READY \u00b7 local bundle only', 'ready'); })
@@ -195,18 +271,29 @@ function contentSecurityPolicy() {
 
 function renderShellHtml() {
   const policy = contentSecurityPolicy();
-  return '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' +
+  return '<!doctype html>\n<html lang="en" data-theme="midnight" data-density="comfortable" data-scale="normal" data-focus="full" data-meta="show">\n<head>\n<meta charset="utf-8">\n' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">\n' +
     '<meta http-equiv="Content-Security-Policy" content="' + escapeHtml(policy) + '">\n' +
     '<title>AXM Local Browser Session \u2014 EXPERIMENTAL</title>\n' +
     '<style>\n' +
-    ':root{color-scheme:dark;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#030711;color:#f4f7ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#122541 0,#030711 54rem);min-height:100vh}button,input{font:inherit}.shell{width:min(1500px,calc(100% - 24px));margin:12px auto 44px}.boundary{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border:1px solid #294264;border-radius:12px;background:#0e1930}.badge{padding:5px 9px;border:1px solid #347266;border-radius:999px;color:#72e1c2;font-size:11px;font-weight:800}.held{border-color:#7b6030;color:#f3bd63}.boundary p{flex:1 1 360px;margin:0;color:#9fb1cc;font-size:12px;line-height:1.45}.toolbar{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:auto minmax(180px,1fr) auto;gap:8px;margin:10px 0;padding:10px;border:1px solid #294264;border-radius:12px;background:#07101ff0;backdrop-filter:blur(12px)}.nav-buttons{display:flex;gap:6px}.toolbar button,.open-link,.map-button{border:1px solid #365477;border-radius:8px;background:#142642;color:#f4f7ff;cursor:pointer}.toolbar button{min-width:42px;padding:9px 11px}.toolbar button:hover:not(:disabled),.toolbar button:focus-visible,.open-link:hover:not(:disabled),.open-link:focus-visible,.map-button:hover,.map-button:focus-visible{border-color:#72e1c2;outline:none}.toolbar button:disabled,.open-link:disabled{cursor:not-allowed;opacity:.42}.address-wrap{display:flex;min-width:0}.address-wrap input{width:100%;min-width:0;padding:9px 12px;border:1px solid #365477;border-radius:8px 0 0 8px;background:#030711;color:#f4f7ff}.address-wrap button{border-radius:0 8px 8px 0}.status{align-self:center;max-width:260px;color:#9fb1cc;font-size:11px;overflow-wrap:anywhere}.status[data-kind="fail"],.status[data-kind="held"]{color:#ffab7a}.hero{padding:22px;border:1px solid #294264;border-radius:16px;background:#0e1930}.eyebrow{margin:0 0 7px;color:#72e1c2;font-size:11px;font-weight:800;letter-spacing:.08em}.hero h1{margin:0;font-size:clamp(24px,4vw,40px);line-height:1.1}.locator{margin:10px 0 0;color:#9fb1cc;overflow-wrap:anywhere}.summary{display:flex;flex-wrap:wrap;gap:7px;margin:15px 0 0;padding:0;list-style:none}.summary li{display:flex;gap:6px;align-items:baseline;padding:6px 9px;border:1px solid #294264;border-radius:8px;background:#111f39}.summary strong{color:#72e1c2}.summary span{color:#9fb1cc;font-size:10px}.grid{display:grid;grid-template-columns:minmax(230px,290px) minmax(0,1fr) minmax(210px,260px);gap:12px;margin-top:12px;align-items:start}.panel{border:1px solid #294264;border-radius:14px;background:#0e1930}.side{position:sticky;top:76px;max-height:calc(100vh - 88px);overflow:auto;padding:15px}.side h2,.content h2{margin:0;font-size:15px}.side-note{margin:6px 0 12px;color:#9fb1cc;font-size:11px;line-height:1.4}.document-map,.history-list{display:grid;gap:6px;margin:0;padding:0;list-style:none}.map-button{display:grid;width:100%;gap:3px;padding:9px;text-align:left}.map-kind{color:#72e1c2;font-size:9px;font-weight:800;text-transform:uppercase}.map-text{font-size:11px;line-height:1.3}.content{padding:15px}.cards{display:grid;gap:9px;margin-top:12px}.semantic-card{--accent:#79b8ff;scroll-margin-top:78px;padding:15px 17px;border:1px solid #294264;border-left:5px solid var(--accent);border-radius:11px;background:#142642}.semantic-card:focus{border-color:#72e1c2;background:#18304e;outline:2px solid #72e1c255;outline-offset:2px}.semantic-card header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:7px;padding-bottom:8px;border-bottom:1px solid #294264}.kind-label{color:var(--accent);font-size:10px;font-weight:800;text-transform:uppercase}.semantic-card code{color:#9fb1cc;font-size:10px}.entry-text{margin:11px 0 0;font-size:14px;line-height:1.5;overflow-wrap:anywhere}.entry-meta{margin:7px 0 0;color:#9fb1cc;font-size:11px;line-height:1.45;overflow-wrap:anywhere}.kind-heading{--accent:#72e1c2}.kind-landmark{--accent:#69d4ff}.kind-link{--accent:#b5a2ff}.kind-media{--accent:#ff9dc8}.kind-list{--accent:#8bd98b}.kind-table{--accent:#f5cf72}.kind-form{--accent:#ffab7a}.link-controls{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center;margin-top:11px}.resolution{font-size:10px;color:#9fb1cc}.resolution.available,.resolution.same_document{color:#72e1c2}.open-link{padding:7px 10px;font-size:11px}.history-list li{display:grid;gap:3px;padding:8px;border-left:3px solid #294264;color:#9fb1cc;font-size:10px;overflow-wrap:anywhere}.history-list li.current-history{border-color:#72e1c2;background:#142642;color:#f4f7ff}.receipt{display:grid;gap:8px;margin-top:14px}.receipt div{display:grid;gap:2px}.receipt span{color:#9fb1cc;font-size:9px;text-transform:uppercase}.receipt code{font-size:9px;word-break:break-all}.kind-paragraph{--accent:#79b8ff}@media(max-width:1050px){.grid{grid-template-columns:250px minmax(0,1fr)}.history-panel{position:static;grid-column:1/-1;max-height:none}}@media(max-width:760px){.shell{width:min(100% - 10px,1500px);margin-top:5px}.toolbar{grid-template-columns:auto 1fr;top:0}.status{grid-column:1/-1;max-width:none}.grid{grid-template-columns:1fr}.side{position:static;max-height:none}.history-panel{grid-column:auto}.hero{padding:17px}.content{padding:10px}.semantic-card{padding:13px}.nav-buttons button{min-width:38px;padding:8px}.address-wrap input{padding:8px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}\n' +
+    ':root{color-scheme:dark;--bg:#050812;--glow:#17345d;--surface:#0d1728;--surface-strong:#09111f;--panel:#101e32;--card:#142842;--card-focus:#193856;--control:#142842;--input:#070d18;--fg:#f4f7ff;--muted:#9fb1cc;--border:#2b4568;--accent:#72e1c2;--accent2:#6fc5ff;--warn:#f3bd63;--danger:#ffab7a;--shadow:0 20px 55px rgba(0,0,0,.28);--content-size:15px;--card-pad:17px;--space:12px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--fg)}' +
+    'html[data-theme="paper"]{color-scheme:light;--bg:#eef2f7;--glow:#c7ddf7;--surface:#ffffff;--surface-strong:#f8fafc;--panel:#f8fafc;--card:#ffffff;--card-focus:#effaf7;--control:#f7fafc;--input:#ffffff;--fg:#172033;--muted:#64748b;--border:#c9d4e3;--accent:#006f62;--accent2:#005ea8;--warn:#875100;--danger:#a43b17;--shadow:0 18px 45px rgba(39,52,78,.12)}' +
+    'html[data-theme="contrast"]{color-scheme:dark;--bg:#000;--glow:#001b1a;--surface:#050505;--surface-strong:#000;--panel:#080808;--card:#0b0b0b;--card-focus:#101a18;--control:#111;--input:#000;--fg:#fff;--muted:#e2e2e2;--border:#fff;--accent:#00ffd5;--accent2:#53c8ff;--warn:#ffd400;--danger:#ff8a5b;--shadow:none}' +
+    'html[data-density="compact"]{--card-pad:11px;--space:7px}html[data-scale="small"]{--content-size:13px}html[data-scale="large"]{--content-size:18px}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,var(--glow) 0,var(--bg) 52rem);color:var(--fg);transition:background .18s,color .18s}button,input,select{font:inherit;color:inherit}button,select,input{border:1px solid var(--border);background:var(--control)}button{cursor:pointer}.shell{width:min(1540px,calc(100% - 24px));margin:12px auto 48px}.boundary,.toolbar,.viewbar,.hero,.panel{border:1px solid var(--border);box-shadow:var(--shadow)}' +
+    '.boundary{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-radius:14px;background:var(--surface)}.badge{padding:5px 9px;border:1px solid var(--accent);border-radius:999px;color:var(--accent);font:800 10px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.04em}.badge.held{border-color:var(--warn);color:var(--warn)}.boundary p{flex:1 1 360px;margin:0;color:var(--muted);font-size:12px;line-height:1.5}' +
+    '.toolbar{position:sticky;top:0;z-index:8;display:grid;grid-template-columns:auto minmax(220px,1fr) minmax(180px,auto);gap:9px;margin:10px 0;padding:9px;border-radius:14px;background:var(--surface-strong)}.nav-buttons{display:flex;gap:6px}.toolbar button,.open-link,.map-button,.mini-button{border-radius:9px;background:var(--control)}.toolbar button{min-width:42px;padding:9px 11px}.toolbar button:hover:not(:disabled),.toolbar button:focus-visible,.open-link:hover:not(:disabled),.open-link:focus-visible,.map-button:hover,.map-button:focus-visible,.mini-button:hover,.mini-button:focus-visible,select:focus-visible,input:focus-visible{border-color:var(--accent);outline:2px solid var(--accent);outline-offset:1px}.toolbar button:disabled,.open-link:disabled{cursor:not-allowed;opacity:.42}.address-wrap{display:flex;min-width:0}.address-wrap input{width:100%;min-width:0;padding:9px 12px;border-radius:9px 0 0 9px;background:var(--input)}.address-wrap button{border-radius:0 9px 9px 0}.status{align-self:center;max-width:320px;color:var(--muted);font:700 10px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.status[data-kind="fail"],.status[data-kind="held"]{color:var(--danger)}.status[data-kind="ready"],.status[data-kind="applied"]{color:var(--accent)}' +
+    '.viewbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px;padding:9px;border-radius:14px;background:var(--surface)}.view-label{margin:0 5px;color:var(--muted);font:800 10px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;text-transform:uppercase;letter-spacing:.06em}.control{display:flex;gap:6px;align-items:center;padding:5px 7px;border:1px solid var(--border);border-radius:10px;background:var(--surface-strong)}.control span{color:var(--muted);font-size:10px}.control select{padding:5px 24px 5px 7px;border-radius:7px;background:var(--input);font-size:11px}.toggle{display:flex;gap:6px;align-items:center;padding:7px 9px;border:1px solid var(--border);border-radius:10px;background:var(--surface-strong);font-size:11px;cursor:pointer}.toggle input{accent-color:var(--accent)}.filter-wrap{display:flex;flex:1 1 260px;min-width:220px}.filter-wrap input{width:100%;min-width:0;padding:7px 9px;border-radius:8px 0 0 8px;background:var(--input)}.filter-wrap button{border-radius:0 8px 8px 0}.mini-button{padding:7px 9px;font-size:11px}.view-state{margin-left:auto;color:var(--muted);font:700 10px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}' +
+    '.hero{position:relative;overflow:hidden;padding:24px;border-radius:18px;background:linear-gradient(135deg,var(--surface),var(--panel))}.hero:after{content:"";position:absolute;right:-90px;top:-110px;width:260px;height:260px;border:1px solid var(--border);border-radius:50%;opacity:.28;pointer-events:none}.eyebrow{position:relative;z-index:1;margin:0 0 8px;color:var(--accent);font:800 11px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.08em}.hero h1{position:relative;z-index:1;margin:0;max-width:1100px;font-size:clamp(27px,4vw,46px);line-height:1.08;letter-spacing:-.025em}.locator{position:relative;z-index:1;margin:11px 0 0;color:var(--muted);font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.summary{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 0;padding:0;list-style:none}.summary li{display:flex;gap:6px;align-items:baseline;padding:7px 10px;border:1px solid var(--border);border-radius:10px;background:var(--surface-strong)}.summary strong{color:var(--accent);font-size:14px}.summary span{color:var(--muted);font-size:10px}' +
+    '.grid{display:grid;grid-template-columns:minmax(230px,290px) minmax(0,1fr) minmax(220px,270px);gap:var(--space);margin-top:var(--space);align-items:start}.panel{border-radius:16px;background:var(--surface)}.side{position:sticky;top:78px;max-height:calc(100vh - 90px);overflow:auto;padding:14px}.side h2,.content h2{margin:0;font-size:14px;letter-spacing:-.01em}.side-note{margin:6px 0 12px;color:var(--muted);font-size:11px;line-height:1.45}.document-map,.history-list{display:grid;gap:6px;margin:0;padding:0;list-style:none}.map-button{display:grid;width:100%;gap:3px;padding:9px;text-align:left}.map-kind{color:var(--accent);font:800 9px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;text-transform:uppercase}.map-text{font-size:11px;line-height:1.35}.content{padding:15px}.content-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.content-top .badge{white-space:nowrap}.cards{display:grid;gap:var(--space);margin-top:12px}.semantic-card{--entry-accent:var(--accent2);scroll-margin-top:82px;padding:var(--card-pad);border:1px solid var(--border);border-left:5px solid var(--entry-accent);border-radius:13px;background:var(--card);box-shadow:0 10px 28px rgba(0,0,0,.08);transition:transform .12s,border-color .12s,background .12s}.semantic-card:hover{transform:translateY(-1px)}.semantic-card:focus{border-color:var(--accent);background:var(--card-focus);outline:2px solid var(--accent);outline-offset:2px}.semantic-card header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:7px;padding-bottom:8px;border-bottom:1px solid var(--border)}.kind-label{color:var(--entry-accent);font:800 10px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;text-transform:uppercase;letter-spacing:.04em}.semantic-card code{color:var(--muted);font-size:10px}.entry-text{margin:11px 0 0;font-size:var(--content-size);font-weight:520;line-height:1.58;overflow-wrap:anywhere}.entry-meta{margin:7px 0 0;color:var(--muted);font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}.kind-heading{--entry-accent:var(--accent)}.kind-landmark{--entry-accent:#69d4ff}.kind-link{--entry-accent:#b5a2ff}.kind-media{--entry-accent:#ff9dc8}.kind-list{--entry-accent:#8bd98b}.kind-table{--entry-accent:#f5cf72}.kind-form{--entry-accent:#ffab7a}.kind-paragraph{--entry-accent:var(--accent2)}.link-controls{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center;margin-top:11px}.resolution{font:800 10px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted)}.resolution.available,.resolution.same_document{color:var(--accent)}.open-link{padding:7px 10px;font-size:11px}.history-list li{display:grid;gap:3px;padding:8px;border-left:3px solid var(--border);color:var(--muted);font-size:10px;overflow-wrap:anywhere}.history-list li.current-history{border-color:var(--accent);background:var(--card);color:var(--fg)}.receipt{display:grid;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}.receipt div{display:grid;gap:2px}.receipt span{color:var(--muted);font:800 9px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;text-transform:uppercase}.receipt code{font:9px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}' +
+    'html[data-meta="hide"] .entry-meta,html[data-meta="hide"] .semantic-card code{display:none}html[data-focus="reading"] .map-panel,html[data-focus="reading"] .history-panel{display:none}html[data-focus="reading"] .grid{grid-template-columns:minmax(0,980px);justify-content:center}html[data-focus="reading"] .content{padding:clamp(14px,2vw,26px)}html[data-focus="reading"] .semantic-card{border-left-width:4px}html[data-density="compact"] .semantic-card header{padding-bottom:5px}html[data-density="compact"] .entry-text{margin-top:7px;line-height:1.45}html[data-density="compact"] .entry-meta{margin-top:4px}' +
+    '@media(max-width:1080px){.grid{grid-template-columns:250px minmax(0,1fr)}.history-panel{position:static;grid-column:1/-1;max-height:none}.toolbar{grid-template-columns:auto minmax(180px,1fr)}.status{grid-column:1/-1;max-width:none}.view-state{margin-left:0}}@media(max-width:760px){.shell{width:min(100% - 10px,1540px);margin-top:5px}.toolbar{grid-template-columns:auto 1fr}.grid{grid-template-columns:1fr}.side{position:static;max-height:none}.history-panel{grid-column:auto}.hero{padding:18px}.content{padding:10px}.semantic-card{padding:13px}.nav-buttons button{min-width:38px;padding:8px}.address-wrap input{padding:8px}.viewbar{align-items:stretch}.control,.toggle{flex:1 1 140px}.filter-wrap{flex-basis:100%;min-width:0}html[data-focus="reading"] .grid{display:block}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}.semantic-card:hover{transform:none}}\n' +
     '</style>\n</head>\n<body>\n<main class="shell">\n' +
-    '<section class="boundary" aria-label="Experimental boundary"><span class="badge">EXPERIMENTAL</span><span class="badge">LOCAL SESSION</span><span class="badge">SHARED ENGINE</span><span class="badge held">EXTERNAL NETWORK HELD</span><span class="badge held">PAGE CODE INERT</span><p>The trusted AXM shell may navigate only among explicitly allowed local pages. It reparses bound source on reload; unlisted files, HTTP(S), forms, and page scripts remain unavailable.</p></section>\n' +
+    '<section class="boundary" aria-label="Experimental boundary"><span class="badge">EXPERIMENTAL</span><span class="badge">LOCAL SESSION</span><span class="badge">SHARED ENGINE</span><span class="badge held">EXTERNAL NETWORK HELD</span><span class="badge held">PAGE CODE INERT</span><p>The trusted AXM shell may navigate only among explicitly allowed local pages. Visual controls affect this shell only; they do not grant page, file, script, or network authority.</p></section>\n' +
     '<nav class="toolbar" aria-label="Local browser controls"><div class="nav-buttons"><button id="back" type="button" aria-label="Back">\u2190</button><button id="forward" type="button" aria-label="Forward">\u2192</button><button id="reload" type="button" aria-label="Reload">\u21bb</button></div><div class="address-wrap"><input id="address" aria-label="Bundled local address" autocomplete="off" spellcheck="false"><button id="go" type="button">Go</button></div><output id="status" class="status" aria-live="polite">CONNECTING\u2026</output></nav>\n' +
+    '<section class="viewbar" aria-label="Visual options"><p class="view-label">View</p><label class="control"><span>Theme</span><select id="theme" aria-label="Theme"><option value="midnight">Midnight</option><option value="paper">Paper</option><option value="contrast">Contrast</option></select></label><label class="control"><span>Density</span><select id="density" aria-label="Density"><option value="comfortable">Comfort</option><option value="compact">Compact</option></select></label><label class="control"><span>Text</span><select id="text-scale" aria-label="Text size"><option value="small">Small</option><option value="normal" selected>Normal</option><option value="large">Large</option></select></label><label class="toggle"><input id="focus-mode" type="checkbox">Focus reading</label><label class="toggle"><input id="metadata" type="checkbox" checked>Metadata</label><div class="filter-wrap"><input id="filter" type="search" aria-label="Filter semantic entries" placeholder="Filter this page ( / )" autocomplete="off"><button id="clear-filter" class="mini-button" type="button">Clear</button></div><button id="reset-view" class="mini-button" type="button">Reset view</button><span id="visible-count" class="view-state" aria-live="polite">0/0 visible</span></section>\n' +
     '<header class="hero"><p class="eyebrow">AXM LOCAL BROWSER / HUMAN SHELL + HEADLESS SESSION</p><h1 id="page-title">Loading local page\u2026</h1><p id="page-locator" class="locator"></p><ul id="summary" class="summary" aria-label="Extracted structure counts"></ul></header>\n' +
-    '<div class="grid"><nav class="panel side" aria-label="Current document map"><h2>Document map</h2><p class="side-note">Focus and scroll restoration use the same stable entry references exposed to headless callers.</p><ol id="document-map-list" class="document-map"></ol></nav>\n' +
-    '<section class="panel content" aria-labelledby="content-heading"><h2 id="content-heading">Semantic page</h2><div id="cards" class="cards"></div></section>\n' +
+    '<div class="grid"><nav class="panel side map-panel" aria-label="Current document map"><h2>Document map</h2><p class="side-note">Focus and scroll restoration use the same stable entry references exposed to headless callers.</p><ol id="document-map-list" class="document-map"></ol></nav>\n' +
+    '<section class="panel content" aria-labelledby="content-heading"><header class="content-top"><h2 id="content-heading">Semantic page</h2><span class="badge">LOCAL VIEW</span></header><div id="cards" class="cards"></div></section>\n' +
     '<aside class="panel side history-panel" aria-label="Session history"><h2>History</h2><p class="side-note">Bounded local navigation only.</p><ol id="history-list" class="history-list"></ol><div class="receipt"><div><span>Session</span><code id="session-id"></code></div><div><span>Bundle</span><code id="bundle-digest"></code></div><div><span>Source</span><code id="source-digest"></code></div><div><span>Reloads</span><code id="reload-count"></code></div></div></aside></div>\n' +
     '</main>\n<script>' + CONTROLLER_SOURCE + '</script>\n</body>\n</html>\n';
 }
@@ -365,8 +452,8 @@ async function createLocalBrowserHost(session, options) {
   server.keepAliveTimeout = 1000;
   server.maxHeadersCount = 32;
   await listen(server, port);
-  const address = server.address();
-  expectedOrigin = 'http://127.0.0.1:' + address.port;
+  const addressInfo = server.address();
+  expectedOrigin = 'http://127.0.0.1:' + addressInfo.port;
   const snapshot = session.snapshot();
   const receiptMaterial = {
     schema: HOST_RECEIPT_SCHEMA,
