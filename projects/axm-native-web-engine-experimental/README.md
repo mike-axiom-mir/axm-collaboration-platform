@@ -61,8 +61,9 @@ node cli.js browser-snapshot fixtures/simple.html --out ./simple.browser.html
 ```
 
 Writes require an explicit `--out` file. Existing outputs are refused unless
-the caller adds `--force`; input-path overwrite and symbolic-link outputs are
-refused. Each successful write prints `axm.web.artifact-receipt/v1` with byte,
+the caller adds `--force`; input-path overwrite and final-component symbolic
+links, including dangling links, are refused. Each successful write prints
+`axm.web.artifact-receipt/v1` with byte,
 SHA-256, source, Page Model, layout, Display List, and ledger bindings.
 
 Committed deterministic examples are in `examples/`. The HTML snapshot has a

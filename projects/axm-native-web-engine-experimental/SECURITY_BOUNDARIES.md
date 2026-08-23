@@ -24,8 +24,8 @@ separates data preservation from execution authority.
 - The HTML snapshot wraps that SVG with a deny-by-default Content Security
   Policy and no active page controls.
 - Artifact commands require explicit output paths, refuse source-path overwrite,
-  refuse symbolic-link outputs, and require `--force` for existing regular
-  files.
+  refuse final-component symbolic-link outputs (including dangling links), and
+  require `--force` for existing regular files.
 
 ## Not implemented
 

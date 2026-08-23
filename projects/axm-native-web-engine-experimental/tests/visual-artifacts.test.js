@@ -9,6 +9,7 @@ const assert = require('node:assert/strict');
 const Engine = require('../src/engine');
 const Svg = require('../src/svg-renderer');
 const BrowserSnapshot = require('../src/browser-snapshot');
+const Cli = require('../cli');
 
 const root = path.resolve(__dirname, '..');
 const cli = path.join(root, 'cli.js');
@@ -85,4 +86,38 @@ test('CLI refuses missing output and source-path overwrite', function () {
   const overlap = run(['render-svg', 'fixtures/simple.html', '--out', 'fixtures/simple.html', '--force']);
   assert.equal(overlap.status, 2);
   assert.equal(JSON.parse(overlap.stderr).code, 'OUTPUT_OVERLAPS_INPUT');
+});
+
+test('artifact writes refuse a dangling final-component symlink', function () {
+  const outputPath = path.resolve(root, 'synthetic-dangling-output.svg');
+  const originalLstatSync = fs.lstatSync;
+  const originalWriteFileSync = fs.writeFileSync;
+  let writeAttempted = false;
+  fs.lstatSync = function (candidate) {
+    if (path.resolve(candidate) === outputPath) {
+      return {
+        isSymbolicLink: function () { return true; },
+        isDirectory: function () { return false; }
+      };
+    }
+    return originalLstatSync.apply(fs, arguments);
+  };
+  fs.writeFileSync = function () {
+    writeAttempted = true;
+    return originalWriteFileSync.apply(fs, arguments);
+  };
+  try {
+    assert.throws(function () {
+      Cli.writeArtifact(
+        { command: 'render-svg', out: outputPath, force: false },
+        { requestedUrl: 'stdin:' },
+        '<svg/>',
+        {}
+      );
+    }, function (error) { return error.code === 'OUTPUT_SYMLINK_HELD'; });
+    assert.equal(writeAttempted, false);
+  } finally {
+    fs.lstatSync = originalLstatSync;
+    fs.writeFileSync = originalWriteFileSync;
+  }
 });

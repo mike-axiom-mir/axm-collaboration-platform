@@ -136,7 +136,7 @@ function buildDocument(tokenStream, options) {
         reason: support.reason
       });
       if (!node.selfClosing) {
-        if (stack.length >= maxNesting) {
+        if (stack.length > maxNesting) {
           throw new Source.AxmLimitError('TREE_NESTING_LIMIT', 'document exceeds configured nesting limit', {
             maxNesting,
             tagName: token.name,

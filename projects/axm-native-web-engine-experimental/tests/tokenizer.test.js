@@ -25,6 +25,17 @@ test('script content is raw text and is never tokenized as executable markup', f
   assert.equal(result.tokens.filter(function (token) { return token.type === 'startTag' && token.name === 'p'; }).length, 1);
 });
 
+test('raw-text close matching keeps Unicode offsets and requires a tag-name boundary', function () {
+  const html = '<script>İ</script-not-a-close><p>still raw</p></ScRiPt><p>safe</p>';
+  const result = Tokenizer.tokenize(html, { sourceDigest: 'f'.repeat(64) });
+  const scriptText = result.tokens.find(function (token) { return token.rawTextContext === 'script'; });
+  assert.ok(scriptText);
+  assert.equal(scriptText.data, 'İ</script-not-a-close><p>still raw</p>');
+  assert.equal(scriptText.sourceSpan.end, html.indexOf('</ScRiPt>'));
+  assert.equal(result.tokens.filter(function (token) { return token.type === 'endTag' && token.name === 'script'; }).length, 1);
+  assert.equal(result.tokens.filter(function (token) { return token.type === 'startTag' && token.name === 'p'; }).length, 1);
+});
+
 test('duplicate attributes are visible and the first value is retained', function () {
   const result = Tokenizer.tokenize('<p a="first" a="second">x</p>', { sourceDigest: 'c'.repeat(64) });
   assert.equal(result.tokens[0].attributes.length, 1);

@@ -57,6 +57,13 @@ function decodeEntities(text, warnings, offset) {
   });
 }
 
+function findRawTextClose(source, tagName, fromIndex) {
+  const pattern = new RegExp('</' + tagName + '(?=[\\t\\n\\f\\r />])', 'ig');
+  pattern.lastIndex = fromIndex;
+  const match = pattern.exec(source);
+  return match ? match.index : -1;
+}
+
 function tokenize(input, options) {
   options = options || {};
   const source = String(input);
@@ -85,8 +92,7 @@ function tokenize(input, options) {
   let rawTextTag = null;
   while (i < source.length) {
     if (rawTextTag) {
-      const lower = source.toLowerCase();
-      const closeStart = lower.indexOf('</' + rawTextTag, i);
+      const closeStart = findRawTextClose(source, rawTextTag, i);
       const end = closeStart < 0 ? source.length : closeStart;
       if (end > i) {
         const raw = source.slice(i, end);
@@ -276,5 +282,6 @@ module.exports = {
   RAW_TEXT_ELEMENTS,
   NAMED_ENTITIES,
   decodeEntities,
+  findRawTextClose,
   tokenize
 };

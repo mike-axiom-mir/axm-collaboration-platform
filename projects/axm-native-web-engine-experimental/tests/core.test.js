@@ -58,3 +58,12 @@ test('invalid UTF-8 and configured source limits fail visibly', function () {
     Engine.processBytes(Buffer.from('<div><div><div>x</div></div></div>'), { requestedUrl: 'deep.html', maxNesting: 2 });
   }, function (error) { return error.code === 'TREE_NESTING_LIMIT'; });
 });
+
+test('maxNesting counts open elements without counting the document root', function () {
+  assert.doesNotThrow(function () {
+    Engine.processBytes(Buffer.from('<div>x</div>'), { requestedUrl: 'one-level.html', maxNesting: 1 });
+  });
+  assert.throws(function () {
+    Engine.processBytes(Buffer.from('<div><span>x</span></div>'), { requestedUrl: 'two-level.html', maxNesting: 1 });
+  }, function (error) { return error.code === 'TREE_NESTING_LIMIT'; });
+});

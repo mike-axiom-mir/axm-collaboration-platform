@@ -115,8 +115,13 @@ function writeArtifact(args, input, content, bundle) {
   if (inputPath && inputPath === outputPath) {
     throw Object.assign(new Error('output path must not overwrite the input source'), { code: 'OUTPUT_OVERLAPS_INPUT', locator: args.out });
   }
-  if (fs.existsSync(outputPath)) {
-    const stat = fs.lstatSync(outputPath);
+  let stat = null;
+  try {
+    stat = fs.lstatSync(outputPath);
+  } catch (error) {
+    if (!error || error.code !== 'ENOENT') throw error;
+  }
+  if (stat) {
     if (stat.isSymbolicLink()) throw Object.assign(new Error('refusing to write through a symbolic link'), { code: 'OUTPUT_SYMLINK_HELD', locator: args.out });
     if (stat.isDirectory()) throw Object.assign(new Error('output path is a directory'), { code: 'INVALID_ARGUMENT', locator: args.out });
     if (!args.force) throw Object.assign(new Error('output already exists; pass --force to replace it explicitly'), { code: 'OUTPUT_EXISTS', locator: args.out });

@@ -28,6 +28,11 @@ browser behavior:
   goldens, two committed deterministic examples, structure/visual tests, and a
   dedicated Structure View contract.
 - Added explicit output overwrite, source-overlap, and symbolic-link refusals.
+- Added a project-scoped LF checkout contract so byte-bound fixtures, goldens,
+  examples, and the source manifest verify identically on Windows and POSIX.
+- Hardened raw-text closing against Unicode offset drift and false tag-prefix
+  matches, corrected the open-element nesting bound, and covered dangling
+  final-component symbolic links.
 - Added no Foundation, Hub, registry, server, launcher, existing module, public
   discovery, network, local intake, installation, promotion, or canon change.
 
@@ -35,12 +40,12 @@ browser behavior:
 
 | Check | Verdict | Evidence ceiling |
 |---|---|---|
-| `node --test tests/*.test.js` | PASS — 27/27 | Focused deterministic fixture behavior only. |
+| `node --test tests/*.test.js` | PASS — 31/31 | Focused deterministic fixture behavior only. |
 | `node scripts/verify-schemas.js` | PASS — 9 schema documents parsed; local references and representative identities checked | Not full JSON Schema conformance. |
 | `node scripts/build-examples.js --verify` | PASS — 2/2 deterministic examples | Exact generator output only. |
 | `node scripts/build-source-manifest.js --verify` | PASS after final regeneration | Package file-byte integrity only; manifest excludes itself and ZIP outputs. |
 | JavaScript syntax check over every `*.js` file | PASS | Syntax only, not runtime coverage. |
-| `npm run verify` convenience wrapper | BLOCKED before execution by the working-chat host's network classifier | Its four exact offline Node commands passed separately; no network result was substituted. |
+| `npm run verify` convenience wrapper | PASS | Runs the focused tests, schema identities, deterministic examples, and source manifest; no network route is used. |
 | Wide static visual inspection | PASS — committed simple SVG rasterized at 1120×1138; hierarchy, seven cards, and boundary labels visible without clipping | One still image; no motion or click claim. |
 | Narrow adversarial static inspection | PASS — adversarial SVG rasterized at 640×906; script-like text, unsafe-looking URL, remote media, and form stayed visibly inert without clipping | One still image; no arbitrary-page or host-pixel claim. |
 | Network URL refusal | PASS | Typed `NETWORK_HELD`; no request ran. |
