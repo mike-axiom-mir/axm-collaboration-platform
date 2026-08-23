@@ -23,8 +23,10 @@ function isLoopbackUrl(value) {
     return ['http:', 'https:'].includes(parsed.protocol) && LOOPBACK_HOSTS.has(parsed.hostname.toLowerCase());
   } catch (_) { return false; }
 }
-function integerInRange(value, min, max) {
-  return Number.isInteger(value) && value >= min && value <= max;
+function integerInRange(value, min, max) { return Number.isInteger(value) && value >= min && value <= max; }
+function validateBooleanObject(value, name, keys, errors) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) { errors.push(name + ' must be an object'); return; }
+  for (const key of keys) if (typeof value[key] !== 'boolean') errors.push(`${name}.${key} must be boolean`);
 }
 function validatePolicy(policy) {
   const errors = [];
@@ -37,6 +39,10 @@ function validatePolicy(policy) {
   if (policy && policy.provider_egress && policy.provider_egress.allowed_secret_env !== undefined && !Array.isArray(policy.provider_egress.allowed_secret_env)) errors.push('provider_egress.allowed_secret_env must be an array');
   if (policy && policy.allowed_tools !== undefined && !Array.isArray(policy.allowed_tools)) errors.push('allowed_tools must be an array');
   if (policy && policy.research_tools !== undefined && !Array.isArray(policy.research_tools)) errors.push('research_tools must be an array');
+
+  validateBooleanObject(policy && policy.learning, 'learning', [
+    'memory_enabled', 'user_profile_enabled', 'memory_write_approval', 'skill_write_approval', 'background_review_enabled'
+  ], errors);
 
   const limits = policy && policy.limits;
   if (!limits || typeof limits !== 'object' || Array.isArray(limits)) errors.push('limits must be an object');
