@@ -110,6 +110,28 @@ and run:
 node shared/code-capability-fabric/selftest-code-recipe-discovery-v1.js
 ```
 
+## Consent-scoped recipe application planning
+
+The additive v1.2 `TEST` adapter binds one exact blueprint, eligible discovery
+evidence, a requester-specified `REFERENCE_ONLY` selection, explicit
+recipe-to-step mappings, four-root evidence, and grounded consent scope. It
+emits an inert independent-native-implementation outline and an all-`NOT_RUN`,
+all-`UNKNOWN` acceptance plan.
+
+The first fixture maps Foundry `map` and `filter` metadata onto two declared
+steps of a small game-rule pure function. It does not copy or apply snippets,
+infer semantic fitness, authenticate the requester, generate code, write a
+candidate, execute tests, inspect a target workspace, install, integrate,
+promote, or change `CANON`. Its next gate is exact human authentication followed
+by a new detached-candidate request.
+
+See [README-code-recipe-application-planner-v1.md](README-code-recipe-application-planner-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-code-recipe-application-planner-v1.js
+```
+
 ## First deterministic game candidate
 
 The next `TEST` rung adds one native, typed game recipe and a byte-bound game

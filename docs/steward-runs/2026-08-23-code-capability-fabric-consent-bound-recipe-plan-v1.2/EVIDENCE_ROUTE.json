@@ -1,0 +1,73 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "status": "TEST_EVIDENCE",
+  "claims": [
+    {
+      "claimId": "static-contract",
+      "claim": "The v1.2 request and plan records are closed, bounded, and locally resolvable.",
+      "kind": "static-structure",
+      "risk": "medium",
+      "passCondition": "Both schemas parse, every local reference resolves, every object node is closed, and the module contract grants no permissions or writes.",
+      "primarySurface": "schema and contract inspection",
+      "counterevidence": "Unknown fields, unresolved references, permission, write, provider, or lifecycle authority.",
+      "secondarySurfaceIfNeeded": "focused source scan",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "deterministic-plan",
+      "claim": "Identical normalized inputs produce byte-identical application plans.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "Repeated focused executions have identical canonical JSON, digest, byte measurement, ordering, and lineage.",
+      "primarySurface": "focused selftest",
+      "counterevidence": "Locale, input ordering, clock, workspace, or host state changes output.",
+      "secondarySurfaceIfNeeded": "strict deterministic rebuild from the installed catalog",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "exact-lineage",
+      "claim": "Only selected recipes visible as eligible in exact installed discovery evidence can enter a plan.",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "Forged, stale, held, undiscovered, re-digested, ambiguous, or mode-expanded records fail closed.",
+      "primarySurface": "adversarial focused selftest",
+      "counterevidence": "A self-consistent replacement pack or held result reaches an application record.",
+      "secondarySurfaceIfNeeded": "v1.0 and v1.1 installed-byte rebuild verifiers",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "consent-scope",
+      "claim": "The plan binds the exact blueprint, evidence, action, resource, lifecycle, and re-consent scope without claiming authenticated human consent.",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "Consent drift fails closed and every valid plan remains AUTHENTICATED_HUMAN_DECISION_REQUIRED with authority NONE.",
+      "primarySurface": "grounded-consent deterministic evaluation plus adversarial focused selftest",
+      "counterevidence": "Expanded permission, network, lifecycle, resources, stale time, or changed bytes still produce a valid plan.",
+      "secondarySurfaceIfNeeded": "exact plan rebuild",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "source-boundary",
+      "claim": "Recipe source is neither emitted, copied, applied, nor executed by the planner.",
+      "kind": "static-structure",
+      "risk": "high",
+      "passCondition": "Only REFERENCE_ONLY selection is accepted; plan records contain metadata and snippet references but no snippet field or generated code.",
+      "primarySurface": "packet inspection and source scan",
+      "counterevidence": "Snippet text, provider output, executable bundle, or direct-reuse authorization appears in a valid plan.",
+      "secondarySurfaceIfNeeded": "adversarial packet mutation tests",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "runtime-and-visual",
+      "claim": "No candidate runtime or visual surface is produced by v1.2.",
+      "kind": "existence",
+      "risk": "low",
+      "passCondition": "Plan truth and contract both keep candidate null, implementation NOT_STARTED, tests NOT_RUN, and browser testing N/A.",
+      "primarySurface": "plan and contract inspection",
+      "counterevidence": "A candidate file, sandbox action, UI claim, or execution receipt is emitted.",
+      "secondarySurfaceIfNeeded": null,
+      "verdict": "PASS"
+    }
+  ],
+  "authority": "NONE"
+}

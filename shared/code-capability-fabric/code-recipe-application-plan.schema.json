@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-recipe-application-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "id", "status", "planningStatus", "applicationMode", "applicationRequest", "requestRef", "blueprintRef", "discoveryEvidenceRef", "recipeSelectionRef", "consentGate", "applicationRecords", "acceptancePlan", "candidate", "resourceObservation", "lineageRefs", "limitations", "nextGate", "truth", "authority", "planDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-recipe-application-plan/v1"},
+    "version": {"const": "1.2.0"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "status": {"const": "TEST"},
+    "planningStatus": {"const": "CONSENT_SCOPE_VALID_AUTHENTICATION_REQUIRED"},
+    "applicationMode": {"const": "INDEPENDENT_NATIVE_REIMPLEMENTATION_PLAN"},
+    "applicationRequest": {"$ref": "code-recipe-application-request.schema.json"},
+    "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "blueprintRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "discoveryEvidenceRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "recipeSelectionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "consentGate": {"$ref": "#/$defs/consentGate"},
+    "applicationRecords": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"$ref": "#/$defs/applicationRecord"}},
+    "acceptancePlan": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/acceptanceCase"}},
+    "candidate": {"const": null},
+    "resourceObservation": {"$ref": "#/$defs/resources"},
+    "lineageRefs": {"type": "array", "minItems": 8, "maxItems": 8, "items": {"$ref": "semantic-common.schema.json#/$defs/reference"}},
+    "limitations": {"type": "array", "minItems": 14, "maxItems": 14, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}},
+    "nextGate": {"const": "AUTHENTICATE_EXACT_HUMAN_DECISION_THEN_REQUEST_ONE_DETACHED_CANDIDATE"},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "planDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "consentGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "policyRef", "instanceRef", "evaluationRef", "scopeValidated", "authenticatedHumanDecisionVerified", "hostAuthorizationGranted"],
+      "properties": {
+        "status": {"const": "AUTHENTICATED_HUMAN_DECISION_REQUIRED"},
+        "policyRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "instanceRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "evaluationRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "scopeValidated": {"const": true},
+        "authenticatedHumanDecisionVerified": {"const": false},
+        "hostAuthorizationGranted": {"const": false}
+      }
+    },
+    "snippetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength"],
+      "properties": {
+        "sha256": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 4000}
+      }
+    },
+    "recipeEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "primaryLanguage", "domain", "tags", "snippetRef", "syntaxStatus", "discoveryEligibility"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "primaryLanguage": {"type": "string", "minLength": 1, "maxLength": 80},
+        "domain": {"type": ["string", "null"], "maxLength": 80},
+        "tags": {"type": "array", "maxItems": 20, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 60}},
+        "snippetRef": {"$ref": "#/$defs/snippetRef"},
+        "syntaxStatus": {"enum": ["SYNTAX_PASS", "REVIEW_HOLD", "CONTEXT_UNSUPPORTED", "VERIFIER_UNAVAILABLE"]},
+        "discoveryEligibility": {"const": "UNSELECTED_EVIDENCE_ONLY"}
+      }
+    },
+    "requesterMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetStepId", "blueprintOperation", "nativeOperation", "inferredByMachine", "authenticatedHumanChoiceVerified"],
+      "properties": {
+        "targetStepId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+        "blueprintOperation": {"enum": ["SELECT", "TRANSFORM"]},
+        "nativeOperation": {"enum": ["FILTER_VALUES", "MAP_VALUES"]},
+        "inferredByMachine": {"const": false},
+        "authenticatedHumanChoiceVerified": {"const": false}
+      }
+    },
+    "nativeOutline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetRuntime", "reads", "produces", "implementationStatus", "candidateCodeIncluded"],
+      "properties": {
+        "targetRuntime": {"const": "NATIVE_JAVASCRIPT_PURE_FUNCTION"},
+        "reads": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"}},
+        "produces": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+        "implementationStatus": {"const": "NOT_STARTED"},
+        "candidateCodeIncluded": {"const": false}
+      }
+    },
+    "sourceTreatment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "snippetBytesEmitted", "snippetBytesCopied", "snippetBytesApplied", "snippetExecuted", "independentImplementationRequired", "reuseRights", "directReuseAllowed"],
+      "properties": {
+        "mode": {"const": "METADATA_REFERENCE_ONLY"},
+        "snippetBytesEmitted": {"const": false},
+        "snippetBytesCopied": {"const": false},
+        "snippetBytesApplied": {"const": false},
+        "snippetExecuted": {"const": false},
+        "independentImplementationRequired": {"const": true},
+        "reuseRights": {"const": "RESEARCH_ONLY_HOLD"},
+        "directReuseAllowed": {"const": false}
+      }
+    },
+    "applicationRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "recipeId", "recipeEvidence", "requesterMapping", "nativeImplementationOutline", "sourceTreatment"],
+      "properties": {
+        "sourceId": {"type": "string", "pattern": "^CC-[0-9]{4}$"},
+        "recipeId": {"type": "string", "pattern": "^recipe-[a-f0-9]{16}$"},
+        "recipeEvidence": {"$ref": "#/$defs/recipeEvidence"},
+        "requesterMapping": {"$ref": "#/$defs/requesterMapping"},
+        "nativeImplementationOutline": {"$ref": "#/$defs/nativeOutline"},
+        "sourceTreatment": {"$ref": "#/$defs/sourceTreatment"}
+      }
+    },
+    "acceptanceCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "claim", "evidenceRequired", "executionStatus", "verdict"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+        "claim": {"type": "string", "minLength": 1, "maxLength": 500},
+        "evidenceRequired": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,99}$"},
+        "executionStatus": {"const": "NOT_RUN"},
+        "verdict": {"const": "UNKNOWN"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestBytes", "planBytes", "mappingCount", "catalogRecipesVerified", "childProcessesSpawned", "networkUsed", "targetWorkspaceRead", "targetWorkspaceWrite", "requestByteCeilingEnforced", "planByteCeilingEnforced", "mappingCeilingEnforced", "attemptCeilingEnforced"],
+      "properties": {
+        "requestBytes": {"type": "integer", "minimum": 1, "maximum": 524288},
+        "planBytes": {"type": "integer", "minimum": 1, "maximum": 524288},
+        "mappingCount": {"type": "integer", "minimum": 1, "maximum": 8},
+        "catalogRecipesVerified": {"const": 1000},
+        "childProcessesSpawned": {"const": 0},
+        "networkUsed": {"const": false},
+        "targetWorkspaceRead": {"const": false},
+        "targetWorkspaceWrite": {"const": false},
+        "requestByteCeilingEnforced": {"const": true},
+        "planByteCeilingEnforced": {"const": true},
+        "mappingCeilingEnforced": {"const": true},
+        "attemptCeilingEnforced": {"const": true}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exactBlueprintVerified", "installedDiscoveryVerified", "installedSelectionVerified", "selectedRecipesVisibleAsEligible", "requesterMappingsBound", "semanticMappingInferred", "consentScopeValidated", "authenticatedHumanDecisionVerified", "informedUnderstandingProven", "trustedClockObserved", "hostAuthorizationGranted", "sourceClaimsVerified", "licensesVerified", "directReuseAuthorized", "snippetBytesIncluded", "snippetBytesCopied", "snippetBytesApplied", "snippetsExecuted", "independentNativeImplementationPlanned", "candidateGenerated", "candidateExecuted", "testsRun", "runtimeBehaviorProven", "correctnessProven", "safetyProven", "installed", "integrated", "promoted", "canonChanged"],
+      "properties": {
+        "exactBlueprintVerified": {"const": true},
+        "installedDiscoveryVerified": {"const": true},
+        "installedSelectionVerified": {"const": true},
+        "selectedRecipesVisibleAsEligible": {"const": true},
+        "requesterMappingsBound": {"const": true},
+        "semanticMappingInferred": {"const": false},
+        "consentScopeValidated": {"const": true},
+        "authenticatedHumanDecisionVerified": {"const": false},
+        "informedUnderstandingProven": {"const": false},
+        "trustedClockObserved": {"const": false},
+        "hostAuthorizationGranted": {"const": false},
+        "sourceClaimsVerified": {"const": false},
+        "licensesVerified": {"const": false},
+        "directReuseAuthorized": {"const": false},
+        "snippetBytesIncluded": {"const": false},
+        "snippetBytesCopied": {"const": false},
+        "snippetBytesApplied": {"const": false},
+        "snippetsExecuted": {"const": false},
+        "independentNativeImplementationPlanned": {"const": true},
+        "candidateGenerated": {"const": false},
+        "candidateExecuted": {"const": false},
+        "testsRun": {"const": false},
+        "runtimeBehaviorProven": {"const": false},
+        "correctnessProven": {"const": false},
+        "safetyProven": {"const": false},
+        "installed": {"const": false},
+        "integrated": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}
