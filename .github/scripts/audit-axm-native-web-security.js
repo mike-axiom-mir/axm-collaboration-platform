@@ -50,6 +50,10 @@ function audit(sources) {
   check(!/(?:new\s+WebSocket\b|new\s+EventSource\b|navigator\.sendBeacon\b)/.test(host), 'HOST_ACTIVE_NETWORK_CHANNEL', 'trusted shell contains an undeclared active browser network channel');
   check(/server\.listen\(port, '127\.0\.0\.1'/.test(host), 'HOST_NOT_LOOPBACK_BOUND', 'server listener is not explicitly bound to 127.0.0.1');
   check(/crypto\.randomBytes\(24\)/.test(host), 'HOST_CAPABILITY_TOKEN_WEAKENED', 'capability path token is no longer generated from 24 random bytes');
+  check(host.includes("const origin = String(request.headers.origin || '');") && host.includes('if (!origin)') && host.includes("code: 'HOST_ORIGIN_REQUIRED'"), 'HOST_ORIGIN_GUARD_MISSING', 'POST mutation path must fail closed when Origin is missing');
+  check(host.includes("'Cross-Origin-Opener-Policy': 'same-origin'"), 'HOST_COOP_MISSING', 'trusted shell lost same-origin opener isolation');
+  check(host.includes("'Cross-Origin-Resource-Policy': 'same-origin'"), 'HOST_CORP_MISSING', 'trusted shell lost same-origin resource policy');
+  check(host.includes("'Permissions-Policy': PERMISSIONS_POLICY") && ['camera=()', 'microphone=()', 'geolocation=()', 'display-capture=()', 'usb=()', 'serial=()', 'hid=()', 'bluetooth=()'].every(function (directive) { return host.includes(directive); }), 'HOST_PERMISSIONS_POLICY_MISSING', 'trusted shell lost deny-all unused device capability policy');
 
   const fetchTargets = [];
   const fetchRe = /\bfetch\(\s*(['"])([^'"]+)\1/g;
@@ -65,6 +69,7 @@ function audit(sources) {
     "media-src 'none'",
     "object-src 'none'",
     "frame-src 'none'",
+    "frame-ancestors 'none'",
     "worker-src 'none'",
     "base-uri 'none'",
     "form-action 'none'"
@@ -119,6 +124,14 @@ function selftest(sources) {
   const hostFetch = JSON.parse(JSON.stringify(sources));
   hostFetch.host.text += "\nfetch('https://example.invalid/');\n";
   requireFinding(audit(hostFetch), 'HOST_FETCH_SURFACE_DRIFT');
+
+  const hostOrigin = JSON.parse(JSON.stringify(sources));
+  hostOrigin.host.text = hostOrigin.host.text.replace("code: 'HOST_ORIGIN_REQUIRED'", "code: 'HOST_ORIGIN_NOT_REQUIRED'");
+  requireFinding(audit(hostOrigin), 'HOST_ORIGIN_GUARD_MISSING');
+
+  const hostIsolation = JSON.parse(JSON.stringify(sources));
+  hostIsolation.host.text = hostIsolation.host.text.replace("'Cross-Origin-Opener-Policy': 'same-origin'", "'Cross-Origin-Opener-Policy': 'unsafe-none'");
+  requireFinding(audit(hostIsolation), 'HOST_COOP_MISSING');
 
   const htmlScript = JSON.parse(JSON.stringify(sources));
   htmlScript.snapshot.text += '<script>console.log(1)</script>';
