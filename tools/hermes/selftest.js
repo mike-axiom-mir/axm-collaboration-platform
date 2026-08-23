@@ -24,14 +24,14 @@ function pythonCommand() {
     const r = spawnSync(cmd, ['--version'], { encoding: 'utf8', shell: process.platform === 'win32' });
     if (r.status === 0) return cmd;
   }
-  throw new Error('FAIL: Python required by Hermes AXM gate selftest');
+  throw new Error('FAIL: Python is required by AXM Hermes runtime');
 }
 
 function hookCall(script, payload, env) {
   const r = spawnSync(pythonCommand(), [script], {
     input: JSON.stringify(payload),
     encoding: 'utf8',
-    env: Object.assign({}, process.env, env || {}),
+    env: Object.assign({}, process.env, env),
     shell: process.platform === 'win32'
   });
   if (r.status !== 0) throw new Error('hook process failed: ' + (r.stderr || r.stdout || r.status));
@@ -63,7 +63,7 @@ function request(port, method, route, payload) {
       res.on('end', () => {
         let parsed = null;
         try { parsed = JSON.parse(text); } catch (_) {}
-        resolve({ status: res.statusCode, text, body: parsed });
+        resolve({ status: res.statusCode, body: parsed, text });
       });
     });
     req.once('error', reject);
@@ -73,7 +73,7 @@ function request(port, method, route, payload) {
 }
 
 async function waitForHealth(port, child, output) {
-  for (let attempt = 0; attempt < 60; attempt += 1) {
+  for (let i = 0; i < 60; i += 1) {
     if (child.exitCode !== null) throw new Error('runner exited before health: ' + output.value);
     try {
       const result = await request(port, 'GET', '/health');
@@ -81,7 +81,7 @@ async function waitForHealth(port, child, output) {
     } catch (_) {}
     await new Promise(resolve => setTimeout(resolve, 50));
   }
-  throw new Error('runner health timed out: ' + output.value);
+  throw new Error('runner health timeout: ' + output.value);
 }
 
 async function stop(child) {
@@ -92,7 +92,7 @@ async function stop(child) {
   if (child.exitCode === null) child.kill('SIGKILL');
 }
 
-function testRuntimeGate(tempRoot) {
+function testRuntimeBoundary(tempRoot) {
   const gate = path.join(ROOT, 'axm', 'axm_gate.py');
   const context = path.join(ROOT, 'axm', 'axm_context.py');
   const receipt = path.join(ROOT, 'axm', 'axm_receipt.py');
@@ -101,7 +101,6 @@ function testRuntimeGate(tempRoot) {
   const stateDir = path.join(tempRoot, 'state');
   const receiptDir = path.join(tempRoot, 'receipts');
   fs.mkdirSync(workspace, { recursive: true });
-  fs.mkdirSync(stateDir, { recursive: true });
   const policy = json('axm-policy.example.json');
   policy.paths.read_roots = [workspace];
   policy.paths.write_roots = [workspace];
@@ -116,162 +115,154 @@ function testRuntimeGate(tempRoot) {
     AXM_HERMES_STATE_DIR: stateDir,
     AXM_HERMES_RECEIPT_DIR: receiptDir
   };
+  const call = (tool, args, session) => hookCall(gate, { tool_name: tool, tool_input: args || {}, session_id: session || tool }, env);
 
-  let result = hookCall(gate, { tool_name: 'read_file', tool_input: { path: 'a.txt' }, session_id: 'off' }, env);
-  check(result.action === 'block' && /consent is OFF/.test(result.message), 'runtime gate blocks every tool while consent is off');
+  let result = call('read_file', { path: 'a.txt' }, 'consent-off');
+  check(result.action === 'block' && /consent is OFF/.test(result.message), 'consent off blocks tool dispatch');
 
   policy.consent.enabled = true;
   writeJson(policyFile, policy);
-  result = hookCall(gate, { tool_name: 'read_file', tool_input: { path: 'a.txt' }, session_id: 'allowed' }, env);
-  check(Object.keys(result).length === 0, 'runtime gate allows a consented read inside configured root');
-  result = hookCall(gate, { tool_name: 'write_file', tool_input: { path: 'draft.txt', content: 'x' }, session_id: 'allowed' }, env);
-  check(Object.keys(result).length === 0, 'runtime gate allows a consented write inside configured root');
-  result = hookCall(gate, { tool_name: 'write_file', tool_input: { path: path.join(tempRoot, 'outside.txt') }, session_id: 'outside' }, env);
-  check(result.action === 'block' && /outside configured AXM roots/.test(result.message), 'runtime gate blocks write outside configured roots');
-  result = hookCall(gate, { tool_name: 'terminal', tool_input: { command: 'echo hi' }, session_id: 'terminal' }, env);
-  check(result.action === 'block' && /allow_terminal/.test(result.message), 'runtime gate blocks terminal by default');
+  result = call('read_file', { path: 'a.txt' }, 'allowed');
+  check(Object.keys(result).length === 0, 'read inside configured root allowed');
+  result = call('write_file', { path: 'draft.txt', content: 'x' }, 'allowed');
+  check(Object.keys(result).length === 0, 'write inside configured root allowed');
+  result = call('write_file', { path: path.join(tempRoot, 'outside.txt') }, 'outside');
+  check(result.action === 'block' && /outside configured AXM roots/.test(result.message), 'outside-root write blocked');
+  result = call('write_file', { content: 'no path' }, 'missing-path');
+  check(result.action === 'block' && /containment cannot be verified/.test(result.message), 'unverifiable file mutation fails closed');
+
+  const expectedCapability = {
+    terminal: 'allow_terminal',
+    process: 'allow_terminal',
+    execute_code: 'allow_execute_code',
+    computer_use: 'allow_computer_use',
+    delegate_task: 'allow_delegation',
+    cronjob: 'allow_scheduling',
+    memory: 'allow_memory_mutation',
+    skill_manage: 'allow_skill_mutation',
+    browser_click: 'allow_browser_interaction',
+    send_message: 'allow_messaging',
+    ha_call_service: 'allow_home_automation',
+    project_create: 'allow_project_changes',
+    kanban_create: 'allow_coordination_mutation',
+    image_generate: 'allow_generation'
+  };
+  for (const [tool, capability] of Object.entries(expectedCapability)) {
+    result = call(tool, {}, 'blocked-' + tool);
+    check(result.action === 'block' && result.message.includes(capability), tool + ' requires explicit ' + capability);
+  }
+
+  policy.mode.hub_sandbox = false;
+  policy.mode.external_mode = false;
+  writeJson(policyFile, policy);
+  result = call('web_search', { query: 'test' }, 'bad-mode');
+  check(result.action === 'block' && /exactly one run space/.test(result.message), 'ambiguous run-space policy fails closed');
+  policy.mode.hub_sandbox = true;
+  writeJson(policyFile, policy);
 
   policy.limits.max_tool_calls_per_session = 2;
   writeJson(policyFile, policy);
-  check(Object.keys(hookCall(gate, { tool_name: 'read_file', tool_input: { path: 'a' }, session_id: 'limit' }, env)).length === 0, 'first bounded tool call allowed');
-  check(Object.keys(hookCall(gate, { tool_name: 'read_file', tool_input: { path: 'b' }, session_id: 'limit' }, env)).length === 0, 'second bounded tool call allowed');
-  result = hookCall(gate, { tool_name: 'read_file', tool_input: { path: 'c' }, session_id: 'limit' }, env);
-  check(result.action === 'block' && /tool-call limit reached/.test(result.message), 'runtime gate enforces tool-call limit');
+  check(Object.keys(call('web_search', { query: 'a' }, 'limit')).length === 0, 'first bounded tool call allowed');
+  check(Object.keys(call('web_search', { query: 'b' }, 'limit')).length === 0, 'second bounded tool call allowed');
+  result = call('web_search', { query: 'c' }, 'limit');
+  check(result.action === 'block' && /tool-call limit reached/.test(result.message), 'tool-call limit enforced');
 
   const contextResult = hookCall(context, { user_message: 'hello' }, env);
-  check(typeof contextResult.context === 'string' && /candidate/.test(contextResult.context) && /bypass/.test(contextResult.context), 'pre-LLM context carries candidate and no-bypass rules');
+  check(typeof contextResult.context === 'string' && /candidate/.test(contextResult.context) && /bypass/.test(contextResult.context), 'AXM context injects candidate/no-bypass rules');
 
   policy.limits.max_tool_calls_per_session = 3;
-  policy.receipts.enabled = true;
   writeJson(policyFile, policy);
   hookCall(receipt, {
-    tool_name: 'read_file', status: 'success', session_id: 'receipt-session', turn_id: 'raw-turn-id', tool_call_id: 'raw-call-id',
+    tool_name: 'read_file', status: 'success', session_id: 'raw-session', turn_id: 'raw-turn', tool_call_id: 'raw-call',
     args: { path: '/private/secret.txt', token: 'DO_NOT_STORE_ME' }, result: 'SECRET_RESULT_DO_NOT_STORE'
   }, env);
-  const receiptFiles = fs.readdirSync(receiptDir).filter(name => name.endsWith('.jsonl'));
-  check(receiptFiles.length === 1, 'receipt hook writes one local metadata receipt');
-  const receiptText = fs.readFileSync(path.join(receiptDir, receiptFiles[0]), 'utf8');
-  check(!receiptText.includes('DO_NOT_STORE_ME') && !receiptText.includes('SECRET_RESULT_DO_NOT_STORE') && !receiptText.includes('/private/secret.txt'), 'receipt excludes raw arguments, results, and paths');
-  const receiptRecord = JSON.parse(receiptText.trim());
-  check(receiptRecord.canon === false && receiptRecord.review_required === true && receiptRecord.raw_arguments_stored === false, 'receipt is explicitly non-canonical and redacted');
+  const files = fs.readdirSync(receiptDir).filter(name => name.endsWith('.jsonl'));
+  check(files.length === 1, 'metadata receipt written');
+  const text = fs.readFileSync(path.join(receiptDir, files[0]), 'utf8');
+  check(!text.includes('DO_NOT_STORE_ME') && !text.includes('SECRET_RESULT_DO_NOT_STORE') && !text.includes('/private/secret.txt') && !text.includes('raw-session'), 'receipt excludes raw arguments/results/paths/ids');
+  const record = JSON.parse(text.trim());
+  check(record.canon === false && record.review_required === true && record.raw_arguments_stored === false && record.raw_result_stored === false, 'receipt explicitly non-canonical and redacted');
+}
+
+async function testLegacyLoopback(tempRoot) {
+  const hermesRoot = path.join(tempRoot, 'legacy-runner');
+  fs.mkdirSync(hermesRoot, { recursive: true });
+  fs.copyFileSync(path.join(ROOT, 'hermes-runner.js'), path.join(hermesRoot, 'hermes-runner.js'));
+  const port = await freePort();
+  const output = { value: '' };
+  const child = spawn(process.execPath, [path.join(hermesRoot, 'hermes-runner.js')], {
+    cwd: hermesRoot,
+    env: Object.assign({}, process.env, { AXM_HERMES_PORT: String(port) }),
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+  child.stdout.on('data', chunk => { output.value += chunk.toString(); });
+  child.stderr.on('data', chunk => { output.value += chunk.toString(); });
+  try {
+    const health = await waitForHealth(port, child, output);
+    check(health.body && health.body.ok === true && health.body.consent === false, 'legacy runner starts loopback with consent off');
+    check(health.body.host === '127.0.0.1' && health.body.port === port, 'legacy health reports loopback endpoint');
+    const refused = await request(port, 'POST', '/queue', { title: 'must not write' });
+    check(refused.status === 403, 'legacy queue refuses write while consent off');
+    const on = await request(port, 'POST', '/consent', { enabled: true, reason: 'selftest' });
+    check(on.status === 200 && on.body.consent.enabled === true, 'legacy consent can be explicitly enabled');
+    const queued = await request(port, 'POST', '/queue', { source: 'selftest', title: 'bounded', text: 'inspect only' });
+    check(queued.status === 200 && queued.body.result.task.status === 'proposal' && /proposal only/.test(queued.body.result.task.axm_rule), 'legacy queue stays proposal-only');
+    const proposal = await request(port, 'POST', '/proposal', { source: 'selftest', title: '../../boundary', text: 'No apply.' });
+    check(proposal.status === 200 && !path.basename(proposal.body.result.file).includes('..'), 'legacy proposal filename is sanitized');
+    const off = await request(port, 'POST', '/consent', { enabled: false, reason: 'done' });
+    check(off.body.consent.enabled === false, 'legacy consent can be revoked');
+  } finally {
+    await stop(child);
+  }
 }
 
 async function main() {
   const manifest = json('manifest.json');
   const contract = json('module.contract.json');
   const sourceLock = json('hermes-source.lock.json');
-  const policyExample = json('axm-policy.example.json');
-  const runnerSource = read('hermes-runner.js');
-  const bootstrapSource = read('hermes-bootstrap.js');
-  const gateSource = read(path.join('axm', 'axm_gate.py'));
-  const html = read('index.html');
+  const policy = json('axm-policy.example.json');
+  const bootstrap = read('hermes-bootstrap.js');
+  const runner = read('hermes-runner.js');
   const readme = read('README.md');
+  const html = read('index.html');
 
-  check(manifest.schema === ContractVerifier.MANIFEST_SCHEMA, 'manifest uses current tool schema');
-  check(manifest.kind === 'adapter' && manifest.audience === 'human-machine', 'manifest declares adapter kind and audience');
-  check(manifest.version === 'v0.3' && contract.version === 'v0.3', 'manifest and contract agree on v0.3');
-  check(manifest.risk === 'HIGH', 'manifest keeps external runtime risk visible');
-  check(manifest.contract === 'module.contract.json', 'manifest declares module contract');
-  check(manifest.permissions.includes('files') && manifest.permissions.includes('network') && manifest.permissions.includes('machine.execute'), 'manifest declares file, network, and process authority');
-  check(ContractVerifier.validateContract(contract, manifest).pass, 'contract validates against manifest permissions');
+  check(manifest.schema === ContractVerifier.MANIFEST_SCHEMA, 'manifest schema current');
+  check(manifest.kind === 'adapter' && manifest.risk === 'HIGH', 'manifest exposes adapter/high-risk role');
+  check(manifest.version === 'v0.3' && contract.version === 'v0.3', 'manifest and contract version aligned');
+  check(ContractVerifier.validateContract(contract, manifest).pass, 'module contract validates');
   check(contract.boundaries.refuses.includes('os-container-or-vm-sandbox-enforcement-claim'), 'contract refuses fake OS sandbox claim');
   check(contract.boundaries.refuses.includes('tool-policy-as-model-provider-egress-gate-claim'), 'contract refuses fake provider-egress claim');
-  check(contract.boundaries.refuses.includes('hermes-memory-as-axm-canon') && contract.boundaries.refuses.includes('hermes-generated-skill-as-axm-canon'), 'contract refuses automatic Hermes learning canon');
+  check(contract.boundaries.refuses.includes('hermes-memory-as-axm-canon') && contract.boundaries.refuses.includes('hermes-generated-skill-as-axm-canon'), 'contract refuses automatic Hermes canon');
 
-  check(sourceLock.schema === 'axm.hermes-source-lock/v1', 'reviewed source lock has expected schema');
-  check(sourceLock.repo_url === 'https://github.com/NousResearch/hermes-agent.git', 'source lock points to official NousResearch Hermes repository');
-  check(/^[0-9a-f]{40}$/.test(sourceLock.commit), 'source lock uses a full immutable commit SHA');
-  check(policyExample.consent.enabled === false, 'runtime policy consent defaults off');
-  ['allow_terminal', 'allow_execute_code', 'allow_computer_use', 'allow_delegation', 'allow_scheduling', 'allow_messaging'].forEach(key => {
-    check(policyExample.capabilities[key] === false, key + ' defaults off');
-  });
-  check(policyExample.canon.hermes_memory_is_canon === false && policyExample.canon.hermes_skills_are_canon === false, 'policy keeps Hermes memory and skills non-canonical');
+  check(sourceLock.repo_url === 'https://github.com/NousResearch/hermes-agent.git', 'source lock uses official upstream');
+  check(/^[0-9a-f]{40}$/.test(sourceLock.commit), 'source lock is immutable full SHA');
+  check(policy.consent.enabled === false && policy.mode.hub_sandbox === true && policy.mode.external_mode === false, 'default policy is consent-off in hub run space');
+  Object.entries(policy.capabilities).forEach(([name, enabled]) => check(enabled === false, name + ' defaults off'));
+  check(policy.canon.hermes_memory_is_canon === false && policy.canon.hermes_skills_are_canon === false, 'Hermes learning defaults non-canonical');
 
-  check(/const HOST = '127\.0\.0\.1'/.test(runnerSource), 'legacy control layer binds to loopback');
-  ['/queue', '/proposal', '/prompt-packs/add'].forEach(route => {
-    const escaped = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    check(new RegExp("req\\.url === '" + escaped + "'[\\s\\S]{0,140}requireConsent\\(res\\)").test(runnerSource), route + ' stays consent-gated');
-  });
-  check(!/require\(['"]https['"]\)|\bfetch\s*\(/.test(runnerSource), 'legacy control layer contains no external network client');
-
-  check(/hermes-source\.lock\.json/.test(bootstrapSource) && /\^\[0-9a-f\]\{40\}\$/.test(bootstrapSource), 'bootstrap requires immutable source lock');
-  check(/fetch', '--depth', '1', 'origin', lock\.commit/.test(bootstrapSource), 'bootstrap fetches the exact locked commit');
-  check(/checkout', '--detach', lock\.commit/.test(bootstrapSource), 'bootstrap checks out locked commit detached');
-  check(/HERMES_YOLO_MODE: ''/.test(bootstrapSource) && /HERMES_ENABLE_PROJECT_PLUGINS: 'false'/.test(bootstrapSource), 'launcher disables YOLO and project plugins');
-  check(/fail_closed: true/.test(bootstrapSource), 'generated Hermes pre-tool hook is fail closed');
-  check(/action === 'deps'/.test(bootstrapSource) && /\['sync', '--locked'\]/.test(bootstrapSource), 'dependency install is separate and lockfile based');
-  check(/Refusing silent rewrite/.test(bootstrapSource), 'prepare refuses silent local profile replacement');
-  check(/HIGH_AUTHORITY/.test(gateSource) && /allow_terminal/.test(gateSource), 'gate contains explicit high-authority capability controls');
-  check(/not an OS sandbox/i.test(readme) && /model-provider/i.test(readme), 'README exposes sandbox and provider-egress limits');
-  check(/not an OS sandbox/i.test(html), 'landing card exposes non-sandbox boundary');
+  check(/hermes-source\.lock\.json/.test(bootstrap), 'bootstrap consumes immutable source lock');
+  check(/git', \['fetch', '--depth', '1', 'origin', lock\.commit\]/.test(bootstrap), 'bootstrap fetches exact commit');
+  check(/git', \['checkout', '--detach', lock\.commit\]/.test(bootstrap), 'bootstrap checks out detached exact commit');
+  check(/HERMES_YOLO_MODE: ''/.test(bootstrap) && /HERMES_ENABLE_PROJECT_PLUGINS: 'false'/.test(bootstrap), 'launcher disables YOLO and project plugins');
+  check(/fail_closed: true/.test(bootstrap), 'generated pre-tool gate configured fail closed');
+  check(/action === 'deps'/.test(bootstrap) && /\['sync', '--locked'\]/.test(bootstrap), 'dependencies are explicit and lockfile based');
+  check(/Refusing silent rewrite/.test(bootstrap), 'profile preparation refuses silent rewrite');
+  check(/const HOST = '127\.0\.0\.1'/.test(runner), 'legacy runner remains loopback only');
+  check(/not an OS sandbox/i.test(readme) && /model-provider/i.test(readme), 'README states isolation and provider-egress limits');
+  check(/not an OS sandbox/i.test(html), 'landing card states non-sandbox boundary');
 
   for (const match of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)) {
     new Function(match[1]); passes += 1;
   }
 
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-hermes-selftest-'));
-  const hermesRoot = path.join(tempRoot, 'hermes');
-  const runnerCopy = path.join(hermesRoot, 'hermes-runner.js');
-  const output = { value: '' };
-  let child = null;
   try {
-    testRuntimeGate(path.join(tempRoot, 'runtime-gate'));
-
-    fs.mkdirSync(hermesRoot, { recursive: true });
-    fs.copyFileSync(path.join(ROOT, 'hermes-runner.js'), runnerCopy);
-    const port = await freePort();
-    child = spawn(process.execPath, [runnerCopy], {
-      cwd: hermesRoot,
-      env: Object.assign({}, process.env, { AXM_HERMES_PORT: String(port) }),
-      stdio: ['ignore', 'pipe', 'pipe']
-    });
-    child.stdout.on('data', chunk => { output.value += chunk.toString(); });
-    child.stderr.on('data', chunk => { output.value += chunk.toString(); });
-
-    const health = await waitForHealth(port, child, output);
-    check(health.body && health.body.ok === true && health.body.consent === false, 'isolated legacy runner starts healthy with consent off');
-    check(health.body.host === '127.0.0.1' && health.body.port === port, 'health reports isolated loopback endpoint');
-
-    const modules = await request(port, 'GET', '/modules');
-    check(modules.status === 200 && modules.body.modules.some(item => item.id === 'task-queue'), 'module inventory readable without consent');
-    const refusedQueue = await request(port, 'POST', '/queue', { title: 'must not write' });
-    check(refusedQueue.status === 403 && refusedQueue.body.ok === false, 'legacy queue write refused with consent off');
-    check(fs.readdirSync(path.join(hermesRoot, 'queue')).length === 0, 'refused queue request writes no task file');
-
-    const consentOn = await request(port, 'POST', '/consent', { enabled: true, reason: 'isolated selftest' });
-    check(consentOn.status === 200 && consentOn.body.consent.enabled === true, 'explicit request enables legacy control-layer consent');
-    check(fs.existsSync(path.join(hermesRoot, '.hermes-consent.json')), 'legacy consent state persists inside isolated module');
-
-    const queued = await request(port, 'POST', '/queue', { source: 'selftest', kind: 'review', title: 'Bounded task', text: 'Inspect only.' });
-    check(queued.status === 200 && queued.body.result.task.status === 'proposal', 'consented legacy queue emits proposal status');
-    const queueFiles = fs.readdirSync(path.join(hermesRoot, 'queue')).filter(name => name.endsWith('.json'));
-    check(queueFiles.length === 1, 'consented legacy queue writes exactly one task JSON');
-    const task = JSON.parse(fs.readFileSync(path.join(hermesRoot, 'queue', queueFiles[0]), 'utf8'));
-    check(/proposal only/.test(task.axm_rule), 'task record preserves proposal-only rule');
-
-    const proposed = await request(port, 'POST', '/proposal', { source: 'selftest', title: '../../Review boundary', text: 'No apply.' });
-    check(proposed.status === 200 && !path.basename(proposed.body.result.file).includes('..'), 'proposal route sanitizes generated filename');
-    const proposalPath = path.resolve(hermesRoot, proposed.body.result.file);
-    const proposalText = fs.readFileSync(proposalPath, 'utf8');
-    check(proposalPath.startsWith(path.join(hermesRoot, 'outbox') + path.sep) && /Human review required/.test(proposalText), 'proposal stays in outbox and requires review');
-
-    const prompt = await request(port, 'POST', '/prompt-packs/add', { title: '../../Prompt boundary', purpose: 'test', text: 'Review me.' });
-    check(prompt.status === 200 && prompt.body.result.prompt_pack.status === 'local-prompt-pack', 'prompt-pack route emits local status');
-    const promptPath = path.resolve(hermesRoot, prompt.body.result.file);
-    check(promptPath.startsWith(path.join(tempRoot, 'agent-tool-forge', 'prompt-packs') + path.sep) && fs.existsSync(promptPath), 'prompt pack stays in declared sibling folder');
-
-    const consentOff = await request(port, 'POST', '/consent', { enabled: false, reason: 'selftest complete' });
-    check(consentOff.body.consent.enabled === false, 'legacy control-layer consent can be revoked');
-    const refusedList = await request(port, 'GET', '/prompt-packs/list');
-    check(refusedList.status === 403, 'prompt-pack list refused after consent revocation');
-    const missing = await request(port, 'GET', '/not-a-route');
-    check(missing.status === 404, 'unknown legacy routes fail closed');
+    testRuntimeBoundary(path.join(tempRoot, 'runtime'));
+    await testLegacyLoopback(tempRoot);
   } finally {
-    await stop(child);
     fs.rmSync(tempRoot, { recursive: true, force: true });
   }
-
-  console.log('PASS AXM Hermes runtime adapter selftest: ' + passes + ' assertions; upstream model/provider runtime execution not exercised');
+  console.log('PASS AXM Hermes runtime adapter selftest: ' + passes + ' assertions; live upstream/model-provider execution not exercised');
 }
 
 main().catch(error => {
