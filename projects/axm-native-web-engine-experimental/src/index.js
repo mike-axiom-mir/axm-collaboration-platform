@@ -15,10 +15,14 @@ module.exports = {
   svgRenderer: require('./svg-renderer'),
   browserSnapshot: require('./browser-snapshot'),
   browserSession: require('./browser-session'),
+  browserVisualState: require('./browser-visual-state'),
   sessionVerifier: require('./session-verifier'),
   localBrowserHost: require('./local-browser-host'),
   shellPolicy: require('./shell-policy'),
   searchBroker: require('./search-broker'),
   searchExecutor: require('./search-executor'),
+  aiBroker: require('./ai-broker'),
+  aiExecutor: require('./ai-executor'),
+  researchMode: require('./research-mode'),
   engine: require('./engine')
 };
