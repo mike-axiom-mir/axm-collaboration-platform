@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "axm-native-web-engine-experimental",
-  "version": "v0.1.0-experimental.1",
+  "version": "v0.2.0-experimental.1",
   "status": "EXPERIMENTAL",
   "installed": false,
   "promoted": false,
@@ -11,10 +11,16 @@
     "axm.web.document-tree/v1",
     "axm.web.page-model/v1",
     "axm.web.headless-result/v1",
+    "axm.web.structure-layout/v1",
+    "axm.web.display-list/v1",
+    "axm.web.modification-ledger/v1",
+    "axm.web.artifact-receipt/v1",
     "offline-html-tokenize-subset",
     "offline-document-tree-subset",
     "offline-semantic-page-model",
-    "headless-shared-core-cli"
+    "headless-shared-core-cli",
+    "offline-axm-structure-view",
+    "inert-svg-and-html-snapshots"
   ],
   "consumes": [
     "caller-supplied-local-utf8-bytes",
@@ -27,18 +33,27 @@
       "axm.web.token-stream/v1",
       "axm.web.document-tree/v1",
       "axm.web.page-model/v1",
-      "axm.web.headless-result/v1"
+      "axm.web.headless-result/v1",
+      "axm.web.structure-layout/v1",
+      "axm.web.display-list/v1",
+      "axm.web.modification-ledger/v1",
+      "axm.web.artifact-receipt/v1"
     ],
     "accepts": ["local-file:utf8", "stdin:utf8"]
   },
   "boundaries": {
-    "writes": ["stdout:explicit-cli-output-only"],
+    "writes": [
+      "stdout:explicit-cli-json-output",
+      "caller-selected-file:render-svg-or-browser-snapshot-only"
+    ],
     "refuses": [
       "network-fetch",
       "search-provider-query",
       "javascript-or-wasm-execution",
-      "css-layout-or-rendering-claim",
-      "browser-window-or-click-claim",
+      "site-css-cascade-or-site-rendering-claim",
+      "live-browser-window-navigation-or-click-claim",
+      "implicit-output-overwrite",
+      "symbolic-link-output-write",
       "provider-key-access",
       "workshop-state-access",
       "local-machine-authority",
@@ -52,6 +67,6 @@
     "state_owner": "none",
     "reload": "exact-reparse-from-caller-input",
     "disconnect": "not-applicable",
-    "cleanup": "process-owned"
+    "cleanup": "process-owned; caller owns explicit artifact outputs"
   }
 }

@@ -1,66 +1,86 @@
-# AXM Native Web Engine — detached Phase 0/1 proof
+# AXM Native Web Engine — semantic core + Structure Browser proof
 
 Status: `EXPERIMENTAL`  
 Installed: `false`  
 Promoted: `false`  
-Canon: `false`
+Canon: `false`  
+Version: `0.2.0-experimental.1`
 
-This package is the first bounded implementation slice of the AXM Native Web
-Engine handoff. It proves one shared, offline core:
+This detached package now proves two output bodies over one offline core:
 
 ```text
-UTF-8 HTML bytes
+local UTF-8 HTML bytes
   -> digest-bound Source Record
   -> tokenizer subset
   -> typed Document Tree
   -> separate semantic Page Model
-  -> deterministic headless JSON envelope
+       |-> deterministic headless JSON
+       `-> AXM Structure Layout
+             -> renderer-neutral Display List
+                  |-> inert SVG snapshot
+                  `-> inert local HTML snapshot
 ```
 
-It is not a conventional browser shell, a Chromium/WebView wrapper, a complete
-HTML parser, a CSS engine, a renderer, a network client, or a JavaScript
-runtime. No page code is executed. No provider key, Workshop state, browser
-storage, network authority, or local-machine capability is touched.
+Every Structure View carries the same source, document, Page Model, layout, and
+display-list lineage plus a reversible-view Modification Ledger. The ledger
+records `sourceMutation.performed: false`; discarding the derived view restores
+the exact source-bound starting point.
+
+This is not a conventional browser shell, Chromium/WebView wrapper, complete
+HTML parser, CSS/site layout engine, network client, navigation stack, or
+JavaScript runtime. The visual output is explicitly an **AXM Structure View**,
+not a claim that a website has been rendered. Page code, links, forms, remote
+media, and resource URLs remain inert data.
 
 ## Why Node in this detached proof
 
-The working-chat runtime had Node.js 24 and no Rust toolchain. Phase 1 therefore
-uses dependency-free CommonJS so the architecture and deterministic contracts
-can be exercised now. The recommended production substrate remains an explicit
-Rust review decision in `ROADMAP.md`; this proof does not silently settle it.
+The working-chat runtime had Node.js 24 and no Rust toolchain. This proof uses
+dependency-free CommonJS so deterministic contracts can run now. The production
+substrate remains a gated review decision in `ROADMAP.md`; this package does not
+silently settle it.
 
-## Run
-
-From this directory:
+## Run headless
 
 ```bash
-npm test
-npm run verify
 node cli.js inspect fixtures/simple.html --pretty
 node cli.js parse fixtures/simple.html --pretty
-node cli.js tokenize fixtures/simple.html --pretty
+node cli.js layout fixtures/simple.html --viewport 1120x760 --pretty
+node cli.js display fixtures/simple.html --viewport 1120x760 --pretty
 node cli.js profile --pretty
 ```
 
-`http://` and `https://` inputs are refused with `NETWORK_HELD`. Only local
-files and standard input (`-`) are accepted in this phase.
+`layout` emits the typed Structure Layout and its ledger. `display` emits the
+renderer-neutral Display List and its ledger. Both report matching layout,
+display-list, and ledger digests for the same options.
 
-## Shared-core rule
+## Create inert visual artifacts
 
-The CLI imports `src/engine.js`; it contains no parser or Page Model copy. A
-future visual body must consume the same typed core output. Headless is an
-output body, not a second engine.
+```bash
+node cli.js render-svg fixtures/simple.html --out ./simple.structure.svg
+node cli.js browser-snapshot fixtures/simple.html --out ./simple.browser.html
+```
 
-## Evidence and limits
+Writes require an explicit `--out` file. Existing outputs are refused unless
+the caller adds `--force`; input-path overwrite and symbolic-link outputs are
+refused. Each successful write prints `axm.web.artifact-receipt/v1` with byte,
+SHA-256, source, Page Model, layout, Display List, and ledger bindings.
 
-- `RECONNAISSANCE_MAP.md` binds the Phase 0 map to the inspected repository
-  checkpoint.
-- `manifests/capability-profile.json` distinguishes `SUPPORTED`, `PARTIAL`,
-  `UNSUPPORTED`, and `HELD` features.
-- `manifests/source-manifest.json` binds executable and contract files to
-  SHA-256 digests.
-- `ACTION_REPORT.md` states what the checks prove and do not prove.
-- `KNOWN_LIMITS.md` is part of the build, not an afterthought.
-- `LOCAL_INTAKE_HANDOFF.txt` leaves local intake as a later explicit action.
+Committed deterministic examples are in `examples/`. The HTML snapshot has a
+deny-by-default Content Security Policy, no script, no active links or forms,
+and no external resources. The SVG renderer accepts only rectangle, line, and
+escaped text commands from the shared Display List.
 
-Passing these tests does not promote this package to `WORKING` or `CANON`.
+## Verify
+
+```bash
+node --test tests/*.test.js
+node scripts/verify-schemas.js
+node scripts/build-examples.js --verify
+node scripts/build-source-manifest.js --verify
+```
+
+`STRUCTURE_VIEW_CONTRACT.md` defines the lineage and non-claims.
+`ACTION_REPORT.md` records the current evidence ceiling. `KNOWN_LIMITS.md` and
+`SECURITY_BOUNDARIES.md` are part of the build, not afterthoughts.
+
+Passing checks does not install, promote, merge, or mark this package `CANON`.

@@ -1,66 +1,66 @@
 # Roadmap with evidence gates
 
-This roadmap does not authorize installation or promotion.
+This roadmap records sequence; it grants no installation or promotion authority.
 
-## Phase 1.1 — harden the offline semantic proof
+## Completed experimental slice — offline semantics + AXM Structure View
 
-- Add a selected tokenizer/tree-builder conformance matrix.
-- Expand malformed and adversarial fixtures with declared resource budgets.
-- Add a real JSON Schema validator or an independently reviewed validator.
-- Decide whether the production core moves to Rust now or after the CSS/layout
-  contracts stabilize. Record the decision and migration/equivalence tests.
+- Digest-bound local source, tokenizer/tree subset, separate Page Model.
+- Headless semantic, structure-layout, and Display List outputs.
+- Source-ordered bounded Structure Layout with no CSS/site-rendering claim.
+- Renderer-neutral rectangle/line/text Display List.
+- Inert SVG and HTML snapshots consuming that Display List.
+- Reversible Modification Ledger and explicit artifact receipts.
 
-Gate: exact fixture matrix, independent manifest verification, fuzz plan, and
-no loss of Source Record / Document Tree / Page Model separation.
+Gate status: focused fixtures, deterministic goldens/examples, local schema
+identity checks, source manifest, bounds/refusal tests, and two static visual
+inspections pass. Status remains `EXPERIMENTAL`.
 
-## Phase 2 — CSS and layout
+## Next cheapest hardening step
+
+- Run local intake verification from a clean checkout.
+- Add an independently reviewed JSON Schema validator.
+- Add selected tokenizer/tree conformance cases and a fuzz plan.
+- Decide whether to migrate the core to Rust now or after style/layout contracts
+  stabilize; preserve exact cross-implementation fixtures and digests where the
+  contract allows.
+
+Gate: clean local reproduction, declared fixture matrix, independent schema
+validation, fuzz/resource plan, and no loss of Source Record / Document Tree /
+Page Model separation.
+
+## Site style and layout — held
 
 - CSS tokenizer/parser subset.
 - Selector matching, cascade provenance, inheritance, and computed style.
 - Site styles and AXM/user overrides remain distinguishable.
-- Block/inline box generation and deterministic Layout Tree serialization.
-- Add `headless layout` without creating a visual fork.
+- Block/inline box generation and deterministic site Layout Tree.
 
-Gate: golden layout fixtures, cascade provenance tests, limits, and explicit
-unsupported CSS matrix.
+Gate: golden CSS/layout fixtures, cascade provenance tests, resource limits,
+and explicit unsupported matrix. The current Structure Layout does not satisfy
+this gate.
 
-## Phase 3 — display list and first visual body
-
-- Renderer-neutral display commands.
-- CPU renderer first if it gives the smallest inspectable proof.
-- Text, solid backgrounds, borders, raster images, clipping, and scrolling.
-- Visual and offscreen pixel modes consume the same display-list producer.
-
-Gate: visual/reference evidence plus proof that semantic/headless and visual
-report the same core digest and source lineage.
-
-## Phase 4 — brokered network intake
+## Brokered network intake — held
 
 - Explicit URL request contract, HTTP/HTTPS adapter, redirects, MIME, encoding,
   resource budgets, and provenance receipts.
 - No provider key or Workshop authority in the content route.
-- Define isolation honestly before public hostile input is enabled.
+- Define real isolation before public hostile input is enabled.
 
-Gate: redirect/size/timeout/encoding/hostile-URL corpus, exact authority review,
-and visible declaration of every boundary not yet isolated.
+Gate: redirect/size/timeout/encoding/hostile-URL corpus, authority review, and a
+visible declaration of every boundary not yet isolated.
 
-## Phase 5 — navigation
+## Navigation and live browser shell — held
 
 - One-page lifecycle, links, history, back/forward/reload, address surface.
+- Focus, input, scrolling, cleanup, and failure recovery.
 - Tabs only after lifecycle cleanup and isolation evidence are solid.
 
-## Phase 6 — AXM representation proof
-
-- Site View / AXM Minimal Structure View.
-- Reversible Modification Ledger with before/after digests and provenance.
-- Same semantic Page Model in both modes.
-
-## Phase 7 — bounded Workshop seams
+## Bounded Workshop seams — held
 
 - Explicit Discovery/Evidence handoffs.
 - Optional Hub home surface and QA integration.
 - Package/intake receipts and user-reviewed installation route.
 
 Search providers, JavaScript, WebAssembly, service workers, broad media, WebRTC,
-WebGPU, DRM, extensions, and full modern-web compatibility each require their
-own later capability and risk decision.
+WebGPU, DRM, extensions, and full modern-web compatibility each require a
+separate later capability and risk decision.

@@ -28,7 +28,7 @@ function build() {
   });
   const material = {
     schema: 'axm.web.source-manifest/v1',
-    engineVersion: '0.1.0-experimental.1',
+    engineVersion: '0.2.0-experimental.1',
     repositoryCheckpoint: 'fd6ec98a6a98a6666a980c359730ccec57a8cbe9',
     generatedAt: null,
     excludes: [outputRelative, '*.zip'],

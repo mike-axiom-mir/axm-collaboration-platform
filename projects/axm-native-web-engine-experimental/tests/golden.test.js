@@ -19,6 +19,14 @@ test('simple Document Tree and Page Model match committed goldens', function () 
   assert.equal(Canonical.stringify(result.pageModel), Canonical.stringify(readJson('golden/simple.page-model.json')));
 });
 
+test('simple Structure Layout, Display List, and Modification Ledger match committed goldens', function () {
+  const result = process('simple.html');
+  const structure = Engine.deriveStructure(result, { requestedBy: 'golden-test' });
+  assert.equal(Canonical.stringify(structure.layout), Canonical.stringify(readJson('golden/simple.structure-layout.json')));
+  assert.equal(Canonical.stringify(structure.displayList), Canonical.stringify(readJson('golden/simple.display-list.json')));
+  assert.equal(Canonical.stringify(structure.modificationLedger), Canonical.stringify(readJson('golden/simple.modification-ledger.json')));
+});
+
 test('malformed warning tree and held Page Model match committed goldens', function () {
   assert.equal(Canonical.stringify(process('malformed.html').documentTree), Canonical.stringify(readJson('golden/malformed.document-tree.json')));
   assert.equal(Canonical.stringify(process('held-elements.html').pageModel), Canonical.stringify(readJson('golden/held.page-model.json')));

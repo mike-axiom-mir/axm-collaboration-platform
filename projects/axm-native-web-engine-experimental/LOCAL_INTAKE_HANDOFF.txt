@@ -48,3 +48,43 @@ Choose one:
   REJECT
 
 Only Mike / the explicit AXM Merge Gate may make a promotion or canon decision.
+
+SECOND STEWARD PASS ADDENDUM — 2026-08-23
+-----------------------------------------
+Package version: 0.2.0-experimental.1
+Status remains: EXPERIMENTAL / installed false / promoted false / canon false
+
+NEW REVIEW SURFACES
+-------------------
+- STRUCTURE_VIEW_CONTRACT.md
+- examples/simple.structure.svg
+- examples/simple.browser-snapshot.html
+- headless commands: layout, display
+- explicit artifact commands: render-svg, browser-snapshot
+
+VERIFY THIS PASS
+----------------
+Run from the package root:
+    node --test tests/*.test.js
+    node scripts/verify-schemas.js
+    node scripts/build-examples.js --verify
+    node scripts/build-source-manifest.js --verify
+
+Then inspect both committed examples as inert data. Confirm their displayed
+source/Page Model/layout/Display List/ledger lineage against headless output.
+Any digest mismatch, active-content finding, unexpected write, clipped required
+boundary label, or newer conflicting local browser work becomes HOLD.
+
+STRUCTURE-VIEW BOUNDARY
+-----------------------
+The new visual body is a static AXM Structure View over the semantic Page Model.
+It is not Site View, CSS rendering, navigation, page execution, network access,
+or a production browser shell. Discarding the derived view is the declared
+reversal; original source bytes are not modified.
+
+FIRST SAFE LOCAL DECISION IS STILL ONE OF
+-----------------------------------------
+  HOLD
+  ACCEPT_FOR_TEST
+  REQUEST_REPAIR
+  REJECT

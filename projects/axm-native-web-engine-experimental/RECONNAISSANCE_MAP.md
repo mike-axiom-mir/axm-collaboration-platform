@@ -30,10 +30,10 @@ and it does not claim runtime behavior beyond the named evidence.
 
 - Extend the established typed contract, exact digest, explicit refusal, and
   honest evidence language inside this new package.
-- Extend the body-separation rule with one future visual body and the current
-  headless body sharing the same engine lineage.
-- Extend browser QA later with fixtures produced by this engine; do not change
-  the existing Lab in Phase 1.
+- Extend the body-separation rule with the detached Structure Browser snapshot
+  and headless body sharing the same engine lineage.
+- Extend browser QA later with fixtures produced by this engine; this detached
+  pass does not change the existing Lab.
 
 ## ADAPT
 
@@ -53,8 +53,13 @@ and it does not claim runtime behavior beyond the named evidence.
 - `axm.web.document-tree/v1`
 - `axm.web.page-model/v1`
 - `axm.web.headless-result/v1`
-- Offline tokenizer subset, stack-based tree builder, semantic Page Model, and
-  shared-core headless CLI.
+- `axm.web.structure-layout/v1`
+- `axm.web.display-list/v1`
+- `axm.web.modification-ledger/v1`
+- `axm.web.artifact-receipt/v1`
+- Offline tokenizer subset, stack-based tree builder, semantic Page Model,
+  shared-core headless CLI, inert SVG renderer, and HTML Structure Browser
+  snapshot.
 - Bounded fixtures, malformed-input tests, goldens, schemas, manifests, action
   report, limits, roadmap, and local-intake handoff.
 
@@ -64,8 +69,9 @@ and it does not claim runtime behavior beyond the named evidence.
   module edits.
 - Installation, local intake, promotion, merge, and canon.
 - HTTP/HTTPS, redirects, cookies, cache, search providers, downloads, and tabs.
-- CSS, cascade, layout tree, display list, pixels, window/UI, screenshots, and
-  visual claims.
+- CSS, cascade, site Layout Tree, site rendering, live window/UI, clicks,
+  navigation, compositor, and host-independent pixel claims. The bounded AXM
+  Structure Layout and static snapshots are the only visual proof in scope.
 - JavaScript, WebAssembly, service workers, WebRTC, WebGPU, DRM, extensions,
   broad media, and local/LAN authority.
 - WPT execution, established-engine differential tests, process sandboxing,

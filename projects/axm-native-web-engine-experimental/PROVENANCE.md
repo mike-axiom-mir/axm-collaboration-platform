@@ -16,9 +16,12 @@ was copied into this package. No external npm dependency is used.
 
 The high-level staged architecture follows the working handoff's source-grounded
 lessons: source bytes, tokenization/tree construction, semantic representation,
-style/layout, display list, and multiple output bodies remain separate. Those
-architecture references are not evidence that this Phase 1 subset conforms to
-the named standards or engines.
+style/layout, display list, and multiple output bodies remain separate. The
+Structure Layout, Display List, SVG renderer, HTML snapshot, and ledger in the
+second steward pass were authored specifically for this detached package; no
+external rendering source or dependency was introduced. Those architecture
+references are not evidence that this experimental subset conforms to the named
+standards or engines.
 
 ## License boundary
 

@@ -8,8 +8,8 @@
     "schema":{"const":"axm.web.headless-result/v1"},
     "version":{"const":1},
     "engine":{"type":"object","required":["engineVersion","sourceCommit","buildManifestDigest","standardsProfile","featureMatrixDigest","status","installed","promoted","implementation"]},
-    "mode":{"const":"semantic"},
-    "command":{"enum":["tokenize","parse","inspect","full"]},
+    "mode":{"enum":["semantic","axm-structure"]},
+    "command":{"enum":["tokenize","parse","inspect","full","layout","display"]},
     "source":{"$ref":"source-record.schema.json"},
     "capabilities":{"type":"object"},
     "documentDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
@@ -18,6 +18,12 @@
     "unsupported":{"type":"array"},
     "tokenStream":{"$ref":"token-stream.schema.json"},
     "document":{"$ref":"document-tree.schema.json"},
-    "page":{"$ref":"page-model.schema.json"}
+    "page":{"$ref":"page-model.schema.json"},
+    "layoutDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "displayListDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "ledgerDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "structureLayout":{"$ref":"structure-layout.schema.json"},
+    "displayList":{"$ref":"display-list.schema.json"},
+    "modificationLedger":{"$ref":"modification-ledger.schema.json"}
   }
 }

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.artifact-receipt/v1",
+  "title": "AXM Visual Artifact Write Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","status","command","artifactKind","outputPath","byteLength","sha256","sourceDigest","pageModelDigest","layoutDigest","displayListDigest","ledgerDigest","sourceMutated","activeContent","networkUsed"],
+  "properties": {
+    "schema":{"const":"axm.web.artifact-receipt/v1"},
+    "status":{"const":"EXPERIMENTAL"},
+    "command":{"enum":["render-svg","browser-snapshot"]},
+    "artifactKind":{"enum":["image/svg+xml","text/html"]},
+    "outputPath":{"type":"string","minLength":1},
+    "byteLength":{"type":"integer","minimum":1},
+    "sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "sourceDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "pageModelDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "layoutDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "displayListDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "ledgerDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "sourceMutated":{"const":false},
+    "activeContent":{"const":false},
+    "networkUsed":{"const":false}
+  }
+}

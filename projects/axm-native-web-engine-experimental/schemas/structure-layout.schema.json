@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.structure-layout/v1",
+  "title": "AXM Structure View Layout",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","mode","sourceDigest","documentDigest","pageModelDigest","viewport","canvas","limits","chrome","summary","items","held","layoutDigest"],
+  "properties": {
+    "schema":{"const":"axm.web.structure-layout/v1"},
+    "version":{"const":1},
+    "mode":{"const":"axm-structure"},
+    "sourceDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "documentDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "pageModelDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "viewport":{"$ref":"#/$defs/size"},
+    "canvas":{"$ref":"#/$defs/size"},
+    "limits":{"type":"object","required":["maxItems","maxTextChars","maxCanvasHeight","observedTextCharacters"]},
+    "chrome":{"type":"object","required":["product","status","title","locator","view","siteView","navigation","network"]},
+    "summary":{"type":"object","required":["headings","paragraphs","links","media","lists","tables","forms","controls"]},
+    "items":{"type":"array","items":{"$ref":"#/$defs/item"}},
+    "held":{"type":"array","items":{"type":"object","required":["feature","state"]}},
+    "layoutDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "size":{"type":"object","required":["width","height"],"properties":{"width":{"type":"integer","minimum":1},"height":{"type":"integer","minimum":1}},"additionalProperties":false},
+    "box":{"type":"object","required":["x","y","width","height"],"properties":{"x":{"type":"integer"},"y":{"type":"integer"},"width":{"type":"integer","minimum":1},"height":{"type":"integer","minimum":1}},"additionalProperties":false},
+    "item":{"type":"object","additionalProperties":false,"required":["itemId","nodeRef","kind","label","text","meta","textLines","metaLines","box"],"properties":{"itemId":{"type":"string","pattern":"^item-[0-9]{4}$"},"nodeRef":{"type":["string","null"]},"kind":{"enum":["heading","paragraph","link","media","list","table","form","plain-text"]},"label":{"type":"string"},"text":{"type":"string"},"meta":{"type":"string"},"textLines":{"type":"array","items":{"type":"string"}},"metaLines":{"type":"array","items":{"type":"string"}},"box":{"$ref":"#/$defs/box"}}}
+  }
+}

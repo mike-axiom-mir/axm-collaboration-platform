@@ -40,6 +40,12 @@ function main() {
   assert(result.tokenStream.schema === 'axm.web.token-stream/v1', 'token representative schema mismatch');
   assert(result.document.schema === 'axm.web.document-tree/v1', 'document representative schema mismatch');
   assert(result.page.schema === 'axm.web.page-model/v1', 'page representative schema mismatch');
+  const structure = Engine.run(fs.readFileSync(path.join(root, 'fixtures/simple.html')), {
+    command: 'display', requestedUrl: 'fixtures/simple.html', requestedBy: 'schema-verifier'
+  });
+  assert(structure.mode === 'axm-structure', 'structure representative mode mismatch');
+  assert(structure.displayList.schema === 'axm.web.display-list/v1', 'display-list representative schema mismatch');
+  assert(structure.modificationLedger.schema === 'axm.web.modification-ledger/v1', 'ledger representative schema mismatch');
   process.stdout.write('parsed ' + names.length + ' schema documents and checked representative schema identities\n');
 }
 

@@ -1,35 +1,42 @@
 # Security boundaries
 
-The Internet is hostile input. This Phase 1 core therefore starts offline and
-records the gap between memory-safe-ish implementation choices and real
-isolation.
+The Internet is hostile input. This experimental core remains offline and
+separates data preservation from execution authority.
 
 ## Implemented in this slice
 
-- Local bytes are bounded before UTF-8 decoding.
-- Invalid UTF-8 fails visibly.
-- Token count, attributes per element, and open-tree depth are bounded.
-- JavaScript, CSS, resource, iframe, canvas, media, and unknown elements are
-  inert data; held/unsupported features are reported.
-- No `eval`, dynamic module loading, VM execution, provider call, socket,
+- Local bytes are bounded before fatal UTF-8 decoding.
+- Token count, attributes per element, open-tree depth, semantic item count,
+  derived text, viewport, and canvas height are bounded.
+- JavaScript, CSS, resources, iframes, canvas, media, and unknown elements are
+  inert data; held/unsupported features stay visible.
+- No `eval`, VM execution, dynamic module loading, provider call, socket,
   listener, URL fetch, browser storage, Workshop state, shell, or native adapter
   route exists in the core.
-- Network-looking CLI inputs fail with a typed held/unsupported result.
-- Source bytes are preserved in a digest-bound Source Record. The CLI can omit
-  raw bytes from an envelope while keeping a digest/length binding.
-- Machine paths are not resolved or added by the core; the Source Record carries
-  only the caller-supplied locator.
+- Network-looking CLI inputs fail with typed held/unsupported results.
+- Source bytes remain preserved under an exact SHA-256/length binding. Headless
+  envelopes may omit raw bytes while retaining the binding.
+- Structure Layout and Display List carry source/Page Model lineage. The
+  Modification Ledger records identical before/after source digests,
+  `pageCodeExecuted: false`, and `networkUsed: false`.
+- The SVG renderer accepts only rectangles, lines, and escaped text; it emits no
+  scripts, anchors, events, foreign objects, or external resource references.
+- The HTML snapshot wraps that SVG with a deny-by-default Content Security
+  Policy and no active page controls.
+- Artifact commands require explicit output paths, refuse source-path overwrite,
+  refuse symbolic-link outputs, and require `--force` for existing regular
+  files.
 
 ## Not implemented
 
-- OS process sandboxing and site isolation.
-- A trusted Browser Shell, Network Broker, Web Content process, decoder process,
-  compositor, or AXM local-authority broker.
-- Decompression, archive, image, font, audio, video, TLS, certificate, DNS,
-  redirect, cache, cookie, download, or navigation hardening.
-- Resource budgets backed by real host metrics.
-- Fuzzing, sanitizer, fault-injection, or adversarial corpus beyond small parser
-  fixtures.
+- OS process sandboxing, site isolation, trusted Browser Shell, Network Broker,
+  Web Content process, decoder process, compositor, or AXM local-authority broker.
+- Decompression, image/font/audio/video decoding, TLS, certificates, DNS,
+  redirects, cookies, cache, downloads, navigation, or site-render hardening.
+- Race-free privileged filesystem mediation; the CLI is an unprivileged local
+  proof and must not be embedded in a privileged host as-is.
+- Fuzzing, sanitizers, fault injection, or a hostile corpus beyond focused
+  parser and output-escaping fixtures.
 
 ## Target boundary for later phases
 
