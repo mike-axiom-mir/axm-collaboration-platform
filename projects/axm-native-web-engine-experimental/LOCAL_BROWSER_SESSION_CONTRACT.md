@@ -19,10 +19,11 @@ Session inputs are bounded by default to:
 - 16 explicitly allowed pages;
 - 4 MiB combined source bytes, with the existing per-source bound also active;
 - 128 history entries;
+- 512 recorded session transitions; further actions are refused before mutation;
 - 16 KiB per loopback action request.
 
 Final-component symbolic-link page inputs, non-files, duplicate paths, unlisted
-local targets, URL schemes, and HTTP(S) targets fail or remain visibly held.
+local targets, URL schemes, HTTP(S) targets, and query-bearing locators fail or remain visibly held.
 
 ## Shared human/headless lineage
 
@@ -39,14 +40,14 @@ second navigation algorithm in browser code.
 Supported actions are:
 
 - activate a current-page link entry;
-- open an exact bundled locator or same-document fragment;
+- open an exact bundled locator or same-document fragment; query components remain held until they have defined semantics;
 - back and forward;
 - reload;
 - focus or scroll to a stable Structure Index entry.
 
 The resulting `axm.web.local-browser-session/v1` records bounded history,
 cursor, current lineage, focus/scroll references, every applied/held/no-op
-transition, reparse receipts, and a deterministic session digest.
+transition up to the hard 512-transition lifecycle bound, reparse receipts, and a deterministic session digest.
 
 ## Reload
 
