@@ -8,6 +8,7 @@ const BrowserAiControlHost = require('./browser-ai-control-host');
 const HtmlLiveBuilderHost = require('./html-live-builder-host');
 const ReferenceLabModule = require('./reference-lab');
 const ReferenceLabHost = require('./reference-lab-host');
+const ExposureLabHost = require('./exposure-lab-host');
 
 const HOST_RECEIPT_SCHEMA = 'axm.web.local-browser-host-receipt/v2';
 
@@ -34,10 +35,12 @@ async function createLocalBrowserHost(session, options) {
   );
   const shouldStartBuilderHost = options.builderEnabled === true;
   const shouldStartReferenceLab = options.referenceLab === true || Boolean(options.referenceConfig || options.referenceLabInstance);
+  const shouldStartExposureLab = options.exposureLab === true || Boolean(options.exposureConfig);
   let aiControlHost = null;
   let builderHost = null;
   let referenceLab = null;
   let referenceHost = null;
+  let exposureHost = null;
   try {
     if (shouldStartAiControlHost) {
       aiControlHost = await BrowserAiControlHost.createBrowserAiControlHost(
@@ -72,7 +75,19 @@ async function createLocalBrowserHost(session, options) {
         maxUploadBytes: config.maxUploadBytes
       });
     }
+    if (shouldStartExposureLab) {
+      const config = options.exposureConfig || {};
+      exposureHost = await ExposureLabHost.createExposureLabHost({
+        port: config.port,
+        maxJsonBytes: config.maxJsonBytes,
+        searchConfig: config.searchConfig || {},
+        networkAuthority: config.networkAuthority,
+        executorOptions: config.executorOptions || {},
+        visualStateProvider: function () { return aiControl.ensureVisualState(session.snapshot()); }
+      });
+    }
   } catch (error) {
+    if (exposureHost) await exposureHost.close().catch(function () {});
     if (referenceHost) await referenceHost.close().catch(function () {});
     if (builderHost) await builderHost.close().catch(function () {});
     if (aiControlHost) await aiControlHost.close().catch(function () {});
@@ -101,9 +116,13 @@ async function createLocalBrowserHost(session, options) {
     referenceLabHost: referenceHost,
     referenceLabUrl: referenceHost ? referenceHost.url : null,
     referenceLabReceipt: referenceHost ? referenceHost.receipt : null,
+    exposureLabHost: exposureHost,
+    exposureLabUrl: exposureHost ? exposureHost.url : null,
+    exposureLabReceipt: exposureHost ? exposureHost.receipt : null,
     controlState: function () { return aiControl.state(session.snapshot()); },
     visualState: function () { return aiControl.ensureVisualState(session.snapshot()); },
     close: async function () {
+      if (exposureHost) await exposureHost.close();
       if (referenceHost) await referenceHost.close();
       if (builderHost) await builderHost.close();
       if (aiControlHost) await aiControlHost.close();
