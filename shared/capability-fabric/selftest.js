@@ -19,11 +19,11 @@ function resealCandidate(candidate){
 function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
-  check(catalog.recipes.length===4,'reviewed catalog has validator, code, creation, and adapter recipes');
-  check(catalog.recipes.every(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}),'reviewed active recipes are explicitly typed as executable HAND capabilities');
+  check(catalog.recipes.length===5,'reviewed catalog has one portable SKILL plus validator, code, creation, and adapter HAND recipes');
+  check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===4&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.variants.some(function(variant){return variant.id===row.candidatePolicy.defaultVariantId;});}),'every reviewed recipe explicitly defaults to one named candidate variant');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
-  check(BuilderRegistry.activeIds().length===4&&BuilderRegistry.reviewCandidateIds().length===1,'modular builder registry separates four active builders from the remaining SKILL review candidate');
+  check(BuilderRegistry.activeIds().length===5&&BuilderRegistry.reviewCandidateIds().length===0,'modular builder registry contains five reviewed active builders and no pending candidates');
   check(catalog.recipes.every(function(row){const builder=BuilderRegistry.describe(row.builderId);return builder&&row.builderDigest===builder.implementationDigest;}),'every active recipe binds the exact modular builder digest');
 
   const packages={};
@@ -36,7 +36,8 @@ function main(){
     check(Fabric.canonicalJson(one)===Fabric.canonicalJson(two),recipe.id+' rebuild is byte-identical');
     check(Fabric.verifyCandidate(one.candidates[0]).ok,recipe.id+' package verifies');
     check(Object.values(one.candidates[0].package.authority).every(function(value){return value===false;}),recipe.id+' package carries no authority');
-    check(one.candidates[0].files['selftest.js']&&one.candidates[0].files['module-bundle.json'],recipe.id+' emits external tests and exact bundle');
+    const selftestPath=recipe.capabilityKind==='HAND'?'selftest.js':'skill.selftest.js';
+    check(one.candidates[0].files[selftestPath]&&one.candidates[0].files['module-bundle.json'],recipe.id+' emits its kind-specific external test and exact bundle');
     const modular=JSON.parse(one.candidates[0].files['modular-capability.contract.json']);
     const modularBody=Fabric.clone(modular);delete modularBody.contractDigest;check(modular.kind===recipe.capabilityKind&&modular.contractDigest===Fabric.digest(modularBody),recipe.id+' emits a digest-bound modular capability contract');
     packages[recipe.id]=one.candidates[0];

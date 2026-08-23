@@ -143,6 +143,7 @@
   // Lifecycle activation is applied after implementation sealing so the exact
   // source-reviewed builder digest remains the one bound by the admission plan.
   entries.find(function(entry){return entry.id==='closed-json-schema-validator-v1';}).status=ACTIVE;
+  entries.find(function(entry){return entry.id==='bounded-review-procedure-skill-v1';}).status=ACTIVE;
   const byId=new Map(entries.map(function(entry){return [entry.id,entry];}));
   function descriptor(entry){return {id:entry.id,capabilityKind:entry.capabilityKind,status:entry.status,proposalDigest:entry.proposalDigest,implementationDigest:entry.implementationDigest};}
   const registryBody={schema:REGISTRY_SCHEMA,version:'1.0.0',entries:entries.map(descriptor).sort(function(left,right){return left.id.localeCompare(right.id);})};

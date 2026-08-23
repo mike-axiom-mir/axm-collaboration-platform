@@ -5,17 +5,15 @@ This is the human and machine front door for
 memory, and offers an explicit deterministic ZIP download. `machine.js`
 exposes the same pure operations without filesystem authority.
 
-Every recipe and candidate is now explicitly typed as `HAND` or `SKILL`.
-Active v1 recipes remain reviewed `HAND` builders. The dependent Capability
-Recipe Foundry carries the first inactive portable `SKILL` pilot through source
-review without activating it.
+Every recipe and candidate is explicitly typed as `HAND` or `SKILL`. Active v1
+recipes include four reviewed executable `HAND` builders and one reviewed
+host-mediated portable `SKILL` builder.
 
 Builder code is no longer selected by hard-coded branches in the Fabric core.
-A digest-bound modular registry supplies four active HAND builders, including
-the validator admitted through the reviewed merge gate. The portable review
-SKILL remains a non-executable review candidate. The separate Capability Recipe
-Admission Gate can prove its exact evidence and prospective catalog diff, but
-cannot activate the candidate itself.
+A digest-bound modular registry supplies all five active builders. The validator
+and portable review SKILL were admitted through the reviewed merge gate. The
+separate Capability Recipe Admission Gate can prove exact evidence and a
+prospective catalog diff for future candidates, but cannot activate one itself.
 
 Explicit local materialization is CLI-only:
 
@@ -27,7 +25,8 @@ node tools/capability-fabric/cli.js build \
 
 The destination must not exist. Writes use new-file semantics, package bytes
 are read back and verified, and the detached Nursery must report
-`READY_FOR_LATER_INTAKE`. Generated `selftest.js` is not executed by the CLI.
+`READY_FOR_LATER_INTAKE`. Generated `selftest.js` or `skill.selftest.js` is not
+executed by the CLI.
 If writing, readback, or Nursery inspection fails, the CLI removes only the
 fresh candidate directory it created and preserves the explicit output parent.
 

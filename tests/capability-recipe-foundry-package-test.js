@@ -85,6 +85,7 @@ function main() {
     const activeStateAfter = { catalogDigest: Fabric.loadCatalog().catalogDigest, builderPresent: Fabric.ALLOWED_BUILDERS.includes(proposal.recipe.builderId), recipePresent: Fabric.loadCatalog().recipes.some((recipe) => recipe.id === proposal.recipe.id) };
     check(activeStateBefore.builderPresent && activeStateBefore.recipePresent && Foundry.canonicalJson(activeStateAfter) === Foundry.canonicalJson(activeStateBefore), 'materialization preserves the separately reviewed active state without causing activation');
 
+    const skillActiveStateBefore = { catalogDigest: Fabric.loadCatalog().catalogDigest, builderPresent: Fabric.ALLOWED_BUILDERS.includes(skillIntent.recipe.builderId), recipePresent: Fabric.loadCatalog().recipes.some((recipe) => recipe.id === skillIntent.recipe.id) };
     const skillResult = Foundry.forge(skillIntent), skillMaterialized = Cli.materialize(skillResult, root);
     check(skillMaterialized.fileCount === 10 && skillMaterialized.builderSourceExecuted === false, 'CLI materializes the eight-file SKILL review packet without execution');
     const skillRun = childProcess.spawnSync(process.execPath, [path.join(skillMaterialized.directory, 'builder-contribution.selftest.js')], { cwd: skillMaterialized.directory, encoding: 'utf8', timeout: 10000 });
@@ -96,7 +97,8 @@ function main() {
     check(Object.keys(builtSkill.portableFiles).sort().join(',') === 'SKILL.md,skill.contract.json,skill.selftest.js', 'SKILL builder emits the exact portable three-file set');
     const portableContract = JSON.parse(builtSkill.portableFiles['skill.contract.json']);
     check(portableContract.authorityInherited === false && portableContract.installed === false && portableContract.promoted === false && portableContract.canon === false, 'portable SKILL contract inherits no authority');
-    check(!Fabric.ALLOWED_BUILDERS.includes(skillProposal.recipe.builderId) && !Fabric.loadCatalog().recipes.some((recipe) => recipe.id === skillProposal.recipe.id), 'SKILL builder and recipe remain inactive and absent from the active catalog');
+    const skillActiveStateAfter = { catalogDigest: Fabric.loadCatalog().catalogDigest, builderPresent: Fabric.ALLOWED_BUILDERS.includes(skillProposal.recipe.builderId), recipePresent: Fabric.loadCatalog().recipes.some((recipe) => recipe.id === skillProposal.recipe.id) };
+    check(skillActiveStateBefore.builderPresent && skillActiveStateBefore.recipePresent && Foundry.canonicalJson(skillActiveStateAfter) === Foundry.canonicalJson(skillActiveStateBefore), 'SKILL materialization preserves its separately reviewed active state without causing activation');
     assert.throws(() => Cli.materialize(first, root), (error) => error && error.receipt && error.receipt.code === 'OUTPUT_OVERWRITE_REFUSED');
     passed += 1; process.stdout.write('PASS CLI refuses exact packet overwrite\n');
 
