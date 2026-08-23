@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `03606f669b08fcf41160213e97f41c0d943144a5f4429d5362f75dd6a9324620`
+Twin digest: `2f0913a3863370c8a71cc65d020164519e7d1e103483253466b4dfab2e03e365`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -13,7 +13,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | aetherfx | HAND | TEST | 18 | WRITE_CANDIDATE | UNKNOWN | `a1dc66141473e5d9…` |
 | agent-command-center | BRIDGE | TEST | 8 | NONE | UNKNOWN | `3d065deca1114cde…` |
 | agent-tool-forge | HAND | TEST | 6 | WRITE_CANDIDATE | UNKNOWN | `082142fa4cab385f…` |
-| ai-habitat | BRIDGE | TEST | 6 | NETWORK_READ | UNKNOWN | `b2e0b00c67e2481d…` |
+| ai-habitat | BRIDGE | TEST | 6 | NETWORK_READ | UNKNOWN | `18d6d1e3fbc7a9cb…` |
 | ai-task-talk | ROUTE | TEST | 3 | NONE | UNKNOWN | `ca912d461fb4a91b…` |
 | ai-team | BRIDGE | TEST | 30 | NONE | UNKNOWN | `2cf51493d4ec51a9…` |
 | ai-team-steward-lab | ROOM | TEST | 8 | NONE | LOW | `8ee9cdc509be33d6…` |
@@ -44,7 +44,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | capability-fabric | BRIDGE | EXPERIMENTAL | 5 | WRITE_CANDIDATE | UNKNOWN | `e9205240c39b3e5e…` |
 | capability-gap-workbench | HAND | TEST | 5 | WRITE_CANDIDATE | MEDIUM | `e8c183f4486ef4ae…` |
 | capability-recipe-foundry | HAND | EXPERIMENTAL | 6 | WRITE_CANDIDATE | UNKNOWN | `d34e2bd0e664ab78…` |
-| challenge-arena | HAND | TEST | 5 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `f0177c0134c697f5…` |
+| challenge-arena | HAND | TEST | 5 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `5ab1c562399aff7e…` |
 | character-animation-mocap-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `2aea59965e3adca5…` |
 | character-creature-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `31530b278d8d7694…` |
 | chatgpt-connector | BRIDGE | TEST | 4 | WRITE_CANDIDATE | UNKNOWN | `dfcb60c697ea2efd…` |
