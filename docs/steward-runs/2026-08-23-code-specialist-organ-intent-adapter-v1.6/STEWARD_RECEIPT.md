@@ -27,6 +27,7 @@ material, write the Workshop, install, integrate, publish, promote, or change
 - Reviewed v1.5 source: `76abb8c6532fef4e0af2f0851d4559b1dee275d1`
 - Explicit lineage-join commit: `36235effcfec4d11923d8a87a12eeb76cc552c1b`
 - Bounded technical commit: `8b2fbc3f9f0911fe8c9cdbf05a111b4439198489`
+- Verified evidence-closure commit: `48959aa5e091d8a8b928487ce1a223011f365ad6`
 - Complete technical payload versus the selected base: 398 paths, recorded in
   `TECHNICAL_CHANGED_PATHS.txt` with path-set digest
   `sha256:c353adc3998387579fa0debf216b77c7f20fe182db64baef80dfb985f54d87ed`.
@@ -67,6 +68,8 @@ payload is enumerated separately so the review receipt stays compact.
 - All ten required `AGENTS.md` commands: exit 0.
 - `node verify.js`: 0 FAIL, 25 warnings, spine `b618c5762240070c`.
 
+The listed checks were rerun against the exact evidence-closure commit above.
+
 The retained 25 warnings are visible, not converted into passes: 20 game QA
 warnings, one legacy `UNDECLARED` manifest kind, and four promotion claims that
 still require current selftest evidence.
@@ -92,4 +95,3 @@ the canonical checkout, or `CANON` decision occurred.
 
 Technical result: `TEST`, ready for review. Canon decision: not requested and
 not made. Mike remains the final integration and merge gate.
-

@@ -4,6 +4,8 @@
 
 - Source branch: `codex/code-capability-fabric-code-specialist-organ-intent-adapter-v1.6`
 - Technical source commit: `8b2fbc3f9f0911fe8c9cdbf05a111b4439198489`
+- Exact verified source commit for integration review:
+  `48959aa5e091d8a8b928487ce1a223011f365ad6`
 - Source lineage join: `36235effcfec4d11923d8a87a12eeb76cc552c1b`
 - Join parents: canonical selection
   `0f54e9db45679a2f5405e393a1236ebcaf75a4fa` and reviewed v1.5
@@ -12,10 +14,14 @@
 
 ## Target drift observed before sealing
 
-The target advanced during this run to
+The target first advanced during this run to
 `74cdd057b258a49a1bafce6c2ad295e87bdd5215` and was busy with 21 uncommitted
 Capability Fabric paths. None of those uncommitted paths overlapped the source
 payload at this observation, but a busy checkout is not an integration target.
+
+The final re-check found that work committed, the checkout clean, and the target
+advanced again to `e20e6d4ad9efbbfe3ba0c6c4d720ef5cae1e0037`. The exact final
+observation and merge-tree result are sealed in `TARGET_DRIFT_ADDENDUM.md`.
 
 The source and target now diverge from merge base
 `0f54e9db45679a2f5405e393a1236ebcaf75a4fa`. A read-only merge-tree check found
@@ -26,15 +32,19 @@ resolved by choosing an older side.
 
 ## Exact safe review route
 
-Do not run these commands in the busy canonical checkout. After its work is
-committed or moved and Mike selects the new exact target commit, create a clean
-review worktree and re-check drift:
+Do not run these commands in the canonical checkout. If the clean target still
+equals the final observed commit and Mike selects it, create a clean review
+worktree and re-check drift:
 
 ```powershell
+$expectedTarget = "e20e6d4ad9efbbfe3ba0c6c4d720ef5cae1e0037"
+$sourceCommit = "48959aa5e091d8a8b928487ce1a223011f365ad6"
 $targetCommit = git -C $targetRepo rev-parse HEAD
-git -C $targetRepo status --short
+$targetState = @(git -C $targetRepo status --porcelain)
+if ($targetState.Count -ne 0) { throw "Target is busy; do not integrate here." }
+if ($targetCommit -ne $expectedTarget) { throw "Target drifted; repeat merge-tree review." }
 git -C $targetRepo worktree add -b codex/code-specialist-organ-intent-v1.6-integration-review $reviewPath $targetCommit
-git -C $reviewPath merge --no-ff --no-commit 8b2fbc3f9f0911fe8c9cdbf05a111b4439198489
+git -C $reviewPath merge --no-ff --no-commit $sourceCommit
 ```
 
 If the merge reports only generated index/City conflicts, regenerate them from
@@ -54,8 +64,5 @@ Then review `git diff --cached`, run the focused Fabric/Organ/Game/City checks
 and every required `AGENTS.md` command, and let Mike decide whether to commit the
 integration merge. Do not promote or CANON as part of this route.
 
-The final source tip will include this receipt after its evidence-only commit;
-use that final tip instead of the technical commit if Mike wants the steward-run
-evidence in the integration review. Re-check target drift again immediately
-before that review action.
-
+The exact verified source commit already includes this steward-run receipt.
+Re-check target drift again immediately before the review action.
