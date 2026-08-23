@@ -38,7 +38,8 @@ function createRun(options) {
       consent_enabled: options.policy.consent && options.policy.consent.enabled === true,
       provider_egress_mode: options.policy.provider_egress && options.policy.provider_egress.mode,
       hub_sandbox: options.policy.mode && options.policy.mode.hub_sandbox === true,
-      external_mode: options.policy.mode && options.policy.mode.external_mode === true
+      external_mode: options.policy.mode && options.policy.mode.external_mode === true,
+      max_run_minutes: options.policy.limits && options.policy.limits.max_run_minutes
     },
     profile_sha256: hashFile(options.configFile),
     invocation: {
@@ -94,6 +95,7 @@ function finalizeRun(options) {
   const finalProfileHash = hashFile(options.configFile);
   const initialPolicyHash = manifest.policy && manifest.policy.sha256 || null;
   const initialProfileHash = manifest.profile_sha256 || null;
+  const watchdogTimedOut = options.watchdogTimedOut === true;
 
   const packet = {
     schema: 'axm.hermes-return-packet/v1',
@@ -101,6 +103,11 @@ function finalizeRun(options) {
     finished_at: now(),
     process_exit_code: Number.isInteger(options.exitCode) ? options.exitCode : null,
     process_signal: options.signal || null,
+    watchdog: {
+      max_run_minutes: manifest.policy && manifest.policy.max_run_minutes || null,
+      timed_out: watchdogTimedOut,
+      process_tree_termination_guaranteed: false
+    },
     source_commit: options.sourceLock.commit,
     source_tree: options.sourceLock.tree || null,
     initial_policy_sha256: initialPolicyHash,
@@ -126,11 +133,13 @@ function finalizeRun(options) {
       receipt_set_sha256: receiptSetHash(sessionEvents),
       latest_turn_evidence: sessionEvidence
     },
-    outcome: sessionEvidence && sessionEvidence.failed === true ? 'session-reported-failure' :
+    outcome: watchdogTimedOut ? 'launcher-watchdog-timeout' :
+      sessionEvidence && sessionEvidence.failed === true ? 'session-reported-failure' :
       sessionEvidence && sessionEvidence.interrupted === true ? 'session-reported-interruption' :
       options.exitCode === 0 ? 'process-exited-zero' : 'process-exited-nonzero-or-unknown',
     integrity_flags: {
       provider_policy_mismatch: providerMismatch,
+      watchdog_timeout: watchdogTimedOut,
       source_was_verified_before_launch: options.sourceVerified === true,
       source_verified_after_run: options.sourceVerifiedAfter === true,
       policy_changed_during_run: Boolean(initialPolicyHash && finalPolicyHash && initialPolicyHash !== finalPolicyHash),
