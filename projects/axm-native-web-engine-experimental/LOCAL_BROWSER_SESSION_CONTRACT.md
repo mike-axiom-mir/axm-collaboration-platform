@@ -84,10 +84,19 @@ browser package so package code does not become its only judge.
 
 `serve-local` binds an ephemeral HTTP listener to `127.0.0.1` only and prints an
 `axm.web.local-browser-host-receipt/v1`. Routes live beneath a random capability
-path. The host checks the exact `Host` header, rejects cross-origin mutations,
-accepts action mutations only as bounded `application/json`, exposes no CORS
-permission, and sends no-store, no-sniff, no-referrer, frame-denial, and
-deny-by-default Content Security Policy headers.
+path. The host validates the exact `Host` header. Every `POST /action` mutation
+must also carry an `Origin` header exactly equal to that loopback shell origin;
+a missing Origin and a different Origin both fail before action parsing or
+session mutation. Accepted actions must then be bounded `application/json`.
+The host exposes no CORS permission.
+
+Shell HTML and JSON responses use no-store, no-sniff, no-referrer, and frame
+denial together with `Cross-Origin-Opener-Policy: same-origin`,
+`Cross-Origin-Resource-Policy: same-origin`, and a Permissions Policy that denies
+camera, microphone, geolocation, display capture, USB, serial, HID, and
+Bluetooth. The deny-by-default Content Security Policy also includes
+`frame-ancestors 'none'` in addition to its script hash, self-only connection,
+and resource/form/worker restrictions.
 
 One CSP-hash-bound AXM controller script is active. It renders page-derived
 values through DOM text nodes, never through HTML injection. Page scripts are
@@ -95,8 +104,9 @@ not executed, original forms are not controls, external resources are not
 loaded, and only links whose target is already in the explicit local bundle get
 an enabled activation control.
 
-The loopback transport is trusted-shell transport, not the future Network
-Broker and not evidence that hostile web input is isolated.
+These controls harden the trusted loopback shell boundary; they are not evidence
+that hostile arbitrary web content has been isolated. The loopback transport is
+not the future Network Broker and does not close the Web Content process gate.
 
 ## Lifecycle and cleanup
 
