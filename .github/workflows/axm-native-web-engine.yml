@@ -64,3 +64,41 @@ jobs:
           path: projects/axm-native-web-engine-experimental/manifests/source-manifest.json
           if-no-files-found: error
           retention-days: 14
+
+  browser-engine-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: projects/axm-native-web-engine-experimental
+    steps:
+      - name: Check out the browser candidate
+        uses: actions/checkout@v4
+      - name: Use the declared Node.js line
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.17.0
+      - name: Use independent schema-validator Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned independent JSON Schema engine
+        run: python -m pip install --disable-pip-version-check --no-input jsonschema==4.26.0
+      - name: Verify browser package on native Windows paths
+        run: npm run verify
+      - name: Independently validate schemas and committed artifacts
+        run: python ../../.github/scripts/validate-axm-native-web-schemas.py . --selftest
+      - name: Independently verify committed browser session
+        run: node ../../.github/scripts/verify-axm-native-web-session.js golden/local-session.navigation.json --selftest
+      - name: Independently audit native web security surface
+        run: node ../../.github/scripts/audit-axm-native-web-security.js . --selftest
+      - name: Verify helper syntax on Windows
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -Recurse -File -Filter *.js
+          foreach ($file in $files) {
+            node --check $file.FullName
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          node --check ../../.github/scripts/verify-axm-native-web-session.js
+          node --check ../../.github/scripts/audit-axm-native-web-security.js
+          python -m py_compile ../../.github/scripts/validate-axm-native-web-schemas.py

@@ -142,3 +142,19 @@ test('endpoint validation is pinned for fixed APIs even if a tampered plan is re
     });
   }, function (error) { return error.code === 'SEARCH_PROVIDER_FAILED' && error.details.code === 'SEARCH_ENDPOINT_REFUSED'; });
 });
+
+test('re-digested plans cannot select a different environment secret', async function () {
+  const forged = plan('brave');
+  forged.requests[0].auth.secretEnv = 'OPENAI_API_KEY';
+  delete forged.planDigest;
+  forged.planDigest = Digest.canonicalDigest(forged);
+  let called = false;
+  await assert.rejects(function () {
+    return Executor.executeSearchPlan(forged, {
+      networkAuthority: 'EXPLICIT_ALLOW',
+      env: { OPENAI_API_KEY: 'must-not-leave-process' },
+      fetchImpl: async function () { called = true; return jsonResponse({ web: { results: [] } }); }
+    });
+  }, function (error) { return error.code === 'SEARCH_PROVIDER_FAILED' && error.details.code === 'SEARCH_AUTH_REF_REFUSED'; });
+  assert.equal(called, false);
+});

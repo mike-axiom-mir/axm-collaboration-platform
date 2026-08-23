@@ -228,6 +228,58 @@ test('AI executor rejects re-digested endpoint tampering before transport', asyn
   assert.equal(called, false);
 });
 
+test('AI executor independently binds body and credential references after re-digest', async function () {
+  let reg = Ai.setRegistryMode(registry({ localEnabled: false }), 'single');
+  reg = Ai.setActiveProvider(reg, 'openai-cloud');
+  const plan = Ai.buildAiPlan('Cloud test', reg, {});
+
+  const secretTamper = JSON.parse(JSON.stringify(plan));
+  secretTamper.requests[0].auth.secretEnv = 'ANTHROPIC_API_KEY';
+  delete secretTamper.planDigest;
+  secretTamper.planDigest = Digest.canonicalDigest(secretTamper);
+  let called = false;
+  await assert.rejects(function () {
+    return AiExecutor.executeAiPlan(secretTamper, {
+      networkAuthority: 'EXPLICIT_ALLOW',
+      env: { ANTHROPIC_API_KEY: 'must-not-leave-process' },
+      fetchImpl: async function () { called = true; throw new Error('must not execute'); }
+    });
+  }, function (error) { return error.code === 'AI_PROVIDER_FAILED' && error.details.code === 'AI_AUTH_REF_REFUSED'; });
+  assert.equal(called, false);
+
+  const bodyTamper = JSON.parse(JSON.stringify(plan));
+  bodyTamper.requests[0].body.model = 'changed-after-broker';
+  delete bodyTamper.planDigest;
+  bodyTamper.planDigest = Digest.canonicalDigest(bodyTamper);
+  await assert.rejects(function () {
+    return AiExecutor.executeAiPlan(bodyTamper, {
+      networkAuthority: 'EXPLICIT_ALLOW',
+      env: { OPENAI_API_KEY: 'secret' },
+      fetchImpl: async function () { called = true; throw new Error('must not execute'); }
+    });
+  }, function (error) { return error.code === 'AI_PROVIDER_FAILED' && error.details.code === 'AI_REQUEST_SHAPE_REFUSED'; });
+  assert.equal(called, false);
+});
+
+test('AI response byte limit cancels the stream before full buffering', async function () {
+  let pulls = 0;
+  let canceled = false;
+  const stream = new ReadableStream({
+    pull: function (controller) {
+      pulls += 1;
+      controller.enqueue(new Uint8Array(700));
+      if (pulls >= 5) controller.close();
+    },
+    cancel: function () { canceled = true; }
+  });
+  const response = new Response(stream, { headers: { 'content-type': 'application/json' } });
+  await assert.rejects(function () {
+    return AiExecutor.readBoundedJson(response, 1024);
+  }, function (error) { return error.code === 'AI_RESPONSE_BYTES_LIMIT'; });
+  assert.equal(canceled, true);
+  assert.ok(pulls < 5);
+});
+
 test('research mode is a real switch and cannot run while disabled', function () {
   const off = Ai.setResearchMode(registry(), false);
   assert.throws(function () {

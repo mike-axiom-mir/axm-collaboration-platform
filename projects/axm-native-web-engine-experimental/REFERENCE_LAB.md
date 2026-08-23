@@ -58,7 +58,12 @@ const registry = Ai.createRegistry([
 ], { mode: 'single' });
 ```
 
-No secret value belongs in the registry. Cloud adapters keep only environment-variable references in plans and materialize the actual secret at the explicit executor boundary.
+No secret value belongs in the registry. Cloud adapters keep only
+environment-variable references in plans and materialize the actual secret at
+the explicit executor boundary. Each executor revalidates the adapter, request
+shape, body digest, endpoint, and credential reference after plan-digest
+verification. A non-default credential reference must also appear in the
+executor's exact `allowedSecretRefs` list.
 
 ## Enabling the companion browser surface
 

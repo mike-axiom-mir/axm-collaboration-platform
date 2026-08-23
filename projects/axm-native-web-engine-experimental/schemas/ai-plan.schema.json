@@ -1,8 +1,69 @@
 {
-  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"axm.web.ai-plan/v1","title":"AXM AI Plan","type":"object","additionalProperties":false,
-  "required":["schema","version","status","task","registryDigest","mode","providerIds","requests","authority","planDigest"],
-  "properties":{"schema":{"const":"axm.web.ai-plan/v1"},"version":{"const":1},"status":{"const":"EXPERIMENTAL"},"task":{"type":"string","minLength":1,"maxLength":12000},"registryDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},"mode":{"enum":["single","panel"]},
-  "providerIds":{"type":"array","minItems":1,"maxItems":8,"uniqueItems":true,"items":{"type":"string","pattern":"^[a-z][a-z0-9._-]*$","maxLength":40}},
-  "requests":{"type":"array","minItems":1,"maxItems":8,"items":{"type":"object","additionalProperties":false,"required":["providerId","adapter","method","url","headers","auth","body","bodyDigest","transportAuthority","visualStateAttached","searchEvidenceAttached","referenceAttached","referenceReceiptDigest"],"properties":{"providerId":{"type":"string","maxLength":40},"adapter":{"enum":["openai-responses","anthropic-messages","openai-compatible-chat","gemini-generate-content","ollama-chat"]},"method":{"const":"POST"},"url":{"type":"string","minLength":1,"maxLength":2048},"headers":{"type":"object","additionalProperties":{"type":"string"}},"auth":{"type":["object","null"]},"body":{"type":"object"},"bodyDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},"transportAuthority":{"const":"REQUIRES_EXPLICIT_AI_EXECUTOR"},"visualStateAttached":{"type":"boolean"},"searchEvidenceAttached":{"type":"boolean"},"referenceAttached":{"type":"boolean"},"referenceReceiptDigest":{"type":["string","null"],"pattern":"^[a-f0-9]{64}$"}}}},
-  "authority":{"type":"object","additionalProperties":false,"required":["networkExecutionGranted","browserMutationAllowed","searchExecutionGranted","toolExecutionGranted","installAllowed","promotionAllowed","canonAllowed"],"properties":{"networkExecutionGranted":{"const":false},"browserMutationAllowed":{"const":false},"searchExecutionGranted":{"const":false},"toolExecutionGranted":{"const":false},"installAllowed":{"const":false},"promotionAllowed":{"const":false},"canonAllowed":{"const":false}}},"planDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}}
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.ai-plan/v1",
+  "title": "AXM AI Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","task","registryDigest","mode","providerIds","requests","authority","planDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.ai-plan/v1"},
+    "version": {"const": 1},
+    "status": {"const": "EXPERIMENTAL"},
+    "task": {"type": "string", "minLength": 1, "maxLength": 12000},
+    "registryDigest": {"$ref": "#/$defs/digest"},
+    "mode": {"enum": ["single","panel"]},
+    "providerIds": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/providerId"}},
+    "requests": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"$ref": "#/$defs/request"}},
+    "authority": {"$ref": "#/$defs/authority"},
+    "planDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "providerId": {"type": "string", "pattern": "^[a-z][a-z0-9._-]*$", "maxLength": 40},
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type","secretEnv","header","prefix"],
+      "properties": {
+        "type": {"const": "ENV_HEADER_SECRET"},
+        "secretEnv": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$"},
+        "header": {"type": "string", "minLength": 1, "maxLength": 64},
+        "prefix": {"type": "string", "maxLength": 32}
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["providerId","adapter","method","url","headers","auth","body","bodyDigest","transportAuthority","visualStateAttached","searchEvidenceAttached","referenceAttached","referenceReceiptDigest"],
+      "properties": {
+        "providerId": {"$ref": "#/$defs/providerId"},
+        "adapter": {"enum": ["openai-responses","anthropic-messages","openai-compatible-chat","gemini-generate-content","ollama-chat"]},
+        "method": {"const": "POST"},
+        "url": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "headers": {"type": "object", "maxProperties": 8, "additionalProperties": {"type": "string", "maxLength": 1024}},
+        "auth": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/auth"}]},
+        "body": {"type": "object"},
+        "bodyDigest": {"$ref": "#/$defs/digest"},
+        "transportAuthority": {"const": "REQUIRES_EXPLICIT_AI_EXECUTOR"},
+        "visualStateAttached": {"type": "boolean"},
+        "searchEvidenceAttached": {"type": "boolean"},
+        "referenceAttached": {"type": "boolean"},
+        "referenceReceiptDigest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["networkExecutionGranted","browserMutationAllowed","searchExecutionGranted","toolExecutionGranted","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "networkExecutionGranted": {"const": false},
+        "browserMutationAllowed": {"const": false},
+        "searchExecutionGranted": {"const": false},
+        "toolExecutionGranted": {"const": false},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    }
+  }
 }

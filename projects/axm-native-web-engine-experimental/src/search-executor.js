@@ -16,6 +16,11 @@ const PROVIDER_COST_USD = Object.freeze({
   kagi: 0.012
 });
 
+const DEFAULT_SECRET_REFS = Object.freeze({
+  brave: Object.freeze({ type: 'ENV_HEADER_SECRET', header: 'X-Subscription-Token', prefix: '', secretEnv: 'BRAVE_SEARCH_API_KEY' }),
+  kagi: Object.freeze({ type: 'ENV_HEADER_SECRET', header: 'Authorization', prefix: 'Bot ', secretEnv: 'KAGI_API_TOKEN' })
+});
+
 class AxmSearchExecutionError extends Error {
   constructor(code, message, details) {
     super(message);
@@ -56,10 +61,51 @@ function validatePlan(plan) {
       max: MAX_PROVIDER_REQUESTS
     });
   }
+  if (!plan.query || plan.query.schema !== Search.SEARCH_QUERY_SCHEMA || !Array.isArray(plan.providers)
+      || plan.providers.length !== plan.requests.length || new Set(plan.providers).size !== plan.providers.length
+      || plan.requests.some(function (request, index) { return !request || request.provider !== plan.providers[index]; })) {
+    throw new AxmSearchExecutionError('SEARCH_PLAN_INVALID', 'search query, provider order, and request order must agree exactly');
+  }
   if (!plan.authority || plan.authority.networkExecutionGranted !== false) {
     throw new AxmSearchExecutionError('SEARCH_PLAN_INVALID', 'search plan must remain non-executing; authority is granted only to this executor call');
   }
   return plan;
+}
+
+function sameStringMap(actual, expected) {
+  if (!actual || typeof actual !== 'object' || Array.isArray(actual)) return false;
+  const actualKeys = Object.keys(actual).sort();
+  const expectedKeys = Object.keys(expected).sort();
+  return actualKeys.length === expectedKeys.length && actualKeys.every(function (key, index) {
+    return key === expectedKeys[index] && typeof actual[key] === 'string' && actual[key] === expected[key];
+  });
+}
+
+function sameSecretRef(actual, expected) {
+  return Boolean(actual && expected && actual.type === 'ENV_HEADER_SECRET'
+    && actual.header === expected.header && actual.prefix === expected.prefix && actual.secretEnv === expected.secretEnv);
+}
+
+function allowedSecretRefs(provider, options) {
+  const defaults = DEFAULT_SECRET_REFS[provider] ? [DEFAULT_SECRET_REFS[provider]] : [];
+  const explicit = Array.isArray(options.allowedSecretRefs) ? options.allowedSecretRefs.filter(function (item) {
+    return item && item.provider === provider;
+  }) : [];
+  return defaults.concat(explicit);
+}
+
+function validateRequestEnvelope(request, options) {
+  if (!request || request.method !== 'GET' || request.transportAuthority !== 'REQUIRES_EXPLICIT_NETWORK_EXECUTOR'
+      || !sameStringMap(request.headers, { Accept: 'application/json' })) {
+    throw new AxmSearchExecutionError('SEARCH_REQUEST_SHAPE_REFUSED', 'search request method, headers, or transport authority drifted', { provider: request && request.provider });
+  }
+  if (request.provider === 'searxng') {
+    if (request.auth !== null) throw new AxmSearchExecutionError('SEARCH_AUTH_REF_REFUSED', 'SearXNG plans may not select an environment secret', { provider: request.provider });
+    return;
+  }
+  if (!allowedSecretRefs(request.provider, options).some(function (expected) { return sameSecretRef(request.auth, expected); })) {
+    throw new AxmSearchExecutionError('SEARCH_AUTH_REF_REFUSED', 'search credential reference is not the provider default or an explicit executor allowlist entry', { provider: request.provider, secretEnv: request.auth && request.auth.secretEnv });
+  }
 }
 
 function endpointIdentity(value) {
@@ -172,6 +218,7 @@ function safeFailure(provider, error) {
 }
 
 async function executeOne(request, query, options) {
+  validateRequestEnvelope(request, options);
   validateRequestEndpoint(request, options);
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   if (typeof fetchImpl !== 'function') throw new AxmSearchExecutionError('SEARCH_FETCH_UNAVAILABLE', 'no fetch implementation is available');
@@ -289,6 +336,7 @@ module.exports = {
   PROVIDER_COST_USD,
   AxmSearchExecutionError,
   validatePlan,
+  validateRequestEnvelope,
   validateRequestEndpoint,
   materializeHeaders,
   readBoundedJson,

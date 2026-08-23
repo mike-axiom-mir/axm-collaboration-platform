@@ -9,6 +9,9 @@ const DEFAULT_TIMEOUT_MS = 10000;
 const DEFAULT_MAX_RESPONSE_BYTES = 2 * 1024 * 1024;
 const MAX_PROVIDER_REQUESTS = 2;
 const FAILURE_MODES = new Set(['require-all', 'best-effort']);
+const DEFAULT_SECRET_REFS = Object.freeze({
+  brave: Object.freeze({ type: 'ENV_HEADER_SECRET', header: 'X-Subscription-Token', prefix: '', secretEnv: 'BRAVE_SEARCH_API_KEY' })
+});
 
 class AxmImageSearchExecutionError extends Error {
   constructor(code, message, details) {
@@ -30,8 +33,37 @@ function validatePlan(plan) {
   const computed = Digest.canonicalDigest(planMaterial(plan));
   if (computed !== plan.planDigest) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_PLAN_DIGEST_MISMATCH', 'image-search plan digest mismatch');
   if (!Array.isArray(plan.requests) || plan.requests.length < 1 || plan.requests.length > MAX_PROVIDER_REQUESTS) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_PLAN_INVALID', 'image-search request count is outside executor bound');
+  if (!plan.query || plan.query.schema !== ImageSearch.IMAGE_SEARCH_QUERY_SCHEMA || !Array.isArray(plan.providers)
+      || plan.providers.length !== plan.requests.length || new Set(plan.providers).size !== plan.providers.length
+      || plan.requests.some(function (request, index) { return !request || request.provider !== plan.providers[index]; })) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_PLAN_INVALID', 'image-search query, provider order, and request order must agree exactly');
   if (!plan.authority || plan.authority.networkExecutionGranted !== false || plan.authority.imageFetchGranted !== false) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_PLAN_INVALID', 'image-search plan must remain non-executing');
   return plan;
+}
+
+function sameStringMap(actual, expected) {
+  if (!actual || typeof actual !== 'object' || Array.isArray(actual)) return false;
+  const actualKeys = Object.keys(actual).sort();
+  const expectedKeys = Object.keys(expected).sort();
+  return actualKeys.length === expectedKeys.length && actualKeys.every(function (key, index) {
+    return key === expectedKeys[index] && typeof actual[key] === 'string' && actual[key] === expected[key];
+  });
+}
+
+function sameSecretRef(actual, expected) {
+  return Boolean(actual && expected && actual.type === 'ENV_HEADER_SECRET'
+    && actual.header === expected.header && actual.prefix === expected.prefix && actual.secretEnv === expected.secretEnv);
+}
+
+function validateRequestEnvelope(request, options) {
+  if (!request || request.method !== 'GET' || request.transportAuthority !== 'REQUIRES_EXPLICIT_IMAGE_SEARCH_EXECUTOR'
+      || !sameStringMap(request.headers, { Accept: 'application/json' })) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_REQUEST_SHAPE_REFUSED', 'image-search request method, headers, or transport authority drifted', { provider: request && request.provider });
+  if (request.provider === 'searxng') {
+    if (request.auth !== null) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_AUTH_REF_REFUSED', 'SearXNG image plans may not select an environment secret', { provider: request.provider });
+    return;
+  }
+  const explicit = Array.isArray(options.allowedSecretRefs) ? options.allowedSecretRefs.filter(function (item) { return item && item.provider === request.provider; }) : [];
+  const allowed = (DEFAULT_SECRET_REFS[request.provider] ? [DEFAULT_SECRET_REFS[request.provider]] : []).concat(explicit);
+  if (!allowed.some(function (expected) { return sameSecretRef(request.auth, expected); })) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_AUTH_REF_REFUSED', 'image-search credential reference is not the provider default or an explicit executor allowlist entry', { provider: request.provider, secretEnv: request.auth && request.auth.secretEnv });
 }
 
 function endpointIdentity(value) {
@@ -66,18 +98,43 @@ function materializeHeaders(request, env) {
   return headers;
 }
 
-async function readBoundedJson(response, maxBytes) {
-  const contentType = String(response.headers.get('content-type') || '').toLowerCase();
-  if (!/(?:^|;)\s*application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_RESPONSE_CONTENT_TYPE', 'image-search response is not JSON', { contentType });
-  const declared = Number(response.headers.get('content-length'));
-  if (Number.isFinite(declared) && declared > maxBytes) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_RESPONSE_BYTES_LIMIT', 'declared image-search response exceeds byte bound', { declared, maxBytes });
-  const bytes = Buffer.from(await response.arrayBuffer());
-  if (bytes.length > maxBytes) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_RESPONSE_BYTES_LIMIT', 'image-search response exceeds byte bound', { bytes: bytes.length, maxBytes });
+function decodeJson(bytes) {
   let text;
   try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); } catch (_error) { throw new AxmImageSearchExecutionError('IMAGE_SEARCH_RESPONSE_UTF8', 'image-search response is not UTF-8'); }
   let body;
   try { body = JSON.parse(text); } catch (_error) { throw new AxmImageSearchExecutionError('IMAGE_SEARCH_RESPONSE_JSON', 'image-search response is not valid JSON'); }
   return { body, bytes: bytes.length, digest: Digest.sha256Hex(bytes) };
+}
+
+async function readBoundedJson(response, maxBytes) {
+  const contentType = String(response.headers.get('content-type') || '').toLowerCase();
+  if (!/(?:^|;)\s*application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_RESPONSE_CONTENT_TYPE', 'image-search response is not JSON', { contentType });
+  const declared = Number(response.headers.get('content-length'));
+  if (Number.isFinite(declared) && declared > maxBytes) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_RESPONSE_BYTES_LIMIT', 'declared image-search response exceeds byte bound', { declared, maxBytes });
+  if (!response.body || typeof response.body.getReader !== 'function') {
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (bytes.length > maxBytes) throw new AxmImageSearchExecutionError('IMAGE_SEARCH_RESPONSE_BYTES_LIMIT', 'image-search response exceeds byte bound', { bytes: bytes.length, maxBytes });
+    return decodeJson(bytes);
+  }
+  const reader = response.body.getReader();
+  const chunks = [];
+  let total = 0;
+  try {
+    while (true) {
+      const item = await reader.read();
+      if (item.done) break;
+      const chunk = Buffer.from(item.value);
+      total += chunk.length;
+      if (total > maxBytes) {
+        await reader.cancel();
+        throw new AxmImageSearchExecutionError('IMAGE_SEARCH_RESPONSE_BYTES_LIMIT', 'image-search response exceeds byte bound', { bytes: total, maxBytes });
+      }
+      chunks.push(chunk);
+    }
+  } finally {
+    try { reader.releaseLock(); } catch (_error) {}
+  }
+  return decodeJson(Buffer.concat(chunks, total));
 }
 
 function boundedInteger(value, fallback, min, max, name) {
@@ -87,6 +144,7 @@ function boundedInteger(value, fallback, min, max, name) {
 }
 
 async function executeOne(request, query, options) {
+  validateRequestEnvelope(request, options);
   validateRequestEndpoint(request, options);
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   if (typeof fetchImpl !== 'function') throw new AxmImageSearchExecutionError('IMAGE_SEARCH_FETCH_UNAVAILABLE', 'no fetch implementation is available');
@@ -142,4 +200,4 @@ async function executeImageSearchPlan(plan, options) {
   return Object.assign({}, material, { executionDigest: Digest.canonicalDigest(material) });
 }
 
-module.exports = { IMAGE_SEARCH_EXECUTION_SCHEMA, NETWORK_AUTHORITY, DEFAULT_TIMEOUT_MS, DEFAULT_MAX_RESPONSE_BYTES, MAX_PROVIDER_REQUESTS, AxmImageSearchExecutionError, validatePlan, validateRequestEndpoint, materializeHeaders, readBoundedJson, executeImageSearchPlan };
+module.exports = { IMAGE_SEARCH_EXECUTION_SCHEMA, NETWORK_AUTHORITY, DEFAULT_TIMEOUT_MS, DEFAULT_MAX_RESPONSE_BYTES, MAX_PROVIDER_REQUESTS, AxmImageSearchExecutionError, validatePlan, validateRequestEnvelope, validateRequestEndpoint, materializeHeaders, readBoundedJson, executeImageSearchPlan };

@@ -49,7 +49,14 @@ Current credential references:
 - Kagi: `KAGI_API_TOKEN` -> `Authorization: Bot ...`;
 - SearXNG: no credential in the baseline adapter; endpoint is explicitly configured.
 
-`search-plan` never reads API-key values. `search-execute` resolves a referenced secret only while materializing the outbound request header. The value is never copied into the execution receipt, normalized result set, plan, or error details.
+`search-plan` never reads API-key values. `search-execute` resolves a referenced
+secret only while materializing the outbound request header. Before reading the
+environment, the executor independently checks the provider/request order,
+method, fixed header set, transport marker, endpoint, and credential reference.
+Brave and Kagi default credential references are accepted; a custom reference
+requires an exact `allowedSecretRefs` executor entry. SearXNG plans may not
+select an environment secret. Secret values are never copied into the execution
+receipt, normalized result set, plan, or error details.
 
 ## Explicit executor gate
 
@@ -65,7 +72,7 @@ Additional boundaries:
 
 - maximum 3 provider requests per plan;
 - default timeout 8 seconds per provider; configurable only from 100–60,000 ms;
-- default response ceiling 1 MiB per provider; configurable only from 1 KiB–8 MiB;
+- default response ceiling 1 MiB per provider; configurable only from 1 KiB–8 MiB, enforced while streaming before the complete response is buffered;
 - redirects are refused (`redirect: error`);
 - credentials/cookies are omitted;
 - response must be JSON and valid UTF-8;

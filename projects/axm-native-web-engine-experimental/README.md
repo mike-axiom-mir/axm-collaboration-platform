@@ -123,12 +123,15 @@ node scripts/search-execute.js "local-first AI browser" \
 ```
 
 Execution is bounded to at most three provider requests, refuses redirects,
-omits credentials/cookies, validates UTF-8 JSON, uses an 8-second default
-provider timeout and 1 MiB default response ceiling, pins Brave/Kagi to their
-known search endpoints, and requires an exact SearXNG endpoint allowlist. API
-secrets are materialized only into outbound request headers and are not copied
-into receipts/results. Search execution still grants no arbitrary page
-navigation and treats result content as untrusted.
+omits credentials/cookies, validates UTF-8 JSON, streams under an 8-second
+default timeout and 1 MiB response ceiling, pins Brave/Kagi to their known
+search endpoints, and requires an exact SearXNG endpoint allowlist. Before an
+environment secret is read, the executor independently rechecks the sealed
+provider order, request shape, endpoint, and credential reference; custom
+credential references require an exact executor allowlist entry. Secrets are
+materialized only into outbound request headers and are not copied into
+receipts/results. Search execution still grants no arbitrary page navigation
+and treats result content as untrusted.
 
 See `SEARCH_PROVIDER_CONTRACT.md` for exact query/plan/result/execution schemas,
 federated merge behavior, current cost estimates, and remaining held network

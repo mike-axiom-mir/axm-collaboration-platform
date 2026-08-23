@@ -1,4 +1,4 @@
-# Action Report — shared local browser lifecycle slice
+# Action Report — PR #44 native web stewardship pass
 
 Date: 2026-08-23  
 Version: `0.4.0-experimental.1`  
@@ -9,107 +9,109 @@ Canon: `false`
 
 ## Goal
 
-Advance the shared semantic/headless proof into the first state-owning local
-Browser Shell without creating a second parser or navigation state machine and
-without crossing the hostile-network/isolation boundary:
+Steward the rapidly stacked PR #44 browser work into a more trustworthy shared
+human/headless substrate while keeping the current boundary explicit:
 
-`explicit local file set -> shared engine per page -> Local Browser Bundle -> one Browser Session -> headless trace / loopback human shell`
+`held input -> deterministic plan or local bundle -> independently checked executor/session -> bounded evidence`
+
+This pass does not merge the PR, promote a package, grant generated material
+authority, or claim an arbitrary-site browser.
 
 ## Changed in this steward pass
 
-- Preserved the original Source Record, Token Stream, Document Tree, Page Model,
-  parser tests, and upstream reconnaissance checkpoint.
-- Added a bounded, source-ordered Structure Index with stable entry references,
-  semantic kinds, landmarks, summary counts, source/document/Page Model lineage,
-  and a viewport-independent digest.
-- Made the Structure Layout, Display List, Modification Ledger, headless
-  `outline`, SVG, and HTML outputs derive from that same index.
-- Replaced the SVG-only HTML wrapper with responsive native semantic HTML: a
-  trusted same-document outline, landmark-aware reading cards, lineage and
-  boundary receipts, and a collapsed deterministic SVG map.
-- Added a typed Structure Index schema and golden plus cross-output lineage,
-  viewport-invariance, safe-anchor, responsive-surface, and CLI outline tests.
-- Kept original-page targets inert. The only active links in the generated
-  snapshot are trusted `#document-map` and `#entry-*` anchors.
-- Added an explicitly authorized local multi-page bundle. Every page carries
-  Source Record, Document Tree, Page Model, and Structure Index lineage; links
-  resolve only within the caller's closed file set.
-- Added the deterministic headless `session` command with typed activate,
-  address, back, forward, reload, focus, and scroll actions; bounded history;
-  visible held/no-op transitions; and a committed navigation golden.
-- Added source-reparsing reload that preserves locator-derived history and emits
-  before/after source digests plus a changed verdict for every allowed page.
-- Added `serve-local`: an ephemeral `127.0.0.1` human Browser Shell over the
-  same process-owned session object, with a capability path, Host/Origin and
-  content-type refusals, bounded requests/timeouts, and one CSP-hash-bound AXM
-  controller. Page-derived values are assigned only as DOM text.
-- Added three typed session/host schemas, three navigation fixtures, focused
-  lifecycle/host tests, and `LOCAL_BROWSER_SESSION_CONTRACT.md`.
-- Added explicit output overwrite, source-overlap, and symbolic-link refusals.
-- Added a project-scoped LF checkout contract so byte-bound fixtures, goldens,
-  examples, and the source manifest verify identically on Windows and POSIX.
-- Hardened raw-text closing against Unicode offset drift and false tag-prefix
-  matches, corrected the open-element nesting bound, and covered dangling
-  final-component symbolic links.
-- Added no Foundation, Hub, registry, Workshop server, launcher, existing
-  module, public discovery, external network intake, local intake, installation,
-  promotion, or canon change.
+- Reconciled the dedicated PR worktree to the then-current PR head and reviewed
+  the newly stacked Browser Session, Live HTML Builder, Reference Lab, visual
+  state, AI, search, and image-search surfaces as one moving-workspace lane.
+- Reproduced two native Windows failures that the Ubuntu package job did not
+  cover. Absolute drive locators such as `D:/...` were being classified as URI
+  schemes before their query/path rules ran.
+- Added a shared held-scheme predicate that excludes Windows drive locators,
+  restoring absolute-local open behavior and the intended
+  `HELD_QUERY_UNSUPPORTED` classification.
+- Added a native `windows-latest` package job. It runs the complete package
+  verifier, independent session/security/schema verifiers, JavaScript syntax
+  checks, and Python helper compilation with the JSON Schema validator pinned.
+- Made AI, web-search, and image-search executors revalidate request order,
+  method, fixed headers, transport marker, endpoint policy, and credential
+  reference before reading environment secrets or invoking transport. AI plans
+  also revalidate each body digest.
+- Kept built-in credential names as explicit adapter/provider defaults. A
+  caller-selected alternative must match an exact executor-side
+  `allowedSecretRefs` entry; SearXNG and Ollama cannot be changed into secret
+  readers by re-digesting a plan.
+- Changed AI and image-search response limits from post-buffer checks to
+  streaming byte ceilings. Oversized streams are cancelled as soon as the bound
+  is crossed.
+- Strengthened the AI and image-search plan/query schemas and committed
+  deterministic AI, search, and image-search plan goldens. The independent CI
+  schema verifier now requires and validates all three plan artifact roots.
+- Added negative tests for re-digested credential substitution, AI body drift,
+  and oversized chunked responses that must stop pulling after cancellation.
+- Updated the provider, Reference Lab, security, roadmap, limit, and package
+  documentation so plan digests are not described as executor authorization.
+- Re-ran the Live HTML Builder at desktop and mobile widths, then exercised the
+  shared local Browser Shell navigation. The probe source stayed in memory, its
+  script did not execute, external link/form/media targets stayed inert, and
+  the fixture byte digest was unchanged after shutdown.
+- Added no Foundation, Hub, registry, Workshop server, launcher, installation,
+  promotion, merge, or canon change.
 
 ## Checks observed in the working-chat runtime
 
 | Check | Verdict | Evidence ceiling |
 |---|---|---|
-| `node --test tests/*.test.js` | PASS — 42/42 | Focused deterministic fixture and loopback-host behavior only. |
-| `node scripts/verify-schemas.js` | PASS — 13 schema documents parsed; local references and representative identities checked | Not full JSON Schema conformance. |
+| `node --test tests/*.test.js` | PASS — 124/124 | Deterministic fixture and injected-transport behavior; no live provider compatibility claim. |
+| Focused native Windows regression tests | PASS — 7/7 across Browser Session and session guard | Native Windows paths in the committed focused corpus only. |
+| `node scripts/verify-schemas.js` | PASS — 38 schema documents parsed; local references and representative identities checked | Identity/reference checks, not independent full JSON Schema conformance. |
+| Plan golden comparison | PASS — AI, search, and image-search plans match their deterministic generators | Exact committed examples only. |
 | `node scripts/build-examples.js --verify` | PASS — 2/2 deterministic examples | Exact generator output only. |
 | `node scripts/build-source-manifest.js --verify` | PASS after final regeneration | Package file-byte integrity only; manifest excludes itself and ZIP outputs. |
-| JavaScript syntax check over every `*.js` file | PASS — 32 files | Syntax only, not runtime coverage. |
-| `npm run verify` convenience wrapper | PASS | Runs the focused tests, schema identities, deterministic examples, and source manifest; no network route is used. |
-| Static Structure View desktop | PASS — generated HTML at 1280×900; 12 indexed entries, semantic cards, sticky outline, no horizontal overflow, zero scripts, zero forms, and only trusted same-document anchors | Local generated snapshot only; not arbitrary-page rendering. |
-| Static document-map click | PASS — selecting `Table summary Phase state` changed the hash to `#entry-0009`, scrolled the target into view, and applied its visible target treatment | Same-document navigation only; no page lifecycle or browsing-history claim. |
-| Static Structure View mobile | PASS — generated HTML at 390×844; single-column document map and cards remained readable without horizontal overflow | One bounded mobile viewport; not general responsive conformance. |
-| Desktop local Browser Shell | PASS — 1280×900; three-column shell, visible boundary/address/history/lineage, 12 Home entries, two enabled bundled targets, two disabled held targets, and no horizontal overflow | Explicit three-page local fixture bundle only. |
-| Live local lifecycle journey | PASS — Home → About fragment → Back → Forward → Reload → same-document Features; address, history cursor, focus entry, scroll restoration, and reload count agreed after each action | Process-owned local session only; not host-browser history, persistence, or arbitrary-site navigation. |
-| Human address boundary | PASS — entering `https://example.invalid/` produced visible `HELD_NETWORK`, retained the current page/history, and made no external request | One explicit external target; broader hostile URL corpus remains held. |
-| Mobile local Browser Shell | PASS — 390×844; single-column shell, 365.2px content/history panels, usable controls, and no horizontal overflow | One bounded mobile viewport; not general responsive or accessibility conformance. |
-| Live executable-DOM countercheck | PASS — one package-owned inline controller; zero anchors, forms, frames, images, or external-resource attributes; held link controls disabled; no browser console errors | DOM/runtime observation plus CSP/unit checks; not OS isolation evidence. |
-| Loopback host cleanup | PASS — listener unreachable after the bounded live run | One normal shutdown path; crash recovery/fault injection not run. |
-| Network URL refusal | PASS | Typed `NETWORK_HELD` for single-source CLI and `HELD_NETWORK` in local session; no external request ran. |
+| JavaScript syntax check over every package `*.js` file | PASS — 69 files | Syntax only, not runtime coverage. |
+| `npm run verify` convenience wrapper | PASS | Package tests, schema identities, examples, and source manifest; no external network route. |
+| Independent security sentinel | PASS — 38/38 | Static security invariants and its self-test corpus, not process isolation. |
+| Independent session verifier | PASS — 134/134 | Committed session artifact and verifier self-tests only. |
+| Independent Python JSON Schema validation | NOT_RUN locally — pinned `jsonschema` is not installed in this worktree runtime | The PR's Ubuntu and new native Windows CI jobs are the independent execution surface. |
+| Live HTML Builder desktop | PASS — 1280×900, two-pane editor/preview, no horizontal overflow, no console warnings/errors | One local deterministic fixture and one in-memory probe. |
+| Live HTML Builder mobile | PASS — 390×844, panels stacked to 367.2px with no horizontal overflow | One bounded mobile viewport; not general responsive conformance. |
+| Live compiler inertness probe | PASS — seven semantic entries; page script did not execute; external link, form, and image became held text/placeholders | Runtime DOM observation of the trusted generated preview, not hostile-web isolation. |
+| Shared Browser Shell journey | PASS — Home -> About fragment -> Back; address, title, history cursor, and enabled/disabled controls agreed; no console warnings/errors | Explicit local bundle only; not arbitrary-site or host-browser history. |
+| Live host cleanup and source countercheck | PASS — both loopback listeners closed; `session-home.html` remained SHA-256 `162d0b283ab69f850597dbb84d134e43e5f8b73d611f4d4f1b148987b0a9a7f5` | Normal shutdown path and one fixture byte countercheck. |
+| Repository-wide required checks | PASS — all ten root `AGENTS.md` commands exited 0; `verify.js` reported 0 FAIL and 43 tracked warnings | Compatibility with this checked-out tree, not resolution of the pre-existing warning inventory. |
+| Live AI/search/image provider calls | NOT_RUN | No cloud credentials were read and no provider compatibility claim is made. |
 | Web Platform Tests | NOT_RUN | No standards-conformance claim. |
-| Repository-wide tests | PASS — all ten commands required by the root `AGENTS.md` exited 0; `verify.js` reported 0 FAIL and 43 tracked warnings | This proves compatibility with the checked-out repository at this commit, not resolution of the repository's pre-existing warning inventory. |
-| Rust compile/test | NOT_RUN | Rust toolchain unavailable; production substrate remains held. |
+| Rust compile/test | NOT_RUN | Production Rust substrate remains held. |
 
-The committed example and all goldens were regenerated from reviewed source,
-then verified byte-for-byte. Temporary raster files used for visual inspection
-are not part of the package or continuity handoff.
+The deterministic examples and goldens were regenerated from reviewed source
+and verified byte-for-byte. Temporary live browser tabs and loopback listeners
+were closed; screenshots used for observation are not package evidence.
 
 ## What is proven
 
-- Headless and visual outputs call the same engine and bind to the same source,
-  document, Page Model, Structure Index, layout, and Display List lineage.
-- The compact headless outline and responsive human document map expose the same
-  stable entry references from the same Structure Index digest.
-- Repeated deterministic inputs/options produce identical typed outputs and
-  digests.
-- The Modification Ledger records a derived view only, identical source
-  before/after digests, no page-code execution, no network, and discard-based
-  reversal.
-- Script-like text and unsafe-looking URLs are escaped into inert visible text;
-  remote media and forms are placeholders, not active controls. Generated
-  document-map anchors navigate only within the trusted snapshot.
-- Visual file writes are explicit and emit byte/digest receipts.
-- Human and headless local navigation use the same server-owned session state
-  machine and the same per-page Structure Index lineage.
-- Explicitly bundled local links, same-document fragments, bounded history,
-  back/forward, allowlist-only address input, stable focus/scroll entry state,
-  and reload reparsing behave deterministically for the committed fixtures.
-- The loopback shell transport is constrained independently from page content;
-  its active controller does not grant execution authority to page scripts.
+- Human and headless local navigation still derive from the same per-page
+  parser, Page Model, Structure Index, stable entry references, and session
+  state machine.
+- Absolute Windows drive locators are no longer confused with URI schemes in
+  the tested open and held-query paths.
+- A valid plan digest alone cannot select a different credential, request
+  shape, or AI body at executor time without failing the new executor-side
+  checks.
+- Oversized streamed AI and image-search responses stop at the configured byte
+  ceiling in the injected chunked-response tests.
+- The Live HTML Builder recompiles an in-memory draft into the trusted semantic
+  renderer without executing source scripts or activating original page forms,
+  media, or external links.
+- The package remains detached, experimental, uninstalled, unpromoted, and
+  unable to canonize itself.
 
 ## What is not proven
 
-Everything in `KNOWN_LIMITS.md`, including WHATWG/CSS conformance, site
-rendering, arbitrary or external-page navigation, persistent/crash-recoverable
-lifecycle, tabs, editable page controls, accessibility parity, security
-isolation, hostile-web safety, WPT conformance, host-independent pixel identity,
+Everything in `KNOWN_LIMITS.md`, including WHATWG/CSS conformance, arbitrary
+site-body rendering, persistent/crash-recoverable lifecycle, tabs, editable
+page controls, accessibility parity, hostile-web/content-process isolation,
+live provider compatibility, WPT conformance, host-independent pixel identity,
 production Rust suitability, and Workshop integration.
+
+The current browser is therefore `WORKING` for its bounded local semantic and
+headless proof, `DEGRADED` for broad page rendering, and `BLOCKED` from hostile
+web use until a real network broker, CSS layout/page-control surface, and
+content-process isolation boundary exist.

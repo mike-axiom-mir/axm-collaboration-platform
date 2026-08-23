@@ -23,7 +23,7 @@ from referencing.exceptions import NoSuchResource
 
 DRAFT = "https://json-schema.org/draft/2020-12/schema"
 EXPECTED_VERSION = "4.26.0"
-MIN_VALIDATED_ARTIFACTS = 7
+MIN_VALIDATED_ARTIFACTS = 10
 REQUIRED_ARTIFACT_SCHEMAS = {
     "axm.web.document-tree/v1",
     "axm.web.page-model/v1",
@@ -32,6 +32,9 @@ REQUIRED_ARTIFACT_SCHEMAS = {
     "axm.web.display-list/v1",
     "axm.web.modification-ledger/v1",
     "axm.web.local-browser-session/v1",
+    "axm.web.ai-plan/v1",
+    "axm.web.search-plan/v1",
+    "axm.web.image-search-plan/v1",
 }
 
 

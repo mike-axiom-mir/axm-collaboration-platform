@@ -18,7 +18,7 @@ function create() {
   );
 }
 
-test('query-bearing local locators stay held until query semantics exist', function () {
+test('query-bearing absolute local locators stay held before scheme classification', function () {
   const session = create();
   const before = session.snapshot();
   const home = before.bundle.pages.find(function (page) {

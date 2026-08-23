@@ -40,3 +40,10 @@ test('local navigation, history, and reload receipts match the committed session
     Canonical.stringify(readJson('golden/local-session.navigation.json'))
   );
 });
+
+test('AI, web-search, and image-search plans match committed schema-validation goldens', function () {
+  const plans = GoldenBuilder.capabilityPlanGoldens();
+  assert.equal(Canonical.stringify(plans.ai), Canonical.stringify(readJson('golden/ai-plan.json')));
+  assert.equal(Canonical.stringify(plans.search), Canonical.stringify(readJson('golden/search-plan.json')));
+  assert.equal(Canonical.stringify(plans.imageSearch), Canonical.stringify(readJson('golden/image-search-plan.json')));
+});

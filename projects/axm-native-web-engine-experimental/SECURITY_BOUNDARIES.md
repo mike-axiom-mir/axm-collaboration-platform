@@ -55,6 +55,14 @@ separates data preservation from execution authority.
   recomputes bundle/session digests and checks bounded structural invariants.
   Verification does not grant source truth, trust, install, promotion, canon,
   or mutation authority; CI retains a separately implemented counter-verifier.
+- AI, web-search, and image-search executors treat a plan digest as an integrity
+  receipt, not authorization. After digest verification they independently bind
+  provider/request order, method, fixed headers, body digest where applicable,
+  transport marker, endpoint policy, and credential-reference policy before
+  reading any environment secret or starting transport. Default provider
+  credential references are accepted; custom references require an exact
+  executor allowlist entry. Bounded JSON responses are canceled while streaming
+  once their configured byte ceiling is crossed.
 
 ## Not implemented
 

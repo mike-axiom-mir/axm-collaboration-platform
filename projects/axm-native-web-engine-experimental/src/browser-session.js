@@ -101,6 +101,11 @@ function splitHref(rawHref) {
   };
 }
 
+function hasHeldScheme(locator) {
+  const value = String(locator);
+  return /^[A-Za-z][A-Za-z0-9+.-]*:/.test(value) && !/^[A-Za-z]:\//.test(value);
+}
+
 function decodeFragment(value) {
   if (!value) return null;
   try {
@@ -134,7 +139,7 @@ function resolveLink(record, link, recordsByPath, rootPath) {
   if (rawTarget == null || rawTarget === '') return heldResolution('HELD_MISSING_TARGET', rawTarget);
   const value = String(rawTarget);
   if (/^https?:\/\//i.test(value) || /^\/\//.test(value)) return heldResolution('HELD_NETWORK', value);
-  if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(value)) return heldResolution('HELD_SCHEME', value);
+  if (hasHeldScheme(value)) return heldResolution('HELD_SCHEME', value);
   if (value.includes('\\') || /[\u0000-\u001f\u007f]/.test(value)) return heldResolution('HELD_INVALID_TARGET', value);
 
   const parts = splitHref(value);
@@ -411,7 +416,7 @@ function applyRuntimeAction(bundle, previousState, requestedAction) {
     if (/^https?:\/\//i.test(action.locator) || /^\/\//.test(action.locator)) {
       status = 'HELD';
       reason = 'HELD_NETWORK';
-    } else if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(action.locator)) {
+    } else if (hasHeldScheme(action.locator)) {
       status = 'HELD';
       reason = 'HELD_SCHEME';
     } else if (parts.query) {

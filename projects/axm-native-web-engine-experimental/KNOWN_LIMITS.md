@@ -71,6 +71,8 @@ same as full standards behavior.
 ## Evidence ceiling
 
 - Focused deterministic tests and goldens prove behavior only for their inputs.
+- AI/search/image executor tests use injected provider responses; no live cloud
+  credential or provider-compatibility run was performed in this steward pass.
 - No Web Platform Tests, differential engine comparison, fuzzing, sanitizers,
   memory profiling, hostile-web campaign, accessibility audit, or arbitrary-
   site browser campaign ran.

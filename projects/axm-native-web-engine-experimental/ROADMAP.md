@@ -76,8 +76,11 @@ Implemented:
 - maximum three provider requests per plan;
 - fixed Brave/Kagi endpoints and exact SearXNG endpoint allowlist;
 - secret resolution only into outbound headers, never receipts/results;
+- independent request-shape, body-digest, provider-order, endpoint, and
+  credential-reference revalidation after plan-digest verification;
 - no redirects, cookies, or credential forwarding;
-- bounded timeout and JSON response bytes;
+- bounded timeout and streamed JSON response bytes with cancellation at the
+  ceiling;
 - `require-all` and explicit `best-effort` failure modes;
 - transparent estimated external API cost per attempted provider.
 
