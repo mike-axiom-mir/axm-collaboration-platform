@@ -59,7 +59,7 @@ test('loopback host serves one hash-bound trusted shell over the shared session'
   const host = await LocalBrowserHost.createLocalBrowserHost(createSession(), { port: 0 });
   try {
     const expectedPolicy = ShellPolicy.buildShellPolicy();
-    assert.equal(host.receipt.schema, 'axm.web.local-browser-host-receipt/v1');
+    assert.equal(host.receipt.schema, 'axm.web.local-browser-host-receipt/v2');
     assert.match(host.receipt.origin, /^http:\/\/127\.0\.0\.1:[0-9]+$/);
     assert.equal(host.receipt.shellPolicySchema, expectedPolicy.schema);
     assert.equal(host.receipt.shellPolicyDigest, expectedPolicy.policyDigest);
