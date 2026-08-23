@@ -369,3 +369,29 @@ and run:
 ```powershell
 node shared/code-capability-fabric/selftest-code-specialization-router-v1.js
 ```
+
+## Exact specialist-lane → Organ Fabric intent binding
+
+The additive v1.6 `TEST` rung connects one exact v1.5 artifact/specialist lane
+to the canonical Deterministic Organ Fabric without pretending the profile or
+file path supplies implementation semantics. The caller must provide the typed
+ports, fixtures, invariants, boundaries, and bounded resources explicitly.
+
+The adapter rebuilds the entire byte-bound v1.5 specialization plan, requires
+one exact closed specialist lane and the exact
+`software-workshop@1.1.0` field pack, appends the profile digest, empty
+knowledge-lane state, evidence ceiling, and specialist refusals, then seals an
+inert `axm.organ-intent/v1` for human review.
+
+It does not generate an organ or candidate, run the Organ Fabric runtime, read
+source/workspace content, load knowledge, execute tests, grant permission or
+network, merge alternatives, install, integrate, publish, promote, or change
+`CANON`. Unsupported implementation-organ semantics remain a typed future
+field-pack gap.
+
+See [README-code-specialist-organ-intent-adapter-v1.md](README-code-specialist-organ-intent-adapter-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-code-specialist-organ-intent-adapter-v1.js
+```

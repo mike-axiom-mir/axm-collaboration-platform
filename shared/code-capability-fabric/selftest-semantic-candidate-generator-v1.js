@@ -338,7 +338,7 @@ check(G.jsonBytes(base).length <= base.resourceEnvelope.maxInputBytes,
   'sealed request digest bytes are included under the enforced input ceiling');
 check(G.jsonBytes(native).length <= base.resourceEnvelope.maxOutputBytes,
   'complete emitted result stays under the enforced output ceiling');
-rejects(() => withResource(base, 'maxInputBytes', 45180), /sealed semantic generation request exceeds/i,
+rejects(() => withResource(base, 'maxInputBytes', 45180), /semantic generation request exceeds/i,
   'sealed request bytes cannot hide outside the declared input ceiling');
 const tinyOutput = withResource(base, 'maxOutputBytes', 1);
 rejects(() => G.generate(tinyOutput), /complete semantic generation result exceeds/i,

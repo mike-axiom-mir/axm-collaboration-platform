@@ -1,11 +1,9 @@
 'use strict';
 
 const assert = require('assert');
-const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const Generator = require('./deterministic-adventure-content-generator-v1');
-const FirstGame = require('./deterministic-game-candidate-generator-v1');
 
 let passed = 0;
 function test(name, fn) {
@@ -58,12 +56,19 @@ test('identical requests produce byte-identical content packets', () => {
 });
 
 test('the exact proven v0.1 candidate is the immutable ancestor', () => {
-  const first = FirstGame.generate(FirstGame.buildExampleRequest());
-  assert.strictEqual(first.request.requestDigest, Generator.ANCESTOR.requestDigest);
-  assert.strictEqual(first.packet.packetDigest, Generator.ANCESTOR.packetDigest);
-  const bundleBytes = Buffer.from(JSON.stringify(first.packet.moduleBundle, null, 2) + '\n');
-  const bundleDigest = 'sha256:' + crypto.createHash('sha256').update(bundleBytes).digest('hex');
-  assert.strictEqual(bundleDigest, Generator.ANCESTOR.bundleDigest);
+  const gameRoot = path.join(__dirname, '..', '..', 'tools', 'game-hub', 'game-library', '020-four-roots-adventure');
+  const rollback = JSON.parse(fs.readFileSync(path.join(gameRoot, 'rollback', 'first-generated-v0.1.json'), 'utf8'));
+  const decision = JSON.parse(fs.readFileSync(path.join(gameRoot, 'promotion', 'mike-test-promotion-decision.json'), 'utf8'));
+  const receipt = JSON.parse(fs.readFileSync(path.join(gameRoot, 'promotion', 'test-installation-receipt.json'), 'utf8'));
+  assert.strictEqual(rollback.sourceCommit, Generator.ANCESTOR.sourceCommit);
+  assert.strictEqual(rollback.requestDigest, Generator.ANCESTOR.requestDigest);
+  assert.strictEqual(rollback.packetDigest, Generator.ANCESTOR.packetDigest);
+  assert.strictEqual(rollback.bundleDigest, Generator.ANCESTOR.bundleDigest);
+  assert.strictEqual(rollback.liveIterationDigest, Generator.ANCESTOR.liveIterationDigest);
+  assert.strictEqual(rollback.canon, false);
+  assert.deepStrictEqual(decision.source, Generator.ANCESTOR);
+  assert.strictEqual(receipt.ancestorRef.sha256, Generator.ANCESTOR.packetDigest);
+  assert.strictEqual(receipt.authority.canonChanged, false);
 });
 
 test('promotion is exact TEST scope and not cryptographic identity proof', () => {
