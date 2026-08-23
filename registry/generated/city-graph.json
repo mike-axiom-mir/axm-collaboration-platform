@@ -4407,8 +4407,10 @@
         "refuses": [
           "automatic installation",
           "CANON change",
+          "composition node execution",
           "Foundation mutation",
           "generated code execution",
+          "host authority inheritance",
           "implicit recipe inference",
           "inactive recipe execution",
           "network access",
@@ -4416,6 +4418,7 @@
           "promotion",
           "registration",
           "review-candidate builder execution",
+          "runtime payload compatibility claims from contract identity alone",
           "staging"
         ],
         "writes": [
@@ -4461,12 +4464,16 @@
       "schema": "axm.block-view/v1",
       "sockets": {
         "accepts": [
+          "axm.capability-composition.build/v1",
+          "axm.capability-composition.request/v1",
           "axm.capability-fabric.build-request/v1",
           "axm.capability-recipe-draft/v1",
           "axm.capability-recipe-proposal/v1",
           "axm.workshop-direction.hand-request/v1"
         ],
         "consumes": [
+          "axm.capability-composition.build/v1",
+          "axm.capability-composition.request/v1",
           "axm.capability-fabric.build-request/v1",
           "axm.workshop-direction.hand-request/v1",
           "explicit-human-build-review",
@@ -4476,16 +4483,24 @@
           "axm.capability-build-plan/v1",
           "axm.capability-build-receipt/v1",
           "axm.capability-candidate-package/v1",
+          "axm.capability-composition-materialization-receipt/v1",
+          "axm.capability-composition-node-packages/v1",
+          "axm.capability-composition.build/v1",
+          "axm.capability-composition.plan/v1",
+          "axm.capability-composition.verification/v1",
           "axm.modular-capability-contract/v1",
           "axm.module-bundle/v1"
         ],
         "provides": [
+          "detached-composition-materialization",
           "detached-nursery-compatible-capability-packages",
+          "deterministic-capability-composition",
           "deterministic-capability-recipe-compilation",
           "digest-bound-modular-builder-registry",
           "first-class-modular-hand-and-skill-kind-binding",
           "inactive-future-recipe-proposal-inspection",
-          "typed-capability-build-holds"
+          "typed-capability-build-holds",
+          "typed-capability-composition-holds"
         ]
       },
       "source": {
@@ -4495,7 +4510,7 @@
           "tools/capability-fabric/module.contract.json"
         ],
         "declaredId": "capability-fabric",
-        "digest": "f2f343beb7d00c9fa6a08ea5b8d1f625a8656f40862a026a50bc6660eb77e783",
+        "digest": "0614a22e14b275900796a01fecfa82052f8c8eb056135aaf3137dfdc90a483f3",
         "manifest": "tools/capability-fabric/manifest.json",
         "observedSourceFileCount": 10,
         "root": "tools/capability-fabric"
@@ -4506,7 +4521,7 @@
         "entry": "index.html",
         "type": "hub-module"
       },
-      "version": "v0.1"
+      "version": "v0.2"
     },
     {
       "authority": {
@@ -38935,6 +38950,20 @@
       "consumers": [
         "capability-fabric"
       ],
+      "id": "axm.capability-composition.build/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "capability-fabric"
+      ],
+      "id": "axm.capability-composition.request/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "capability-fabric"
+      ],
       "id": "axm.capability-fabric.build-request/v1",
       "providers": []
     },
@@ -44250,6 +44279,13 @@
     },
     {
       "consumers": [],
+      "id": "detached-composition-materialization",
+      "providers": [
+        "capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "detached-nursery-compatible-capability-packages",
       "providers": [
         "capability-fabric"
@@ -44290,6 +44326,13 @@
       ],
       "id": "deterministic-canonical-json",
       "providers": []
+    },
+    {
+      "consumers": [],
+      "id": "deterministic-capability-composition",
+      "providers": [
+        "capability-fabric"
+      ]
     },
     {
       "consumers": [],
@@ -57238,6 +57281,13 @@
     },
     {
       "consumers": [],
+      "id": "typed-capability-composition-holds",
+      "providers": [
+        "capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "typed-claim-evidence-routing",
       "providers": [
         "evidence-desk"
@@ -59675,6 +59725,36 @@
       "id": "axm.capability-candidate-package/v1",
       "path": "shared/capability-fabric/schemas/candidate-package.schema.json",
       "sha256": "df233f44058931c16a45dbe561c263cd707779e234b4c6c0929d6a8e793a3901"
+    },
+    {
+      "id": "axm.capability-composition-materialization-receipt/v1",
+      "path": "shared/capability-fabric/schemas/composition-materialization-receipt.schema.json",
+      "sha256": "0abe66779d2b3ba75bf12ddeb4167ec179bd6712215798b244bc7da4ae2a84f9"
+    },
+    {
+      "id": "axm.capability-composition-node-packages/v1",
+      "path": "shared/capability-fabric/schemas/composition-node-packages.schema.json",
+      "sha256": "ee305d12da9a00e6c2ad7ba62e8e937b8e7a4f40c8027f68d354217ec5bc4662"
+    },
+    {
+      "id": "axm.capability-composition.build/v1",
+      "path": "shared/capability-fabric/schemas/composition-build.schema.json",
+      "sha256": "4a2d11b3547156efd6a6362081a6a2dc75e9c95775aeb0f7662d0ee933d03da3"
+    },
+    {
+      "id": "axm.capability-composition.plan/v1",
+      "path": "shared/capability-fabric/schemas/composition-plan.schema.json",
+      "sha256": "4fdabb63482c3cbf74e3f3ec6e7b4a75ea8b47fd8ea09aea137172fc9c047287"
+    },
+    {
+      "id": "axm.capability-composition.request/v1",
+      "path": "shared/capability-fabric/schemas/composition-request.schema.json",
+      "sha256": "4e267a46b8a401242a87480ea9189aebb4c76c5808a43cd8585bbe13b92faab6"
+    },
+    {
+      "id": "axm.capability-composition.verification/v1",
+      "path": "shared/capability-fabric/schemas/composition-verification.schema.json",
+      "sha256": "cd11bb11dce266bc085aa9d8d6c997eb25102e85f9acd1c2125c320a92e3651f"
     },
     {
       "id": "axm.capability-fabric.build-request/v1",
@@ -63562,18 +63642,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "fc29d4e5451e2da6c2c9ec8185d9edfc7fadeb64b751f07da14c1eb979bd0025",
+  "semanticDigest": "4d81952fef8b88c6417ba1e54c9b662e8f04b55084e9d9f45a198712c7b9b870",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "b820a52165c447295d62f39d8395410df568237886806efb67aa3d36b8bfda60",
+    "declarationDigest": "73ca8e3655eeecd7cd0e16dc84269410c4791e973a403ddc3493d66c293436d7",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "b820a52165c447295d62f39d8395410df568237886806efb67aa3d36b8bfda60"
+    "snapshotIdentity": "73ca8e3655eeecd7cd0e16dc84269410c4791e973a403ddc3493d66c293436d7"
   },
   "summary": {
     "blockKinds": {
@@ -63586,12 +63666,12 @@
       "SENSOR": 5
     },
     "blocks": 302,
-    "capabilities": 2935,
+    "capabilities": 2940,
     "declaredContracts": 299,
     "declaredManifests": 251,
     "edges": 86,
-    "schemas": 840,
-    "unresolved": 1973
+    "schemas": 846,
+    "unresolved": 1975
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -65635,6 +65715,18 @@
       "blockId": "bulk-intake-conveyor",
       "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.bulk-intake-worklist/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.capability-composition.build/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.capability-composition.request/v1",
       "state": "UNKNOWN"
     },
     {

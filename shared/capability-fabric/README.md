@@ -5,6 +5,12 @@ reviewed, digest-bound build request through one exact source-reviewed recipe
 into a detached capability candidate. Ordinary builds require no provider,
 model, API key, network request, or repeated reasoning compute.
 
+The composition layer can bind two to sixteen reviewed candidate builds into a
+bounded directed acyclic graph. Every edge must name one exact contract emitted
+by its source and consumed by its target. Root inputs, expected outputs, node
+and edge ceilings, aggregate package bytes, topological order, runtime modes,
+and required host capabilities are digest-bound in the composition plan.
+
 The existing Deterministic Organ Fabric remains the reused declarative kernel
 and specialized compatibility surface. This layer adds a generic recipe
 catalog and complete candidate materialization for modular capabilities.
@@ -44,6 +50,24 @@ module contract, and receipt.
 - `axm.capability-recipe-draft/v1`
 - `axm.modular-capability-recipe-contract/v1`
 - `axm.modular-capability-contract/v1`
+- `axm.capability-composition.request/v1`
+- `axm.capability-composition.plan/v1`
+- `axm.capability-composition.build/v1`
+- `axm.capability-composition.verification/v1`
+
+## Composition truth boundary
+
+- Composition proves exact declared contract identity, acyclic order, child
+  request/recipe/builder/package lineage, resource ceilings, and deterministic
+  rebuild parity.
+- It does not claim that equal contract labels guarantee runtime payload
+  semantics. Node selftests and end-to-end behavior require separate trusted
+  host execution and evidence.
+- A host-mediated `SKILL` remains host-mediated inside a graph. Its required
+  host capabilities are surfaced in the plan and never inherited as authority.
+- A held graph emits no partial candidate set. The Fabric never executes a node,
+  installs output, changes permissions, promotes material, touches Foundation,
+  or changes CANON.
 
 The reviewed catalog contains four executable `HAND` recipes—a closed JSON
 Schema validator, a pure JSON transform, an SVG status-badge creation hand,

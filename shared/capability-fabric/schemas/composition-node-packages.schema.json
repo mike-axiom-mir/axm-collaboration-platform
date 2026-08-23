@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-composition-node-packages/v1",
+  "title": "AXM materialized composition node-package index v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "buildDigest", "nodes", "nodePackagesDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-composition-node-packages/v1" },
+    "version": { "const": "1.0.0" },
+    "buildDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "nodes": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["nodeId", "folder", "package"],
+        "properties": {
+          "nodeId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+          "folder": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}-[a-f0-9]{12}$" },
+          "package": { "$ref": "candidate-package.schema.json" }
+        }
+      }
+    },
+    "nodePackagesDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

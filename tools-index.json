@@ -1,7 +1,7 @@
 {
   "schema": "axm.tools-index/v1",
   "generatedAt": "2026-08-23T14:51:55.127Z",
-  "sourceDigest": "8b520493f33052978edd746b02e56f86158dc7958fe395eb62b993c3bb0826a0",
+  "sourceDigest": "2c73ff7dee01c5ba0b467119de096445fb78aef65c9386720e7803c57b5d766d",
   "promotionLadder": "shared/readiness/promotion-ladder.json",
   "summary": {
     "tools": 236,
@@ -18,7 +18,7 @@
     "permissionsDeclared": 236,
     "kindsDeclared": 235,
     "readmes": 150,
-    "capabilities": 2225
+    "capabilities": 2230
   },
   "promotionQueue": {
     "readyForHumanReview": [
@@ -1323,6 +1323,20 @@
       "providers": [],
       "consumers": [
         "bulk-intake-conveyor"
+      ]
+    },
+    {
+      "id": "axm.capability-composition.build/v1",
+      "providers": [],
+      "consumers": [
+        "capability-fabric"
+      ]
+    },
+    {
+      "id": "axm.capability-composition.request/v1",
+      "providers": [],
+      "consumers": [
+        "capability-fabric"
       ]
     },
     {
@@ -4996,6 +5010,13 @@
       "consumers": []
     },
     {
+      "id": "detached-composition-materialization",
+      "providers": [
+        "capability-fabric"
+      ],
+      "consumers": []
+    },
+    {
       "id": "detached-nursery-compatible-capability-packages",
       "providers": [
         "capability-fabric"
@@ -5022,6 +5043,13 @@
       "consumers": [
         "review-inbox"
       ]
+    },
+    {
+      "id": "deterministic-capability-composition",
+      "providers": [
+        "capability-fabric"
+      ],
+      "consumers": []
     },
     {
       "id": "deterministic-capability-recipe-authoring",
@@ -15088,6 +15116,13 @@
       "consumers": []
     },
     {
+      "id": "typed-capability-composition-holds",
+      "providers": [
+        "capability-fabric"
+      ],
+      "consumers": []
+    },
+    {
       "id": "typed-claim-evidence-routing",
       "providers": [
         "evidence-desk"
@@ -18803,14 +18838,14 @@
       "id": "capability-fabric",
       "folder": "capability-fabric",
       "name": "Capability Fabric",
-      "version": "v0.1",
+      "version": "v0.2",
       "status": "EXPERIMENTAL",
       "schema": "axm.tool-manifest/v1",
       "kind": "product",
       "audience": "human-machine",
       "manifest": {
         "path": "tools/capability-fabric/manifest.json",
-        "sha256": "8d3382e1bc529a77ccd3a1c09409861d760b52cc056c205fe26236c7d210d6c8",
+        "sha256": "deb38359bbc387a83018d5942869cc851f05b9ef2eaff9b3020b4b8b8fd29452",
         "valid": true,
         "errors": []
       },
@@ -18832,10 +18867,15 @@
           "first-class-modular-hand-and-skill-kind-binding",
           "digest-bound-modular-builder-registry",
           "detached-nursery-compatible-capability-packages",
-          "inactive-future-recipe-proposal-inspection"
+          "inactive-future-recipe-proposal-inspection",
+          "deterministic-capability-composition",
+          "typed-capability-composition-holds",
+          "detached-composition-materialization"
         ],
         "consumes": [
           "axm.capability-fabric.build-request/v1",
+          "axm.capability-composition.request/v1",
+          "axm.capability-composition.build/v1",
           "axm.workshop-direction.hand-request/v1",
           "human-recipe-review",
           "explicit-human-build-review"
@@ -18846,7 +18886,7 @@
           "tools/capability-fabric/selftest.js"
         ],
         "promotionPath": "tools/capability-fabric/selftest.js",
-        "sha256": "c4001d4d51d3b186c9d1b0fbc4c441cb041986d288fb2a84b8a5d376a46142fb",
+        "sha256": "e66330796ef0e007cbd147032ea718b620ea73bc381c4e734a48c56d74ef0831",
         "digestScope": "all-discovered-selftests/v1",
         "result": null
       },

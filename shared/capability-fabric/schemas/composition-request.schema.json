@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-composition.request/v1",
+  "title": "AXM deterministic capability composition request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "purpose", "nodes", "edges", "externalInputs", "expectedOutputs", "limits", "source", "status", "authority", "humanReviewed", "requestDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-composition.request/v1" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+    "purpose": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "nodes": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "request"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+          "request": { "$ref": "build-request.schema.json" }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/edge" }
+    },
+    "externalInputs": {
+      "type": "array",
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/binding" }
+    },
+    "expectedOutputs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": { "$ref": "#/$defs/binding" }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxNodes", "maxEdges", "maxTotalCandidateBytes"],
+      "properties": {
+        "maxNodes": { "type": "integer", "minimum": 2, "maximum": 16 },
+        "maxEdges": { "type": "integer", "minimum": 1, "maximum": 64 },
+        "maxTotalCandidateBytes": { "type": "integer", "minimum": 65536, "maximum": 16777216 }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref"],
+      "properties": {
+        "kind": { "enum": ["HUMAN", "WORKSHOP_DIRECTION", "EXTERNAL", "MIRROR", "CODE_FABRIC"] },
+        "ref": { "type": ["string", "null"], "maxLength": 500 }
+      }
+    },
+    "status": { "const": "EXPERIMENTAL" },
+    "authority": { "const": "NONE" },
+    "humanReviewed": { "type": "boolean" },
+    "requestDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "contract": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$" },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to", "contract"],
+      "properties": {
+        "from": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+        "to": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+        "contract": { "$ref": "#/$defs/contract" }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeId", "contract"],
+      "properties": {
+        "nodeId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+        "contract": { "$ref": "#/$defs/contract" }
+      }
+    }
+  }
+}

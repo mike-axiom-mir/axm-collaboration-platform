@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-composition.plan/v1",
+  "title": "AXM deterministic capability composition plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "requestDigest", "catalogDigest", "nodeCount", "nodes", "edges", "externalInputs", "expectedOutputs", "order", "requiredHostCapabilities", "totalCandidateBytes", "evidence", "holds", "generatedCodeExecuted", "nodeTestsExecuted", "authority", "planDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-composition.plan/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["READY", "HELD"] },
+    "requestDigest": { "type": ["string", "null"] },
+    "catalogDigest": { "type": ["string", "null"] },
+    "nodeCount": { "type": "integer", "minimum": 0, "maximum": 16 },
+    "nodes": { "type": "array", "maxItems": 16 },
+    "edges": { "type": "array", "maxItems": 64 },
+    "externalInputs": { "type": "array", "maxItems": 64 },
+    "expectedOutputs": { "type": "array", "maxItems": 32 },
+    "order": { "type": "array", "maxItems": 16, "items": { "type": "string" } },
+    "requiredHostCapabilities": { "type": "array", "maxItems": 64, "items": { "type": "string" } },
+    "totalCandidateBytes": { "type": "integer", "minimum": 0, "maximum": 16777216 },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proven", "notProven", "verificationSurfaces"],
+      "properties": {
+        "proven": { "type": "array", "items": { "type": "string" } },
+        "notProven": { "type": "array", "items": { "type": "string" } },
+        "verificationSurfaces": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "holds": { "type": "array" },
+    "generatedCodeExecuted": { "const": false },
+    "nodeTestsExecuted": { "const": false },
+    "authority": { "type": "object" },
+    "planDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

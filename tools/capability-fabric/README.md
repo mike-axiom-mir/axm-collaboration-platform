@@ -15,6 +15,13 @@ and portable review SKILL were admitted through the reviewed merge gate. The
 separate Capability Recipe Admission Gate can prove exact evidence and a
 prospective catalog diff for future candidates, but cannot activate one itself.
 
+The v0.2 composition door deterministically connects reviewed candidates through
+exact `consumes` / `provides` identities. It refuses cycles, self-edges,
+duplicate or ambiguous bindings, unbound inputs, undeclared outputs, unavailable
+child builds, and node/edge/byte budget excess. Its evidence route explicitly
+keeps runtime payload semantics, node tests, host authority, and end-to-end
+behavior unproven until checked on their native surfaces.
+
 Explicit local materialization is CLI-only:
 
 ```text
@@ -22,6 +29,22 @@ node tools/capability-fabric/cli.js build \
   --request capability-request.json \
   --output-parent /existing/detached-candidate-parent
 ```
+
+Composition validation, planning, and explicit materialization use:
+
+```text
+node tools/capability-fabric/cli.js compose-validate --request composition.json
+node tools/capability-fabric/cli.js compose-plan --request composition.json
+node tools/capability-fabric/cli.js compose-build \
+  --request composition.json \
+  --output-parent /existing/detached-composition-parent
+```
+
+`compose-build` creates one fresh composition root with the sealed request,
+plan, receipt, node-package index, and one independently verified candidate
+folder per node. It reconstructs the complete build from disk and requires every
+node to reach Nursery `READY_FOR_LATER_INTAKE`; any failure rolls back only that
+fresh composition root.
 
 The destination must not exist. Writes use new-file semantics, package bytes
 are read back and verified, and the detached Nursery must report

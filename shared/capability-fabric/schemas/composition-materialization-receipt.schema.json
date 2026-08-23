@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-composition-materialization-receipt/v1",
+  "title": "AXM detached capability composition materialization receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "compositionSchema", "buildDigest", "requestDigest", "planDigest", "nodePackagesFile", "nodePackagesDigest", "verification", "holds", "generatedCodeExecuted", "nodeTestsExecuted", "authority", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-composition-materialization-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "const": "COMPLETE" },
+    "compositionSchema": { "const": "axm.capability-composition.build/v1" },
+    "buildDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "requestDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "planDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "nodePackagesFile": { "const": "node-packages.json" },
+    "nodePackagesDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "verification": { "type": "object" },
+    "holds": { "type": "array", "maxItems": 0 },
+    "generatedCodeExecuted": { "const": false },
+    "nodeTestsExecuted": { "const": false },
+    "authority": { "type": "object" },
+    "receiptDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

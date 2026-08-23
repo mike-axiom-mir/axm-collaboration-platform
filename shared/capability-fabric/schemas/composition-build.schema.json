@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-composition.build/v1",
+  "title": "AXM deterministic capability composition build v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "request", "plan", "nodes", "verification", "holds", "generatedCodeExecuted", "nodeTestsExecuted", "authority", "buildDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-composition.build/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["COMPLETE", "HELD"] },
+    "request": { "$ref": "composition-request.schema.json" },
+    "plan": { "$ref": "composition-plan.schema.json" },
+    "nodes": { "type": "array", "maxItems": 16 },
+    "verification": { "type": "object" },
+    "holds": { "type": "array" },
+    "generatedCodeExecuted": { "const": false },
+    "nodeTestsExecuted": { "const": false },
+    "authority": { "type": "object" },
+    "buildDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

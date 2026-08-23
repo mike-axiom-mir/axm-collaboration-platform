@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `fc29d4e5451e2da6c2c9ec8185d9edfc7fadeb64b751f07da14c1eb979bd0025`
+Semantic graph digest: `4d81952fef8b88c6417ba1e54c9b662e8f04b55084e9d9f45a198712c7b9b870`
 
-Blocks: 302 · Capabilities: 2935 · Schemas: 840 · Unresolved edges: 1973
+Blocks: 302 · Capabilities: 2940 · Schemas: 846 · Unresolved edges: 1975
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -45,7 +45,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | browser-global-surface-observatory | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 5 | 2 | 1 selftest(s) |
 | browser-lan-hardware-qa-lab | ROUTE (INFERRED_UNCONFIRMED) | TEST | PHYSICAL_ACTUATION, WRITE_CANDIDATE | 7 | 5 | 1 selftest(s) |
 | bulk-intake-conveyor | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 7 | 4 | 1 selftest(s) |
-| capability-fabric | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 6 | 4 | 1 selftest(s) |
+| capability-fabric | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 9 | 6 | 1 selftest(s) |
 | capability-gap-workbench | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 3 | 1 selftest(s) |
 | capability-recipe-admission-gate | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | OBSERVE_LOCAL, WRITE_CANDIDATE | 6 | 5 | 1 selftest(s) |
 | capability-recipe-foundry | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 6 | 4 | 3 selftest(s) |
@@ -656,6 +656,8 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `bulk-intake-conveyor` → `axm.bulk-intake-conveyor-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `bulk-intake-conveyor` → `axm.bulk-intake-conveyor-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `bulk-intake-conveyor` → `axm.bulk-intake-worklist/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `capability-fabric` → `axm.capability-composition.build/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `capability-fabric` → `axm.capability-composition.request/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `capability-fabric` → `axm.capability-fabric.build-request/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `capability-fabric` → `axm.workshop-direction.hand-request/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `capability-fabric` → `explicit-human-build-review` (UNKNOWN)
