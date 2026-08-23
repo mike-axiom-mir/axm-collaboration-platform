@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.verification-route-token-registry/v1",
+  "title": "AXM Verification Route Token Registry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "version", "tokens", "registryDigest"],
+  "properties": {
+    "schema": {"const": "axm.verification-route-token-registry/v1"},
+    "id": {"const": "verification-route-tokens"},
+    "version": {"type": "string"},
+    "tokens": {
+      "type": "object", "additionalProperties": false,
+      "required": ["archive-reload", "browser-render-click", "contract-test", "fixture-parity", "focused-selftest", "independent-rebuild", "required-regression", "round-trip-test", "schema-check", "sender-receiver-parity", "syntax-check", "tamper-check"],
+      "properties": {
+        "archive-reload": {"$ref": "#/$defs/token"}, "browser-render-click": {"$ref": "#/$defs/token"}, "contract-test": {"$ref": "#/$defs/token"}, "fixture-parity": {"$ref": "#/$defs/token"},
+        "focused-selftest": {"$ref": "#/$defs/token"}, "independent-rebuild": {"$ref": "#/$defs/token"}, "required-regression": {"$ref": "#/$defs/token"}, "round-trip-test": {"$ref": "#/$defs/token"},
+        "schema-check": {"$ref": "#/$defs/token"}, "sender-receiver-parity": {"$ref": "#/$defs/token"}, "syntax-check": {"$ref": "#/$defs/token"}, "tamper-check": {"$ref": "#/$defs/token"}
+      }
+    },
+    "registryDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "token": {
+      "type": "object", "additionalProperties": false, "required": ["description", "evidenceDesk", "verificationSpine"],
+      "properties": {
+        "description": {"type": "string", "minLength": 1},
+        "evidenceDesk": {"type": "object", "additionalProperties": false, "required": ["claimKind", "primarySurface", "passCondition"], "properties": {"claimKind": {"enum": ["existence", "static-structure", "deterministic-behavior", "interaction-journey", "persistence", "transport", "authorization"]}, "primarySurface": {"type": "string", "minLength": 1}, "passCondition": {"type": "string", "minLength": 1}}},
+        "verificationSpine": {"oneOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["categoryId", "claimId"], "properties": {"categoryId": {"type": "string"}, "claimId": {"type": "string"}}}]}
+      }
+    }
+  }
+}

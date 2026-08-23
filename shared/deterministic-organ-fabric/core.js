@@ -13,10 +13,31 @@
   }
 
   const canonicalJson = deterministicJson.canonicalJson;
-  const FACTORY_VERSION = '1.0.0';
+  const FACTORY_VERSION = '1.1.0';
   const RUNTIME_ID = 'axm.deterministic-organ-runtime';
-  const RUNTIME_VERSION = '1.0.0';
-  const RUNTIME_DIGEST = 'sha256:5bd480a2c3a0020b22cfaeb99003f02b918594011383e3db2fe47a970653ba09';
+  const RUNTIME_VERSION = '1.1.0';
+  const RUNTIME_DIGEST = 'sha256:9b25f775f9b0a2cf18b6d87101a1c2860d5c1c549c449031a998477be8ac2912';
+  const VERIFICATION_ROUTE_TOKEN_REGISTRY = Object.freeze({
+    schema:'axm.verification-route-token-registry/v1',
+    id:'verification-route-tokens',
+    version:'1.0.0',
+    tokens:{
+      'archive-reload':{description:'Prove archived state survives a stop, reload, and comparison.',evidenceDesk:{claimKind:'persistence',primarySurface:'save-stop-reload-and-compare',passCondition:'The reloaded archive state matches the sealed pre-stop state.'},verificationSpine:{categoryId:'module',claimId:'module.state-owner'}},
+      'browser-render-click':{description:'Observe the relevant live browser render and click journey.',evidenceDesk:{claimKind:'interaction-journey',primarySurface:'live-browser-render-and-click',passCondition:'The complete declared interaction journey works at the named viewport and state.'},verificationSpine:null},
+      'contract-test':{description:'Validate the accepted and produced contracts against their schemas.',evidenceDesk:{claimKind:'static-structure',primarySurface:'parsed-contract-validation',passCondition:'The exact contract parses and satisfies its declared closed schema.'},verificationSpine:{categoryId:'module',claimId:'module.handoff'}},
+      'fixture-parity':{description:'Execute declared fixtures and compare exact asserted outputs.',evidenceDesk:{claimKind:'deterministic-behavior',primarySurface:'focused-fixture-execution',passCondition:'Known inputs produce the exact asserted outputs in the trusted runtime.'},verificationSpine:null},
+      'focused-selftest':{description:'Run the smallest trusted selftest covering the changed behavior.',evidenceDesk:{claimKind:'deterministic-behavior',primarySurface:'focused-execution-with-known-inputs',passCondition:'Known inputs exercise the changed seam and all focused assertions pass.'},verificationSpine:{categoryId:'module',claimId:'module.lifecycle'}},
+      'independent-rebuild':{description:'Rebuild independently and compare canonical bytes and digests.',evidenceDesk:{claimKind:'deterministic-behavior',primarySurface:'independent-rebuild-and-digest-compare',passCondition:'An independent rebuild produces byte-identical artifacts and matching digests.'},verificationSpine:null},
+      'required-regression':{description:'Run the repository-required regression checks from the declared checkpoint.',evidenceDesk:{claimKind:'deterministic-behavior',primarySurface:'repository-required-regression-suite',passCondition:'Every repository-required regression command exits successfully.'},verificationSpine:{categoryId:'foundation',claimId:'foundation.route-integrity'}},
+      'round-trip-test':{description:'Serialize, reopen, and compare the exact state.',evidenceDesk:{claimKind:'persistence',primarySurface:'save-restart-reload-and-compare',passCondition:'Serialized state reopens in a fresh process with exact semantic parity.'},verificationSpine:{categoryId:'module',claimId:'module.state-owner'}},
+      'schema-check':{description:'Validate the changed structure against its declared schema.',evidenceDesk:{claimKind:'static-structure',primarySurface:'parsed-schema-validation',passCondition:'The exact artifact parses and satisfies its declared closed schema.'},verificationSpine:{categoryId:'module',claimId:'module.manifest'}},
+      'sender-receiver-parity':{description:'Bind sender and passive-receiver receipts by payload digest and acknowledgement.',evidenceDesk:{claimKind:'transport',primarySurface:'sender-and-receiver-receipts',passCondition:'Sender and receiver receipts name the same payload digest and acknowledgement.'},verificationSpine:null},
+      'syntax-check':{description:'Compile or parse changed scripts without claiming live behavior.',evidenceDesk:{claimKind:'static-structure',primarySurface:'script-compilation-and-parsed-syntax',passCondition:'Every changed script parses or compiles successfully.'},verificationSpine:null},
+      'tamper-check':{description:'Attempt a digest-bound package mutation and prove admission is refused.',evidenceDesk:{claimKind:'authorization',primarySurface:'allowed-and-denied-package-admission',passCondition:'The intact package is accepted for inspection and the tampered package is refused.'},verificationSpine:{categoryId:'module',claimId:'module.permissions'}}
+    },
+    registryDigest:'sha256:98dd708faa719c5354d7106086e36e108e7446479b578b1aa771198e5eb308be'
+  });
+  const VERIFICATION_ROUTE_TOKEN_REGISTRY_REF = Object.freeze({id:VERIFICATION_ROUTE_TOKEN_REGISTRY.id,version:VERIFICATION_ROUTE_TOKEN_REGISTRY.version,digest:VERIFICATION_ROUTE_TOKEN_REGISTRY.registryDigest});
   const STRATEGIES = Object.freeze(['lean', 'balanced', 'guarded']);
   const LIMITS = Object.freeze({
     maxNodes: 64,
@@ -45,7 +66,7 @@
   });
   const ALLOWED_OPERATIONS = Object.freeze([
     'read', 'literal', 'lookup', 'equals', 'gte', 'and', 'or', 'not',
-    'choose', 'clamp', 'stable_unique', 'stable_union', 'object',
+    'choose', 'clamp', 'stable_unique', 'stable_union', 'stable_lookup_union', 'object',
     'transition', 'seeded_select'
   ]);
   const ORGAN_ARCHIVE_BRIDGE = Object.freeze({
@@ -239,11 +260,27 @@
   }
   function validatePack(pack) {
     const errors = [];
-    if (!allowedKeys(pack, ['schema','id','version','title','description','capability','vocabulary','requiredInputs','requiredOutputs','allowedPrimitives','strategies','validators','heldOutCases','humanJudgments','exampleIntent','packDigest'], '$', errors)) return {ok:false,errors:errors};
+    if (!allowedKeys(pack, ['schema','id','version','title','description','capability','vocabulary','requiredInputs','requiredOutputs','allowedPrimitives','strategies','validators','heldOutCases','humanJudgments','exampleIntent','routeTokenRegistryRef','packDigest'], '$', errors)) return {ok:false,errors:errors};
     required(pack, ['schema','id','version','title','description','capability','vocabulary','requiredInputs','requiredOutputs','allowedPrimitives','strategies','validators','heldOutCases','humanJudgments','exampleIntent','packDigest'], '$', errors);
     if (pack.schema !== 'axm.organ-field-pack/v1') errors.push(issue('SCHEMA_MISMATCH', '$.schema', 'Expected axm.organ-field-pack/v1.'));
     STRATEGIES.forEach(function (name) { if (!pack.strategies || !pack.strategies[name]) errors.push(issue('STRATEGY_MISSING', '$.strategies.' + name, 'All three strategies are required.')); });
     (pack.allowedPrimitives || []).forEach(function (op) { if (ALLOWED_OPERATIONS.indexOf(op) < 0) errors.push(issue('UNKNOWN_OPERATION', '$.allowedPrimitives', 'Pack declares unsupported operation ' + op + '.')); });
+    STRATEGIES.forEach(function(name){
+      const strategy=pack.strategies&&pack.strategies[name];if(!strategy)return;
+      const guardOnly=strategy.guardOnlyInputs||[];
+      if(!Array.isArray(guardOnly))errors.push(issue('GUARD_ONLY_INPUTS_INVALID','$.strategies.'+name+'.guardOnlyInputs','guardOnlyInputs must be an array.'));
+      else guardOnly.forEach(function(inputName){
+        if((pack.requiredInputs||[]).indexOf(inputName)<0)errors.push(issue('GUARD_ONLY_INPUT_UNKNOWN','$.strategies.'+name+'.guardOnlyInputs','Guard-only input is not a required pack input: '+inputName));
+        if(!(strategy.guards||[]).some(function(guard){return guard.kind==='required'&&String(guard.path).replace(/^\$\.?/,'').split('.')[0]===inputName;}))errors.push(issue('GUARD_ONLY_REQUIRED_GUARD_MISSING','$.strategies.'+name+'.guardOnlyInputs','Guard-only input needs an explicit required guard: '+inputName));
+      });
+    });
+    if(pack.routeTokenRegistryRef){
+      if(canonicalJson(pack.routeTokenRegistryRef)!==canonicalJson(VERIFICATION_ROUTE_TOKEN_REGISTRY_REF))errors.push(issue('ROUTE_TOKEN_REGISTRY_LINEAGE_MISMATCH','$.routeTokenRegistryRef','Pack does not bind the exact verification-route token registry.'));
+      Object.keys(pack.strategies||{}).forEach(function(name){((pack.strategies[name].graph||{}).nodes||[]).forEach(function(node,index){
+        const arrays=[];if(Array.isArray(node.value))arrays.push(node.value);Object.keys(node.table||{}).forEach(function(key){if(Array.isArray(node.table[key]))arrays.push(node.table[key]);});
+        arrays.forEach(function(rows){rows.forEach(function(token){if(typeof token==='string'&&!own(VERIFICATION_ROUTE_TOKEN_REGISTRY.tokens,token))errors.push(issue('ROUTE_TOKEN_UNKNOWN','$.strategies.'+name+'.graph.nodes['+index+']','Unknown verification-route token: '+token));});});
+      });});
+    }
     (pack.heldOutCases || []).forEach(function (row, i) { validateCase(row, '$.heldOutCases[' + i + ']', errors); });
     const expected = digest(withoutKey(pack, 'packDigest'));
     if (pack.packDigest !== expected) errors.push(issue('PACK_DIGEST_MISMATCH', '$.packDigest', 'Pack digest does not match canonical content.', {expected:expected,actual:pack.packDigest}));
@@ -274,7 +311,7 @@
     if (graph.nodes.length > limits.maxNodes) errors.push(issue('GRAPH_NODE_LIMIT', '$.graph.nodes', 'Graph exceeds node limit.'));
     graph.nodes.forEach(function (node, index) {
       const at = '$.graph.nodes[' + index + ']';
-      if (!allowedKeys(node, ['id','op','path','value','table','args','fields','minimum','maximum','states','seedRef','options'], at, errors)) return;
+      if (!allowedKeys(node, ['id','op','path','value','table','args','fields','minimum','maximum','states','seedRef','options','onUnknown'], at, errors)) return;
       required(node, ['id','op'], at, errors);
       if (seen.has(node.id)) errors.push(issue('DUPLICATE_NODE', at + '.id', 'Node id is duplicated.'));
       if (ALLOWED_OPERATIONS.indexOf(node.op) < 0 || (pack && pack.allowedPrimitives.indexOf(node.op) < 0)) errors.push(issue('UNKNOWN_OPERATION', at + '.op', 'Operation is not allowlisted: ' + node.op));
@@ -284,6 +321,12 @@
       if (node.seedRef) references.push(node.seedRef);
       references.forEach(function (ref) { if (!seen.has(ref)) errors.push(issue('CYCLE_OR_FORWARD_REFERENCE', at, 'References must point to an earlier node: ' + ref)); });
       if (node.op === 'seeded_select' && !node.seedRef) errors.push(issue('EXPLICIT_SEED_REQUIRED', at + '.seedRef', 'Seeded selection requires an explicit seed reference.'));
+      if (node.op === 'stable_lookup_union') {
+        if (!isPlain(node.table)) errors.push(issue('LOOKUP_TABLE_REQUIRED', at + '.table', 'Stable lookup union needs a closed lookup table.'));
+        else Object.keys(node.table).forEach(function(key){if(!Array.isArray(node.table[key]))errors.push(issue('LOOKUP_ROUTE_ARRAY_REQUIRED',at+'.table.'+key,'Every stable lookup union mapping must be an array.'));});
+        if (['refuse','default'].indexOf(node.onUnknown)<0) errors.push(issue('LOOKUP_UNKNOWN_POLICY_REQUIRED', at + '.onUnknown', 'Stable lookup union requires onUnknown refuse or default.'));
+        if (node.onUnknown === 'default' && (!node.table || !Array.isArray(node.table.default))) errors.push(issue('LOOKUP_DEFAULT_REQUIRED', at + '.table.default', 'Default policy requires a default route array.'));
+      }
       seen.add(node.id);
     });
     if (!seen.has(graph.output)) errors.push(issue('GRAPH_OUTPUT_UNKNOWN', '$.graph.output', 'Output must name an existing node.'));
@@ -320,6 +363,7 @@
         const args = (node.args || []).map(function (arg) { return resolveArg(arg, values); });
         if (node.op === 'stable_unique') operations += Array.isArray(args[0]) ? args[0].length : 0;
         if (node.op === 'stable_union') operations += (Array.isArray(args[0]) ? args[0].length : 0) + (Array.isArray(args[1]) ? args[1].length : 0);
+        if (node.op === 'stable_lookup_union') operations += Array.isArray(args[0]) ? args[0].length : 0;
         if (node.op === 'seeded_select') operations += (node.options || []).length;
         if (operations > limits.maxOperations) throw issue('OPERATION_LIMIT', '$.graph', 'Operation ceiling reached.', { actual:operations, ceiling:limits.maxOperations });
         let value;
@@ -340,6 +384,18 @@
           case 'clamp': value = Math.max(Number(node.minimum), Math.min(Number(node.maximum), Number(args[0]))); break;
           case 'stable_unique': value = stableUnique(args[0]); break;
           case 'stable_union': value = stableUnique([].concat(args[0] || [], args[1] || [])); break;
+          case 'stable_lookup_union': {
+            if(!Array.isArray(args[0])) throw issue('LOOKUP_KEYS_ARRAY_REQUIRED', '$.graph.nodes[' + index + ']', 'Stable lookup union input must be an array.');
+            const keys=stableUnique(args[0]).map(String).sort(), mapped=[];
+            keys.forEach(function(key){
+              if(own(node.table||{},key)) mapped.push.apply(mapped,clone(node.table[key]));
+              else if(node.onUnknown==='default'&&Array.isArray((node.table||{}).default)) mapped.push.apply(mapped,clone(node.table.default));
+              else throw issue('LOOKUP_KEY_UNKNOWN','$.input','Unknown bounded lookup key.',{key:key,node:node.id});
+            });
+            operations += mapped.length;
+            if(operations>limits.maxOperations) throw issue('OPERATION_LIMIT','$.graph','Operation ceiling reached.',{actual:operations,ceiling:limits.maxOperations});
+            value=stableUnique(mapped);break;
+          }
           case 'object': {
             value = {};
             Object.keys(node.fields || {}).sort().forEach(function (key) { value[key] = resolveArg(node.fields[key], values); });
@@ -394,6 +450,7 @@
     if (guard.kind==='enum') return (guard.values||[]).indexOf(value)>=0;
     if (guard.kind==='minimum') return Number(value)>=Number(guard.value);
     if (guard.kind==='maximum') return Number(value)<=Number(guard.value);
+    if (guard.kind==='minimumItems') return Array.isArray(value) && value.length>=Number(guard.value);
     return false;
   }
   function runDefinition(definition,input) {
@@ -425,10 +482,10 @@
     const strategy=pack.strategies[strategyName];
     if(!strategy) throw new Error('Unknown strategy '+strategyName);
     const definition={
-      schema:'axm.deterministic-organ/v1',id:intent.id+'-'+strategyName,version:'0.1.0',status:'EXPERIMENTAL',
+      schema:'axm.deterministic-organ/v1',id:intent.id+'-'+strategyName,version:'0.2.0',status:'EXPERIMENTAL',
       field:pack.id,strategy:strategyName,purpose:intent.purpose,
-      lineage:{factoryVersion:FACTORY_VERSION,runtime:{id:RUNTIME_ID,version:RUNTIME_VERSION,digest:RUNTIME_DIGEST},pack:{id:pack.id,version:pack.version,digest:pack.packDigest},intentDigest:intent.intentDigest,metricProfileId:intent.metricProfileId,metricProfileDigest:METRIC_PROFILE.digest},
-      interface:{inputs:clone(intent.inputs),outputs:clone(intent.outputs)},graph:clone(strategy.graph),guards:clone(strategy.guards||[]),
+      lineage:{factoryVersion:FACTORY_VERSION,runtime:{id:RUNTIME_ID,version:RUNTIME_VERSION,digest:RUNTIME_DIGEST},pack:{id:pack.id,version:pack.version,digest:pack.packDigest},routeTokenRegistry:pack.routeTokenRegistryRef?clone(pack.routeTokenRegistryRef):null,intentDigest:intent.intentDigest,metricProfileId:intent.metricProfileId,metricProfileDigest:METRIC_PROFILE.digest},
+      interface:{inputs:clone(intent.inputs),outputs:clone(intent.outputs)},graph:clone(strategy.graph),guards:clone(strategy.guards||[]),guardOnlyInputs:clone(strategy.guardOnlyInputs||[]),
       limits:Object.assign({},LIMITS,intent.resourceBudget||{}),invariants:clone(intent.invariants),boundaries:clone(intent.boundaries),
       refusals:['unknown-operation','cycle-or-forward-reference','implicit-randomness','missing-explicit-seed','clock-or-environment-access','network','filesystem','dynamic-code','unbounded-iteration','authority-escalation'],
       implementation:{kind:'pure-json-transformer',status:'EXPERIMENTAL'},installed:false,registered:false,staged:false,promoted:false,canonChanged:false
@@ -436,14 +493,26 @@
     definition.definitionDigest=digest(definition);
     return definition;
   }
+  function requiredInputUsage(definition,pack){
+    const reads=new Set();
+    (definition.graph&&definition.graph.nodes||[]).forEach(function(node){if(node.op==='read'){const root=String(node.path||'').replace(/^\$\.?/,'').split('.').filter(Boolean)[0];if(root)reads.add(root);}});
+    const guardOnly=new Set(definition.guardOnlyInputs||[]),guards=definition.guards||[],errors=[];
+    (pack.requiredInputs||[]).forEach(function(name){
+      const guarded=guardOnly.has(name)&&guards.some(function(guard){return guard.kind==='required'&&String(guard.path).replace(/^\$\.?/,'').split('.')[0]===name;});
+      if(!reads.has(name)&&!guarded)errors.push(issue('REQUIRED_INPUT_UNUSED','$.interface.inputs.'+name,'Required input is neither read by the graph nor explicitly required as guard-only.',{input:name}));
+    });
+    return {ok:errors.length===0,errors:errors,readInputs:Array.from(reads).sort(),guardOnlyInputs:Array.from(guardOnly).sort()};
+  }
   function evaluateDefinition(definition,intent,pack) {
     const gates=[];
     function gate(id,ok,details){gates.push({id:id,ok:Boolean(ok),details:details||[]});}
     const lineage=definition.lineage||{};
-    gate('exact-lineage',lineage.intentDigest===intent.intentDigest && lineage.pack && lineage.pack.digest===pack.packDigest && lineage.runtime && lineage.runtime.version===RUNTIME_VERSION && lineage.runtime.digest===RUNTIME_DIGEST && lineage.metricProfileDigest===METRIC_PROFILE.digest);
+    const registryLineage=pack.routeTokenRegistryRef?canonicalJson(lineage.routeTokenRegistry)===canonicalJson(VERIFICATION_ROUTE_TOKEN_REGISTRY_REF):lineage.routeTokenRegistry===null;
+    gate('exact-lineage',lineage.intentDigest===intent.intentDigest && lineage.pack && lineage.pack.id===pack.id && lineage.pack.version===pack.version && lineage.pack.digest===pack.packDigest && lineage.runtime && lineage.runtime.id===RUNTIME_ID && lineage.runtime.version===RUNTIME_VERSION && lineage.runtime.digest===RUNTIME_DIGEST && lineage.metricProfileId===METRIC_PROFILE.id && lineage.metricProfileDigest===METRIC_PROFILE.digest && registryLineage);
     const intentCheck=validateIntent(intent,pack); gate('schema-and-types',intentCheck.ok,intentCheck.errors);
     const graphCheck=validateGraph(definition.graph,pack,definition.limits); gate('purity-and-graph-bounds',graphCheck.ok,graphCheck.errors);
     gate('capability-coverage',pack.requiredInputs.every(function(n){return intent.inputs.some(function(p){return p.name===n;});}) && pack.requiredOutputs.every(function(n){return intent.outputs.some(function(p){return p.name===n;});}));
+    const usage=requiredInputUsage(definition,pack);gate('required-input-usage',usage.ok,usage.errors);
     const requiredRows=[], desiredRows=[], heldRows=[];
     function runRows(rows,target){(rows||[]).forEach(function(row){const result=runDefinition(definition,row.input),check=assertCase(result,row);target.push({id:row.id,ok:check.ok,failures:check.failures,outputDigest:result.ok?digest(result.output):null,trace:result.trace||[]});});}
     if(graphCheck.ok){runRows(intent.requiredCases,requiredRows);runRows(intent.desiredCases,desiredRows);runRows(pack.heldOutCases,heldRows);}
@@ -491,7 +560,7 @@
       "function stable(v){if(v===null||typeof v!=='object')return JSON.stringify(v);if(Array.isArray(v))return '['+v.map(stable).join(',')+']';return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}';}\n"+
       "function unique(a){const s=new Set();return (a||[]).filter(v=>{const k=stable(v);if(s.has(k))return false;s.add(k);return true;});}\n"+
       "function hash(s){let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}\n"+
-      "function run(input){for(const g of definition.guards||[]){const v=path(input,g.path);const ok=g.kind==='required'?v!==undefined&&v!==null&&v!=='':g.kind==='enum'?g.values.includes(v):g.kind==='minimum'?Number(v)>=Number(g.value):g.kind==='maximum'?Number(v)<=Number(g.value):false;if(!ok)return {ok:false,code:'GUARD_REFUSAL',guard:g};}const v={};for(const n of definition.graph.nodes){const a=(n.args||[]).map(x=>x&&own(x,'ref')?v[x.ref]:x.value);switch(n.op){case'read':v[n.id]=path(input,n.path);break;case'literal':v[n.id]=n.value;break;case'lookup':v[n.id]=own(n.table,String(a[0]))?n.table[String(a[0])]:n.table.default;break;case'equals':v[n.id]=stable(a[0])===stable(a[1]);break;case'gte':v[n.id]=Number(a[0])>=Number(a[1]);break;case'and':v[n.id]=a.every(Boolean);break;case'or':v[n.id]=a.some(Boolean);break;case'not':v[n.id]=!a[0];break;case'choose':v[n.id]=a[0]?a[1]:a[2];break;case'clamp':v[n.id]=Math.max(n.minimum,Math.min(n.maximum,Number(a[0])));break;case'stable_unique':v[n.id]=unique(a[0]);break;case'stable_union':v[n.id]=unique([...(a[0]||[]),...(a[1]||[])]);break;case'object':v[n.id]=Object.fromEntries(Object.keys(n.fields).sort().map(k=>[k,n.fields[k].ref?v[n.fields[k].ref]:n.fields[k].value]));break;case'transition':v[n.id]=n.states[String(a[0])+'|'+String(a[1])]||a[0];break;case'seeded_select':v[n.id]=n.options[hash(stable({options:n.options,seed:v[n.seedRef]}))%n.options.length];break;default:return {ok:false,code:'UNKNOWN_OPERATION'};}}return {ok:true,output:v[definition.graph.output]};}\n"+
+      "function run(input){for(const g of definition.guards||[]){const v=path(input,g.path);const ok=g.kind==='required'?v!==undefined&&v!==null&&v!=='':g.kind==='enum'?g.values.includes(v):g.kind==='minimum'?Number(v)>=Number(g.value):g.kind==='maximum'?Number(v)<=Number(g.value):g.kind==='minimumItems'?Array.isArray(v)&&v.length>=Number(g.value):false;if(!ok)return {ok:false,code:'GUARD_REFUSAL',guard:g};}const v={};for(const n of definition.graph.nodes){const a=(n.args||[]).map(x=>x&&own(x,'ref')?v[x.ref]:x.value);switch(n.op){case'read':v[n.id]=path(input,n.path);break;case'literal':v[n.id]=n.value;break;case'lookup':v[n.id]=own(n.table,String(a[0]))?n.table[String(a[0])]:n.table.default;break;case'equals':v[n.id]=stable(a[0])===stable(a[1]);break;case'gte':v[n.id]=Number(a[0])>=Number(a[1]);break;case'and':v[n.id]=a.every(Boolean);break;case'or':v[n.id]=a.some(Boolean);break;case'not':v[n.id]=!a[0];break;case'choose':v[n.id]=a[0]?a[1]:a[2];break;case'clamp':v[n.id]=Math.max(n.minimum,Math.min(n.maximum,Number(a[0])));break;case'stable_unique':v[n.id]=unique(a[0]);break;case'stable_union':v[n.id]=unique([...(a[0]||[]),...(a[1]||[])]);break;case'stable_lookup_union':{if(!Array.isArray(a[0]))return {ok:false,code:'LOOKUP_KEYS_ARRAY_REQUIRED'};const rows=[];for(const k of unique(a[0]).map(String).sort()){if(own(n.table,k))rows.push(...n.table[k]);else if(n.onUnknown==='default'&&Array.isArray(n.table.default))rows.push(...n.table.default);else return {ok:false,code:'LOOKUP_KEY_UNKNOWN',key:k};}v[n.id]=unique(rows);break;}case'object':v[n.id]=Object.fromEntries(Object.keys(n.fields).sort().map(k=>[k,n.fields[k].ref?v[n.fields[k].ref]:n.fields[k].value]));break;case'transition':v[n.id]=n.states[String(a[0])+'|'+String(a[1])]||a[0];break;case'seeded_select':v[n.id]=n.options[hash(stable({options:n.options,seed:v[n.seedRef]}))%n.options.length];break;default:return {ok:false,code:'UNKNOWN_OPERATION'};}}return {ok:true,output:v[definition.graph.output]};}\n"+
       "module.exports={definition,run};\n";
     return source.replace(/\r\n/g,'\n');
   }
@@ -501,8 +570,8 @@
   function buildPackage(definition,intent,pack,evaluation){
     if(evaluation.status!=='VALID') throw new Error('Rejected candidates cannot be packaged.');
     const moduleId=definition.id;
-    const manifest={schema:'axm.module-manifest/v1',id:moduleId,name:intent.name+' — '+definition.strategy,version:'v0.1',status:'EXPERIMENTAL',entry:'index.html',contract:'module.contract.json',uses:[],installed:false,promoted:false};
-    const contract={schema:'axm.module-contract/v1',id:moduleId,version:'v0.1',provides:intent.outputs.map(function(p){return 'json-output:'+p.name;}),consumes:intent.inputs.map(function(p){return 'json-input:'+p.name;}),permissions:[],handoffs:{emits:['axm.deterministic-organ/v1','axm.organ-evaluation-receipt/v1'],accepts:['json-input','human-implementation-review']},lifecycle:{state_owner:'none',reload:'not-applicable',disconnect:'not-applicable',cleanup:'not-applicable'},boundaries:{writes:[],refuses:['network','filesystem','clock','environment','dynamic-code','implicit-randomness','installation','registration','staging','promotion','permission-change','canon-change','foundation-mutation']}};
+    const manifest={schema:'axm.module-manifest/v1',id:moduleId,name:intent.name+' — '+definition.strategy,version:'v0.2',status:'EXPERIMENTAL',entry:'index.html',contract:'module.contract.json',uses:[],installed:false,promoted:false};
+    const contract={schema:'axm.module-contract/v1',id:moduleId,version:'v0.2',provides:intent.outputs.map(function(p){return 'json-output:'+p.name;}),consumes:intent.inputs.map(function(p){return 'json-input:'+p.name;}),permissions:[],handoffs:{emits:['axm.deterministic-organ/v1','axm.organ-evaluation-receipt/v1'],accepts:['json-input','human-implementation-review']},lifecycle:{state_owner:'none',reload:'not-applicable',disconnect:'not-applicable',cleanup:'not-applicable'},boundaries:{writes:[],refuses:['network','filesystem','clock','environment','dynamic-code','implicit-randomness','installation','registration','staging','promotion','permission-change','canon-change','foundation-mutation']}};
     const files={
       'manifest.json':pretty(manifest),
       'module.contract.json':pretty(contract),
@@ -518,6 +587,7 @@
       'organ.evaluation.json':pretty(evaluation),
       'authority.receipt.json':pretty({schema:'axm.organ-authority-receipt/v1',status:'EXPERIMENTAL',installed:false,registered:false,staged:false,promoted:false,canonChanged:false,permissionsChanged:false})
     };
+    if(definition.lineage.routeTokenRegistry)files['verification-route-token-registry.json']=pretty(VERIFICATION_ROUTE_TOKEN_REGISTRY);
     const bundleFiles=Object.keys(files).sort().map(function(path){return {path:path,encoding:'utf8',sha256:digest(files[path]).slice(7),content:files[path]};});
     const bundle={schema:'axm.module-bundle/v1',id:manifest.id,version:manifest.version,files:bundleFiles};
     const bundleText=pretty(bundle);
@@ -739,8 +809,9 @@
   return {
     FACTORY_VERSION:FACTORY_VERSION,RUNTIME_ID:RUNTIME_ID,RUNTIME_VERSION:RUNTIME_VERSION,RUNTIME_DIGEST:RUNTIME_DIGEST,
     LIMITS:LIMITS,METRIC_PROFILE:METRIC_PROFILE,STRATEGIES:STRATEGIES,ALLOWED_OPERATIONS:ALLOWED_OPERATIONS,
+    VERIFICATION_ROUTE_TOKEN_REGISTRY:VERIFICATION_ROUTE_TOKEN_REGISTRY,VERIFICATION_ROUTE_TOKEN_REGISTRY_REF:VERIFICATION_ROUTE_TOKEN_REGISTRY_REF,
     canonicalJson:canonicalJson,digest:digest,clone:clone,sealIntent:sealIntent,validateIntent:validateIntent,validatePack:validatePack,
-    validateGraph:validateGraph,executeGraph:executeGraph,runDefinition:runDefinition,makeDefinition:makeDefinition,evaluateDefinition:evaluateDefinition,
+    validateGraph:validateGraph,executeGraph:executeGraph,runDefinition:runDefinition,makeDefinition:makeDefinition,evaluateDefinition:evaluateDefinition,requiredInputUsage:requiredInputUsage,
     buildPackage:buildPackage,verifyPackage:verifyPackage,generateCandidates:generateCandidates,compareCandidates:compareCandidates,
     selectCandidate:selectCandidate,parseSentence:parseSentence,importProposal:importProposal,portSchema:portSchema,
     ORGAN_ARCHIVE_BRIDGE:ORGAN_ARCHIVE_BRIDGE,ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT:ORGAN_ARCHIVE_CONNECTION_ACKNOWLEDGEMENT,

@@ -17,7 +17,8 @@ for (const pack of Fabric.loadPacks()) {
   check(run.status === 'COMPLETE' && run.candidates.length === 3 && run.failures.length === 0, pack.id + ' produces three candidates');
   for (const candidate of run.candidates) {
     check(candidate.evaluation.status === 'VALID', candidate.package.id + ' passes hard gates');
-    check(Object.keys(candidate.files).length === 15 && Fabric.verifyPackage(candidate).ok, candidate.package.id + ' is a verified 15-file package');
+    const expectedFiles=pack.routeTokenRegistryRef?16:15;
+    check(Object.keys(candidate.files).length === expectedFiles && Fabric.verifyPackage(candidate).ok, candidate.package.id + ' is a verified bounded package');
   }
 }
 
@@ -26,6 +27,7 @@ const runtimeCore=JSON.parse(JSON.stringify(runtimeContract));delete runtimeCore
 const metricCore=JSON.parse(JSON.stringify(metricProfile));delete metricCore.digest;check(Fabric.digest(metricCore)===metricProfile.digest&&metricProfile.digest===Fabric.METRIC_PROFILE.digest,'metric profile digest binds exact weights');
 check(Object.values(Fabric.METRIC_PROFILE.weights).reduce(function(sum,value){return sum+value;},0) === 100, 'metric weights total 100');
 check(Fabric.parseSentence('completely unknown orbit', Fabric.loadPacks()).draft === null, 'unknown controlled sentence stops before generation');
-['organ-archive-connection-plan','organ-archive-receiver-acknowledgement','organ-archive-connection-receipt','organ-archive-connection-result'].forEach(function(name){const schema=JSON.parse(require('fs').readFileSync(require('path').join(__dirname,'schemas',name+'.schema.json'),'utf8'));check(schema.$id==='axm.'+name+'/v1'&&objectSchemasClosed(schema),name+' schema is identity-bound and closed at every object node');});
+['organ-archive-connection-plan','organ-archive-receiver-acknowledgement','organ-archive-connection-receipt','organ-archive-connection-result','verification-route-token-registry','verification-route-plan'].forEach(function(name){const schema=JSON.parse(require('fs').readFileSync(require('path').join(__dirname,'schemas',name+'.schema.json'),'utf8'));check(schema.$id==='axm.'+name+'/v1'&&objectSchemasClosed(schema),name+' schema is identity-bound and closed at every object node');});
+const registry=require('./verification-route-token-registry.json'),registryCore=JSON.parse(JSON.stringify(registry));delete registryCore.registryDigest;check(Fabric.digest(registryCore)===registry.registryDigest&&Fabric.canonicalJson(registry)===Fabric.canonicalJson(Fabric.VERIFICATION_ROUTE_TOKEN_REGISTRY),'verification route registry digest and runtime bytes agree');
 
 console.log('Deterministic Organ Fabric shared selftest PASS · ' + checks + ' checks');

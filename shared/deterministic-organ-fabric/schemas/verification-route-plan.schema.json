@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.verification-route-plan/v1",
+  "title": "AXM Verification Route Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "candidate", "input", "output", "bindings", "evidenceDeskPrefill", "limitations", "authority", "planDigest"],
+  "properties": {
+    "schema": {"const": "axm.verification-route-plan/v1"}, "status": {"const": "EXPERIMENTAL"},
+    "candidate": {"$ref": "#/$defs/candidate"}, "input": {"$ref": "#/$defs/input"}, "output": {"$ref": "#/$defs/output"},
+    "bindings": {"type": "array", "items": {"$ref": "#/$defs/binding"}}, "evidenceDeskPrefill": {"$ref": "#/$defs/prefill"},
+    "limitations": {"type": "array", "items": {"type": "string"}}, "authority": {"$ref": "#/$defs/authority"}, "planDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "ref": {"type": "object", "additionalProperties": false, "required": ["id", "version", "digest"], "properties": {"id": {"type": "string"}, "version": {"type": "string"}, "digest": {"$ref": "#/$defs/digest"}}},
+    "candidate": {"type": "object", "additionalProperties": false, "required": ["id", "packageDigest", "definitionDigest", "evaluationDigest", "runtime", "pack", "routeTokenRegistry"], "properties": {"id": {"type": "string"}, "packageDigest": {"$ref": "#/$defs/digest"}, "definitionDigest": {"$ref": "#/$defs/digest"}, "evaluationDigest": {"$ref": "#/$defs/digest"}, "runtime": {"$ref": "#/$defs/ref"}, "pack": {"$ref": "#/$defs/ref"}, "routeTokenRegistry": {"$ref": "#/$defs/ref"}}},
+    "brief": {"type": "object", "additionalProperties": false, "required": ["changeType", "risk", "affectedSurfaces"], "properties": {"changeType": {"enum": ["config", "code", "ui", "data"]}, "risk": {"type": "integer", "minimum": 1, "maximum": 5}, "affectedSurfaces": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}}},
+    "input": {"type": "object", "additionalProperties": false, "required": ["brief", "inputDigest"], "properties": {"brief": {"$ref": "#/$defs/brief"}, "inputDigest": {"$ref": "#/$defs/digest"}}},
+    "output": {"type": "object", "additionalProperties": false, "required": ["route", "containment", "explanation"], "properties": {"route": {"type": "array", "items": {"type": "string"}}, "containment": {"type": "string"}, "explanation": {"type": "string"}}},
+    "evidenceDesk": {"type": "object", "additionalProperties": false, "required": ["claimKind", "primarySurface", "passCondition"], "properties": {"claimKind": {"type": "string"}, "primarySurface": {"type": "string"}, "passCondition": {"type": "string"}}},
+    "spine": {"oneOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["categoryId", "claimId"], "properties": {"categoryId": {"type": "string"}, "claimId": {"type": "string"}}}]},
+    "binding": {"type": "object", "additionalProperties": false, "required": ["token", "description", "evidenceDesk", "verificationSpine"], "properties": {"token": {"type": "string"}, "description": {"type": "string"}, "evidenceDesk": {"$ref": "#/$defs/evidenceDesk"}, "verificationSpine": {"$ref": "#/$defs/spine"}}},
+    "actor": {"type": "object", "additionalProperties": false, "required": ["id", "type"], "properties": {"id": {"type": "string"}, "type": {"type": "string"}}},
+    "observation": {"type": "object", "additionalProperties": false, "required": ["id", "claim", "kind", "risk", "verdict", "pass_condition", "primary_surface", "observed_evidence", "counterevidence", "source_kind", "source", "named_seam"], "properties": {"id": {"type": "string"}, "claim": {"type": "string"}, "kind": {"type": "string"}, "risk": {"enum": ["LOW", "MEDIUM", "HIGH"]}, "verdict": {"const": "UNKNOWN"}, "pass_condition": {"type": "string"}, "primary_surface": {"type": "string"}, "observed_evidence": {"const": ""}, "counterevidence": {"type": "string"}, "source_kind": {"const": "deterministic-organ-route-plan"}, "source": {"$ref": "#/$defs/digest"}, "named_seam": {"type": "string"}}},
+    "prefill": {"type": "object", "additionalProperties": false, "required": ["schema", "title", "goal", "source_checkpoint", "actor", "observations", "actions", "checks", "changes", "limitations", "next_actions"], "properties": {"schema": {"const": "axm.evidence-fields/v2"}, "title": {"type": "string"}, "goal": {"type": "string"}, "source_checkpoint": {"$ref": "#/$defs/digest"}, "actor": {"$ref": "#/$defs/actor"}, "observations": {"type": "array", "items": {"$ref": "#/$defs/observation"}}, "actions": {"type": "array", "maxItems": 0}, "checks": {"type": "array", "maxItems": 0}, "changes": {"type": "array", "maxItems": 0}, "limitations": {"type": "array", "items": {"type": "string"}}, "next_actions": {"type": "array", "items": {"type": "string"}}}},
+    "authority": {"type": "object", "additionalProperties": false, "required": ["executed", "wroteState", "installed", "registered", "staged", "promoted", "canonChanged", "foundationChanged"], "properties": {"executed": {"const": false}, "wroteState": {"const": false}, "installed": {"const": false}, "registered": {"const": false}, "staged": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}, "foundationChanged": {"const": false}}}
+  }
+}

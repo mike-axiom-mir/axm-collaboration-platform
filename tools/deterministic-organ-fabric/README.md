@@ -19,6 +19,10 @@ Every hard-gate-valid candidate is retained as `VALID_DORMANT_LIBRARY`, `KEEP_WH
 
 Selection is a durable event overlay. It does not mutate the immutable candidate or remove the other dormant candidates. Every candidate stays detached with `installed`, `registered`, `staged`, `promoted`, and `canonChanged` set to `false`.
 
+Software & Workshop v1.1 reads every declared affected surface through the bounded `stable_lookup_union` runtime primitive. Unknown surfaces refuse; reordered equivalent surface sets produce the same route. Every emitted verification token is bound to the exact packaged `axm.verification-route-token-registry/v1`, which names an Evidence Desk claim kind, native proof surface, pass condition, and optional Verification Spine claim.
+
+The pure machine action `verification.route.plan` accepts an intact current candidate plus a typed change brief and emits `axm.verification-route-plan/v1` with an Evidence Desk prefill. It executes only the trusted in-memory declarative runtime; it never imports generated `organ.js`, runs checks, controls a browser, writes state, installs, registers, stages, promotes, changes CANON, or mutates the Foundation.
+
 `stash-export` emits a content-bound `axm.organ-archive-stash-envelope/v1` containing the standalone `organ.js` source under an `organs/*-organ.js` suggested path. It remains a detached handoff and performs no write.
 
 `connect-mirror` is the explicit host-authorized bridge. It is bound to AI Organ Archive `0.9.0` TEST contract digest `sha256:42a91fd899191dfb6ded2f54074d874cbc20c7d7a020c082a252775eaae254da` and the exact passive receiver entry-point bytes. It refuses missing authorization, lineage drift, symlinks, overlap, traversal, or different bytes at the target. With the exact acknowledgement, it places the source, invokes only the trusted archive receiver (never the organ), verifies the predicted content-addressed object and dormant/non-admitted state, and records `axm.organ-archive-connection-receipt/v1` as a durable Fabric event. Repeating the exact connection deduplicates both source and event.

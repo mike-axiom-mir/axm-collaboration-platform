@@ -1,7 +1,7 @@
 {
   "schema": "axm.organ-field-pack/v1",
   "id": "games-entertainment",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "Games & Entertainment",
   "description": "Build bounded encounter-beat selectors with explicit seed, state, and telegraphing.",
   "capability": "encounter-beat-selection",
@@ -11,7 +11,8 @@
   "allowedPrimitives": ["read", "literal", "lookup", "clamp", "transition", "seeded_select", "object"],
   "strategies": {
     "lean": {
-      "guards": [{"kind": "required", "path": "explicitSeed"}, {"kind": "enum", "path": "currentState", "values": ["calm", "pressure", "recovery"]}, {"kind": "minimum", "path": "intensity", "value": 1}, {"kind": "maximum", "path": "intensity", "value": 5}],
+      "guardOnlyInputs": ["recentBeats"],
+      "guards": [{"kind": "required", "path": "explicitSeed"}, {"kind": "required", "path": "currentState"}, {"kind": "required", "path": "intensity"}, {"kind": "required", "path": "recentBeats"}, {"kind": "enum", "path": "currentState", "values": ["calm", "pressure", "recovery"]}, {"kind": "minimum", "path": "intensity", "value": 1}, {"kind": "maximum", "path": "intensity", "value": 5}],
       "graph": {"nodes": [
         {"id": "seed", "op": "read", "path": "explicitSeed"},
         {"id": "state", "op": "read", "path": "currentState"},
@@ -25,7 +26,8 @@
       ], "output": "output"}
     },
     "balanced": {
-      "guards": [{"kind": "required", "path": "explicitSeed"}, {"kind": "required", "path": "currentState"}, {"kind": "enum", "path": "currentState", "values": ["calm", "pressure", "recovery"]}, {"kind": "minimum", "path": "intensity", "value": 1}, {"kind": "maximum", "path": "intensity", "value": 5}],
+      "guardOnlyInputs": ["recentBeats"],
+      "guards": [{"kind": "required", "path": "explicitSeed"}, {"kind": "required", "path": "currentState"}, {"kind": "required", "path": "intensity"}, {"kind": "required", "path": "recentBeats"}, {"kind": "enum", "path": "currentState", "values": ["calm", "pressure", "recovery"]}, {"kind": "minimum", "path": "intensity", "value": 1}, {"kind": "maximum", "path": "intensity", "value": 5}],
       "graph": {"nodes": [
         {"id": "seed", "op": "read", "path": "explicitSeed"},
         {"id": "state", "op": "read", "path": "currentState"},
@@ -39,7 +41,8 @@
       ], "output": "output"}
     },
     "guarded": {
-      "guards": [{"kind": "required", "path": "explicitSeed"}, {"kind": "required", "path": "currentState"}, {"kind": "required", "path": "recentBeats"}, {"kind": "enum", "path": "currentState", "values": ["calm", "pressure", "recovery"]}, {"kind": "minimum", "path": "intensity", "value": 1}, {"kind": "maximum", "path": "intensity", "value": 5}],
+      "guardOnlyInputs": ["recentBeats"],
+      "guards": [{"kind": "required", "path": "explicitSeed"}, {"kind": "required", "path": "currentState"}, {"kind": "required", "path": "intensity"}, {"kind": "required", "path": "recentBeats"}, {"kind": "enum", "path": "currentState", "values": ["calm", "pressure", "recovery"]}, {"kind": "minimum", "path": "intensity", "value": 1}, {"kind": "maximum", "path": "intensity", "value": 5}],
       "graph": {"nodes": [
         {"id": "seed", "op": "read", "path": "explicitSeed"},
         {"id": "state", "op": "read", "path": "currentState"},
@@ -53,7 +56,7 @@
       ], "output": "output"}
     }
   },
-  "validators": ["explicit-seed", "bounded-state-transition", "telegraph-present", "typed-ports", "held-out-cases", "rebuild-parity"],
+  "validators": ["explicit-seed", "bounded-state-transition", "telegraph-present", "typed-ports", "required-input-usage", "held-out-cases", "rebuild-parity"],
   "heldOutCases": [
     {"id": "held-seeded-pressure", "description": "Explicit seed produces one declared beat and a bounded next state.", "input": {"explicitSeed": "held-17", "currentState": "pressure", "intensity": 5, "recentBeats": ["approach"]}, "assertions": [{"path": "beat", "op": "in", "value": ["approach", "feint", "hazard", "breather"]}, {"path": "nextState", "op": "eq", "value": "recovery"}]},
     {"id": "held-telegraph", "description": "Every declared result has a visible telegraph string.", "input": {"explicitSeed": "held-telegraph", "currentState": "calm", "intensity": 2, "recentBeats": []}, "assertions": [{"path": "nextState", "op": "eq", "value": "pressure"}, {"path": "durationTicks", "op": "gte", "value": 1}]}
@@ -85,5 +88,5 @@
     "resourceBudget": {},
     "metricProfileId": "balanced-v1"
   },
-  "packDigest": "sha256:0fbcd17c7136f5b492629ccfff0028105c01c9e1908339501ad567bdd0fc2044"
+  "packDigest": "sha256:e0f37e4ff348d9c1eaa805454b94b23be849acf010eb41660f370bc1e698daec"
 }

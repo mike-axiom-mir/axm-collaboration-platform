@@ -1,0 +1,27 @@
+{
+  "schema": "axm.organ-surface-semantics-proof/v1",
+  "status": "PASS",
+  "candidatePackageDigest": "sha256:874399d704bf7e68bb1fdbcf4b16609eb5adb262fab8e310c90710bb1106385c",
+  "sameChangeAndRisk": {"changeType": "code", "risk": 2},
+  "surfaceOutputs": {
+    "runtime": {"route": ["focused-selftest", "contract-test"], "containment": "review"},
+    "archive": {"route": ["focused-selftest", "contract-test", "fixture-parity", "round-trip-test", "archive-reload"], "containment": "review"},
+    "mirror-passive-receiver": {"route": ["focused-selftest", "contract-test", "sender-receiver-parity"], "containment": "review"}
+  },
+  "metamorphicChecks": {
+    "differentRelevantSurfacesProduceDifferentRoutes": true,
+    "reorderedAndDuplicatedEquivalentSurfaceSetsProduceIdenticalOutput": true,
+    "unknownSurfaceRefusal": {"code": "LOOKUP_KEY_UNKNOWN", "key": "unknown-surface", "node": "surfaceRoute"},
+    "emptySurfaceRefusal": {"code": "GUARD_REFUSAL", "guardKind": "minimumItems", "minimum": 1}
+  },
+  "requiredInputUsage": {"affectedSurfacesRead": true, "gate": "required-input-usage", "gatePassed": true},
+  "routeTokenResolution": {"registryDigest": "sha256:98dd708faa719c5354d7106086e36e108e7446479b578b1aa771198e5eb308be", "allEmittedTokensResolve": true},
+  "trustedPlanner": {
+    "planDigest": "sha256:844bec6cdc9dac2a9cea9e6b0f056acf18a3d6ce3b12b8edb8709589dbb917fb",
+    "rebuildVerified": true,
+    "route": ["focused-selftest", "contract-test", "fixture-parity", "round-trip-test", "archive-reload", "sender-receiver-parity", "required-regression"],
+    "evidenceKinds": ["deterministic-behavior", "static-structure", "persistence", "transport"],
+    "generatedOrganJsRequired": false,
+    "authority": {"executed": false, "wroteState": false, "installed": false, "registered": false, "staged": false, "promoted": false, "canonChanged": false, "foundationChanged": false}
+  }
+}
