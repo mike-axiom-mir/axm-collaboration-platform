@@ -128,6 +128,7 @@ function finalizeRun(options) {
     initial_profile_sha256: initialProfileHash,
     final_profile_sha256: finalProfileHash,
     tool_receipts: {
+      count: toolReceipts.length,
       authorized_tool_calls: stateCounters.tool_calls,
       completion_receipt_count: toolReceipts.length,
       evidence_gap: toolReceiptGap,
