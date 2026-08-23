@@ -1,0 +1,49 @@
+{
+  "$schema": "axm.evidence-route/v1",
+  "subject": "Capability Recipe Foundry v1 claims",
+  "testedImplementationCommit": "99bf930599ea584f5f622121bdfbae05158774ac",
+  "claims": [
+    {
+      "id": "sealed-intent-determinism",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "The same sealed authoring intent produces byte-identical proposal, files, packet, receipt, and digest.",
+      "primarySurface": "Focused Foundry selftest and materialized-packet parity test",
+      "counterevidence": "Any repeated route or committed pilot byte differs.",
+      "observedEvidence": "All deterministic rebuild and committed-pilot parity checks passed.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "inactive-authority-ceiling",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "Rehashing cannot introduce execution, active state, permissions, promotion, extra executable files, or erased review holds.",
+      "primarySurface": "Adversarial focused verification",
+      "secondarySurface": "Closed JSON schemas and machine-door refusals",
+      "counterevidence": "A self-consistently rehashed authority-bearing packet verifies.",
+      "observedEvidence": "All named authority and exact-file-set mutations were refused.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "pilot-builder-external-proof",
+      "kind": "behavioral",
+      "risk": "medium",
+      "passCondition": "An explicit trusted test host can run the contribution, prove deterministic output, and execute the emitted validator selftest while the Foundry itself never does so.",
+      "primarySurface": "Capability Recipe Foundry package test",
+      "counterevidence": "Builder output drifts, emitted source fails, or the Foundry executes it internally.",
+      "observedEvidence": "The external host proof passed valid, required-field, additional-property, open-schema, and excessive-budget cases; internal execution flags stayed false.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "live-workbench-route",
+      "kind": "visual-and-interaction",
+      "risk": "medium",
+      "passCondition": "The sealed pilot routes to an INACTIVE seven-file packet on desktop and 390 by 844 CSS pixels, without fresh console errors or horizontal page overflow.",
+      "primarySurface": "Live in-app browser interaction and repeated screenshots",
+      "secondarySurface": "DOM state and geometry inspection",
+      "counterevidence": "BROKEN dependency state, missing packet, overlap, horizontal page overflow, or a fresh console error.",
+      "observedEvidence": "A missing browser dependency was first observed and repaired; the fresh desktop and mobile routes then met every named condition.",
+      "verdict": "PASS_AFTER_REPAIR"
+    }
+  ]
+}
