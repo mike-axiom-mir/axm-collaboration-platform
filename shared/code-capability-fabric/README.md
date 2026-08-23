@@ -169,3 +169,30 @@ See `tools/sandbox/README-workshop-shadow-sandbox-v1.md` and run:
 node shared/code-capability-fabric/selftest-workshop-contract-repair-planner-v1.js
 node tools/sandbox/selftest-workshop-contract-repair-sandbox-v1.js
 ```
+
+## Exact human-declared candidate selection binding
+
+The additive v0.7 `TEST` rung can bind one declared human review-seat choice to
+the exact v0.6 candidate packet, exact selected alternative bytes, exact sealed
+grounded-consent instance/evaluation, ordered four-root evidence references,
+time window, nonce, and a declared replay-ledger snapshot.
+
+The binder hashes the exact selected candidate bytes in memory against the
+declared length and SHA-256, then retains only the reference. The result is
+intentionally `AUTHENTICATION_REQUIRED` with effect
+`INERT_REVIEW_BINDING`. A seat reference is not natural-person authentication;
+the supplied clock and replay ledger are not independently trusted; live
+revocation, informed understanding, host authorization, and semantic fitness
+remain unproven. Consent for another candidate, stale or replayed declarations,
+forged records, scope expansion, permissions, network, lifecycle authority, and
+machine selection fail closed.
+
+The binder reads no filesystem, writes nothing, and cannot execute tests or
+candidates, install, integrate, publish, promote, or change CANON. A future
+trusted authentication hand is a separate capability and Mike decision.
+
+Run:
+
+```powershell
+node shared/code-capability-fabric/selftest-human-candidate-selection-binder-v1.js
+```
