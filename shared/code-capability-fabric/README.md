@@ -107,3 +107,24 @@ and run:
 ```powershell
 node shared/code-capability-fabric/selftest-deterministic-game-trailer-planner-v1.js
 ```
+
+## Deterministic gameplay-replay trailer
+
+The following `TEST` rung replaces the abstract middle of that trailer with
+frames reconstructed from exact states emitted by the reviewed Four Roots
+native engine. A fixed complete-journey entrypoint produces 228 digest-linked
+actions and 40 byte-bound visual checkpoints across all five zones. This is
+explicitly replay reconstruction, not browser capture or live player input.
+
+Only the exact engine bytes are accepted. Uploaded or generated runtimes,
+arbitrary commands, providers, network access, publication, promotion,
+Foundation mutation, and CANON remain refused.
+
+See [README-deterministic-gameplay-trailer-planner-v1.md](README-deterministic-gameplay-trailer-planner-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-deterministic-gameplay-replay-v1.js
+node shared/code-capability-fabric/selftest-deterministic-gameplay-trailer-planner-v1.js
+node tools/game-hub/game-library/020-four-roots-adventure/media/trailer-selftest.js
+```

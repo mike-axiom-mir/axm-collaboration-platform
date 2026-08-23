@@ -33,6 +33,7 @@ const MEDIA_ALLOWLIST = new Set([
   'rendered/four-roots-adventure-trailer.webm',
   'rendered/four-roots-adventure-trailer.vtt',
   'rendered/trailer-plan.json',
+  'rendered/gameplay-replay.json',
   'rendered/sparse-sequence.json',
   'rendered/verification-receipt.json',
   'rendered/proof-first.png',

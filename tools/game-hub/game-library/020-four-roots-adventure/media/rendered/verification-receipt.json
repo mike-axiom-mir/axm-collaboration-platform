@@ -1,10 +1,17 @@
 {
-  "schema": "axm.game-trailer-render-verification-receipt/v1",
-  "version": "1.0.0",
+  "schema": "axm.game-trailer-render-verification-receipt/v2",
+  "version": "2.0.0",
   "status": "PASS",
-  "trailerId": "four-roots-adventure-trailer-v0.1",
-  "requestDigest": "sha256:f498a13b9ee118d615ebed39a47f9da7d35562316e070ba6bcf95eb3fa071ed4",
-  "planDigest": "sha256:30d01e8c660471e332b33caad7a118fa5ece3bd0691a75cb75065360ad199c3e",
+  "trailerId": "four-roots-adventure-gameplay-trailer-v0.2",
+  "requestDigest": "sha256:f555ffac2031235eb1f2bfcd9bced4b8f749965033baa78c331145872106c0fa",
+  "planDigest": "sha256:81061e201ec3333c52c44210dd063a4c6291e47c4e4785f53b83cd7d360de22e",
+  "replayRef": {
+    "id": "four-roots-adventure-complete-replay-v0.1",
+    "schema": "axm.four-roots-adventure-gameplay-replay/v1",
+    "path": "tools/game-hub/game-library/020-four-roots-adventure/media/rendered/gameplay-replay.json",
+    "sha256": "sha256:0fb7d7ecffdd6dd60977f5971cebf2274242774d485080cb2983596076ff3073",
+    "byteLength": 102882
+  },
   "sourceRefs": [
     {
       "id": "four-roots-adventure-content-v0.2",
@@ -17,12 +24,19 @@
       "id": "020-four-roots-adventure",
       "schema": "game.manifest.json",
       "path": "tools/game-hub/game-library/020-four-roots-adventure/game.manifest.json",
-      "sha256": "sha256:a123ae877201e08c43bea70078edabf6a80b554eb08b61067ec786ea1ac9cf96",
-      "byteLength": 5557
+      "sha256": "sha256:810a9b6e1fa617a7bf02f746ba12f2a3792fc6ce3a81de82c1da5ff2d5d3f65e",
+      "byteLength": 5867
+    },
+    {
+      "id": "four-roots-adventure-engine-v0.2",
+      "schema": "commonjs-module",
+      "path": "tools/game-hub/game-library/020-four-roots-adventure/runtime/game-engine.js",
+      "sha256": "sha256:03e9fa179208868df943591a0b5f17fb58a53df4666b6530f21dfc4c8a9159a9",
+      "byteLength": 10785
     }
   ],
   "renderer": {
-    "id": "axm-native-sparse-video-renderer",
+    "id": "axm-native-gameplay-replay-video-renderer",
     "version": "1.0.0",
     "engine": {
       "name": "libvips sparse still encoder + AXM rational ISO BMFF/WebM muxers",
@@ -39,6 +53,8 @@
     "height": 360,
     "frames": 360,
     "uniqueFrames": 48,
+    "gameplayUniqueFrames": 40,
+    "titleUniqueFrames": 8,
     "frameRate": {
       "numerator": 12,
       "denominator": 1
@@ -55,7 +71,7 @@
       "format": "MP4",
       "codec": "jpeg",
       "profile": "bounded Motion JPEG in ISO BMFF",
-      "bytes": 10835439,
+      "bytes": 18738132,
       "width": 640,
       "height": 360,
       "frames": 360,
@@ -103,7 +119,7 @@
       "format": "WebM",
       "codec": "V_VP8",
       "profile": "VP8 all-keyframe WebM",
-      "bytes": 4605018,
+      "bytes": 9255844,
       "width": 640,
       "height": 360,
       "frames": 360,
@@ -147,12 +163,25 @@
   },
   "proofFrames": [
     {
-      "role": "first",
+      "role": "first-title",
       "frameIndex": 0,
+      "frameLineage": {
+        "uniqueFrameIndex": 0,
+        "sceneIndex": 0,
+        "phase": 0,
+        "kind": "title-card",
+        "checkpointId": null,
+        "actionIndex": null,
+        "stateDigest": null,
+        "zoneId": null,
+        "x": null,
+        "y": null,
+        "completed": false
+      },
       "path": "media/rendered/proof-first.png",
       "mime": "image/png",
       "byteLength": 922111,
-      "sha256": "sha256:f7631de854ab741a9ee0bc5d1b1453ec3761b40405849473ed05e341373e88a3",
+      "sha256": "sha256:c7096945286816fb6c269b39b4a6205d6e18da9168c2fafaee76ed09f52df675",
       "inspection": {
         "pass": true,
         "errors": [],
@@ -162,12 +191,25 @@
       }
     },
     {
-      "role": "middle",
+      "role": "middle-gameplay",
       "frameIndex": 24,
+      "frameLineage": {
+        "uniqueFrameIndex": 24,
+        "sceneIndex": 3,
+        "phase": 0,
+        "kind": "gameplay-replay",
+        "checkpointId": "scene-3-phase-0",
+        "actionIndex": 71,
+        "stateDigest": "sha256:a5838b7af5eccfb834b14215ea3bf54bccdce94aa54bd0e083f023328d1e74f9",
+        "zoneId": "agency-garden",
+        "x": 1,
+        "y": 9,
+        "completed": false
+      },
       "path": "media/rendered/proof-middle.png",
       "mime": "image/png",
       "byteLength": 922111,
-      "sha256": "sha256:7b70a1b059da4cb5ad585497835a1e1449d1966454759ee861e834a2d711217c",
+      "sha256": "sha256:3f4f14e40ec484f9b59c8684e82efdeeb39631c7684229129f62434bf5922b42",
       "inspection": {
         "pass": true,
         "errors": [],
@@ -177,12 +219,25 @@
       }
     },
     {
-      "role": "last",
+      "role": "last-gameplay",
       "frameIndex": 47,
+      "frameLineage": {
+        "uniqueFrameIndex": 47,
+        "sceneIndex": 5,
+        "phase": 7,
+        "kind": "gameplay-replay",
+        "checkpointId": "scene-5-phase-7",
+        "actionIndex": 227,
+        "stateDigest": "sha256:947e93bff9f9c39940269495213572f79fb74a04218408b29b8903dc9985818e",
+        "zoneId": "crossroads",
+        "x": 7,
+        "y": 1,
+        "completed": true
+      },
       "path": "media/rendered/proof-last.png",
       "mime": "image/png",
       "byteLength": 922111,
-      "sha256": "sha256:4f8499f3b65df5e055aee5c27291902b64f95c1b5cc18b9272660d2408b99b7d",
+      "sha256": "sha256:608d5a3720c36d4a6013d84791ed9ab01fa59179db47464c3c55717473b0e253",
       "inspection": {
         "pass": true,
         "errors": [],
@@ -196,58 +251,67 @@
     {
       "path": "media/rendered/four-roots-adventure-trailer.mp4",
       "mime": "video/mp4",
-      "byteLength": 10835439,
-      "sha256": "sha256:ef18047d49f136fb9fdbc0e96f49c8e7ca5eb78df0d6b872dc5457771dde45cc"
+      "byteLength": 18738132,
+      "sha256": "sha256:5a87f73731e5a1cfc1bf9be345843ec1d412e17d6a8e6527832daa6df5a24a7e"
     },
     {
       "path": "media/rendered/four-roots-adventure-trailer.webm",
       "mime": "video/webm",
-      "byteLength": 4605018,
-      "sha256": "sha256:aaaaf0b963de9eb7d4e3509743cb638f5c34f267d22c83be3deb7eb69bc97517"
+      "byteLength": 9255844,
+      "sha256": "sha256:9368ca1417e189812d0a768f9cecde62c0db7b66767a37408d6fc1877dbf17d0"
     },
     {
       "path": "media/rendered/four-roots-adventure-trailer.vtt",
       "mime": "text/vtt",
-      "byteLength": 561,
-      "sha256": "sha256:5c01693d7e4681c8a9f4de26a274c5f81c16d9b5a0247810d25ab6d640b23c19"
+      "byteLength": 728,
+      "sha256": "sha256:2eea2c0c6bcb224bbcb869af218b191edbabae6c626a521bd4f24ecf6b35bb48"
     },
     {
       "path": "media/rendered/trailer-plan.json",
       "mime": "application/json",
-      "byteLength": 15237,
-      "sha256": "sha256:57643c8c562362744175eb9bed75bb9db60b5b34dcfc2d2ea6101ee784ba71a7"
+      "byteLength": 20602,
+      "sha256": "sha256:30bd8a610f98254ad9ae4903a429f648dc6a475e79102c4445f1420b55dd06fc"
+    },
+    {
+      "path": "media/rendered/gameplay-replay.json",
+      "mime": "application/json",
+      "byteLength": 102882,
+      "sha256": "sha256:0fb7d7ecffdd6dd60977f5971cebf2274242774d485080cb2983596076ff3073"
     },
     {
       "path": "media/rendered/sparse-sequence.json",
       "mime": "application/json",
-      "byteLength": 3175,
-      "sha256": "sha256:49f50e6ea66d152ba5d17b71752496d901372e4f9e1d14430c2c73004cf99d80"
+      "byteLength": 20395,
+      "sha256": "sha256:f52370dc58153a9391ab326cbe329503503e609f0ce354f4d541094451c1fe5b"
     },
     {
       "path": "media/rendered/proof-first.png",
       "mime": "image/png",
       "byteLength": 922111,
-      "sha256": "sha256:f7631de854ab741a9ee0bc5d1b1453ec3761b40405849473ed05e341373e88a3"
+      "sha256": "sha256:c7096945286816fb6c269b39b4a6205d6e18da9168c2fafaee76ed09f52df675"
     },
     {
       "path": "media/rendered/proof-middle.png",
       "mime": "image/png",
       "byteLength": 922111,
-      "sha256": "sha256:7b70a1b059da4cb5ad585497835a1e1449d1966454759ee861e834a2d711217c"
+      "sha256": "sha256:3f4f14e40ec484f9b59c8684e82efdeeb39631c7684229129f62434bf5922b42"
     },
     {
       "path": "media/rendered/proof-last.png",
       "mime": "image/png",
       "byteLength": 922111,
-      "sha256": "sha256:4f8499f3b65df5e055aee5c27291902b64f95c1b5cc18b9272660d2408b99b7d"
+      "sha256": "sha256:608d5a3720c36d4a6013d84791ed9ab01fa59179db47464c3c55717473b0e253"
     }
   ],
   "receiptSelfReference": "OMITTED_TO_AVOID_RECURSIVE_DIGEST",
   "resources": {
     "uniqueFrameBytes": 44236800,
-    "encodedAndEvidenceBytesExcludingReceipt": 18225763,
+    "replayBytes": 102882,
+    "replayActions": 228,
+    "replayCheckpoints": 40,
+    "encodedAndEvidenceBytesExcludingReceipt": 30904916,
     "maxEncodedOutputBytes": 52428800,
-    "files": 9,
+    "files": 10,
     "childProcesses": 0,
     "networkRequests": 0,
     "enforced": true
@@ -258,21 +322,28 @@
   },
   "truth": {
     "actualVideoRendered": true,
+    "gameplayReplayRendered": true,
+    "nativeGameEngineExecuted": true,
+    "replayVerified": true,
+    "reconstructedFromExactEngineStates": true,
+    "browserCapture": false,
+    "livePlayerInput": false,
+    "playabilityProvenByTrailer": false,
     "containersParsed": true,
     "firstMiddleLastDecoded": true,
     "captionCompanionEmitted": true,
-    "gameRuntimeExecuted": false,
     "published": false,
     "installed": false,
     "promoted": false,
     "canonChanged": false
   },
   "limitations": [
+    "Gameplay images are reconstructed from exact deterministic engine states; they are not browser screen capture or live player input.",
     "Silent video; tutorial and marketing copy are on-screen and in companion captions.",
     "MP4 uses bounded Motion JPEG; WebM uses VP8 all-keyframes.",
-    "Trailer proves its own media structure, not every gameplay or taste claim.",
+    "The trailer does not by itself prove live input feel, persistence, performance, accessibility, or human taste.",
     "Internal Workshop TEST only; public distribution remains HOLD."
   ],
   "authority": "NONE",
-  "receiptDigest": "sha256:bdb9688702fdd5c9376a3410174d06b3f2b1f46d59d1532d31219a0910ab93df"
+  "receiptDigest": "sha256:6ba4d6eb844a664b69973021b828414996f8f2b770a2120f36c54db5b201ab21"
 }

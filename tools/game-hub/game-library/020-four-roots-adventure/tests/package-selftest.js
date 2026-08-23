@@ -7,6 +7,7 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const WORKSHOP = path.resolve(ROOT, '..', '..', '..', '..');
 const Generator = require(path.join(WORKSHOP, 'shared', 'code-capability-fabric', 'deterministic-adventure-content-generator-v1'));
+const Replay = require(path.join(ROOT, 'runtime', 'deterministic-journey'));
 const PackageVerifier = require(path.join(WORKSHOP, 'tools', 'game-hub', 'game-package-verifier'));
 
 function read(relative) { return fs.readFileSync(path.join(ROOT, relative), 'utf8'); }
@@ -15,6 +16,7 @@ function json(relative) { return JSON.parse(read(relative)); }
 const manifest = json('game.manifest.json');
 assert.strictEqual(manifest.slot, '020');
 assert.strictEqual(manifest.game_id, '020-four-roots-adventure');
+assert.strictEqual(manifest.version, '0.2.2');
 assert.ok(manifest.status.startsWith('TEST'));
 assert.strictEqual(manifest.rules.simulation_authority, 'server');
 assert.strictEqual(manifest.rules.save_authority, 'server-file-content-bound');
@@ -26,8 +28,13 @@ assert.strictEqual(manifest.controls.phone_controller, false);
 assert.strictEqual(manifest.controls.gamepad, false);
 assert.strictEqual(manifest.controls.touch, false);
 assert.strictEqual(manifest.media.trailer.status, 'TEST');
+assert.strictEqual(manifest.media.trailer.version, '0.2.0');
 assert.strictEqual(manifest.media.trailer.duration_seconds, 30);
 assert.strictEqual(manifest.media.trailer.deterministic_native_render, true);
+assert.strictEqual(manifest.media.trailer.footage_mode, 'deterministic-native-engine-reconstruction');
+assert.strictEqual(manifest.media.trailer.gameplay_replay, true);
+assert.strictEqual(manifest.media.trailer.browser_capture, false);
+assert.strictEqual(manifest.media.trailer.live_player_input, false);
 assert.strictEqual(manifest.media.trailer.ai_used, false);
 assert.strictEqual(manifest.media.trailer.outbound_network_used, false);
 assert.strictEqual(manifest.media.trailer.public_distribution, 'HOLD');
@@ -61,6 +68,14 @@ assert.strictEqual(ancestor.packetDigest, Generator.ANCESTOR.packetDigest);
 assert.strictEqual(ancestor.sourceCommit, Generator.ANCESTOR.sourceCommit);
 assert.strictEqual(ancestor.canon, false);
 
+const gameplayReplay = json('media/rendered/gameplay-replay.json');
+const mediaReceipt = json('media/rendered/verification-receipt.json');
+assert.strictEqual(gameplayReplay.schema, 'axm.four-roots-adventure-gameplay-replay/v1');
+assert.strictEqual(gameplayReplay.summary.moves, 202);
+assert.strictEqual(gameplayReplay.summary.actions, 228);
+assert.strictEqual(gameplayReplay.checkpoints.length, 40);
+assert.strictEqual(Replay.hashBytes(Buffer.from(read('media/rendered/gameplay-replay.json'), 'utf8')), mediaReceipt.replayRef.sha256);
+
 const html = read('runtime/index.html');
 const app = read('runtime/app.js');
 const styles = read('runtime/styles.css');
@@ -85,4 +100,4 @@ for (const source of [html, app, styles]) {
   assert.doesNotMatch(source, /WebSocket|EventSource|sendBeacon/i, 'runtime source must not add an alternate network channel');
 }
 
-console.log('PASS Four Roots Adventure package selftest (59 assertions)');
+console.log('PASS Four Roots Adventure package selftest (70 assertions)');

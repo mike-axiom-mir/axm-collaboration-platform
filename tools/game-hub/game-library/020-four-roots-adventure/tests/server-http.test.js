@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert');
+const crypto = require('crypto');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -49,8 +50,22 @@ async function main() {
     assert.match(mediaResponse.headers.get('content-type'), /^application\/json/);
     const mediaReceipt = await mediaResponse.json();
     assert.strictEqual(mediaReceipt.status, 'PASS');
+    assert.strictEqual(mediaReceipt.truth.gameplayReplayRendered, true);
+    assert.strictEqual(mediaReceipt.truth.nativeGameEngineExecuted, true);
+    assert.strictEqual(mediaReceipt.truth.browserCapture, false);
+    assert.strictEqual(mediaReceipt.truth.livePlayerInput, false);
     assert.strictEqual(mediaReceipt.truth.published, false);
     assert.strictEqual(mediaReceipt.rights.publicDistribution, 'HOLD');
+    mediaResponse = await fetch(base + '/games/020/trailer/rendered/gameplay-replay.json');
+    assert.strictEqual(mediaResponse.status, 200);
+    assert.match(mediaResponse.headers.get('content-type'), /^application\/json/);
+    const gameplayReplayBytes = await mediaResponse.text();
+    const gameplayReplay = JSON.parse(gameplayReplayBytes);
+    assert.strictEqual(gameplayReplay.schema, 'axm.four-roots-adventure-gameplay-replay/v1');
+    assert.strictEqual(gameplayReplay.summary.actions, 228);
+    assert.strictEqual(gameplayReplay.checkpoints.length, 40);
+    assert.strictEqual(gameplayReplay.truth.browserCapture, false);
+    assert.strictEqual('sha256:' + crypto.createHash('sha256').update(gameplayReplayBytes).digest('hex'), mediaReceipt.replayRef.sha256);
     for (const blocked of ['/%2e%2e/game.manifest.json', '/C:/Windows/win.ini', '/content/adventure-content.v0.2.json', '/missing.js']) {
       result = await call(base, blocked); assert.strictEqual(result.response.status, 404, blocked);
     }
@@ -105,7 +120,7 @@ async function main() {
 
     result = await call(base, '/api/unknown');
     assert.strictEqual(result.response.status, 404);
-    console.log('PASS Four Roots Adventure HTTP boundary (58 assertions)');
+    console.log('PASS Four Roots Adventure HTTP boundary (69 assertions)');
   } finally {
     await new Promise((resolve) => server.close(resolve));
     fs.rmSync(dataRoot, { recursive: true, force: true });

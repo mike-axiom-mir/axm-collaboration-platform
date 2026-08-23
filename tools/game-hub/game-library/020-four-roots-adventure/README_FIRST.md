@@ -19,11 +19,12 @@ node runtime/server.js
 
 Then open `http://127.0.0.1:8820/games/020/`.
 
-The v0.2.1 package also exposes a deterministic 30-second silent and captioned
-trailer at `http://127.0.0.1:8820/games/020/trailer/`. It is rendered locally
-from the exact game content and manifest through the Workshop's bounded native
-video codec. It uses no AI key or internet and public distribution remains
-`HOLD`.
+The v0.2.2 package also exposes a deterministic 30-second silent and captioned
+trailer at `http://127.0.0.1:8820/games/020/trailer/`. Forty of its forty-eight
+unique frames reconstruct gameplay from exact, digest-linked states produced by
+the reviewed native game engine's fixed complete-journey entrypoint. This is
+replay rendering, not screen capture or live player input. It uses no AI key or
+internet and public distribution remains `HOLD`.
 
 The runtime is dependency-free and local-only. It reads its versioned content,
 serves the reviewed UI, accepts only move/interact/reset actions, and writes one

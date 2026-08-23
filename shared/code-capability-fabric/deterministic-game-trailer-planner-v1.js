@@ -18,7 +18,7 @@ const MANIFEST_FILE = path.resolve(__dirname, '..', '..', MANIFEST_PATH);
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
 const ID = /^[a-z0-9][a-z0-9._-]{1,127}$/;
 const CONTENT_REF = Object.freeze({id:'four-roots-adventure-content-v0.2',schema:'axm.four-roots-adventure-content/v1',path:CONTENT_PATH,sha256:'sha256:fa5e159f6d7266bd4f3881983e567ae2cce21ca339ac26e7921912439f02dd8d',byteLength:25693});
-const MANIFEST_REF = Object.freeze({id:'020-four-roots-adventure',schema:'game.manifest.json',path:MANIFEST_PATH,sha256:'sha256:a123ae877201e08c43bea70078edabf6a80b554eb08b61067ec786ea1ac9cf96',byteLength:5557});
+const MANIFEST_REF = Object.freeze({id:'020-four-roots-adventure',schema:'game.manifest.json',path:MANIFEST_PATH,sha256:'sha256:810a9b6e1fa617a7bf02f746ba12f2a3792fc6ce3a81de82c1da5ff2d5d3f65e',byteLength:5867});
 const OUTPUT_PATHS = Object.freeze([
   'media/rendered/four-roots-adventure-trailer.mp4',
   'media/rendered/four-roots-adventure-trailer.webm',

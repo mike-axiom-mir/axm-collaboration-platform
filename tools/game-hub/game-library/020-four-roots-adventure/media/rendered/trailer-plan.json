@@ -1,8 +1,8 @@
 {
   "request": {
-    "schema": "axm.game-trailer-generation-request/v1",
-    "id": "four-roots-adventure-trailer-request-v0.1",
-    "goal": "Create one silent captioned TEST trailer that teaches the proven controls while truthfully marketing the exact Four Roots Adventure release.",
+    "schema": "axm.gameplay-trailer-generation-request/v1",
+    "id": "four-roots-adventure-gameplay-trailer-request-v0.2",
+    "goal": "Create one silent captioned TEST trailer that shows reconstructed states from the exact deterministic Four Roots game engine while keeping every claim, limit, and authority boundary visible.",
     "gameContentRef": {
       "id": "four-roots-adventure-content-v0.2",
       "schema": "axm.four-roots-adventure-content/v1",
@@ -14,8 +14,15 @@
       "id": "020-four-roots-adventure",
       "schema": "game.manifest.json",
       "path": "tools/game-hub/game-library/020-four-roots-adventure/game.manifest.json",
-      "sha256": "sha256:a123ae877201e08c43bea70078edabf6a80b554eb08b61067ec786ea1ac9cf96",
-      "byteLength": 5557
+      "sha256": "sha256:810a9b6e1fa617a7bf02f746ba12f2a3792fc6ce3a81de82c1da5ff2d5d3f65e",
+      "byteLength": 5867
+    },
+    "gameEngineRef": {
+      "id": "four-roots-adventure-engine-v0.2",
+      "schema": "commonjs-module",
+      "path": "tools/game-hub/game-library/020-four-roots-adventure/runtime/game-engine.js",
+      "sha256": "sha256:03e9fa179208868df943591a0b5f17fb58a53df4666b6530f21dfc4c8a9159a9",
+      "byteLength": 10785
     },
     "outputProfile": {
       "width": 640,
@@ -31,15 +38,22 @@
       "audio": false,
       "captions": true
     },
+    "replayPolicy": {
+      "mode": "DETERMINISTIC_NATIVE_ENGINE_RECONSTRUCTION",
+      "browserCapture": false,
+      "livePlayerInput": false,
+      "maxActions": 256,
+      "maxCheckpoints": 40
+    },
     "rootsGate": [
       {
         "root": "truth",
         "verdict": "PASS",
         "evidenceRefs": [
           {
-            "id": "four-roots-trailer-truth",
+            "id": "four-roots-gameplay-trailer-truth",
             "schema": "axm.four-root-technical-review/v1",
-            "sha256": "sha256:8492d1ec487930364449b35f4fb475893d0b48600835e9d482728a2a01694f34"
+            "sha256": "sha256:fb84b4a4a2373ce18958441dedf03d3725ada5ca8fb7304e1d6ba2d8a4bd235b"
           }
         ]
       },
@@ -48,9 +62,9 @@
         "verdict": "PASS",
         "evidenceRefs": [
           {
-            "id": "four-roots-trailer-agency-non-domination",
+            "id": "four-roots-gameplay-trailer-agency-non-domination",
             "schema": "axm.four-root-technical-review/v1",
-            "sha256": "sha256:fb7df3053e17df78d2cd06a07699085afec752263e7021e681330b175fabc261"
+            "sha256": "sha256:0f321255555781f357768cd608acd728a21e2a2a92e9215de27ce2395878194a"
           }
         ]
       },
@@ -59,9 +73,9 @@
         "verdict": "PASS",
         "evidenceRefs": [
           {
-            "id": "four-roots-trailer-continuity",
+            "id": "four-roots-gameplay-trailer-continuity",
             "schema": "axm.four-root-technical-review/v1",
-            "sha256": "sha256:7fd37557c223e90c9e16da4afec110e8fa2e89671f7fd4a9db4689efec48d57a"
+            "sha256": "sha256:eea3146b21a1e02c682eb2aaa6065f2519787165c4a7ce2238611ee962fd6889"
           }
         ]
       },
@@ -70,9 +84,9 @@
         "verdict": "PASS",
         "evidenceRefs": [
           {
-            "id": "four-roots-trailer-wisdom-over-speed",
+            "id": "four-roots-gameplay-trailer-wisdom-over-speed",
             "schema": "axm.four-root-technical-review/v1",
-            "sha256": "sha256:241930f1cd0df98b876ffa312f4a31dcc37ff48e92be6b1afa731f83f2d1ac02"
+            "sha256": "sha256:19b33649777d2101576c7ea64847db0bd7beb91c7a38b792fcff87ff4b20a448"
           }
         ]
       }
@@ -85,11 +99,12 @@
       "canon": false
     },
     "resources": {
-      "maxInputBytes": 65536,
-      "maxPlanBytes": 65536,
+      "maxInputBytes": 131072,
+      "maxPlanBytes": 131072,
+      "maxReplayBytes": 262144,
       "maxUniqueFrameBytes": 44236800,
       "maxEncodedOutputBytes": 52428800,
-      "maxFiles": 9,
+      "maxFiles": 10,
       "maxChildProcesses": 0,
       "maxNetworkRequests": 0
     },
@@ -101,21 +116,22 @@
       "source": "EXPLICIT_IN_THREAD_DIRECTION",
       "authenticatedIdentityProven": false,
       "planAuthorized": true,
+      "replayAuthorized": true,
       "renderAuthorized": true,
       "publishAuthorized": false
     },
     "authority": "NONE",
-    "requestDigest": "sha256:f498a13b9ee118d615ebed39a47f9da7d35562316e070ba6bcf95eb3fa071ed4"
+    "requestDigest": "sha256:f555ffac2031235eb1f2bfcd9bced4b8f749965033baa78c331145872106c0fa"
   },
   "plan": {
-    "schema": "axm.game-trailer-plan/v1",
+    "schema": "axm.gameplay-trailer-plan/v1",
     "version": "1.0.0",
     "status": "TEST_PLAN",
-    "id": "four-roots-adventure-trailer-v0.1",
+    "id": "four-roots-adventure-gameplay-trailer-v0.2",
     "requestRef": {
-      "id": "four-roots-adventure-trailer-request-v0.1",
-      "schema": "axm.game-trailer-generation-request/v1",
-      "sha256": "sha256:f498a13b9ee118d615ebed39a47f9da7d35562316e070ba6bcf95eb3fa071ed4"
+      "id": "four-roots-adventure-gameplay-trailer-request-v0.2",
+      "schema": "axm.gameplay-trailer-generation-request/v1",
+      "sha256": "sha256:f555ffac2031235eb1f2bfcd9bced4b8f749965033baa78c331145872106c0fa"
     },
     "sourceRefs": [
       {
@@ -129,10 +145,24 @@
         "id": "020-four-roots-adventure",
         "schema": "game.manifest.json",
         "path": "tools/game-hub/game-library/020-four-roots-adventure/game.manifest.json",
-        "sha256": "sha256:a123ae877201e08c43bea70078edabf6a80b554eb08b61067ec786ea1ac9cf96",
-        "byteLength": 5557
+        "sha256": "sha256:810a9b6e1fa617a7bf02f746ba12f2a3792fc6ce3a81de82c1da5ff2d5d3f65e",
+        "byteLength": 5867
+      },
+      {
+        "id": "four-roots-adventure-engine-v0.2",
+        "schema": "commonjs-module",
+        "path": "tools/game-hub/game-library/020-four-roots-adventure/runtime/game-engine.js",
+        "sha256": "sha256:03e9fa179208868df943591a0b5f17fb58a53df4666b6530f21dfc4c8a9159a9",
+        "byteLength": 10785
       }
     ],
+    "replayRef": {
+      "id": "four-roots-adventure-complete-replay-v0.1",
+      "schema": "axm.four-roots-adventure-gameplay-replay/v1",
+      "path": "tools/game-hub/game-library/020-four-roots-adventure/media/rendered/gameplay-replay.json",
+      "sha256": "sha256:0fb7d7ecffdd6dd60977f5971cebf2274242774d485080cb2983596076ff3073",
+      "byteLength": 102882
+    },
     "profile": {
       "width": 640,
       "height": 360,
@@ -157,64 +187,92 @@
             "id": "020-four-roots-adventure",
             "schema": "game.manifest.json",
             "path": "tools/game-hub/game-library/020-four-roots-adventure/game.manifest.json",
-            "sha256": "sha256:a123ae877201e08c43bea70078edabf6a80b554eb08b61067ec786ea1ac9cf96",
-            "byteLength": 5557
+            "sha256": "sha256:810a9b6e1fa617a7bf02f746ba12f2a3792fc6ce3a81de82c1da5ff2d5d3f65e",
+            "byteLength": 5867
+          }
+        ]
+      },
+      {
+        "id": "deterministic-gameplay-replay",
+        "text": "FOOTAGE RECONSTRUCTED FROM THE EXACT NATIVE TEST ENGINE",
+        "status": "PROVEN_FROM_EXACT_SOURCE",
+        "evidenceRefs": [
+          {
+            "id": "four-roots-adventure-content-v0.2",
+            "schema": "axm.four-roots-adventure-content/v1",
+            "path": "tools/game-hub/game-library/020-four-roots-adventure/content/adventure-content.v0.2.json",
+            "sha256": "sha256:fa5e159f6d7266bd4f3881983e567ae2cce21ca339ac26e7921912439f02dd8d",
+            "byteLength": 25693
+          },
+          {
+            "id": "four-roots-adventure-engine-v0.2",
+            "schema": "commonjs-module",
+            "path": "tools/game-hub/game-library/020-four-roots-adventure/runtime/game-engine.js",
+            "sha256": "sha256:03e9fa179208868df943591a0b5f17fb58a53df4666b6530f21dfc4c8a9159a9",
+            "byteLength": 10785
+          },
+          {
+            "id": "four-roots-adventure-complete-replay-v0.1",
+            "schema": "axm.four-roots-adventure-gameplay-replay/v1",
+            "path": "tools/game-hub/game-library/020-four-roots-adventure/media/rendered/gameplay-replay.json",
+            "sha256": "sha256:0fb7d7ecffdd6dd60977f5971cebf2274242774d485080cb2983596076ff3073",
+            "byteLength": 102882
           }
         ]
       },
       {
         "id": "five-connected-zones",
-        "text": "EXPLORE 5 CONNECTED ZONES",
+        "text": "REPLAY VISITS 5 CONNECTED ZONES",
         "status": "PROVEN_FROM_EXACT_SOURCE",
         "evidenceRefs": [
           {
-            "id": "four-roots-adventure-content-v0.2",
-            "schema": "axm.four-roots-adventure-content/v1",
-            "path": "tools/game-hub/game-library/020-four-roots-adventure/content/adventure-content.v0.2.json",
-            "sha256": "sha256:fa5e159f6d7266bd4f3881983e567ae2cce21ca339ac26e7921912439f02dd8d",
-            "byteLength": 25693
+            "id": "four-roots-adventure-complete-replay-v0.1",
+            "schema": "axm.four-roots-adventure-gameplay-replay/v1",
+            "path": "tools/game-hub/game-library/020-four-roots-adventure/media/rendered/gameplay-replay.json",
+            "sha256": "sha256:0fb7d7ecffdd6dd60977f5971cebf2274242774d485080cb2983596076ff3073",
+            "byteLength": 102882
           }
         ]
       },
       {
         "id": "six-quests",
-        "text": "COMPLETE 6 QUESTS",
+        "text": "REPLAY COMPLETES 6 QUESTS",
         "status": "PROVEN_FROM_EXACT_SOURCE",
         "evidenceRefs": [
           {
-            "id": "four-roots-adventure-content-v0.2",
-            "schema": "axm.four-roots-adventure-content/v1",
-            "path": "tools/game-hub/game-library/020-four-roots-adventure/content/adventure-content.v0.2.json",
-            "sha256": "sha256:fa5e159f6d7266bd4f3881983e567ae2cce21ca339ac26e7921912439f02dd8d",
-            "byteLength": 25693
+            "id": "four-roots-adventure-complete-replay-v0.1",
+            "schema": "axm.four-roots-adventure-gameplay-replay/v1",
+            "path": "tools/game-hub/game-library/020-four-roots-adventure/media/rendered/gameplay-replay.json",
+            "sha256": "sha256:0fb7d7ecffdd6dd60977f5971cebf2274242774d485080cb2983596076ff3073",
+            "byteLength": 102882
           }
         ]
       },
       {
         "id": "ten-discoveries",
-        "text": "FIND 10 DISCOVERIES",
+        "text": "REPLAY FINDS 10 DISCOVERIES",
         "status": "PROVEN_FROM_EXACT_SOURCE",
         "evidenceRefs": [
           {
-            "id": "four-roots-adventure-content-v0.2",
-            "schema": "axm.four-roots-adventure-content/v1",
-            "path": "tools/game-hub/game-library/020-four-roots-adventure/content/adventure-content.v0.2.json",
-            "sha256": "sha256:fa5e159f6d7266bd4f3881983e567ae2cce21ca339ac26e7921912439f02dd8d",
-            "byteLength": 25693
+            "id": "four-roots-adventure-complete-replay-v0.1",
+            "schema": "axm.four-roots-adventure-gameplay-replay/v1",
+            "path": "tools/game-hub/game-library/020-four-roots-adventure/media/rendered/gameplay-replay.json",
+            "sha256": "sha256:0fb7d7ecffdd6dd60977f5971cebf2274242774d485080cb2983596076ff3073",
+            "byteLength": 102882
           }
         ]
       },
       {
         "id": "four-ordered-roots",
-        "text": "CARRY 4 ROOTS IN ORDER",
+        "text": "REPLAY CARRIES 4 ROOTS IN ORDER",
         "status": "PROVEN_FROM_EXACT_SOURCE",
         "evidenceRefs": [
           {
-            "id": "four-roots-adventure-content-v0.2",
-            "schema": "axm.four-roots-adventure-content/v1",
-            "path": "tools/game-hub/game-library/020-four-roots-adventure/content/adventure-content.v0.2.json",
-            "sha256": "sha256:fa5e159f6d7266bd4f3881983e567ae2cce21ca339ac26e7921912439f02dd8d",
-            "byteLength": 25693
+            "id": "four-roots-adventure-complete-replay-v0.1",
+            "schema": "axm.four-roots-adventure-gameplay-replay/v1",
+            "path": "tools/game-hub/game-library/020-four-roots-adventure/media/rendered/gameplay-replay.json",
+            "sha256": "sha256:0fb7d7ecffdd6dd60977f5971cebf2274242774d485080cb2983596076ff3073",
+            "byteLength": 102882
           }
         ]
       },
@@ -227,22 +285,22 @@
             "id": "020-four-roots-adventure",
             "schema": "game.manifest.json",
             "path": "tools/game-hub/game-library/020-four-roots-adventure/game.manifest.json",
-            "sha256": "sha256:a123ae877201e08c43bea70078edabf6a80b554eb08b61067ec786ea1ac9cf96",
-            "byteLength": 5557
+            "sha256": "sha256:810a9b6e1fa617a7bf02f746ba12f2a3792fc6ce3a81de82c1da5ff2d5d3f65e",
+            "byteLength": 5867
           }
         ]
       },
       {
         "id": "server-resume",
-        "text": "YOUR EXACT TEST SAVE CAN RESUME AFTER RESTART.",
+        "text": "THE EXACT TEST SAVE CAN RESUME AFTER RESTART.",
         "status": "PROVEN_FROM_EXACT_SOURCE",
         "evidenceRefs": [
           {
             "id": "020-four-roots-adventure",
             "schema": "game.manifest.json",
             "path": "tools/game-hub/game-library/020-four-roots-adventure/game.manifest.json",
-            "sha256": "sha256:a123ae877201e08c43bea70078edabf6a80b554eb08b61067ec786ea1ac9cf96",
-            "byteLength": 5557
+            "sha256": "sha256:810a9b6e1fa617a7bf02f746ba12f2a3792fc6ce3a81de82c1da5ff2d5d3f65e",
+            "byteLength": 5867
           }
         ]
       },
@@ -255,8 +313,8 @@
             "id": "020-four-roots-adventure",
             "schema": "game.manifest.json",
             "path": "tools/game-hub/game-library/020-four-roots-adventure/game.manifest.json",
-            "sha256": "sha256:a123ae877201e08c43bea70078edabf6a80b554eb08b61067ec786ea1ac9cf96",
-            "byteLength": 5557
+            "sha256": "sha256:810a9b6e1fa617a7bf02f746ba12f2a3792fc6ce3a81de82c1da5ff2d5d3f65e",
+            "byteLength": 5867
           }
         ]
       }
@@ -269,116 +327,174 @@
         "endFrame": 60,
         "kind": "title",
         "headline": "FOUR ROOTS ADVENTURE",
-        "subline": "A LOCAL TEST JOURNEY",
+        "subline": "NOW WITH DETERMINISTIC REPLAY FOOTAGE",
         "accent": "#58e6ff",
         "claimIds": [
           "local-test-adventure",
           "offline-native"
         ],
         "visual": {
-          "mode": "gate-awakens",
-          "zoneId": "crossroads"
+          "mode": "title-card",
+          "checkpointIds": [],
+          "zoneIds": [],
+          "footageLabel": "TITLE CARD"
         }
       },
       {
-        "id": "controls",
+        "id": "crossroads-replay",
         "index": 1,
         "startFrame": 60,
         "endFrame": 120,
-        "kind": "tutorial",
-        "headline": "MOVE. MEET. DISCOVER.",
-        "subline": "WASD OR ARROWS / E OR SPACE",
+        "kind": "gameplay",
+        "headline": "WORKSHOP CROSSROADS",
+        "subline": "MOVE. MEET. CHOOSE.",
         "accent": "#ffcc66",
         "claimIds": [
-          "keyboard-pointer-controls"
+          "keyboard-pointer-controls",
+          "deterministic-gameplay-replay"
         ],
         "visual": {
-          "mode": "control-path",
-          "zoneId": "crossroads"
+          "mode": "gameplay-replay",
+          "checkpointIds": [
+            "scene-1-phase-0",
+            "scene-1-phase-1",
+            "scene-1-phase-2",
+            "scene-1-phase-3",
+            "scene-1-phase-4",
+            "scene-1-phase-5",
+            "scene-1-phase-6",
+            "scene-1-phase-7"
+          ],
+          "zoneIds": [
+            "crossroads"
+          ],
+          "footageLabel": "DETERMINISTIC REPLAY - NOT SCREEN CAPTURE"
         }
       },
       {
-        "id": "worlds",
+        "id": "truth-replay",
         "index": 2,
         "startFrame": 120,
         "endFrame": 180,
-        "kind": "world",
-        "headline": "FIVE CONNECTED WORLDS",
-        "subline": "EVERY PATH CARRIES EVIDENCE",
-        "accent": "#8df0a8",
+        "kind": "gameplay",
+        "headline": "TRUTH HOLLOW",
+        "subline": "TWO WITNESSES. ONE GROUNDED CLAIM.",
+        "accent": "#58e6ff",
         "claimIds": [
-          "five-connected-zones"
+          "four-ordered-roots",
+          "deterministic-gameplay-replay"
         ],
         "visual": {
-          "mode": "zone-orbit",
+          "mode": "gameplay-replay",
+          "checkpointIds": [
+            "scene-2-phase-0",
+            "scene-2-phase-1",
+            "scene-2-phase-2",
+            "scene-2-phase-3",
+            "scene-2-phase-4",
+            "scene-2-phase-5",
+            "scene-2-phase-6",
+            "scene-2-phase-7"
+          ],
           "zoneIds": [
-            "crossroads",
-            "truth-hollow",
-            "agency-garden",
-            "continuity-archive",
-            "wisdom-grove"
-          ]
+            "truth-hollow"
+          ],
+          "footageLabel": "DETERMINISTIC REPLAY - NOT SCREEN CAPTURE"
         }
       },
       {
-        "id": "roots",
+        "id": "agency-replay",
         "index": 3,
         "startFrame": 180,
         "endFrame": 240,
-        "kind": "progression",
-        "headline": "TRUTH / AGENCY",
-        "subline": "CONTINUITY / WISDOM",
-        "accent": "#d8a8ff",
+        "kind": "gameplay",
+        "headline": "AGENCY GARDEN",
+        "subline": "OPEN EVERY LANTERN WITHOUT CHOOSING FOR IT.",
+        "accent": "#ffcc66",
         "claimIds": [
-          "four-ordered-roots"
+          "four-ordered-roots",
+          "deterministic-gameplay-replay"
         ],
         "visual": {
-          "mode": "root-constellation",
-          "rootIds": [
-            "truth",
-            "agency-non-domination",
-            "continuity",
-            "wisdom-over-speed"
-          ]
+          "mode": "gameplay-replay",
+          "checkpointIds": [
+            "scene-3-phase-0",
+            "scene-3-phase-1",
+            "scene-3-phase-2",
+            "scene-3-phase-3",
+            "scene-3-phase-4",
+            "scene-3-phase-5",
+            "scene-3-phase-6",
+            "scene-3-phase-7"
+          ],
+          "zoneIds": [
+            "agency-garden"
+          ],
+          "footageLabel": "DETERMINISTIC REPLAY - NOT SCREEN CAPTURE"
         }
       },
       {
-        "id": "quests",
+        "id": "continuity-wisdom-replay",
         "index": 4,
         "startFrame": 240,
         "endFrame": 300,
-        "kind": "features",
-        "headline": "6 QUESTS. 10 DISCOVERIES.",
-        "subline": "YOUR EXACT SAVE CAN RETURN.",
-        "accent": "#ff8f70",
+        "kind": "gameplay",
+        "headline": "CONTINUITY / WISDOM",
+        "subline": "REPAIR THE BRIDGE. TAKE THE LONG LOOK.",
+        "accent": "#8df0a8",
         "claimIds": [
+          "five-connected-zones",
           "six-quests",
-          "ten-discoveries",
-          "server-resume"
+          "ten-discoveries"
         ],
         "visual": {
-          "mode": "quest-journal",
-          "quests": 6,
-          "items": 10,
-          "actors": 25
+          "mode": "gameplay-replay",
+          "checkpointIds": [
+            "scene-4-phase-0",
+            "scene-4-phase-1",
+            "scene-4-phase-2",
+            "scene-4-phase-3",
+            "scene-4-phase-4",
+            "scene-4-phase-5",
+            "scene-4-phase-6",
+            "scene-4-phase-7"
+          ],
+          "zoneIds": [
+            "continuity-archive",
+            "wisdom-grove"
+          ],
+          "footageLabel": "DETERMINISTIC REPLAY - NOT SCREEN CAPTURE"
         }
       },
       {
-        "id": "ending",
+        "id": "ending-replay",
         "index": 5,
         "startFrame": 300,
         "endFrame": 360,
-        "kind": "call-to-review",
+        "kind": "gameplay",
         "headline": "A DOOR INTO REVIEW",
         "subline": "PLAY. QUESTION. REPAIR. DECIDE.",
-        "accent": "#58e6ff",
+        "accent": "#d8a8ff",
         "claimIds": [
-          "local-test-adventure",
-          "offline-native"
+          "four-ordered-roots",
+          "server-resume"
         ],
         "visual": {
-          "mode": "review-door",
-          "endingTitle": "A Door Into Review"
+          "mode": "gameplay-replay",
+          "checkpointIds": [
+            "scene-5-phase-0",
+            "scene-5-phase-1",
+            "scene-5-phase-2",
+            "scene-5-phase-3",
+            "scene-5-phase-4",
+            "scene-5-phase-5",
+            "scene-5-phase-6",
+            "scene-5-phase-7"
+          ],
+          "zoneIds": [
+            "crossroads"
+          ],
+          "footageLabel": "DETERMINISTIC REPLAY - NOT SCREEN CAPTURE"
         }
       }
     ],
@@ -389,7 +505,7 @@
         "endFrame": 60,
         "start": "00:00:00.000",
         "end": "00:00:05.000",
-        "text": "Four Roots Adventure. A local Workshop TEST journey."
+        "text": "Four Roots Adventure. Now with deterministic replay footage from the local TEST engine."
       },
       {
         "index": 1,
@@ -397,7 +513,7 @@
         "endFrame": 120,
         "start": "00:00:05.000",
         "end": "00:00:10.000",
-        "text": "Move with WASD or arrows. Interact with E or Space."
+        "text": "At the Workshop Crossroads, move with WASD or arrows and interact with E or Space."
       },
       {
         "index": 2,
@@ -405,7 +521,7 @@
         "endFrame": 180,
         "start": "00:00:10.000",
         "end": "00:00:15.000",
-        "text": "Explore five connected zones where every path carries evidence."
+        "text": "The replay enters Truth Hollow and keeps two witnesses separate before carrying the first root."
       },
       {
         "index": 3,
@@ -413,7 +529,7 @@
         "endFrame": 240,
         "start": "00:00:15.000",
         "end": "00:00:20.000",
-        "text": "Carry Truth, Agency, Continuity, and Wisdom in order."
+        "text": "In Agency Garden, every lantern opens without choosing for another."
       },
       {
         "index": 4,
@@ -421,7 +537,7 @@
         "endFrame": 300,
         "start": "00:00:20.000",
         "end": "00:00:25.000",
-        "text": "Complete six quests, find ten discoveries, and resume your exact save."
+        "text": "The replay repairs Continuity, takes the long look for Wisdom, and visits all five zones."
       },
       {
         "index": 5,
@@ -429,7 +545,7 @@
         "endFrame": 360,
         "start": "00:00:25.000",
         "end": "00:00:30.000",
-        "text": "Reach A Door Into Review. Play, question, repair, and decide."
+        "text": "After six quests, ten discoveries, and four ordered roots, the replay reaches A Door Into Review."
       }
     ],
     "outputPaths": [
@@ -437,6 +553,7 @@
       "media/rendered/four-roots-adventure-trailer.webm",
       "media/rendered/four-roots-adventure-trailer.vtt",
       "media/rendered/trailer-plan.json",
+      "media/rendered/gameplay-replay.json",
       "media/rendered/sparse-sequence.json",
       "media/rendered/verification-receipt.json",
       "media/rendered/proof-first.png",
@@ -444,11 +561,14 @@
       "media/rendered/proof-last.png"
     ],
     "resources": {
-      "inputBytes": 31250,
-      "planBytes": 8045,
+      "inputBytes": 42345,
+      "planBytes": 11482,
+      "replayBytes": 102882,
       "uniqueFrameBytes": 44236800,
+      "actions": 228,
+      "checkpoints": 40,
       "samples": 360,
-      "files": 9,
+      "files": 10,
       "childProcesses": 0,
       "networkRequests": 0,
       "enforced": true
@@ -458,23 +578,27 @@
       "publicDistribution": "HOLD"
     },
     "limitations": [
+      "Gameplay images are reconstructed from exact deterministic engine states; they are not browser screen capture or live player input.",
       "Silent video; tutorial and marketing copy are on-screen and in companion captions.",
       "MP4 uses bounded Motion JPEG; WebM uses VP8 all-keyframes.",
-      "Trailer proves its own media structure, not every gameplay or taste claim.",
+      "The trailer does not by itself prove live input feel, persistence, performance, accessibility, or human taste.",
       "Internal Workshop TEST only; public distribution remains HOLD."
     ],
     "truth": {
       "deterministicPlan": true,
       "claimsEvidenceBound": true,
+      "nativeGameEngineExecuted": true,
+      "replayReconstructed": true,
+      "browserCapture": false,
+      "livePlayerInput": false,
       "providerCalled": false,
       "aiUsed": false,
-      "gameRuntimeExecuted": false,
       "videoRendered": false,
       "playabilityProvenByTrailer": false,
       "published": false,
       "canonChanged": false
     },
     "authority": "NONE",
-    "planDigest": "sha256:30d01e8c660471e332b33caad7a118fa5ece3bd0691a75cb75065360ad199c3e"
+    "planDigest": "sha256:81061e201ec3333c52c44210dd063a4c6291e47c4e4785f53b83cd7d360de22e"
   }
 }
