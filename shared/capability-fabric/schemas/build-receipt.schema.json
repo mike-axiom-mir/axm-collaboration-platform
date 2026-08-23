@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-build-receipt/v1",
+  "title": "AXM capability build receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "fabricVersion", "status", "plan", "candidates", "generatedCodeExecuted", "authority", "runDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-build-receipt/v1" },
+    "fabricVersion": { "type": "string" },
+    "status": { "enum": ["COMPLETE", "HELD"] },
+    "plan": { "$ref": "build-plan.schema.json" },
+    "candidates": { "type": "array", "maxItems": 1 },
+    "holds": { "type": "array" },
+    "verification": { "type": "object" },
+    "generatedCodeExecuted": { "const": false },
+    "testsEmitted": { "type": "boolean" },
+    "authority": { "type": "object" },
+    "runDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

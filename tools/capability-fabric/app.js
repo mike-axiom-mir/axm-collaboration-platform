@@ -1,0 +1,32 @@
+'use strict';
+(function(){
+  const Fabric=window.AXMCapabilityFabric,Zip=window.AXMZipStore,$=function(id){return document.getElementById(id);};
+  const state={catalog:null,recipe:null,run:null};
+  function el(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=String(text);return node;}
+  function notice(node,text,tone){node.textContent=text;node.className='notice'+(tone?' '+tone:'');}
+  function parseEditor(){try{return JSON.parse($('request-json').value);}catch(error){notice($('request-state'),'INVALID JSON · '+error.message,'bad');return null;}}
+  function selectedRecipe(){return state.catalog&&state.catalog.recipes.find(function(row){return row.id===$('recipe-list').querySelector('input:checked')?.value;});}
+  function setRecipe(recipe){state.recipe=recipe;document.querySelectorAll('.recipe-card').forEach(function(card){card.classList.toggle('active',card.dataset.recipeId===recipe.id);});}
+  function renderCatalog(){
+    const root=$('recipe-list');root.replaceChildren();
+    state.catalog.recipes.forEach(function(recipe,index){const label=el('label','recipe-card');label.dataset.recipeId=recipe.id;const radio=document.createElement('input');radio.type='radio';radio.name='recipe';radio.value=recipe.id;radio.checked=index===0;radio.addEventListener('change',function(){setRecipe(recipe);});const top=el('span','recipe-top');top.append(el('b',null,recipe.title),el('small',null,recipe.family));label.append(radio,top,el('span','recipe-summary',recipe.summary),el('code',null,recipe.recipeDigest.slice(7,23)+'…'));root.append(label);});
+    setRecipe(state.catalog.recipes[0]);notice($('catalog-state'),'VALID · '+state.catalog.recipes.length+' exact recipes · '+state.catalog.catalogDigest.slice(7,19),'good');
+  }
+  function loadStarter(){const recipe=selectedRecipe()||state.recipe;if(!recipe)return;setRecipe(recipe);const request=Fabric.sealRequest(recipe.exampleRequest,false);$('request-json').value=JSON.stringify(request,null,2);$('human-reviewed').checked=false;state.run=null;$('candidate').hidden=true;notice($('request-state'),'STRUCTURALLY SEALED · Human review is still required.','hold');notice($('plan-state'),'Plan it now to see the authority hold, or review and build.','');}
+  function sealedFromEditor(reviewed){const draft=parseEditor();if(!draft)return null;const request=Fabric.sealRequest(draft,reviewed);$('request-json').value=JSON.stringify(request,null,2);return request;}
+  function renderPlan(plan){if(plan.status==='READY'){notice($('plan-state'),'READY · '+plan.recipeRef.id+' · variant '+plan.variantId+' · exactly '+plan.candidateCount+' candidate.','good');return;}notice($('plan-state'),'HELD · '+plan.holds.map(function(row){return row.code;}).join(' · '),'bad');}
+  function plan(){const request=sealedFromEditor($('human-reviewed').checked);if(!request)return;const validation=Fabric.validateRequest(request);if(!validation.ok){notice($('request-state'),'REFUSED · '+validation.errors.slice(0,4).map(function(row){return row.code+' '+row.path;}).join(' · '),'bad');return;}notice($('request-state'),'VALID · '+request.requestDigest,'good');renderPlan(Fabric.planBuild(request,state.catalog));}
+  function renderCandidate(candidate){$('candidate').hidden=false;$('candidate-id').textContent=candidate.package.id;$('package-digest').textContent=candidate.package.packageDigest;$('candidate-summary').textContent=candidate.package.files.length+' exact files · '+candidate.package.totalBytes+' bytes · emitted selftest not executed';const files=$('file-list');files.replaceChildren();candidate.package.files.forEach(function(row){const item=el('li');item.append(el('span',null,row.path),el('code',null,row.bytes+' B'));files.append(item);});}
+  function build(){
+    if(!$('human-reviewed').checked){notice($('plan-state'),'HELD · HUMAN_REVIEW_REQUIRED','bad');return;}
+    const request=sealedFromEditor(true);if(!request)return;const run=Fabric.build(request,state.catalog);state.run=run;renderPlan(run.plan);if(run.status!=='COMPLETE'){notice($('plan-state'),'HELD · '+((run.plan&&run.plan.holds)||run.holds||[]).map(function(row){return row.code;}).join(' · '),'bad');$('candidate').hidden=true;return;}renderCandidate(run.candidates[0]);$('result-title').textContent='One candidate built';notice($('request-state'),'VALID · deterministic request sealed after explicit review.','good');if(window.AXMHub)AXMHub.log('Capability Fabric built one detached '+run.candidates[0].package.id+' candidate','info');
+  }
+  function download(){if(!state.run||!state.run.candidates[0])return;const candidate=state.run.candidates[0],bytes=Zip.build(candidate.files,candidate.package.id),blob=new Blob([bytes],{type:'application/zip'}),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=candidate.package.id+'-'+candidate.package.packageDigest.slice(7,19)+'.zip';anchor.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);}
+  async function start(){
+    if(!Fabric||!Zip)throw new Error('Capability Fabric dependencies are unavailable.');
+    state.catalog=await fetch('/shared/capability-fabric/recipes/catalog.json').then(function(response){if(!response.ok)throw new Error('Could not load recipe catalog.');return response.json();});const checked=Fabric.validateCatalog(state.catalog);if(!checked.ok)throw new Error('Recipe catalog validation failed: '+checked.errors.map(function(row){return row.code;}).join(', '));renderCatalog();
+    $('load-starter').addEventListener('click',loadStarter);$('plan').addEventListener('click',plan);$('build').addEventListener('click',build);$('download').addEventListener('click',download);$('request-json').addEventListener('input',function(){$('human-reviewed').checked=false;notice($('request-state'),'CHANGED · review and reseal required.','hold');});
+    loadStarter();if(window.AXMHub){AXMHub.ready({id:'capability-fabric',name:'Capability Fabric',version:'v0.1',hubApiVersion:'1.0',permissions:[],savesState:false});AXMHub.log('Capability Fabric ready · deterministic recipe path · EXPERIMENTAL','info');}
+  }
+  start().catch(function(error){console.error(error);notice($('catalog-state'),'BROKEN · '+error.message,'bad');if(window.AXMHub)AXMHub.error(error.message);});
+}());

@@ -1,0 +1,44 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "capability-fabric",
+  "version": "v0.1",
+  "provides": [
+    "deterministic-capability-recipe-compilation",
+    "typed-capability-build-holds",
+    "detached-nursery-compatible-capability-packages",
+    "inactive-future-recipe-proposal-inspection"
+  ],
+  "consumes": [
+    "axm.capability-fabric.build-request/v1",
+    "axm.workshop-direction.hand-request/v1",
+    "human-recipe-review",
+    "explicit-human-build-review"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.capability-build-plan/v1", "axm.capability-candidate-package/v1", "axm.capability-build-receipt/v1", "axm.module-bundle/v1"],
+    "accepts": ["axm.capability-fabric.build-request/v1", "axm.workshop-direction.hand-request/v1", "axm.capability-recipe-proposal/v1"]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "writes": ["explicit CLI output parent only", "explicit browser download only"],
+    "refuses": [
+      "implicit recipe inference",
+      "inactive recipe execution",
+      "generated code execution",
+      "network access",
+      "automatic installation",
+      "registration",
+      "staging",
+      "promotion",
+      "permission change",
+      "Foundation mutation",
+      "CANON change"
+    ]
+  }
+}

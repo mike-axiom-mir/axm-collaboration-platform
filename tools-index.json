@@ -1,24 +1,24 @@
 {
   "schema": "axm.tools-index/v1",
-  "generatedAt": "2026-08-23T01:22:33.036Z",
-  "sourceDigest": "a54a7c88f19c0f1225a3ed8c65c70fc255bc52486a966f1a9a04f017c4c9cdc1",
+  "generatedAt": "2026-08-23T09:16:41.728Z",
+  "sourceDigest": "59ba41edd11e9ec0d35d996c62e6d7628d40f822c5cadd6b37e60caadba73ec5",
   "promotionLadder": "shared/readiness/promotion-ladder.json",
   "summary": {
-    "tools": 225,
+    "tools": 226,
     "statuses": {
       "TEST": 131,
       "WORKING": 4,
-      "EXPERIMENTAL": 89,
+      "EXPERIMENTAL": 90,
       "SHELL": 1
     },
-    "contractsPresent": 225,
-    "contractsValid": 225,
-    "topLevelSelftests": 225,
-    "anySelftests": 225,
-    "permissionsDeclared": 225,
-    "kindsDeclared": 225,
-    "readmes": 139,
-    "capabilities": 1966
+    "contractsPresent": 226,
+    "contractsValid": 226,
+    "topLevelSelftests": 226,
+    "anySelftests": 226,
+    "permissionsDeclared": 226,
+    "kindsDeclared": 226,
+    "readmes": 140,
+    "capabilities": 1974
   },
   "promotionQueue": {
     "readyForHumanReview": [
@@ -1268,6 +1268,13 @@
       "providers": [],
       "consumers": [
         "bulk-intake-conveyor"
+      ]
+    },
+    {
+      "id": "axm.capability-fabric.build-request/v1",
+      "providers": [],
+      "consumers": [
+        "capability-fabric"
       ]
     },
     {
@@ -2551,6 +2558,13 @@
       "providers": [],
       "consumers": [
         "workshop-census-observatory"
+      ]
+    },
+    {
+      "id": "axm.workshop-direction.hand-request/v1",
+      "providers": [],
+      "consumers": [
+        "capability-fabric"
       ]
     },
     {
@@ -4504,9 +4518,23 @@
       "consumers": []
     },
     {
+      "id": "detached-nursery-compatible-capability-packages",
+      "providers": [
+        "capability-fabric"
+      ],
+      "consumers": []
+    },
+    {
       "id": "detached-nursery-compatible-packages",
       "providers": [
         "deterministic-organ-fabric"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "deterministic-capability-recipe-compilation",
+      "providers": [
+        "capability-fabric"
       ],
       "consumers": []
     },
@@ -5871,6 +5899,13 @@
         "hub-test-room"
       ],
       "consumers": []
+    },
+    {
+      "id": "explicit-human-build-review",
+      "providers": [],
+      "consumers": [
+        "capability-fabric"
+      ]
     },
     {
       "id": "explicit-human-comparison-review",
@@ -7565,6 +7600,13 @@
       ]
     },
     {
+      "id": "human-recipe-review",
+      "providers": [],
+      "consumers": [
+        "capability-fabric"
+      ]
+    },
+    {
       "id": "human-review",
       "providers": [],
       "consumers": [
@@ -8004,6 +8046,13 @@
       "id": "in-process-scheduled-backups",
       "providers": [
         "recovery-center"
+      ],
+      "consumers": []
+    },
+    {
+      "id": "inactive-future-recipe-proposal-inspection",
+      "providers": [
+        "capability-fabric"
       ],
       "consumers": []
     },
@@ -13326,6 +13375,13 @@
       "consumers": []
     },
     {
+      "id": "typed-capability-build-holds",
+      "providers": [
+        "capability-fabric"
+      ],
+      "consumers": []
+    },
+    {
       "id": "typed-claim-evidence-routing",
       "providers": [
         "evidence-desk"
@@ -17061,6 +17117,67 @@
       },
       "promotion": {
         "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
+      }
+    },
+    {
+      "id": "capability-fabric",
+      "folder": "capability-fabric",
+      "name": "Capability Fabric",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "schema": "axm.tool-manifest/v1",
+      "kind": "product",
+      "audience": "human-machine",
+      "manifest": {
+        "path": "tools/capability-fabric/manifest.json",
+        "sha256": "517616fec0c7628dba87ebae0166706cccd0be216aaa93b372029d57ee7158ad",
+        "valid": true,
+        "errors": []
+      },
+      "entry": {
+        "path": "tools/capability-fabric/index.html",
+        "exists": true
+      },
+      "permissionsDeclared": true,
+      "usesDeclared": true,
+      "contract": {
+        "path": "tools/capability-fabric/module.contract.json",
+        "declared": true,
+        "present": true,
+        "valid": true,
+        "errors": [],
+        "provides": [
+          "deterministic-capability-recipe-compilation",
+          "typed-capability-build-holds",
+          "detached-nursery-compatible-capability-packages",
+          "inactive-future-recipe-proposal-inspection"
+        ],
+        "consumes": [
+          "axm.capability-fabric.build-request/v1",
+          "axm.workshop-direction.hand-request/v1",
+          "human-recipe-review",
+          "explicit-human-build-review"
+        ]
+      },
+      "selftest": {
+        "paths": [
+          "tools/capability-fabric/selftest.js"
+        ],
+        "promotionPath": "tools/capability-fabric/selftest.js",
+        "sha256": "d79e7ccd50fca17a6cd1d94ffcc7496e999492ab84c1ee62d5f599c4b1d52b72",
+        "digestScope": "all-discovered-selftests/v1",
+        "result": null
+      },
+      "readme": true,
+      "discoveryReview": false,
+      "verifiedAt": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
         "blockers": []
       }
     },

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-fabric.build-request/v1",
+  "title": "AXM Capability Fabric build request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "family", "purpose", "recipeId", "variantId", "parameters", "source", "status", "authority", "humanReviewed", "requestDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-fabric.build-request/v1" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+    "family": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+    "purpose": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "recipeId": { "type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+    "variantId": { "type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]{2,79}$" },
+    "parameters": { "type": "object" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref"],
+      "properties": {
+        "kind": { "enum": ["HUMAN", "WORKSHOP_DIRECTION", "EXTERNAL", "MIRROR", "CODE_FABRIC"] },
+        "ref": { "type": ["string", "null"] }
+      }
+    },
+    "status": { "const": "EXPERIMENTAL" },
+    "authority": { "const": "NONE" },
+    "humanReviewed": { "type": "boolean" },
+    "requestDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

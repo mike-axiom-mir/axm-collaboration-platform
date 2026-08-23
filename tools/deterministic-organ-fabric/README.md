@@ -1,5 +1,9 @@
 # Deterministic Organ Fabric
 
+This workbench remains the specialized three-strategy organ surface. The
+broader `tools/capability-fabric` front door reuses its deterministic kernel for
+exact recipe builds across code, creation hands, and contract adapters.
+
 `EXPERIMENTAL` additive factory for pure, bounded JSON-in/JSON-out organs. The normal path is deterministic and needs no AI, network, API key, provider, model, randomness, install, promotion, or Foundation mutation.
 
 CLI:

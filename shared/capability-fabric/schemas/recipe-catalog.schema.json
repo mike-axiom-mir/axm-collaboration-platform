@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-recipe-catalog/v1",
+  "title": "AXM capability recipe catalog v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "activationPolicy", "recipes", "catalogDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-recipe-catalog/v1" },
+    "status": { "const": "EXPERIMENTAL" },
+    "activationPolicy": { "const": "SOURCE_REVIEW_AND_MIKE_MERGE" },
+    "recipes": { "type": "array", "minItems": 1, "items": { "$ref": "capability-recipe.schema.json" } },
+    "catalogDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

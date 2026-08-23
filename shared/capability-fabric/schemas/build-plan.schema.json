@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-build-plan/v1",
+  "title": "AXM capability build plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "fabricVersion", "status", "requestDigest", "catalogDigest", "recipeRef", "variantId", "candidateCount", "holds", "generatedCodeExecuted", "authority", "planDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-build-plan/v1" },
+    "fabricVersion": { "type": "string" },
+    "status": { "enum": ["READY", "HELD"] },
+    "requestDigest": { "type": ["string", "null"] },
+    "catalogDigest": { "type": ["string", "null"] },
+    "recipeRef": { "type": ["object", "null"] },
+    "variantId": { "type": ["string", "null"] },
+    "candidateCount": { "type": "integer", "minimum": 0, "maximum": 1 },
+    "holds": { "type": "array" },
+    "generatedCodeExecuted": { "const": false },
+    "authority": { "type": "object" },
+    "planDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

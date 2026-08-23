@@ -1,0 +1,280 @@
+{
+  "schema": "axm.capability-recipe-catalog/v1",
+  "status": "EXPERIMENTAL",
+  "activationPolicy": "SOURCE_REVIEW_AND_MIKE_MERGE",
+  "recipes": [
+    {
+      "schema": "axm.capability-recipe/v1",
+      "id": "pure-json-transform",
+      "version": "1.0.0",
+      "title": "Pure JSON Transform",
+      "summary": "Compile a dependency-free bounded field transform with an emitted external selftest.",
+      "family": "code-module",
+      "builderId": "pure-json-transform-v1",
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "sharedUseRequires": "MIKE_TOBI_MERGE",
+        "canonAuthority": "NONE"
+      },
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "variants": [
+          {
+            "id": "standard",
+            "title": "Standard bounded transform",
+            "parameterOverrides": {}
+          }
+        ]
+      },
+      "parameterSpec": {
+        "inputField": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z][a-zA-Z0-9]{0,63}$",
+          "maxLength": 64,
+          "description": "Exact input field to read."
+        },
+        "outputField": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z][a-zA-Z0-9]{0,63}$",
+          "maxLength": 64,
+          "description": "Exact output field to emit."
+        },
+        "defaultValue": {
+          "type": "string",
+          "required": true,
+          "maxLength": 256,
+          "description": "Fallback string when the input field is absent."
+        },
+        "outputSchema": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,127}/v[0-9]+$",
+          "maxLength": 128,
+          "description": "Schema emitted by the transform envelope."
+        },
+        "maxInputKeys": {
+          "type": "integer",
+          "required": true,
+          "minimum": 1,
+          "maximum": 128,
+          "description": "Maximum accepted top-level input keys."
+        }
+      },
+      "exampleRequest": {
+        "id": "status-normalizer",
+        "family": "code-module",
+        "purpose": "Map a reviewed status field into a small stable result envelope.",
+        "recipeId": "pure-json-transform",
+        "variantId": null,
+        "parameters": {
+          "inputField": "status",
+          "outputField": "normalizedStatus",
+          "defaultValue": "unknown",
+          "outputSchema": "axm.example.status-normalized/v1",
+          "maxInputKeys": 16
+        },
+        "source": {
+          "kind": "HUMAN",
+          "ref": "capability-fabric-starter"
+        }
+      },
+      "boundaries": [
+        "pure JSON input only",
+        "no filesystem, network, clock, environment, dynamic code, or implicit randomness",
+        "detached candidate output only",
+        "generated tests are emitted but never executed by the Fabric"
+      ],
+      "verifiers": [
+        "package digest and exact deterministic rebuild",
+        "externally execute emitted selftest.js",
+        "Detached Candidate Nursery structural scan"
+      ],
+      "recipeDigest": "sha256:cd800d802e4ca7e18398318c6ecc35967b8e2b8577c5f41fe7393682aec6d89e"
+    },
+    {
+      "schema": "axm.capability-recipe/v1",
+      "id": "svg-status-badge",
+      "version": "1.0.0",
+      "title": "SVG Status Badge Creation Hand",
+      "summary": "Compile a dependency-free deterministic SVG status badge renderer with XML escaping.",
+      "family": "creation-hand",
+      "builderId": "svg-status-badge-v1",
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "sharedUseRequires": "MIKE_TOBI_MERGE",
+        "canonAuthority": "NONE"
+      },
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "variants": [
+          {
+            "id": "standard",
+            "title": "Standard accessible badge",
+            "parameterOverrides": {}
+          }
+        ]
+      },
+      "parameterSpec": {
+        "label": {
+          "type": "string",
+          "required": true,
+          "maxLength": 48,
+          "description": "Default badge label."
+        },
+        "value": {
+          "type": "string",
+          "required": true,
+          "maxLength": 48,
+          "description": "Default badge value."
+        },
+        "background": {
+          "type": "string",
+          "required": true,
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "maxLength": 7,
+          "description": "Left-side hexadecimal fill."
+        },
+        "foreground": {
+          "type": "string",
+          "required": true,
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "maxLength": 7,
+          "description": "Right-side hexadecimal fill."
+        },
+        "width": {
+          "type": "integer",
+          "required": true,
+          "minimum": 120,
+          "maximum": 512,
+          "description": "Badge width in SVG user units."
+        }
+      },
+      "exampleRequest": {
+        "id": "workshop-build-badge",
+        "family": "creation-hand",
+        "purpose": "Create a stable local badge renderer for experimental capability build state.",
+        "recipeId": "svg-status-badge",
+        "variantId": null,
+        "parameters": {
+          "label": "CAPABILITY",
+          "value": "EXPERIMENTAL",
+          "background": "#17324d",
+          "foreground": "#79e6c2",
+          "width": 240
+        },
+        "source": {
+          "kind": "HUMAN",
+          "ref": "capability-fabric-starter"
+        }
+      },
+      "boundaries": [
+        "text and six-digit hexadecimal colours only",
+        "bounded static SVG; no scripts, external resources, fonts, network, or filesystem",
+        "visual fitness still requires separate human observation",
+        "detached candidate output only"
+      ],
+      "verifiers": [
+        "package digest and exact deterministic rebuild",
+        "externally execute emitted selftest.js",
+        "live render and visual inspection",
+        "Detached Candidate Nursery structural scan"
+      ],
+      "recipeDigest": "sha256:280e6db497702e65d5cafcfff035dac5f21a565e077e4d65fdd2dbdf7722f0a6"
+    },
+    {
+      "schema": "axm.capability-recipe/v1",
+      "id": "workshop-direction-adapter",
+      "version": "1.0.0",
+      "title": "Workshop Direction Capability Adapter",
+      "summary": "Compile a bounded adapter from Workshop Direction hand requests to digest-bound Capability Fabric build requests that remain human-review held.",
+      "family": "contract-adapter",
+      "builderId": "workshop-direction-adapter-v1",
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "sharedUseRequires": "MIKE_TOBI_MERGE",
+        "canonAuthority": "NONE"
+      },
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "variants": [
+          {
+            "id": "standard",
+            "title": "Human-review-held adapter",
+            "parameterOverrides": {}
+          }
+        ]
+      },
+      "parameterSpec": {
+        "targetRecipeId": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z][a-z0-9-]{2,79}$",
+          "maxLength": 80,
+          "description": "Exact recipe the generated adapter targets."
+        },
+        "targetFamily": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z][a-z0-9-]{2,79}$",
+          "maxLength": 80,
+          "description": "Exact capability family the generated adapter targets."
+        },
+        "targetParameters": {
+          "type": "object",
+          "required": true,
+          "maxBytes": 16384,
+          "description": "Reviewed target recipe parameters copied into adapted requests."
+        },
+        "idSuffix": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z][a-z0-9-]{2,31}$",
+          "maxLength": 32,
+          "description": "Bounded suffix for adapted request ids."
+        }
+      },
+      "exampleRequest": {
+        "id": "direction-to-status-transform",
+        "family": "contract-adapter",
+        "purpose": "Create a callable bridge that turns an explicit Direction hand request into a still-unreviewed status-transform build request.",
+        "recipeId": "workshop-direction-adapter",
+        "variantId": null,
+        "parameters": {
+          "targetRecipeId": "pure-json-transform",
+          "targetFamily": "code-module",
+          "targetParameters": {
+            "inputField": "status",
+            "outputField": "normalizedStatus",
+            "defaultValue": "unknown",
+            "outputSchema": "axm.example.status-normalized/v1",
+            "maxInputKeys": 16
+          },
+          "idSuffix": "capability"
+        },
+        "source": {
+          "kind": "HUMAN",
+          "ref": "capability-fabric-starter"
+        }
+      },
+      "boundaries": [
+        "accept exact axm.workshop-direction.hand-request/v1 only",
+        "target recipe and parameters are explicit at adapter build time",
+        "adapted requests always set humanReviewed false",
+        "no build, install, promotion, permission, or CANON authority"
+      ],
+      "verifiers": [
+        "package digest and exact deterministic rebuild",
+        "externally execute emitted selftest.js",
+        "adapted request contract and digest validation",
+        "Detached Candidate Nursery structural scan"
+      ],
+      "recipeDigest": "sha256:4044606f75a206599dd5de7a6cb21200491d845cd99317638a79d683cd2e530b"
+    }
+  ],
+  "catalogDigest": "sha256:01e8ce5f24a6cb4bd727d9b8b786d4a1c37456400f3e225ee89210455d34d44f"
+}

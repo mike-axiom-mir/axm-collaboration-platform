@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-candidate-package/v1",
+  "title": "AXM detached capability candidate package v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "version", "status", "requestDigest", "catalogDigest", "recipeRef", "variantId", "compilationDigest", "files", "totalBytes", "authority", "packageDigest"],
+  "properties": {
+    "schema": { "const": "axm.capability-candidate-package/v1" },
+    "id": { "type": "string" },
+    "version": { "type": "string" },
+    "status": { "const": "EXPERIMENTAL" },
+    "requestDigest": { "type": "string" },
+    "catalogDigest": { "type": "string" },
+    "recipeRef": { "type": "object" },
+    "variantId": { "type": "string" },
+    "compilationDigest": { "type": "string" },
+    "files": { "type": "array", "minItems": 1 },
+    "totalBytes": { "type": "integer", "minimum": 1, "maximum": 1048576 },
+    "authority": { "type": "object" },
+    "packageDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}
