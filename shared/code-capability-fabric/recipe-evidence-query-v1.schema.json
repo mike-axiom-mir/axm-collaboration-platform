@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-recipe-evidence-query/v1",
+  "title": "AXM Code Recipe Evidence Query",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "axm.code-recipe-evidence-query/v1"},
+    "terms": {"type": "string", "maxLength": 1024},
+    "languages": {"$ref": "#/$defs/list16"},
+    "domains": {"$ref": "#/$defs/list16"},
+    "tags": {"$ref": "#/$defs/list32"},
+    "familyKeys": {"$ref": "#/$defs/list16"},
+    "maxResults": {"type": "integer", "minimum": 1, "maximum": 32, "default": 12}
+  },
+  "anyOf": [
+    {"required": ["terms"]},
+    {"required": ["languages"]},
+    {"required": ["domains"]},
+    {"required": ["tags"]},
+    {"required": ["familyKeys"]}
+  ],
+  "$defs": {
+    "token": {"type": "string", "minLength": 1, "maxLength": 160},
+    "list16": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/token"}},
+    "list32": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/token"}}
+  }
+}
