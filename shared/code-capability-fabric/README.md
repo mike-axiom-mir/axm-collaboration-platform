@@ -341,3 +341,31 @@ and run:
 ```powershell
 node shared/code-capability-fabric/selftest-semantic-candidate-materializer-v1.js
 ```
+
+## Multi-axis code taxonomy and specialist routing
+
+The additive v1.5 `TEST` rung categorizes exact, digest-bound artifact
+observations before any code-specific knowledge is attached. Language/format,
+artifact family, responsibility, runtime, framework, interface, authority, and
+evidence axes remain separate. Extensions provide mechanical candidates only;
+ambiguous `.m`, `.pl`, and `.v` paths require an explicit compatible language
+declaration, while unknown axes emit typed capability gaps.
+
+The router reuses exact method-mask references from Workshop's existing
+Specialist Library and emits separate, non-merging technical organ lanes for
+markup, style, browser behavior, application logic, data/schema, testing,
+persistence, authority/security, build/package, shader/rendering, hardware
+simulation, performance/resources, documentation, and audio. The catalog is
+extensible and explicitly does not claim to enumerate every language.
+
+All future knowledge lanes start `REFERENCE_ONLY_EMPTY`. The planner reads no
+source bytes, loads no specialist knowledge, writes nothing, calls no provider,
+runs no tests or candidate, grants no permission/network, and cannot learn,
+install, integrate, publish, actuate hardware, promote, or change `CANON`.
+
+See [README-code-specialization-router-v1.md](README-code-specialization-router-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-code-specialization-router-v1.js
+```
