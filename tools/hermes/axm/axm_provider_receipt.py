@@ -21,22 +21,34 @@ def digest(value: object) -> str:
 
 
 def scope(base_url: object) -> str:
+    if not base_url:
+        return "unknown"
     try:
-        parsed = urlparse(str(base_url or ""))
-        return "loopback" if (parsed.hostname or "").lower() in LOOPBACK else "remote"
+        parsed = urlparse(str(base_url))
+        host = (parsed.hostname or "").lower()
+        if not host:
+            return "unknown"
+        return "loopback" if host in LOOPBACK else "remote"
     except Exception:
         return "unknown"
 
 
-def policy_mode() -> str:
+def policy_state() -> tuple[str, bool]:
     try:
         value = json.loads(POLICY_FILE.read_text(encoding="utf-8"))
-        return str(value.get("provider_egress", {}).get("mode") or "unknown")
+        return (
+            str(value.get("provider_egress", {}).get("mode") or "unknown"),
+            value.get("receipts", {}).get("record_provider_metadata") is True,
+        )
     except Exception:
-        return "unknown"
+        return ("unknown", False)
 
 
 def main() -> None:
+    mode, enabled = policy_state()
+    if not enabled:
+        print("{}")
+        return
     try:
         event = json.loads(__import__("sys").stdin.read() or "{}")
     except Exception:
@@ -49,7 +61,11 @@ def main() -> None:
     hook = str(event.get("hook_event_name") or "unknown")
     base_url = extra.get("base_url")
     base_scope = scope(base_url)
-    mode = policy_mode()
+    host = ""
+    try:
+        host = urlparse(str(base_url or "")).hostname or ""
+    except Exception:
+        pass
     record = {
         "schema": "axm.hermes-provider-receipt/v1",
         "run_id": RUN_ID,
@@ -62,7 +78,7 @@ def main() -> None:
         "model": str(extra.get("model") or extra.get("response_model") or "unknown")[:200],
         "api_mode": str(extra.get("api_mode") or "unknown")[:80],
         "base_url_scope": base_scope,
-        "base_url_host_hash": digest(urlparse(str(base_url or "")).hostname or "") if base_url else None,
+        "base_url_host_hash": digest(host) if host else None,
         "api_call_count": extra.get("api_call_count") if isinstance(extra.get("api_call_count"), int) else None,
         "retry_count": extra.get("retry_count") if isinstance(extra.get("retry_count"), int) else None,
         "message_count": extra.get("message_count") if isinstance(extra.get("message_count"), int) else None,
