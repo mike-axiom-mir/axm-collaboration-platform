@@ -1,0 +1,87 @@
+{
+  "schema": "axm.steward-evidence-route/v1",
+  "claims": [
+    {
+      "claimId": "deterministic-preparation",
+      "kind": "DETERMINISTIC_BEHAVIOR",
+      "risk": "HIGH",
+      "passCondition": "Equivalent trusted inputs rebuild the same semantic generation and exact materialization subject.",
+      "primarySurface": "focused exact-rebuild and input-reordering selftests",
+      "counterevidence": "changed subject digest, file set, lineage, or resource envelope",
+      "observedEvidence": "deterministic preparation cases PASS",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "bounded-human-authorization",
+      "kind": "AUTHORIZATION",
+      "risk": "HIGH",
+      "passCondition": "Only a current AUTHORIZE signature from the exact policy seat over the exact Tier-1 subject passes; HOLD, REJECT, forgery, drift, expiry, or root non-PASS closes the gate.",
+      "primarySurface": "Ed25519, scope, window, policy, roots, and drift adversarial tests",
+      "counterevidence": "wrong key, changed bytes, changed scope, stale decision, or root HOLD accepted",
+      "observedEvidence": "signature, choice, roots, drift, expiry, and wrong-key cases PASS",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "revocation-and-host-replay",
+      "kind": "AUTHORIZATION",
+      "risk": "HIGH",
+      "passCondition": "A separately signed current revocation snapshot is clear and the decision nonce is reserved exactly once in the selected Nursery ledger.",
+      "primarySurface": "revocation and exclusive-ledger replay tests",
+      "counterevidence": "revoked seat/key/nonce/digest, stale snapshot, or reused nonce accepted",
+      "observedEvidence": "all revocation classes and replay-after-discard/failure cases PASS",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "detached-path-boundary",
+      "kind": "STATIC_STRUCTURE",
+      "risk": "HIGH",
+      "passCondition": "Writes create one new direct-child root under a canonical, existing, unlinked Nursery parent disjoint from protected source, workspace, and evidence roots.",
+      "primarySurface": "real temporary filesystem tests",
+      "counterevidence": "overwrite, traversal, alias, protected overlap, symlink, junction, or source/output overlap accepted",
+      "observedEvidence": "new-root, existing-root, dot-alias, protected-overlap, junction-parent, and junction-ledger cases PASS",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "byte-bound-inert-candidate",
+      "kind": "STATIC_STRUCTURE",
+      "risk": "HIGH",
+      "passCondition": "Every candidate byte is written exclusively, read back exactly, and accepted by the Nursery inspector without importing or executing candidate code.",
+      "primarySurface": "real materialization, readback, tamper, source scan, and Nursery inspection",
+      "counterevidence": "byte drift, malformed bundle, candidate import, dynamic code, provider call, or process/network use",
+      "observedEvidence": "seven-file candidate, byte-tamper, static-inspection, and forbidden-capability cases PASS",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "resource-and-privacy-receipt",
+      "kind": "RESOURCE_PERFORMANCE",
+      "risk": "HIGH",
+      "passCondition": "Declared file/byte/attempt/process ceilings are enforced and durable receipts retain only digests, bounded measurements, verdicts, and path-free evidence.",
+      "primarySurface": "resource-total, receipt-normalization, and sensitive-surface tests",
+      "counterevidence": "ceiling expansion, inconsistent total, source, raw goal, stdout/stderr, key, or machine path retained",
+      "observedEvidence": "resource totals, re-digested contradiction, and privacy assertions PASS",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "runtime-or-quality-proof",
+      "kind": "FUNCTIONAL_BEHAVIOR",
+      "risk": "HIGH",
+      "passCondition": "The exact candidate is separately authorized, executed in a repaired disposable sandbox, and verified on its native evidence surfaces.",
+      "primarySurface": "future sandbox, behavioral, browser, and human review evidence",
+      "counterevidence": "no execution evidence or failed acceptance behavior",
+      "observedEvidence": "NOT_RUN; candidate code remained inert",
+      "verdict": "UNKNOWN"
+    },
+    {
+      "claimId": "natural-person-informed-consent",
+      "kind": "AUTHORIZATION",
+      "risk": "HIGH",
+      "passCondition": "Independent evidence proves the signing seat corresponds to the intended person and that the decision was informed and uncoerced.",
+      "primarySurface": "future identity, presentation, comprehension, and audit controls",
+      "counterevidence": "valid key signature without person or comprehension evidence",
+      "observedEvidence": "NOT_PROVEN by this cryptographic gate",
+      "verdict": "UNKNOWN"
+    }
+  ],
+  "overall": "PASS_FOR_NATIVE_TIER1_DETACHED_MATERIALIZATION_ONLY",
+  "browser": "N/A_NO_VISUAL_CHANGE"
+}
