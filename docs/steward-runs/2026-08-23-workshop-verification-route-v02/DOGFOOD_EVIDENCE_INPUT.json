@@ -1,0 +1,201 @@
+{
+  "schema": "axm.evidence-fields/v2",
+  "title": "Selected balanced verification organ dogfood",
+  "goal": "Execute the exact nine-step route emitted for commit ba46e3cd and preserve compact native evidence without granting implementation authority.",
+  "actor": {
+    "id": "codex-organ-fabric-dogfood",
+    "type": "machine-with-live-human-visible-browser"
+  },
+  "source_checkpoint": "git:ba46e3cdb99d87f5e4898ea84c11d645912ecc2a",
+  "observations": [
+    {
+      "id": "focused-selftest",
+      "claim": "The selected implementation passes its focused shared-runtime and Hub selftests at the bound checkpoint.",
+      "kind": "deterministic-behavior",
+      "risk": "HIGH",
+      "verdict": "PASS",
+      "pass_condition": "Both focused commands exit zero with their declared check counts.",
+      "primary_surface": "focused-execution",
+      "observed_evidence": "Shared runtime reported 47 checks and Hub tool reported 11 checks, both PASS.",
+      "counterevidence": "Either command exits nonzero or reports a failed assertion.",
+      "source_kind": "focused-execution",
+      "source": "node shared/deterministic-organ-fabric/selftest.js; node tools/deterministic-organ-fabric/selftest.js"
+    },
+    {
+      "id": "contract-test",
+      "claim": "The selected organ and candidate packages satisfy the declared closed contracts and lineage checks.",
+      "kind": "static-structure",
+      "risk": "HIGH",
+      "verdict": "PASS",
+      "pass_condition": "The package suite exits zero and direct inspection matches the selected package and selection digests.",
+      "primary_surface": "schema-validation",
+      "observed_evidence": "The package suite reported 167 PASS checks; direct inspection reported packageVerified true and generatedCodeExecuted false.",
+      "counterevidence": "A schema, digest, lineage, or package integrity check fails.",
+      "source_kind": "schema-validation",
+      "source": "tests/deterministic-organ-fabric-package-test.js; shared/deterministic-organ-fabric/selected-verification-route-organ.contract.json"
+    },
+    {
+      "id": "fixture-parity",
+      "claim": "Required and held-out fixtures produce their exact asserted deterministic outputs.",
+      "kind": "deterministic-behavior",
+      "risk": "HIGH",
+      "verdict": "PASS",
+      "pass_condition": "Every declared fixture and held-out package case passes exact assertions.",
+      "primary_surface": "focused-execution",
+      "observed_evidence": "Fixture and held-out parity passed inside the 167-check package suite.",
+      "counterevidence": "A required or held-out fixture differs from its asserted output.",
+      "source_kind": "focused-fixture-execution",
+      "source": "node tests/deterministic-organ-fabric-package-test.js"
+    },
+    {
+      "id": "round-trip-test",
+      "claim": "Portable packages and filesystem archive views round-trip without semantic or digest drift.",
+      "kind": "persistence",
+      "risk": "HIGH",
+      "verdict": "PASS",
+      "pass_condition": "Import/export parity passes and two fresh archive verifier processes return identical digests and counts.",
+      "primary_surface": "restart-reload",
+      "observed_evidence": "Package round-trip checks passed; two fresh CLI processes returned index sha256:cab192d2fe8c5add72736b9fad620dcddbb0f1d5f6eb6a1d0f35117a2a0c04b7 with 14 objects, 1 rejected attempt, and 28 events.",
+      "counterevidence": "A portable round trip changes bytes or fresh processes disagree on archive state.",
+      "source_kind": "fresh-process-parity",
+      "source": "node tests/deterministic-organ-fabric-package-test.js; node tools/deterministic-organ-fabric/cli.js archive verify --archive-root state/organ-archive"
+    },
+    {
+      "id": "archive-reload",
+      "claim": "The Hub's authorized IndexedDB archive preserves exact dormant objects and events across reload.",
+      "kind": "persistence",
+      "risk": "HIGH",
+      "verdict": "PASS",
+      "pass_condition": "Three generated objects verify before reload, return with identical digests after reload, and reverify with the same event count.",
+      "primary_surface": "restart-reload",
+      "observed_evidence": "Three objects and three events verified, survived page reload with identical digests, and reverified PASS.",
+      "counterevidence": "An object, digest, or event is absent or verification fails after reload.",
+      "source_kind": "live-browser-reload",
+      "source": "docs/steward-runs/2026-08-23-workshop-verification-route-v02/DOGFOOD_RESULT.json#liveBrowser.archiveReload"
+    },
+    {
+      "id": "sender-receiver-parity",
+      "claim": "The authorized sender and passive Mirror receiver bind exact dormant bytes without loading the organ.",
+      "kind": "transport",
+      "risk": "HIGH",
+      "verdict": "PASS",
+      "pass_condition": "The connection test proves exact-byte acknowledgement, idempotence, drift refusal, and no organ load.",
+      "primary_surface": "sender-and-receiver-receipts",
+      "observed_evidence": "The Mirror connection suite passed explicit authority, exact bytes, dormant acknowledgement, idempotence, drift refusal, and no organ load.",
+      "counterevidence": "Sender and receiver digests disagree, drift is accepted, or the receiver loads the organ.",
+      "source_kind": "sender-and-receiver-receipts",
+      "source": "node tests/deterministic-organ-fabric-mirror-connection-test.js"
+    },
+    {
+      "id": "syntax-check",
+      "claim": "Changed JavaScript and repository HTML scripts parse or compile at the bound checkpoint.",
+      "kind": "static-structure",
+      "risk": "HIGH",
+      "verdict": "PASS",
+      "pass_condition": "Every changed JavaScript file passes node --check and the HTML script syntax suite reports zero failures.",
+      "primary_surface": "schema-validation",
+      "observed_evidence": "Eleven changed JavaScript files passed node --check; 56 HTML surfaces compiled with 0 FAIL.",
+      "counterevidence": "A changed script fails parsing or an HTML surface fails compilation.",
+      "source_kind": "script-compilation",
+      "source": "git show ba46e3cdb99d87f5e4898ea84c11d645912ecc2a; node tests/html-script-syntax-test.js"
+    },
+    {
+      "id": "browser-render-click",
+      "claim": "The selected-route planning and archive reload journeys work in the live in-app browser at declared desktop and mobile viewports.",
+      "kind": "interaction-journey",
+      "risk": "HIGH",
+      "verdict": "PASS",
+      "pass_condition": "The exact route is visible without horizontal overflow, archive generation and reload complete, and the console has no warning or error.",
+      "primary_surface": "live-interaction",
+      "observed_evidence": "The journey passed at 1280x720 and 390x844; six mobile tabs occupied two rows; archive reload reverified; console warning/error count was zero.",
+      "counterevidence": "A required control clips, the route differs, reload loses state, or a console warning/error appears.",
+      "source_kind": "live-browser-observation",
+      "source": "docs/steward-runs/2026-08-23-workshop-verification-route-v02/DOGFOOD_RESULT.json#liveBrowser"
+    },
+    {
+      "id": "required-regression",
+      "claim": "Every repository-required AGENTS.md command passes at the bound checkpoint.",
+      "kind": "deterministic-behavior",
+      "risk": "HIGH",
+      "verdict": "PASS",
+      "pass_condition": "All ten commands exit zero and verify.js records no FAIL while preserving warnings.",
+      "primary_surface": "focused-execution",
+      "observed_evidence": "All ten commands exited zero; verify.js recorded 572 PASS lines, 0 FAIL, 20 warnings, and a matching tools index.",
+      "counterevidence": "A required command exits nonzero, verify.js records a FAIL, or the tools index drifts.",
+      "source_kind": "repository-required-regression-suite",
+      "source": "AGENTS.md; docs/steward-runs/2026-08-23-workshop-verification-route-v02/DOGFOOD_RESULT.json#requiredRegression"
+    }
+  ],
+  "actions": [
+    {
+      "action": "Execute the exact selected-organ verification route",
+      "target": "git:ba46e3cdb99d87f5e4898ea84c11d645912ecc2a",
+      "effect": "bounded-read-and-local-test-state",
+      "result": "All nine route tokens gathered native PASS evidence.",
+      "evidence": "docs/steward-runs/2026-08-23-workshop-verification-route-v02/DOGFOOD_RESULT.json#routeResults"
+    }
+  ],
+  "checks": [
+    {
+      "name": "focused-selftest",
+      "status": "PASS",
+      "evidence": "47 shared checks and 11 Hub tool checks passed."
+    },
+    {
+      "name": "contract-test",
+      "status": "PASS",
+      "evidence": "167 package/contract checks passed and selected lineage inspected."
+    },
+    {
+      "name": "fixture-parity",
+      "status": "PASS",
+      "evidence": "Required and held-out fixture assertions passed in the package suite."
+    },
+    {
+      "name": "round-trip-test",
+      "status": "PASS",
+      "evidence": "Portable package parity and two-process archive digest parity passed."
+    },
+    {
+      "name": "archive-reload",
+      "status": "PASS",
+      "evidence": "Three IndexedDB objects and three events reverified after reload."
+    },
+    {
+      "name": "sender-receiver-parity",
+      "status": "PASS",
+      "evidence": "Exact dormant receiver acknowledgement and refusal boundaries passed."
+    },
+    {
+      "name": "syntax-check",
+      "status": "PASS",
+      "evidence": "11 changed JavaScript files and 56 HTML surfaces parsed or compiled."
+    },
+    {
+      "name": "browser-render-click",
+      "status": "PASS",
+      "evidence": "Desktop/mobile journey and archive reload passed with zero console warning/error."
+    },
+    {
+      "name": "required-regression",
+      "status": "PASS",
+      "evidence": "All ten AGENTS.md commands exited zero; verify.js had zero FAIL."
+    }
+  ],
+  "changes": [
+    {
+      "path": "docs/steward-runs/2026-08-23-workshop-verification-route-v02",
+      "kind": "added-evidence",
+      "summary": "Compact dogfood plan, native evidence, Evidence Desk receipt, and Verification Spine receipts."
+    }
+  ],
+  "limitations": [
+    "The live browser proof covers only the declared in-app browser desktop and mobile viewports.",
+    "The 20 repository warnings remain warnings and are not converted into passes.",
+    "No usefulness, wisdom, merge-fitness, broad safety, installation, promotion, or CANON claim is made.",
+    "No raw logs or screenshots are retained in this compact packet."
+  ],
+  "next_actions": [
+    "Mike reviews the implementation diff, warnings, and open human judgments before any merge decision."
+  ]
+}
