@@ -1,0 +1,48 @@
+name: Waldo Mirror Code Fabric Bridge
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/waldo-mirror-code-fabric-bridge-v0.1/**'
+      - 'shared/code-capability-fabric/**'
+      - 'tools/deterministic-json-core/**'
+      - '.github/workflows/waldo-mirror-code-fabric-bridge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bridge-selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Donor deterministic JSON selftest
+        run: node tools/deterministic-json-core/selftest.js
+      - name: Donor Code Fabric v2 selftest
+        run: node shared/code-capability-fabric/selftest-v2.js
+      - name: Donor blueprint composer selftest
+        run: node shared/code-capability-fabric/selftest-declarative-blueprint-composer-v1.js
+      - name: Donor blueprint schema compiler selftest
+        run: node shared/code-capability-fabric/selftest-blueprint-schema-compiler-v1.js
+      - name: One concept / three deterministic bodies
+        run: |
+          node experiments/waldo-mirror-code-fabric-bridge-v0.1/selftest.js \
+            --output deterministic-receipt.json
+      - name: Explicit AI-opt-in proposal / same Fabric
+        run: |
+          node experiments/waldo-mirror-code-fabric-bridge-v0.1/selftest.js \
+            --ai-opt-in experiments/waldo-mirror-code-fabric-bridge-v0.1/ai-proposal.example.json \
+            --output ai-opt-in-receipt.json
+      - name: Show receipt summaries
+        run: |
+          node -e "const a=require('./deterministic-receipt.json'); const b=require('./ai-opt-in-receipt.json'); console.log({deterministicBodies:a.bodies.length, aiOptInBodies:b.bodies.length, deterministicReceipt:a.receiptSha256, aiReceipt:b.receiptSha256, privateOrganFactory:a.privateOrganFactory});"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: waldo-mirror-code-fabric-bridge-receipts
+          path: |
+            deterministic-receipt.json
+            ai-opt-in-receipt.json
