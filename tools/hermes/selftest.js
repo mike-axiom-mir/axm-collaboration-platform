@@ -118,8 +118,11 @@ function testRuntimeBoundary(tempRoot) {
   check(result.action === 'block' && /research posture/.test(result.message), 'research posture blocks mutation even with global consent on');
 
   policy.posture = 'operator'; writeJson(policyFile, policy);
+  result = call('write_file', { path: 'draft.txt', content: 'x' }, 'operator-write-gated');
+  check(result.action === 'block' && /allow_file_mutation/.test(result.message), 'operator posture still requires explicit file-mutation capability');
+  policy.capabilities.allow_file_mutation = true; writeJson(policyFile, policy);
   result = call('write_file', { path: 'draft.txt', content: 'x' }, 'operator-write');
-  check(Object.keys(result).length === 0, 'operator posture permits contained file write');
+  check(Object.keys(result).length === 0, 'explicit file-mutation capability permits contained write');
   result = call('write_file', { path: path.join(tempRoot, 'outside.txt') }, 'outside');
   check(result.action === 'block' && /outside configured AXM roots/.test(result.message), 'operator write outside configured root blocked');
   result = call('write_file', { content: 'no path' }, 'missing-path');
