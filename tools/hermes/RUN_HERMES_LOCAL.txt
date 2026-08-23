@@ -14,21 +14,28 @@ Fresh policy starts:
 - posture: research
 - action consent: OFF
 - provider credential posture: local_only
+- 15 minute hard launcher watchdog
+- built-in Hermes memory/user profile: OFF
+- automatic background self-improvement review: OFF
+- memory/skill writes: approval-gated
+- runtime lazy package installation: OFF
 - all mutation/world-action capabilities: OFF
+
+The install phase fetches the exact pinned commit snapshot only. The explicit deps phase creates the pinned environment. Start uses uv --no-sync, so a run is not also a dependency-install step.
 
 For the first live run, keep research + local model and enable only global action consent:
 
 node hermes-bootstrap.js consent on "first local research run"
 node hermes-bootstrap.js start
 
-Each start creates its own runtime/runs/<run-id>/ capsule and ends with a candidate-only Return Packet.
+Each start creates its own runtime/runs/<run-id>/ capsule and ends with a candidate-only Return Packet. The packet cross-checks tool authorizations against completion receipts and flags missing evidence.
 
 After the run:
 
 node hermes-bootstrap.js consent off "run ended"
 node hermes-bootstrap.js repair
 
-Use repair whenever a run or machine dies unexpectedly. It closes incomplete run capsules into recovery Return Packets instead of deleting evidence.
+Use repair whenever a run or machine dies unexpectedly. It closes incomplete run capsules into recovery Return Packets instead of deleting evidence, while skipping capsules whose launcher PID is still alive.
 
 Only change posture to operator when action capability is actually needed. Operator still requires individual capability switches such as allow_file_mutation, allow_terminal, allow_execute_code, etc.
 
@@ -38,12 +45,20 @@ Provider note:
 - explicit_remote restores only exact secret env names listed in local policy
 - this is credential control, not hard network isolation
 
+Defense in depth:
+- AXM pre-tool gate is fail closed
+- Hermes native HERMES_WRITE_SAFE_ROOT is also set from AXM write roots
+- Hermes secret redaction is forced on
+- Hermes runtime lazy installs are disabled
+- source is re-verified after every run
+
 Hard boundaries:
 - source must match repo + commit + tree + observed version
+- launcher watchdog termination is not a guaranteed process-tree kill
 - fail-closed tool gate is not an OS sandbox
 - provider observer receipts cannot veto an already-dispatched model request
+- Hermes upstream session state may still contain its own local conversation data inside the Git-ignored HERMES_HOME; AXM evidence receipts do not copy raw prompt/response content
 - Hermes memory/skills/results stay non-canonical candidates
-- raw prompt/response/tool content is excluded from AXM evidence receipts
 
 Optional legacy proposal/control layer:
 
