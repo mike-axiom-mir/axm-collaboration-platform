@@ -1,10 +1,11 @@
 {
-  "note": "Verified public Hermes Agent source. Copy to hermes-source.local.json only if you need local overrides. Do not commit local config.",
+  "schema": "axm.hermes-source-reference/v1",
+  "status": "REFERENCE_ONLY",
+  "note": "Compatibility/reference file. AXM Hermes Runtime v0.3 does not consume this file for install/start; hermes-source.lock.json is the authoritative reviewed source pin.",
   "repo_url": "https://github.com/NousResearch/hermes-agent.git",
-  "branch": "main",
+  "example_commit": "739bc555b1932e66c169b20edec3a48368e2dd3f",
   "license": "MIT",
-  "install_linux_mac_wsl": "curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash",
-  "install_windows_powershell": "irm https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1 | iex",
-  "start_command": "hermes",
-  "doctor_command": "hermes doctor"
+  "update_rule": "review upstream, then replace the immutable SHA in hermes-source.lock.json",
+  "remote_install_scripts": "not used by the AXM pinned bootstrap",
+  "start_path": "node hermes-bootstrap.js start"
 }
