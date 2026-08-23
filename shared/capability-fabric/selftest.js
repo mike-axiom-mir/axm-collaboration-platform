@@ -6,12 +6,20 @@ const Fabric = require('./index.js');
 
 let passed=0;
 function check(condition,label){assert(condition,label);passed+=1;}
+function resealPlan(plan){const copy=Fabric.clone(plan);delete copy.planDigest;plan.planDigest=Fabric.digest(copy);return plan;}
+function resealCandidate(candidate){
+  const bundle={schema:'axm.module-bundle/v1',id:candidate.package.id,version:candidate.package.version,requiredSeats:1,files:Object.keys(candidate.files).filter(function(path){return path!=='module-bundle.json';}).sort().map(function(path){return {path:path,encoding:'utf8',sha256:Fabric.digest(candidate.files[path]).slice(7),content:candidate.files[path]};})};
+  candidate.files['module-bundle.json']=JSON.stringify(bundle,null,2)+'\n';
+  candidate.package.files=Object.keys(candidate.files).sort().map(function(path){return {path:path,bytes:Buffer.byteLength(candidate.files[path],'utf8'),digest:Fabric.digest(candidate.files[path])};});
+  candidate.package.totalBytes=candidate.package.files.reduce(function(sum,row){return sum+row.bytes;},0);
+  const descriptor=Fabric.clone(candidate.package);delete descriptor.packageDigest;candidate.package.packageDigest=Fabric.digest(descriptor);return candidate;
+}
 
 function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
   check(catalog.recipes.length===3,'initial catalog has code, creation, and adapter recipes');
-  check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1;}),'every initial recipe defaults to one candidate');
+  check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.defaultVariantId==='standard';}),'every initial recipe explicitly defaults to one standard candidate');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
 
   const packages={};
@@ -38,14 +46,25 @@ function main(){
   check(missing.status==='HELD'&&missing.holds[0].code==='MISSING_RECIPE','missing exact recipe returns typed hold');
   const implicitDraft=Fabric.clone(recipe.exampleRequest);implicitDraft.recipeId=null;const implicit=Fabric.planBuild(Fabric.sealRequest(implicitDraft,true),catalog);
   check(implicit.status==='READY'&&implicit.recipeRef.id===recipe.id,'single exact family match can be resolved without guessing');
-  const ambiguousCatalog=Fabric.clone(catalog),copy=Fabric.clone(recipe);copy.id='pure-json-transform-alt';delete copy.recipeDigest;copy.recipeDigest=Fabric.digest(copy);ambiguousCatalog.recipes.push(copy);delete ambiguousCatalog.catalogDigest;ambiguousCatalog.catalogDigest=Fabric.digest(ambiguousCatalog);const ambiguous=Fabric.planBuild(Fabric.sealRequest(implicitDraft,true),ambiguousCatalog);
+  const ambiguousCatalog=Fabric.clone(catalog),copy=Fabric.clone(recipe);copy.id='pure-json-transform-alt';copy.exampleRequest.recipeId=copy.id;delete copy.recipeDigest;copy.recipeDigest=Fabric.digest(copy);ambiguousCatalog.recipes.push(copy);delete ambiguousCatalog.catalogDigest;ambiguousCatalog.catalogDigest=Fabric.digest(ambiguousCatalog);const ambiguous=Fabric.planBuild(Fabric.sealRequest(implicitDraft,true),ambiguousCatalog);
   check(ambiguous.status==='HELD'&&ambiguous.holds[0].code==='RECIPE_SELECTION_REQUIRED','ambiguous family returns selection hold');
   const invalid=Fabric.clone(base);invalid.parameters.extra=true;delete invalid.requestDigest;invalid.requestDigest=Fabric.digest(invalid);const invalidPlan=Fabric.planBuild(invalid,catalog);
   check(invalidPlan.status==='HELD'&&invalidPlan.holds[0].code==='CONTRACT_HOLD','unknown parameter is refused by closed recipe contract');
+  const defaultedCatalog=Fabric.clone(catalog),defaultedRecipe=defaultedCatalog.recipes[0];defaultedRecipe.candidatePolicy.variants[0].parameterOverrides={defaultValue:'from-variant'};delete defaultedRecipe.recipeDigest;defaultedRecipe.recipeDigest=Fabric.digest(defaultedRecipe);delete defaultedCatalog.catalogDigest;defaultedCatalog.catalogDigest=Fabric.digest(defaultedCatalog);const defaultedDraft=Fabric.clone(recipe.exampleRequest);delete defaultedDraft.parameters.defaultValue;const defaultedRequest=Fabric.sealRequest(defaultedDraft,true),defaultedPlan=Fabric.planBuild(defaultedRequest,defaultedCatalog);
+  check(defaultedPlan.status==='READY'&&Fabric.build(defaultedRequest,defaultedCatalog).status==='COMPLETE','default variant overrides are resolved before required-parameter validation');
+  const invalidVariantCatalog=Fabric.clone(catalog),invalidVariantRecipe=invalidVariantCatalog.recipes[0];invalidVariantRecipe.candidatePolicy.variants[0].parameterOverrides={undeclared:true};delete invalidVariantRecipe.recipeDigest;invalidVariantRecipe.recipeDigest=Fabric.digest(invalidVariantRecipe);delete invalidVariantCatalog.catalogDigest;invalidVariantCatalog.catalogDigest=Fabric.digest(invalidVariantCatalog);const invalidVariantPlan=Fabric.planBuild(base,invalidVariantCatalog);
+  check(invalidVariantPlan.status==='HELD'&&invalidVariantPlan.holds[0].code==='CATALOG_HOLD','invalid variant override becomes a typed catalog hold before compilation');
+  const forgedPlan=Fabric.clone(Fabric.planBuild(base,catalog));forgedPlan.requestDigest=unreviewed.requestDigest;resealPlan(forgedPlan);assert.throws(function(){Fabric.buildCandidate(unreviewed,catalog,forgedPlan);});passed+=1;
+  const weakenedPlan=Fabric.clone(Fabric.planBuild(base,catalog));weakenedPlan.candidateCount=0;resealPlan(weakenedPlan);assert.throws(function(){Fabric.buildCandidate(base,catalog,weakenedPlan);});passed+=1;
+  check(true,'exported candidate builder refuses forged or weakened READY plans');
 
-  const proposalRecipe=Fabric.clone(recipe);proposalRecipe.id='mirror-proposed-transform';const proposal={schema:Fabric.PROPOSAL_SCHEMA,sourceKind:'MIRROR',recipe:proposalRecipe,proposalDigest:Fabric.digest(proposalRecipe)},proposalResult=Fabric.importRecipeProposal(proposal);
+  const proposalRecipe=Fabric.clone(recipe);delete proposalRecipe.recipeDigest;proposalRecipe.schema=Fabric.PROPOSAL_RECIPE_SCHEMA;proposalRecipe.id='mirror-proposed-transform';proposalRecipe.activation='INACTIVE_PROPOSAL';proposalRecipe.exampleRequest.id='mirror-proposed-transform-example';proposalRecipe.exampleRequest.recipeId=proposalRecipe.id;const proposal={schema:Fabric.PROPOSAL_SCHEMA,sourceKind:'MIRROR',recipe:proposalRecipe,proposalDigest:Fabric.digest(proposalRecipe)},proposalResult=Fabric.importRecipeProposal(proposal);
   check(proposalResult.ok&&proposalResult.status==='INACTIVE_PROPOSAL'&&proposalResult.active===false,'Mirror recipe proposal remains inactive');
   check(proposalResult.providerCalled===false,'proposal inspection invokes no provider');
+  const activeClaim=Fabric.clone(proposal);activeClaim.recipe.activation=Fabric.ACTIVE_RECIPE;activeClaim.proposalDigest=Fabric.digest(activeClaim.recipe);const activeClaimResult=Fabric.importRecipeProposal(activeClaim);
+  check(!activeClaimResult.ok&&activeClaimResult.errors.some(function(row){return row.code==='PROPOSAL_ACTIVATION_REFUSED';}),'proposal inspection refuses an active-recipe claim');
+  const malformedProposal={schema:Fabric.PROPOSAL_SCHEMA,sourceKind:'AI',recipe:{},proposalDigest:Fabric.digest({})};
+  check(!Fabric.importRecipeProposal(malformedProposal).ok,'under-specified recipe proposal is refused without provider execution');
 
   const hand={schema:'axm.workshop-direction.hand-request/v1',handRequestId:'hand-proof',targetModuleId:'status-proof',title:'Build a status proof',reason:'No bounded callable hand exists.',desiredContract:'axm.direction-hand/status-proof/v1'},target={recipeId:'pure-json-transform',family:'code-module',parameters:Fabric.clone(recipe.exampleRequest.parameters),idSuffix:'capability'},adapted=Fabric.adaptHandRequest(hand,target);
   check(adapted.ok&&adapted.request.schema===Fabric.REQUEST_SCHEMA,'Workshop Direction hand request adapts to exact build request contract');
@@ -55,6 +74,16 @@ function main(){
 
   const tampered=Fabric.clone(packages['pure-json-transform']);tampered.files['capability.js']+='// drift\n';
   check(!Fabric.verifyCandidate(tampered).ok,'package byte tampering is detected');
+  const installedManifest=Fabric.clone(packages['pure-json-transform']),manifest=JSON.parse(installedManifest.files['manifest.json']);manifest.installed=true;installedManifest.files['manifest.json']=JSON.stringify(manifest,null,2)+'\n';resealCandidate(installedManifest);const manifestCheck=Fabric.verifyCandidate(installedManifest);
+  check(!manifestCheck.ok&&manifestCheck.errors.some(function(row){return row.code==='MANIFEST_AUTHORITY_DRIFT';}),'rehashing cannot hide an installed manifest authority conflict');
+  const writableContract=Fabric.clone(packages['pure-json-transform']),contract=JSON.parse(writableContract.files['module.contract.json']);contract.permissions=['filesystem'];writableContract.files['module.contract.json']=JSON.stringify(contract,null,2)+'\n';resealCandidate(writableContract);const contractCheck=Fabric.verifyCandidate(writableContract);
+  check(!contractCheck.ok&&contractCheck.errors.some(function(row){return row.code==='CONTRACT_AUTHORITY_DRIFT';}),'rehashing cannot hide a permission-bearing contract');
+  const weakenedEvidence=Fabric.clone(packages['pure-json-transform']),evidence=JSON.parse(weakenedEvidence.files['evidence-route.json']);evidence.notProven=[];weakenedEvidence.files['evidence-route.json']=JSON.stringify(evidence,null,2)+'\n';resealCandidate(weakenedEvidence);const evidenceCheck=Fabric.verifyCandidate(weakenedEvidence);
+  check(!evidenceCheck.ok&&evidenceCheck.errors.some(function(row){return row.code==='EVIDENCE_BOUNDARY_DRIFT';}),'rehashing cannot erase required not-proven evidence boundaries');
+  const promotedDescriptor=Fabric.clone(packages['pure-json-transform']);promotedDescriptor.package.authority.promoted=true;const promotedBody=Fabric.clone(promotedDescriptor.package);delete promotedBody.packageDigest;promotedDescriptor.package.packageDigest=Fabric.digest(promotedBody);const promotedCheck=Fabric.verifyCandidate(promotedDescriptor);
+  check(!promotedCheck.ok&&promotedCheck.errors.some(function(row){return row.code==='DETACHED_AUTHORITY_CONFLICT';}),'rehashing cannot hide descriptor promotion authority');
+  const byteLie=Fabric.clone(packages['pure-json-transform']);byteLie.package.files[0].bytes+=1;const byteLieBody=Fabric.clone(byteLie.package);delete byteLieBody.packageDigest;byteLie.package.packageDigest=Fabric.digest(byteLieBody);
+  check(!Fabric.verifyCandidate(byteLie).ok,'rehashing cannot hide false file byte declarations');
   process.stdout.write('Capability Fabric shared selftest PASS · '+passed+' checks\n');
 }
 

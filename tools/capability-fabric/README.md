@@ -16,6 +16,8 @@ node tools/capability-fabric/cli.js build \
 The destination must not exist. Writes use new-file semantics, package bytes
 are read back and verified, and the detached Nursery must report
 `READY_FOR_LATER_INTAKE`. Generated `selftest.js` is not executed by the CLI.
+If writing, readback, or Nursery inspection fails, the CLI removes only the
+fresh candidate directory it created and preserves the explicit output parent.
 
 That Nursery label is structural only. Run the emitted test from an explicit
 trusted host entry point and obtain separate live visual evidence for creation

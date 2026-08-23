@@ -14,18 +14,30 @@ function isWithin(parent,child){const relative=path.relative(parent,child);retur
 function safeFilePath(parent,relative){if(typeof relative!=='string'||!relative||relative.includes('\0')||path.isAbsolute(relative)||relative.replace(/\\/g,'/').split('/').some(function(part){return !part||part==='.'||part==='..';}))fail('PACKAGE_PATH_UNSAFE','Package path is unsafe.',{path:relative});const target=path.resolve(parent,relative);if(!isWithin(path.resolve(parent),target))fail('PACKAGE_PATH_TRAVERSAL','Package path escapes candidate directory.',{path:relative});return target;}
 function readJson(file){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch(error){fail('JSON_INVALID','Could not parse JSON.',{path:file,error:error.message});}}
 function writeNew(file,content){fs.writeFileSync(file,content,{encoding:'utf8',flag:'wx'});}
+function rollbackFreshTarget(outputParent,target){
+  const parent=path.resolve(outputParent),resolved=path.resolve(target);
+  if(resolved===parent||!isWithin(parent,resolved))throw new Error('Rollback boundary refused.');
+  if(!fs.existsSync(resolved))return;
+  if(fs.lstatSync(resolved).isSymbolicLink())fs.unlinkSync(resolved);
+  else fs.rmSync(resolved,{recursive:true,force:true});
+}
 function materialize(candidate,outputParent){
   const check=Fabric.verifyCandidate(candidate);if(!check.ok)fail('PACKAGE_INVALID','Candidate failed verification before materialization.',check.errors);
-  const name=candidate.package.id+'-'+candidate.package.packageDigest.slice(7,19),target=path.resolve(outputParent,name);
-  if(!isWithin(outputParent,target)||target===path.resolve(outputParent))fail('OUTPUT_BOUNDARY_REFUSED','Candidate destination escaped the explicit parent.',{path:target});
+  const parent=fs.realpathSync(existingDirectory(outputParent,'Output parent')),name=candidate.package.id+'-'+candidate.package.packageDigest.slice(7,19),target=path.resolve(parent,name);let created=false;
+  if(!isWithin(parent,target)||target===parent)fail('OUTPUT_BOUNDARY_REFUSED','Candidate destination escaped the explicit parent.',{path:target});
   if(fs.existsSync(target))fail('OUTPUT_OVERWRITE_REFUSED','Candidate destination already exists.',{path:target});
-  fs.mkdirSync(target,{recursive:false});
-  Object.keys(candidate.files).sort().forEach(function(relative){const file=safeFilePath(target,relative);const parent=path.dirname(file);if(parent!==target&&!fs.existsSync(parent))fs.mkdirSync(parent,{recursive:true});writeNew(file,candidate.files[relative]);});
-  const readback={package:Fabric.clone(candidate.package),files:{}};Object.keys(candidate.files).sort().forEach(function(relative){readback.files[relative]=fs.readFileSync(safeFilePath(target,relative),'utf8');});
-  const readbackCheck=Fabric.verifyCandidate(readback);if(!readbackCheck.ok)fail('READBACK_VERIFICATION_FAILED','Materialized bytes failed package verification.',readbackCheck.errors);
-  const nursery=Nursery.scanSupply(outputParent),record=nursery.candidates.find(function(row){return row.folder===name;});
-  if(!record||record.status!=='READY_FOR_LATER_INTAKE')fail('NURSERY_HOLD','Materialized candidate did not reach structural later-intake readiness.',record||null);
-  return {directory:target,readback:readbackCheck,nursery:{status:record.status,structuralInspectionOnly:record.structuralInspectionOnly,codeExecuted:record.truth.codeExecuted}};
+  try{
+    fs.mkdirSync(target,{recursive:false});created=true;
+    Object.keys(candidate.files).sort().forEach(function(relative){const file=safeFilePath(target,relative),fileParent=path.dirname(file);if(fileParent!==target&&!fs.existsSync(fileParent))fs.mkdirSync(fileParent,{recursive:true});if(fileParent!==target&&fs.lstatSync(fileParent).isSymbolicLink())fail('SYMLINK_REFUSED','Candidate subdirectory cannot be a symbolic link.',{path:fileParent});writeNew(file,candidate.files[relative]);});
+    const readback={package:Fabric.clone(candidate.package),files:{}};Object.keys(candidate.files).sort().forEach(function(relative){readback.files[relative]=fs.readFileSync(safeFilePath(target,relative),'utf8');});
+    const readbackCheck=Fabric.verifyCandidate(readback);if(!readbackCheck.ok)fail('READBACK_VERIFICATION_FAILED','Materialized bytes failed package verification.',readbackCheck.errors);
+    const nursery=Nursery.scanSupply(parent),record=nursery.candidates.find(function(row){return row.folder===name;});
+    if(!record||record.status!=='READY_FOR_LATER_INTAKE')fail('NURSERY_HOLD','Materialized candidate did not reach structural later-intake readiness.',record||null);
+    return {directory:target,readback:readbackCheck,nursery:{status:record.status,structuralInspectionOnly:record.structuralInspectionOnly,codeExecuted:record.truth.codeExecuted}};
+  }catch(error){
+    if(created){try{rollbackFreshTarget(parent,target);}catch(cleanupError){fail('MATERIALIZATION_CLEANUP_FAILED','Candidate materialization failed and its fresh destination could not be removed.',{cause:error.receipt||error.message,cleanup:cleanupError.message});}}
+    throw error;
+  }
 }
 function requestFrom(args){return readJson(existingFile(args.request,'Request'));}
 function main(argv){
@@ -44,4 +56,4 @@ function main(argv){
 }
 
 if(require.main===module){try{main(process.argv.slice(2));}catch(error){console.error(JSON.stringify(error.receipt||{schema:'axm.capability-cli-error/v1',ok:false,code:'UNEXPECTED_ERROR',message:error.message},null,2));process.exitCode=1;}}
-module.exports={main:main,parseArgs:parseArgs,materialize:materialize,safeFilePath:safeFilePath,isWithin:isWithin};
+module.exports={main:main,parseArgs:parseArgs,materialize:materialize,safeFilePath:safeFilePath,isWithin:isWithin,rollbackFreshTarget:rollbackFreshTarget};

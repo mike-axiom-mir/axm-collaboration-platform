@@ -53,6 +53,9 @@ function main(){
 
     const request=Fabric.sealRequest(catalog.recipes[0].exampleRequest,true),candidate=Fabric.build(request,catalog).candidates[0],tampered=Fabric.clone(candidate);tampered.files['module-bundle.json']=tampered.files['module-bundle.json'].replace('pure-json-transform','changed-transform');
     check(!Fabric.verifyCandidate(tampered).ok,'bundle tampering fails package verification');
+    const rollbackParent=path.join(root,'rollback-proof');fs.mkdirSync(rollbackParent);const originalScan=Nursery.scanSupply;let rollbackError=null;
+    try{Nursery.scanSupply=function(){return {candidates:[]};};Cli.materialize(candidate,rollbackParent);}catch(error){rollbackError=error;}finally{Nursery.scanSupply=originalScan;}
+    check(rollbackError&&rollbackError.receipt&&rollbackError.receipt.code==='NURSERY_HOLD'&&fs.readdirSync(rollbackParent).length===0,'failed Nursery intake rolls back only the fresh candidate directory');
     check(Cli.safeFilePath(root,'safe.json')===path.join(root,'safe.json'),'CLI accepts safe child paths');
     assert.throws(function(){Cli.safeFilePath(root,'../escape.json');});passed+=1;process.stdout.write('PASS CLI refuses traversal paths\n');
     process.stdout.write('Capability Fabric package test PASS · '+passed+' checks\n');

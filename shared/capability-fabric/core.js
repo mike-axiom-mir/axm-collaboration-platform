@@ -12,7 +12,7 @@
     throw new Error('AXM deterministic organ kernel is required');
   }
 
-  const FABRIC_VERSION = '1.0.0';
+  const FABRIC_VERSION = '1.1.0';
   const REQUEST_SCHEMA = 'axm.capability-fabric.build-request/v1';
   const RECIPE_SCHEMA = 'axm.capability-recipe/v1';
   const CATALOG_SCHEMA = 'axm.capability-recipe-catalog/v1';
@@ -20,8 +20,10 @@
   const PACKAGE_SCHEMA = 'axm.capability-candidate-package/v1';
   const RUN_SCHEMA = 'axm.capability-build-receipt/v1';
   const PROPOSAL_SCHEMA = 'axm.capability-recipe-proposal/v1';
+  const PROPOSAL_RECIPE_SCHEMA = 'axm.capability-recipe-draft/v1';
   const ACTIVE_RECIPE = 'ACTIVE_SOURCE_REVIEWED';
   const MAX_PARAMETER_BYTES = 32768;
+  const MAX_PROPOSAL_BYTES = 131072;
   const MAX_PACKAGE_FILES = 32;
   const MAX_PACKAGE_BYTES = 1048576;
   const ALLOWED_BUILDERS = Object.freeze(['pure-json-transform-v1', 'svg-status-badge-v1', 'workshop-direction-adapter-v1']);
@@ -55,14 +57,42 @@
   }
   function safeId(value) { return /^[a-z][a-z0-9-]{2,79}$/.test(String(value||'')); }
   function safeField(value) { return /^[a-z][a-zA-Z0-9]{0,63}$/.test(String(value||'')); }
+  function safeVersion(value) { return /^[0-9]+\.[0-9]+\.[0-9]+$/.test(String(value||'')); }
+  function safeDigest(value) { return /^sha256:[a-f0-9]{64}$/.test(String(value||'')); }
+  function safePackagePath(value) { return typeof value==='string'&&value.length>0&&value.length<=240&&!value.includes('\0')&&!/^(?:[A-Za-z]:|[\\/])/.test(value)&&value.replace(/\\/g,'/').split('/').every(function(part){return part&&part!=='.'&&part!=='..';}); }
   function escapeHtml(value) { return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function mergeParameters(base, overrides) {
+    const result=Object.create(null);
+    Object.keys(base||{}).sort().forEach(function(key){result[key]=clone(base[key]);});
+    Object.keys(overrides||{}).sort().forEach(function(key){result[key]=clone(overrides[key]);});
+    return clone(result);
+  }
+  function validateStringList(value,path,errors,code) {
+    if(!Array.isArray(value)||!value.length){errors.push(issue(code,path,'Expected a non-empty string array.'));return;}
+    const seen=new Set();
+    value.forEach(function(row,index){const at=path+'['+index+']';if(typeof row!=='string'||!row.trim()||row.length>500){errors.push(issue(code,at,'Expected 1 to 500 characters.'));return;}if(seen.has(row))errors.push(issue(code,at,'Duplicate entries are refused.'));seen.add(row);});
+  }
+  function falseAuthority(value,path,errors) {
+    if(!allowedKeys(value,Object.keys(AUTHORITY),path,errors))return;
+    requireKeys(value,Object.keys(AUTHORITY),path,errors);
+    Object.keys(AUTHORITY).forEach(function(key){if(value[key]!==false)errors.push(issue('DETACHED_AUTHORITY_CONFLICT',path+'.'+key,'Detached authority must be false.'));});
+  }
 
   function validateRule(rule, path, errors) {
     if(!allowedKeys(rule,['type','required','enum','pattern','minimum','maximum','maxLength','maxBytes','description'],path,errors))return;
     requireKeys(rule,['type','required','description'],path,errors);
     if(['string','integer','number','boolean','object','array'].indexOf(rule.type)<0)errors.push(issue('PARAMETER_TYPE_UNSUPPORTED',path+'.type','Unsupported parameter type.'));
-    if(rule.enum&&(!Array.isArray(rule.enum)||!rule.enum.length))errors.push(issue('PARAMETER_ENUM_INVALID',path+'.enum','Enum must be a non-empty array.'));
-    if(rule.pattern){try{new RegExp(rule.pattern);}catch(error){errors.push(issue('PARAMETER_PATTERN_INVALID',path+'.pattern',error.message));}}
+    if(typeof rule.required!=='boolean')errors.push(issue('PARAMETER_REQUIRED_FLAG_INVALID',path+'.required','required must be boolean.'));
+    if(typeof rule.description!=='string'||!rule.description.trim()||rule.description.length>500)errors.push(issue('PARAMETER_DESCRIPTION_INVALID',path+'.description','Description must contain 1 to 500 characters.'));
+    if(own(rule,'enum')){
+      if(!Array.isArray(rule.enum)||!rule.enum.length)errors.push(issue('PARAMETER_ENUM_INVALID',path+'.enum','Enum must be a non-empty array.'));
+      else {const seen=new Set();rule.enum.forEach(function(value,index){if(!typeMatches(value,rule.type))errors.push(issue('PARAMETER_ENUM_TYPE_MISMATCH',path+'.enum['+index+']','Enum value must match the rule type.'));const key=canonicalJson(value);if(seen.has(key))errors.push(issue('PARAMETER_ENUM_DUPLICATE',path+'.enum['+index+']','Enum values must be unique.'));seen.add(key);});}
+    }
+    if(own(rule,'pattern')){if(rule.type!=='string'||typeof rule.pattern!=='string')errors.push(issue('PARAMETER_PATTERN_INVALID',path+'.pattern','Pattern is allowed only as a string constraint.'));else try{new RegExp(rule.pattern);}catch(error){errors.push(issue('PARAMETER_PATTERN_INVALID',path+'.pattern',error.message));}}
+    ['minimum','maximum'].forEach(function(key){if(own(rule,key)&&(['integer','number'].indexOf(rule.type)<0||typeof rule[key]!=='number'||!Number.isFinite(rule[key])))errors.push(issue('PARAMETER_RANGE_INVALID',path+'.'+key,'Numeric bounds require a finite number rule.'));});
+    if(own(rule,'minimum')&&own(rule,'maximum')&&rule.minimum>rule.maximum)errors.push(issue('PARAMETER_RANGE_INVALID',path,'minimum cannot exceed maximum.'));
+    if(own(rule,'maxLength')&&(rule.type!=='string'||!Number.isInteger(rule.maxLength)||rule.maxLength<1))errors.push(issue('PARAMETER_LENGTH_RULE_INVALID',path+'.maxLength','maxLength requires a positive integer string rule.'));
+    if(own(rule,'maxBytes')&&(!Number.isInteger(rule.maxBytes)||rule.maxBytes<1||rule.maxBytes>MAX_PARAMETER_BYTES))errors.push(issue('PARAMETER_BYTE_RULE_INVALID',path+'.maxBytes','maxBytes must be a positive integer within the parameter ceiling.'));
   }
 
   function validateRecipe(recipe) {
@@ -72,19 +102,37 @@
     requireKeys(recipe,keys,'$',errors);
     if(recipe.schema!==RECIPE_SCHEMA)errors.push(issue('SCHEMA_MISMATCH','$.schema','Expected '+RECIPE_SCHEMA+'.'));
     if(!safeId(recipe.id))errors.push(issue('RECIPE_ID_INVALID','$.id','Recipe id must be lowercase and hyphenated.'));
+    if(!safeVersion(recipe.version))errors.push(issue('RECIPE_VERSION_INVALID','$.version','Recipe version must be numeric semantic version text.'));
+    if(typeof recipe.title!=='string'||!recipe.title.trim()||recipe.title.length>120)errors.push(issue('RECIPE_TITLE_INVALID','$.title','Title must contain 1 to 120 characters.'));
+    if(typeof recipe.summary!=='string'||!recipe.summary.trim()||recipe.summary.length>500)errors.push(issue('RECIPE_SUMMARY_INVALID','$.summary','Summary must contain 1 to 500 characters.'));
+    if(!safeId(recipe.family))errors.push(issue('RECIPE_FAMILY_INVALID','$.family','Family must be lowercase and hyphenated.'));
     if(ALLOWED_BUILDERS.indexOf(recipe.builderId)<0)errors.push(issue('BUILDER_UNKNOWN','$.builderId','Builder is not compiled into this Fabric.'));
     if(recipe.activation!==ACTIVE_RECIPE)errors.push(issue('RECIPE_INACTIVE','$.activation','Only source-reviewed recipes in the exact catalog are active.'));
+    if(allowedKeys(recipe.reviewPolicy,['activation','sharedUseRequires','canonAuthority'],'$.reviewPolicy',errors)){
+      requireKeys(recipe.reviewPolicy,['activation','sharedUseRequires','canonAuthority'],'$.reviewPolicy',errors);
+      if(recipe.reviewPolicy.activation!=='source-review-and-merge'||recipe.reviewPolicy.sharedUseRequires!=='MIKE_TOBI_MERGE'||recipe.reviewPolicy.canonAuthority!=='NONE')errors.push(issue('REVIEW_POLICY_INVALID','$.reviewPolicy','Recipe review policy cannot grant activation or CANON authority.'));
+    }
     if(!isPlain(recipe.parameterSpec))errors.push(issue('PARAMETER_SPEC_INVALID','$.parameterSpec','Parameter specification must be an object.'));
     else Object.keys(recipe.parameterSpec).sort().forEach(function(key){if(!safeField(key))errors.push(issue('PARAMETER_NAME_INVALID','$.parameterSpec.'+key,'Use lower camel case.'));validateRule(recipe.parameterSpec[key],'$.parameterSpec.'+key,errors);});
-    if(!isPlain(recipe.candidatePolicy)||recipe.candidatePolicy.defaultCount!==1||!Array.isArray(recipe.candidatePolicy.variants)||!recipe.candidatePolicy.variants.length)errors.push(issue('CANDIDATE_POLICY_INVALID','$.candidatePolicy','v1 recipes must default to one candidate and declare at least one variant.'));
+    if(!isPlain(recipe.candidatePolicy)||!allowedKeys(recipe.candidatePolicy,['defaultCount','defaultVariantId','variants'],'$.candidatePolicy',errors)||recipe.candidatePolicy.defaultCount!==1||!safeId(recipe.candidatePolicy.defaultVariantId)||!Array.isArray(recipe.candidatePolicy.variants)||!recipe.candidatePolicy.variants.length)errors.push(issue('CANDIDATE_POLICY_INVALID','$.candidatePolicy','v1 recipes must name one default variant and build one candidate.'));
     else {
       const ids=new Set();
-      recipe.candidatePolicy.variants.forEach(function(row,index){const at='$.candidatePolicy.variants['+index+']';if(!allowedKeys(row,['id','title','parameterOverrides'],at,errors))return;requireKeys(row,['id','title','parameterOverrides'],at,errors);if(!safeId(row.id)||ids.has(row.id))errors.push(issue('VARIANT_ID_INVALID',at+'.id','Variant id must be unique and lowercase.'));ids.add(row.id);if(!isPlain(row.parameterOverrides))errors.push(issue('VARIANT_OVERRIDES_INVALID',at+'.parameterOverrides','Overrides must be an object.'));});
+      recipe.candidatePolicy.variants.forEach(function(row,index){const at='$.candidatePolicy.variants['+index+']';if(!allowedKeys(row,['id','title','parameterOverrides'],at,errors))return;requireKeys(row,['id','title','parameterOverrides'],at,errors);if(!safeId(row.id)||ids.has(row.id))errors.push(issue('VARIANT_ID_INVALID',at+'.id','Variant id must be unique and lowercase.'));ids.add(row.id);if(typeof row.title!=='string'||!row.title.trim()||row.title.length>120)errors.push(issue('VARIANT_TITLE_INVALID',at+'.title','Variant title must contain 1 to 120 characters.'));if(!isPlain(row.parameterOverrides))errors.push(issue('VARIANT_OVERRIDES_INVALID',at+'.parameterOverrides','Overrides must be an object.'));else validateParameters(row.parameterOverrides,recipe,{requireRequired:false}).errors.forEach(function(error){errors.push(issue(error.code,at+'.parameterOverrides'+error.path.slice('$.parameters'.length),error.message,error.details));});});
+      if(!ids.has(recipe.candidatePolicy.defaultVariantId))errors.push(issue('DEFAULT_VARIANT_MISSING','$.candidatePolicy.defaultVariantId','Default variant id must name one declared variant.'));
     }
-    if(!Array.isArray(recipe.boundaries)||!recipe.boundaries.length)errors.push(issue('BOUNDARIES_REQUIRED','$.boundaries','Recipe needs explicit boundaries.'));
-    if(!Array.isArray(recipe.verifiers)||!recipe.verifiers.length)errors.push(issue('VERIFIERS_REQUIRED','$.verifiers','Recipe needs external verifier routes.'));
+    validateStringList(recipe.boundaries,'$.boundaries',errors,'BOUNDARIES_REQUIRED');
+    validateStringList(recipe.verifiers,'$.verifiers',errors,'VERIFIERS_REQUIRED');
+    if(isPlain(recipe.exampleRequest)){
+      const draftKeys=['id','family','purpose','recipeId','variantId','parameters','source'];
+      allowedKeys(recipe.exampleRequest,draftKeys,'$.exampleRequest',errors);requireKeys(recipe.exampleRequest,draftKeys,'$.exampleRequest',errors);
+      if(recipe.exampleRequest.recipeId!==recipe.id||recipe.exampleRequest.family!==recipe.family)errors.push(issue('EXAMPLE_RECIPE_MISMATCH','$.exampleRequest','Example request must explicitly target this recipe and family.'));
+      const sealed=sealRequest(recipe.exampleRequest,true),requestCheck=validateRequest(sealed);
+      requestCheck.errors.forEach(function(error){errors.push(issue(error.code,'$.exampleRequest'+error.path.slice(1),error.message,error.details));});
+      const defaultVariant=isPlain(recipe.candidatePolicy)&&Array.isArray(recipe.candidatePolicy.variants)?recipe.candidatePolicy.variants.find(function(row){return row&&row.id===recipe.candidatePolicy.defaultVariantId;}):null;
+      if(defaultVariant&&isPlain(defaultVariant.parameterOverrides))validateParameters(mergeParameters(sealed.parameters,defaultVariant.parameterOverrides),recipe).errors.forEach(function(error){errors.push(issue(error.code,'$.exampleRequest'+error.path.slice(1),error.message,error.details));});
+    } else errors.push(issue('EXAMPLE_REQUEST_INVALID','$.exampleRequest','Recipe requires a closed example request object.'));
     const expected=digest(withoutKey(recipe,'recipeDigest'));
-    if(recipe.recipeDigest!==expected)errors.push(issue('RECIPE_DIGEST_MISMATCH','$.recipeDigest','Recipe digest does not match canonical content.',{expected:expected,actual:recipe.recipeDigest}));
+    if(!safeDigest(recipe.recipeDigest)||recipe.recipeDigest!==expected)errors.push(issue('RECIPE_DIGEST_MISMATCH','$.recipeDigest','Recipe digest does not match canonical content.',{expected:expected,actual:recipe.recipeDigest}));
     return {ok:errors.length===0,errors:errors};
   }
 
@@ -95,13 +143,13 @@
     if(catalog.schema!==CATALOG_SCHEMA)errors.push(issue('SCHEMA_MISMATCH','$.schema','Expected '+CATALOG_SCHEMA+'.'));
     if(catalog.status!=='EXPERIMENTAL')errors.push(issue('CATALOG_STATUS_INVALID','$.status','The v1 catalog remains EXPERIMENTAL.'));
     if(catalog.activationPolicy!=='SOURCE_REVIEW_AND_MIKE_MERGE')errors.push(issue('ACTIVATION_POLICY_INVALID','$.activationPolicy','Active shared recipes require source review and Mike merge.'));
-    if(!Array.isArray(catalog.recipes)||!catalog.recipes.length)errors.push(issue('RECIPES_REQUIRED','$.recipes','Catalog requires at least one recipe.'));
+    if(!Array.isArray(catalog.recipes)||!catalog.recipes.length||catalog.recipes.length>128)errors.push(issue('RECIPES_REQUIRED','$.recipes','Catalog requires 1 to 128 recipes.'));
     else {
       const ids=new Set();
       catalog.recipes.forEach(function(recipe,index){if(ids.has(recipe&&recipe.id))errors.push(issue('RECIPE_ID_DUPLICATE','$.recipes['+index+'].id','Recipe ids must be unique.'));ids.add(recipe&&recipe.id);validateRecipe(recipe).errors.forEach(function(row){errors.push(issue(row.code,'$.recipes['+index+']'+row.path.slice(1),row.message,row.details));});});
     }
     const expected=digest(withoutKey(catalog,'catalogDigest'));
-    if(catalog.catalogDigest!==expected)errors.push(issue('CATALOG_DIGEST_MISMATCH','$.catalogDigest','Catalog digest does not match canonical content.',{expected:expected,actual:catalog.catalogDigest}));
+    if(!safeDigest(catalog.catalogDigest)||catalog.catalogDigest!==expected)errors.push(issue('CATALOG_DIGEST_MISMATCH','$.catalogDigest','Catalog digest does not match canonical content.',{expected:expected,actual:catalog.catalogDigest}));
     return {ok:errors.length===0,errors:errors};
   }
 
@@ -140,18 +188,19 @@
     if(!isPlain(request.parameters))errors.push(issue('PARAMETERS_INVALID','$.parameters','Parameters must be an object.'));
     else if(utf8Length(request.parameters)>MAX_PARAMETER_BYTES)errors.push(issue('PARAMETER_BYTES_EXCEEDED','$.parameters','Parameters exceed the 32 KiB ceiling.'));
     if(!allowedKeys(request.source,['kind','ref'],'$.source',errors))errors.push(issue('SOURCE_INVALID','$.source','Source must be a closed object.'));
-    else if(['HUMAN','WORKSHOP_DIRECTION','EXTERNAL','MIRROR','CODE_FABRIC'].indexOf(request.source.kind)<0)errors.push(issue('SOURCE_KIND_INVALID','$.source.kind','Unsupported source kind.'));
+    else {requireKeys(request.source,['kind','ref'],'$.source',errors);if(['HUMAN','WORKSHOP_DIRECTION','EXTERNAL','MIRROR','CODE_FABRIC'].indexOf(request.source.kind)<0)errors.push(issue('SOURCE_KIND_INVALID','$.source.kind','Unsupported source kind.'));if(request.source.ref!==null&&(typeof request.source.ref!=='string'||request.source.ref.length>500))errors.push(issue('SOURCE_REF_INVALID','$.source.ref','Source ref must be null or at most 500 characters.'));}
     if(request.status!=='EXPERIMENTAL'||request.authority!=='NONE')errors.push(issue('AUTHORITY_CEILING','$','Build requests remain EXPERIMENTAL with authority NONE.'));
     if(typeof request.humanReviewed!=='boolean')errors.push(issue('HUMAN_REVIEW_FLAG_INVALID','$.humanReviewed','humanReviewed must be boolean.'));
     const expected=digest(withoutKey(request,'requestDigest'));
-    if(request.requestDigest!==expected)errors.push(issue('REQUEST_DIGEST_MISMATCH','$.requestDigest','Request digest does not match canonical content.',{expected:expected,actual:request.requestDigest}));
+    if(!safeDigest(request.requestDigest)||request.requestDigest!==expected)errors.push(issue('REQUEST_DIGEST_MISMATCH','$.requestDigest','Request digest does not match canonical content.',{expected:expected,actual:request.requestDigest}));
     return {ok:errors.length===0,errors:errors};
   }
 
-  function validateParameters(parameters, recipe) {
-    const errors=[],spec=recipe.parameterSpec||{};
+  function validateParameters(parameters, recipe, options) {
+    const errors=[],spec=recipe.parameterSpec||{},requireRequired=!options||options.requireRequired!==false;
+    if(!isPlain(parameters))return {ok:false,errors:[issue('PARAMETERS_INVALID','$.parameters','Parameters must be an object.')]};
     Object.keys(parameters||{}).forEach(function(key){if(!own(spec,key))errors.push(issue('UNKNOWN_PARAMETER','$.parameters.'+key,'Recipe does not declare this parameter.'));});
-    Object.keys(spec).sort().forEach(function(key){const rule=spec[key],present=own(parameters,key),value=parameters[key],at='$.parameters.'+key;if(rule.required&&!present){errors.push(issue('PARAMETER_REQUIRED',at,'Required recipe parameter is missing.'));return;}if(!present)return;if(!typeMatches(value,rule.type)){errors.push(issue('PARAMETER_TYPE_MISMATCH',at,'Expected '+rule.type+'.'));return;}if(rule.enum&&rule.enum.indexOf(value)<0)errors.push(issue('PARAMETER_ENUM_MISMATCH',at,'Value is outside the declared enum.'));if(rule.pattern&&typeof value==='string'&&!new RegExp(rule.pattern).test(value))errors.push(issue('PARAMETER_PATTERN_MISMATCH',at,'Value does not match the declared pattern.'));if(rule.maxLength!==undefined&&typeof value==='string'&&value.length>rule.maxLength)errors.push(issue('PARAMETER_LENGTH_EXCEEDED',at,'String exceeds the declared length.'));if(rule.minimum!==undefined&&Number(value)<Number(rule.minimum))errors.push(issue('PARAMETER_MINIMUM',at,'Value is below the declared minimum.'));if(rule.maximum!==undefined&&Number(value)>Number(rule.maximum))errors.push(issue('PARAMETER_MAXIMUM',at,'Value is above the declared maximum.'));if(rule.maxBytes!==undefined&&utf8Length(value)>rule.maxBytes)errors.push(issue('PARAMETER_BYTES_EXCEEDED',at,'Value exceeds the declared byte ceiling.'));});
+    Object.keys(spec).sort().forEach(function(key){const rule=spec[key],present=own(parameters,key),value=parameters[key],at='$.parameters.'+key;if(requireRequired&&rule.required&&!present){errors.push(issue('PARAMETER_REQUIRED',at,'Required recipe parameter is missing.'));return;}if(!present)return;if(!typeMatches(value,rule.type)){errors.push(issue('PARAMETER_TYPE_MISMATCH',at,'Expected '+rule.type+'.'));return;}if(rule.enum&&rule.enum.indexOf(value)<0)errors.push(issue('PARAMETER_ENUM_MISMATCH',at,'Value is outside the declared enum.'));if(rule.pattern&&typeof value==='string'&&!new RegExp(rule.pattern).test(value))errors.push(issue('PARAMETER_PATTERN_MISMATCH',at,'Value does not match the declared pattern.'));if(rule.maxLength!==undefined&&typeof value==='string'&&value.length>rule.maxLength)errors.push(issue('PARAMETER_LENGTH_EXCEEDED',at,'String exceeds the declared length.'));if(rule.minimum!==undefined&&Number(value)<Number(rule.minimum))errors.push(issue('PARAMETER_MINIMUM',at,'Value is below the declared minimum.'));if(rule.maximum!==undefined&&Number(value)>Number(rule.maximum))errors.push(issue('PARAMETER_MAXIMUM',at,'Value is above the declared maximum.'));if(rule.maxBytes!==undefined&&utf8Length(value)>rule.maxBytes)errors.push(issue('PARAMETER_BYTES_EXCEEDED',at,'Value exceeds the declared byte ceiling.'));});
     return {ok:errors.length===0,errors:errors};
   }
 
@@ -175,11 +224,11 @@
       }
     }
     if(recipe&&!holds.length){
-      const parameterCheck=validateParameters(request.parameters,recipe);if(!parameterCheck.ok)holds.push(hold('CONTRACT_HOLD','Recipe parameters failed validation.',parameterCheck.errors));
       const variants=recipe.candidatePolicy.variants;
       if(request.variantId)variant=variants.find(function(row){return row.id===request.variantId;})||null;
-      else variant=variants[0];
+      else variant=variants.find(function(row){return row.id===recipe.candidatePolicy.defaultVariantId;})||null;
       if(!variant)holds.push(hold('MISSING_VARIANT','Requested recipe variant is unavailable.',{variantId:request.variantId}));
+      else {const parameterCheck=validateParameters(mergeParameters(request.parameters,variant.parameterOverrides),recipe);if(!parameterCheck.ok)holds.push(hold('CONTRACT_HOLD','Resolved recipe parameters failed validation.',parameterCheck.errors));}
     }
     const plan={schema:PLAN_SCHEMA,fabricVersion:FABRIC_VERSION,status:holds.length?'HELD':'READY',requestDigest:request&&request.requestDigest||null,catalogDigest:catalog&&catalog.catalogDigest||null,recipeRef:recipe?{id:recipe.id,version:recipe.version,digest:recipe.recipeDigest,builderId:recipe.builderId}:null,variantId:variant&&variant.id||null,candidateCount:holds.length?0:1,holds:holds,generatedCodeExecuted:false,authority:clone(AUTHORITY),planDigest:''};
     plan.planDigest=digest(withoutKey(plan,'planDigest'));
@@ -211,13 +260,14 @@
   }
 
   function buildCandidate(request, catalog, plan) {
-    if(!plan||plan.status!=='READY')throw new Error('READY build plan required.');
-    if(plan.requestDigest!==request.requestDigest||plan.catalogDigest!==catalog.catalogDigest)throw new Error('Build plan lineage drift.');
+    const expectedPlan=planBuild(request,catalog);
+    if(expectedPlan.status!=='READY'||!plan||plan.status!=='READY')throw new Error('READY build plan required.');
+    if(canonicalJson(plan)!==canonicalJson(expectedPlan))throw new Error('Build plan lineage drift.');
     const recipe=catalog.recipes.find(function(row){return row.id===plan.recipeRef.id&&row.recipeDigest===plan.recipeRef.digest;});
     if(!recipe)throw new Error('Exact planned recipe unavailable.');
     const variant=recipe.candidatePolicy.variants.find(function(row){return row.id===plan.variantId;});
     if(!variant)throw new Error('Exact planned variant unavailable.');
-    const parameters=Object.assign({},clone(request.parameters),clone(variant.parameterOverrides));
+    const parameters=mergeParameters(request.parameters,variant.parameterOverrides);
     const parameterCheck=validateParameters(parameters,recipe);if(!parameterCheck.ok)throw new Error('Variant parameters failed validation.');
     const artifact=compileArtifact(recipe,parameters),moduleId=request.id+(variant.id==='standard'?'':'-'+variant.id),version='v0.1';
     const manifest={schema:'axm.module-manifest/v1',id:moduleId,name:recipe.title+' — '+request.id,version:version,status:'EXPERIMENTAL',entry:'index.html',contract:'module.contract.json',uses:[],installed:false,promoted:false};
@@ -251,24 +301,73 @@
 
   function verifyCandidate(candidate) {
     const errors=[];
-    if(!candidate||!candidate.package||!candidate.files)return {ok:false,errors:[issue('PACKAGE_SHAPE_INVALID','$','Expected package and files.')]};
-    const paths=Object.keys(candidate.files).sort(),declared=(candidate.package.files||[]).map(function(row){return row.path;});
-    if(canonicalJson(paths)!==canonicalJson(declared))errors.push(issue('PACKAGE_FILE_SET_MISMATCH','$.files','Declared and actual file sets differ.'));
-    (candidate.package.files||[]).forEach(function(row){if(!own(candidate.files,row.path))return;const actual=digest(candidate.files[row.path]);if(actual!==row.digest)errors.push(issue('PACKAGE_FILE_TAMPERED','$.files.'+row.path,'File digest mismatch.',{expected:row.digest,actual:actual}));});
-    const expected=digest(withoutKey(candidate.package,'packageDigest'));if(expected!==candidate.package.packageDigest)errors.push(issue('PACKAGE_DIGEST_MISMATCH','$.package.packageDigest','Package digest mismatch.'));
+    if(!isPlain(candidate)||!isPlain(candidate.package)||!isPlain(candidate.files))return {ok:false,errors:[issue('PACKAGE_SHAPE_INVALID','$','Expected package and plain file-map objects.')]};
+    allowedKeys(candidate,['package','files','compilation'],'$',errors);
+    const descriptor=candidate.package,descriptorKeys=['schema','id','version','status','requestDigest','catalogDigest','recipeRef','variantId','compilationDigest','files','totalBytes','authority','packageDigest'];
+    if(allowedKeys(descriptor,descriptorKeys,'$.package',errors))requireKeys(descriptor,descriptorKeys,'$.package',errors);
+    if(descriptor.schema!==PACKAGE_SCHEMA)errors.push(issue('PACKAGE_SCHEMA_MISMATCH','$.package.schema','Expected '+PACKAGE_SCHEMA+'.'));
+    if(!safeId(descriptor.id))errors.push(issue('PACKAGE_ID_INVALID','$.package.id','Package id must be lowercase and hyphenated.'));
+    if(descriptor.version!=='v0.1'||descriptor.status!=='EXPERIMENTAL')errors.push(issue('PACKAGE_STATUS_INVALID','$.package','Capability candidates remain v0.1 and EXPERIMENTAL.'));
+    ['requestDigest','catalogDigest','compilationDigest','packageDigest'].forEach(function(key){if(!safeDigest(descriptor[key]))errors.push(issue('PACKAGE_DIGEST_FORMAT_INVALID','$.package.'+key,'Expected sha256 digest text.'));});
+    if(allowedKeys(descriptor.recipeRef,['id','version','digest','builderId'],'$.package.recipeRef',errors)){
+      requireKeys(descriptor.recipeRef,['id','version','digest','builderId'],'$.package.recipeRef',errors);
+      if(!safeId(descriptor.recipeRef.id)||!safeVersion(descriptor.recipeRef.version)||!safeDigest(descriptor.recipeRef.digest)||ALLOWED_BUILDERS.indexOf(descriptor.recipeRef.builderId)<0)errors.push(issue('PACKAGE_RECIPE_REF_INVALID','$.package.recipeRef','Recipe reference is malformed or names an unavailable builder.'));
+    }
+    if(!safeId(descriptor.variantId))errors.push(issue('PACKAGE_VARIANT_INVALID','$.package.variantId','Variant id must be lowercase and hyphenated.'));
+    falseAuthority(descriptor.authority,'$.package.authority',errors);
+
+    const paths=Object.keys(candidate.files).sort(),declared=[],seen=new Set();let declaredBytes=0;
+    if(!Array.isArray(descriptor.files)||!descriptor.files.length||descriptor.files.length>MAX_PACKAGE_FILES)errors.push(issue('PACKAGE_FILES_INVALID','$.package.files','Package must declare 1 to '+MAX_PACKAGE_FILES+' files.'));
+    else descriptor.files.forEach(function(row,index){
+      const at='$.package.files['+index+']';
+      if(!allowedKeys(row,['path','bytes','digest'],at,errors))return;
+      requireKeys(row,['path','bytes','digest'],at,errors);declared.push(row.path);
+      if(!safePackagePath(row.path)||seen.has(row.path))errors.push(issue('PACKAGE_PATH_UNSAFE',at+'.path','File path must be unique, relative, and traversal-free.'));seen.add(row.path);
+      if(!Number.isInteger(row.bytes)||row.bytes<0)errors.push(issue('PACKAGE_FILE_BYTES_INVALID',at+'.bytes','Declared bytes must be a non-negative integer.'));
+      if(!safeDigest(row.digest))errors.push(issue('PACKAGE_FILE_DIGEST_INVALID',at+'.digest','Declared file digest is malformed.'));
+      if(!own(candidate.files,row.path)){errors.push(issue('PACKAGE_FILE_MISSING','$.files.'+row.path,'Declared file is missing.'));return;}
+      const content=candidate.files[row.path];
+      if(typeof content!=='string'){errors.push(issue('PACKAGE_FILE_CONTENT_INVALID','$.files.'+row.path,'Candidate file content must be UTF-8 text.'));return;}
+      const actualBytes=utf8Length(content),actualDigest=digest(content);declaredBytes+=actualBytes;
+      if(row.bytes!==actualBytes)errors.push(issue('PACKAGE_FILE_BYTES_MISMATCH',at+'.bytes','Declared byte count differs from content.',{expected:actualBytes,actual:row.bytes}));
+      if(row.digest!==actualDigest)errors.push(issue('PACKAGE_FILE_TAMPERED','$.files.'+row.path,'File digest mismatch.',{expected:row.digest,actual:actualDigest}));
+    });
+    paths.forEach(function(path){if(!safePackagePath(path))errors.push(issue('PACKAGE_PATH_UNSAFE','$.files.'+path,'Actual file path is unsafe.'));if(typeof candidate.files[path]!=='string')errors.push(issue('PACKAGE_FILE_CONTENT_INVALID','$.files.'+path,'Candidate file content must be UTF-8 text.'));});
+    if(canonicalJson(paths)!==canonicalJson(declared))errors.push(issue('PACKAGE_FILE_SET_MISMATCH','$.files','Declared and actual file sets or order differ.'));
+    ['manifest.json','module.contract.json','index.html','README.md','capability.js','selftest.js','build-request.json','capability-recipe.json','compilation.receipt.json','evidence-route.json','candidate.receipt.json','module-bundle.json'].forEach(function(path){if(!own(candidate.files,path))errors.push(issue('PACKAGE_REQUIRED_FILE_MISSING','$.files.'+path,'Required v1 candidate file is missing.'));});
+    if(!Number.isInteger(descriptor.totalBytes)||descriptor.totalBytes!==declaredBytes||descriptor.totalBytes>MAX_PACKAGE_BYTES)errors.push(issue('PACKAGE_TOTAL_BYTES_MISMATCH','$.package.totalBytes','Total bytes must exactly match content within the package ceiling.',{expected:declaredBytes,actual:descriptor.totalBytes}));
+    const expected=digest(withoutKey(descriptor,'packageDigest'));if(expected!==descriptor.packageDigest)errors.push(issue('PACKAGE_DIGEST_MISMATCH','$.package.packageDigest','Package digest mismatch.'));
+
     try{
-      const request=JSON.parse(candidate.files['build-request.json']),recipe=JSON.parse(candidate.files['capability-recipe.json']),compilation=JSON.parse(candidate.files['compilation.receipt.json']),receipt=JSON.parse(candidate.files['candidate.receipt.json']);
-      if(validateRequest(request).ok!==true||request.requestDigest!==candidate.package.requestDigest)errors.push(issue('REQUEST_LINEAGE_DRIFT','$.files.build-request.json','Embedded request is invalid or unbound.'));
-      if(validateRecipe(recipe).ok!==true||recipe.recipeDigest!==candidate.package.recipeRef.digest)errors.push(issue('RECIPE_LINEAGE_DRIFT','$.files.capability-recipe.json','Embedded recipe is invalid or unbound.'));
-      if(compilation.compilationDigest!==candidate.package.compilationDigest||compilation.compilationDigest!==digest(withoutKey(compilation,'compilationDigest')))errors.push(issue('COMPILATION_LINEAGE_DRIFT','$.files.compilation.receipt.json','Compilation receipt drifted.'));
-      Object.keys(AUTHORITY).forEach(function(key){if(receipt.authority[key]!==false)errors.push(issue('DETACHED_AUTHORITY_CONFLICT','$.files.candidate.receipt.json.authority.'+key,'Detached authority must be false.'));});
+      const request=JSON.parse(candidate.files['build-request.json']),recipe=JSON.parse(candidate.files['capability-recipe.json']),compilation=JSON.parse(candidate.files['compilation.receipt.json']),receipt=JSON.parse(candidate.files['candidate.receipt.json']),manifest=JSON.parse(candidate.files['manifest.json']),contract=JSON.parse(candidate.files['module.contract.json']),evidence=JSON.parse(candidate.files['evidence-route.json']);
+      if(validateRequest(request).ok!==true||request.requestDigest!==descriptor.requestDigest)errors.push(issue('REQUEST_LINEAGE_DRIFT','$.files.build-request.json','Embedded request is invalid or unbound.'));
+      if(validateRecipe(recipe).ok!==true||recipe.id!==descriptor.recipeRef.id||recipe.version!==descriptor.recipeRef.version||recipe.builderId!==descriptor.recipeRef.builderId||recipe.recipeDigest!==descriptor.recipeRef.digest)errors.push(issue('RECIPE_LINEAGE_DRIFT','$.files.capability-recipe.json','Embedded recipe is invalid or unbound.'));
+      const compilationKeys=['schema','fabricVersion','status','requestDigest','catalogDigest','recipeRef','variantId','builderId','generatedCodeExecuted','testsEmitted','authority','compilationDigest'];
+      if(allowedKeys(compilation,compilationKeys,'$.files.compilation.receipt.json',errors))requireKeys(compilation,compilationKeys,'$.files.compilation.receipt.json',errors);
+      if(compilation.schema!=='axm.capability-compilation-receipt/v1'||compilation.fabricVersion!==FABRIC_VERSION||compilation.status!=='EXPERIMENTAL'||compilation.requestDigest!==descriptor.requestDigest||compilation.catalogDigest!==descriptor.catalogDigest||canonicalJson(compilation.recipeRef)!==canonicalJson(descriptor.recipeRef)||compilation.variantId!==descriptor.variantId||compilation.builderId!==descriptor.recipeRef.builderId||compilation.generatedCodeExecuted!==false||compilation.testsEmitted!==true||compilation.compilationDigest!==descriptor.compilationDigest||compilation.compilationDigest!==digest(withoutKey(compilation,'compilationDigest')))errors.push(issue('COMPILATION_LINEAGE_DRIFT','$.files.compilation.receipt.json','Compilation receipt drifted or weakened its execution boundary.'));
+      falseAuthority(compilation.authority,'$.files.compilation.receipt.json.authority',errors);
+      if(own(candidate,'compilation')&&canonicalJson(candidate.compilation)!==canonicalJson(compilation))errors.push(issue('COMPILATION_OBJECT_DRIFT','$.compilation','Detached compilation object differs from its embedded receipt.'));
+      allowedKeys(receipt,['schema','candidate','source','authority','boundaries'],'$.files.candidate.receipt.json',errors);requireKeys(receipt,['schema','candidate','source','authority','boundaries'],'$.files.candidate.receipt.json',errors);
+      if(isPlain(receipt.candidate)){allowedKeys(receipt.candidate,['id','name','version','status','location'],'$.files.candidate.receipt.json.candidate',errors);requireKeys(receipt.candidate,['id','name','version','status','location'],'$.files.candidate.receipt.json.candidate',errors);}
+      if(isPlain(receipt.source)){allowedKeys(receipt.source,['kind','requestDigest','recipeDigest','compilationDigest'],'$.files.candidate.receipt.json.source',errors);requireKeys(receipt.source,['kind','requestDigest','recipeDigest','compilationDigest'],'$.files.candidate.receipt.json.source',errors);}
+      const requiredReceiptBoundaries=['detached-package','no-self-install','no-self-promotion','host-review-required'];
+      if(!isPlain(receipt.candidate)||receipt.schema!=='axm.module-candidate-receipt/v1'||receipt.candidate.id!==descriptor.id||receipt.candidate.version!==descriptor.version||receipt.candidate.status!=='EXPERIMENTAL'||receipt.candidate.location!=='detached-capability-candidate'||!isPlain(receipt.source)||receipt.source.kind!=='capability-fabric'||receipt.source.requestDigest!==descriptor.requestDigest||receipt.source.recipeDigest!==descriptor.recipeRef.digest||receipt.source.compilationDigest!==descriptor.compilationDigest||!Array.isArray(receipt.boundaries)||requiredReceiptBoundaries.some(function(value){return receipt.boundaries.indexOf(value)<0;}))errors.push(issue('CANDIDATE_RECEIPT_DRIFT','$.files.candidate.receipt.json','Candidate receipt lineage or detached boundary drifted.'));
+      falseAuthority(receipt.authority,'$.files.candidate.receipt.json.authority',errors);
+      allowedKeys(manifest,['schema','id','name','version','status','entry','contract','uses','installed','promoted'],'$.files.manifest.json',errors);requireKeys(manifest,['schema','id','name','version','status','entry','contract','uses','installed','promoted'],'$.files.manifest.json',errors);
+      if(manifest.schema!=='axm.module-manifest/v1'||manifest.id!==descriptor.id||manifest.version!==descriptor.version||manifest.status!=='EXPERIMENTAL'||manifest.entry!=='index.html'||manifest.contract!=='module.contract.json'||manifest.installed!==false||manifest.promoted!==false||!Array.isArray(manifest.uses)||manifest.uses.length!==0)errors.push(issue('MANIFEST_AUTHORITY_DRIFT','$.files.manifest.json','Manifest identity or detached authority drifted.'));
+      const requiredRefusals=['network','filesystem','dynamic-code','implicit-randomness','automatic-test-execution','installation','registration','staging','promotion','permission-change','canon-change','foundation-mutation'];
+      allowedKeys(contract,['schema','id','version','provides','consumes','permissions','handoffs','lifecycle','boundaries'],'$.files.module.contract.json',errors);requireKeys(contract,['schema','id','version','provides','consumes','permissions','handoffs','lifecycle','boundaries'],'$.files.module.contract.json',errors);
+      if(isPlain(contract.boundaries)){allowedKeys(contract.boundaries,['writes','refuses'],'$.files.module.contract.json.boundaries',errors);requireKeys(contract.boundaries,['writes','refuses'],'$.files.module.contract.json.boundaries',errors);}
+      if(contract.schema!=='axm.module-contract/v1'||contract.id!==descriptor.id||contract.version!==descriptor.version||!Array.isArray(contract.provides)||!Array.isArray(contract.consumes)||!Array.isArray(contract.permissions)||contract.permissions.length!==0||!isPlain(contract.boundaries)||!Array.isArray(contract.boundaries.writes)||contract.boundaries.writes.length!==0||!Array.isArray(contract.boundaries.refuses)||requiredRefusals.some(function(value){return contract.boundaries.refuses.indexOf(value)<0;}))errors.push(issue('CONTRACT_AUTHORITY_DRIFT','$.files.module.contract.json','Module contract weakened the detached execution or authority boundary.'));
+      const requiredNotProven=['runtime safety outside declared boundaries','installation readiness','promotion or CANON status'];
+      if(!isPlain(evidence)||evidence.schema!=='axm.evidence-route/v1'||!Array.isArray(evidence.claims)||!Array.isArray(evidence.notProven)||requiredNotProven.some(function(value){return evidence.notProven.indexOf(value)<0;}))errors.push(issue('EVIDENCE_BOUNDARY_DRIFT','$.files.evidence-route.json','Evidence route removed required not-proven boundaries.'));
     }catch(error){errors.push(issue('BOUND_JSON_INVALID','$.files',String(error.message||error)));}
     try{
-      const bundle=JSON.parse(candidate.files['module-bundle.json']),covered=Object.keys(candidate.files).filter(function(path){return path!=='module-bundle.json';}).sort();
-      if(bundle.schema!=='axm.module-bundle/v1'||canonicalJson(bundle.files.map(function(row){return row.path;}))!==canonicalJson(covered))errors.push(issue('BUNDLE_DRIFT','$.files.module-bundle.json','Bundle does not cover the exact non-self file set.'));
-      (bundle.files||[]).forEach(function(row){if(candidate.files[row.path]!==row.content||digest(row.content).slice(7)!==row.sha256)errors.push(issue('BUNDLE_FILE_DRIFT','$.files.'+row.path,'Bundled content differs.'));});
+      const bundle=JSON.parse(candidate.files['module-bundle.json']),covered=paths.filter(function(path){return path!=='module-bundle.json';});
+      if(!isPlain(bundle)||bundle.schema!=='axm.module-bundle/v1'||bundle.id!==descriptor.id||bundle.version!==descriptor.version||bundle.requiredSeats!==1||!Array.isArray(bundle.files)||canonicalJson(bundle.files.map(function(row){return row.path;}))!==canonicalJson(covered))errors.push(issue('BUNDLE_DRIFT','$.files.module-bundle.json','Bundle identity or exact non-self coverage drifted.'));
+      (bundle.files||[]).forEach(function(row,index){const at='$.files.module-bundle.json.files['+index+']';if(!allowedKeys(row,['path','encoding','sha256','content'],at,errors))return;requireKeys(row,['path','encoding','sha256','content'],at,errors);if(!safePackagePath(row.path)||row.encoding!=='utf8'||typeof row.content!=='string'||!safeDigest('sha256:'+row.sha256)||candidate.files[row.path]!==row.content||digest(row.content).slice(7)!==row.sha256)errors.push(issue('BUNDLE_FILE_DRIFT',at,'Bundled content, digest, encoding, or path differs.'));});
     }catch(error){errors.push(issue('BUNDLE_INVALID','$.files.module-bundle.json',String(error.message||error)));}
-    return {ok:errors.length===0,errors:errors,packageDigest:candidate.package.packageDigest};
+    return {ok:errors.length===0,errors:errors,packageDigest:descriptor.packageDigest};
   }
 
   function build(request,catalog) {
@@ -281,15 +380,41 @@
     return run;
   }
 
+  function validateRecipeProposalDraft(recipe) {
+    const errors=[],keys=['schema','id','version','title','summary','family','builderId','activation','reviewPolicy','candidatePolicy','parameterSpec','exampleRequest','boundaries','verifiers'];
+    if(!allowedKeys(recipe,keys,'$.recipe',errors))return {ok:false,errors:errors};
+    requireKeys(recipe,keys,'$.recipe',errors);
+    if(utf8Length(recipe)>MAX_PROPOSAL_BYTES)errors.push(issue('PROPOSAL_BYTES_EXCEEDED','$.recipe','Recipe proposal exceeds the 128 KiB inspection ceiling.'));
+    if(recipe.schema!==PROPOSAL_RECIPE_SCHEMA)errors.push(issue('SCHEMA_MISMATCH','$.recipe.schema','Expected '+PROPOSAL_RECIPE_SCHEMA+'.'));
+    if(!safeId(recipe.id)||!safeVersion(recipe.version)||!safeId(recipe.family)||!safeId(recipe.builderId))errors.push(issue('PROPOSAL_IDENTITY_INVALID','$.recipe','Recipe proposal identity or version is malformed.'));
+    if(typeof recipe.title!=='string'||!recipe.title.trim()||recipe.title.length>120||typeof recipe.summary!=='string'||!recipe.summary.trim()||recipe.summary.length>500)errors.push(issue('PROPOSAL_DESCRIPTION_INVALID','$.recipe','Recipe proposal title or summary is invalid.'));
+    if(recipe.activation!=='INACTIVE_PROPOSAL')errors.push(issue('PROPOSAL_ACTIVATION_REFUSED','$.recipe.activation','Submitted recipe drafts must explicitly remain INACTIVE_PROPOSAL.'));
+    if(allowedKeys(recipe.reviewPolicy,['activation','sharedUseRequires','canonAuthority'],'$.recipe.reviewPolicy',errors)){
+      requireKeys(recipe.reviewPolicy,['activation','sharedUseRequires','canonAuthority'],'$.recipe.reviewPolicy',errors);
+      if(recipe.reviewPolicy.activation!=='source-review-and-merge'||recipe.reviewPolicy.sharedUseRequires!=='MIKE_TOBI_MERGE'||recipe.reviewPolicy.canonAuthority!=='NONE')errors.push(issue('REVIEW_POLICY_INVALID','$.recipe.reviewPolicy','Proposal review policy must preserve source review, Mike merge, and no CANON authority.'));
+    }
+    if(!isPlain(recipe.parameterSpec))errors.push(issue('PARAMETER_SPEC_INVALID','$.recipe.parameterSpec','Parameter specification must be an object.'));
+    else Object.keys(recipe.parameterSpec).sort().forEach(function(key){if(!safeField(key))errors.push(issue('PARAMETER_NAME_INVALID','$.recipe.parameterSpec.'+key,'Use lower camel case.'));validateRule(recipe.parameterSpec[key],'$.recipe.parameterSpec.'+key,errors);});
+    if(!isPlain(recipe.candidatePolicy)||!allowedKeys(recipe.candidatePolicy,['defaultCount','defaultVariantId','variants'],'$.recipe.candidatePolicy',errors)||recipe.candidatePolicy.defaultCount!==1||!safeId(recipe.candidatePolicy.defaultVariantId)||!Array.isArray(recipe.candidatePolicy.variants)||!recipe.candidatePolicy.variants.length)errors.push(issue('CANDIDATE_POLICY_INVALID','$.recipe.candidatePolicy','Proposal must name one default variant and build one candidate.'));
+    else {const ids=new Set();recipe.candidatePolicy.variants.forEach(function(row,index){const at='$.recipe.candidatePolicy.variants['+index+']';if(!allowedKeys(row,['id','title','parameterOverrides'],at,errors))return;requireKeys(row,['id','title','parameterOverrides'],at,errors);if(!safeId(row.id)||ids.has(row.id))errors.push(issue('VARIANT_ID_INVALID',at+'.id','Variant id must be unique and lowercase.'));ids.add(row.id);if(typeof row.title!=='string'||!row.title.trim()||row.title.length>120)errors.push(issue('VARIANT_TITLE_INVALID',at+'.title','Variant title must contain 1 to 120 characters.'));if(!isPlain(row.parameterOverrides))errors.push(issue('VARIANT_OVERRIDES_INVALID',at+'.parameterOverrides','Overrides must be an object.'));else validateParameters(row.parameterOverrides,recipe,{requireRequired:false}).errors.forEach(function(error){errors.push(issue(error.code,at+'.parameterOverrides'+error.path.slice('$.parameters'.length),error.message,error.details));});});if(!ids.has(recipe.candidatePolicy.defaultVariantId))errors.push(issue('DEFAULT_VARIANT_MISSING','$.recipe.candidatePolicy.defaultVariantId','Default variant id must name one declared variant.'));}
+    validateStringList(recipe.boundaries,'$.recipe.boundaries',errors,'BOUNDARIES_REQUIRED');
+    validateStringList(recipe.verifiers,'$.recipe.verifiers',errors,'VERIFIERS_REQUIRED');
+    if(!isPlain(recipe.exampleRequest))errors.push(issue('EXAMPLE_REQUEST_INVALID','$.recipe.exampleRequest','Proposal requires a closed example request object.'));
+    else {const draftKeys=['id','family','purpose','recipeId','variantId','parameters','source'];allowedKeys(recipe.exampleRequest,draftKeys,'$.recipe.exampleRequest',errors);requireKeys(recipe.exampleRequest,draftKeys,'$.recipe.exampleRequest',errors);if(recipe.exampleRequest.recipeId!==recipe.id||recipe.exampleRequest.family!==recipe.family)errors.push(issue('EXAMPLE_RECIPE_MISMATCH','$.recipe.exampleRequest','Example request must target the proposed recipe and family.'));const sealed=sealRequest(recipe.exampleRequest,true),requestCheck=validateRequest(sealed);requestCheck.errors.forEach(function(error){errors.push(issue(error.code,'$.recipe.exampleRequest'+error.path.slice(1),error.message,error.details));});const defaultVariant=isPlain(recipe.candidatePolicy)&&Array.isArray(recipe.candidatePolicy.variants)?recipe.candidatePolicy.variants.find(function(row){return row&&row.id===recipe.candidatePolicy.defaultVariantId;}):null;if(defaultVariant&&isPlain(defaultVariant.parameterOverrides))validateParameters(mergeParameters(sealed.parameters,defaultVariant.parameterOverrides),recipe).errors.forEach(function(error){errors.push(issue(error.code,'$.recipe.exampleRequest'+error.path.slice(1),error.message,error.details));});}
+    return {ok:errors.length===0,errors:errors};
+  }
+
   function importRecipeProposal(envelope) {
     const errors=[];
     if(!allowedKeys(envelope,['schema','sourceKind','recipe','proposalDigest'],'$',errors))return {ok:false,errors:errors};
     requireKeys(envelope,['schema','sourceKind','recipe','proposalDigest'],'$',errors);
     if(envelope.schema!==PROPOSAL_SCHEMA)errors.push(issue('SCHEMA_MISMATCH','$.schema','Expected '+PROPOSAL_SCHEMA+'.'));
     if(['MIRROR','CODE_FABRIC','EXTERNAL','AI'].indexOf(envelope.sourceKind)<0)errors.push(issue('PROPOSAL_SOURCE_INVALID','$.sourceKind','Unsupported proposal source.'));
-    if(envelope.proposalDigest!==digest(envelope.recipe))errors.push(issue('PROPOSAL_DIGEST_MISMATCH','$.proposalDigest','Proposal digest mismatch.'));
+    const recipeCheck=validateRecipeProposalDraft(envelope.recipe);recipeCheck.errors.forEach(function(row){errors.push(row);});
+    const expectedProposalDigest=isPlain(envelope.recipe)?digest(envelope.recipe):null;
+    if(!safeDigest(envelope.proposalDigest)||envelope.proposalDigest!==expectedProposalDigest)errors.push(issue('PROPOSAL_DIGEST_MISMATCH','$.proposalDigest','Proposal digest mismatch.'));
     if(errors.length)return {ok:false,errors:errors};
-    return {ok:true,status:'INACTIVE_PROPOSAL',active:false,sourceKind:envelope.sourceKind,recipe:clone(envelope.recipe),proposalDigest:envelope.proposalDigest,requiresSourceReview:true,requiresMikeMerge:true,providerCalled:false,authority:clone(AUTHORITY)};
+    return {ok:true,status:'INACTIVE_PROPOSAL',active:false,sourceKind:envelope.sourceKind,recipe:clone(envelope.recipe),proposalDigest:envelope.proposalDigest,validation:recipeCheck,requiresSourceReview:true,requiresMikeMerge:true,providerCalled:false,authority:clone(AUTHORITY)};
   }
 
   function adaptHandRequest(handRequest,target) {
@@ -302,7 +427,7 @@
   }
 
   return {
-    FABRIC_VERSION:FABRIC_VERSION,REQUEST_SCHEMA:REQUEST_SCHEMA,RECIPE_SCHEMA:RECIPE_SCHEMA,CATALOG_SCHEMA:CATALOG_SCHEMA,PLAN_SCHEMA:PLAN_SCHEMA,PACKAGE_SCHEMA:PACKAGE_SCHEMA,RUN_SCHEMA:RUN_SCHEMA,PROPOSAL_SCHEMA:PROPOSAL_SCHEMA,ACTIVE_RECIPE:ACTIVE_RECIPE,AUTHORITY:AUTHORITY,ALLOWED_BUILDERS:ALLOWED_BUILDERS,
-    canonicalJson:canonicalJson,digest:digest,clone:clone,sealRequest:sealRequest,validateRequest:validateRequest,validateRecipe:validateRecipe,validateCatalog:validateCatalog,validateParameters:validateParameters,planBuild:planBuild,buildCandidate:buildCandidate,verifyCandidate:verifyCandidate,build:build,importRecipeProposal:importRecipeProposal,adaptHandRequest:adaptHandRequest
+    FABRIC_VERSION:FABRIC_VERSION,REQUEST_SCHEMA:REQUEST_SCHEMA,RECIPE_SCHEMA:RECIPE_SCHEMA,CATALOG_SCHEMA:CATALOG_SCHEMA,PLAN_SCHEMA:PLAN_SCHEMA,PACKAGE_SCHEMA:PACKAGE_SCHEMA,RUN_SCHEMA:RUN_SCHEMA,PROPOSAL_SCHEMA:PROPOSAL_SCHEMA,PROPOSAL_RECIPE_SCHEMA:PROPOSAL_RECIPE_SCHEMA,ACTIVE_RECIPE:ACTIVE_RECIPE,AUTHORITY:AUTHORITY,ALLOWED_BUILDERS:ALLOWED_BUILDERS,
+    canonicalJson:canonicalJson,digest:digest,clone:clone,sealRequest:sealRequest,validateRequest:validateRequest,validateRecipe:validateRecipe,validateCatalog:validateCatalog,validateParameters:validateParameters,validateRecipeProposalDraft:validateRecipeProposalDraft,planBuild:planBuild,buildCandidate:buildCandidate,verifyCandidate:verifyCandidate,build:build,importRecipeProposal:importRecipeProposal,adaptHandRequest:adaptHandRequest
   };
 });
