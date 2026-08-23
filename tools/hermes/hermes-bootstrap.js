@@ -156,7 +156,7 @@ function removeTopLevelYamlBlock(text, key) {
   if (start < 0) return text;
   let end = lines.length;
   for (let i = start + 1; i < lines.length; i += 1) {
-    if (/^[A-Za-z0-9_.-]+\s*:\s*(?:#.*)?$/.test(lines[i])) { end = i; break; }
+    if (/^[A-Za-z0-9_.-]+\s*:/.test(lines[i])) { end = i; break; }
   }
   return lines.slice(0, start).concat(lines.slice(end)).join('\n').replace(/^\s*\n/, '');
 }
@@ -249,7 +249,7 @@ function repairInterruptedRuns() {
       runId, runDir, receiptDir: path.join(runDir, 'receipts'), providerReceiptDir: path.join(runDir, 'provider-receipts'), sessionEventDir: path.join(runDir, 'session-events'),
       reportDir: REPORT_DIR, sourceLock: lock, policyFile: POLICY_FILE, configFile: HERMES_CONFIG,
       sourceVerified: manifest.source && manifest.source.verified_before_launch === true, sourceVerifiedAfter: false,
-      exitCode: null, signal: 'recovered-after-incomplete-run'
+      exitCode: null, signal: 'recovered-after-incomplete-run', watchdogTimedOut: false
     });
     repaired += 1;
   }
@@ -282,6 +282,7 @@ function showDoctor() {
   console.log('policy:            ' + (policyCheck.ok ? 'valid' : 'invalid/missing: ' + policyCheck.errors.join('; ')));
   console.log('posture:           ' + (policy && policy.posture || 'UNKNOWN'));
   console.log('provider egress:   ' + (policy && policy.provider_egress && policy.provider_egress.mode || 'UNKNOWN'));
+  console.log('run watchdog:      ' + (policy && policy.limits && policy.limits.max_run_minutes || 'UNKNOWN') + ' minute(s)');
   console.log('action consent:    ' + (policy && policy.consent && policy.consent.enabled === true ? 'ON' : 'OFF'));
   console.log('credential guard:  ' + credentialStatus);
   console.log('AXM profile:       ' + (exists(HERMES_CONFIG) ? 'prepared' : 'not prepared'));
@@ -325,21 +326,32 @@ function startHermes(extraArgs) {
     AXM_HERMES_STATE_DIR: runContext.stateDir, AXM_HERMES_RECEIPT_DIR: runContext.receiptDir,
     AXM_HERMES_PROVIDER_RECEIPT_DIR: runContext.providerReceiptDir, AXM_HERMES_SESSION_EVENT_DIR: runContext.sessionEventDir
   });
+  const maxRunMs = policy.limits.max_run_minutes * 60 * 1000;
   console.log('Run capsule:       ' + runContext.runId);
   console.log('AXM posture:       ' + policy.posture);
   console.log('Action consent:    ' + (policy.consent.enabled ? 'ON' : 'OFF'));
   console.log('Provider egress:   ' + policy.provider_egress.mode + ' (credential guard; not network isolation)');
+  console.log('Run watchdog:      ' + policy.limits.max_run_minutes + ' minute(s)');
   console.log('Inherited secrets stripped from Hermes child: ' + guarded.report.inherited_secret_count);
-  const result = run('uv', ['run', '--project', HERMES_DIR, 'hermes'].concat(extraArgs || []), { cwd: WORKSPACE, env: guarded.env, redactArgs: true });
+  const result = run('uv', ['run', '--project', HERMES_DIR, 'hermes'].concat(extraArgs || []), {
+    cwd: WORKSPACE,
+    env: guarded.env,
+    redactArgs: true,
+    timeout: maxRunMs,
+    killSignal: 'SIGTERM'
+  });
+  const watchdogTimedOut = Boolean(result.error && result.error.code === 'ETIMEDOUT');
   const sourceAfter = verifyPinnedSource(false);
   const packet = RunLedger.finalizeRun({
     runId: runContext.runId, runDir: runContext.runDir, receiptDir: runContext.receiptDir,
     providerReceiptDir: runContext.providerReceiptDir, sessionEventDir: runContext.sessionEventDir,
     reportDir: REPORT_DIR, sourceLock: lock, policyFile: POLICY_FILE, configFile: HERMES_CONFIG,
-    sourceVerified: true, sourceVerifiedAfter: sourceAfter.ok, exitCode: result.status, signal: result.signal || null
+    sourceVerified: true, sourceVerifiedAfter: sourceAfter.ok, exitCode: result.status, signal: result.signal || null,
+    watchdogTimedOut
   });
   console.log('Return Packet: ' + path.join(runContext.runDir, 'return-packet.json'));
   console.log('Outcome:       ' + packet.outcome);
+  if (watchdogTimedOut) console.error('AXM WATCHDOG: Hermes exceeded max_run_minutes and the launcher terminated its direct child. Process-tree termination is not claimed.');
   if (!sourceAfter.ok) console.error('AXM WARNING: pinned Hermes checkout no longer verifies after run. Treat run as boundary failure.');
   if (packet.integrity_flags.provider_policy_mismatch) console.error('AXM WARNING: remote provider base URL observed under local_only policy. Treat run as boundary failure.');
   process.exitCode = Number.isInteger(result.status) ? result.status : 1;
