@@ -7,6 +7,7 @@ const Digest = require('./digest');
 
 const HOST_RECEIPT_SCHEMA = 'axm.web.local-browser-host-receipt/v1';
 const DEFAULT_MAX_ACTION_BYTES = 16 * 1024;
+const PERMISSIONS_POLICY = 'camera=(), microphone=(), geolocation=(), display-capture=(), usb=(), serial=(), hid=(), bluetooth=()';
 
 const CONTROLLER_SOURCE = `(function () {
   'use strict';
@@ -188,11 +189,15 @@ function controllerHash() {
   return crypto.createHash('sha256').update(CONTROLLER_SOURCE, 'utf8').digest('base64');
 }
 
+function contentSecurityPolicy() {
+  return "default-src 'none'; script-src 'sha256-" + controllerHash() + "'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'";
+}
+
 function renderShellHtml() {
-  const hash = controllerHash();
+  const policy = contentSecurityPolicy();
   return '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' +
     '<meta name="viewport" content="width=device-width,initial-scale=1">\n' +
-    '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'sha256-' + escapeHtml(hash) + '\'; style-src \'unsafe-inline\'; connect-src \'self\'; img-src \'none\'; font-src \'none\'; media-src \'none\'; object-src \'none\'; frame-src \'none\'; worker-src \'none\'; base-uri \'none\'; form-action \'none\'">\n' +
+    '<meta http-equiv="Content-Security-Policy" content="' + escapeHtml(policy) + '">\n' +
     '<title>AXM Local Browser Session \u2014 EXPERIMENTAL</title>\n' +
     '<style>\n' +
     ':root{color-scheme:dark;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#030711;color:#f4f7ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#122541 0,#030711 54rem);min-height:100vh}button,input{font:inherit}.shell{width:min(1500px,calc(100% - 24px));margin:12px auto 44px}.boundary{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border:1px solid #294264;border-radius:12px;background:#0e1930}.badge{padding:5px 9px;border:1px solid #347266;border-radius:999px;color:#72e1c2;font-size:11px;font-weight:800}.held{border-color:#7b6030;color:#f3bd63}.boundary p{flex:1 1 360px;margin:0;color:#9fb1cc;font-size:12px;line-height:1.45}.toolbar{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:auto minmax(180px,1fr) auto;gap:8px;margin:10px 0;padding:10px;border:1px solid #294264;border-radius:12px;background:#07101ff0;backdrop-filter:blur(12px)}.nav-buttons{display:flex;gap:6px}.toolbar button,.open-link,.map-button{border:1px solid #365477;border-radius:8px;background:#142642;color:#f4f7ff;cursor:pointer}.toolbar button{min-width:42px;padding:9px 11px}.toolbar button:hover:not(:disabled),.toolbar button:focus-visible,.open-link:hover:not(:disabled),.open-link:focus-visible,.map-button:hover,.map-button:focus-visible{border-color:#72e1c2;outline:none}.toolbar button:disabled,.open-link:disabled{cursor:not-allowed;opacity:.42}.address-wrap{display:flex;min-width:0}.address-wrap input{width:100%;min-width:0;padding:9px 12px;border:1px solid #365477;border-radius:8px 0 0 8px;background:#030711;color:#f4f7ff}.address-wrap button{border-radius:0 8px 8px 0}.status{align-self:center;max-width:260px;color:#9fb1cc;font-size:11px;overflow-wrap:anywhere}.status[data-kind="fail"],.status[data-kind="held"]{color:#ffab7a}.hero{padding:22px;border:1px solid #294264;border-radius:16px;background:#0e1930}.eyebrow{margin:0 0 7px;color:#72e1c2;font-size:11px;font-weight:800;letter-spacing:.08em}.hero h1{margin:0;font-size:clamp(24px,4vw,40px);line-height:1.1}.locator{margin:10px 0 0;color:#9fb1cc;overflow-wrap:anywhere}.summary{display:flex;flex-wrap:wrap;gap:7px;margin:15px 0 0;padding:0;list-style:none}.summary li{display:flex;gap:6px;align-items:baseline;padding:6px 9px;border:1px solid #294264;border-radius:8px;background:#111f39}.summary strong{color:#72e1c2}.summary span{color:#9fb1cc;font-size:10px}.grid{display:grid;grid-template-columns:minmax(230px,290px) minmax(0,1fr) minmax(210px,260px);gap:12px;margin-top:12px;align-items:start}.panel{border:1px solid #294264;border-radius:14px;background:#0e1930}.side{position:sticky;top:76px;max-height:calc(100vh - 88px);overflow:auto;padding:15px}.side h2,.content h2{margin:0;font-size:15px}.side-note{margin:6px 0 12px;color:#9fb1cc;font-size:11px;line-height:1.4}.document-map,.history-list{display:grid;gap:6px;margin:0;padding:0;list-style:none}.map-button{display:grid;width:100%;gap:3px;padding:9px;text-align:left}.map-kind{color:#72e1c2;font-size:9px;font-weight:800;text-transform:uppercase}.map-text{font-size:11px;line-height:1.3}.content{padding:15px}.cards{display:grid;gap:9px;margin-top:12px}.semantic-card{--accent:#79b8ff;scroll-margin-top:78px;padding:15px 17px;border:1px solid #294264;border-left:5px solid var(--accent);border-radius:11px;background:#142642}.semantic-card:focus{border-color:#72e1c2;background:#18304e;outline:2px solid #72e1c255;outline-offset:2px}.semantic-card header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:7px;padding-bottom:8px;border-bottom:1px solid #294264}.kind-label{color:var(--accent);font-size:10px;font-weight:800;text-transform:uppercase}.semantic-card code{color:#9fb1cc;font-size:10px}.entry-text{margin:11px 0 0;font-size:14px;line-height:1.5;overflow-wrap:anywhere}.entry-meta{margin:7px 0 0;color:#9fb1cc;font-size:11px;line-height:1.45;overflow-wrap:anywhere}.kind-heading{--accent:#72e1c2}.kind-landmark{--accent:#69d4ff}.kind-link{--accent:#b5a2ff}.kind-media{--accent:#ff9dc8}.kind-list{--accent:#8bd98b}.kind-table{--accent:#f5cf72}.kind-form{--accent:#ffab7a}.link-controls{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center;margin-top:11px}.resolution{font-size:10px;color:#9fb1cc}.resolution.available,.resolution.same_document{color:#72e1c2}.open-link{padding:7px 10px;font-size:11px}.history-list li{display:grid;gap:3px;padding:8px;border-left:3px solid #294264;color:#9fb1cc;font-size:10px;overflow-wrap:anywhere}.history-list li.current-history{border-color:#72e1c2;background:#142642;color:#f4f7ff}.receipt{display:grid;gap:8px;margin-top:14px}.receipt div{display:grid;gap:2px}.receipt span{color:#9fb1cc;font-size:9px;text-transform:uppercase}.receipt code{font-size:9px;word-break:break-all}.kind-paragraph{--accent:#79b8ff}@media(max-width:1050px){.grid{grid-template-columns:250px minmax(0,1fr)}.history-panel{position:static;grid-column:1/-1;max-height:none}}@media(max-width:760px){.shell{width:min(100% - 10px,1500px);margin-top:5px}.toolbar{grid-template-columns:auto 1fr;top:0}.status{grid-column:1/-1;max-width:none}.grid{grid-template-columns:1fr}.side{position:static;max-height:none}.history-panel{grid-column:auto}.hero{padding:17px}.content{padding:10px}.semantic-card{padding:13px}.nav-buttons button{min-width:38px;padding:8px}.address-wrap input{padding:8px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}\n' +
@@ -204,6 +209,18 @@ function renderShellHtml() {
     '<section class="panel content" aria-labelledby="content-heading"><h2 id="content-heading">Semantic page</h2><div id="cards" class="cards"></div></section>\n' +
     '<aside class="panel side history-panel" aria-label="Session history"><h2>History</h2><p class="side-note">Bounded local navigation only.</p><ol id="history-list" class="history-list"></ol><div class="receipt"><div><span>Session</span><code id="session-id"></code></div><div><span>Bundle</span><code id="bundle-digest"></code></div><div><span>Source</span><code id="source-digest"></code></div><div><span>Reloads</span><code id="reload-count"></code></div></div></aside></div>\n' +
     '</main>\n<script>' + CONTROLLER_SOURCE + '</script>\n</body>\n</html>\n';
+}
+
+function securityHeaders() {
+  return {
+    'Cache-Control': 'no-store',
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Cross-Origin-Resource-Policy': 'same-origin',
+    'Permissions-Policy': PERMISSIONS_POLICY,
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'no-referrer',
+    'X-Frame-Options': 'DENY'
+  };
 }
 
 function errorEnvelope(error) {
@@ -218,27 +235,19 @@ function errorEnvelope(error) {
 
 function sendJson(response, statusCode, value) {
   const body = Canonical.stringify(value) + '\n';
-  response.writeHead(statusCode, {
+  response.writeHead(statusCode, Object.assign({
     'Content-Type': 'application/json; charset=utf-8',
-    'Content-Length': Buffer.byteLength(body),
-    'Cache-Control': 'no-store',
-    'X-Content-Type-Options': 'nosniff',
-    'Referrer-Policy': 'no-referrer',
-    'X-Frame-Options': 'DENY'
-  });
+    'Content-Length': Buffer.byteLength(body)
+  }, securityHeaders()));
   response.end(body);
 }
 
 function sendHtml(response, html) {
-  response.writeHead(200, {
+  response.writeHead(200, Object.assign({
     'Content-Type': 'text/html; charset=utf-8',
     'Content-Length': Buffer.byteLength(html),
-    'Cache-Control': 'no-store',
-    'Content-Security-Policy': "default-src 'none'; script-src 'sha256-" + controllerHash() + "'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'",
-    'X-Content-Type-Options': 'nosniff',
-    'Referrer-Policy': 'no-referrer',
-    'X-Frame-Options': 'DENY'
-  });
+    'Content-Security-Policy': contentSecurityPolicy()
+  }, securityHeaders()));
   response.end(html);
 }
 
@@ -324,8 +333,12 @@ async function createLocalBrowserHost(session, options) {
         return;
       }
       if (request.method === 'POST' && route === 'action') {
-        const origin = request.headers.origin;
-        if (origin && origin !== expectedOrigin) {
+        const origin = String(request.headers.origin || '');
+        if (!origin) {
+          sendJson(response, 403, errorEnvelope(Object.assign(new Error('session actions require the exact loopback shell Origin header'), { code: 'HOST_ORIGIN_REQUIRED' })));
+          return;
+        }
+        if (origin !== expectedOrigin) {
           sendJson(response, 403, errorEnvelope(Object.assign(new Error('cross-origin session action refused'), { code: 'HOST_ORIGIN_REFUSED' })));
           return;
         }
@@ -380,9 +393,12 @@ async function createLocalBrowserHost(session, options) {
 module.exports = {
   HOST_RECEIPT_SCHEMA,
   DEFAULT_MAX_ACTION_BYTES,
+  PERMISSIONS_POLICY,
   CONTROLLER_SOURCE,
   escapeHtml,
   controllerHash,
+  contentSecurityPolicy,
+  securityHeaders,
   renderShellHtml,
   errorEnvelope,
   createLocalBrowserHost
