@@ -23,6 +23,9 @@ function isLoopbackUrl(value) {
     return ['http:', 'https:'].includes(parsed.protocol) && LOOPBACK_HOSTS.has(parsed.hostname.toLowerCase());
   } catch (_) { return false; }
 }
+function integerInRange(value, min, max) {
+  return Number.isInteger(value) && value >= min && value <= max;
+}
 function validatePolicy(policy) {
   const errors = [];
   if (!policy || typeof policy !== 'object' || Array.isArray(policy)) errors.push('policy must be an object');
@@ -34,6 +37,16 @@ function validatePolicy(policy) {
   if (policy && policy.provider_egress && policy.provider_egress.allowed_secret_env !== undefined && !Array.isArray(policy.provider_egress.allowed_secret_env)) errors.push('provider_egress.allowed_secret_env must be an array');
   if (policy && policy.allowed_tools !== undefined && !Array.isArray(policy.allowed_tools)) errors.push('allowed_tools must be an array');
   if (policy && policy.research_tools !== undefined && !Array.isArray(policy.research_tools)) errors.push('research_tools must be an array');
+
+  const limits = policy && policy.limits;
+  if (!limits || typeof limits !== 'object' || Array.isArray(limits)) errors.push('limits must be an object');
+  else {
+    if (!integerInRange(limits.max_run_minutes, 1, 1440)) errors.push('limits.max_run_minutes must be an integer from 1 to 1440');
+    if (!integerInRange(limits.max_tool_calls_per_session, 1, 100000)) errors.push('limits.max_tool_calls_per_session must be a positive bounded integer');
+    if (!integerInRange(limits.max_files_read_per_session, 1, 100000)) errors.push('limits.max_files_read_per_session must be a positive bounded integer');
+    if (!integerInRange(limits.max_files_written_per_session, 1, 100000)) errors.push('limits.max_files_written_per_session must be a positive bounded integer');
+  }
+
   const caps = policy && policy.capabilities;
   if (!caps || typeof caps !== 'object' || Array.isArray(caps)) errors.push('capabilities must be an object');
   else Object.entries(caps).forEach(([key, value]) => { if (typeof value !== 'boolean') errors.push(`capabilities.${key} must be boolean`); });
