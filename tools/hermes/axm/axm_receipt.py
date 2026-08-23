@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 """Write metadata-only Hermes tool receipts for AXM review.
 
-Raw arguments, tool results, user content, paths, and identifiers are not stored.
+One JSON file is written per tool event. Raw arguments, results, user content,
+paths, and raw identifiers are deliberately excluded.
 """
 from __future__ import annotations
 
-import datetime as dt
 import hashlib
 import json
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
 MODULE_ROOT = Path(os.environ.get("AXM_HERMES_ROOT", Path(__file__).resolve().parents[1])).resolve()
 POLICY_FILE = Path(os.environ.get("AXM_HERMES_POLICY_FILE", MODULE_ROOT / "runtime" / "policy.json")).resolve()
 RECEIPT_DIR = Path(os.environ.get("AXM_HERMES_RECEIPT_DIR", MODULE_ROOT / "runtime" / "receipts")).resolve()
+RUN_ID = os.environ.get("AXM_HERMES_RUN_ID", "unknown-run")
 
 
 def digest(value: Any) -> str:
@@ -43,26 +45,30 @@ def main() -> None:
         print("{}")
         return
     event = load_event()
-    session_hash = digest(event.get("session_id") or event.get("task_id") or "unknown")
+    extra = event.get("extra") if isinstance(event.get("extra"), dict) else {}
+    timestamp_ns = time.time_ns()
     record = {
         "schema": "axm.hermes-tool-receipt/v1",
-        "timestamp_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
-        "session_hash": session_hash,
-        "turn_hash": digest(event.get("turn_id")),
-        "tool_call_hash": digest(event.get("tool_call_id")),
-        "tool_name": str(event.get("tool_name") or event.get("tool") or "unknown")[:120],
-        "status": str(event.get("status") or "unknown")[:80],
-        "duration_ms": event.get("duration_ms") if isinstance(event.get("duration_ms"), (int, float)) else None,
-        "error_type": str(event.get("error_type") or "")[:120] or None,
+        "run_id": RUN_ID,
+        "timestamp_ns": timestamp_ns,
+        "session_hash": digest(event.get("session_id")),
+        "turn_hash": digest(extra.get("turn_id")),
+        "tool_call_hash": digest(extra.get("tool_call_id")),
+        "tool_name": str(event.get("tool_name") or "unknown")[:120],
+        "status": str(extra.get("status") or "unknown")[:80],
+        "duration_ms": extra.get("duration_ms") if isinstance(extra.get("duration_ms"), (int, float)) else None,
+        "error_type": str(extra.get("error_type") or "")[:120] or None,
         "raw_arguments_stored": False,
         "raw_result_stored": False,
+        "raw_paths_stored": False,
         "canon": False,
         "review_required": True,
     }
+    canonical = json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    record["receipt_hash"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     RECEIPT_DIR.mkdir(parents=True, exist_ok=True)
-    target = RECEIPT_DIR / f"{session_hash}.jsonl"
-    with target.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(record, sort_keys=True, ensure_ascii=False) + "\n")
+    target = RECEIPT_DIR / f"{timestamp_ns}-{record['tool_call_hash']}-{digest(record['tool_name'])}.json"
+    target.write_text(json.dumps(record, sort_keys=True, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print("{}")
 
 
