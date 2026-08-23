@@ -22,8 +22,13 @@ module.exports = {
   shellPolicy: require('./shell-policy'),
   searchBroker: require('./search-broker'),
   searchExecutor: require('./search-executor'),
+  imageSearchBroker: require('./image-search-broker'),
+  imageSearchExecutor: require('./image-search-executor'),
   aiBroker: require('./ai-broker'),
   aiExecutor: require('./ai-executor'),
   researchMode: require('./research-mode'),
+  referenceIntake: require('./reference-intake'),
+  referenceLab: require('./reference-lab'),
+  referenceLabHost: require('./reference-lab-host'),
   engine: require('./engine')
 };
