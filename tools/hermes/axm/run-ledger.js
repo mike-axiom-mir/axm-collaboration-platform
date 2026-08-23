@@ -39,7 +39,9 @@ function createRun(options) {
       provider_egress_mode: options.policy.provider_egress && options.policy.provider_egress.mode,
       hub_sandbox: options.policy.mode && options.policy.mode.hub_sandbox === true,
       external_mode: options.policy.mode && options.policy.mode.external_mode === true,
-      max_run_minutes: options.policy.limits && options.policy.limits.max_run_minutes
+      max_run_minutes: options.policy.limits && options.policy.limits.max_run_minutes,
+      background_review_enabled: options.policy.learning && options.policy.learning.background_review_enabled === true,
+      built_in_memory_enabled: options.policy.learning && (options.policy.learning.memory_enabled === true || options.policy.learning.user_profile_enabled === true)
     },
     profile_sha256: hashFile(options.configFile),
     invocation: {
@@ -68,6 +70,15 @@ function tally(records, key) {
   }
   return out;
 }
+function sumStateCounters(dir) {
+  const states = readJsonFiles(dir);
+  return states.reduce((acc, state) => {
+    acc.tool_calls += Number.isFinite(Number(state.tool_calls)) ? Number(state.tool_calls) : 0;
+    acc.files_read += Number.isFinite(Number(state.files_read)) ? Number(state.files_read) : 0;
+    acc.files_written += Number.isFinite(Number(state.files_written)) ? Number(state.files_written) : 0;
+    return acc;
+  }, { tool_calls: 0, files_read: 0, files_written: 0 });
+}
 function receiptSetHash(records) {
   const hashes = records.map(record => String(record.receipt_hash || '')).filter(Boolean).sort();
   return hashText(hashes.join('\n'));
@@ -88,8 +99,10 @@ function finalizeRun(options) {
   const toolReceipts = readJsonFiles(options.receiptDir);
   const providerReceipts = readJsonFiles(options.providerReceiptDir);
   const sessionEvents = readJsonFiles(options.sessionEventDir);
+  const stateCounters = sumStateCounters(path.join(options.runDir, 'state'));
   const manifest = readJson(path.join(options.runDir, 'run-manifest.json')) || {};
   const providerMismatch = providerReceipts.some(record => record.policy_mismatch === true);
+  const toolReceiptGap = toolReceipts.length < stateCounters.tool_calls;
   const sessionEvidence = latestSessionEvidence(sessionEvents);
   const finalPolicyHash = hashFile(options.policyFile);
   const finalProfileHash = hashFile(options.configFile);
@@ -115,10 +128,14 @@ function finalizeRun(options) {
     initial_profile_sha256: initialProfileHash,
     final_profile_sha256: finalProfileHash,
     tool_receipts: {
-      count: toolReceipts.length,
+      authorized_tool_calls: stateCounters.tool_calls,
+      completion_receipt_count: toolReceipts.length,
+      evidence_gap: toolReceiptGap,
       receipt_set_sha256: receiptSetHash(toolReceipts),
       by_tool: tally(toolReceipts, 'tool_name'),
-      by_status: tally(toolReceipts, 'status')
+      by_status: tally(toolReceipts, 'status'),
+      file_read_authorizations: stateCounters.files_read,
+      file_write_authorizations: stateCounters.files_written
     },
     provider_receipts: {
       count: providerReceipts.length,
@@ -138,6 +155,7 @@ function finalizeRun(options) {
       sessionEvidence && sessionEvidence.interrupted === true ? 'session-reported-interruption' :
       options.exitCode === 0 ? 'process-exited-zero' : 'process-exited-nonzero-or-unknown',
     integrity_flags: {
+      tool_receipt_gap: toolReceiptGap,
       provider_policy_mismatch: providerMismatch,
       watchdog_timeout: watchdogTimedOut,
       source_was_verified_before_launch: options.sourceVerified === true,
