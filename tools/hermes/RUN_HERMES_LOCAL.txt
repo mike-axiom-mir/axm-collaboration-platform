@@ -1,8 +1,6 @@
-AXM Hermes Runtime Adapter - local start note
+AXM Hermes Runtime Adapter v0.4 - local intake note
 
-External Hermes stays pinned and reviewable. The AXM runtime policy and the older loopback proposal service are separate layers.
-
-Pinned runtime path (explicit commands only):
+Fast path:
 
 cd AXM_WORKSHOP\tools\hermes
 node hermes-bootstrap.js doctor
@@ -10,35 +8,46 @@ node hermes-bootstrap.js install
 node hermes-bootstrap.js verify
 node hermes-bootstrap.js deps
 node hermes-bootstrap.js prepare
+node hermes-bootstrap.js repair
 
-Action consent starts OFF.
+Fresh policy starts:
+- posture: research
+- action consent: OFF
+- provider credential posture: local_only
+- all mutation/world-action capabilities: OFF
 
-To deliberately permit policy-approved Hermes tool calls:
+For the first live run, keep research + local model and enable only global action consent:
 
-node hermes-bootstrap.js consent on "local reviewed run"
-
-Start pinned Hermes through the AXM profile:
-
+node hermes-bootstrap.js consent on "first local research run"
 node hermes-bootstrap.js start
 
-To revoke action consent:
+Each start creates its own runtime/runs/<run-id>/ capsule and ends with a candidate-only Return Packet.
+
+After the run:
 
 node hermes-bootstrap.js consent off "run ended"
+node hermes-bootstrap.js repair
 
-Important:
-- the source checkout must match hermes-source.lock.json exactly
-- high-authority terminal/code/computer/delegation/scheduling/messaging capabilities remain OFF unless local policy explicitly changes them
-- the AXM hook is an authorization gate, not an OS sandbox
-- model-provider network egress is a separate boundary
-- Hermes memory, generated skills, and conclusions are not AXM canon
+Use repair whenever a run or machine dies unexpectedly. It closes incomplete run capsules into recovery Return Packets instead of deleting evidence.
 
-Optional legacy AXM proposal/control-layer test:
+Only change posture to operator when action capability is actually needed. Operator still requires individual capability switches such as allow_file_mutation, allow_terminal, allow_execute_code, etc.
 
-cd AXM_WORKSHOP\tools\hermes
+Provider note:
+- local_only strips inherited secrets/proxies from the Hermes child
+- loopback LM Studio/OpenAI-compatible provider pairs may pass through
+- explicit_remote restores only exact secret env names listed in local policy
+- this is credential control, not hard network isolation
+
+Hard boundaries:
+- source must match repo + commit + tree + observed version
+- fail-closed tool gate is not an OS sandbox
+- provider observer receipts cannot veto an already-dispatched model request
+- Hermes memory/skills/results stay non-canonical candidates
+- raw prompt/response/tool content is excluded from AXM evidence receipts
+
+Optional legacy proposal/control layer:
+
 node hermes-runner.js
-
-Then check:
-
 http://127.0.0.1:8791/health
 
-The legacy loopback consent store gates that service's write routes only. It is not yet unified with runtime/policy.json.
+Legacy loopback consent is still separate from runtime/policy.json.
