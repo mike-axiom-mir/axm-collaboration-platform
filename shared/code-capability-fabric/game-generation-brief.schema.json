@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-generation-brief/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "title", "seed", "recipeId", "difficulty", "world", "theme", "accessibility", "session", "authority", "briefDigest"],
+  "properties": {
+    "schema": {"const": "axm.game-generation-brief/v1"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 80},
+    "seed": {"type": "integer", "minimum": 0, "maximum": 4294967295},
+    "recipeId": {"const": "four-roots-grid-game"},
+    "difficulty": {"enum": ["CALM", "STANDARD", "BRISK"]},
+    "world": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {"width": {"const": 16}, "height": {"const": 10}}
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["background", "panel", "wall", "path", "player", "accent", "text"],
+      "properties": {
+        "background": {"$ref": "#/$defs/color"}, "panel": {"$ref": "#/$defs/color"},
+        "wall": {"$ref": "#/$defs/color"}, "path": {"$ref": "#/$defs/color"},
+        "player": {"$ref": "#/$defs/color"}, "accent": {"$ref": "#/$defs/color"},
+        "text": {"$ref": "#/$defs/color"}
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["touchTargetPx", "reducedMotionDefault", "highContrast"],
+      "properties": {
+        "touchTargetPx": {"type": "integer", "minimum": 44, "maximum": 72},
+        "reducedMotionDefault": {"type": "boolean"},
+        "highContrast": {"const": true}
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["persistence", "network", "players"],
+      "properties": {"persistence": {"const": "SESSION_ONLY"}, "network": {"const": "DISABLED"}, "players": {"const": 1}}
+    },
+    "authority": {"const": "NONE"},
+    "briefDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {"color": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"}}
+}
+

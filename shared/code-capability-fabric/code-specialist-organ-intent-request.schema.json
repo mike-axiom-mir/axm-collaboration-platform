@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-specialist-organ-intent-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "id", "specializationRequest", "specializationPlan", "selection", "fieldPackRef", "intentDraft", "settings", "resourceEnvelope", "rootsGate", "instructionRef", "authority", "requestDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-specialist-organ-intent-request/v1"},
+    "version": {"const": "1.6.0"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "specializationRequest": {"$ref": "code-specialization-request.schema.json"},
+    "specializationPlan": {"$ref": "code-specialization-plan.schema.json"},
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifactId", "specialistOrganRef", "coordinationMode"],
+      "properties": {
+        "artifactId": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "specialistOrganRef": {"$ref": "#/$defs/versionedRef"},
+        "coordinationMode": {"const": "ONE_EXACT_LANE_NO_AUTOMATIC_MERGE"}
+      }
+    },
+    "fieldPackRef": {"$ref": "#/$defs/packRef"},
+    "intentDraft": {"$ref": "#/$defs/intentDraft"},
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intentInference", "knowledgeMode", "generationMode", "allowedPermissions", "allowedNetworkDomains"],
+      "properties": {
+        "intentInference": {"const": "NONE"},
+        "knowledgeMode": {"const": "REFERENCE_LANE_ONLY"},
+        "generationMode": {"const": "INTENT_BIND_ONLY"},
+        "allowedPermissions": {"const": []},
+        "allowedNetworkDomains": {"const": []}
+      }
+    },
+    "resourceEnvelope": {"$ref": "#/$defs/resources"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "instructionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "authority": {"const": "NONE"},
+    "requestDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "version", "sha256"],
+      "properties": {
+        "id": {"type": "string"},
+        "schema": {"type": "string"},
+        "version": {"type": "string"},
+        "sha256": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "packRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "digest"],
+      "properties": {
+        "id": {"type": "string"},
+        "version": {"type": "string"},
+        "digest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "intentDraft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "purpose", "inputs", "outputs", "requiredCases", "desiredCases", "invariants", "boundaries", "resourceBudget", "metricProfileId"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,63}$"},
+        "name": {"type": "string", "minLength": 1},
+        "purpose": {"type": "string", "minLength": 1},
+        "inputs": {"type": "array", "minItems": 1, "items": {"$ref": "../deterministic-organ-fabric/schemas/organ-intent.schema.json#/$defs/port"}},
+        "outputs": {"type": "array", "minItems": 1, "items": {"$ref": "../deterministic-organ-fabric/schemas/organ-intent.schema.json#/$defs/port"}},
+        "requiredCases": {"type": "array", "minItems": 1, "items": {"$ref": "../deterministic-organ-fabric/schemas/organ-intent.schema.json#/$defs/case"}},
+        "desiredCases": {"type": "array", "items": {"$ref": "../deterministic-organ-fabric/schemas/organ-intent.schema.json#/$defs/case"}},
+        "invariants": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "boundaries": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "resourceBudget": {"$ref": "../deterministic-organ-fabric/schemas/organ-intent.schema.json#/$defs/limits"},
+        "metricProfileId": {"const": "balanced-v1"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxInputBytes", "maxOutputBytes", "maxMemoryBytes", "maxDurationMs", "maxProcesses", "maxAttempts", "maxCostMinorUnits"],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 8388608},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 8388608},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1},
+        "maxDurationMs": {"type": "integer", "minimum": 1},
+        "maxProcesses": {"const": 1},
+        "maxAttempts": {"const": 1},
+        "maxCostMinorUnits": {"const": 0}
+      }
+    }
+  }
+}

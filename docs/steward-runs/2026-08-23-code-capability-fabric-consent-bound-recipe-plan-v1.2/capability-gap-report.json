@@ -1,0 +1,106 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "consent-scoped-recipe-application-plan",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.discovery.verify-installed-evidence",
+        "code.recipe.selection.verify-exact-reference-only",
+        "creation.blueprint.verify-exact",
+        "consent.scope.verify-deterministic",
+        "code.recipe.application.validate-requester-mapping",
+        "code.recipe.application.plan-independent-native-implementation",
+        "code.recipe.application.preserve-source-rights-hold"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.discovery.verify-installed-evidence": [
+          "v1.1 deterministically rebuilds discovery evidence from exact installed Foundry bytes"
+        ],
+        "code.recipe.selection.verify-exact-reference-only": [
+          "v1.0 verifies requester-specified installed identities and can omit snippet source"
+        ],
+        "creation.blueprint.verify-exact": [
+          "declarative blueprint composer rebuilds a blueprint from its exact sealed intent"
+        ],
+        "consent.scope.verify-deterministic": [
+          "grounded consent verifies policy, instance, resource, evidence, lifecycle, and time scope but not human authentication"
+        ],
+        "code.recipe.application.validate-requester-mapping": [
+          "v1.2 requires every selected identity exactly once, rejects held or undiscovered identities, and checks only declared tag-to-step structural compatibility"
+        ],
+        "code.recipe.application.plan-independent-native-implementation": [
+          "v1.2 emits inert JavaScript pure-function outlines with implementation NOT_STARTED, candidate null, tests NOT_RUN, and evidence UNKNOWN"
+        ],
+        "code.recipe.application.preserve-source-rights-hold": [
+          "discovery and selection packets preserve RESEARCH_ONLY_HOLD and direct reuse false"
+        ]
+      }
+    },
+    {
+      "id": "detached-game-rule-candidate",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "consent.human-decision.authenticate",
+        "code.recipe.application.materialize-arbitrary-native-candidate"
+      ],
+      "declaredConstraints": {
+        "consent.human-decision.authenticate": [
+          "grounded consent explicitly ends at AUTHENTICATED_HUMAN_DECISION_REQUIRED"
+        ],
+        "code.recipe.application.materialize-arbitrary-native-candidate": [
+          "existing materializer supports one reviewed native recipe and may not be bypassed"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "code.recipe.application.materialize-arbitrary-native-candidate",
+    "consent.human-decision.authenticate"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "code.recipe.application.materialize-arbitrary-native-candidate",
+      "requiredBy": [
+        "detached-game-rule-candidate"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "consent.human-decision.authenticate",
+      "requiredBy": [
+        "detached-game-rule-candidate"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

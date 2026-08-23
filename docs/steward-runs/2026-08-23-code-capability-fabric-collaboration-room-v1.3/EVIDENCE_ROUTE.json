@@ -1,0 +1,86 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "status": "TEST_EVIDENCE",
+  "claims": [
+    {
+      "claimId": "closed-static-module",
+      "claim": "The Collaboration Room is a closed permissionless TEST module with only ephemeral browser-memory output.",
+      "kind": "static-structure",
+      "risk": "medium",
+      "passCondition": "Manifest, contract and decision schema parse; output objects are closed; permissions are empty; lifecycle uses Workshop vocabulary; network, workspace, provider, execution, review-write and lifecycle authority are refused.",
+      "primarySurface": "parsed manifest, contract and schema",
+      "counterevidence": "An undeclared field, permission, external URL, durable storage, provider call or lifecycle claim exists.",
+      "secondarySurfaceIfNeeded": "focused source scan and verify.js module-contract verifier",
+      "observedEvidence": "Focused suite passed 68 checks after the lifecycle vocabulary was repaired; verify.js and verify-plus passed.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claimId": "deterministic-draft",
+      "claim": "The same bounded human input produces the same unauthenticated decision draft and cannot inflate its authority.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Exact rebuild succeeds; unknown fields, unsupported decisions, missing trial digest, missing acknowledgement, noncanonical digest, control characters and truth inflation fail closed.",
+      "primarySurface": "focused adversarial selftest",
+      "counterevidence": "A draft can claim authentication, signature, effect, installation, integration, promotion or CANON.",
+      "secondarySurfaceIfNeeded": "closed output schema inspection",
+      "observedEvidence": "All adversarial draft checks passed, including the repaired raw-control-character case.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claimId": "desktop-visual",
+      "claim": "The room visibly separates the seven collaborators, one shared goal, four roots and the authority inspector at desktop width.",
+      "kind": "visual-appearance",
+      "risk": "medium",
+      "passCondition": "The captured desktop frame is legible, unclipped horizontally and visibly distinguishes active-route nodes from declared-only nodes.",
+      "primarySurface": "real in-app browser screenshot at the default desktop viewport",
+      "counterevidence": "Blank surface, overlapping primary controls, hidden root order, missing collaborator or misleading live-state presentation.",
+      "secondarySurfaceIfNeeded": "semantic DOM snapshot",
+      "observedEvidence": "A 1265 by 712 browser frame showed all primary desktop columns, the constellation, root rail and explicit TEST/DECLARED/LOCKED states.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claimId": "narrow-visual",
+      "claim": "The room remains usable at a 390 by 844 narrow viewport.",
+      "kind": "visual-appearance",
+      "risk": "medium",
+      "passCondition": "Header, root rail, scenarios, constellation, inspector and decision controls stack without horizontal overflow.",
+      "primarySurface": "real in-app browser screenshots and measured document width",
+      "counterevidence": "Horizontal overflow, clipped controls, unreadable avatar labels or inaccessible decision actions.",
+      "secondarySurfaceIfNeeded": "semantic interaction at the narrow viewport",
+      "observedEvidence": "innerWidth 390, clientWidth and scrollWidth 375, horizontalOverflow false; scenario, Mirror inspector and HOLD draft controls remained clickable.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claimId": "interaction-boundary",
+      "claim": "Scenario, collaborator and draft controls behave visibly while preserving the human-decision boundary.",
+      "kind": "interaction-journey",
+      "risk": "high",
+      "passCondition": "Actor and scenario clicks update the correct state; missing trial digest refuses; exact digest plus acknowledgement emits only UNAUTHENTICATED_DRAFT with NONE authority/effect; reload clears it; Review Inbox link opens the existing route.",
+      "primarySurface": "real browser click/type/reload journey",
+      "counterevidence": "A missing digest succeeds, a draft persists, the page claims authorization, or exact review is handled locally.",
+      "secondarySurfaceIfNeeded": "focused deterministic selftest and source scan",
+      "observedEvidence": "All named interactions passed; reload returned NO DRAFT; browser console had no errors or warnings.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "claimId": "live-collaborator-state",
+      "claim": "AI provider and Mirror are live-connected and acting in this room.",
+      "kind": "existence",
+      "risk": "high",
+      "required": false,
+      "passCondition": "Fresh provider and Mirror sender/receiver observations prove exact live connections.",
+      "primarySurface": "provider and Mirror transport receipts",
+      "counterevidence": "Only static declarations or visual labels are available.",
+      "secondarySurfaceIfNeeded": null,
+      "observedEvidence": "No provider or Mirror call was made. The UI explicitly shows AI OFF BY DEFAULT and Mirror LIVE UNKNOWN.",
+      "verdict": "UNKNOWN",
+      "namedSeam": "LIVE_COLLABORATOR_OBSERVATION_NOT_IMPLEMENTED"
+    }
+  ],
+  "authority": "NONE"
+}

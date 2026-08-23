@@ -1,0 +1,89 @@
+{
+  "schema": "axm.game-visual-play-evidence/v1",
+  "status": "TEST",
+  "candidateRef": {
+    "id": "four-roots-run-native",
+    "schema": "axm.game-candidate-packet/v1",
+    "sha256": "sha256:0f92db03251710f34c8b50ea13d30e2a910336d3d0d6ceb884824d68951416c7"
+  },
+  "iterationRef": {
+    "id": "four-roots-run-v1-review-iteration-000",
+    "schema": "axm.sandbox-candidate-iteration/v1",
+    "sha256": "sha256:9ad3bfe37db7c90e6d98ff24636d1a1b39c04b58ab4714401b1b521de286a408"
+  },
+  "surface": "in-app browser",
+  "visualBackend": "BROWSER_PRIMARY",
+  "fallbackUsed": false,
+  "rawCaptureRetained": false,
+  "temporaryPathsCreated": [],
+  "cleanupComplete": true,
+  "observations": [
+    {
+      "claim": "desktop render and runtime initialization",
+      "viewport": "default 1280 by 720 observed frame",
+      "baseline": "Review shell showed TEST / detached / not installed; game showed a styled 16 by 10 board, controls, move count 0, and Find Truth first.",
+      "action": "navigate to exact loopback preview after host-boundary repair",
+      "expected": "CSS and external game script load without granting same-origin iframe authority",
+      "observed": "board styled; status advanced from Preparing game to Find Truth first",
+      "verdict": "PASS",
+      "proofFrame": {"sha256": "sha256:3bf69b5b475e063d8033e8c05cf1a9ad5750b3dd454f43f3eb81a51228b61b6b", "byteLength": 73740}
+    },
+    {
+      "claim": "visible control uses the game input gate",
+      "viewport": "default desktop",
+      "baseline": "player at 1,1; moves 0",
+      "action": "click Move right once",
+      "expected": "player advances to 2,1 and move count becomes 1",
+      "observed": "status Position 2, 1.; moves 1",
+      "verdict": "PASS",
+      "proofFrame": {"sha256": "sha256:503eabe267eb4af514cdecde7ff1fdbd3a6ce51a22147760484eced993f9d50b", "byteLength": 73552}
+    },
+    {
+      "claim": "keyboard journey preserves four-root order",
+      "viewport": "default desktop",
+      "baseline": "Truth current; other roots waiting",
+      "action": "ArrowRight and ArrowDown inputs along the declared route",
+      "expected": "Truth, Agency/non-domination, Continuity, then Wisdom-over-speed become complete",
+      "observed": "Continuity completed at move 15; Wisdom-over-speed completed at move 18",
+      "verdict": "PASS",
+      "proofFrame": {"sha256": "sha256:1c44307a78d682a7e481c984f7dd4590b9f8a96418823f15e26ca9e861b58db1", "byteLength": 74852}
+    },
+    {
+      "claim": "complete playable outcome",
+      "viewport": "default desktop",
+      "baseline": "four roots carried forward",
+      "action": "two ArrowDown inputs from Wisdom to the Workshop exit",
+      "expected": "visible victory and complete status",
+      "observed": "Game complete: all four roots reached the Workshop.; moves 20; victory visible",
+      "verdict": "PASS",
+      "proofFrame": {"sha256": "sha256:bbe16911d14b81bf182828a1390a39eb8b3c1e191381c3cd33f7b09320cad007", "byteLength": 81695}
+    },
+    {
+      "claim": "responsive controls remain visible and usable",
+      "viewport": "600 by 800",
+      "baseline": "session reset at move 0",
+      "action": "apply narrow viewport and click Move right",
+      "expected": "all five controls remain visible; click advances one cell",
+      "observed": "all five controls visible; status Position 2, 1.; moves 1",
+      "verdict": "PASS",
+      "proofFrame": {"sha256": "sha256:02933241a67c67a1bc58835e15cc26c7e79a3be377ebafe8f878dd1a481991bd", "byteLength": 46455}
+    },
+    {
+      "claim": "restart truth matches SESSION_ONLY declaration",
+      "viewport": "default desktop",
+      "baseline": "victory visible at move 20",
+      "action": "browser reload",
+      "expected": "state resets rather than pretending persistence",
+      "observed": "moves 0; victory hidden; Truth current; remaining roots waiting",
+      "verdict": "PASS",
+      "proofFrame": null
+    }
+  ],
+  "limitations": [
+    "No timing or animation cadence claim was made.",
+    "Durable persistence is unsupported; only honest reload reset was proven.",
+    "The exit-before-roots countertest was not independently run because the fixed route naturally crosses the checkpoints.",
+    "No installation, integration, publication, active lesson admission, promotion, or CANON action occurred."
+  ],
+  "authority": "NONE"
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.authenticated-human-decision/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "id", "subjectRef", "candidateRef", "seatRef", "trustPolicyRef", "choice", "scope", "tier", "issuedAt", "expiresAt", "nonce", "rootsGate", "authority", "decisionDigest", "signatureBase64"],
+  "properties": {
+    "schema": {"const": "axm.authenticated-human-decision/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "SIGNED_DECISION"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "subjectRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "candidateRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "seatRef": {"$ref": "human-decision-trust-policy.schema.json#/$defs/seatRef"},
+    "trustPolicyRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "choice": {"enum": ["AUTHORIZE", "HOLD", "REJECT"]},
+    "scope": {"const": "TIER_1_CREATE_ONE_DETACHED_CANDIDATE"},
+    "tier": {"const": 1},
+    "issuedAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "nonce": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "authority": {"const": "DECISION_ONLY"},
+    "decisionDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+    "signatureBase64": {"type": "string", "minLength": 88, "maxLength": 88, "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"}
+  }
+}

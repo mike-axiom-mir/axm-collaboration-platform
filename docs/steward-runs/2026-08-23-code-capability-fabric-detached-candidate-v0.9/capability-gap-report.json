@@ -1,0 +1,195 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "native-semantic-candidate",
+      "required": true,
+      "status": "READY",
+      "available": ["candidate.semantic.native.generate"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "candidate.semantic.native.generate": [
+          "existing native review-card adapter recipe only",
+          "generation is rebuilt and byte-bound before writing"
+        ]
+      }
+    },
+    {
+      "id": "signed-human-decision",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.decision.ed25519.verify",
+        "human.revocation.ed25519.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.decision.ed25519.verify": [
+          "verification is relative to the exact key in the host-selected trust policy",
+          "the module does not handle signing keys"
+        ],
+        "human.revocation.ed25519.verify": [
+          "separate revocation key and signed current snapshot",
+          "seat, key, nonce, and decision-digest revocations are checked"
+        ]
+      }
+    },
+    {
+      "id": "bounded-detached-write",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "human.decision.replay.reserve-host-ledger",
+        "candidate.detached.materialize-tier1",
+        "candidate.structure.inspect-detached"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.decision.replay.reserve-host-ledger": [
+          "exclusive hashed reservation in one pre-provisioned Nursery ledger",
+          "reservation survives candidate failure or discard",
+          "not global or cross-host"
+        ],
+        "candidate.detached.materialize-tier1": [
+          "one NATIVE_ONLY candidate under one new direct-child root",
+          "exclusive writes, exact-byte readback, fixed permissions and lifecycle false",
+          "candidate remains EXPERIMENTAL, uninstalled, unexecuted, and research-only"
+        ],
+        "candidate.structure.inspect-detached": [
+          "existing Detached Candidate Nursery static inspector",
+          "structure evidence does not prove runtime behavior or quality"
+        ]
+      }
+    },
+    {
+      "id": "program-to-semantic-request",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["creation.program.bridge-semantic-request"],
+      "declaredConstraints": {
+        "creation.program.bridge-semantic-request": [
+          "v0.9 does not translate a bounded creation program into semantic generator input"
+        ]
+      }
+    },
+    {
+      "id": "arbitrary-domain-generation",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["creation.recipe.generate-arbitrary-domain"],
+      "declaredConstraints": {
+        "creation.recipe.generate-arbitrary-domain": [
+          "only the accepted native review-card adapter recipe is materializable"
+        ]
+      }
+    },
+    {
+      "id": "strong-human-assurance",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "human.time.independently-trusted",
+        "human.identity.natural-person-prove",
+        "human.decision.informed-understanding-prove",
+        "human.decision.replay.prevent-global"
+      ],
+      "declaredConstraints": {
+        "human.time.independently-trusted": [
+          "decision and revocation windows use a trusted-entrypoint time observation, not an independent time authority"
+        ],
+        "human.identity.natural-person-prove": [
+          "a valid seat-key signature is not proof of natural-person identity"
+        ],
+        "human.decision.informed-understanding-prove": [
+          "signature verification does not prove comprehension or absence of coercion"
+        ],
+        "human.decision.replay.prevent-global": [
+          "replay protection is scoped to one host-bound Nursery ledger"
+        ]
+      }
+    },
+    {
+      "id": "candidate-execution",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["sandbox.execute-exact-candidate"],
+      "declaredConstraints": {
+        "sandbox.execute-exact-candidate": [
+          "repaired disposable executor remains separately unauthorized"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "creation.program.bridge-semantic-request",
+    "creation.recipe.generate-arbitrary-domain",
+    "human.decision.informed-understanding-prove",
+    "human.decision.replay.prevent-global",
+    "human.identity.natural-person-prove",
+    "human.time.independently-trusted",
+    "sandbox.execute-exact-candidate"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "creation.program.bridge-semantic-request",
+      "requiredBy": ["program-to-semantic-request"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "creation.recipe.generate-arbitrary-domain",
+      "requiredBy": ["arbitrary-domain-generation"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "human.decision.informed-understanding-prove",
+      "requiredBy": ["strong-human-assurance"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "human.decision.replay.prevent-global",
+      "requiredBy": ["strong-human-assurance"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "human.identity.natural-person-prove",
+      "requiredBy": ["strong-human-assurance"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "human.time.independently-trusted",
+      "requiredBy": ["strong-human-assurance"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "sandbox.execute-exact-candidate",
+      "requiredBy": ["candidate-execution"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

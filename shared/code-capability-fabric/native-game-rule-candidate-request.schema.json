@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.native-game-rule-candidate-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "tier", "mode", "applicationPlan", "consent", "resourceEnvelope", "instructionRef", "authority", "requestDigest"],
+  "properties": {
+    "schema": {"const": "axm.native-game-rule-candidate-request/v1"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "tier": {"const": 1},
+    "mode": {"const": "NATIVE_IN_MEMORY_DRAFT"},
+    "applicationPlan": {"$ref": "code-recipe-application-plan.schema.json"},
+    "consent": {"$ref": "#/$defs/consent"},
+    "resourceEnvelope": {"$ref": "#/$defs/resources"},
+    "instructionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "authority": {"const": "NONE"},
+    "requestDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "evaluationInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "instance", "evaluatedAt"],
+      "properties": {
+        "policy": {"$ref": "grounded-consent-policy.schema.json"},
+        "instance": {"$ref": "grounded-consent-instance.schema.json"},
+        "evaluatedAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evaluationInput", "evaluation"],
+      "properties": {
+        "evaluationInput": {"$ref": "#/$defs/evaluationInput"},
+        "evaluation": {"$ref": "grounded-consent-evaluation.schema.json"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxInputBytes", "maxOutputBytes", "maxMemoryBytes", "maxDurationMs", "maxProcesses", "maxAttempts", "maxCostMinorUnits"],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 524288},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 524288},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1, "maximum": 1073741824},
+        "maxDurationMs": {"type": "integer", "minimum": 1, "maximum": 60000},
+        "maxProcesses": {"const": 1},
+        "maxAttempts": {"const": 1},
+        "maxCostMinorUnits": {"const": 0}
+      }
+    }
+  }
+}

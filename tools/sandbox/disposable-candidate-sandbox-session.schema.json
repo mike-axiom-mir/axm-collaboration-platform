@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.disposable-candidate-sandbox-session/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "sessionId", "candidateRef", "requestRef", "authorizationRef", "roots", "iteration", "resources", "truth", "authority", "sessionDigest"],
+  "properties": {
+    "schema": {"const": "axm.disposable-candidate-sandbox-session/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "TEST"},
+    "sessionId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "candidateRef": {"$ref": "../../shared/code-capability-fabric/semantic-common.schema.json#/$defs/reference"},
+    "requestRef": {"$ref": "../../shared/code-capability-fabric/semantic-common.schema.json#/$defs/reference"},
+    "authorizationRef": {"$ref": "../../shared/code-capability-fabric/semantic-common.schema.json#/$defs/reference"},
+    "roots": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source", "output", "evidence", "lessons"],
+      "properties": {"source": {"const": "source"}, "output": {"const": "output"}, "evidence": {"const": "evidence"}, "lessons": {"const": "lessons"}}
+    },
+    "iteration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "number", "digest", "fileCount", "sourceBytes", "staticVerdict"],
+      "properties": {
+        "id": {"const": "iteration-000"}, "number": {"const": 0},
+        "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "fileCount": {"type": "integer", "minimum": 1, "maximum": 32},
+        "sourceBytes": {"type": "integer", "minimum": 1, "maximum": 2097152},
+        "staticVerdict": {"const": "PASS"}
+      }
+    },
+    "resources": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidateProcesses", "networkDomains", "fileCountEnforced", "fileBytesEnforced", "totalBytesEnforced", "iterationCeilingEnforced"],
+      "properties": {"candidateProcesses": {"const": 0}, "networkDomains": {"const": []}, "fileCountEnforced": {"const": true}, "fileBytesEnforced": {"const": true}, "totalBytesEnforced": {"const": true}, "iterationCeilingEnforced": {"const": true}}
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sourceOutputEvidenceDisjoint", "sourceImmutable", "candidateCodeExecuted", "previewStarted", "runtimeBehaviorProven", "visualBehaviorProven", "playJourneyProven", "installed", "integrated", "lessonActive", "canonChanged"],
+      "properties": {"sourceOutputEvidenceDisjoint": {"const": true}, "sourceImmutable": {"const": true}, "candidateCodeExecuted": {"const": false}, "previewStarted": {"const": false}, "runtimeBehaviorProven": {"const": false}, "visualBehaviorProven": {"const": false}, "playJourneyProven": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "lessonActive": {"const": false}, "canonChanged": {"const": false}}
+    },
+    "authority": {"const": "NONE"},
+    "sessionDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

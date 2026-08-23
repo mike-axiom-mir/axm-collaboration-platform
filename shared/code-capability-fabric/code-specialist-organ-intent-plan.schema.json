@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-specialist-organ-intent-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "requestRef", "specialistContext", "fieldPackRef", "organIntent", "holds", "capabilityGapReport", "resourceObservation", "limitations", "nextGate", "truth", "authority", "planDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-specialist-organ-intent-plan/v1"},
+    "version": {"const": "1.6.0"},
+    "status": {"enum": ["ROOTS_HOLD", "SPECIALIZATION_HOLD", "SELECTION_HOLD", "FIELD_PACK_HOLD", "INTENT_HOLD", "READY_FOR_ORGAN_INTENT_REVIEW"]},
+    "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "specialistContext": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["specializationRequestRef", "specializationPlanRef", "catalogRef", "observationRef", "artifactPlan", "selectedLane"],
+          "properties": {
+            "specializationRequestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+            "specializationPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+            "catalogRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+            "observationRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+            "artifactPlan": {"$ref": "code-specialization-plan.schema.json#/$defs/artifactPlan"},
+            "selectedLane": {"$ref": "code-specialization-plan.schema.json#/$defs/lane"}
+          }
+        }
+      ]
+    },
+    "fieldPackRef": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/packRef"}]},
+    "organIntent": {"oneOf": [{"type": "null"}, {"$ref": "../deterministic-organ-fabric/schemas/organ-intent.schema.json"}]},
+    "holds": {"type": "array", "maxItems": 64, "items": {"type": "object", "additionalProperties": false, "required": ["code", "detail"], "properties": {"code": {"type": "string"}, "detail": {"type": "string"}}}},
+    "capabilityGapReport": {"$ref": "code-specialization-plan.schema.json#/$defs/gapReport"},
+    "resourceObservation": {"$ref": "#/$defs/resources"},
+    "limitations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "nextGate": {"enum": ["REPAIR_ROOT_EVIDENCE_AND_REPLAN", "REFRESH_EXACT_SPECIALIZATION_PLAN_AND_REPLAN", "SELECT_ONE_EXACT_SPECIALIST_LANE_AND_REPLAN", "USE_EXACT_REVIEWED_SOFTWARE_WORKSHOP_FIELD_PACK", "REPAIR_EXPLICIT_TYPED_ORGAN_INTENT_DRAFT", "HUMAN_REVIEW_EXACT_ORGAN_INTENT_BEFORE_SEPARATE_GENERATION_REQUEST"]},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "planDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "versionedRef": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "version", "sha256"], "properties": {"id": {"type": "string"}, "schema": {"type": "string"}, "version": {"type": "string"}, "sha256": {"$ref": "semantic-common.schema.json#/$defs/digest"}}},
+    "packRef": {"type": "object", "additionalProperties": false, "required": ["id", "version", "digest"], "properties": {"id": {"type": "string"}, "version": {"type": "string"}, "digest": {"$ref": "semantic-common.schema.json#/$defs/digest"}}},
+    "resources": {"type": "object", "additionalProperties": false, "required": ["inputBytes", "outputBytes", "attemptsEnforced", "durationEnforced", "memoryEnforced", "processesSpawned", "providerCalled", "networkUsed", "sourceBytesRead", "workspaceRead", "workspaceWritten"], "properties": {"inputBytes": {"type": "integer", "minimum": 1}, "outputBytes": {"type": "integer", "minimum": 1}, "attemptsEnforced": {"const": true}, "durationEnforced": {"const": false}, "memoryEnforced": {"const": false}, "processesSpawned": {"const": 0}, "providerCalled": {"const": false}, "networkUsed": {"const": false}, "sourceBytesRead": {"const": false}, "workspaceRead": {"const": false}, "workspaceWritten": {"const": false}}},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deterministicPlanOnly", "rootsEvaluatedBeforeSpecialization", "specializationPlanRebuilt", "specialistProfileProvesCapability", "pathClassificationProvesSemantics", "intentInferred", "specialistLineageBoundIntoIntent", "knowledgeLoaded", "lessonAdmitted", "organIntentCreated", "organGenerated", "candidateExecuted", "testsRun", "permissionGranted", "networkUsed", "workspaceWritten", "installed", "integrated", "published", "promoted", "canonChanged", "mikeFinalMergeGatePreserved"],
+      "properties": {
+        "deterministicPlanOnly": {"const": true},
+        "rootsEvaluatedBeforeSpecialization": {"const": true},
+        "specializationPlanRebuilt": {"type": "boolean"},
+        "specialistProfileProvesCapability": {"const": false},
+        "pathClassificationProvesSemantics": {"const": false},
+        "intentInferred": {"const": false},
+        "specialistLineageBoundIntoIntent": {"type": "boolean"},
+        "knowledgeLoaded": {"const": false},
+        "lessonAdmitted": {"const": false},
+        "organIntentCreated": {"type": "boolean"},
+        "organGenerated": {"const": false},
+        "candidateExecuted": {"const": false},
+        "testsRun": {"const": false},
+        "permissionGranted": {"const": false},
+        "networkUsed": {"const": false},
+        "workspaceWritten": {"const": false},
+        "installed": {"const": false},
+        "integrated": {"const": false},
+        "published": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false},
+        "mikeFinalMergeGatePreserved": {"const": true}
+      }
+    }
+  }
+}

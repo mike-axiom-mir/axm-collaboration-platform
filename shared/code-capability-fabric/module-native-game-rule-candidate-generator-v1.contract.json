@@ -1,0 +1,75 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "native-game-rule-candidate-generator-v1",
+  "version": "v1.4",
+  "status": "TEST",
+  "provides": [
+    "axm.native-game-rule-candidate-request/v1",
+    "axm.native-game-rule-candidate-packet/v1",
+    "code.recipe.application.generate-inert-native-game-rule-candidate/v1"
+  ],
+  "consumes": [
+    "axm.code-recipe-application-plan/v1",
+    "axm.grounded-consent-evaluation/v1",
+    "axm.module-bundle/v1",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.native-game-rule-candidate-packet/v1"],
+    "accepts": ["axm.native-game-rule-candidate-request/v1"]
+  },
+  "rootsGate": [
+    "truth",
+    "agency-non-domination",
+    "continuity",
+    "wisdom-over-speed"
+  ],
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "reads": [
+      "module-local:code-recipe-foundry/catalog/code-cheats-1000.code-recipes.json",
+      "module-local:code-recipe-foundry/catalog/code-cheats-1000.syntax-audit.json",
+      "module-local:code-recipe-foundry/module.contract.json"
+    ],
+    "writes": [],
+    "refuses": [
+      "arbitrary-blueprint-generation",
+      "arbitrary-recipe-application",
+      "automatic-recipe-selection",
+      "automatic-semantic-mapping",
+      "atlas-snippet-emission",
+      "atlas-snippet-copying",
+      "atlas-snippet-application",
+      "atlas-snippet-execution",
+      "direct-reuse-authorization",
+      "authenticated-human-decision-claim",
+      "host-authorization",
+      "provider-call",
+      "provider-code-load",
+      "network-use",
+      "target-workspace-read",
+      "target-workspace-write",
+      "filesystem-write",
+      "child-process-spawn",
+      "candidate-code-execution",
+      "test-execution",
+      "runtime-proof",
+      "correctness-proof",
+      "safety-proof",
+      "candidate-materialization",
+      "installation",
+      "integration",
+      "publication",
+      "persistent-learning",
+      "hardware-actuation",
+      "promotion",
+      "canon-change"
+    ]
+  }
+}

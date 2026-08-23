@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axm.workshop-contract-repair-candidate/v1",
+  "title": "AXM Workshop Contract Repair Candidate v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "id", "requestRef", "observationRef", "planRef", "target", "repairClass", "alternatives", "comparison", "requiredTests", "limitations", "truth", "authority", "candidateDigest"],
+  "properties": {
+    "schema": {"const": "axm.workshop-contract-repair-candidate/v1"}, "version": {"const": "1.0.0"}, "status": {"const": "EXPERIMENTAL"}, "id": {"type": "string"},
+    "requestRef": {"$ref": "#/definitions/reference"}, "observationRef": {"$ref": "#/definitions/reference"}, "planRef": {"$ref": "#/definitions/reference"}, "target": {"$ref": "#/definitions/target"}, "repairClass": {"const": "LEGACY_MANIFEST_SCHEMA_AND_KIND"},
+    "alternatives": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/definitions/alternative"}},
+    "comparison": {"type": "object", "additionalProperties": false, "required": ["ranking", "selectedAlternative", "equalAuthority", "permissionDelta", "contractBytesChanged"], "properties": {"ranking": {"const": "NONE"}, "selectedAlternative": {"type": "null"}, "equalAuthority": {"const": true}, "permissionDelta": {"const": {"added": [], "removed": []}}, "contractBytesChanged": {"const": false}}},
+    "requiredTests": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "#/definitions/test"}}, "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}, "truth": {"$ref": "#/definitions/truth"}, "authority": {"const": "NONE"}, "candidateDigest": {"$ref": "#/definitions/digest"}
+  },
+  "definitions": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "reference": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"type": "string"}, "schema": {"type": "string"}, "sha256": {"$ref": "#/definitions/digest"}}},
+    "fileRef": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "byteLength"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/definitions/digest"}, "byteLength": {"type": "integer", "minimum": 1}}},
+    "target": {"type": "object", "additionalProperties": false, "required": ["toolId", "manifestPath", "contractPath", "selftestPath"], "properties": {"toolId": {"type": "string"}, "manifestPath": {"type": "string"}, "contractPath": {"type": "string"}, "selftestPath": {"type": "string"}}},
+    "patchOperation": {"type": "object", "additionalProperties": false, "required": ["operation", "pointer", "value"], "properties": {"operation": {"const": "JSON_ADD"}, "pointer": {"enum": ["/schema", "/kind"]}, "value": {"type": "string"}}},
+    "validation": {"type": "object", "additionalProperties": false, "required": ["pass", "errors"], "properties": {"pass": {"const": true}, "errors": {"const": []}}},
+    "alternative": {"type": "object", "additionalProperties": false, "required": ["id", "kind", "patch", "candidateRef", "manifestValidation", "contractValidation", "semanticFitness", "ranking", "requiresHumanSelection"], "properties": {"id": {"type": "string"}, "kind": {"enum": ["adapter", "machine-capability", "product", "scaffold", "service"]}, "patch": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/definitions/patchOperation"}}, "candidateRef": {"$ref": "#/definitions/fileRef"}, "manifestValidation": {"$ref": "#/definitions/validation"}, "contractValidation": {"$ref": "#/definitions/validation"}, "semanticFitness": {"const": "UNKNOWN"}, "ranking": {"type": "null"}, "requiresHumanSelection": {"const": true}}},
+    "test": {"type": "object", "additionalProperties": false, "required": ["id", "command", "claim", "status", "evidenceRefs"], "properties": {"id": {"type": "string"}, "command": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string"}}, "claim": {"type": "string"}, "status": {"const": "NOT_RUN"}, "evidenceRefs": {"const": []}}},
+    "truth": {"type": "object", "additionalProperties": false, "required": ["draftDetached", "alternativesUnranked", "humanSelectionRequired", "candidateExecuted", "testsExecuted", "sourceWritten", "permissionsChanged", "contractBytesChanged", "installed", "integrated", "published", "promoted", "canonChanged"], "properties": {"draftDetached": {"const": true}, "alternativesUnranked": {"const": true}, "humanSelectionRequired": {"const": true}, "candidateExecuted": {"const": false}, "testsExecuted": {"const": false}, "sourceWritten": {"const": false}, "permissionsChanged": {"const": false}, "contractBytesChanged": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "published": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}}}
+  }
+}

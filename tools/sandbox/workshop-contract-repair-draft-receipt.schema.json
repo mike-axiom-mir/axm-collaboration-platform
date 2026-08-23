@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axm.workshop-contract-repair-draft-receipt/v1",
+  "title": "AXM Workshop Contract Repair Draft Receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "sessionId", "iteration", "sourceLabel", "requestRef", "observationRef", "sourceStateDigest", "planRef", "candidateRef", "generatorRefs", "outputRefs", "roots", "resources", "privacy", "truth", "authority", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.workshop-contract-repair-draft-receipt/v1"}, "version": {"const": "1.0.0"}, "status": {"const": "TEST"}, "sessionId": {"type": "string"}, "iteration": {"type": "object", "additionalProperties": false, "required": ["id", "number"], "properties": {"id": {"type": "string"}, "number": {"type": "integer", "minimum": 0, "maximum": 7}}}, "sourceLabel": {"type": "string"},
+    "requestRef": {"$ref": "#/definitions/reference"}, "observationRef": {"$ref": "#/definitions/reference"}, "sourceStateDigest": {"$ref": "#/definitions/digest"}, "planRef": {"$ref": "#/definitions/reference"}, "candidateRef": {"$ref": "#/definitions/reference"},
+    "generatorRefs": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/definitions/fileRef"}}, "outputRefs": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/definitions/fileRef"}},
+    "roots": {"type": "object", "additionalProperties": false, "required": ["source", "output", "evidence"], "properties": {"source": {"const": "source"}, "output": {"const": "output"}, "evidence": {"const": "evidence"}}},
+    "resources": {"type": "object", "additionalProperties": false, "required": ["inputFiles", "inputBytes", "sourceRecordFiles", "sourceRecordBytes", "outputFiles", "outputBytes", "evidenceFiles", "evidenceBytesExcludingReceipt", "networkRequests", "childProcesses", "enforced"], "properties": {"inputFiles": {"const": 3}, "inputBytes": {"type": "integer", "minimum": 3}, "sourceRecordFiles": {"const": 1}, "sourceRecordBytes": {"type": "integer", "minimum": 1}, "outputFiles": {"const": 6}, "outputBytes": {"type": "integer", "minimum": 6}, "evidenceFiles": {"const": 2}, "evidenceBytesExcludingReceipt": {"type": "integer", "minimum": 1}, "networkRequests": {"const": 0}, "childProcesses": {"const": 0}, "enforced": {"const": true}}},
+    "privacy": {"type": "object", "additionalProperties": false, "required": ["sourceBytesInEvidence", "candidateBytesInOutput", "stdoutRetained", "stderrRetained", "machinePathsRetained", "secretsRead"], "properties": {"sourceBytesInEvidence": {"const": false}, "candidateBytesInOutput": {"const": true}, "stdoutRetained": {"const": false}, "stderrRetained": {"const": false}, "machinePathsRetained": {"const": false}, "secretsRead": {"const": false}}},
+    "truth": {"type": "object", "additionalProperties": false, "required": ["sourceSnapshotReverifiedBeforeWrite", "sourceWritten", "draftDetached", "alternativesUnranked", "humanSelectionRequired", "machineSelected", "candidateExecuted", "testsExecuted", "installed", "integrated", "published", "promoted", "canonChanged"], "properties": {"sourceSnapshotReverifiedBeforeWrite": {"const": true}, "sourceWritten": {"const": false}, "draftDetached": {"const": true}, "alternativesUnranked": {"const": true}, "humanSelectionRequired": {"const": true}, "machineSelected": {"const": false}, "candidateExecuted": {"const": false}, "testsExecuted": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "published": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}}},
+    "authority": {"const": "NONE"}, "receiptDigest": {"$ref": "#/definitions/digest"}
+  },
+  "definitions": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "reference": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"type": "string"}, "schema": {"type": "string"}, "sha256": {"$ref": "#/definitions/digest"}}},
+    "fileRef": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "byteLength"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/definitions/digest"}, "byteLength": {"type": "integer", "minimum": 1}}}
+  }
+}

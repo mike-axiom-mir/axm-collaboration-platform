@@ -1,0 +1,80 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "workshop-shadow",
+  "version": "1.1.0",
+  "provides": [
+    "workshop.shadow.snapshot.byte-bound",
+    "workshop.shadow.snapshot.refresh",
+    "workshop.shadow.snapshot.privacy-scoped",
+    "workshop.improvement.draft.detached-overlay",
+    "workshop.improvement.draft.stale-block",
+    "workshop.improvement.preview.current-snapshot-only",
+    "workshop.improvement.preview.no-candidate-execution",
+    "workshop.improvement.source-writeback.impossible",
+    "workshop.contract-repair.legacy-declaration.detect/v1",
+    "workshop.contract-repair.alternatives.unranked/v1",
+    "workshop.contract-repair.required-tests.not-run/v1",
+    "workshop.contract-repair.human-selection.required/v1"
+  ],
+  "consumes": [
+    "axm.workshop-shadow-refresh-request/v1",
+    "axm.workshop-shadow-improvement-plan/v1",
+    "tools/deterministic-json-core",
+    "shared/readiness/tool-readiness",
+    "filesystem:state/workshop-shadow-sandboxes",
+    "axm.workshop-contract-repair-request/v1",
+    "axm.workshop-contract-observation/v1",
+    "shared/readiness/tool-readiness",
+    "hub/module-contract-verifier",
+    "filesystem:state/workshop-contract-repair-sandboxes"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.workshop-shadow-snapshot/v1", "axm.workshop-shadow-draft-receipt/v1", "axm.workshop-contract-repair-plan/v1", "axm.workshop-contract-repair-candidate/v1", "axm.workshop-contract-repair-draft-receipt/v1", "detached-tools-index-json"],
+    "accepts": ["axm.workshop-shadow-refresh-request/v1", "axm.workshop-shadow-improvement-plan/v1", "axm.workshop-contract-repair-request/v1", "axm.workshop-contract-observation/v1"]
+  },
+  "boundaries": {
+    "writes": [
+      "state/workshop-shadow-sandboxes/<session>/source/<immutable-snapshot-record>",
+      "state/workshop-shadow-sandboxes/<session>/output/<immutable-iteration>/tools-index.json",
+      "state/workshop-shadow-sandboxes/<session>/evidence/<immutable-plan-and-receipt>"
+      ,"state/workshop-contract-repair-sandboxes/<session>/source/<immutable-observation-record>"
+      ,"state/workshop-contract-repair-sandboxes/<session>/output/<immutable-unranked-alternatives>"
+      ,"state/workshop-contract-repair-sandboxes/<session>/evidence/<immutable-plan-and-receipt>"
+    ],
+    "refuses": [
+      "arbitrary-command",
+      "candidate-child-process",
+      "candidate-host-environment",
+      "candidate-host-credentials",
+      "candidate-network",
+      "source-output-evidence-overlap",
+      "source-iteration-mutation",
+      "stale-workshop-draft-preview",
+      "raw-source-in-durable-evidence",
+      "stdout-or-stderr-in-durable-evidence",
+      "machine-path-in-durable-evidence",
+      "workshop-source-writeback",
+      "workshop-candidate-execution",
+      "unscoped-workshop-file-retention",
+      "workshop-recovery-or-missing-file-restoration-claim",
+      "unsupported-workshop-improvement-recipe",
+      "repair-beyond-legacy-schema-and-kind",
+      "silent-alternative-ranking",
+      "machine-alternative-selection",
+      "semantic-fitness-from-structural-validation",
+      "required-test-as-executed-test",
+      "automatic-installation",
+      "automatic-integration",
+      "automatic-publication",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

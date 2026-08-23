@@ -1,0 +1,89 @@
+{
+  "capabilities": [
+    {
+      "id": "candidate.semantic.native.generate",
+      "status": "available",
+      "constraints": [
+        "existing native review-card adapter recipe only",
+        "generation is rebuilt and byte-bound before writing"
+      ]
+    },
+    {
+      "id": "human.decision.ed25519.verify",
+      "status": "available",
+      "constraints": [
+        "verification is relative to the exact key in the host-selected trust policy",
+        "the module does not handle signing keys"
+      ]
+    },
+    {
+      "id": "human.revocation.ed25519.verify",
+      "status": "available",
+      "constraints": [
+        "separate revocation key and signed current snapshot",
+        "seat, key, nonce, and decision-digest revocations are checked"
+      ]
+    },
+    {
+      "id": "human.decision.replay.reserve-host-ledger",
+      "status": "available",
+      "constraints": [
+        "exclusive hashed reservation in one pre-provisioned Nursery ledger",
+        "reservation survives candidate failure or discard",
+        "not global or cross-host"
+      ]
+    },
+    {
+      "id": "candidate.detached.materialize-tier1",
+      "status": "available",
+      "constraints": [
+        "one NATIVE_ONLY candidate under one new direct-child root",
+        "exclusive writes, exact-byte readback, fixed permissions and lifecycle false",
+        "candidate remains EXPERIMENTAL, uninstalled, unexecuted, and research-only"
+      ]
+    },
+    {
+      "id": "candidate.structure.inspect-detached",
+      "status": "available",
+      "constraints": [
+        "existing Detached Candidate Nursery static inspector",
+        "structure evidence does not prove runtime behavior or quality"
+      ]
+    },
+    {
+      "id": "creation.program.bridge-semantic-request",
+      "status": "unavailable",
+      "constraints": ["v0.9 does not translate a bounded creation program into semantic generator input"]
+    },
+    {
+      "id": "creation.recipe.generate-arbitrary-domain",
+      "status": "unavailable",
+      "constraints": ["only the accepted native review-card adapter recipe is materializable"]
+    },
+    {
+      "id": "human.time.independently-trusted",
+      "status": "unavailable",
+      "constraints": ["decision and revocation windows use a trusted-entrypoint time observation, not an independent time authority"]
+    },
+    {
+      "id": "human.identity.natural-person-prove",
+      "status": "unavailable",
+      "constraints": ["a valid seat-key signature is not proof of natural-person identity"]
+    },
+    {
+      "id": "human.decision.informed-understanding-prove",
+      "status": "unavailable",
+      "constraints": ["signature verification does not prove comprehension or absence of coercion"]
+    },
+    {
+      "id": "human.decision.replay.prevent-global",
+      "status": "unavailable",
+      "constraints": ["replay protection is scoped to one host-bound Nursery ledger"]
+    },
+    {
+      "id": "sandbox.execute-exact-candidate",
+      "status": "unavailable",
+      "constraints": ["repaired disposable executor remains separately unauthorized"]
+    }
+  ]
+}

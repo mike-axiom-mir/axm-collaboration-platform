@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-specialization-catalog/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "version", "status", "axes", "languages", "specialistOrgans", "knowledgePolicy", "truth"],
+  "properties": {
+    "schema":{"const":"axm.code-specialization-catalog/v1"},
+    "id":{"const":"workshop-code-specialization-catalog-v1"},
+    "version":{"const":"1.5.0"},
+    "status":{"const":"TEST"},
+    "axes": {
+      "type":"object","additionalProperties":false,
+      "required":["artifactFamilies","responsibilities","runtimes","frameworks"],
+      "properties": {
+        "artifactFamilies":{"$ref":"#/$defs/ids"},"responsibilities":{"$ref":"#/$defs/ids"},
+        "runtimes":{"$ref":"#/$defs/ids"},"frameworks":{"$ref":"#/$defs/ids"}
+      }
+    },
+    "languages": {
+      "type":"array","minItems":1,"maxItems":256,
+      "items": {
+        "type":"object","additionalProperties":false,"required":["id","family","extensions","basenames"],
+        "properties": {
+          "id":{"type":"string","pattern":"^[a-z0-9][a-z0-9._-]{0,127}$"},
+          "family":{"type":"string","pattern":"^[a-z0-9][a-z0-9._-]{0,127}$"},
+          "extensions":{"type":"array","maxItems":24,"uniqueItems":true,"items":{"type":"string","pattern":"^\\.[a-z0-9][a-z0-9._+-]*$"}},
+          "basenames":{"type":"array","maxItems":12,"uniqueItems":true,"items":{"type":"string","minLength":1,"maxLength":80}}
+        }
+      }
+    },
+    "specialistOrgans":{"type":"array","minItems":1,"maxItems":64,"items":{"$ref":"code-specialist-organ-profile.schema.json"}},
+    "knowledgePolicy": {
+      "type":"object","additionalProperties":false,
+      "required":["allowedLessonKinds","forbiddenDurableContent","initialState","automaticAdmission","runningAttemptMutation","requiresHeldOutRegression","requiresHumanDecision"],
+      "properties": {
+        "allowedLessonKinds":{"type":"array","minItems":1,"maxItems":8,"uniqueItems":true,"items":{"enum":["ACCEPTED_RECIPE","COUNTERTEST","PRIVACY_SAFE_FAILURE_RULE","TEST"]}},
+        "forbiddenDurableContent":{"type":"array","minItems":1,"maxItems":16,"uniqueItems":true,"items":{"type":"string","pattern":"^[A-Z0-9_]+$"}},
+        "initialState":{"const":"REFERENCE_ONLY_EMPTY"},"automaticAdmission":{"const":false},"runningAttemptMutation":{"const":false},
+        "requiresHeldOutRegression":{"const":true},"requiresHumanDecision":{"const":true}
+      }
+    },
+    "truth": {
+      "type":"object","additionalProperties":false,
+      "required":["completeLanguageUniverseClaimed","fileExtensionProvesLanguage","pathClassificationProvesSemantics","specialistProfileProvesCapability","knowledgeAttached","learningPerformed","authorityGranted"],
+      "properties": {
+        "completeLanguageUniverseClaimed":{"const":false},"fileExtensionProvesLanguage":{"const":false},
+        "pathClassificationProvesSemantics":{"const":false},"specialistProfileProvesCapability":{"const":false},
+        "knowledgeAttached":{"const":false},"learningPerformed":{"const":false},"authorityGranted":{"const":false}
+      }
+    }
+  },
+  "$defs": {
+    "ids":{"type":"array","minItems":1,"maxItems":128,"uniqueItems":true,"items":{"type":"string","pattern":"^[a-z0-9][a-z0-9._-]{0,127}$"}}
+  }
+}
+

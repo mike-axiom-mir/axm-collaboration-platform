@@ -1,0 +1,208 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "bounded-cross-domain-program",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "creation.graph.compile.deterministic",
+        "creation.route.bind-exact-fabric-v2",
+        "creation.evidence.route-domain-native",
+        "creation.boundary.intersect-authority-resources",
+        "creation.gaps.emit-hand-foundry-intake",
+        "creation.records.validate-standalone"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "creation.graph.compile.deterministic": [
+          "typed artifact graph only",
+          "64 artifact and 16 dependency-depth hard maxima",
+          "plan-only output"
+        ],
+        "creation.route.bind-exact-fabric-v2": [
+          "one exact route plan per typed requirement",
+          "route observations remain input claims"
+        ],
+        "creation.evidence.route-domain-native": [
+          "fourteen claim kinds",
+          "all observed evidence remains empty, UNKNOWN, and NOT_RUN"
+        ],
+        "creation.boundary.intersect-authority-resources": [
+          "declaration and planning only",
+          "no runtime enforcement claim"
+        ],
+        "creation.gaps.emit-hand-foundry-intake": [
+          "specification remains DRAFT",
+          "specification does not implement or close the gap"
+        ],
+        "creation.records.validate-standalone": [
+          "closed schemas",
+          "digest and internal consistency validation",
+          "deterministic rebuild verification when the exact request is supplied"
+        ]
+      }
+    },
+    {
+      "id": "natural-language-goal-compiler",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "creation.goal.compile-semantics"
+      ],
+      "declaredConstraints": {
+        "creation.goal.compile-semantics": [
+          "v0.8 requires human-authored typed artifacts, requirements, and claims"
+        ]
+      }
+    },
+    {
+      "id": "universal-artifact-generation",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "creation.artifact.generate-by-domain"
+      ],
+      "declaredConstraints": {
+        "creation.artifact.generate-by-domain": [
+          "existing recipes cover bounded examples rather than every domain",
+          "unsupported requests remain typed gaps"
+        ]
+      }
+    },
+    {
+      "id": "authenticated-higher-tier-decision",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "human.decision.authenticate-exact-tier"
+      ],
+      "declaredConstraints": {
+        "human.decision.authenticate-exact-tier": [
+          "natural-person authentication, trusted time, live revocation, independent replay, and host authorization remain separate"
+        ]
+      }
+    },
+    {
+      "id": "candidate-execution",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "sandbox.execute-exact-candidate"
+      ],
+      "declaredConstraints": {
+        "sandbox.execute-exact-candidate": [
+          "repaired disposable executor remains unauthorized"
+        ]
+      }
+    },
+    {
+      "id": "workshop-integration",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "mike.integrate-on-clean-v0.7-base"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "mike.integrate-on-clean-v0.7-base": [
+          "active recovery checkout is dirty",
+          "active recovery checkout does not contain the v0.7 base"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "creation.artifact.generate-by-domain",
+    "creation.goal.compile-semantics",
+    "human.decision.authenticate-exact-tier",
+    "sandbox.execute-exact-candidate"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "creation.artifact.generate-by-domain",
+      "requiredBy": [
+        "universal-artifact-generation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "creation.goal.compile-semantics",
+      "requiredBy": [
+        "natural-language-goal-compiler"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "human.decision.authenticate-exact-tier",
+      "requiredBy": [
+        "authenticated-higher-tier-decision"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sandbox.execute-exact-candidate",
+      "requiredBy": [
+        "candidate-execution"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

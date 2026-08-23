@@ -1,0 +1,152 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "emit-one-inert-native-game-rule-draft",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.application.rebuild-exact-plan",
+        "code.recipe.application.generate-inert-native-game-rule-candidate",
+        "artifact.bundle.validate-portable-byte-lineage",
+        "consent.scope.bind-exact-generation-request"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.application.rebuild-exact-plan": [
+          "v1.2 installed Foundry plan only"
+        ],
+        "code.recipe.application.generate-inert-native-game-rule-candidate": [
+          "one fixed bounded game-rule shape",
+          "in-memory candidate data only",
+          "candidate runtime unexecuted"
+        ],
+        "artifact.bundle.validate-portable-byte-lineage": [
+          "existing semantic candidate bundle validator plus exact v1.4 emitted-record rebuild"
+        ],
+        "consent.scope.bind-exact-generation-request": [
+          "scope evaluation only; authentication remains separate"
+        ]
+      }
+    },
+    {
+      "id": "write-candidate-to-detached-nursery",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "consent.human-decision.authenticate-game-rule-candidate",
+        "candidate.materialize.arbitrary-native-recipe"
+      ],
+      "declaredConstraints": {
+        "consent.human-decision.authenticate-game-rule-candidate": [
+          "existing trust policy is limited to the Review-Card recipe"
+        ],
+        "candidate.materialize.arbitrary-native-recipe": [
+          "existing materializer is limited to the Review-Card recipe"
+        ]
+      }
+    },
+    {
+      "id": "execute-and-prove-game-rule-runtime",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "sandbox.execute-authorized-game-rule-candidate",
+        "runtime.game-rule.verify-held-out-behavior"
+      ],
+      "declaredConstraints": {
+        "sandbox.execute-authorized-game-rule-candidate": [
+          "executor expansion is outside this no-execution rung"
+        ],
+        "runtime.game-rule.verify-held-out-behavior": [
+          "candidate runtime and candidate tests remain unrun"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "candidate.materialize.arbitrary-native-recipe",
+    "consent.human-decision.authenticate-game-rule-candidate",
+    "runtime.game-rule.verify-held-out-behavior",
+    "sandbox.execute-authorized-game-rule-candidate"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "candidate.materialize.arbitrary-native-recipe",
+      "requiredBy": [
+        "write-candidate-to-detached-nursery"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "consent.human-decision.authenticate-game-rule-candidate",
+      "requiredBy": [
+        "write-candidate-to-detached-nursery"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "runtime.game-rule.verify-held-out-behavior",
+      "requiredBy": [
+        "execute-and-prove-game-rule-runtime"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sandbox.execute-authorized-game-rule-candidate",
+      "requiredBy": [
+        "execute-and-prove-game-rule-runtime"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

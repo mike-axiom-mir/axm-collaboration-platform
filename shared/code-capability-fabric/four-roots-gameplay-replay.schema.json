@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.four-roots-adventure-gameplay-replay/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "id", "contentRef", "engineRef", "recipe", "actions", "checkpoints", "summary", "resources", "truth", "rights", "authority", "replayDigest"],
+  "properties": {
+    "schema": {"const": "axm.four-roots-adventure-gameplay-replay/v1"},
+    "version": {"const": "1.0.0"},
+    "status": {"const": "TEST"},
+    "id": {"const": "four-roots-adventure-complete-replay-v0.1"},
+    "contentRef": {"$ref": "#/$defs/artifactRef"},
+    "engineRef": {"$ref": "#/$defs/artifactRef"},
+    "recipe": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "actorSequence", "pathOrder"],
+      "properties": {
+        "id": {"const": "four-roots-complete-journey-v1"},
+        "actorSequence": {"type": "array", "minItems": 26, "maxItems": 26, "items": {"$ref": "#/$defs/id"}},
+        "pathOrder": {"const": ["up", "left", "right", "down"]}
+      }
+    },
+    "actions": {"type": "array", "minItems": 1, "maxItems": 256, "items": {"$ref": "#/$defs/action"}},
+    "checkpoints": {"type": "array", "minItems": 40, "maxItems": 40, "items": {"$ref": "#/$defs/checkpoint"}},
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["actions", "moves", "interactionAttempts", "recordedInteractions", "zonesVisited", "roots", "inventory", "completedQuests", "ending", "completed"],
+      "properties": {
+        "actions": {"type": "integer", "minimum": 1, "maximum": 256},
+        "moves": {"const": 202},
+        "interactionAttempts": {"const": 26},
+        "recordedInteractions": {"const": 25},
+        "zonesVisited": {"const": ["crossroads", "truth-hollow", "agency-garden", "continuity-archive", "wisdom-grove"]},
+        "roots": {"const": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"]},
+        "inventory": {"const": 10},
+        "completedQuests": {"const": 6},
+        "ending": {"const": "A Door Into Review"},
+        "completed": {"const": true}
+      }
+    },
+    "resources": {
+      "type": "object", "additionalProperties": false,
+      "required": ["maxActions", "actions", "maxCheckpoints", "checkpoints", "maxRecordBytes", "childProcesses", "networkRequests", "enforced"],
+      "properties": {
+        "maxActions": {"const": 256}, "actions": {"type": "integer", "minimum": 1, "maximum": 256},
+        "maxCheckpoints": {"const": 40}, "checkpoints": {"const": 40}, "maxRecordBytes": {"const": 262144},
+        "childProcesses": {"const": 0}, "networkRequests": {"const": 0}, "enforced": {"const": true}
+      }
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["nativeGameEngineExecuted", "deterministicReplay", "reconstructedFramesPlanned", "browserCapture", "livePlayerInput", "providerCalled", "aiUsed", "published", "canonChanged"],
+      "properties": {
+        "nativeGameEngineExecuted": {"const": true}, "deterministicReplay": {"const": true}, "reconstructedFramesPlanned": {"const": true},
+        "browserCapture": {"const": false}, "livePlayerInput": {"const": false}, "providerCalled": {"const": false}, "aiUsed": {"const": false},
+        "published": {"const": false}, "canonChanged": {"const": false}
+      }
+    },
+    "rights": {"$ref": "#/$defs/rights"},
+    "authority": {"const": "NONE"},
+    "replayDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "artifactRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "path", "sha256", "byteLength"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"}, "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "path": {"type": "string", "minLength": 1, "maxLength": 240}, "sha256": {"$ref": "#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 262144}
+      }
+    },
+    "moveInput": {
+      "type": "object", "additionalProperties": false, "required": ["action", "direction"],
+      "properties": {"action": {"const": "move"}, "direction": {"enum": ["up", "down", "left", "right"]}}
+    },
+    "interactInput": {
+      "type": "object", "additionalProperties": false, "required": ["action"],
+      "properties": {"action": {"const": "interact"}}
+    },
+    "action": {
+      "type": "object", "additionalProperties": false,
+      "required": ["index", "targetActorId", "input", "beforeStateDigest", "afterStateDigest"],
+      "properties": {
+        "index": {"type": "integer", "minimum": 0, "maximum": 255}, "targetActorId": {"$ref": "#/$defs/id"},
+        "input": {"oneOf": [{"$ref": "#/$defs/moveInput"}, {"$ref": "#/$defs/interactInput"}]},
+        "beforeStateDigest": {"$ref": "#/$defs/digest"}, "afterStateDigest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "checkpoint": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "sceneIndex", "phase", "actionIndex", "stateDigest", "zoneId", "x", "y", "roots", "inventoryCount", "completed", "lastActorId", "message"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"}, "sceneIndex": {"type": "integer", "minimum": 1, "maximum": 5},
+        "phase": {"type": "integer", "minimum": 0, "maximum": 7}, "actionIndex": {"type": "integer", "minimum": -1, "maximum": 255},
+        "stateDigest": {"$ref": "#/$defs/digest"}, "zoneId": {"$ref": "#/$defs/id"},
+        "x": {"type": "integer", "minimum": 0, "maximum": 14}, "y": {"type": "integer", "minimum": 0, "maximum": 10},
+        "roots": {"type": "array", "minItems": 0, "maxItems": 4, "items": {"$ref": "#/$defs/id"}},
+        "inventoryCount": {"type": "integer", "minimum": 0, "maximum": 10}, "completed": {"type": "boolean"},
+        "lastActorId": {"type": ["string", "null"]}, "message": {"type": "string", "minLength": 1, "maxLength": 1000}
+      }
+    },
+    "rights": {
+      "type": "object", "additionalProperties": false, "required": ["internalWorkshopReview", "publicDistribution"],
+      "properties": {"internalWorkshopReview": {"const": "MIKE_AUTHORIZED_TEST"}, "publicDistribution": {"const": "HOLD"}}
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.capability-lesson-candidate/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "id", "candidateRef", "baseIterationRef", "resultIterationRef", "findingTypes", "changedPaths", "privacy", "admission", "truth", "authority", "lessonDigest"],
+  "properties": {
+    "schema": {"const": "axm.capability-lesson-candidate/v1"}, "version": {"const": "0.1.0"}, "status": {"const": "EXPERIMENTAL"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "candidateRef": {"$ref": "../../shared/code-capability-fabric/semantic-common.schema.json#/$defs/reference"},
+    "baseIterationRef": {"$ref": "../../shared/code-capability-fabric/semantic-common.schema.json#/$defs/reference"},
+    "resultIterationRef": {"$ref": "../../shared/code-capability-fabric/semantic-common.schema.json#/$defs/reference"},
+    "findingTypes": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9_-]{1,79}$"}},
+    "changedPaths": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "string", "minLength": 1, "maxLength": 180}},
+    "privacy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["rawSourceRetained", "promptRetained", "stdoutRetained", "stderrRetained", "privateContentRetained", "machinePathsRetained"],
+      "properties": {"rawSourceRetained": {"const": false}, "promptRetained": {"const": false}, "stdoutRetained": {"const": false}, "stderrRetained": {"const": false}, "privateContentRetained": {"const": false}, "machinePathsRetained": {"const": false}}
+    },
+    "admission": {
+      "type": "object", "additionalProperties": false,
+      "required": ["active", "installed", "requiresNewLibraryVersion", "nextGate"],
+      "properties": {"active": {"const": false}, "installed": {"const": false}, "requiresNewLibraryVersion": {"const": true}, "nextGate": {"const": "TIER_3_HUMAN_LIBRARY_ADMISSION"}}
+    },
+    "truth": {"type": "object", "additionalProperties": false, "required": ["generalizationProven", "heldOutRegressionPassed"], "properties": {"generalizationProven": {"const": false}, "heldOutRegressionPassed": {"const": false}}},
+    "authority": {"const": "NONE"},
+    "lessonDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

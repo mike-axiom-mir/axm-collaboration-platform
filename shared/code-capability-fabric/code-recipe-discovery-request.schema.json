@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-recipe-discovery-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "purposeRef", "terms", "languages", "domains", "tags", "familyKeys", "maxResults", "catalogRef", "auditRef", "foundryContractRef", "resourceEnvelope", "rootsGate", "authority", "requestDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-recipe-discovery-request/v1"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id", "maxLength": 119},
+    "purposeRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "terms": {"type": "array", "maxItems": 32, "items": {"type": "string", "pattern": "^[a-z0-9]+$", "maxLength": 80}, "uniqueItems": true},
+    "languages": {"$ref": "#/$defs/filters16"},
+    "domains": {"$ref": "#/$defs/filters16"},
+    "tags": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/filter"}, "uniqueItems": true},
+    "familyKeys": {"$ref": "#/$defs/filters16"},
+    "maxResults": {"type": "integer", "minimum": 1, "maximum": 32},
+    "catalogRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "auditRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "foundryContractRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "resourceEnvelope": {"$ref": "#/$defs/resources"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "authority": {"const": "NONE"},
+    "requestDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "anyOf": [
+    {"properties": {"terms": {"minItems": 1}}},
+    {"properties": {"languages": {"minItems": 1}}},
+    {"properties": {"domains": {"minItems": 1}}},
+    {"properties": {"tags": {"minItems": 1}}},
+    {"properties": {"familyKeys": {"minItems": 1}}}
+  ],
+  "$defs": {
+    "filter": {"type": "string", "pattern": "^[a-z0-9]+(?: [a-z0-9]+)*$", "maxLength": 160},
+    "filters16": {"type": "array", "maxItems": 16, "items": {"$ref": "#/$defs/filter"}, "uniqueItems": true},
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxRequestBytes", "maxPacketBytes", "maxRecipesScanned", "maxReturnedPerClass", "maxAttempts", "maxProcesses", "maxCostMinorUnits"],
+      "properties": {
+        "maxRequestBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "maxPacketBytes": {"type": "integer", "minimum": 1, "maximum": 262144},
+        "maxRecipesScanned": {"const": 1000},
+        "maxReturnedPerClass": {"type": "integer", "minimum": 1, "maximum": 32},
+        "maxAttempts": {"const": 1},
+        "maxProcesses": {"const": 0},
+        "maxCostMinorUnits": {"const": 0}
+      }
+    }
+  }
+}

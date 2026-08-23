@@ -1,0 +1,76 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "bounded-recipe-discovery",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.discovery.query-metadata",
+        "code.recipe.discovery.bind-installed-lineage",
+        "code.recipe.discovery.separate-held-results",
+        "code.recipe.discovery.omit-snippet-bytes",
+        "code.recipe.discovery.preserve-selection-gate"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.discovery.query-metadata": [
+          "local v1.1 adapter accepts closed bounded normalized metadata criteria over exactly 1,000 installed records"
+        ],
+        "code.recipe.discovery.bind-installed-lineage": [
+          "integrated v1.0 bridge verifies exact installed pack, audit, recipe set, and Foundry contract"
+        ],
+        "code.recipe.discovery.separate-held-results": [
+          "local v1.1 evidence packets keep eligibleResults and heldResults separate with selection always null"
+        ],
+        "code.recipe.discovery.omit-snippet-bytes": [
+          "integrated v1.0 REFERENCE_ONLY packets already omit snippet text"
+        ],
+        "code.recipe.discovery.preserve-selection-gate": [
+          "integrated v1.0 selection requires exact requester-specified CC-#### identities"
+        ]
+      }
+    },
+    {
+      "id": "semantic-recipe-selection",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "code.recipe.select.semantic-automatic"
+      ],
+      "declaredConstraints": {
+        "code.recipe.select.semantic-automatic": [
+          "automatic semantic choice is intentionally refused"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "code.recipe.select.semantic-automatic"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "code.recipe.select.semantic-automatic",
+      "requiredBy": [
+        "semantic-recipe-selection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.workshop-shadow-refresh-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "sourceLabel", "evaluatedAt", "recipe", "rootsGate", "authorization", "resources", "privacy", "authority", "requestDigest"],
+  "properties": {
+    "schema": {"const": "axm.workshop-shadow-refresh-request/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "sourceLabel": {"type": "string", "minLength": 1, "maxLength": 160},
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "recipe": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "outputPath"],
+      "properties": {"id": {"const": "refresh-tools-index-v1"}, "outputPath": {"const": "tools-index.json"}}
+    },
+    "rootsGate": {
+      "type": "array", "minItems": 4, "maxItems": 4,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["root", "verdict", "evidenceRefs"],
+        "properties": {
+          "root": {"enum": ["TRUTH", "AGENCY_NON_DOMINATION", "CONTINUITY", "WISDOM_OVER_SPEED"]},
+          "verdict": {"const": "PASS"},
+          "evidenceRefs": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"$ref": "#/$defs/ref"}}
+        }
+      }
+    },
+    "authorization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["decisionRef", "snapshotRead", "sandboxDraft", "sandboxRefresh", "preview", "candidateExecution", "sourceWriteBack", "install", "integrate", "publish", "promote", "canon", "authenticatedIdentityProven", "authority"],
+      "properties": {
+        "decisionRef": {"$ref": "#/$defs/ref"},
+        "snapshotRead": {"const": true}, "sandboxDraft": {"const": true}, "sandboxRefresh": {"const": true}, "preview": {"const": true},
+        "candidateExecution": {"const": false}, "sourceWriteBack": {"const": false}, "install": {"const": false}, "integrate": {"const": false},
+        "publish": {"const": false}, "promote": {"const": false}, "canon": {"const": false}, "authenticatedIdentityProven": {"const": false}, "authority": {"const": "NONE"}
+      }
+    },
+    "resources": {
+      "type": "object", "additionalProperties": false,
+      "required": ["maxInputFiles", "maxInputBytes", "maxOutputFiles", "maxOutputBytes", "maxEvidenceFiles", "maxEvidenceBytes", "maxIterations", "maxNetworkRequests", "maxChildProcesses"],
+      "properties": {
+        "maxInputFiles": {"type": "integer", "minimum": 1, "maximum": 8192}, "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 67108864},
+        "maxOutputFiles": {"const": 1}, "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 8388608},
+        "maxEvidenceFiles": {"const": 16}, "maxEvidenceBytes": {"type": "integer", "minimum": 1, "maximum": 8388608}, "maxIterations": {"type": "integer", "minimum": 1, "maximum": 8},
+        "maxNetworkRequests": {"const": 0}, "maxChildProcesses": {"const": 0}
+      }
+    },
+    "privacy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scopeId", "rawSourceRetention", "stdoutRetention", "stderrRetention", "machinePathRetention", "secretsRead"],
+      "properties": {
+        "scopeId": {"const": "tools-index-declarations-and-selftests-v1"}, "rawSourceRetention": {"const": false}, "stdoutRetention": {"const": false},
+        "stderrRetention": {"const": false}, "machinePathRetention": {"const": false}, "secretsRead": {"const": false}
+      }
+    },
+    "authority": {"const": "NONE"},
+    "requestDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "ref": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {"id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"}, "schema": {"type": "string", "minLength": 1, "maxLength": 180}, "sha256": {"$ref": "#/$defs/digest"}}
+    }
+  }
+}

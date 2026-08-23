@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-recipe-selection-packet/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "id", "status", "mode", "selectionRequest", "requestRef", "catalogRef", "auditRef", "foundryContractRef", "selectedRecipes", "resourceObservation", "reuseRights", "lineageRefs", "limitations", "truth", "authority", "packetDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-recipe-selection-packet/v1"},
+    "version": {"const": "1.0.0"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "status": {"const": "TEST"},
+    "mode": {"enum": ["REFERENCE_ONLY", "DETACHED_RESEARCH_CONTEXT"]},
+    "selectionRequest": {"$ref": "code-recipe-selection-request.schema.json"},
+    "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "catalogRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "auditRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "foundryContractRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "selectedRecipes": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "#/$defs/selectedRecipe"}},
+    "resourceObservation": {"$ref": "#/$defs/resources"},
+    "reuseRights": {"$ref": "#/$defs/reuseRights"},
+    "lineageRefs": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "semantic-common.schema.json#/$defs/reference"}},
+    "limitations": {"type": "array", "minItems": 8, "maxItems": 16, "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}, "uniqueItems": true},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "packetDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "snippetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength"],
+      "properties": {
+        "sha256": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 4000}
+      }
+    },
+    "syntaxEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "verifier", "message", "parseOnly", "runtimeProof", "correctnessProof", "safetyProof"],
+      "properties": {
+        "status": {"enum": ["SYNTAX_PASS", "REVIEW_HOLD", "CONTEXT_UNSUPPORTED", "VERIFIER_UNAVAILABLE"]},
+        "verifier": {"type": "string", "minLength": 1, "maxLength": 100},
+        "message": {"type": "string", "minLength": 1, "maxLength": 500},
+        "parseOnly": {"const": true},
+        "runtimeProof": {"const": false},
+        "correctnessProof": {"const": false},
+        "safetyProof": {"const": false}
+      }
+    },
+    "selectedRecipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "recipeId", "title", "primaryLanguage", "domain", "tags", "sourceUrl", "versionBasis", "reviewState", "holdReasons", "selectionPosition", "eligibility", "snippetRef", "snippet", "syntaxEvidence"],
+      "properties": {
+        "sourceId": {"type": "string", "pattern": "^CC-[0-9]{4}$"},
+        "recipeId": {"type": "string", "pattern": "^recipe-[a-f0-9]{16}$"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "primaryLanguage": {"type": "string", "minLength": 1, "maxLength": 80},
+        "domain": {"type": ["string", "null"], "maxLength": 80},
+        "tags": {"type": "array", "maxItems": 20, "items": {"type": "string", "minLength": 1, "maxLength": 60}, "uniqueItems": true},
+        "sourceUrl": {"type": "string", "pattern": "^https?://", "maxLength": 1000},
+        "versionBasis": {"type": ["string", "null"], "maxLength": 240},
+        "reviewState": {"enum": ["SOURCE_REVIEW_REQUIRED", "STRUCTURE_HOLD"]},
+        "holdReasons": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}, "uniqueItems": true},
+        "selectionPosition": {"type": "integer", "minimum": 0, "maximum": 15},
+        "eligibility": {"enum": ["REFERENCE_ONLY", "DETACHED_RESEARCH_CONTEXT_ONLY"]},
+        "snippetRef": {"$ref": "#/$defs/snippetRef"},
+        "snippet": {"type": ["string", "null"], "maxLength": 4000},
+        "syntaxEvidence": {"$ref": "#/$defs/syntaxEvidence"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["catalogRecipeCount", "selectedRecipeCount", "selectedSnippetBytes", "emittedSnippetBytes", "packetBytes", "selectionCountEnforced", "snippetByteCeilingEnforced", "packetByteCeilingEnforced", "attemptCountEnforced", "processesSpawned", "networkUsed"],
+      "properties": {
+        "catalogRecipeCount": {"const": 1000},
+        "selectedRecipeCount": {"type": "integer", "minimum": 1, "maximum": 16},
+        "selectedSnippetBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "emittedSnippetBytes": {"type": "integer", "minimum": 0, "maximum": 65536},
+        "packetBytes": {"type": "integer", "minimum": 1, "maximum": 131072},
+        "selectionCountEnforced": {"const": true},
+        "snippetByteCeilingEnforced": {"const": true},
+        "packetByteCeilingEnforced": {"const": true},
+        "attemptCountEnforced": {"const": true},
+        "processesSpawned": {"const": 0},
+        "networkUsed": {"const": false}
+      }
+    },
+    "reuseRights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "directReuseAllowed", "sourceClaimsVerified", "licensesVerified", "authorityRef"],
+      "properties": {
+        "state": {"const": "RESEARCH_ONLY_HOLD"},
+        "directReuseAllowed": {"const": false},
+        "sourceClaimsVerified": {"const": false},
+        "licensesVerified": {"const": false},
+        "authorityRef": {"const": null}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["catalogDigestVerified", "recipeSetDigestVerified", "auditDigestVerified", "auditRecipeSetMatched", "recipesSelectedAutomatically", "editorialRankTreatedAsQuality", "snippetsIncluded", "snippetsExecuted", "syntaxPassIsRuntimeProof", "syntaxPassIsCorrectnessProof", "syntaxPassIsSafetyProof", "sourceClaimsVerified", "licensesVerified", "directReuseAuthorized", "candidateGenerated", "candidateExecuted", "installed", "integrated", "promoted", "canonChanged"],
+      "properties": {
+        "catalogDigestVerified": {"const": true},
+        "recipeSetDigestVerified": {"const": true},
+        "auditDigestVerified": {"const": true},
+        "auditRecipeSetMatched": {"const": true},
+        "recipesSelectedAutomatically": {"const": false},
+        "editorialRankTreatedAsQuality": {"const": false},
+        "snippetsIncluded": {"type": "boolean"},
+        "snippetsExecuted": {"const": false},
+        "syntaxPassIsRuntimeProof": {"const": false},
+        "syntaxPassIsCorrectnessProof": {"const": false},
+        "syntaxPassIsSafetyProof": {"const": false},
+        "sourceClaimsVerified": {"const": false},
+        "licensesVerified": {"const": false},
+        "directReuseAuthorized": {"const": false},
+        "candidateGenerated": {"const": false},
+        "candidateExecuted": {"const": false},
+        "installed": {"const": false},
+        "integrated": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

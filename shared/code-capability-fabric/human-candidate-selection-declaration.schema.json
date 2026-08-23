@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axm.human-candidate-selection-declaration/v1",
+  "title": "AXM Human Candidate Selection Declaration v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "id", "seatRef", "candidateRef", "selection", "consentEvaluationRef", "consentInstanceRef", "scope", "issuedAt", "expiresAt", "nonce", "rootsGate", "authentication", "revocation", "authority", "declarationDigest"],
+  "properties": {
+    "schema": {"const": "axm.human-candidate-selection-declaration/v1"},
+    "version": {"const": "1.0.0"},
+    "status": {"const": "DECLARED_NOT_AUTHENTICATED"},
+    "id": {"$ref": "#/definitions/id"},
+    "seatRef": {"$ref": "#/definitions/humanSeatReference"},
+    "candidateRef": {"$ref": "#/definitions/reference"},
+    "selection": {"$ref": "#/definitions/selection"},
+    "consentEvaluationRef": {"$ref": "#/definitions/digestReference"},
+    "consentInstanceRef": {"$ref": "#/definitions/reference"},
+    "scope": {"const": "DETACHED_SELECTION_BINDING"},
+    "issuedAt": {"$ref": "#/definitions/timestamp"},
+    "expiresAt": {"$ref": "#/definitions/timestamp"},
+    "nonce": {"$ref": "#/definitions/id"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "#/definitions/rootReview"}},
+    "authentication": {"const": "NOT_PROVEN"},
+    "revocation": {"const": "NOT_CHECKED"},
+    "authority": {"const": "NONE"},
+    "declarationDigest": {"$ref": "#/definitions/digest"}
+  },
+  "definitions": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"},
+    "reference": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"$ref": "#/definitions/id"}, "schema": {"$ref": "#/definitions/token"}, "sha256": {"$ref": "#/definitions/digest"}}},
+    "humanSeatReference": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"$ref": "#/definitions/id"}, "schema": {"const": "axm.human-review-seat/v1"}, "sha256": {"$ref": "#/definitions/digest"}}},
+    "rootEvidenceReference": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"$ref": "#/definitions/id"}, "schema": {"const": "axm.four-root-technical-review/v1"}, "sha256": {"$ref": "#/definitions/digest"}}},
+    "digestReference": {"type": "object", "additionalProperties": false, "required": ["schema", "sha256"], "properties": {"schema": {"$ref": "#/definitions/token"}, "sha256": {"$ref": "#/definitions/digest"}}},
+    "fileReference": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "byteLength"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/definitions/digest"}, "byteLength": {"type": "integer", "minimum": 1}}},
+    "selection": {"type": "object", "additionalProperties": false, "required": ["id", "kind", "candidateRef"], "properties": {"id": {"enum": ["kind-adapter", "kind-machine-capability", "kind-product", "kind-scaffold", "kind-service"]}, "kind": {"enum": ["adapter", "machine-capability", "product", "scaffold", "service"]}, "candidateRef": {"$ref": "#/definitions/fileReference"}}},
+    "rootReview": {"type": "object", "additionalProperties": false, "required": ["root", "verdict", "evidenceRefs"], "properties": {"root": {"enum": ["TRUTH", "AGENCY_NON_DOMINATION", "CONTINUITY", "WISDOM_OVER_SPEED"]}, "verdict": {"const": "PASS"}, "evidenceRefs": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"$ref": "#/definitions/rootEvidenceReference"}}}}
+  }
+}

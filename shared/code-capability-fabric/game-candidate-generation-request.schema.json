@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-candidate-generation-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "goal", "brief", "components", "rootsGate", "authorization", "resources", "reuseRights", "authority", "requestDigest"],
+  "properties": {
+    "schema": {"const": "axm.game-candidate-generation-request/v1"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "goal": {"type": "string", "minLength": 1, "maxLength": 600},
+    "brief": {"$ref": "game-generation-brief.schema.json"},
+    "components": {"type": "array", "minItems": 8, "maxItems": 8, "items": {"$ref": "#/$defs/component"}},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "authorization": {"$ref": "#/$defs/authorization"},
+    "resources": {"$ref": "#/$defs/resources"},
+    "reuseRights": {"$ref": "#/$defs/reuseRights"},
+    "authority": {"const": "NONE"},
+    "requestDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "component": {
+      "type": "object", "additionalProperties": false, "required": ["ref", "contract"],
+      "properties": {"ref": {"$ref": "semantic-common.schema.json#/$defs/reference"}, "contract": {"type": "object"}}
+    },
+    "authorization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schema", "decisionRef", "scope", "generate", "sandboxBuild", "sandboxPreview", "sandboxRepair", "lessonCandidate", "maxIterations", "install", "integrate", "publish", "promote", "canon", "authenticatedIdentityProven", "authority"],
+      "properties": {
+        "schema": {"const": "axm.bounded-sandbox-growth-authorization/v1"},
+        "decisionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "scope": {"const": "GENERATE_BUILD_PREVIEW_REPAIR_AND_LESSON_CANDIDATES"},
+        "generate": {"const": true}, "sandboxBuild": {"const": true}, "sandboxPreview": {"const": true},
+        "sandboxRepair": {"const": true}, "lessonCandidate": {"const": true},
+        "maxIterations": {"type": "integer", "minimum": 1, "maximum": 5},
+        "install": {"const": false}, "integrate": {"const": false}, "publish": {"const": false},
+        "promote": {"const": false}, "canon": {"const": false},
+        "authenticatedIdentityProven": {"const": false}, "authority": {"const": "NONE"}
+      }
+    },
+    "resources": {
+      "type": "object", "additionalProperties": false,
+      "required": ["maxInputBytes", "maxOutputBytes", "maxFileBytes", "maxFiles", "maxIterations", "maxCandidateProcesses", "maxCostMinorUnits"],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 2097152},
+        "maxFileBytes": {"type": "integer", "minimum": 1, "maximum": 262144},
+        "maxFiles": {"type": "integer", "minimum": 1, "maximum": 32},
+        "maxIterations": {"type": "integer", "minimum": 1, "maximum": 5},
+        "maxCandidateProcesses": {"const": 0}, "maxCostMinorUnits": {"const": 0}
+      }
+    },
+    "reuseRights": {
+      "type": "object", "additionalProperties": false, "required": ["state", "directReuseAllowed", "authorityRef"],
+      "properties": {"state": {"const": "RESEARCH_ONLY_HOLD"}, "directReuseAllowed": {"const": false}, "authorityRef": {"const": null}}
+    }
+  }
+}
+
