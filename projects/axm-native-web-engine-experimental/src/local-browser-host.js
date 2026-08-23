@@ -4,6 +4,7 @@ const Digest = require('./digest');
 const HostCore = require('./local-browser-host-core');
 const ShellPolicy = require('./shell-policy');
 const BrowserAiControl = require('./browser-ai-control');
+const BrowserAiControlHost = require('./browser-ai-control-host');
 
 const HOST_RECEIPT_SCHEMA = 'axm.web.local-browser-host-receipt/v2';
 
@@ -16,6 +17,22 @@ async function createLocalBrowserHost(session, options) {
     researchRunner: options.researchRunner,
     researchConfig: options.researchConfig
   });
+  const shouldStartAiControlHost = options.aiControlHost === true || (
+    options.aiControlHost !== false && Boolean(options.aiRegistry || options.aiControlPlane || options.researchRunner || options.researchConfig)
+  );
+  let aiControlHost = null;
+  try {
+    if (shouldStartAiControlHost) {
+      aiControlHost = await BrowserAiControlHost.createBrowserAiControlHost(
+        session,
+        aiControl,
+        options.aiControlHostOptions || {}
+      );
+    }
+  } catch (error) {
+    await host.close();
+    throw error;
+  }
   const receiptMaterial = Object.assign({}, host.receipt, {
     schema: HOST_RECEIPT_SCHEMA,
     shellPolicySchema: shellPolicy.schema,
@@ -30,9 +47,14 @@ async function createLocalBrowserHost(session, options) {
     receipt,
     shellPolicy,
     aiControl,
+    aiControlReceipt: aiControlHost ? aiControlHost.receipt : null,
+    aiControlUrl: aiControlHost ? aiControlHost.receipt.controlUrl : null,
     controlState: function () { return aiControl.state(session.snapshot()); },
     visualState: function () { return aiControl.ensureVisualState(session.snapshot()); },
-    close: host.close
+    close: async function () {
+      if (aiControlHost) await aiControlHost.close();
+      await host.close();
+    }
   };
 }
 
