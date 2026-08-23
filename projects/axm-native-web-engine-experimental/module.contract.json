@@ -18,6 +18,7 @@
     "axm.web.artifact-receipt/v1",
     "axm.web.local-browser-bundle/v1",
     "axm.web.local-browser-session/v1",
+    "axm.web.local-browser-session-verification/v1",
     "axm.web.local-browser-host-receipt/v1",
     "offline-html-tokenize-subset",
     "offline-document-tree-subset",
@@ -31,15 +32,18 @@
     "explicit-local-page-bundle",
     "deterministic-headless-browser-session",
     "bounded-local-navigation-history-and-reload",
+    "read-only-local-session-verification",
     "trusted-loopback-human-browser-shell"
   ],
   "consumes": [
     "caller-supplied-local-utf8-bytes",
     "caller-explicitly-allowed-local-file-set",
+    "caller-supplied-local-browser-session-json",
     "node-runtime-sha256"
   ],
   "permissions": [
     "local-files:caller-explicit-list-read-only",
+    "local-files:caller-selected-session-json-read-only",
     "loopback:ephemeral-127.0.0.1-shell-host"
   ],
   "handoffs": {
@@ -56,13 +60,20 @@
       "axm.web.artifact-receipt/v1",
       "axm.web.local-browser-bundle/v1",
       "axm.web.local-browser-session/v1",
+      "axm.web.local-browser-session-verification/v1",
       "axm.web.local-browser-host-receipt/v1"
     ],
-    "accepts": ["local-file:utf8", "stdin:utf8", "explicit-local-file-set:utf8"]
+    "accepts": [
+      "local-file:utf8",
+      "stdin:utf8",
+      "explicit-local-file-set:utf8",
+      "local-browser-session-json:utf8"
+    ]
   },
   "boundaries": {
     "writes": [
       "stdout:explicit-cli-json-output",
+      "stdout:read-only-session-verification-receipt",
       "caller-selected-file:render-svg-or-browser-snapshot-only",
       "process-memory:bounded-local-session-state",
       "127.0.0.1:ephemeral-trusted-shell-http"
@@ -74,6 +85,8 @@
       "page-javascript-or-wasm-execution",
       "site-css-cascade-or-site-rendering-claim",
       "arbitrary-site-navigation-or-browser-conformance-claim",
+      "session-verification-as-source-truth-or-trust-proof",
+      "session-verification-triggered-mutation-install-promotion-or-canon",
       "implicit-output-overwrite",
       "symbolic-link-output-write",
       "provider-key-access",
@@ -88,6 +101,7 @@
   "lifecycle": {
     "state_owner": "local-browser-session-process-memory",
     "reload": "exact-reparse-of-explicit-local-file-set-with-digest-receipts",
+    "verification": "read-only-serialized-session-integrity-and-structural-consistency-check",
     "disconnect": "explicit-shell-host-shutdown-or-process-exit",
     "cleanup": "listener-and-session-discarded; caller owns explicit artifact outputs"
   }
