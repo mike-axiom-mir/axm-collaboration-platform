@@ -1,0 +1,49 @@
+{
+  "$schema": "axm.evidence-route/v1",
+  "subject": "Capability Fabric modular HAND and SKILL claims",
+  "testedImplementationCommit": "eeea9586618ea8b40ecbef44a6f9dcac08a7a245",
+  "claims": [
+    {
+      "id": "kind-bound-determinism",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Recipe, plan, compilation, package, manifest, module contract, modular contract, and receipts agree on one capability kind and rebuild byte-identically.",
+      "primarySurface": "Capability Fabric focused selftests and package tests",
+      "counterevidence": "A kind mismatch verifies or repeated compilation changes bytes.",
+      "observedEvidence": "All active HAND builds rebuilt deterministically, verified their modular contracts, and refused kind drift.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "portable-skill-exact-artifact",
+      "kind": "contract-and-behavioral",
+      "risk": "high",
+      "passCondition": "The inactive SKILL builder emits only SKILL.md, skill.contract.json, and skill.selftest.js; Capability Fabric accepts the exact artifact and a trusted host can run its selftest.",
+      "primarySurface": "Capability Recipe Foundry package test",
+      "secondarySurface": "Committed packet parity and modular-capability review contract",
+      "counterevidence": "An undeclared file appears, the contract grants authority, the artifact is rejected, or its selftest fails.",
+      "observedEvidence": "The committed SKILL packet matched deterministic output, the exact artifact contract passed, and the explicit external host selftest passed.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "runtime-and-authority-drift-refusal",
+      "kind": "authorization-and-integrity",
+      "risk": "high",
+      "passCondition": "A self-consistently rehashed packet cannot change runtime semantics, portable bindings, installation, promotion, or CANON state.",
+      "primarySurface": "Adversarial Foundry and Fabric verification",
+      "counterevidence": "A rehashed semantic or authority mutation verifies.",
+      "observedEvidence": "Rehashed SKILL runtime drift and modular authority drift were refused; all output authority fields stayed false.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "live-hand-and-skill-routes",
+      "kind": "visual-and-interaction",
+      "risk": "medium",
+      "passCondition": "A reviewed HAND builds visibly to a detached modular candidate and the portable SKILL routes visibly to an inactive eight-file packet without fresh console errors; the SKILL route fits 390 by 844 CSS pixels without horizontal overflow.",
+      "primarySurface": "Live in-app browser interaction and screenshots",
+      "secondarySurface": "DOM state and mobile geometry inspection",
+      "counterevidence": "Wrong kind, missing modular contract, wrong file count, horizontal page overflow, or a fresh console error.",
+      "observedEvidence": "The HAND displayed a 13-file candidate including modular-capability.contract.json; the SKILL displayed the expected eight files and packet digest; both consoles were clean and mobile clientWidth equalled scrollWidth at 375 pixels.",
+      "verdict": "PASS"
+    }
+  ]
+}
