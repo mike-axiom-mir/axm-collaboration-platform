@@ -6,6 +6,7 @@ const path = require('node:path');
 const Engine = require('../src/engine');
 const BrowserSession = require('../src/browser-session');
 const SessionVerifier = require('../src/session-verifier');
+const ShellPolicy = require('../src/shell-policy');
 
 const root = path.resolve(__dirname, '..');
 const schemaDir = path.join(root, 'schemas');
@@ -63,6 +64,10 @@ function main() {
   const verification = SessionVerifier.verifySessionBytes(Buffer.from(JSON.stringify(localSession), 'utf8'));
   assert(verification.schema === 'axm.web.local-browser-session-verification/v1', 'local session verification representative schema mismatch');
   assert(verification.status === 'PASS', 'local session verification representative did not pass');
+  const shellPolicy = ShellPolicy.buildShellPolicy();
+  assert(shellPolicy.schema === 'axm.web.local-browser-shell-policy/v1', 'local shell policy representative schema mismatch');
+  assert(shellPolicy.mutationOriginPolicy === 'EXACT_SHELL_ORIGIN_REQUIRED', 'local shell policy origin boundary mismatch');
+  assert(shellPolicy.authority.networkAuthorityGranted === false, 'local shell policy granted network authority');
   process.stdout.write('parsed ' + names.length + ' schema documents and checked representative schema identities\n');
 }
 
