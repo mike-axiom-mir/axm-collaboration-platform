@@ -1,17 +1,38 @@
-Hermes local start note
+AXM Hermes Runtime Adapter - local start note
 
-The bootstrap and control layer are separate.
+External Hermes stays pinned and reviewable. The AXM runtime policy and the older loopback proposal service are separate layers.
 
-External bootstrap path (explicit commands only):
+Pinned runtime path (explicit commands only):
 
 cd AXM_WORKSHOP\tools\hermes
 node hermes-bootstrap.js doctor
 node hermes-bootstrap.js install
+node hermes-bootstrap.js verify
+node hermes-bootstrap.js deps
+node hermes-bootstrap.js prepare
+
+Action consent starts OFF.
+
+To deliberately permit policy-approved Hermes tool calls:
+
+node hermes-bootstrap.js consent on "local reviewed run"
+
+Start pinned Hermes through the AXM profile:
+
 node hermes-bootstrap.js start
 
-Install/start requires reviewed local configuration. The wrapper does not verify source, license, command safety, installation, or runtime readiness. These commands are not gated by the control-layer consent toggle.
+To revoke action consent:
 
-Optional AXM control-layer test:
+node hermes-bootstrap.js consent off "run ended"
+
+Important:
+- the source checkout must match hermes-source.lock.json exactly
+- high-authority terminal/code/computer/delegation/scheduling/messaging capabilities remain OFF unless local policy explicitly changes them
+- the AXM hook is an authorization gate, not an OS sandbox
+- model-provider network egress is a separate boundary
+- Hermes memory, generated skills, and conclusions are not AXM canon
+
+Optional legacy AXM proposal/control-layer test:
 
 cd AXM_WORKSHOP\tools\hermes
 node hermes-runner.js
@@ -20,4 +41,4 @@ Then check:
 
 http://127.0.0.1:8791/health
 
-Control-layer consent is OFF by default and gates its write routes. The control layer does not connect to or invoke the external runtime.
+The legacy loopback consent store gates that service's write routes only. It is not yet unified with runtime/policy.json.
