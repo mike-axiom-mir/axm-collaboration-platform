@@ -89,13 +89,14 @@ function materialize(result, parent, options) {
 
 function main(argv) {
   if ((argv.length !== 2 && argv.length !== 4) || argv[0] !== '--pilot' || !argv[1] || (argv.length === 4 && argv[2] !== '--kind')) {
-    process.stderr.write('Usage: node tools/capability-recipe-foundry/cli.js --pilot <existing-output-parent> [--kind HAND|SKILL]\n');
+    process.stderr.write('Usage: node tools/capability-recipe-foundry/cli.js --pilot <existing-output-parent> [--kind HAND|SKILL|ADAPTER]\n');
     process.exitCode = 2;
     return;
   }
   const kind = String(argv[3] || 'HAND').toUpperCase();
-  if (kind !== 'HAND' && kind !== 'SKILL') { process.stderr.write('Kind must be HAND or SKILL.\n'); process.exitCode = 2; return; }
-  const result = Foundry.forge(kind === 'SKILL' ? Foundry.exampleSkill() : Foundry.example());
+  if (kind !== 'HAND' && kind !== 'SKILL' && kind !== 'ADAPTER') { process.stderr.write('Kind must be HAND, SKILL, or ADAPTER.\n'); process.exitCode = 2; return; }
+  const intent = kind === 'SKILL' ? Foundry.exampleSkill() : kind === 'ADAPTER' ? Foundry.exampleAdapter() : Foundry.example();
+  const result = Foundry.forge(intent);
   process.stdout.write(JSON.stringify(materialize(result, argv[1]), null, 2) + '\n');
 }
 

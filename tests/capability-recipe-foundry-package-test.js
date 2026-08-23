@@ -9,6 +9,7 @@ const childProcess = require('child_process');
 const Foundry = require('../tools/capability-recipe-foundry/foundry-core.js');
 const Cli = require('../tools/capability-recipe-foundry/cli.js');
 const Fabric = require('../shared/capability-fabric/index.js');
+const BuilderRegistry = require('../shared/capability-fabric/builder-registry.js');
 
 let passed = 0;
 function check(condition, label) { assert(condition, label); passed += 1; process.stdout.write('PASS ' + label + '\n'); }
@@ -32,8 +33,8 @@ function main() {
     check(manifest.permissions.length === 0 && contract.permissions.length === 0, 'Foundry requires no permissions');
     check(contract.boundaries.refuses.includes('builder source execution') && contract.boundaries.refuses.includes('recipe activation'), 'contract refuses source execution and activation');
     check(contract.boundaries.refuses.includes('Foundation mutation') && contract.boundaries.refuses.includes('CANON change'), 'contract refuses Foundation and CANON mutation');
-    check(html.includes('Capability Recipe') && html.includes('ONE PACKET DEFAULT'), 'human workbench exposes the intended one-packet route');
-    check(html.includes('/shared/capability-fabric/core.js') && html.includes('/tools/hand-verification-lab/hand-verification-core.js'), 'workbench visibly reuses Capability Fabric and verification contracts');
+    check(html.includes('Capability Recipe') && html.includes('ONE PACKET DEFAULT') && html.includes('load-adapter-pilot') && app.includes('Foundry.exampleAdapter()'), 'human workbench exposes the one-packet route and explicit adapter starter');
+    check(html.includes('/shared/capability-fabric/core.js') && html.includes('/shared/capability-fabric/builder-registry.js') && html.indexOf('/shared/capability-fabric/builder-registry.js') < html.indexOf('/shared/capability-fabric/core.js') && html.includes('/tools/hand-verification-lab/hand-verification-core.js'), 'workbench loads the builder registry before Capability Fabric and reuses verification contracts');
     check(!/openai|anthropic|gemini|api[_ -]?key/i.test(app), 'browser workbench has no provider or credential path');
     new Function(app); check(true, 'browser workbench script parses');
 
@@ -41,23 +42,25 @@ function main() {
       JSON.parse(fs.readFileSync(path.join(toolRoot, 'schemas', file), 'utf8'));
       passed += 1; process.stdout.write('PASS ' + file + ' parses\n');
     });
+    JSON.parse(fs.readFileSync(path.join(__dirname,'../shared/capability-fabric/schemas/closed-object-adapter-parameters.schema.json'),'utf8'));passed+=1;process.stdout.write('PASS closed-object-adapter-parameters.schema.json parses\n');
 
     const intent = Foundry.example();
     const skillIntent = Foundry.exampleSkill();
+    const adapterIntent = Foundry.exampleAdapter();
     const first = Foundry.forge(intent);
     const second = Foundry.forge(intent);
     check(Foundry.canonicalJson(first) === Foundry.canonicalJson(second), 'pilot packet rebuild is byte-identical');
     check(first.receipt.truth.builderSourceExecuted === false && first.receipt.truth.testsExecuted === false, 'Foundry receipt honestly leaves executable evidence unrun');
     const staticPilotRoots = fs.readdirSync(path.join(toolRoot, 'pilots'), { withFileTypes: true }).filter((entry) => entry.isDirectory() && entry.name.startsWith(Cli.ROOT_PREFIX) && fs.existsSync(path.join(toolRoot, 'pilots', entry.name, 'packet.json')));
-    check(staticPilotRoots.length === 2, 'repository contains detached materialized HAND and SKILL pilot packets');
-    [intent, skillIntent].forEach((pilotIntent) => {
+    check(staticPilotRoots.length === 3, 'repository contains detached validator, SKILL, and object-adapter pilot packets');
+    [intent, skillIntent, adapterIntent].forEach((pilotIntent) => {
       const expected = Foundry.forge(pilotIntent);
-      const staticRoot = staticPilotRoots.map((entry) => path.join(toolRoot, 'pilots', entry.name)).find((rootPath) => JSON.parse(fs.readFileSync(path.join(rootPath, 'packet.json'), 'utf8')).target.capabilityKind === pilotIntent.recipe.capabilityKind);
+      const staticRoot = staticPilotRoots.map((entry) => path.join(toolRoot, 'pilots', entry.name)).find((rootPath) => JSON.parse(fs.readFileSync(path.join(rootPath, 'packet.json'), 'utf8')).target.recipeId === pilotIntent.recipe.id);
       const staticPacket = JSON.parse(fs.readFileSync(path.join(staticRoot, 'packet.json'), 'utf8'));
       const staticReceipt = JSON.parse(fs.readFileSync(path.join(staticRoot, 'foundry-receipt.json'), 'utf8'));
       const staticFiles = Object.fromEntries(staticPacket.files.map((row) => [row.path, fs.readFileSync(path.join(staticRoot, row.path), 'utf8')]));
       const staticResult = { schema: expected.schema, version: expected.version, status: 'COMPLETE', plan: expected.plan, packet: staticPacket, files: staticFiles, receipt: staticReceipt, authority: expected.authority };
-      check(Foundry.verify(staticResult).ok && staticPacket.packetDigest === expected.packet.packetDigest, 'committed ' + pilotIntent.recipe.capabilityKind + ' pilot is the exact deterministic Foundry output');
+      check(Foundry.verify(staticResult).ok && staticPacket.packetDigest === expected.packet.packetDigest, 'committed ' + pilotIntent.recipe.id + ' pilot is the exact deterministic Foundry output');
     });
     const activeStateBefore = { catalogDigest: Fabric.loadCatalog().catalogDigest, builderPresent: Fabric.ALLOWED_BUILDERS.includes(intent.recipe.builderId), recipePresent: Fabric.loadCatalog().recipes.some((recipe) => recipe.id === intent.recipe.id) };
     const materialized = Cli.materialize(first, root);
@@ -99,6 +102,18 @@ function main() {
     check(portableContract.authorityInherited === false && portableContract.installed === false && portableContract.promoted === false && portableContract.canon === false, 'portable SKILL contract inherits no authority');
     const skillActiveStateAfter = { catalogDigest: Fabric.loadCatalog().catalogDigest, builderPresent: Fabric.ALLOWED_BUILDERS.includes(skillProposal.recipe.builderId), recipePresent: Fabric.loadCatalog().recipes.some((recipe) => recipe.id === skillProposal.recipe.id) };
     check(skillActiveStateBefore.builderPresent && skillActiveStateBefore.recipePresent && Foundry.canonicalJson(skillActiveStateAfter) === Foundry.canonicalJson(skillActiveStateBefore), 'SKILL materialization preserves its separately reviewed active state without causing activation');
+
+    const adapterResult=Foundry.forge(adapterIntent),adapterMaterialized=Cli.materialize(adapterResult,root);
+    check(adapterMaterialized.status==='MATERIALIZED_FOR_SOURCE_REVIEW'&&adapterMaterialized.builderSourceExecuted===false&&adapterMaterialized.testsExecuted===false,'adapter pilot materializes only an inactive source-review packet');
+    const adapterRun=childProcess.spawnSync(process.execPath,[path.join(adapterMaterialized.directory,'builder-contribution.selftest.js')],{cwd:adapterMaterialized.directory,encoding:'utf8',timeout:10000});
+    check(adapterRun.status===0&&/closed object contract adapter builder contribution selftest PASS/.test(adapterRun.stdout),'adapter builder and generated adapter pass only in the explicit trusted test host');
+    const adapterBuilder=require(path.join(adapterMaterialized.directory,'builder-contribution.js')),adapterParameters=adapterIntent.recipe.exampleRequest.parameters,adapterBuilt=adapterBuilder.build(adapterParameters),adapterDescriptor=BuilderRegistry.describe(adapterIntent.recipe.builderId),registryBuilt=BuilderRegistry.compileReviewCandidate(adapterDescriptor.id,adapterDescriptor.implementationDigest,adapterParameters);
+    check(Foundry.canonicalJson(adapterBuilt)===Foundry.canonicalJson(registryBuilt)&&adapterBuilt.consumes[0]===adapterParameters.inputContract&&adapterBuilt.provides[0]===adapterParameters.outputContract,'review packet builder exactly matches the inactive registry candidate and declares both contracts');
+    const adapterProposal=JSON.parse(fs.readFileSync(path.join(adapterMaterialized.directory,'recipe-proposal.json'),'utf8'));
+    check(Fabric.validateCompiledArtifact(adapterProposal.recipe,adapterBuilt).ok&&Fabric.importRecipeProposal(adapterProposal).active===false,'Capability Fabric accepts the adapter artifact shape while keeping its recipe inactive');
+    check(!Fabric.ALLOWED_BUILDERS.includes(adapterProposal.recipe.builderId)&&!Fabric.loadCatalog().recipes.some((recipe)=>recipe.id===adapterProposal.recipe.id),'adapter materialization cannot activate its builder or catalog recipe');
+    const adapterCliRoot=path.join(root,'adapter-cli');fs.mkdirSync(adapterCliRoot);const adapterCli=childProcess.spawnSync(process.execPath,[path.join(toolRoot,'cli.js'),'--pilot',adapterCliRoot,'--kind','ADAPTER'],{cwd:path.join(__dirname,'..'),encoding:'utf8',timeout:10000,windowsHide:true});
+    check(adapterCli.status===0&&JSON.parse(adapterCli.stdout).status==='MATERIALIZED_FOR_SOURCE_REVIEW','public CLI exposes the deterministic ADAPTER pilot route');
     assert.throws(() => Cli.materialize(first, root), (error) => error && error.receipt && error.receipt.code === 'OUTPUT_OVERWRITE_REFUSED');
     passed += 1; process.stdout.write('PASS CLI refuses exact packet overwrite\n');
 

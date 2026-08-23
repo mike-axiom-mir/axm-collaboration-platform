@@ -24,7 +24,10 @@ async function run(request) {
   if (ACTIONS.indexOf(action) < 0) {
     return refusal(FORBIDDEN.indexOf(action) >= 0 ? 'FORBIDDEN_ACTION' : 'UNSUPPORTED_ACTION', 'The machine door exposes pure inspection and packet assembly only.');
   }
-  if (action === 'pilot.example') return response({ ok: true, intent: String(input.capabilityKind || 'HAND').toUpperCase() === 'SKILL' ? Foundry.exampleSkill() : Foundry.example() });
+  if (action === 'pilot.example') {
+    const pilotType=String(input.pilotType || input.capabilityKind || 'HAND').toUpperCase();
+    return response({ ok: true, intent: pilotType === 'SKILL' ? Foundry.exampleSkill() : pilotType === 'ADAPTER' ? Foundry.exampleAdapter() : Foundry.example() });
+  }
   if (action === 'intent.validate') {
     const validation = Foundry.validateIntent(input.intent);
     return response({ ok: validation.ok, validation: validation });

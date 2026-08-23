@@ -9,6 +9,8 @@ const Fabric=require('../../shared/capability-fabric/index.js');
 const Registry=require('../../shared/capability-fabric/builder-registry.js');
 const Admission=require('../../shared/capability-fabric/admission-core.js');
 const Host=require('./admission-host.js');
+const Foundry=require('../capability-recipe-foundry/foundry-core.js');
+const FoundryCli=require('../capability-recipe-foundry/cli.js');
 
 const REVIEWED_PILOTS=[
   path.resolve(__dirname,'../capability-recipe-foundry/pilots/axm-capability-recipe-review-closed-json-schema-validator-recipe-pilot-6f0ccc698d7c'),
@@ -59,13 +61,27 @@ function exerciseReceiptContracts(){
   check(!Admission.verifyDecision(decisionDrift,decisionExpected),'decision byte drift cannot grant CANON authority');
 }
 
+function exerciseAdapterCandidate(){
+  const parent=fs.mkdtempSync(path.join(os.tmpdir(),'axm-adapter-admission-'));
+  try{
+    const intent=Foundry.exampleAdapter(),result=Foundry.forge(intent),materialized=FoundryCli.materialize(result,parent),inspected=Host.inspectPacketRoot(materialized.directory);
+    check(inspected.verification.state==='PASS'&&byId(inspected.verification.checks,'registered-review-candidate').pass,'adapter packet is bound to the exact inactive registry review candidate');
+    const testReceipt=Host.runExactTest({packetRoot:materialized.directory,confirmation:Admission.TEST_CONFIRMATION});
+    check(testReceipt.state==='PASS'&&testReceipt.sourceExecuted===true&&testReceipt.generatedCapabilityExecuted===true,'trusted admission host proves the exact adapter builder and generated selftest');
+    const plan=Admission.buildPlan({proposal:inspected.proposal,packet:inspected.packet,catalog:Fabric.loadCatalog(),foundryVerification:inspected.verification,testReceipt:testReceipt,reviewReceipt:null,decision:null});
+    check(plan.state==='AWAITING_SOURCE_REVIEW'&&plan.action==='REVIEW_EXACT_SOURCE_AND_EVIDENCE'&&plan.checks.trustedTestVerified&&plan.checks.sourceReviewVerified===false&&Admission.verifyPlan(plan).state==='PASS','tested adapter candidate stops at the exact source-review gate');
+    check(plan.proposedRecipe&&plan.proposedRecipe.id==='closed-object-contract-adapter'&&plan.proposedRegistry.entries.some(function(row){return row.id==='closed-object-contract-adapter-v1'&&row.status===Registry.ACTIVE;})&&plan.effects.recipeActivated===false,'admission projects the adapter diff without applying or activating it');
+  }finally{fs.rmSync(parent,{recursive:true,force:true});}
+}
+
 function main(){
   const inventory=Registry.inventory(),catalogBefore=Fabric.loadCatalog();
-  check(Registry.activeIds().length===5&&Registry.reviewCandidateIds().length===0,'registry contains five reviewed active builders and no pending candidate');
+  check(Registry.activeIds().length===5&&Registry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','registry contains five reviewed active builders and one exact inactive adapter candidate');
   check(inventory.registryDigest===Registry.inventory().registryDigest,'builder registry digest is deterministic');
   REVIEWED_PILOTS.forEach(exerciseReviewedPilot);
+  exerciseAdapterCandidate();
   exerciseReceiptContracts();
-  check(Fabric.canonicalJson(Fabric.loadCatalog())===Fabric.canonicalJson(catalogBefore)&&Registry.activeIds().length===5,'admission replay and receipt tests perform no activation or catalog mutation');
+  check(Fabric.canonicalJson(Fabric.loadCatalog())===Fabric.canonicalJson(catalogBefore)&&Registry.activeIds().length===5&&Registry.reviewCandidateIds().length===1,'admission replay and receipt tests perform no activation or catalog mutation');
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'axm-admission-tamper-'));
   try{
     fs.cpSync(REVIEWED_PILOTS[0],temp,{recursive:true});

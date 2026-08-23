@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `4d81952fef8b88c6417ba1e54c9b662e8f04b55084e9d9f45a198712c7b9b870`
+Semantic graph digest: `f0318b9fbb512d67f601442ac0e058028061c717e66a9c9588983cf905ef8b52`
 
-Blocks: 302 · Capabilities: 2940 · Schemas: 846 · Unresolved edges: 1975
+Blocks: 302 · Capabilities: 2943 · Schemas: 847 · Unresolved edges: 1975
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -45,10 +45,10 @@ This file is generated from the same graph as the machine views. Labels never gr
 | browser-global-surface-observatory | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 5 | 2 | 1 selftest(s) |
 | browser-lan-hardware-qa-lab | ROUTE (INFERRED_UNCONFIRMED) | TEST | PHYSICAL_ACTUATION, WRITE_CANDIDATE | 7 | 5 | 1 selftest(s) |
 | bulk-intake-conveyor | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 7 | 4 | 1 selftest(s) |
-| capability-fabric | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 9 | 6 | 1 selftest(s) |
+| capability-fabric | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 10 | 6 | 1 selftest(s) |
 | capability-gap-workbench | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 3 | 1 selftest(s) |
 | capability-recipe-admission-gate | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | OBSERVE_LOCAL, WRITE_CANDIDATE | 6 | 5 | 1 selftest(s) |
-| capability-recipe-foundry | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 6 | 4 | 3 selftest(s) |
+| capability-recipe-foundry | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 8 | 4 | 4 selftest(s) |
 | challenge-arena | HAND (INFERRED_UNCONFIRMED) | TEST | ROOT_CHANGE, WRITE_CANDIDATE | 5 | 4 | 1 selftest(s) |
 | character-animation-mocap-studio | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | character-creature-studio | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |

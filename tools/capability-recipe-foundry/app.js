@@ -47,6 +47,19 @@
     $('holds').firstChild.textContent = 'Portable SKILL pilot loaded. Validate its exact sealed digest and modular contract.';
     notice('SEALED SKILL PILOT · ' + state.intent.intentDigest, 'hold');
   }
+  function loadAdapterPilot() {
+    state.intent = Foundry.exampleAdapter();
+    state.result = null;
+    $('intent-json').value = JSON.stringify(state.intent, null, 2);
+    resetOutput(state.intent);
+    $('packet-result').hidden = true;
+    $('output-status').textContent = 'NOT BUILT';
+    $('output-status').className = 'chip hold';
+    $('holds').className = 'holds';
+    $('holds').replaceChildren(document.createElement('li'));
+    $('holds').firstChild.textContent = 'Object adapter pilot loaded. Structural mapping proof does not claim domain semantic equivalence.';
+    notice('SEALED ADAPTER PILOT · ' + state.intent.intentDigest, 'hold');
+  }
   function reseal() {
     var parsed = parseEditor();
     if (!parsed) return;
@@ -134,6 +147,7 @@
     if (!Foundry || !Zip) throw new Error('Capability Recipe Foundry dependencies are unavailable.');
     $('load-pilot').addEventListener('click', loadPilot);
     $('load-skill-pilot').addEventListener('click', loadSkillPilot);
+    $('load-adapter-pilot').addEventListener('click', loadAdapterPilot);
     $('reseal').addEventListener('click', reseal);
     $('route').addEventListener('click', route);
     $('download').addEventListener('click', download);

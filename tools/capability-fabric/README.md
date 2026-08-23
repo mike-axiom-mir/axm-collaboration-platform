@@ -15,6 +15,12 @@ and portable review SKILL were admitted through the reviewed merge gate. The
 separate Capability Recipe Admission Gate can prove exact evidence and a
 prospective catalog diff for future candidates, but cannot activate one itself.
 
+The registry also exposes one exact inactive object-contract adapter review
+candidate to Recipe Foundry. Normal Fabric builds cannot compile it. The
+candidate makes copied, renamed, defaulted, and dropped fields explicit and
+proves only structural output compatibility; source review and Mike's merge
+decision remain required before catalog activation.
+
 The v0.2 composition door deterministically connects reviewed candidates through
 exact `consumes` / `provides` identities. It refuses cycles, self-edges,
 duplicate or ambiguous bindings, unbound inputs, undeclared outputs, unavailable

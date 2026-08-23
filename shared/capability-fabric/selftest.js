@@ -23,7 +23,7 @@ function main(){
   check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===4&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.variants.some(function(variant){return variant.id===row.candidatePolicy.defaultVariantId;});}),'every reviewed recipe explicitly defaults to one named candidate variant');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
-  check(BuilderRegistry.activeIds().length===5&&BuilderRegistry.reviewCandidateIds().length===0,'modular builder registry contains five reviewed active builders and no pending candidates');
+  check(BuilderRegistry.activeIds().length===5&&BuilderRegistry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','modular builder registry keeps five reviewed builders active and one exact adapter review candidate inactive');
   check(catalog.recipes.every(function(row){const builder=BuilderRegistry.describe(row.builderId);return builder&&row.builderDigest===builder.implementationDigest;}),'every active recipe binds the exact modular builder digest');
 
   const packages={};

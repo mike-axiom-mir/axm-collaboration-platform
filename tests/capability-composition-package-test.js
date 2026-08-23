@@ -10,6 +10,7 @@ const Fabric=require('../shared/capability-fabric/index.js');
 const Cli=require('../tools/capability-fabric/cli.js');
 const Machine=require('../tools/capability-fabric/machine.js');
 const Nursery=require('../tools/detached-candidate-nursery/core/nursery-core.js');
+const Foundry=require('../tools/capability-recipe-foundry/foundry-core.js');
 
 let passed=0;
 function check(value,label){assert(value,label);passed+=1;process.stdout.write('PASS '+label+'\n');}
@@ -23,6 +24,10 @@ function safeRemove(root){const resolved=path.resolve(root);if(path.dirname(reso
     const manifest=JSON.parse(fs.readFileSync(path.join(toolRoot,'manifest.json'),'utf8')),contract=JSON.parse(fs.readFileSync(path.join(toolRoot,'module.contract.json'),'utf8'));
     check(manifest.status==='EXPERIMENTAL'&&manifest.installed===false&&manifest.promoted===false,'Capability Fabric remains experimental and detached');
     check(manifest.actions.some(function(row){return /composition/i.test(row);})&&contract.provides.includes('deterministic-capability-composition'),'tool contracts expose deterministic composition explicitly');
+    const inactiveAdapterRequest=Fabric.sealRequest(Foundry.exampleAdapter().recipe.exampleRequest,true),inactiveAdapterPlan=Fabric.planBuild(inactiveAdapterRequest,catalog);
+    check(inactiveAdapterPlan.status==='HELD'&&inactiveAdapterPlan.holds.some(function(row){return row.code==='MISSING_RECIPE';}),'composition build planning cannot smuggle the inactive adapter candidate into the active catalog');
+    const heldCompositionDraft=Fabric.clone(request);heldCompositionDraft.nodes[0].request=inactiveAdapterRequest;const heldCompositionRequest=Fabric.sealCompositionRequest(heldCompositionDraft,true),heldAdapterComposition=Fabric.buildComposition(heldCompositionRequest,catalog);
+    check(heldAdapterComposition.status==='HELD'&&heldAdapterComposition.nodes.length===0&&heldAdapterComposition.holds.some(function(row){return row.code==='NODE_BUILD_HOLD';}),'composition containing the inactive adapter emits no partial node candidates');
     ['composition-request.schema.json','composition-plan.schema.json','composition-build.schema.json','composition-verification.schema.json','composition-node-packages.schema.json','composition-materialization-receipt.schema.json'].forEach(function(file){JSON.parse(fs.readFileSync(path.join(schemaRoot,file),'utf8'));passed+=1;process.stdout.write('PASS '+file+' parses\n');});
     new Function(fs.readFileSync(path.join(__dirname,'../shared/capability-fabric/composition-core.js'),'utf8'));check(true,'composition core parses');
 

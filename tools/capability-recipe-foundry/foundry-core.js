@@ -6,10 +6,13 @@
   var Verification = typeof module !== 'undefined' && module.exports
     ? require('../hand-verification-lab/hand-verification-core.js')
     : root.AXMHandVerificationCore;
-  var api = factory(Fabric, Verification);
+  var BuilderRegistry = typeof module !== 'undefined' && module.exports
+    ? require('../../shared/capability-fabric/builder-registry.js')
+    : root.AXMCapabilityBuilderRegistry;
+  var api = factory(Fabric, Verification, BuilderRegistry);
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.AXMCapabilityRecipeFoundry = api;
-})(typeof self !== 'undefined' ? self : this, function (Fabric, Verification) {
+})(typeof self !== 'undefined' ? self : this, function (Fabric, Verification, BuilderRegistry) {
   'use strict';
 
   if (!Fabric || typeof Fabric.importRecipeProposal !== 'function') {
@@ -17,6 +20,9 @@
   }
   if (!Verification || typeof Verification.parseSpecification !== 'function') {
     throw new Error('Hand Verification core is required');
+  }
+  if (!BuilderRegistry || typeof BuilderRegistry.reviewCandidateContribution !== 'function') {
+    throw new Error('Capability builder registry is required');
   }
 
   var VERSION = '1.1.0';
@@ -766,6 +772,35 @@ process.stdout.write('portable skill builder contribution selftest PASS\\n');
     });
   }
 
+  function exampleAdapter() {
+    var candidate=BuilderRegistry.reviewCandidateContribution('closed-object-contract-adapter-v1');
+    if(!candidate)throw new Error('Closed object adapter review candidate is unavailable');
+    var parameters=candidate.exampleParameters;
+    var specification={
+      schema:'axm.missing-hand-specification/v1',capability:'capability.specify.missing-hand/v1',capabilityId:'contract.adapt.closed-object/v1',gapType:'CONTRACT',status:'DRAFT',
+      purpose:'Build a deterministic bounded object-contract adapter that makes every copied, renamed, defaulted, and dropped top-level field explicit without claiming domain meaning from structural compatibility.',
+      inputsAndSchemas:[parameters.inputContract,'one reviewed closed flat-object source schema','one explicit field mapping and loss declaration'],outputsAndSchemas:[parameters.outputContract,'one mapping digest bound to successful results'],
+      sideEffects:['none; adaptation is a pure in-memory operation'],permissionsAndConsent:['no permissions; callers explicitly provide the source object and retain authority over use of the result'],
+      resourceBudget:'At most 64 primitive properties, 16 KiB per schema, 64 KiB input, 64 KiB output, no recursion, network, filesystem, clock, environment, or dynamic code.',
+      failureAndRecovery:'Unknown fields, invalid schemas, hidden drops, narrowing copies, incompatible defaults, over-budget input, malformed source values, and invalid target output fail with typed refusal and no retained partial state.',
+      compatibilityVersionContract:'The pilot consumes one exact source contract and provides one exact target contract. It proves successful output shape, declared loss, and deterministic mapping bytes; domain semantic equivalence remains unproven.',
+      verificationContract:'Prove exact mapping coverage, explicit loss, widening-only copies, valid defaults, deterministic rebuild parity, generated selftest behavior, bounded resources, and authority refusal.',
+      promotionGate:'Mike reviews the exact builder source, semantic boundary, test evidence, catalog diff, and composition behavior before activation or merge.',
+      provenance:{sourceSchema:'axm.capability-gap-report/v1',sourceRequirementIds:['capability-composition-runtime-semantics'],foundry:'capability-recipe-foundry/v1.1',generatedAt:'2026-08-24T09:00:00.000Z'},
+      truth:{implementationNeutral:true,installed:false,executed:false,authorityGranted:false,promoted:false,canon:false,prototypeOrMockClosesGap:false}
+    };
+    var verificationPlan=Verification.buildPlan(specification,'2026-08-24T09:01:00.000Z');
+    return sealIntent({id:'closed-object-contract-adapter-recipe-pilot',sourceKind:'CODEX',specification:specification,verificationPlan:verificationPlan,recipe:{
+      id:'closed-object-contract-adapter',version:'0.1.0',title:'Closed Object Contract Adapter',summary:'Compile an explicit bounded field mapping into a deterministic object-contract adapter with visible loss and structural compatibility proof.',family:'contract-adapter',capabilityKind:'HAND',
+      capabilityContract:{runtimeMode:'EXECUTABLE',entry:'capability.js',operation:'adapt',portableForm:'NONE',portablePath:null,resultContractPolicy:'BUILDER_PROVIDES_EXACT',requiredHostCapabilities:[]},builderId:'closed-object-contract-adapter-v1',
+      candidatePolicy:{defaultCount:1,defaultVariantId:'closed-default',variants:[{id:'closed-default',title:'Closed primitive object mapping',parameterOverrides:{}}]},
+      parameterSpec:{inputContract:{type:'string',required:true,pattern:'^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$',maxLength:180,description:'Exact source contract consumed.'},outputContract:{type:'string',required:true,pattern:'^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$',maxLength:180,description:'Exact target contract provided.'},sourceSchema:{type:'object',required:true,maxBytes:16384,description:'Reviewed closed flat-object source schema.'},targetSchema:{type:'object',required:true,maxBytes:16384,description:'Reviewed closed flat-object target schema.'},mappings:{type:'array',required:true,maxBytes:32768,description:'Explicit one-to-one copy, rename, missing-value, and default policies.'},drops:{type:'array',required:true,maxBytes:8192,description:'Every deliberately unused source property.'},maxProperties:{type:'integer',required:true,minimum:1,maximum:64,description:'Maximum properties on either side.'},maxInputBytes:{type:'integer',required:true,minimum:64,maximum:65536,description:'Maximum source JSON bytes.'},maxOutputBytes:{type:'integer',required:true,minimum:64,maximum:65536,description:'Maximum target JSON bytes.'}},
+      exampleRequest:{id:'closed-object-contract-adapter-example',family:'contract-adapter',purpose:'Build the reviewed legacy-player to player-summary adapter pilot.',recipeId:'closed-object-contract-adapter',variantId:null,parameters:parameters,source:{kind:'HUMAN',ref:'capability-composition-runtime-semantics'}},
+      boundaries:['closed flat object schemas and primitive fields only','every target field mapped and every unused source field explicitly dropped','copy compatibility is widening-only and defaults must satisfy target shape','structural compatibility does not prove domain meaning','generated code is emitted but never executed by Capability Fabric or Recipe Foundry','no network, install, registration, promotion, permission, Foundation, or CANON authority'],
+      verifiers:['Capability Fabric inactive proposal inspection','exact mapping and loss coverage review','trusted-host builder contribution selftest','deterministic rebuild parity','narrowing, hidden-loss, missing-target, invalid-default, and unknown-field adversarial fixtures']
+    },contribution:{builderId:'closed-object-contract-adapter-v1',builderSource:candidate.builderSource,builderSelftestSource:candidate.builderSelftestSource}});
+  }
+
   return {
     VERSION: VERSION,
     INTENT_SCHEMA: INTENT_SCHEMA,
@@ -788,6 +823,7 @@ process.stdout.write('portable skill builder contribution selftest PASS\\n');
     verify: verify,
     example: example,
     exampleSkill: exampleSkill,
+    exampleAdapter: exampleAdapter,
     clone: clone,
     digest: Fabric.digest,
     canonicalJson: Fabric.canonicalJson

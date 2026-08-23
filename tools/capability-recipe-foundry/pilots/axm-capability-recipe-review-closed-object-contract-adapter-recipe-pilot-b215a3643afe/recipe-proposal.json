@@ -1,0 +1,211 @@
+{
+  "proposalDigest": "sha256:65a4fbfab2452f0e2c6a8fbff0f873f2b58f6b6cb7f0f533cbe1a260f9f151d1",
+  "recipe": {
+    "activation": "INACTIVE_PROPOSAL",
+    "boundaries": [
+      "closed flat object schemas and primitive fields only",
+      "every target field mapped and every unused source field explicitly dropped",
+      "copy compatibility is widening-only and defaults must satisfy target shape",
+      "structural compatibility does not prove domain meaning",
+      "generated code is emitted but never executed by Capability Fabric or Recipe Foundry",
+      "no network, install, registration, promotion, permission, Foundation, or CANON authority"
+    ],
+    "builderId": "closed-object-contract-adapter-v1",
+    "candidatePolicy": {
+      "defaultCount": 1,
+      "defaultVariantId": "closed-default",
+      "variants": [
+        {
+          "id": "closed-default",
+          "parameterOverrides": {},
+          "title": "Closed primitive object mapping"
+        }
+      ]
+    },
+    "capabilityContract": {
+      "entry": "capability.js",
+      "operation": "adapt",
+      "portableForm": "NONE",
+      "portablePath": null,
+      "requiredHostCapabilities": [],
+      "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+      "runtimeMode": "EXECUTABLE"
+    },
+    "capabilityKind": "HAND",
+    "exampleRequest": {
+      "family": "contract-adapter",
+      "id": "closed-object-contract-adapter-example",
+      "parameters": {
+        "drops": [
+          "legacyNote"
+        ],
+        "inputContract": "axm.example.legacy-player/v1",
+        "mappings": [
+          {
+            "defaultValue": null,
+            "onMissing": "REFUSE",
+            "source": "displayName",
+            "target": "name"
+          },
+          {
+            "defaultValue": null,
+            "onMissing": "REFUSE",
+            "source": "score",
+            "target": "points"
+          },
+          {
+            "defaultValue": "unlabeled",
+            "onMissing": "DEFAULT",
+            "source": "category",
+            "target": "label"
+          }
+        ],
+        "maxInputBytes": 4096,
+        "maxOutputBytes": 4096,
+        "maxProperties": 16,
+        "outputContract": "axm.example.player-summary/v1",
+        "sourceSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "category": {
+              "maxLength": 32,
+              "type": "string"
+            },
+            "displayName": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "legacyNote": {
+              "maxLength": 120,
+              "type": "string"
+            },
+            "score": {
+              "maximum": 999999,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "displayName",
+            "score"
+          ],
+          "type": "object"
+        },
+        "targetSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "maxLength": 32,
+              "type": "string"
+            },
+            "name": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "points": {
+              "maximum": 999999,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": [
+            "name",
+            "points",
+            "label"
+          ],
+          "type": "object"
+        }
+      },
+      "purpose": "Build the reviewed legacy-player to player-summary adapter pilot.",
+      "recipeId": "closed-object-contract-adapter",
+      "source": {
+        "kind": "HUMAN",
+        "ref": "capability-composition-runtime-semantics"
+      },
+      "variantId": null
+    },
+    "family": "contract-adapter",
+    "id": "closed-object-contract-adapter",
+    "parameterSpec": {
+      "drops": {
+        "description": "Every deliberately unused source property.",
+        "maxBytes": 8192,
+        "required": true,
+        "type": "array"
+      },
+      "inputContract": {
+        "description": "Exact source contract consumed.",
+        "maxLength": 180,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+        "required": true,
+        "type": "string"
+      },
+      "mappings": {
+        "description": "Explicit one-to-one copy, rename, missing-value, and default policies.",
+        "maxBytes": 32768,
+        "required": true,
+        "type": "array"
+      },
+      "maxInputBytes": {
+        "description": "Maximum source JSON bytes.",
+        "maximum": 65536,
+        "minimum": 64,
+        "required": true,
+        "type": "integer"
+      },
+      "maxOutputBytes": {
+        "description": "Maximum target JSON bytes.",
+        "maximum": 65536,
+        "minimum": 64,
+        "required": true,
+        "type": "integer"
+      },
+      "maxProperties": {
+        "description": "Maximum properties on either side.",
+        "maximum": 64,
+        "minimum": 1,
+        "required": true,
+        "type": "integer"
+      },
+      "outputContract": {
+        "description": "Exact target contract provided.",
+        "maxLength": 180,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+        "required": true,
+        "type": "string"
+      },
+      "sourceSchema": {
+        "description": "Reviewed closed flat-object source schema.",
+        "maxBytes": 16384,
+        "required": true,
+        "type": "object"
+      },
+      "targetSchema": {
+        "description": "Reviewed closed flat-object target schema.",
+        "maxBytes": 16384,
+        "required": true,
+        "type": "object"
+      }
+    },
+    "reviewPolicy": {
+      "activation": "source-review-and-merge",
+      "canonAuthority": "NONE",
+      "sharedUseRequires": "MIKE_TOBI_MERGE"
+    },
+    "schema": "axm.capability-recipe-draft/v1",
+    "summary": "Compile an explicit bounded field mapping into a deterministic object-contract adapter with visible loss and structural compatibility proof.",
+    "title": "Closed Object Contract Adapter",
+    "verifiers": [
+      "Capability Fabric inactive proposal inspection",
+      "exact mapping and loss coverage review",
+      "trusted-host builder contribution selftest",
+      "deterministic rebuild parity",
+      "narrowing, hidden-loss, missing-target, invalid-default, and unknown-field adversarial fixtures"
+    ],
+    "version": "0.1.0"
+  },
+  "schema": "axm.capability-recipe-proposal/v1",
+  "sourceKind": "CODEX"
+}

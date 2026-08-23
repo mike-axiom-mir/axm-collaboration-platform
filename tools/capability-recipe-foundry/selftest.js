@@ -5,6 +5,7 @@ const assert = require('assert');
 const Foundry = require('./foundry-core.js');
 const Machine = require('./machine.js');
 const Fabric = require('../../shared/capability-fabric/index.js');
+const BuilderRegistry = require('../../shared/capability-fabric/builder-registry.js');
 
 let passed = 0;
 function check(condition, label) { assert(condition, label); passed += 1; process.stdout.write('PASS ' + label + '\n'); }
@@ -75,10 +76,21 @@ function resealPacket(packet) { const copy = Foundry.clone(packet); delete copy.
   const skillSemanticDrift = Foundry.clone(skillFirst), semanticContract = JSON.parse(skillSemanticDrift.files[Foundry.FILES.modularContract]); semanticContract.runtime.operation = 'promote'; delete semanticContract.contractDigest; semanticContract.contractDigest = Foundry.digest(semanticContract); skillSemanticDrift.files[Foundry.FILES.modularContract] = JSON.stringify(semanticContract, null, 2) + '\n'; const semanticRow = skillSemanticDrift.packet.files.find((row) => row.path === Foundry.FILES.modularContract); const oldBytes = semanticRow.bytes; semanticRow.bytes = Buffer.byteLength(skillSemanticDrift.files[Foundry.FILES.modularContract]); semanticRow.digest = Foundry.digest(skillSemanticDrift.files[Foundry.FILES.modularContract]); skillSemanticDrift.packet.totalBytes += semanticRow.bytes - oldBytes; resealPacket(skillSemanticDrift.packet); skillSemanticDrift.receipt.packetRef.digest = skillSemanticDrift.packet.packetDigest; skillSemanticDrift.receipt.output.totalBytes = skillSemanticDrift.packet.totalBytes; const semanticReceipt = Foundry.clone(skillSemanticDrift.receipt); delete semanticReceipt.receiptDigest; skillSemanticDrift.receipt.receiptDigest = Foundry.digest(semanticReceipt);
   check(!Foundry.verify(skillSemanticDrift).ok, 'rehashing cannot drift SKILL runtime semantics away from the reviewed proposal');
 
+  const adapterIntent=Foundry.exampleAdapter();
+  check(Foundry.validateIntent(adapterIntent).ok&&adapterIntent.specification.gapType==='CONTRACT'&&adapterIntent.recipe.capabilityKind==='HAND','object adapter pilot closes the missing contract seam through the governed authoring route');
+  const adapterPlan=Foundry.plan(adapterIntent),adapterFirst=Foundry.forge(adapterIntent),adapterSecond=Foundry.forge(adapterIntent);
+  check(adapterPlan.status==='READY'&&adapterPlan.executesBuilderSource===false&&Foundry.canonicalJson(adapterFirst)===Foundry.canonicalJson(adapterSecond)&&Foundry.verify(adapterFirst).ok,'adapter review packet is deterministic without executing candidate source');
+  const adapterProposal=JSON.parse(adapterFirst.files[Foundry.FILES.proposal]),adapterInspection=Fabric.importRecipeProposal(adapterProposal),adapterBuilder=BuilderRegistry.describe(adapterProposal.recipe.builderId);
+  check(adapterInspection.ok&&adapterInspection.active===false&&!Fabric.ALLOWED_BUILDERS.includes(adapterProposal.recipe.builderId)&&!Fabric.loadCatalog().recipes.some((recipe)=>recipe.id===adapterProposal.recipe.id),'adapter proposal remains inactive and absent from the reviewed catalog');
+  check(adapterBuilder&&adapterBuilder.status===BuilderRegistry.REVIEW_CANDIDATE&&adapterBuilder.proposalDigest===adapterProposal.proposalDigest,'adapter proposal is bound to one exact inactive registry review candidate');
+  check(adapterFirst.receipt.truth.builderSourceExecuted===false&&adapterFirst.receipt.truth.testsExecuted===false&&adapterFirst.files[Foundry.FILES.builder].includes('semanticCompatibilityProven:false'),'adapter packet preserves the structural-versus-domain semantic proof boundary');
+
   const machinePilot = await Machine.run({ action: 'pilot.example' });
   check(machinePilot.ok && machinePilot.builderSourceExecuted === false && machinePilot.providerCalled === false, 'machine pilot route is pure and provider-free');
   const machineSkillPilot = await Machine.run({ action: 'pilot.example', input: { capabilityKind: 'SKILL' } });
   check(machineSkillPilot.ok && machineSkillPilot.intent.recipe.capabilityKind === 'SKILL' && machineSkillPilot.builderSourceExecuted === false, 'machine pilot route exposes the SKILL contract without execution');
+  const machineAdapterPilot=await Machine.run({action:'pilot.example',input:{pilotType:'ADAPTER'}});
+  check(machineAdapterPilot.ok&&machineAdapterPilot.intent.recipe.id==='closed-object-contract-adapter'&&machineAdapterPilot.builderSourceExecuted===false,'machine pilot route exposes the inactive adapter contract without execution');
   const machineBuild = await Machine.run({ action: 'packet.forge', input: { intent: intent } });
   check(machineBuild.ok && machineBuild.result.packet.packetDigest === first.packet.packetDigest, 'machine door assembles the exact same packet');
   const forbidden = await Machine.run({ action: 'builder.execute' });

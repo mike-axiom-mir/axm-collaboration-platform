@@ -81,5 +81,8 @@ the deterministic admission gate after exact packet inspection, trusted tests,
 nine-case source review, and Mike's merge decision. The portable review SKILL
 entered through the same route and remains instruction material: its authorized
 host must re-check every capability and permission at use time. No review
-candidates remain. `tools/capability-recipe-admission-gate` stays available for
-future Foundry candidates and has no apply or activation action.
+authority is inherited. The registry now also carries one exact inactive
+`closed-object-contract-adapter-v1` review candidate. Ordinary Fabric builds
+cannot compile it; its source, structural-versus-semantic boundary, evidence,
+and catalog diff still require the full admission route and Mike's decision.
+`tools/capability-recipe-admission-gate` has no apply or activation action.

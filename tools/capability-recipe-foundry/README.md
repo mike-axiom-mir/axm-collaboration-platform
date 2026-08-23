@@ -41,6 +41,18 @@ portable `SKILL.md`, a closed `axm.portable-skill-contract/v1`, and an external
 selftest through an explicitly host-mediated runtime contract. It is equally
 inactive and carries no inherited authority.
 
+The third pilot proposes `closed-object-contract-adapter-v1`. It accepts two
+closed flat-object schemas plus explicit copy/rename/default/drop declarations.
+The review candidate refuses hidden loss, incomplete target coverage, narrowing
+copies, invalid defaults, undeclared fields, and resource excess. Its proof is
+deliberately structural: domain meaning and end-to-end fitness remain unproven.
+
+Materialize that exact inactive packet with:
+
+```powershell
+node tools/capability-recipe-foundry/cli.js --pilot <existing-output-parent> --kind ADAPTER
+```
+
 ## Verify
 
 ```powershell
