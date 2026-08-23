@@ -24,7 +24,7 @@ function exact(value, keys, label) {
   }
 function contractId(value,label){const text=String(value||'');if(!/^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$/.test(text))throw new Error(label+' is invalid');return text;}
 function adapterFieldName(value,label) {
-    const text=String(value||'');if(!/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(text))throw new Error(label+' is invalid');return text;
+    const text=String(value||'');if(!/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(text)||['__proto__','prototype','constructor'].includes(text))throw new Error(label+' is invalid');return text;
   }
 function primitiveValueValid(schema,value,skipEnum) {
     const type=schema.type;
@@ -33,9 +33,9 @@ function primitiveValueValid(schema,value,skipEnum) {
     if(type==='integer'&&!Number.isInteger(value))return false;
     if(type==='number'&&(typeof value!=='number'||!Number.isFinite(value)))return false;
     if(type==='string'){
-      if(schema.minLength!==undefined&&value.length<schema.minLength)return false;
-      if(schema.maxLength!==undefined&&value.length>schema.maxLength)return false;
-      if(schema.pattern!==undefined&&!new RegExp(schema.pattern).test(value))return false;
+      const length=Array.from(value).length;
+      if(schema.minLength!==undefined&&length<schema.minLength)return false;
+      if(schema.maxLength!==undefined&&length>schema.maxLength)return false;
     }
     if(type==='integer'||type==='number'){
       if(schema.minimum!==undefined&&value<schema.minimum)return false;
@@ -43,28 +43,12 @@ function primitiveValueValid(schema,value,skipEnum) {
     }
     return skipEnum===true||schema.enum===undefined||schema.enum.some(function(row){return canonicalJson(row)===canonicalJson(value);});
   }
-function inspectAdapterPattern(pattern,label) {
-    if(typeof pattern!=='string'||pattern.length>240)throw new Error(label+' is invalid');
-    let escaped=false,inClass=false;
-    for(let index=0;index<pattern.length;index+=1){
-      const token=pattern[index];
-      if(escaped){if(!inClass&&/[1-9]/.test(token))throw new Error(label+' uses a backreference');escaped=false;continue;}
-      if(token==='\\'){escaped=true;continue;}
-      if(token==='['&&!inClass){inClass=true;continue;}
-      if(token===']'&&inClass){inClass=false;continue;}
-      if(!inClass&&'()|*+'.includes(token))throw new Error(label+' uses unsupported potentially unbounded syntax');
-    }
-    const quantifiers=pattern.match(/\{\d+(?:,\d*)?\}/g)||[];
-    quantifiers.forEach(function(token){const values=token.slice(1,-1).split(',');if((values.length>1&&values[1]==='')||values.some(function(value){return value!==''&&Number(value)>65536;}))throw new Error(label+' uses an unbounded or excessive quantifier');});
-    new RegExp(pattern);
-  }
 function inspectAdapterPrimitive(schema,label) {
-    exactKeys(schema,['type','enum','pattern','minLength','maxLength','minimum','maximum','description'],label);
+    exactKeys(schema,['type','enum','minLength','maxLength','minimum','maximum','description'],label);
     if(!['string','number','integer','boolean'].includes(schema.type))throw new Error(label+'.type must be a supported primitive');
     if(schema.description!==undefined&&(typeof schema.description!=='string'||schema.description.length>500))throw new Error(label+'.description is invalid');
-    if(schema.type!=='string'&&['pattern','minLength','maxLength'].some(function(key){return schema[key]!==undefined;}))throw new Error(label+' carries a string-only keyword for a non-string type');
+    if(schema.type!=='string'&&['minLength','maxLength'].some(function(key){return schema[key]!==undefined;}))throw new Error(label+' carries a string-only keyword for a non-string type');
     if(schema.type!=='number'&&schema.type!=='integer'&&['minimum','maximum'].some(function(key){return schema[key]!==undefined;}))throw new Error(label+' carries a numeric-only keyword for a non-numeric type');
-    if(schema.pattern!==undefined)inspectAdapterPattern(schema.pattern,label+'.pattern');
     ['minLength','maxLength'].forEach(function(key){if(schema[key]!==undefined&&(!Number.isInteger(schema[key])||schema[key]<0||schema[key]>65536))throw new Error(label+'.'+key+' is invalid');});
     if(schema.minLength!==undefined&&schema.maxLength!==undefined&&schema.minLength>schema.maxLength)throw new Error(label+' string bounds conflict');
     ['minimum','maximum'].forEach(function(key){if(schema[key]!==undefined&&(typeof schema[key]!=='number'||!Number.isFinite(schema[key])))throw new Error(label+'.'+key+' is invalid');});
@@ -91,7 +75,6 @@ function primitiveSchemaCompatible(source,target) {
       const sourceMin=source.minLength===undefined?0:source.minLength,sourceMax=source.maxLength===undefined?Infinity:source.maxLength;
       if(target.minLength!==undefined&&sourceMin<target.minLength)return false;
       if(target.maxLength!==undefined&&sourceMax>target.maxLength)return false;
-      if(target.pattern!==undefined&&source.pattern!==target.pattern)return false;
     }
     if(source.type==='number'||source.type==='integer'){
       const sourceMin=source.minimum===undefined?-Infinity:source.minimum,sourceMax=source.maximum===undefined?Infinity:source.maximum;
@@ -139,13 +122,13 @@ function inspectAdapterParameters(parameters) {
     config.mappingDigest=digest(config);return config;
   }
 function objectAdapterSource(config) {
-    return "'use strict';\nconst CONFIG=Object.freeze("+JSON.stringify(config)+");\nfunction own(v,k){return Object.prototype.hasOwnProperty.call(Object(v),k);}\nfunction bytes(v){try{return Buffer.byteLength(JSON.stringify(v),'utf8');}catch(_){return Infinity;}}\nfunction primitive(v,s){if(s.type==='string'&&typeof v!=='string')return false;if(s.type==='boolean'&&typeof v!=='boolean')return false;if(s.type==='integer'&&!Number.isInteger(v))return false;if(s.type==='number'&&(typeof v!=='number'||!Number.isFinite(v)))return false;if(s.type==='string'){if(s.minLength!==undefined&&v.length<s.minLength)return false;if(s.maxLength!==undefined&&v.length>s.maxLength)return false;if(s.pattern!==undefined&&!new RegExp(s.pattern).test(v))return false;}if(s.type==='integer'||s.type==='number'){if(s.minimum!==undefined&&v<s.minimum)return false;if(s.maximum!==undefined&&v>s.maximum)return false;}return s.enum===undefined||s.enum.some(x=>JSON.stringify(x)===JSON.stringify(v));}\nfunction validate(v,s){const errors=[];if(!v||typeof v!=='object'||Array.isArray(v))return [{path:'$',code:'OBJECT_REQUIRED'}];const properties=s.properties||{};(s.required||[]).forEach(k=>{if(!own(v,k))errors.push({path:'$.'+k,code:'REQUIRED'});});Object.keys(v).sort().forEach(k=>{if(!own(properties,k))errors.push({path:'$.'+k,code:'ADDITIONAL_PROPERTY'});else if(!primitive(v[k],properties[k]))errors.push({path:'$.'+k,code:'VALUE_INVALID'});});return errors;}\nfunction put(v,k,value){Object.defineProperty(v,k,{value:value,enumerable:true,writable:true,configurable:true});}\nfunction adapt(input){if(bytes(input)>CONFIG.maxInputBytes)return {schema:CONFIG.outputContract,ok:false,code:'INPUT_BYTES_EXCEEDED',mappingDigest:CONFIG.mappingDigest};const sourceErrors=validate(input,CONFIG.sourceSchema);if(sourceErrors.length)return {schema:CONFIG.outputContract,ok:false,code:'SOURCE_CONTRACT_INVALID',errors:sourceErrors,mappingDigest:CONFIG.mappingDigest};const output={};for(const map of CONFIG.mappings){if(own(input,map.source))put(output,map.target,input[map.source]);else if(map.onMissing==='DEFAULT')put(output,map.target,map.defaultValue);else if(map.onMissing==='REFUSE')return {schema:CONFIG.outputContract,ok:false,code:'SOURCE_FIELD_MISSING',field:map.source,mappingDigest:CONFIG.mappingDigest};}const targetErrors=validate(output,CONFIG.targetSchema);if(targetErrors.length)return {schema:CONFIG.outputContract,ok:false,code:'TARGET_CONTRACT_INVALID',errors:targetErrors,mappingDigest:CONFIG.mappingDigest};if(bytes(output)>CONFIG.maxOutputBytes)return {schema:CONFIG.outputContract,ok:false,code:'OUTPUT_BYTES_EXCEEDED',mappingDigest:CONFIG.mappingDigest};return {schema:CONFIG.outputContract,ok:true,output:output,mappingDigest:CONFIG.mappingDigest,totality:CONFIG.totality,semanticCompatibilityProven:false};}\nmodule.exports={CONFIG:CONFIG,adapt:adapt};\n";
+    return "'use strict';\nfunction deepFreeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);Object.keys(value).forEach(key=>deepFreeze(value[key]));}return value;}\nconst CONFIG=deepFreeze("+JSON.stringify(config)+");\nfunction own(v,k){return Object.prototype.hasOwnProperty.call(Object(v),k);}\nfunction jsonRecord(v){if(!v||typeof v!=='object'||Array.isArray(v))return false;const prototype=Object.getPrototypeOf(v);if(prototype!==Object.prototype&&prototype!==null)return false;if(Object.getOwnPropertySymbols(v).length)return false;return Object.getOwnPropertyNames(v).every(k=>{const descriptor=Object.getOwnPropertyDescriptor(v,k);return descriptor&&descriptor.enumerable&&own(descriptor,'value');});}\nfunction bytes(v){try{return Buffer.byteLength(JSON.stringify(v),'utf8');}catch(_){return Infinity;}}\nfunction primitive(v,s){if(s.type==='string'&&typeof v!=='string')return false;if(s.type==='boolean'&&typeof v!=='boolean')return false;if(s.type==='integer'&&!Number.isInteger(v))return false;if(s.type==='number'&&(typeof v!=='number'||!Number.isFinite(v)))return false;if(s.type==='string'){const length=Array.from(v).length;if(s.minLength!==undefined&&length<s.minLength)return false;if(s.maxLength!==undefined&&length>s.maxLength)return false;}if(s.type==='integer'||s.type==='number'){if(s.minimum!==undefined&&v<s.minimum)return false;if(s.maximum!==undefined&&v>s.maximum)return false;}return s.enum===undefined||s.enum.some(x=>JSON.stringify(x)===JSON.stringify(v));}\nfunction validate(v,s){const errors=[];if(!jsonRecord(v))return [{path:'$',code:'PLAIN_JSON_OBJECT_REQUIRED'}];const properties=s.properties||{};(s.required||[]).forEach(k=>{if(!own(v,k))errors.push({path:'$.'+k,code:'REQUIRED'});});Object.keys(v).sort().forEach(k=>{if(!own(properties,k))errors.push({path:'$.'+k,code:'ADDITIONAL_PROPERTY'});else if(!primitive(v[k],properties[k]))errors.push({path:'$.'+k,code:'VALUE_INVALID'});});return errors;}\nfunction put(v,k,value){Object.defineProperty(v,k,{value:value,enumerable:true,writable:true,configurable:true});}\nfunction adapt(input){const sourceErrors=validate(input,CONFIG.sourceSchema);if(sourceErrors.length)return {schema:CONFIG.outputContract,ok:false,code:'SOURCE_CONTRACT_INVALID',errors:sourceErrors,mappingDigest:CONFIG.mappingDigest};if(bytes(input)>CONFIG.maxInputBytes)return {schema:CONFIG.outputContract,ok:false,code:'INPUT_BYTES_EXCEEDED',mappingDigest:CONFIG.mappingDigest};const output={};for(const map of CONFIG.mappings){if(own(input,map.source))put(output,map.target,input[map.source]);else if(map.onMissing==='DEFAULT')put(output,map.target,map.defaultValue);else if(map.onMissing==='REFUSE')return {schema:CONFIG.outputContract,ok:false,code:'SOURCE_FIELD_MISSING',field:map.source,mappingDigest:CONFIG.mappingDigest};}const targetErrors=validate(output,CONFIG.targetSchema);if(targetErrors.length)return {schema:CONFIG.outputContract,ok:false,code:'TARGET_CONTRACT_INVALID',errors:targetErrors,mappingDigest:CONFIG.mappingDigest};if(bytes(output)>CONFIG.maxOutputBytes)return {schema:CONFIG.outputContract,ok:false,code:'OUTPUT_BYTES_EXCEEDED',mappingDigest:CONFIG.mappingDigest};return {schema:CONFIG.outputContract,ok:true,output:output,mappingDigest:CONFIG.mappingDigest,totality:CONFIG.totality,semanticCompatibilityProven:false};}\nmodule.exports={CONFIG:CONFIG,adapt:adapt};\n";
   }
 function objectAdapterSelftest(config) {
     const input={};Object.keys(config.sourceSchema.properties).sort().forEach(function(name){input[name]=adapterExample(config.sourceSchema.properties[name]);});
     const expected={};config.mappings.forEach(function(row){expected[row.target]=input[row.source];});
     const defaultMap=config.mappings.find(function(row){return row.onMissing==='DEFAULT';});
-    return "'use strict';\nconst assert=require('assert');const capability=require('./capability.js');const input="+JSON.stringify(input)+",expected="+JSON.stringify(expected)+";const first=capability.adapt(input),second=capability.adapt(input);assert.equal(first.ok,true);assert.deepStrictEqual(first,second);assert.deepStrictEqual(first.output,expected);assert.equal(first.semanticCompatibilityProven,false);"+(defaultMap?"const withoutDefault=Object.assign({},input);delete withoutDefault["+JSON.stringify(defaultMap.source)+"];assert.deepStrictEqual(capability.adapt(withoutDefault).output["+JSON.stringify(defaultMap.target)+"],"+JSON.stringify(defaultMap.defaultValue)+");":"")+"assert.equal(capability.adapt(Object.assign({},input,{undeclared:true})).code,'SOURCE_CONTRACT_INVALID');console.log('PASS closed object contract adapter capability');\n";
+    return "'use strict';\nconst assert=require('assert');const capability=require('./capability.js');const input="+JSON.stringify(input)+",expected="+JSON.stringify(expected)+";assert(Object.isFrozen(capability.CONFIG));assert(Object.isFrozen(capability.CONFIG.mappings));assert(Object.isFrozen(capability.CONFIG.sourceSchema.properties));assert.throws(()=>{capability.CONFIG.mappings[0].target='drift';},TypeError);const first=capability.adapt(input),second=capability.adapt(input);assert.equal(first.ok,true);assert.deepStrictEqual(first,second);assert.deepStrictEqual(first.output,expected);assert.equal(first.semanticCompatibilityProven,false);"+(defaultMap?"const withoutDefault=Object.assign({},input);delete withoutDefault["+JSON.stringify(defaultMap.source)+"];assert.deepStrictEqual(capability.adapt(withoutDefault).output["+JSON.stringify(defaultMap.target)+"],"+JSON.stringify(defaultMap.defaultValue)+");":"")+"assert.equal(capability.adapt(Object.assign({},input,{undeclared:true})).code,'SOURCE_CONTRACT_INVALID');const hostile=Object.assign({},input);hostile.toJSON=()=>{throw new Error('must not execute');};assert.equal(capability.adapt(hostile).code,'SOURCE_CONTRACT_INVALID');console.log('PASS closed object contract adapter capability');\n";
   }
 function buildObjectAdapter(parameters) {
     const config=inspectAdapterParameters(parameters);

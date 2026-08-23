@@ -33,7 +33,7 @@
   },
   "$defs": {
     "contract": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$" },
-    "field": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$" },
+    "field": { "type": "string", "pattern": "^(?!(?:__proto__|prototype|constructor)$)[A-Za-z][A-Za-z0-9_-]{0,63}$" },
     "flatObjectSchema": {
       "type": "object",
       "additionalProperties": false,
@@ -59,7 +59,6 @@
       "properties": {
         "type": { "enum": ["string", "number", "integer", "boolean"] },
         "enum": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "type": ["string", "number", "boolean"] } },
-        "pattern": { "type": "string", "maxLength": 240 },
         "minLength": { "type": "integer", "minimum": 0, "maximum": 65536 },
         "maxLength": { "type": "integer", "minimum": 0, "maximum": 65536 },
         "minimum": { "type": "number" },
@@ -69,7 +68,7 @@
       "allOf": [
         {
           "if": { "properties": { "type": { "const": "string" } }, "required": ["type"] },
-          "else": { "not": { "anyOf": [{ "required": ["pattern"] }, { "required": ["minLength"] }, { "required": ["maxLength"] }] } }
+          "else": { "not": { "anyOf": [{ "required": ["minLength"] }, { "required": ["maxLength"] }] } }
         },
         {
           "if": { "properties": { "type": { "enum": ["number", "integer"] } }, "required": ["type"] },

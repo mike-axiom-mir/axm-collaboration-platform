@@ -34,9 +34,11 @@ function readJsonDeclaration(root, file, code) {
 function walkFiles(start, predicate, limit) {
   const found = [];
   const queue = [start];
+  let cursor = 0;
   let visited = 0;
-  while (queue.length) {
-    const current = queue.shift();
+  while (cursor < queue.length) {
+    const current = queue[cursor];
+    cursor += 1;
     let entries;
     try { entries = fs.readdirSync(current, { withFileTypes: true }); }
     catch (_) { continue; }

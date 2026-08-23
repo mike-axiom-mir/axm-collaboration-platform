@@ -4,7 +4,7 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `f0318b9fbb512d67f601442ac0e058028061c717e66a9c9588983cf905ef8b52`
+Semantic graph digest: `aef4b5639e24b24ad7abd43c286fc4952c4252a50de7e64ffee39751c187ff09`
 
 Blocks: 302 · Capabilities: 2943 · Schemas: 847 · Unresolved edges: 1975
 
