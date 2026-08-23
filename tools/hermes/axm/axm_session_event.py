@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 ROOT = Path(os.environ.get("AXM_HERMES_ROOT", Path(__file__).resolve().parents[1])).resolve()
+POLICY_FILE = Path(os.environ.get("AXM_HERMES_POLICY_FILE", ROOT / "runtime" / "policy.json")).resolve()
 RUN_ID = os.environ.get("AXM_HERMES_RUN_ID", "unknown-run")
 OUT_DIR = Path(os.environ.get("AXM_HERMES_SESSION_EVENT_DIR", ROOT / "runtime" / "session-events")).resolve()
 
@@ -17,7 +18,18 @@ def digest(value: object) -> str:
     return hashlib.sha256(str(value or "").encode("utf-8", "replace")).hexdigest()[:16]
 
 
+def enabled() -> bool:
+    try:
+        policy = json.loads(POLICY_FILE.read_text(encoding="utf-8"))
+        return policy.get("receipts", {}).get("record_session_outcome_metadata") is True
+    except Exception:
+        return False
+
+
 def main() -> None:
+    if not enabled():
+        print("{}")
+        return
     try:
         event = json.loads(__import__("sys").stdin.read() or "{}")
     except Exception:
