@@ -65,7 +65,24 @@ class LocalBrowserAiControl {
     return Boolean(action && typeof action === 'object' && CONTROL_ACTIONS.has(String(action.type || '')));
   }
 
-  state() {
+  ensureVisualState(sessionSnapshot) {
+    if (!sessionSnapshot || !sessionSnapshot.state || !sessionSnapshot.state.current) return this.visualState;
+    const current = sessionSnapshot.state.current;
+    const stale = !this.visualState ||
+      this.visualState.sessionId !== sessionSnapshot.sessionId ||
+      this.visualState.bundleDigest !== sessionSnapshot.bundle.bundleDigest ||
+      this.visualState.page.pageId !== current.pageId ||
+      this.visualState.page.sourceDigest !== current.sourceDigest ||
+      this.visualState.page.structureIndexDigest !== current.structureIndexDigest;
+    if (stale) {
+      this.visualSequence += 1;
+      this.visualState = Visual.buildVisualState(sessionSnapshot, {}, { sequence: this.visualSequence });
+    }
+    return this.visualState;
+  }
+
+  state(sessionSnapshot) {
+    this.ensureVisualState(sessionSnapshot);
     const material = {
       schema: BROWSER_AI_CONTROL_SCHEMA,
       version: 1,
@@ -101,37 +118,37 @@ class LocalBrowserAiControl {
 
   async apply(action, sessionSnapshot) {
     if (!this.canHandle(action)) throw new AxmBrowserAiControlError('BROWSER_AI_CONTROL_ACTION_UNKNOWN', 'unsupported browser AI control action', { type: action && action.type });
-    if (action.type === 'shell-control-snapshot') return this.state();
+    if (action.type === 'shell-control-snapshot') return this.state(sessionSnapshot);
     if (action.type === 'ai-provider-enabled') {
       this.registry = Ai.setProviderEnabled(this.registry, action.providerId, action.enabled === true);
-      return this.state();
+      return this.state(sessionSnapshot);
     }
     if (action.type === 'ai-visual-access') {
       this.registry = Ai.setVisualStateAccess(this.registry, action.providerId, action.enabled === true);
-      return this.state();
+      return this.state(sessionSnapshot);
     }
     if (action.type === 'ai-active-provider') {
       this.registry = Ai.setActiveProvider(this.registry, action.providerId);
-      return this.state();
+      return this.state(sessionSnapshot);
     }
     if (action.type === 'ai-mode') {
       this.registry = Ai.setRegistryMode(this.registry, action.mode);
-      return this.state();
+      return this.state(sessionSnapshot);
     }
     if (action.type === 'research-mode-enabled') {
       this.registry = Ai.setResearchMode(this.registry, action.enabled === true);
-      return this.state();
+      return this.state(sessionSnapshot);
     }
     if (action.type === 'visual-report') {
       this.visualSequence += 1;
       this.visualState = Visual.buildVisualState(sessionSnapshot, action.report || {}, { sequence: this.visualSequence });
-      return this.state();
+      return this.state(sessionSnapshot);
     }
-    if (action.type === 'research-run') return this.runResearch(action);
+    if (action.type === 'research-run') return this.runResearch(action, sessionSnapshot);
     throw new AxmBrowserAiControlError('BROWSER_AI_CONTROL_ACTION_UNKNOWN', 'unsupported browser AI control action', { type: action.type });
   }
 
-  async runResearch(action) {
+  async runResearch(action, sessionSnapshot) {
     if (this.researchRunning) throw new AxmBrowserAiControlError('BROWSER_RESEARCH_BUSY', 'a browser Research Mode run is already active');
     if (!this.registry.researchModeEnabled) throw new AxmBrowserAiControlError('BROWSER_RESEARCH_DISABLED', 'Research Mode is turned off');
     const question = String(action.question == null ? '' : action.question).trim();
@@ -141,6 +158,7 @@ class LocalBrowserAiControl {
     if (typeof this.options.researchRunner !== 'function' && !this.options.researchConfig) {
       throw new AxmBrowserAiControlError('BROWSER_RESEARCH_EXECUTION_UNCONFIGURED', 'browser Research Mode execution is not configured on this host');
     }
+    this.ensureVisualState(sessionSnapshot);
     this.researchRunning = true;
     try {
       let result;
@@ -176,7 +194,7 @@ class LocalBrowserAiControl {
     } finally {
       this.researchRunning = false;
     }
-    return this.state();
+    return this.state(sessionSnapshot);
   }
 }
 
