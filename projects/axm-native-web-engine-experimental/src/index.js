@@ -16,6 +16,7 @@ module.exports = {
   browserSnapshot: require('./browser-snapshot'),
   browserSession: require('./browser-session'),
   browserVisualState: require('./browser-visual-state'),
+  browserAiControl: require('./browser-ai-control'),
   sessionVerifier: require('./session-verifier'),
   localBrowserHost: require('./local-browser-host'),
   shellPolicy: require('./shell-policy'),
