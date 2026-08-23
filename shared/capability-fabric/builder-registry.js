@@ -103,6 +103,34 @@
     return {capabilityKind:'HAND',source:validatorSource(config),selftest:validatorSelftest(config),provides:[parameters.resultSchemaId],consumes:[parameters.inputSchemaId],summary:'Closed deterministic JSON Schema subset validator.'};
   }
 
+  function htmlExact(value,keys,label){
+    if(!value||typeof value!=='object'||Array.isArray(value))throw new Error(label+' must be an object');
+    Object.keys(value).forEach(function(key){if(!keys.includes(key))throw new Error(label+' contains unsupported key '+key);});
+    keys.forEach(function(key){if(!Object.prototype.hasOwnProperty.call(value,key))throw new Error(label+' is missing '+key);});
+  }
+  function htmlText(value,label,maximum){
+    const text=String(value==null?'':value);
+    if(!text.trim()||text.length>maximum||text.includes('\u0000'))throw new Error(label+' is invalid');
+    return text;
+  }
+  function htmlPageSource(config) {
+    return "'use strict';\nconst CONFIG=Object.freeze("+JSON.stringify(config)+");\nfunction bytes(v){try{return Buffer.byteLength(JSON.stringify(v),'utf8');}catch(e){return Infinity;}}\nfunction own(v,k){return Object.prototype.hasOwnProperty.call(Object(v),k);}\nfunction esc(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\\\"/g,'&quot;').replace(/'/g,'&#39;');}\nfunction text(v,fallback){const value=v==null?fallback:v;return typeof value==='string'&&value.trim()&&value.length<=CONFIG.maxTextLength&&!value.includes('\\u0000')?value:null;}\nfunction render(input){if(!input||typeof input!=='object'||Array.isArray(input))return {schema:CONFIG.resultSchemaId,ok:false,errors:[{path:'$',code:'INPUT_OBJECT_REQUIRED'}]};if(bytes(input)>CONFIG.maxInputBytes)return {schema:CONFIG.resultSchemaId,ok:false,errors:[{path:'$',code:'INPUT_BYTES_EXCEEDED'}]};const keys=Object.keys(input);if(keys.some(k=>!['heading','intro','sections'].includes(k)))return {schema:CONFIG.resultSchemaId,ok:false,errors:[{path:'$',code:'INPUT_FIELDS_UNSUPPORTED'}]};const heading=text(input.heading,CONFIG.defaultHeading),intro=text(input.intro,CONFIG.defaultIntro),sections=own(input,'sections')?input.sections:[];if(!heading||!intro)return {schema:CONFIG.resultSchemaId,ok:false,errors:[{path:'$',code:'TEXT_INVALID'}]};if(!Array.isArray(sections)||sections.length>CONFIG.maxSections)return {schema:CONFIG.resultSchemaId,ok:false,errors:[{path:'$.sections',code:'SECTION_LIMIT'}]};const rendered=[];for(let i=0;i<sections.length;i+=1){const row=sections[i];if(!row||typeof row!=='object'||Array.isArray(row)||Object.keys(row).some(k=>!['heading','body'].includes(k))||!own(row,'heading')||!own(row,'body'))return {schema:CONFIG.resultSchemaId,ok:false,errors:[{path:'$.sections['+i+']',code:'SECTION_SHAPE'}]};const h=text(row.heading,null),body=text(row.body,null);if(!h||!body)return {schema:CONFIG.resultSchemaId,ok:false,errors:[{path:'$.sections['+i+']',code:'SECTION_TEXT_INVALID'}]};const id='section-'+(i+1);rendered.push('<section aria-labelledby=\\\"'+id+'-heading\\\"><h2 id=\\\"'+id+'-heading\\\">'+esc(h)+'</h2><p>'+esc(body)+'</p></section>');}const html='<!doctype html><html lang=\\\"'+CONFIG.language+'\\\"><head><meta charset=\\\"utf-8\\\"><meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1\\\"><title>'+esc(CONFIG.documentTitle)+'</title></head><body><a href=\\\"#content\\\">Skip to content</a><header><h1>'+esc(heading)+'</h1><p>'+esc(intro)+'</p></header><main id=\\\"content\\\">'+rendered.join('')+'</main></body></html>';return {schema:CONFIG.resultSchemaId,ok:true,mimeType:'text/html; charset=utf-8',html:html};}\nmodule.exports={CONFIG:CONFIG,render:render};\n";
+  }
+  function htmlPageSelftest(config) {
+    return "'use strict';\nconst assert=require('assert');const page=require('./capability.js');const input={heading:'<Proof>',intro:'Truth & agency',sections:[{heading:'Start',body:'<script>alert(1)</script>'}]};const one=page.render(input),two=page.render(input);assert.equal(one.ok,true);assert.equal(one.html,two.html);assert(one.html.includes('<html lang=\\\""+config.language+"\\\">'));assert(one.html.includes('name=\\\"viewport\\\"'));assert(one.html.includes('<main id=\\\"content\\\">'));assert(one.html.includes('&lt;script&gt;'));assert(!/<script\\b/i.test(one.html));assert(!/\\son[a-z]+\\s*=/i.test(one.html));assert.equal(page.render({unexpected:true}).ok,false);process.stdout.write('static accessible HTML page candidate selftest PASS\\n');\n";
+  }
+  function buildHtmlPage(parameters) {
+    htmlExact(parameters,['resultSchemaId','documentTitle','language','defaultHeading','defaultIntro','maxSections','maxInputBytes','maxTextLength'],'parameters');
+    if(!/^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$/.test(parameters.resultSchemaId||''))throw new Error('resultSchemaId is invalid');
+    const language=String(parameters.language||'');
+    if(!/^[a-z]{2,3}(?:-[A-Z]{2})?$/.test(language))throw new Error('language is invalid');
+    if(!Number.isInteger(parameters.maxSections)||parameters.maxSections<0||parameters.maxSections>24)throw new Error('maxSections is outside the bounded range');
+    if(!Number.isInteger(parameters.maxInputBytes)||parameters.maxInputBytes<128||parameters.maxInputBytes>65536)throw new Error('maxInputBytes is outside the bounded range');
+    if(!Number.isInteger(parameters.maxTextLength)||parameters.maxTextLength<16||parameters.maxTextLength>4000)throw new Error('maxTextLength is outside the bounded range');
+    const config={resultSchemaId:parameters.resultSchemaId,documentTitle:htmlText(parameters.documentTitle,'documentTitle',120),language:language,defaultHeading:htmlText(parameters.defaultHeading,'defaultHeading',120),defaultIntro:htmlText(parameters.defaultIntro,'defaultIntro',500),maxSections:parameters.maxSections,maxInputBytes:parameters.maxInputBytes,maxTextLength:parameters.maxTextLength};
+    return {capabilityKind:'HAND',source:htmlPageSource(config),selftest:htmlPageSelftest(config),provides:[parameters.resultSchemaId,'text/html'],consumes:['axm.markup-page-content/v1'],summary:'Pure deterministic accessible HTML document-structure renderer.'};
+  }
+
   function exact(value, keys, label) {
     if(!value||typeof value!=='object'||Array.isArray(value))throw new Error(label+' must be an object');
     Object.keys(value).forEach(function(key){if(!keys.includes(key))throw new Error(label+' contains unsupported key '+key);});
@@ -138,12 +166,14 @@
     makeEntry('svg-status-badge-v1','HAND',ACTIVE,null,buildSvgBadge,[svgBadgeSource,svgBadgeSelftest,buildSvgBadge]),
     makeEntry('workshop-direction-adapter-v1','HAND',ACTIVE,null,buildDirectionAdapter,[directionAdapterSource,directionAdapterSelftest,buildDirectionAdapter]),
     makeEntry('closed-json-schema-validator-v1','HAND',REVIEW_CANDIDATE,'sha256:02a61d48f5213edc9140f1720c12f84a8de1ebc0bbc7f1b338d9a9e8bf0df14f',buildSchemaValidator,[stable,byteLength,exactKeys,inspectSchema,validatorSource,validatorSelftest,exampleFor,buildSchemaValidator]),
-    makeEntry('bounded-review-procedure-skill-v1','SKILL',REVIEW_CANDIDATE,'sha256:acd5678b5327fda7c2a2f1280fb4fa26f41cfd188e4788c1df3c2e539ee532ba',buildReviewSkill,[exact,list,safeId,contractId,renderSkillMarkdown,renderSkillSelftest,buildReviewSkill])
+    makeEntry('bounded-review-procedure-skill-v1','SKILL',REVIEW_CANDIDATE,'sha256:acd5678b5327fda7c2a2f1280fb4fa26f41cfd188e4788c1df3c2e539ee532ba',buildReviewSkill,[exact,list,safeId,contractId,renderSkillMarkdown,renderSkillSelftest,buildReviewSkill]),
+    makeEntry('static-accessible-html-page-v1','HAND',REVIEW_CANDIDATE,'sha256:983ff82440f97044d5d1af9737e7656df547898b9a0753579fb01440ca4ecfc6',buildHtmlPage,[htmlExact,htmlText,htmlPageSource,htmlPageSelftest,buildHtmlPage])
   ];
   // Lifecycle activation is applied after implementation sealing so the exact
   // source-reviewed builder digest remains the one bound by the admission plan.
   entries.find(function(entry){return entry.id==='closed-json-schema-validator-v1';}).status=ACTIVE;
   entries.find(function(entry){return entry.id==='bounded-review-procedure-skill-v1';}).status=ACTIVE;
+  entries.find(function(entry){return entry.id==='static-accessible-html-page-v1';}).status=ACTIVE;
   const byId=new Map(entries.map(function(entry){return [entry.id,entry];}));
   function descriptor(entry){return {id:entry.id,capabilityKind:entry.capabilityKind,status:entry.status,proposalDigest:entry.proposalDigest,implementationDigest:entry.implementationDigest};}
   const registryBody={schema:REGISTRY_SCHEMA,version:'1.0.0',entries:entries.map(descriptor).sort(function(left,right){return left.id.localeCompare(right.id);})};

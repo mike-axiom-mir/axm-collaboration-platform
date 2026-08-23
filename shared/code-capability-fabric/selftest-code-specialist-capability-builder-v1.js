@@ -21,13 +21,16 @@ function held(base, mutate, status) { const result = Builder.generate(changed(ba
 const base = Builder.buildExampleRequest();
 const result = Builder.generate(base);
 const candidate = result.detachedCandidate;
+const markupBase = Builder.buildMarkupExampleRequest();
+const markupResult = Builder.generate(markupBase);
+const markupCandidate = markupResult.detachedCandidate;
 const sourcePath = path.join(__dirname, 'code-specialist-capability-builder-v1.js');
 const requestSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-specialist-capability-build-request.schema.json'), 'utf8'));
 const resultSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-specialist-capability-candidate.schema.json'), 'utf8'));
 const capabilityRecipeSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'capability-recipe.schema.json'), 'utf8'));
 const candidatePackageSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'candidate-package.schema.json'), 'utf8'));
 
-test('example request is sealed under the v1.7 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
+test('example request is sealed under the v1.8 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
 test('request version is exact', () => assert.strictEqual(base.version, Builder.VERSION));
 test('request digest rebuilds exactly', () => assert.strictEqual(base.requestDigest, Builder.sha256Value(Object.fromEntries(Object.entries(base).filter(([key]) => key !== 'requestDigest')))));
 test('example produces one detached candidate', () => assert.strictEqual(result.status, 'COMPLETE_DETACHED_CANDIDATE'));
@@ -95,6 +98,36 @@ test('public copying remains unauthorized', () => assert.strictEqual(result.reus
 test('capability gap report is READY only for this exact rung', () => assert.deepStrictEqual(result.capabilityGapReport.missingCapabilities, []));
 test('next gate is exact candidate review before sandbox decision', () => assert.strictEqual(result.nextGate, 'HUMAN_REVIEW_EXACT_CANDIDATE_BYTES_BEFORE_SEPARATE_SANDBOX_DECISION'));
 
+test('markup example request is sealed under the v1.8 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
+test('markup example produces one detached candidate', () => assert.strictEqual(markupResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
+test('markup result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(markupResult, markupBase), { pass: true, errors: [] }));
+test('markup generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(markupResult), Builder.canonicalJson(Builder.generate(markupBase))));
+test('markup selection binds the exact markup-structure specialist', () => assert.strictEqual(markupResult.specialistContext.specialistOrganRef.id, 'organ.code.markup-structure'));
+test('markup selection binds the exact game-index artifact', () => assert.strictEqual(markupResult.specialistContext.artifactRef.id, 'game-index'));
+test('markup candidate binds the exact admitted HTML recipe', () => assert.deepStrictEqual(markupResult.recipeRef, Builder.MARKUP_TARGET_RECIPE));
+test('markup build request is human reviewed and Code Fabric bound', () => assert.strictEqual(markupBase.capabilityBuildRequest.humanReviewed, true) && assert.strictEqual(markupBase.capabilityBuildRequest.source.kind, 'CODE_FABRIC'));
+test('markup build request binds the exact intent plan', () => assert.strictEqual(markupBase.capabilityBuildRequest.source.ref, markupBase.intentAdapterPlan.planDigest));
+test('markup consent binds the exact recipe digest', () => assert.strictEqual(markupResult.consentRef.subject.recipeDigest, Builder.MARKUP_TARGET_RECIPE.digest));
+test('markup candidate is EXPERIMENTAL', () => assert.strictEqual(markupCandidate.package.status, 'EXPERIMENTAL'));
+test('markup candidate remains structurally verified', () => assert(CapabilityFabric.verifyCandidate(markupCandidate).ok));
+test('markup candidate contains inert generated capability text', () => assert.strictEqual(typeof markupCandidate.files['capability.js'], 'string'));
+test('markup candidate contains an emitted but unrun selftest', () => assert.strictEqual(markupResult.evidence.emittedSelftest, 'EMITTED_NOT_RUN'));
+test('markup generated source declares an HTML document', () => assert(markupCandidate.files['capability.js'].includes('<!doctype html>')));
+test('markup generated source declares language and viewport structure', () => assert(markupCandidate.files['capability.js'].includes('<html lang=') && markupCandidate.files['capability.js'].includes('name=\\\"viewport\\\"')));
+test('markup generated source contains semantic header and main structure', () => assert(markupCandidate.files['capability.js'].includes('<header>') && markupCandidate.files['capability.js'].includes('<main id=\\\"content\\\">')));
+test('markup generated source contains the reviewed escaping rules', () => assert(markupCandidate.files['capability.js'].includes('&amp;') && markupCandidate.files['capability.js'].includes('&lt;') && markupCandidate.files['capability.js'].includes('&#39;')));
+test('markup generated source contains no script element', () => assert(!/<script\b/i.test(markupCandidate.files['capability.js'])));
+test('markup generated source contains no inline event attribute', () => assert(!/\son[a-z]+\s*=/i.test(markupCandidate.files['capability.js'])));
+test('markup generated source imports no filesystem or child process', () => assert(!/require\(['"](?:fs|node:fs|child_process|node:child_process)['"]\)/.test(markupCandidate.files['capability.js'])));
+test('markup generated source contains no fetch or dynamic evaluation', () => assert(!/\bfetch\s*\(|new Function|\beval\s*\(/.test(markupCandidate.files['capability.js'])));
+test('markup runtime remains UNKNOWN because candidate was not run', () => assert.strictEqual(markupResult.evidence.runtimeBehavior, 'UNKNOWN'));
+test('markup visual behavior remains UNKNOWN because no browser render occurred', () => assert.strictEqual(markupResult.evidence.visualBehavior, 'UNKNOWN'));
+test('markup candidate and generated selftest were not executed', () => assert.strictEqual(markupResult.resourceObservation.candidateExecuted, false) && assert.strictEqual(markupResult.resourceObservation.generatedSelftestExecuted, false));
+test('markup candidate grants no authority or permissions', () => { assert(Object.values(markupCandidate.package.authority).every((value) => value === false)); assert.deepStrictEqual(JSON.parse(markupCandidate.files['module.contract.json']).permissions, []); });
+test('markup candidate remains detached and unintegrated', () => assert.strictEqual(markupResult.truth.candidateDetached, true) && assert.strictEqual(markupResult.truth.integrated, false));
+test('markup output stays inside the exact candidate resource ceiling', () => assert(markupCandidate.package.totalBytes <= markupBase.resourceEnvelope.maxCandidateBytes && markupCandidate.package.files.length <= markupBase.resourceEnvelope.maxCandidateFiles));
+test('markup visual limitation is retained', () => assert(markupResult.limitations.includes('HTML_VISUAL_ACCESSIBILITY_AND_INTERACTION_BEHAVIOR_NOT_PROVEN')));
+
 test('root HOLD stops before intent verification and build', () => {
   const originalVerify = IntentAdapter.verify, originalBuild = CapabilityFabric.build;
   let verified = 0, built = 0;
@@ -116,6 +149,25 @@ test('application-logic specialist remains an unsupported typed hold', () => {
   next.intentAdapterRequest = intentRequest; next.intentAdapterPlan = intentPlan;
   next.selection = { artifactId: intentPlan.specialistContext.artifactPlan.artifactRef.id, specialistOrganRef: intentPlan.specialistContext.selectedLane.organRef, mode: 'ONE_EXACT_DATA_SCHEMA_SPECIALIST' };
   const heldResult = Builder.generate(resealOuter(next)); assert.strictEqual(heldResult.status, 'SPECIALIST_HOLD'); assert(heldResult.capabilityGapReport.missingCapabilities.includes('code.specialist.data-schema.exact-lane'));
+});
+test('markup lane cannot be relabelled as the data-schema mode', () => held(markupBase, (next) => { next.selection.mode = 'ONE_EXACT_DATA_SCHEMA_SPECIALIST'; }, 'SPECIALIST_HOLD'));
+test('data-schema lane cannot be relabelled as the markup mode', () => held(base, (next) => { next.selection.mode = 'ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST'; }, 'SPECIALIST_HOLD'));
+test('unsupported selection mode is refused before planning', () => assert.throws(() => changed(markupBase, (next) => { next.selection.mode = 'UNIVERSAL_CODE_SPECIALIST'; }), /selection mode/i));
+test('unreviewed markup build request is held', () => held(markupBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, false); }, 'BUILD_REQUEST_HOLD'));
+test('markup recipe substitution is held', () => held(markupBase, (next) => { const catalog = CapabilityFabric.loadCatalog(), recipe = catalog.recipes.find((row) => row.id === 'svg-status-badge'), draft = clone(recipe.exampleRequest); draft.source = { kind: 'CODE_FABRIC', ref: next.intentAdapterPlan.planDigest }; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); }, 'BUILD_REQUEST_HOLD'));
+test('markup family drift is held', () => held(markupBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.family = 'creation-hand'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); }, 'BUILD_REQUEST_HOLD'));
+test('markup parameter expansion is held by the exact build plan', () => held(markupBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.inlineScript = 'alert(1)'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('markup language outside the reviewed contract is held by the build plan', () => held(markupBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.language = 'en-us<script>'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('markup section ceiling expansion is held by the build plan', () => held(markupBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxSections = 25; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('markup native builder refusal becomes a typed candidate hold', () => { const heldResult = held(markupBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.defaultIntro = 'unsafe\u0000intro'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'CANDIDATE_HOLD'); assert.strictEqual(heldResult.holds[0].code, 'NATIVE_BUILDER_REFUSAL'); assert.strictEqual(heldResult.truth.candidateBytesGeneratedTransiently, false); });
+test('markup consent recipe drift is held', () => held(markupBase, (next) => { next.consent.subject.recipeDigest = Builder.sha256Value('wrong-markup-recipe'); }, 'CONSENT_HOLD'));
+test('markup candidate byte overflow becomes a typed hold', () => held(markupBase, (next) => { next.resourceEnvelope.maxCandidateBytes = 1; }, 'CANDIDATE_HOLD'));
+test('markup candidate tampering fails exact result verification', () => { const tampered = clone(markupResult); tampered.detachedCandidate.files['capability.js'] += '\n// drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, markupBase).pass, false); });
+test('markup catalog lineage drift becomes a recipe hold', () => {
+  const original = CapabilityFabric.loadCatalog;
+  CapabilityFabric.loadCatalog = function () { const catalog = clone(original()); const recipe = catalog.recipes.find((row) => row.id === 'static-accessible-html-page'); recipe.recipeDigest = Builder.sha256Value('markup-drift'); return catalog; };
+  try { assert.strictEqual(Builder.generate(markupBase).status, 'RECIPE_HOLD'); }
+  finally { CapabilityFabric.loadCatalog = original; }
 });
 test('unreviewed capability request is held', () => held(base, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, false); }, 'BUILD_REQUEST_HOLD'));
 test('wrong recipe is held', () => held(base, (next) => { const catalog = CapabilityFabric.loadCatalog(), recipe = catalog.recipes.find((row) => row.id === 'pure-json-transform'), draft = clone(recipe.exampleRequest); draft.source = { kind: 'CODE_FABRIC', ref: next.intentAdapterPlan.planDigest }; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); }, 'BUILD_REQUEST_HOLD'));
@@ -189,11 +241,16 @@ test('module contract refuses CANON change', () => assert(Builder.MODULE_CONTRAC
 test('request schema is closed', () => assert.strictEqual(requestSchema.additionalProperties, false));
 test('result schema is closed', () => assert.strictEqual(resultSchema.additionalProperties, false));
 test('active recipe schema knows the admitted validator builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('closed-json-schema-validator-v1')));
+test('active recipe schema knows the admitted HTML page builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('static-accessible-html-page-v1')));
 test('candidate package schema knows the admitted validator builder', () => assert(candidatePackageSchema.$defs ? candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('closed-json-schema-validator-v1') : false));
+test('candidate package schema knows the admitted HTML page builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('static-accessible-html-page-v1')));
 test('candidate package schema knows the admitted review-skill builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-review-procedure-skill-v1')));
+test('request schema admits only the two exact specialist modes', () => assert.deepStrictEqual(requestSchema.properties.selection.properties.mode.enum, ['ONE_EXACT_DATA_SCHEMA_SPECIALIST', 'ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST']));
+test('result schema byte-binds both exact specialist recipes', () => assert.deepStrictEqual(resultSchema.$defs.recipeRef.oneOf.map((row) => row.properties.id.const), ['closed-json-schema-validator', 'static-accessible-html-page']));
+test('result schema preserves UNKNOWN visual evidence for markup', () => assert(resultSchema.$defs.evidence.properties.visualBehavior.enum.includes('UNKNOWN')));
 test('source contains no filesystem module import', () => assert(!/require\(['"](?:fs|node:fs)['"]\)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source contains no child-process module import', () => assert(!/require\(['"](?:child_process|node:child_process)['"]\)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source contains no fetch call', () => assert(!/\bfetch\s*\(/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source never invokes generated candidate text', () => assert(!/new Function|\beval\s*\(|vm\.(?:run|compile)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 
-if (!process.exitCode) process.stdout.write('Code specialist capability builder v1.7 selftest: ' + passed + ' PASS\n');
+if (!process.exitCode) process.stdout.write('Code specialist capability builder v1.8 selftest: ' + passed + ' PASS\n');

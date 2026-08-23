@@ -7,7 +7,7 @@ const CapabilityFabric = require('../capability-fabric');
 const HandFoundryContract = require('../../tools/hand-specification-foundry/module.contract.json');
 const MODULE_CONTRACT = require('./module-code-specialist-capability-builder-v1.contract.json');
 
-const VERSION = '1.7.0';
+const VERSION = '1.8.0';
 const REQUEST_SCHEMA = 'axm.code-specialist-capability-build-request/v1';
 const RESULT_SCHEMA = 'axm.code-specialist-capability-candidate/v1';
 const TARGET_SPECIALIST_ID = 'organ.code.data-schema';
@@ -18,6 +18,38 @@ const TARGET_RECIPE = Object.freeze({
   builderId: 'closed-json-schema-validator-v1',
   builderDigest: 'sha256:d5bbf6fc6c4219fd90987b7b458c2d396ce5d5c421f06c8763b85338e40c38a0',
   capabilityKind: 'HAND'
+});
+const MARKUP_TARGET_RECIPE = Object.freeze({
+  id: 'static-accessible-html-page',
+  version: '0.1.0',
+  digest: 'sha256:e5216430a135f44927364f3beb9bd7825f0aa2e4b5410be6e9cf3cc5c6a28417',
+  builderId: 'static-accessible-html-page-v1',
+  builderDigest: 'sha256:ca938e6fe3b7635c4fe30b00c1fc13edb9a875257cabdcce1c487d35640aa122',
+  capabilityKind: 'HAND'
+});
+const TARGETS = Object.freeze({
+  ONE_EXACT_DATA_SCHEMA_SPECIALIST: Object.freeze({
+    mode: 'ONE_EXACT_DATA_SCHEMA_SPECIALIST', specialistId: TARGET_SPECIALIST_ID,
+    recipe: TARGET_RECIPE, family: 'schema-validation', artifactId: 'game-schema',
+    specialistGate: 'SELECT_EXACT_DATA_SCHEMA_SPECIALIST_AND_REPLAN',
+    recipeGate: 'RESTORE_EXACT_SOURCE_REVIEWED_SCHEMA_VALIDATOR_RECIPE',
+    requestGate: 'REPAIR_EXACT_HUMAN_REVIEWED_SCHEMA_VALIDATOR_REQUEST',
+    specialistGap: 'code.specialist.data-schema.exact-lane',
+    recipeGap: 'capability.recipe.closed-json-schema-validator.exact',
+    requestGap: 'capability.build-request.data-schema.exact',
+    visualEvidence: 'NOT_APPLICABLE'
+  }),
+  ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST: Object.freeze({
+    mode: 'ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST', specialistId: 'organ.code.markup-structure',
+    recipe: MARKUP_TARGET_RECIPE, family: 'markup-creation', artifactId: 'game-index',
+    specialistGate: 'SELECT_EXACT_MARKUP_STRUCTURE_SPECIALIST_AND_REPLAN',
+    recipeGate: 'RESTORE_EXACT_SOURCE_REVIEWED_HTML_PAGE_RECIPE',
+    requestGate: 'REPAIR_EXACT_HUMAN_REVIEWED_HTML_PAGE_REQUEST',
+    specialistGap: 'code.specialist.markup-structure.exact-lane',
+    recipeGap: 'capability.recipe.static-accessible-html-page.exact',
+    requestGap: 'capability.build-request.markup-structure.exact',
+    visualEvidence: 'UNKNOWN'
+  })
 });
 const ROOTS = IntentAdapter.ROOTS;
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
@@ -30,7 +62,8 @@ const LIMITATIONS = Object.freeze([
   'DIRECT_REUSE_AND_PUBLIC_COPY_REMAIN_ON_HOLD',
   'DURATION_NOT_INDEPENDENTLY_ENFORCED',
   'GENERATED_SELFTEST_EMITTED_NOT_RUN',
-  'IMPLEMENTATION_SUPPORT_LIMITED_TO_ONE_CLOSED_JSON_SCHEMA_VALIDATOR_RECIPE',
+  'HTML_VISUAL_ACCESSIBILITY_AND_INTERACTION_BEHAVIOR_NOT_PROVEN',
+  'IMPLEMENTATION_SUPPORT_LIMITED_TO_CLOSED_SCHEMA_VALIDATOR_AND_STATIC_HTML_PAGE_RECIPES',
   'MEMORY_NOT_INDEPENDENTLY_ENFORCED',
   'ORGAN_INTENT_DOES_NOT_PROVE_IMPLEMENTATION_SEMANTICS',
   'SPECIALIST_PROFILE_IS_ROUTING_CONTEXT_NOT_CAPABILITY_PROOF',
@@ -104,7 +137,7 @@ function resourceEnvelope(value) {
     if (!Number.isInteger(value[key]) || value[key] < 0) fail('request.resourceEnvelope.' + key + ' must be a non-negative integer');
   });
   if (value.maxInputBytes < 1 || value.maxOutputBytes < 1 || value.maxCandidateFiles < 1 || value.maxCandidateBytes < 1 || value.maxMemoryBytes < 1 || value.maxDurationMs < 1) fail('request resource byte, file, memory, and duration limits must be positive');
-  if (value.maxInputBytes > 8388608 || value.maxOutputBytes > 8388608 || value.maxCandidateFiles > 32 || value.maxCandidateBytes > 1048576) fail('request resource envelope exceeds v1.7 ceilings');
+  if (value.maxInputBytes > 8388608 || value.maxOutputBytes > 8388608 || value.maxCandidateFiles > 32 || value.maxCandidateBytes > 1048576) fail('request resource envelope exceeds v1.8 ceilings');
   if (value.maxBuildPasses !== 2 || value.maxAttempts !== 1 || value.maxProcesses !== 0 || value.maxCostMinorUnits !== 0) fail('request resource authority exceeds the deterministic in-memory build rung');
   return clone(value);
 }
@@ -149,7 +182,7 @@ function normalizeRequestCore(value) {
   object(value.intentAdapterPlan, 'request.intentAdapterPlan');
   object(value.capabilityBuildRequest, 'request.capabilityBuildRequest');
   exact(value.selection, ['artifactId', 'specialistOrganRef', 'mode'], 'request.selection');
-  if (value.selection.mode !== 'ONE_EXACT_DATA_SCHEMA_SPECIALIST') fail('request selection mode is unsupported');
+  if (!Object.prototype.hasOwnProperty.call(TARGETS, value.selection.mode)) fail('request selection mode is unsupported');
   if (!Array.isArray(value.rootsGate) || value.rootsGate.length !== 4) fail('request must contain exactly four root decisions');
   return {
     schema: REQUEST_SCHEMA,
@@ -207,8 +240,8 @@ function recipeRef(recipe) {
   return { id: recipe.id, version: recipe.version, digest: recipe.recipeDigest, builderId: recipe.builderId, builderDigest: recipe.builderDigest, capabilityKind: recipe.capabilityKind };
 }
 
-function exactTargetRecipe(recipe) {
-  return recipe && same(recipeRef(recipe), TARGET_RECIPE) && recipe.activation === 'ACTIVE_SOURCE_REVIEWED' && recipe.family === 'schema-validation' && recipe.reviewPolicy && recipe.reviewPolicy.sharedUseRequires === 'MIKE_TOBI_MERGE' && recipe.reviewPolicy.canonAuthority === 'NONE';
+function exactTargetRecipe(recipe, target) {
+  return recipe && same(recipeRef(recipe), target.recipe) && recipe.activation === 'ACTIVE_SOURCE_REVIEWED' && recipe.family === target.family && recipe.reviewPolicy && recipe.reviewPolicy.sharedUseRequires === 'MIKE_TOBI_MERGE' && recipe.reviewPolicy.canonAuthority === 'NONE';
 }
 
 function planReference(plan) {
@@ -243,6 +276,7 @@ function sealResult(core) {
 
 function generate(input) {
   const request = normalizeRequest(input);
+  const target = TARGETS[request.selection.mode];
   const rootHold = request.rootsGate.some((decision) => decision.verdict !== 'PASS');
   let status = rootHold ? 'ROOTS_HOLD' : 'INTENT_LINEAGE_HOLD';
   let nextGate = rootHold ? 'REPAIR_ROOT_EVIDENCE_AND_REPLAN' : 'REBUILD_EXACT_SPECIALIST_INTENT_AND_REPLAN';
@@ -262,29 +296,29 @@ function generate(input) {
       intentRebuilt = true;
       const context = request.intentAdapterPlan.specialistContext;
       const exactSelection = context && context.artifactPlan && context.selectedLane && context.artifactPlan.artifactRef.id === request.selection.artifactId && same(context.selectedLane.organRef, request.selection.specialistOrganRef);
-      const closedLane = exactSelection && context.selectedLane.organRef.id === TARGET_SPECIALIST_ID && context.selectedLane.executionStatus === 'NOT_RUN' && context.selectedLane.candidateStatus === 'NOT_GENERATED' && context.selectedLane.authority === 'NONE' && context.selectedLane.permissions.length === 0 && context.selectedLane.networkDomains.length === 0;
+      const closedLane = exactSelection && context.selectedLane.organRef.id === target.specialistId && context.selectedLane.executionStatus === 'NOT_RUN' && context.selectedLane.candidateStatus === 'NOT_GENERATED' && context.selectedLane.authority === 'NONE' && context.selectedLane.permissions.length === 0 && context.selectedLane.networkDomains.length === 0;
       if (!closedLane || request.intentAdapterPlan.truth.specialistLineageBoundIntoIntent !== true || request.intentAdapterPlan.truth.organIntentCreated !== true) {
-        status = 'SPECIALIST_HOLD'; nextGate = 'SELECT_EXACT_DATA_SCHEMA_SPECIALIST_AND_REPLAN';
-        holds = [{ code: 'EXACT_DATA_SCHEMA_SPECIALIST_REQUIRED', detail: 'This rung supports only one closed organ.code.data-schema lane bound into a reviewed v1.6 intent.' }];
-        gaps = ['code.specialist.data-schema.exact-lane'];
+        status = 'SPECIALIST_HOLD'; nextGate = target.specialistGate;
+        holds = [{ code: 'EXACT_SPECIALIST_REQUIRED', detail: 'This rung requires one closed ' + target.specialistId + ' lane bound into the reviewed specialist intent.' }];
+        gaps = [target.specialistGap];
       } else {
         specialistContext = { intentPlanRef: planReference(request.intentAdapterPlan), artifactRef: clone(context.artifactPlan.artifactRef), specialistOrganRef: clone(context.selectedLane.organRef), organIntentRef: { id: request.intentAdapterPlan.organIntent.id, schema: request.intentAdapterPlan.organIntent.schema, sha256: request.intentAdapterPlan.organIntent.intentDigest } };
         const catalog = CapabilityFabric.loadCatalog();
         const catalogValidation = CapabilityFabric.validateCatalog(catalog);
-        const recipe = catalog.recipes.find((row) => row.id === TARGET_RECIPE.id);
+        const recipe = catalog.recipes.find((row) => row.id === target.recipe.id);
         catalogRef = { id: 'capability-recipe-catalog', schema: catalog.schema, sha256: catalog.catalogDigest };
         selectedRecipeRef = recipe ? recipeRef(recipe) : null;
         const capabilityValidation = CapabilityFabric.validateRequest(request.capabilityBuildRequest);
-        const expectedConsentSubject = { intentPlanDigest: request.intentAdapterPlan.planDigest, capabilityRequestDigest: request.capabilityBuildRequest.requestDigest, catalogDigest: catalog.catalogDigest, recipeDigest: recipe ? recipe.recipeDigest : TARGET_RECIPE.digest };
+        const expectedConsentSubject = { intentPlanDigest: request.intentAdapterPlan.planDigest, capabilityRequestDigest: request.capabilityBuildRequest.requestDigest, catalogDigest: catalog.catalogDigest, recipeDigest: recipe ? recipe.recipeDigest : target.recipe.digest };
         const consentExact = same(request.consent.subject, expectedConsentSubject);
-        if (!catalogValidation.ok || !exactTargetRecipe(recipe)) {
-          status = 'RECIPE_HOLD'; nextGate = 'RESTORE_EXACT_SOURCE_REVIEWED_SCHEMA_VALIDATOR_RECIPE';
-          holds = [{ code: 'TARGET_RECIPE_LINEAGE_MISMATCH', detail: 'The exact source-reviewed closed JSON Schema validator recipe is unavailable or drifted.' }];
-          gaps = ['capability.recipe.closed-json-schema-validator.exact'];
-        } else if (!capabilityValidation.ok || request.capabilityBuildRequest.humanReviewed !== true || request.capabilityBuildRequest.source.kind !== 'CODE_FABRIC' || request.capabilityBuildRequest.source.ref !== request.intentAdapterPlan.planDigest || request.capabilityBuildRequest.recipeId !== TARGET_RECIPE.id || request.capabilityBuildRequest.family !== 'schema-validation') {
-          status = 'BUILD_REQUEST_HOLD'; nextGate = 'REPAIR_EXACT_HUMAN_REVIEWED_SCHEMA_VALIDATOR_REQUEST';
+        if (!catalogValidation.ok || !exactTargetRecipe(recipe, target)) {
+          status = 'RECIPE_HOLD'; nextGate = target.recipeGate;
+          holds = [{ code: 'TARGET_RECIPE_LINEAGE_MISMATCH', detail: 'The exact source-reviewed specialist recipe is unavailable or drifted.' }];
+          gaps = [target.recipeGap];
+        } else if (!capabilityValidation.ok || request.capabilityBuildRequest.humanReviewed !== true || request.capabilityBuildRequest.source.kind !== 'CODE_FABRIC' || request.capabilityBuildRequest.source.ref !== request.intentAdapterPlan.planDigest || request.capabilityBuildRequest.recipeId !== target.recipe.id || request.capabilityBuildRequest.family !== target.family) {
+          status = 'BUILD_REQUEST_HOLD'; nextGate = target.requestGate;
           holds = [{ code: 'CAPABILITY_BUILD_REQUEST_MISMATCH', detail: capabilityValidation.ok ? 'Build request lineage, human review, family, or recipe is not exact.' : capabilityValidation.errors.map((row) => row.code).join(',') }];
-          gaps = ['capability.build-request.data-schema.exact'];
+          gaps = [target.requestGap];
         } else if (!consentExact) {
           status = 'CONSENT_HOLD'; nextGate = 'RECONSENT_TO_EXACT_INTENT_RECIPE_CATALOG_AND_BUILD_BYTES';
           holds = [{ code: 'CONSENT_SUBJECT_DRIFT', detail: 'Tier-1 consent does not bind the exact intent, build request, catalog, and recipe digests.' }];
@@ -293,14 +327,16 @@ function generate(input) {
           consentRef = { decisionRef: clone(request.consent.decisionRef), tier: request.consent.tier, subject: clone(request.consent.subject), evaluatedAt: request.consent.evaluatedAt, expiresAt: request.consent.expiresAt, nonce: request.consent.nonce, replayState: request.consent.replayState };
           buildRequestRef = { id: request.capabilityBuildRequest.id, schema: request.capabilityBuildRequest.schema, sha256: request.capabilityBuildRequest.requestDigest };
           buildPlan = CapabilityFabric.planBuild(request.capabilityBuildRequest, catalog);
-          if (buildPlan.status !== 'READY' || !same(buildPlan.recipeRef, TARGET_RECIPE) || buildPlan.generatedCodeExecuted !== false || !same(buildPlan.authority, CapabilityFabric.AUTHORITY)) {
+          if (buildPlan.status !== 'READY' || !same(buildPlan.recipeRef, target.recipe) || buildPlan.generatedCodeExecuted !== false || !same(buildPlan.authority, CapabilityFabric.AUTHORITY)) {
             status = 'BUILD_PLAN_HOLD'; nextGate = 'REPAIR_EXACT_CAPABILITY_BUILD_PLAN';
             holds = [{ code: 'CAPABILITY_BUILD_PLAN_HELD', detail: (buildPlan.holds || []).map((row) => row.code).join(',') || 'Build plan lineage or authority drifted.' }];
             gaps = ['capability.build-plan.detached.ready'];
           } else {
             nativeBuilderInvoked = true;
-            const build = CapabilityFabric.build(request.capabilityBuildRequest, catalog);
-            const candidate = build.status === 'COMPLETE' && build.candidates.length === 1 ? build.candidates[0] : null;
+            let build = null, buildFailure = null;
+            try { build = CapabilityFabric.build(request.capabilityBuildRequest, catalog); }
+            catch (error) { buildFailure = String(error && error.message ? error.message : error); }
+            const candidate = build && build.status === 'COMPLETE' && build.candidates.length === 1 ? build.candidates[0] : null;
             buildPasses = candidate ? 2 : 0;
             candidateBytesGeneratedTransiently = candidate !== null;
             emittedSelftestEvidence = candidate && typeof candidate.files['selftest.js'] === 'string' ? 'EMITTED_NOT_RUN' : 'NOT_EMITTED';
@@ -310,7 +346,11 @@ function generate(input) {
             candidateByteEvidence = candidate ? (verification.ok ? 'PASS' : 'FAIL') : 'FAIL';
             candidatePathEvidence = candidate ? (pathCheck.pass ? 'PASS' : 'FAIL') : 'FAIL';
             const withinCandidateResources = candidate && candidate.package.files.length <= request.resourceEnvelope.maxCandidateFiles && candidate.package.totalBytes <= request.resourceEnvelope.maxCandidateBytes;
-            if (!candidate || build.generatedCodeExecuted !== false || !same(build.authority, CapabilityFabric.AUTHORITY) || !verification.ok || !pathCheck.pass || !withinCandidateResources) {
+            if (buildFailure) {
+              status = 'CANDIDATE_HOLD'; nextGate = 'REPAIR_DETACHED_CANDIDATE_STRUCTURE_OR_RESOURCE_BOUND';
+              holds = [{ code: 'NATIVE_BUILDER_REFUSAL', detail: buildFailure.slice(0, 500) }];
+              gaps = ['capability.builder.exact-parameter-contract'];
+            } else if (!candidate || build.generatedCodeExecuted !== false || !same(build.authority, CapabilityFabric.AUTHORITY) || !verification.ok || !pathCheck.pass || !withinCandidateResources) {
               status = 'CANDIDATE_HOLD'; nextGate = 'REPAIR_DETACHED_CANDIDATE_STRUCTURE_OR_RESOURCE_BOUND';
               holds = [{ code: 'DETACHED_CANDIDATE_REFUSED', detail: !withinCandidateResources ? 'Candidate exceeds declared file or byte budget.' : (pathCheck.errors.concat((verification.errors || []).map((row) => row.code || row.message))).join(',') }];
               gaps = ['capability.candidate.detached.verified'];
@@ -336,7 +376,7 @@ function generate(input) {
       candidateByteLineage: candidateByteEvidence,
       candidatePaths: candidatePathEvidence,
       emittedSelftest: emittedSelftestEvidence,
-      runtimeBehavior: 'UNKNOWN', visualBehavior: 'NOT_APPLICABLE'
+      runtimeBehavior: 'UNKNOWN', visualBehavior: target.visualEvidence
     },
     holds,
     capabilityGapReport: buildGapReport(gaps, request.id),
@@ -385,52 +425,101 @@ function resealIntentRequest(value) {
   const draft = clone(value); delete draft.requestDigest; return IntentAdapter.sealRequest(draft);
 }
 
-function buildExampleIntentRequest() {
+function buildTargetExampleIntentRequest(target, options) {
   const draft = clone(IntentAdapter.buildExampleRequest());
-  const artifact = draft.specializationPlan.artifactPlans.find((row) => row.artifactRef.id === 'game-schema');
-  const lane = artifact.specialistLanes.find((row) => row.organRef.id === TARGET_SPECIALIST_ID);
+  const artifact = draft.specializationPlan.artifactPlans.find((row) => row.artifactRef.id === target.artifactId);
+  const lane = artifact && artifact.specialistLanes.find((row) => row.organRef.id === target.specialistId);
+  if (!artifact || !lane) fail('example specialization plan lacks target artifact or specialist lane');
   draft.selection = { artifactId: artifact.artifactRef.id, specialistOrganRef: clone(lane.organRef), coordinationMode: 'ONE_EXACT_LANE_NO_AUTOMATIC_MERGE' };
-  draft.id = 'bind-data-schema-specialist-organ-intent';
-  draft.intentDraft.name = 'Data Schema Specialist Verification Intent';
-  draft.intentDraft.purpose = 'Bind one exact data-schema specialist lane to a reviewed verification intent before a separate candidate-generation decision.';
+  draft.id = options.intentRequestId;
+  draft.intentDraft.name = options.intentName;
+  draft.intentDraft.purpose = options.intentPurpose;
   return resealIntentRequest(draft);
 }
 
-function buildExampleRequest() {
-  const intentAdapterRequest = buildExampleIntentRequest();
+function buildTargetExampleRequest(target, options) {
+  const intentAdapterRequest = buildTargetExampleIntentRequest(target, options);
   const intentAdapterPlan = IntentAdapter.plan(intentAdapterRequest);
   const context = intentAdapterPlan.specialistContext;
   const catalog = CapabilityFabric.loadCatalog();
-  const recipe = catalog.recipes.find((row) => row.id === TARGET_RECIPE.id);
+  const recipe = catalog.recipes.find((row) => row.id === target.recipe.id);
+  if (!recipe || !exactTargetRecipe(recipe, target)) fail('example target recipe is unavailable or drifted');
   const buildDraft = clone(recipe.exampleRequest);
-  buildDraft.id = 'game-schema-validator-candidate';
-  buildDraft.purpose = 'Generate one detached bounded validator candidate for an explicitly reviewed synthetic game-schema contract.';
+  buildDraft.id = options.buildRequestId;
+  buildDraft.purpose = options.buildPurpose;
   buildDraft.source = { kind: 'CODE_FABRIC', ref: intentAdapterPlan.planDigest };
   const capabilityBuildRequest = CapabilityFabric.sealRequest(buildDraft, true);
   const subject = { intentPlanDigest: intentAdapterPlan.planDigest, capabilityRequestDigest: capabilityBuildRequest.requestDigest, catalogDigest: catalog.catalogDigest, recipeDigest: recipe.recipeDigest };
   return sealRequest({
-    schema: REQUEST_SCHEMA, version: VERSION, id: 'build-data-schema-specialist-candidate',
+    schema: REQUEST_SCHEMA, version: VERSION, id: options.outerRequestId,
     intentAdapterRequest, intentAdapterPlan,
-    selection: { artifactId: context.artifactPlan.artifactRef.id, specialistOrganRef: clone(context.selectedLane.organRef), mode: 'ONE_EXACT_DATA_SCHEMA_SPECIALIST' },
+    selection: { artifactId: context.artifactPlan.artifactRef.id, specialistOrganRef: clone(context.selectedLane.organRef), mode: target.mode },
     capabilityBuildRequest,
     consent: {
       tier: 'TIER_1_DETACHED_CANDIDATE',
-      decisionRef: { id: 'mike-tier-1-schema-candidate-direction', schema: 'axm.explicit-human-direction/v1', sha256: sha256Value('Mike authorized the next bounded rung: create one detached data-schema validator candidate; do not execute, write, install, integrate, publish, promote, or CANON.') },
-      subject, evaluatedAt: '2026-08-23T21:00:00.000Z', expiresAt: '2026-08-24T21:00:00.000Z',
-      nonce: 'schema-candidate-0001', revoked: false, replayState: 'UNVERIFIED_SINGLE_USE_CLAIM',
+      decisionRef: { id: options.decisionId, schema: 'axm.explicit-human-direction/v1', sha256: sha256Value(options.decisionText) },
+      subject, evaluatedAt: options.evaluatedAt, expiresAt: options.expiresAt,
+      nonce: options.nonce, revoked: false, replayState: 'UNVERIFIED_SINGLE_USE_CLAIM',
       scope: { candidateCount: 1, candidateExecution: false, workspaceWrite: false, permissions: [], networkDomains: [], install: false, integrate: false, publish: false, promote: false, canon: false }
     },
     resourceEnvelope: { maxInputBytes: 4194304, maxOutputBytes: 4194304, maxCandidateFiles: 16, maxCandidateBytes: 1048576, maxBuildPasses: 2, maxAttempts: 1, maxProcesses: 0, maxMemoryBytes: 268435456, maxDurationMs: 30000, maxCostMinorUnits: 0 },
     reuseRights: { mode: 'RESEARCH_ONLY_DIRECT_REUSE_HOLD', externalSourceBytesIncluded: false, publicCopyAuthorized: false, directReuseAuthorized: false },
-    rootsGate: ROOTS.map((root) => ({ root, verdict: 'PASS', evidenceRefs: [{ id: 'schema-candidate-' + root, schema: 'axm.four-root-technical-review/v1', sha256: sha256Value('schema-specialist-candidate-v1.7:' + root) }] })),
+    rootsGate: ROOTS.map((root) => ({ root, verdict: 'PASS', evidenceRefs: [{ id: options.rootEvidencePrefix + root, schema: 'axm.four-root-technical-review/v1', sha256: sha256Value(options.rootEvidenceSubject + ':' + root) }] })),
     authority: 'NONE'
+  });
+}
+
+function buildExampleIntentRequest() {
+  return buildTargetExampleIntentRequest(TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST, {
+    intentRequestId: 'bind-data-schema-specialist-organ-intent',
+    intentName: 'Data Schema Specialist Verification Intent',
+    intentPurpose: 'Bind one exact data-schema specialist lane to a reviewed verification intent before a separate candidate-generation decision.'
+  });
+}
+
+function buildExampleRequest() {
+  return buildTargetExampleRequest(TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST, {
+    intentRequestId: 'bind-data-schema-specialist-organ-intent',
+    intentName: 'Data Schema Specialist Verification Intent',
+    intentPurpose: 'Bind one exact data-schema specialist lane to a reviewed verification intent before a separate candidate-generation decision.',
+    buildRequestId: 'game-schema-validator-candidate',
+    buildPurpose: 'Generate one detached bounded validator candidate for an explicitly reviewed synthetic game-schema contract.',
+    outerRequestId: 'build-data-schema-specialist-candidate',
+    decisionId: 'mike-tier-1-schema-candidate-direction',
+    decisionText: 'Mike authorized the bounded data-schema rung: create one detached validator candidate; do not execute, write, install, integrate, publish, promote, or CANON.',
+    evaluatedAt: '2026-08-24T00:00:00.000Z', expiresAt: '2026-08-25T00:00:00.000Z', nonce: 'schema-candidate-0002',
+    rootEvidencePrefix: 'schema-candidate-', rootEvidenceSubject: 'schema-specialist-candidate-v1.8'
+  });
+}
+
+function buildMarkupExampleIntentRequest() {
+  return buildTargetExampleIntentRequest(TARGETS.ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST, {
+    intentRequestId: 'bind-markup-specialist-organ-intent',
+    intentName: 'Markup Structure Specialist Creation Intent',
+    intentPurpose: 'Bind one exact markup-structure specialist lane to a reviewed semantic-page intent before a separate detached candidate-generation decision.'
+  });
+}
+
+function buildMarkupExampleRequest() {
+  return buildTargetExampleRequest(TARGETS.ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST, {
+    intentRequestId: 'bind-markup-specialist-organ-intent',
+    intentName: 'Markup Structure Specialist Creation Intent',
+    intentPurpose: 'Bind one exact markup-structure specialist lane to a reviewed semantic-page intent before a separate detached candidate-generation decision.',
+    buildRequestId: 'game-index-html-renderer-candidate',
+    buildPurpose: 'Generate one detached semantic HTML page-renderer candidate for the explicitly reviewed synthetic game-index artifact.',
+    outerRequestId: 'build-markup-specialist-candidate',
+    decisionId: 'mike-tier-1-markup-candidate-direction',
+    decisionText: 'Mike authorized the next bounded rung: create one detached HTML markup candidate; do not execute, render, write, install, integrate, publish, promote, or CANON.',
+    evaluatedAt: '2026-08-24T00:00:00.000Z', expiresAt: '2026-08-25T00:00:00.000Z', nonce: 'markup-candidate-0001',
+    rootEvidencePrefix: 'markup-candidate-', rootEvidenceSubject: 'markup-specialist-candidate-v1.8'
   });
 }
 
 if (!MODULE_CONTRACT || MODULE_CONTRACT.id !== 'code-specialist-capability-builder-v1') fail('module contract identity mismatch');
 
 module.exports = {
-  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, ROOTS, LIMITATIONS, MODULE_CONTRACT,
+  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, TARGETS, ROOTS, LIMITATIONS, MODULE_CONTRACT,
   canonicalJson, clone, same, sha256Value, jsonBytes, isSafeCandidatePath, validateCandidatePaths,
-  sealRequest, normalizeRequest, generate, verify, buildExampleIntentRequest, buildExampleRequest
+  sealRequest, normalizeRequest, generate, verify, buildExampleIntentRequest, buildExampleRequest,
+  buildMarkupExampleIntentRequest, buildMarkupExampleRequest
 };

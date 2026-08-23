@@ -6,7 +6,7 @@
   "required": ["schema", "version", "id", "intentAdapterRequest", "intentAdapterPlan", "selection", "capabilityBuildRequest", "consent", "resourceEnvelope", "reuseRights", "rootsGate", "authority", "requestDigest"],
   "properties": {
     "schema": {"const": "axm.code-specialist-capability-build-request/v1"},
-    "version": {"const": "1.7.0"},
+    "version": {"const": "1.8.0"},
     "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
     "intentAdapterRequest": {"$ref": "code-specialist-organ-intent-request.schema.json"},
     "intentAdapterPlan": {"$ref": "code-specialist-organ-intent-plan.schema.json"},
@@ -17,7 +17,7 @@
       "properties": {
         "artifactId": {"$ref": "semantic-common.schema.json#/$defs/id"},
         "specialistOrganRef": {"$ref": "#/$defs/versionedRef"},
-        "mode": {"const": "ONE_EXACT_DATA_SCHEMA_SPECIALIST"}
+        "mode": {"enum": ["ONE_EXACT_DATA_SCHEMA_SPECIALIST", "ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST"]}
       }
     },
     "capabilityBuildRequest": {"$ref": "../capability-fabric/schemas/build-request.schema.json"},

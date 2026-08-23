@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `41ddb5e7f767a0dbfe33078217696dfb9a68bb92f0141aa619e914f67316bea6`
+Twin digest: `2b474d372244e5963e90df684ea6eee8ec22986cf6871e60b664e7d205a342c6`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -43,7 +43,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | bulk-intake-conveyor | HAND | TEST | 7 | WRITE_CANDIDATE | UNKNOWN | `46335417c3c9f353…` |
 | capability-fabric | BRIDGE | EXPERIMENTAL | 9 | WRITE_CANDIDATE | UNKNOWN | `be1dc862facd41ab…` |
 | capability-gap-workbench | HAND | TEST | 5 | WRITE_CANDIDATE | MEDIUM | `e8c183f4486ef4ae…` |
-| capability-recipe-admission-gate | HAND | EXPERIMENTAL | 6 | OBSERVE_LOCAL, WRITE_CANDIDATE | UNKNOWN | `d6a238c6d1a67490…` |
+| capability-recipe-admission-gate | HAND | EXPERIMENTAL | 6 | OBSERVE_LOCAL, WRITE_CANDIDATE | UNKNOWN | `77a2d1cb0f26ca2c…` |
 | capability-recipe-foundry | HAND | EXPERIMENTAL | 6 | WRITE_CANDIDATE | UNKNOWN | `10cc356929116ac9…` |
 | challenge-arena | HAND | TEST | 5 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `f0177c0134c697f5…` |
 | character-animation-mocap-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `2aea59965e3adca5…` |
@@ -216,7 +216,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | shared/baseline-simulation-lab | ORGAN | EXPERIMENTAL | 11 | NONE | LOW | `7941a41c089dd390…` |
 | shared/city-gates | BRIDGE | EXPERIMENTAL | 5 | NETWORK_WRITE, PUBLIC_RELEASE | HIGH | `80831a1116ef8216…` |
 | shared/city-graph | ORGAN | EXPERIMENTAL | 5 | NONE | UNKNOWN | `a1c481486b694ed5…` |
-| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `b659119c6d8eaada…` |
+| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `05d167c97cfdcfed…` |
 | shared/compute-substrate-lab | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `65884a71a64101f4…` |
 | shared/deterministic-animation-fabric | BRICK | EXPERIMENTAL | 12 | NONE | LOW | `d03680c39d4e474d…` |
 | shared/deterministic-audio-fabric | BRICK | EXPERIMENTAL | 5 | NONE | LOW | `c4bbf8ea631be508…` |

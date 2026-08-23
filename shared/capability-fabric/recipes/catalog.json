@@ -270,6 +270,135 @@
     },
     {
       "schema": "axm.capability-recipe/v1",
+      "id": "static-accessible-html-page",
+      "version": "0.1.0",
+      "title": "Static Accessible HTML Page Hand",
+      "summary": "Compile a dependency-free semantic HTML document renderer with strict text escaping and bounded sections.",
+      "family": "markup-creation",
+      "capabilityKind": "HAND",
+      "capabilityContract": {
+        "runtimeMode": "EXECUTABLE",
+        "entry": "capability.js",
+        "operation": "render",
+        "portableForm": "NONE",
+        "portablePath": null,
+        "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+        "requiredHostCapabilities": []
+      },
+      "builderId": "static-accessible-html-page-v1",
+      "builderDigest": "sha256:ca938e6fe3b7635c4fe30b00c1fc13edb9a875257cabdcce1c487d35640aa122",
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "sharedUseRequires": "MIKE_TOBI_MERGE",
+        "canonAuthority": "NONE"
+      },
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "defaultVariantId": "semantic-default",
+        "variants": [
+          {
+            "id": "semantic-default",
+            "title": "Semantic structure without style or script",
+            "parameterOverrides": {}
+          }
+        ]
+      },
+      "parameterSpec": {
+        "resultSchemaId": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+          "maxLength": 180,
+          "description": "Exact result envelope emitted by the renderer."
+        },
+        "documentTitle": {
+          "type": "string",
+          "required": true,
+          "maxLength": 120,
+          "description": "Fixed escaped document title."
+        },
+        "language": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$",
+          "maxLength": 6,
+          "description": "Exact HTML language tag."
+        },
+        "defaultHeading": {
+          "type": "string",
+          "required": true,
+          "maxLength": 120,
+          "description": "Default escaped page heading."
+        },
+        "defaultIntro": {
+          "type": "string",
+          "required": true,
+          "maxLength": 500,
+          "description": "Default escaped introductory text."
+        },
+        "maxSections": {
+          "type": "integer",
+          "required": true,
+          "minimum": 0,
+          "maximum": 24,
+          "description": "Maximum semantic content sections."
+        },
+        "maxInputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 128,
+          "maximum": 65536,
+          "description": "Maximum serialized content bytes before refusal."
+        },
+        "maxTextLength": {
+          "type": "integer",
+          "required": true,
+          "minimum": 16,
+          "maximum": 4000,
+          "description": "Maximum characters in each runtime text field."
+        }
+      },
+      "exampleRequest": {
+        "id": "accessible-html-page-example",
+        "family": "markup-creation",
+        "purpose": "Build one detached semantic HTML page renderer candidate for the markup specialist pilot.",
+        "recipeId": "static-accessible-html-page",
+        "variantId": null,
+        "parameters": {
+          "resultSchemaId": "axm.markup-page-render-result/v1",
+          "documentTitle": "AXM Detached Creation Candidate",
+          "language": "en",
+          "defaultHeading": "Creation candidate",
+          "defaultIntro": "A deterministic semantic page candidate awaiting review.",
+          "maxSections": 8,
+          "maxInputBytes": 16384,
+          "maxTextLength": 1000
+        },
+        "source": {
+          "kind": "HUMAN",
+          "ref": "markup-specialist-v1.8"
+        }
+      },
+      "boundaries": [
+        "text input only; every inserted value is HTML escaped",
+        "semantic document structure only; no CSS or presentation claim",
+        "no script, inline event handler, external resource, network, filesystem, clock, environment, dynamic code, or randomness",
+        "generated code and selftest are emitted but never executed by Capability Fabric",
+        "visual appearance, accessibility usability, and interaction remain UNKNOWN until separate browser evidence",
+        "detached candidate output only; no install, merge, promotion, Foundation, or CANON authority"
+      ],
+      "verifiers": [
+        "package digest and exact deterministic rebuild",
+        "generated-source static checks for escaping and forbidden active content",
+        "externally execute emitted selftest.js only after separate sandbox consent",
+        "live browser render and keyboard inspection only after separate execution consent",
+        "Detached Candidate Nursery structural scan"
+      ],
+      "recipeDigest": "sha256:e5216430a135f44927364f3beb9bd7825f0aa2e4b5410be6e9cf3cc5c6a28417"
+    },
+    {
+      "schema": "axm.capability-recipe/v1",
       "id": "pure-json-transform",
       "version": "1.0.0",
       "title": "Pure JSON Transform",
@@ -577,5 +706,5 @@
       "recipeDigest": "sha256:754d323174787080f5d61c2c5fe515bc74ea126af21a498bbec17a6e4665594d"
     }
   ],
-  "catalogDigest": "sha256:0ac0af5dc4a816ee9606da9b58a7cab72a8e70ce18d5207ada0c0ff9bdc6fa51"
+  "catalogDigest": "sha256:ce4a47bfd917742e60e12d0f5b00dca12706d91c14cafb60d5c5620006e29a05"
 }
