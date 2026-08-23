@@ -3,10 +3,14 @@
 const crypto = require('crypto');
 
 const PACK_SCHEMA = 'axm.code-recipe-pack/v1';
+const AUDIT_SCHEMA = 'axm.code-recipe-syntax-audit/v1';
 const PACKET_SCHEMA = 'axm.code-recipe-evidence-packet/v1';
 const QUERY_SCHEMA = 'axm.code-recipe-evidence-query/v1';
 const MAX_RESULTS = 32;
 const MAX_RECIPES = 5000;
+const MAX_QUERY_TERMS = 32;
+const QUERY_KEYS = new Set(['schema', 'terms', 'languages', 'domains', 'tags', 'familyKeys', 'maxResults']);
+const REVIEW_STATES = new Set(['SOURCE_REVIEW_REQUIRED', 'STRUCTURE_HOLD', 'STRUCTURE_VALIDATED']);
 
 function stableStringify(value) {
   if (value === null || typeof value !== 'object') return JSON.stringify(value);
@@ -40,22 +44,34 @@ function normalizeList(value, limit, field) {
   if (value == null) return [];
   if (!Array.isArray(value)) throw new Error(field + ' must be an array.');
   if (value.length > limit) throw new Error(field + ' exceeds the bounded limit of ' + limit + '.');
-  return Array.from(new Set(value.map(normalizeText).filter(Boolean))).sort();
+  const normalized = value.map((item, index) => {
+    if (typeof item !== 'string') throw new Error(field + '[' + index + '] must be a string.');
+    const text = normalizeText(item);
+    if (!text) throw new Error(field + '[' + index + '] normalizes to an empty value.');
+    return text;
+  });
+  return Array.from(new Set(normalized)).sort();
 }
 
 function normalizeQuery(query) {
   if (!query || typeof query !== 'object' || Array.isArray(query)) throw new Error('Query must be an object.');
+  const unknown = Object.keys(query).filter(key => !QUERY_KEYS.has(key));
+  if (unknown.length) throw new Error('Unknown query field(s): ' + unknown.sort().join(', ') + '.');
   if (query.schema != null && query.schema !== QUERY_SCHEMA) throw new Error('Unsupported query schema.');
-  const termsValue = String(query.terms == null ? '' : query.terms);
+  if (query.terms != null && typeof query.terms !== 'string') throw new Error('terms must be a string when provided.');
+  if (query.maxResults != null && !Number.isInteger(query.maxResults)) throw new Error('maxResults must be an integer when provided.');
+  const termsValue = query.terms == null ? '' : query.terms;
   if (Buffer.byteLength(termsValue, 'utf8') > 1024) throw new Error('Query terms exceed 1 KiB.');
+  const termList = tokens(termsValue);
+  if (termList.length > MAX_QUERY_TERMS) throw new Error('Query contains more than ' + MAX_QUERY_TERMS + ' normalized terms.');
   const normalized = {
     schema: QUERY_SCHEMA,
-    terms: tokens(termsValue),
+    terms: termList,
     languages: normalizeList(query.languages, 16, 'languages'),
     domains: normalizeList(query.domains, 16, 'domains'),
     tags: normalizeList(query.tags, 32, 'tags'),
     familyKeys: normalizeList(query.familyKeys, 16, 'familyKeys'),
-    maxResults: Number.isInteger(query.maxResults) ? query.maxResults : 12
+    maxResults: query.maxResults == null ? 12 : query.maxResults
   };
   if (normalized.maxResults < 1 || normalized.maxResults > MAX_RESULTS) throw new Error('maxResults must be between 1 and ' + MAX_RESULTS + '.');
   if (!normalized.terms.length && !normalized.languages.length && !normalized.domains.length && !normalized.tags.length && !normalized.familyKeys.length) {
@@ -64,28 +80,88 @@ function normalizeQuery(query) {
   return normalized;
 }
 
+function assertString(value, label, allowEmpty) {
+  if (typeof value !== 'string') throw new Error(label + ' must be a string.');
+  if (!allowEmpty && !value.trim()) throw new Error(label + ' must not be empty.');
+}
+
+function assertStringArray(value, label, maxItems) {
+  if (!Array.isArray(value)) throw new Error(label + ' must be an array.');
+  if (value.length > maxItems) throw new Error(label + ' exceeds the bounded limit of ' + maxItems + '.');
+  value.forEach((item, index) => assertString(item, label + '[' + index + ']', false));
+}
+
+function assertRecipe(recipe, index) {
+  const label = 'recipes[' + index + ']';
+  if (!recipe || typeof recipe !== 'object' || Array.isArray(recipe)) throw new Error(label + ' must be an object.');
+  assertString(recipe.id, label + '.id', false);
+  if (!/^recipe-[a-f0-9]{16}$/.test(recipe.id)) throw new Error(label + '.id must match the stable recipe id pattern.');
+  assertString(recipe.title, label + '.title', false);
+  assertString(recipe.snippet, label + '.snippet', false);
+  assertString(recipe.description, label + '.description', false);
+  assertString(recipe.primaryLanguage, label + '.primaryLanguage', false);
+  assertString(recipe.familyKey, label + '.familyKey', false);
+  if (!REVIEW_STATES.has(recipe.reviewState)) throw new Error(label + '.reviewState is unsupported.');
+  assertStringArray(recipe.tags, label + '.tags', 20);
+  assertStringArray(recipe.holdReasons, label + '.holdReasons', 20);
+}
+
 function assertPack(pack) {
   if (!pack || typeof pack !== 'object' || Array.isArray(pack)) throw new Error('Recipe pack must be an object.');
   if (pack.schema !== PACK_SCHEMA) throw new Error('Recipe pack must use ' + PACK_SCHEMA + '.');
   if (!Array.isArray(pack.recipes)) throw new Error('Recipe pack recipes must be an array.');
   if (pack.recipes.length > MAX_RECIPES) throw new Error('Recipe pack exceeds the 5,000-recipe bound.');
+  const ids = new Set();
+  pack.recipes.forEach((recipe, index) => {
+    assertRecipe(recipe, index);
+    if (ids.has(recipe.id)) throw new Error('Recipe pack contains duplicate recipe id: ' + recipe.id + '.');
+    ids.add(recipe.id);
+  });
   return pack;
 }
 
 function syntaxIndex(audit) {
-  const index = new Map();
-  if (!audit || typeof audit !== 'object' || !Array.isArray(audit.results)) return index;
-  for (const result of audit.results) {
-    if (!result || typeof result !== 'object') continue;
-    const key = String(result.sourceId || result.recipeId || '').trim();
-    if (!key || index.has(key)) continue;
-    index.set(key, {
+  const byRecipeId = new Map();
+  const bySourceId = new Map();
+  if (audit == null) return { byRecipeId, bySourceId };
+  if (!audit || typeof audit !== 'object' || Array.isArray(audit)) throw new Error('Syntax audit must be an object.');
+  if (audit.schema !== AUDIT_SCHEMA) throw new Error('Syntax audit must use ' + AUDIT_SCHEMA + '.');
+  if (!Array.isArray(audit.results)) throw new Error('Syntax audit results must be an array.');
+  for (let index = 0; index < audit.results.length; index += 1) {
+    const result = audit.results[index];
+    if (!result || typeof result !== 'object' || Array.isArray(result)) throw new Error('Syntax audit result ' + index + ' must be an object.');
+    const recipeId = result.recipeId == null ? '' : String(result.recipeId).trim();
+    const sourceId = result.sourceId == null ? '' : String(result.sourceId).trim();
+    if (!recipeId && !sourceId) throw new Error('Syntax audit result ' + index + ' needs recipeId or sourceId.');
+    if (recipeId && byRecipeId.has(recipeId)) throw new Error('Syntax audit contains duplicate recipeId: ' + recipeId + '.');
+    if (sourceId && bySourceId.has(sourceId)) throw new Error('Syntax audit contains duplicate sourceId: ' + sourceId + '.');
+    const compact = {
+      recipeId: recipeId || null,
+      sourceId: sourceId || null,
       status: String(result.status || 'NOT_PROVEN'),
       verifier: result.verifier ? String(result.verifier) : null,
       message: result.message ? String(result.message).slice(0, 400) : null
-    });
+    };
+    if (recipeId) byRecipeId.set(recipeId, compact);
+    if (sourceId) bySourceId.set(sourceId, compact);
   }
-  return index;
+  return { byRecipeId, bySourceId };
+}
+
+function syntaxForRecipe(recipe, auditIndex) {
+  const byRecipe = auditIndex.byRecipeId.get(recipe.id) || null;
+  const sourceKey = recipe.sourceId == null ? '' : String(recipe.sourceId).trim();
+  const bySource = sourceKey ? auditIndex.bySourceId.get(sourceKey) || null : null;
+  if (byRecipe && bySource && byRecipe !== bySource) throw new Error('Syntax audit identity conflict for recipe ' + recipe.id + '.');
+  const evidence = byRecipe || bySource;
+  if (!evidence) return null;
+  if (evidence.recipeId && evidence.recipeId !== recipe.id) throw new Error('Syntax audit recipeId mismatch for ' + recipe.id + '.');
+  if (evidence.sourceId && sourceKey && evidence.sourceId !== sourceKey) throw new Error('Syntax audit sourceId mismatch for ' + recipe.id + '.');
+  return {
+    status: evidence.status,
+    verifier: evidence.verifier,
+    message: evidence.message
+  };
 }
 
 function fieldTokenSet(recipe) {
@@ -93,7 +169,7 @@ function fieldTokenSet(recipe) {
   return {
     title: set(recipe.title),
     family: set(recipe.familyKey),
-    tags: set(Array.isArray(recipe.tags) ? recipe.tags.join(' ') : ''),
+    tags: set(recipe.tags.join(' ')),
     description: set(recipe.description),
     domain: set(recipe.domain),
     language: set(recipe.primaryLanguage),
@@ -110,7 +186,7 @@ function matchesFilter(recipe, query) {
   const language = normalizeText(recipe.primaryLanguage);
   const domain = normalizeText(recipe.domain);
   const family = normalizeText(recipe.familyKey);
-  const tagValues = new Set((Array.isArray(recipe.tags) ? recipe.tags : []).map(normalizeText).filter(Boolean));
+  const tagValues = new Set(recipe.tags.map(normalizeText).filter(Boolean));
   if (query.languages.length && !query.languages.includes(language)) return false;
   if (query.domains.length && !query.domains.includes(domain)) return false;
   if (query.familyKeys.length && !query.familyKeys.includes(family)) return false;
@@ -144,22 +220,22 @@ function scoreRecipe(recipe, query) {
 }
 
 function compactRecipeRef(recipe, syntax) {
-  const reviewState = String(recipe.reviewState || 'SOURCE_REVIEW_REQUIRED');
+  const reviewState = recipe.reviewState;
   return {
-    recipeId: String(recipe.id || ''),
+    recipeId: recipe.id,
     sourceId: recipe.sourceId == null ? null : String(recipe.sourceId),
-    familyKey: String(recipe.familyKey || ''),
-    title: String(recipe.title || ''),
-    description: String(recipe.description || ''),
-    primaryLanguage: String(recipe.primaryLanguage || ''),
+    familyKey: recipe.familyKey,
+    title: recipe.title,
+    description: recipe.description,
+    primaryLanguage: recipe.primaryLanguage,
     domain: recipe.domain == null ? null : String(recipe.domain),
-    tags: Array.isArray(recipe.tags) ? recipe.tags.map(String) : [],
+    tags: recipe.tags.slice(),
     difficulty: recipe.difficulty == null ? null : String(recipe.difficulty),
     platform: recipe.platform == null ? null : String(recipe.platform),
     versionBasis: recipe.versionBasis == null ? null : String(recipe.versionBasis),
     sourceUrl: recipe.sourceUrl == null ? null : String(recipe.sourceUrl),
     reviewState,
-    holdReasons: Array.isArray(recipe.holdReasons) ? recipe.holdReasons.map(String) : [],
+    holdReasons: recipe.holdReasons.slice(),
     safetyNotePresent: Boolean(recipe.notesSafety && String(recipe.notesSafety).trim()),
     snippetRef: {
       sha256: sha256Text(recipe.snippet),
@@ -179,12 +255,10 @@ function buildEvidencePacket(pack, query, options) {
   const heldMatches = [];
 
   for (const recipe of pack.recipes) {
-    if (!recipe || typeof recipe !== 'object' || Array.isArray(recipe)) continue;
     if (!matchesFilter(recipe, normalizedQuery)) continue;
     const scored = scoreRecipe(recipe, normalizedQuery);
     if (!scored) continue;
-    const syntaxKey = String(recipe.sourceId || recipe.id || '');
-    const ref = compactRecipeRef(recipe, auditMap.get(syntaxKey));
+    const ref = compactRecipeRef(recipe, syntaxForRecipe(recipe, auditMap));
     const record = {
       match: {
         mechanicalScore: scored.score,
@@ -258,14 +332,17 @@ function verifyPacket(packet) {
 
 module.exports = {
   PACK_SCHEMA,
+  AUDIT_SCHEMA,
   PACKET_SCHEMA,
   QUERY_SCHEMA,
   MAX_RESULTS,
   MAX_RECIPES,
+  MAX_QUERY_TERMS,
   stableStringify,
   sha256Object,
   sha256Text,
   normalizeQuery,
+  assertPack,
   buildEvidencePacket,
   verifyPacket
 };
