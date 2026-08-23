@@ -1,0 +1,141 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "bounded-contract-repair-draft",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "workshop.observe-exact-contract",
+        "fabric.plan-contract-repair",
+        "workshop.validate-manifest-contract",
+        "sandbox.materialize-detached-alternatives",
+        "lineage.reject-stale-or-forged",
+        "review.render-inert-alternatives"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "workshop.observe-exact-contract": [
+          "three allowlisted UTF-8 files",
+          "metadata-only durable observation"
+        ],
+        "fabric.plan-contract-repair": [
+          "one exact legacy schema-and-kind omission class",
+          "pure deterministic planning"
+        ],
+        "workshop.validate-manifest-contract": [
+          "static readiness and module-contract validation only"
+        ],
+        "sandbox.materialize-detached-alternatives": [
+          "new immutable direct-child iteration",
+          "no target write"
+        ],
+        "lineage.reject-stale-or-forged": [
+          "revalidate before write and every preview request"
+        ],
+        "review.render-inert-alternatives": [
+          "loopback only",
+          "script-free",
+          "allowlisted candidate and metadata routes"
+        ]
+      }
+    },
+    {
+      "id": "semantic-candidate-selection",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "human.determine-semantic-kind"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "human.determine-semantic-kind": [
+          "requires module-steward judgment",
+          "machine ranking forbidden"
+        ]
+      }
+    },
+    {
+      "id": "candidate-behavior-verification",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "sandbox.execute-exact-candidate",
+        "workshop.run-required-target-tests"
+      ],
+      "declaredConstraints": {
+        "sandbox.execute-exact-candidate": [
+          "repaired disposable executor remains explicitly unauthorized"
+        ],
+        "workshop.run-required-target-tests": [
+          "all four candidate-specific commands retained as NOT_RUN"
+        ]
+      }
+    },
+    {
+      "id": "workshop-integration",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "mike.integrate-on-clean-selected-base"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "mike.integrate-on-clean-selected-base": [
+          "active recovery checkout is dirty",
+          "current recovery HEAD does not contain Fabric v0.5 base"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "sandbox.execute-exact-candidate",
+    "workshop.run-required-target-tests"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "sandbox.execute-exact-candidate",
+      "requiredBy": [
+        "candidate-behavior-verification"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "workshop.run-required-target-tests",
+      "requiredBy": [
+        "candidate-behavior-verification"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

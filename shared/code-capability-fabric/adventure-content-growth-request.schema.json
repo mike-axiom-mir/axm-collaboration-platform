@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.adventure-content-growth-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "goal", "decision", "ancestorPacketRef", "rootsGate", "resources", "reuseRights", "authority", "requestDigest"],
+  "properties": {
+    "schema": {"const": "axm.adventure-content-growth-request/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "goal": {"type": "string", "minLength": 1, "maxLength": 600},
+    "decision": {"$ref": "game-test-promotion-decision.schema.json"},
+    "ancestorPacketRef": {
+      "type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"],
+      "properties": {"id": {"const": "four-roots-run-native"}, "schema": {"const": "axm.game-candidate-packet/v1"}, "sha256": {"const": "sha256:0f92db03251710f34c8b50ea13d30e2a910336d3d0d6ceb884824d68951416c7"}}
+    },
+    "rootsGate": {
+      "type": "array", "minItems": 4, "maxItems": 4,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["root", "verdict", "evidenceRefs"],
+        "properties": {
+          "root": {"enum": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"]}, "verdict": {"const": "PASS"},
+          "evidenceRefs": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"type": "string"}, "schema": {"type": "string"}, "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}}}
+        }
+      }
+    },
+    "resources": {
+      "type": "object", "additionalProperties": false,
+      "required": ["maxRecipeBytes", "maxPacketBytes", "maxFiles", "maxRuntimeProcesses", "maxNetworkRequests"],
+      "properties": {"maxRecipeBytes": {"type": "integer", "minimum": 1, "maximum": 262144}, "maxPacketBytes": {"type": "integer", "minimum": 1, "maximum": 1048576}, "maxFiles": {"const": 1}, "maxRuntimeProcesses": {"const": 0}, "maxNetworkRequests": {"const": 0}}
+    },
+    "reuseRights": {
+      "type": "object", "additionalProperties": false, "required": ["internalWorkshopUse", "publicDirectReuse"],
+      "properties": {"internalWorkshopUse": {"const": "MIKE_AUTHORIZED_TEST"}, "publicDirectReuse": {"const": "HOLD"}}
+    },
+    "authority": {"const": "NONE"},
+    "requestDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

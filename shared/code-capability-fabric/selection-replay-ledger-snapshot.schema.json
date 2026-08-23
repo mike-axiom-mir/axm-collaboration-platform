@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axm.selection-replay-ledger-snapshot/v1",
+  "title": "AXM Selection Replay Ledger Snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "id", "observedAt", "consumedNonces", "authority", "ledgerDigest"],
+  "properties": {
+    "schema": {"const": "axm.selection-replay-ledger-snapshot/v1"},
+    "version": {"const": "1.0.0"},
+    "status": {"const": "HOST_SNAPSHOT_DECLARED"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "observedAt": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"},
+    "consumedNonces": {"type": "array", "maxItems": 1024, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"}},
+    "authority": {"const": "NONE"},
+    "ledgerDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.semantic-candidate-generator-profile/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "id", "status", "kind", "defaultMode", "consentTier", "supportedRecipeIds", "nativeOperations", "maxRequestBytes", "maxCandidates", "maxFilesPerCandidate", "maxFileBytes", "maxCandidateBytes", "permissions", "networkDomains", "authority", "profileDigest"],
+  "properties": {
+    "schema": {"const": "axm.semantic-candidate-generator-profile/v1"},
+    "version": {"const": "0.1.0"},
+    "id": {"const": "semantic-candidate-generator-v1"},
+    "status": {"const": "TEST"},
+    "kind": {"const": "PURE_DATA_TRANSFORM"},
+    "defaultMode": {"const": "NATIVE_ONLY"},
+    "consentTier": {"const": 1},
+    "supportedRecipeIds": {"const": ["creation-review-card-adapter"]},
+    "nativeOperations": {"const": ["VALIDATION", "MAPPING", "FILTERING", "COMPARISON", "SUMMARIZATION", "PLAIN_LANGUAGE_RENDERING"]},
+    "maxRequestBytes": {"const": 1048576},
+    "maxCandidates": {"const": 2},
+    "maxFilesPerCandidate": {"const": 16},
+    "maxFileBytes": {"const": 262144},
+    "maxCandidateBytes": {"const": 524288},
+    "permissions": {"const": []},
+    "networkDomains": {"const": []},
+    "authority": {"const": "NONE"},
+    "profileDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  }
+}

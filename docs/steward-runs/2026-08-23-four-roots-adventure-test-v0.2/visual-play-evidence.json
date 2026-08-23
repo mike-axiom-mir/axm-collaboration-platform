@@ -1,0 +1,89 @@
+{
+  "schema": "axm.game-visual-play-evidence/v1",
+  "status": "TEST",
+  "gameRef": {
+    "id": "020-four-roots-adventure",
+    "version": "0.2.0",
+    "contentSha256": "sha256:fa5e159f6d7266bd4f3881983e567ae2cce21ca339ac26e7921912439f02dd8d"
+  },
+  "ancestorRef": {
+    "id": "four-roots-run-native",
+    "schema": "axm.game-candidate-packet/v1",
+    "sha256": "sha256:0f92db03251710f34c8b50ea13d30e2a910336d3d0d6ceb884824d68951416c7"
+  },
+  "surface": "local browser runtime",
+  "visualBackend": "BROWSER_PRIMARY_WITH_WINDOWS_VIEWPORT_FALLBACK",
+  "fallbackReason": "The browser controller exposed no viewport-resize operation, so a clean temporary Chrome window was resized for the narrow-layout observation.",
+  "rawCaptureRetained": false,
+  "temporaryPathsCreated": [],
+  "cleanupComplete": true,
+  "observations": [
+    {
+      "claim": "desktop render and runtime initialization",
+      "viewport": "1265 by 712 observed frame",
+      "baseline": "Fresh local TEST runtime with the server-owned initial state.",
+      "action": "Navigate to the Game Hub slot and inspect the rendered page.",
+      "expected": "The map, player, objective, controls, journal, release lineage, and authority limits are visible without clipping.",
+      "observed": "The styled five-zone map initialized and the first quest, keeper, controls, TEST label, content lineage, and review boundary were visible.",
+      "verdict": "PASS",
+      "proofFrame": null
+    },
+    {
+      "claim": "visible controls and keyboard share one bounded action gate",
+      "viewport": "desktop",
+      "baseline": "Player at the live saved revision.",
+      "action": "Click a visible interaction control, move with a visible direction control, move with ArrowLeft, open Help, and close it with Escape.",
+      "expected": "Every action advances only through the revision-checked server API and the overlay remains escapable.",
+      "observed": "Luma interaction completed, pointer and ArrowLeft moves advanced the same server state, and Escape closed Help.",
+      "verdict": "PASS",
+      "proofFrame": null
+    },
+    {
+      "claim": "complete live adventure journey",
+      "viewport": "desktop",
+      "baseline": "No completed roots in a fresh bounded save.",
+      "action": "Use only the rendered direction and interaction controls to visit every required actor and return through the root-ordered gate.",
+      "expected": "Truth, Agency/non-domination, Continuity, Wisdom over speed, and then the Mike Workshop Gate complete without hidden state mutation.",
+      "observed": "The visible-control journey completed in 192 moves with four roots, ten inventory discoveries, six quests, and the authored A Door Into Review ending.",
+      "verdict": "PASS",
+      "proofFrame": null
+    },
+    {
+      "claim": "browser reload preserves exact server-owned progress",
+      "viewport": "desktop",
+      "baseline": "Completed 192-move state and ending visible.",
+      "action": "Reload the browser page.",
+      "expected": "The browser re-fetches the same server revision rather than inventing or losing progress.",
+      "observed": "All four roots, ten discoveries, six quests, 192 moves, and the ending remained visible.",
+      "verdict": "PASS",
+      "proofFrame": null
+    },
+    {
+      "claim": "real server restart restores the exact content-bound save",
+      "viewport": "desktop",
+      "baseline": "Completed state persisted by the local server outside the repository.",
+      "action": "Stop the server process, start a fresh server process against the same bounded state root, and reload the page.",
+      "expected": "The new process accepts only the save bound to the exact content digest and restores it.",
+      "observed": "The fresh process restored the 192-move completed state and A Door Into Review ending.",
+      "verdict": "PASS",
+      "proofFrame": null
+    },
+    {
+      "claim": "narrow layout remains readable and operable",
+      "viewport": "643 by 804 observed frame",
+      "baseline": "Completed state in a clean temporary Chrome window.",
+      "action": "Resize the real window to a narrow width and inspect the header, map, controls, journal, progress, inventory, and ending while scrolling.",
+      "expected": "The layout stacks without horizontal clipping and preserves the full game state and controls.",
+      "observed": "Header actions wrapped, the map fit the width, control and journal panels stacked, and all progress plus the ending remained readable.",
+      "verdict": "PASS",
+      "proofFrame": null
+    }
+  ],
+  "limitations": [
+    "No raw screenshot or recording is retained; observations are bounded textual evidence from the live session.",
+    "No timing, frame-rate, animation-cadence, audio, gamepad, touch-device, or screen-reader claim is made.",
+    "This proves the reviewed native game runtime, not arbitrary uploaded-code execution safety.",
+    "No integration into the canonical checkout, publication, public-rights decision, or CANON action occurred."
+  ],
+  "authority": "NONE"
+}

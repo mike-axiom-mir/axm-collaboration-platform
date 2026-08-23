@@ -1,0 +1,87 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-capability-fabric-semantic-candidate-materializer-v1",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "axm.human-decision-trust-policy/v1",
+    "axm.semantic-candidate-materialization-subject/v1",
+    "axm.authenticated-human-decision/v1",
+    "axm.human-decision-revocation-snapshot/v1",
+    "axm.authenticated-human-decision-evaluation/v1",
+    "axm.human-decision-replay-reservation/v1",
+    "axm.semantic-candidate-materialization-receipt/v1",
+    "candidate.semantic.materialize-detached-tier1"
+  ],
+  "consumes": [
+    "code-capability-fabric-semantic-candidate-generator-v1",
+    "code-capability-readiness-v1-ed25519-key-contract",
+    "deterministic-json-core",
+    "detached-candidate-nursery",
+    "host-selected-trust-policy-digest",
+    "host-provisioned-nonce-ledger",
+    "host-selected-disposable-candidate-parent"
+  ],
+  "permissions": [
+    "candidate.output-write",
+    "candidate.replay-ledger-reserve"
+  ],
+  "handoffs": {
+    "emits": [
+      "one EXPERIMENTAL detached native candidate",
+      "axm.human-decision-replay-reservation/v1",
+      "axm.semantic-candidate-materialization-receipt/v1"
+    ],
+    "accepts": [
+      "one exact axm.semantic-generation-request/v1",
+      "one host-selected axm.human-decision-trust-policy/v1",
+      "one exact signed axm.authenticated-human-decision/v1",
+      "one current signed axm.human-decision-revocation-snapshot/v1",
+      "one canonical disjoint disposable output boundary"
+    ]
+  },
+  "rootsGate": [
+    "truth",
+    "agency-non-domination",
+    "continuity",
+    "wisdom-over-speed"
+  ],
+  "boundaries": {
+    "writes": [
+      "one exclusive hashed nonce marker under one pre-provisioned host ledger",
+      "one new direct-child candidate root under one explicitly selected existing parent"
+    ],
+    "refuses": [
+      "private-key-storage",
+      "human-decision-signing",
+      "natural-person-identity-claim",
+      "informed-understanding-claim",
+      "global-replay-prevention-claim",
+      "provider-call",
+      "provider-code-load",
+      "AI-challenger-materialization",
+      "candidate-code-execution",
+      "workspace-source-read",
+      "source-writeback",
+      "existing-root-overwrite",
+      "network-use",
+      "child-process-spawn",
+      "permission-grant",
+      "sandbox-execution",
+      "installation",
+      "integration",
+      "publication",
+      "persistent-learning-admission",
+      "model-training",
+      "physical-actuation",
+      "promotion",
+      "canon-change"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "host-selected disposable candidate parent and nonce ledger",
+    "reload": "new signed decision and current revocation snapshot required",
+    "disconnect": "no background work",
+    "cleanup": "failed attempts retain the nonce reservation and remove only the newly owned candidate root"
+  }
+}

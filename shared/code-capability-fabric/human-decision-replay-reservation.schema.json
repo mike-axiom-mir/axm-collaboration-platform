@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.human-decision-replay-reservation/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "trustPolicyRef", "subjectRef", "decisionRef", "candidateRef", "nonceDigest", "reservedAt", "authority", "reservationDigest"],
+  "properties": {
+    "schema": {"const": "axm.human-decision-replay-reservation/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "NONCE_RESERVED"},
+    "trustPolicyRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "subjectRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "decisionRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "candidateRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "nonceDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+    "reservedAt": {"type": "string", "format": "date-time"},
+    "authority": {"const": "REPLAY_PREVENTION_ONLY"},
+    "reservationDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  }
+}

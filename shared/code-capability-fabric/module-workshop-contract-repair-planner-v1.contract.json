@@ -1,0 +1,15 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "workshop-contract-repair-planner-v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "provides": ["workshop.contract-defect.detect.legacy-schema-kind", "workshop.contract-repair.alternatives.unranked", "workshop.contract-repair.tests.declare-not-run", "workshop.contract-repair.authority.none"],
+  "consumes": ["axm.workshop-contract-repair-request/v1", "axm.workshop-contract-observation/v1", "tools/deterministic-json-core"],
+  "permissions": [],
+  "handoffs": {"accepts": ["axm.workshop-contract-repair-request/v1", "axm.workshop-contract-observation/v1"], "emits": ["axm.workshop-contract-repair-plan/v1", "axm.workshop-contract-repair-candidate/v1"]},
+  "boundaries": {
+    "writes": [],
+    "refuses": ["filesystem-read", "filesystem-write", "arbitrary-repair", "alternative-ranking", "alternative-selection", "semantic-fitness-claim", "test-execution", "source-writeback", "candidate-execution", "provider-call", "network-use", "child-process", "environment-access", "automatic-installation", "automatic-integration", "automatic-publication", "automatic-promotion", "automatic-canon"]
+  },
+  "lifecycle": {"state_owner": "none", "reload": "deterministic-rebuild", "disconnect": "not-applicable", "cleanup": "none"}
+}

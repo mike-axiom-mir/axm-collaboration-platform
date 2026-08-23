@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.workshop-shadow-draft-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "sessionId", "iteration", "sourceLabel", "requestRef", "snapshotRef", "sourceStateDigest", "planRef", "generatorRefs", "outputRef", "roots", "resources", "privacy", "truth", "authority", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.workshop-shadow-draft-receipt/v1"}, "version": {"const": "1.0.0"}, "status": {"const": "TEST"},
+    "sessionId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "iteration": {"type": "object", "additionalProperties": false, "required": ["id", "number"], "properties": {"id": {"type": "string", "pattern": "^iteration-[0-9]{3}$"}, "number": {"type": "integer", "minimum": 0, "maximum": 999}}},
+    "sourceLabel": {"type": "string", "minLength": 1, "maxLength": 160},
+    "requestRef": {"$ref": "#/$defs/ref"}, "snapshotRef": {"$ref": "#/$defs/ref"}, "sourceStateDigest": {"$ref": "#/$defs/digest"}, "planRef": {"$ref": "#/$defs/ref"},
+    "generatorRefs": {"type": "array", "minItems": 5, "maxItems": 8, "items": {"$ref": "#/$defs/fileRef"}},
+    "outputRef": {"$ref": "#/$defs/fileRef"},
+    "roots": {"type": "object", "additionalProperties": false, "required": ["source", "output", "evidence"], "properties": {"source": {"const": "source"}, "output": {"const": "output"}, "evidence": {"const": "evidence"}}},
+    "resources": {"type": "object", "additionalProperties": false, "required": ["inputFiles", "inputBytes", "snapshotFiles", "snapshotBytes", "outputFiles", "outputBytes", "evidenceFiles", "evidenceBytesExcludingReceipt", "networkRequests", "childProcesses", "enforced"], "properties": {"inputFiles": {"type": "integer", "minimum": 1}, "inputBytes": {"type": "integer", "minimum": 1}, "snapshotFiles": {"const": 1}, "snapshotBytes": {"type": "integer", "minimum": 1}, "outputFiles": {"const": 1}, "outputBytes": {"type": "integer", "minimum": 1}, "evidenceFiles": {"const": 2}, "evidenceBytesExcludingReceipt": {"type": "integer", "minimum": 1}, "networkRequests": {"const": 0}, "childProcesses": {"const": 0}, "enforced": {"const": true}}},
+    "privacy": {"type": "object", "additionalProperties": false, "required": ["rawSourceRetained", "stdoutRetained", "stderrRetained", "machinePathsRetained", "secretsRead"], "properties": {"rawSourceRetained": {"const": false}, "stdoutRetained": {"const": false}, "stderrRetained": {"const": false}, "machinePathsRetained": {"const": false}, "secretsRead": {"const": false}}},
+    "truth": {"type": "object", "additionalProperties": false, "required": ["sourceSnapshotReverifiedBeforeWrite", "sourceWritten", "draftDetached", "candidateExecuted", "previewStarted", "installed", "integrated", "published", "promoted", "canonChanged"], "properties": {"sourceSnapshotReverifiedBeforeWrite": {"const": true}, "sourceWritten": {"const": false}, "draftDetached": {"const": true}, "candidateExecuted": {"const": false}, "previewStarted": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "published": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}}},
+    "authority": {"const": "NONE"}, "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "ref": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"type": "string"}, "schema": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}}},
+    "fileRef": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "byteLength"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/$defs/digest"}, "byteLength": {"type": "integer", "minimum": 1}}}
+  }
+}

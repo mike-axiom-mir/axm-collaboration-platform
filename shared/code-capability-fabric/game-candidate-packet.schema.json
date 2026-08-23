@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-candidate-packet/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "candidate", "requestRef", "briefRef", "generator", "gameForgeProjectRef", "moduleBundle", "moduleBundleRef", "sourceFiles", "testPlanRef", "rootsGate", "declaredAuthority", "resources", "reuseRights", "limitations", "truth", "authority", "packetDigest"],
+  "properties": {
+    "schema": {"const": "axm.game-candidate-packet/v1"}, "version": {"const": "0.1.0"}, "status": {"const": "EXPERIMENTAL"},
+    "candidate": {"$ref": "semantic-common.schema.json#/$defs/candidate"},
+    "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "briefRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "generator": {
+      "type": "object", "additionalProperties": false, "required": ["id", "version", "recipeId", "aiUsed"],
+      "properties": {"id": {"const": "axm-native-game-recipe-engine"}, "version": {"const": "0.1.0"}, "recipeId": {"const": "four-roots-grid-game"}, "aiUsed": {"const": false}}
+    },
+    "gameForgeProjectRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "moduleBundle": {"$ref": "semantic-common.schema.json#/$defs/moduleBundle"},
+    "moduleBundleRef": {"$ref": "semantic-common.schema.json#/$defs/artifactReference"},
+    "sourceFiles": {"type": "array", "minItems": 10, "maxItems": 16, "items": {"$ref": "semantic-common.schema.json#/$defs/sourceFile"}},
+    "testPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "declaredAuthority": {"type": "object", "additionalProperties": false, "required": ["permissions", "networkDomains", "lifecycleEffects"], "properties": {"permissions": {"const": []}, "networkDomains": {"const": []}, "lifecycleEffects": {"const": []}}},
+    "resources": {"type": "object", "additionalProperties": false, "required": ["fileCount", "sourceBytes", "fileCountEnforced", "fileBytesEnforced", "totalBytesEnforced", "candidateProcesses"], "properties": {"fileCount": {"type": "integer", "minimum": 10, "maximum": 16}, "sourceBytes": {"type": "integer", "minimum": 1, "maximum": 1048576}, "fileCountEnforced": {"const": true}, "fileBytesEnforced": {"const": true}, "totalBytesEnforced": {"const": true}, "candidateProcesses": {"const": 0}}},
+    "reuseRights": {"type": "object", "additionalProperties": false, "required": ["state", "directReuseAllowed", "authorityRef"], "properties": {"state": {"const": "RESEARCH_ONLY_HOLD"}, "directReuseAllowed": {"const": false}, "authorityRef": {"const": null}}},
+    "limitations": {"type": "array", "minItems": 8, "maxItems": 32, "items": {"type": "string", "minLength": 1, "maxLength": 160}},
+    "truth": {"type": "object", "additionalProperties": false, "required": ["deterministicBytes", "gameCodeExecuted", "runtimeBehaviorProven", "visualBehaviorProven", "playJourneyProven", "persistenceProven", "installed", "integrated", "lessonActive", "promoted", "canonChanged"], "properties": {"deterministicBytes": {"const": true}, "gameCodeExecuted": {"const": false}, "runtimeBehaviorProven": {"const": false}, "visualBehaviorProven": {"const": false}, "playJourneyProven": {"const": false}, "persistenceProven": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "lessonActive": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}}},
+    "authority": {"const": "NONE"}, "packetDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  }
+}
+

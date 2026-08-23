@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.human-decision-trust-policy/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "id", "status", "seatRef", "decisionKey", "revocationKey", "nurseryRef", "scope", "tier", "allowedRecipeIds", "validFrom", "expiresAt", "maximumDecisionWindowMs", "maximumRevocationAgeMs", "resources", "allowedPermissions", "allowedNetworkDomains", "lifecycle", "authority", "policyDigest"],
+  "properties": {
+    "schema": {"const": "axm.human-decision-trust-policy/v1"},
+    "version": {"const": "0.1.0"},
+    "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+    "status": {"const": "TEST"},
+    "seatRef": {"$ref": "#/$defs/seatRef"},
+    "decisionKey": {"$ref": "code-trust-key.schema.json"},
+    "revocationKey": {"$ref": "code-trust-key.schema.json"},
+    "nurseryRef": {"$ref": "#/$defs/nurseryRef"},
+    "scope": {"const": "TIER_1_CREATE_ONE_DETACHED_CANDIDATE"},
+    "tier": {"const": 1},
+    "allowedRecipeIds": {"const": ["creation-review-card-adapter"]},
+    "validFrom": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "maximumDecisionWindowMs": {"type": "integer", "minimum": 1, "maximum": 86400000},
+    "maximumRevocationAgeMs": {"type": "integer", "minimum": 1, "maximum": 3600000},
+    "resources": {"$ref": "#/$defs/resources"},
+    "allowedPermissions": {"const": []},
+    "allowedNetworkDomains": {"const": []},
+    "lifecycle": {"$ref": "#/$defs/lifecycle"},
+    "authority": {"const": "HOST_TRUST_ANCHOR_DECLARATION"},
+    "policyDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "seatRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "schema": {"const": "axm.human-review-seat/v1"},
+        "sha256": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "nurseryRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "schema": {"const": "axm.detached-candidate-nursery/v1"},
+        "sha256": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxCandidateFiles", "maxCandidateBytes", "maxEvidenceBytes", "maxTotalBytes", "maxAttempts", "maxProcesses", "maxCostMinorUnits"],
+      "properties": {
+        "maxCandidateFiles": {"type": "integer", "minimum": 7, "maximum": 17},
+        "maxCandidateBytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+        "maxEvidenceBytes": {"type": "integer", "minimum": 1024, "maximum": 131072},
+        "maxTotalBytes": {"type": "integer", "minimum": 2048, "maximum": 1179648},
+        "maxAttempts": {"const": 1},
+        "maxProcesses": {"const": 1},
+        "maxCostMinorUnits": {"const": 0}
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["install", "integrate", "publish", "learn", "train", "physicalActuation", "promote", "canon"],
+      "properties": {
+        "install": {"const": false},
+        "integrate": {"const": false},
+        "publish": {"const": false},
+        "learn": {"const": false},
+        "train": {"const": false},
+        "physicalActuation": {"const": false},
+        "promote": {"const": false},
+        "canon": {"const": false}
+      }
+    }
+  }
+}

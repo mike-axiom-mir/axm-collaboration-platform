@@ -1,0 +1,225 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "inert-human-selection-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "selection.validate-candidate-packet",
+        "selection.bind-consent-instance-subject",
+        "selection.hash-selected-bytes",
+        "selection.bind-ordered-roots",
+        "selection.detect-expiry-and-declared-replay",
+        "selection.emit-inert-authentication-gap"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "selection.validate-candidate-packet": [
+          "exact v0.6 repair candidate contract"
+        ],
+        "selection.bind-consent-instance-subject": [
+          "sealed grounded-consent instance/evaluation",
+          "inert code-selection scope only"
+        ],
+        "selection.hash-selected-bytes": [
+          "in-memory Buffer or Uint8Array",
+          "8 MiB ceiling",
+          "bytes not retained"
+        ],
+        "selection.bind-ordered-roots": [
+          "four ordered PASS references",
+          "evidence content not independently verified"
+        ],
+        "selection.detect-expiry-and-declared-replay": [
+          "declared clock and ledger only",
+          "maximum 24-hour declaration window"
+        ],
+        "selection.emit-inert-authentication-gap": [
+          "only AUTHENTICATION_REQUIRED can be hold-free",
+          "authority NONE"
+        ]
+      }
+    },
+    {
+      "id": "authenticated-human-decision",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "identity.authenticate-natural-person",
+        "time.observe-trusted-clock",
+        "revocation.check-live",
+        "replay.observe-independent-ledger",
+        "host.authorize-exact-action"
+      ],
+      "declaredConstraints": {
+        "identity.authenticate-natural-person": [
+          "no trusted identity service in this rung"
+        ],
+        "time.observe-trusted-clock": [
+          "provided timestamp is not trusted-clock evidence"
+        ],
+        "revocation.check-live": [
+          "no independent live revocation service"
+        ],
+        "replay.observe-independent-ledger": [
+          "provided ledger is explicitly not independently trusted"
+        ],
+        "host.authorize-exact-action": [
+          "selection does not grant host authority"
+        ]
+      }
+    },
+    {
+      "id": "candidate-execution",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "sandbox.execute-exact-candidate"
+      ],
+      "declaredConstraints": {
+        "sandbox.execute-exact-candidate": [
+          "repaired disposable executor remains unauthorized"
+        ]
+      }
+    },
+    {
+      "id": "workshop-integration",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "mike.integrate-on-clean-v0.6-base"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "mike.integrate-on-clean-v0.6-base": [
+          "active recovery checkout is dirty",
+          "current recovery HEAD does not contain v0.6"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "host.authorize-exact-action",
+    "identity.authenticate-natural-person",
+    "replay.observe-independent-ledger",
+    "revocation.check-live",
+    "sandbox.execute-exact-candidate",
+    "time.observe-trusted-clock"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "host.authorize-exact-action",
+      "requiredBy": [
+        "authenticated-human-decision"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "identity.authenticate-natural-person",
+      "requiredBy": [
+        "authenticated-human-decision"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "replay.observe-independent-ledger",
+      "requiredBy": [
+        "authenticated-human-decision"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "revocation.check-live",
+      "requiredBy": [
+        "authenticated-human-decision"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sandbox.execute-exact-candidate",
+      "requiredBy": [
+        "candidate-execution"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "time.observe-trusted-clock",
+      "requiredBy": [
+        "authenticated-human-decision"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

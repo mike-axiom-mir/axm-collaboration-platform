@@ -1,0 +1,59 @@
+{
+  "schema": "axm.steward-run-verification-receipt/v1",
+  "status": "TEST",
+  "baseCommit": "d98c4d25dd85553f131814a4a487c1272ba94ed5",
+  "implementationCommit": "94da36a7654cc1848a32896e56a07869a49fdf0c",
+  "requiredChecks": [
+    {"command": "node verify.js", "exitCode": 0, "result": "0 FAIL · 22 warn · spine b618c5762240070c"},
+    {"command": "node hub/hub-selftest.js", "exitCode": 0, "passLines": 144, "failLines": 0},
+    {"command": "node hub/route-selftest.js", "exitCode": 0, "passLines": 40, "failLines": 0},
+    {"command": "node hub/graft-selftest.js", "exitCode": 0, "passLines": 24, "failLines": 0},
+    {"command": "node hub/skin-selftest.js", "exitCode": 0, "passLines": 85, "failLines": 0},
+    {"command": "node hub/verify-plus.js", "exitCode": 0, "result": "0 FAIL · 22 warn · spine b618c5762240070c"},
+    {"command": "node tests/html-script-syntax-test.js", "exitCode": 0, "result": "55 PASS · 0 FAIL"},
+    {"command": "node tests/tool-forge-package-test.js", "exitCode": 0, "result": "ok=true; installed=false; transient package cleaned"},
+    {"command": "node tools/agent-tool-forge/selftest.js", "exitCode": 0, "result": "17 PASS · 0 FAIL"},
+    {"command": "node tools/evidence-desk/selftest.js", "exitCode": 0, "result": "36 PASS · 0 FAIL"}
+  ],
+  "focusedChecks": [
+    {"suite": "blueprint-schema-compiler-v1", "result": "83 checks passed"},
+    {"suite": "declarative-blueprint-composer-v1", "result": "62 checks passed"},
+    {"suite": "git-object-inventory-comparator-v1", "result": "174 checks passed"},
+    {"suite": "grounded-consent-scope-v1", "result": "73 checks passed"},
+    {"suite": "independent-assurance-v1", "result": "46 checks passed"},
+    {"suite": "policy-bound-assurance-v1", "result": "46 checks passed"},
+    {"suite": "readiness-v1", "result": "46 checks passed"},
+    {"suite": "schema-packet-mirror-verifier-v1", "result": "130 checks passed"},
+    {"suite": "semantic-candidate-generator-v1", "result": "104 checks passed"},
+    {"suite": "slow-creation-pilot-v1", "result": "40 checks passed"},
+    {"suite": "code-capability-fabric-v2", "result": "74 checks passed"},
+    {"suite": "code-capability-fabric-v1", "result": "18 checks passed"}
+  ],
+  "staticChecks": [
+    {"command": "git diff --check base..implementation", "exitCode": 0},
+    {"command": "node --check semantic-candidate-generator-v1.js", "exitCode": 0},
+    {"command": "node --check selftest-semantic-candidate-generator-v1.js", "exitCode": 0}
+  ],
+  "warnings": {
+    "branchVerifierWarnings": 22,
+    "historicalIntakeWarningCount": 41,
+    "note": "The historical 41-warning count belonged to the earlier intake state. This integrated branch reports 22. The currently busy canonical checkout reported 18 under unrelated uncommitted changes and is not a clean comparison baseline."
+  },
+  "unrun": [
+    "browser render/click and accessibility testing because no live visual surface changed",
+    "generated candidate import or execution",
+    "AI provider call or provider-code load",
+    "disposable sandbox execution",
+    "independent duration, memory, CPU, interruption, and cleanup enforcement",
+    "restart and persistence behavior",
+    "installation, integration, publication, learning admission, promotion, and CANON",
+    "third-party JSON Schema runtime validation; native strict validators, reference closure, and deterministic rebuild checks were used"
+  ],
+  "openMikeDecisions": [
+    "whether generated or AI-supplied source has sufficient rights for direct reuse or public copying",
+    "whether a future repaired executor may run one exact candidate in a disposable sandbox",
+    "whether and when to integrate this review branch"
+  ],
+  "authority": "NONE"
+}
+
