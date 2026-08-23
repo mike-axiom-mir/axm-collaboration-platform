@@ -24,19 +24,66 @@ POLICY_FILE = Path(os.environ.get("AXM_HERMES_POLICY_FILE", MODULE_ROOT / "runti
 STATE_DIR = Path(os.environ.get("AXM_HERMES_STATE_DIR", MODULE_ROOT / "runtime" / "state")).resolve()
 WORKSPACE = Path(os.environ.get("AXM_HERMES_WORKSPACE", MODULE_ROOT / "runtime" / "workspace")).resolve()
 
-HIGH_AUTHORITY = {
+# These names are based on the reviewed/pinned Hermes tool surface. The source
+# lock prevents a future upstream tool from silently arriving through `main`.
+CAPABILITY_BY_TOOL = {
+    # Host/process authority.
     "terminal": "allow_terminal",
-    "terminal_tool": "allow_terminal",
+    "process": "allow_terminal",
     "execute_code": "allow_execute_code",
-    "python": "allow_execute_code",
     "computer_use": "allow_computer_use",
     "delegate_task": "allow_delegation",
-    "cron": "allow_scheduling",
-    "schedule": "allow_scheduling",
+    "cronjob": "allow_scheduling",
+    # Durable self-modification / self-memory inside Hermes.
+    "skill_manage": "allow_skill_mutation",
+    "memory": "allow_memory_mutation",
+    # Browser actions with meaningful side-effect potential.
+    "browser_click": "allow_browser_interaction",
+    "browser_type": "allow_browser_interaction",
+    "browser_press": "allow_browser_interaction",
+    "browser_dialog": "allow_browser_interaction",
+    "browser_cdp": "allow_browser_interaction",
+    "browser_exec": "allow_browser_interaction",
+    # External accounts / people / physical-world control.
     "send_message": "allow_messaging",
+    "discord": "allow_messaging",
+    "discord_admin": "allow_messaging",
+    "yb_send_dm": "allow_messaging",
+    "feishu_drive_reply_comment": "allow_messaging",
+    "feishu_drive_add_comment": "allow_messaging",
+    "spotify_playback": "allow_external_account_actions",
+    "ha_call_service": "allow_home_automation",
+    # Project/coordination mutation.
+    "project_create": "allow_project_changes",
+    "project_switch": "allow_project_changes",
+    "kanban_complete": "allow_coordination_mutation",
+    "kanban_block": "allow_coordination_mutation",
+    "kanban_request_review": "allow_coordination_mutation",
+    "kanban_request_changes": "allow_coordination_mutation",
+    "kanban_heartbeat": "allow_coordination_mutation",
+    "kanban_comment": "allow_coordination_mutation",
+    "kanban_create": "allow_coordination_mutation",
+    "kanban_link": "allow_coordination_mutation",
+    "kanban_unblock": "allow_coordination_mutation",
+    "kanban_attach": "allow_coordination_mutation",
+    "kanban_attach_url": "allow_coordination_mutation",
+    # Generation can spend provider credits or export user material.
+    "image_generate": "allow_generation",
+    "video_generate": "allow_generation",
+    "xai_video_edit": "allow_generation",
+    "xai_video_extend": "allow_generation",
+    "bfl_flux3_text_to_video": "allow_generation",
+    "bfl_flux3_image_to_video": "allow_generation",
+    "bfl_flux3_keyframes_to_video": "allow_generation",
+    "bfl_flux3_video_continuation": "allow_generation",
+    "text_to_speech": "allow_generation",
 }
 
-READ_HINTS = ("read", "view", "list", "search", "grep", "glob", "find")
+# File tools for which missing/unrecognized path fields would make containment
+# unverifiable. Fail closed instead of assuming the current directory.
+PATH_REQUIRED_TOOLS = {"read_file", "write_file", "patch"}
+
+READ_HINTS = ("read", "view", "list", "search", "grep", "glob", "find", "snapshot")
 WRITE_HINTS = ("write", "edit", "patch", "delete", "remove", "move", "rename", "copy", "mkdir", "save", "download")
 PATH_KEYS = {
     "path", "file", "file_path", "filepath", "filename", "target", "target_path",
@@ -198,6 +245,12 @@ def main() -> None:
     if policy.get("consent", {}).get("enabled") is not True:
         block("action consent is OFF")
 
+    mode = policy.get("mode", {})
+    hub_sandbox = mode.get("hub_sandbox") is True
+    external_mode = mode.get("external_mode") is True
+    if hub_sandbox == external_mode:
+        block("policy must select exactly one run space: hub_sandbox or external_mode")
+
     tool = str(event.get("tool_name") or event.get("tool") or "").strip()
     if not tool:
         block("tool name missing")
@@ -208,13 +261,15 @@ def main() -> None:
         block(f"tool '{tool}' is explicitly blocked")
 
     capabilities = policy.get("capabilities", {})
-    for prefix, capability in HIGH_AUTHORITY.items():
-        if lowered == prefix or lowered.startswith(prefix + "_"):
-            if capabilities.get(capability) is not True:
-                block(f"tool '{tool}' requires explicit {capability}=true")
+    required_capability = CAPABILITY_BY_TOOL.get(lowered)
+    if required_capability and capabilities.get(required_capability) is not True:
+        block(f"tool '{tool}' requires explicit {required_capability}=true")
 
     kind = classify(lowered)
     paths = [resolve_tool_path(raw) for raw in candidate_paths(tool_args(event))]
+    if lowered in PATH_REQUIRED_TOOLS and not paths:
+        block(f"tool '{tool}' did not expose a recognized path field; containment cannot be verified")
+
     if kind == "read":
         allowed_roots = roots(policy, "read_roots")
         if not allowed_roots:
