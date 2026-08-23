@@ -1,0 +1,74 @@
+{
+  "schema": "axm.waldo-mirror.fabric-ai-proposal/v0.1",
+  "sourceMode": "AI_OPT_IN_EXTERNAL_PROPOSAL",
+  "proposalId": "ai-tool-episode-quarantine",
+  "body": {
+    "id": "tool-episode-quarantine-body",
+    "name": "Tool Episode Quarantine Body",
+    "purpose": "Prepare a review-only bridge from verified tool experience into a candidate structured training episode without automatically admitting evidence as training data.",
+    "capability": "mirror.tool-episode.quarantine",
+    "inputFields": [
+      {
+        "id": "conversation-witness",
+        "type": "object",
+        "required": true,
+        "description": "Digest-only structured conversation witness from the Waldo Mirror experiment."
+      },
+      {
+        "id": "tool-experience",
+        "type": "object",
+        "required": true,
+        "description": "Verified public-safe tool experience and its evidence references."
+      },
+      {
+        "id": "training-policy",
+        "type": "object",
+        "required": true,
+        "description": "Explicit review and quarantine policy for any later training candidate."
+      }
+    ],
+    "outputFields": [
+      {
+        "id": "quarantined-training-candidate",
+        "type": "object",
+        "source": "quarantined-training-candidate",
+        "description": "A candidate declaration that still requires separate review before any training use."
+      }
+    ],
+    "steps": [
+      {
+        "id": "validate-witness",
+        "operation": "VALIDATE",
+        "reads": ["conversation-witness"],
+        "produces": "validated-witness",
+        "description": "Validate the conversation witness identity and retain only its declared digest boundary."
+      },
+      {
+        "id": "validate-experience",
+        "operation": "VALIDATE",
+        "reads": ["tool-experience"],
+        "produces": "validated-experience",
+        "description": "Validate that the tool experience is independently evidenced and public-safe."
+      },
+      {
+        "id": "bind-policy",
+        "operation": "ASSEMBLE",
+        "reads": ["training-policy", "validated-experience", "validated-witness"],
+        "produces": "quarantine-bound-episode",
+        "description": "Bind the exact episode evidence to an explicit review policy without granting training authority."
+      },
+      {
+        "id": "emit-candidate",
+        "operation": "EMIT",
+        "reads": ["quarantine-bound-episode"],
+        "produces": "quarantined-training-candidate",
+        "description": "Emit a review-only training candidate declaration with evidence and policy lineage preserved."
+      }
+    ],
+    "qualityClaims": [
+      "Evidence does not become training data automatically.",
+      "The candidate remains bound to the exact conversation and tool-experience lineage.",
+      "A separate explicit review remains required before any training use."
+    ]
+  }
+}
