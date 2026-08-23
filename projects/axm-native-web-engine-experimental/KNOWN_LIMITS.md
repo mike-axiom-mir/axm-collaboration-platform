@@ -37,9 +37,10 @@ same as full standards behavior.
   typed core output.
 - Image URLs become labeled placeholders. Links and form targets become inert
   text. No resource is fetched and nothing can be clicked or submitted.
-- SVG and local HTML are static snapshots. There is no live window, scrolling
-  controller, focus model, interaction, navigation, tabs, history, download,
-  screenshot API, or compositor.
+- SVG and local HTML are generated snapshots. The HTML document map supports
+  trusted same-document anchors and target highlighting over generated entries.
+  There is no page lifecycle, original-link activation, history, tabs, editable
+  focus/input model, download, screenshot API, or compositor.
 
 ## Runtime and security
 

@@ -4,7 +4,7 @@ Status: `EXPERIMENTAL`
 Installed: `false`  
 Promoted: `false`  
 Canon: `false`  
-Version: `0.2.0-experimental.1`
+Version: `0.3.0-experimental.1`
 
 This detached package now proves two output bodies over one offline core:
 
@@ -14,8 +14,10 @@ local UTF-8 HTML bytes
   -> tokenizer subset
   -> typed Document Tree
   -> separate semantic Page Model
-       |-> deterministic headless JSON
-       `-> AXM Structure Layout
+       `-> shared semantic Structure Index
+             |-> compact headless outline JSON
+             |-> semantic HTML document map
+             `-> AXM Structure Layout
              -> renderer-neutral Display List
                   |-> inert SVG snapshot
                   `-> inert local HTML snapshot
@@ -44,14 +46,16 @@ silently settle it.
 ```bash
 node cli.js inspect fixtures/simple.html --pretty
 node cli.js parse fixtures/simple.html --pretty
+node cli.js outline fixtures/simple.html --pretty
 node cli.js layout fixtures/simple.html --viewport 1120x760 --pretty
 node cli.js display fixtures/simple.html --viewport 1120x760 --pretty
 node cli.js profile --pretty
 ```
 
+`outline` emits the compact shared Structure Index used by both bodies.
 `layout` emits the typed Structure Layout and its ledger. `display` emits the
-renderer-neutral Display List and its ledger. Both report matching layout,
-display-list, and ledger digests for the same options.
+renderer-neutral Display List and its ledger. All three report the same
+Structure Index digest for the same source and bounds.
 
 ## Create inert visual artifacts
 
@@ -67,9 +71,10 @@ links, including dangling links, are refused. Each successful write prints
 SHA-256, source, Page Model, layout, Display List, and ledger bindings.
 
 Committed deterministic examples are in `examples/`. The HTML snapshot has a
-deny-by-default Content Security Policy, no script, no active links or forms,
-and no external resources. The SVG renderer accepts only rectangle, line, and
-escaped text commands from the shared Display List.
+deny-by-default Content Security Policy, no script or form, and no external
+resources. Its trusted document-map anchors navigate only within the generated
+snapshot; original page links remain inert text. The SVG renderer accepts only
+rectangle, line, and escaped text commands from the shared Display List.
 
 ## Verify
 

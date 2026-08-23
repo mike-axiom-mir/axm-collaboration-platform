@@ -24,12 +24,13 @@ function main(argv) {
   const structure = Engine.deriveStructure(simple, { requestedBy: 'golden-test' });
   write('simple.document-tree.json', simple.documentTree);
   write('simple.page-model.json', simple.pageModel);
+  write('simple.structure-index.json', structure.structureIndex);
   write('simple.structure-layout.json', structure.layout);
   write('simple.display-list.json', structure.displayList);
   write('simple.modification-ledger.json', structure.modificationLedger);
   write('malformed.document-tree.json', processFixture('malformed.html').documentTree);
   write('held.page-model.json', processFixture('held-elements.html').pageModel);
-  process.stdout.write('wrote 7 deterministic golden files\n');
+  process.stdout.write('wrote 8 deterministic golden files\n');
 }
 
 if (require.main === module) main(process.argv.slice(2));

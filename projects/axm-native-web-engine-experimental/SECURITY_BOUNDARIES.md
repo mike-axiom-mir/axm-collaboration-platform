@@ -22,7 +22,8 @@ separates data preservation from execution authority.
 - The SVG renderer accepts only rectangles, lines, and escaped text; it emits no
   scripts, anchors, events, foreign objects, or external resource references.
 - The HTML snapshot wraps that SVG with a deny-by-default Content Security
-  Policy and no active page controls.
+  Policy and adds semantic HTML plus trusted same-document outline anchors.
+  Original page links and forms remain inert text; no page script runs.
 - Artifact commands require explicit output paths, refuse source-path overwrite,
   refuse final-component symbolic-link outputs (including dangling links), and
   require `--force` for existing regular files.

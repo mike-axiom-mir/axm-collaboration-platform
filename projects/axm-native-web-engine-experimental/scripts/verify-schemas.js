@@ -43,7 +43,12 @@ function main() {
   const structure = Engine.run(fs.readFileSync(path.join(root, 'fixtures/simple.html')), {
     command: 'display', requestedUrl: 'fixtures/simple.html', requestedBy: 'schema-verifier'
   });
+  const outline = Engine.run(fs.readFileSync(path.join(root, 'fixtures/simple.html')), {
+    command: 'outline', requestedUrl: 'fixtures/simple.html', requestedBy: 'schema-verifier'
+  });
   assert(structure.mode === 'axm-structure', 'structure representative mode mismatch');
+  assert(outline.structureIndex.schema === 'axm.web.structure-index/v1', 'structure-index representative schema mismatch');
+  assert(outline.structureIndexDigest === structure.structureIndexDigest, 'structure-index representative lineage mismatch');
   assert(structure.displayList.schema === 'axm.web.display-list/v1', 'display-list representative schema mismatch');
   assert(structure.modificationLedger.schema === 'axm.web.modification-ledger/v1', 'ledger representative schema mismatch');
   process.stdout.write('parsed ' + names.length + ' schema documents and checked representative schema identities\n');

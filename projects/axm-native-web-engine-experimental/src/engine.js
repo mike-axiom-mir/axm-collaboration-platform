@@ -5,13 +5,15 @@ const Source = require('./source-record');
 const Tokenizer = require('./tokenizer');
 const Tree = require('./tree-builder');
 const Page = require('./page-model');
+const StructureIndex = require('./structure-index');
 const StructureLayout = require('./structure-layout');
 const DisplayList = require('./display-list');
 const ModificationLedger = require('./modification-ledger');
 const Metadata = require('./metadata');
 
 const HEADLESS_SCHEMA = 'axm.web.headless-result/v1';
-const STRUCTURE_COMMANDS = new Set(['layout', 'display']);
+const STRUCTURE_COMMANDS = new Set(['outline', 'layout', 'display']);
+const LAYOUT_COMMANDS = new Set(['layout', 'display']);
 
 function decodeUtf8(bytes) {
   try {
@@ -40,19 +42,21 @@ function processBytes(input, options) {
   return { source, tokenStream, documentTree, pageModel };
 }
 
-function deriveStructure(processed, options) {
+function deriveStructure(processed, options, providedIndex) {
   options = options || {};
-  const layout = StructureLayout.buildStructureLayout(processed, options);
+  const structureIndex = providedIndex || StructureIndex.buildStructureIndex(processed, options);
+  const layout = StructureLayout.buildStructureLayout(processed, options, structureIndex);
   const displayList = DisplayList.buildDisplayList(layout);
-  const modificationLedger = ModificationLedger.createModificationLedger(processed, layout, displayList, options);
-  return { processed, layout, displayList, modificationLedger };
+  const modificationLedger = ModificationLedger.createModificationLedger(processed, structureIndex, layout, displayList, options);
+  return { processed, structureIndex, layout, displayList, modificationLedger };
 }
 
 function headlessEnvelope(processed, options) {
   options = options || {};
   const command = options.command || 'inspect';
   const isStructureCommand = STRUCTURE_COMMANDS.has(command);
-  const derived = isStructureCommand ? deriveStructure(processed, options) : null;
+  const structureIndex = isStructureCommand ? StructureIndex.buildStructureIndex(processed, options) : null;
+  const derived = LAYOUT_COMMANDS.has(command) ? deriveStructure(processed, options, structureIndex) : null;
   const envelope = {
     schema: HEADLESS_SCHEMA,
     version: 1,
@@ -69,7 +73,12 @@ function headlessEnvelope(processed, options) {
   if (command === 'tokenize') envelope.tokenStream = processed.tokenStream;
   if (command === 'parse') envelope.document = processed.documentTree;
   if (command === 'inspect') envelope.page = processed.pageModel;
+  if (command === 'outline') {
+    envelope.structureIndexDigest = structureIndex.structureIndexDigest;
+    envelope.structureIndex = structureIndex;
+  }
   if (command === 'layout') {
+    envelope.structureIndexDigest = derived.structureIndex.structureIndexDigest;
     envelope.layoutDigest = derived.layout.layoutDigest;
     envelope.displayListDigest = derived.displayList.displayListDigest;
     envelope.ledgerDigest = derived.modificationLedger.ledgerDigest;
@@ -77,6 +86,7 @@ function headlessEnvelope(processed, options) {
     envelope.modificationLedger = derived.modificationLedger;
   }
   if (command === 'display') {
+    envelope.structureIndexDigest = derived.structureIndex.structureIndexDigest;
     envelope.layoutDigest = derived.layout.layoutDigest;
     envelope.displayListDigest = derived.displayList.displayListDigest;
     envelope.ledgerDigest = derived.modificationLedger.ledgerDigest;
@@ -99,6 +109,7 @@ function run(input, options) {
 module.exports = {
   HEADLESS_SCHEMA,
   STRUCTURE_COMMANDS,
+  LAYOUT_COMMANDS,
   decodeUtf8,
   processBytes,
   deriveStructure,

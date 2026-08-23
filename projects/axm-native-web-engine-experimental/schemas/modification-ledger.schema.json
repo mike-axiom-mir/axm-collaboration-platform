@@ -12,13 +12,13 @@
     "requestedBy":{"type":"string","minLength":1},
     "createdAt":{"type":["string","null"]},
     "input":{"type":"object","required":["sourceDigest","documentDigest","pageModelDigest"]},
-    "output":{"type":"object","required":["mode","layoutDigest","displayListDigest"]},
+    "output":{"type":"object","required":["mode","structureIndexDigest","layoutDigest","displayListDigest"]},
     "sourceMutation":{"type":"object","required":["performed","beforeDigest","afterDigest"],"properties":{"performed":{"const":false},"beforeDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},"afterDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}},"additionalProperties":false},
     "pageCodeExecuted":{"const":false},
     "networkUsed":{"const":false},
     "reversible":{"const":true},
     "reversal":{"const":"discard-derived-view-and-reload-bound-source"},
-    "entries":{"type":"array","minItems":2,"items":{"type":"object","required":["sequence","operation","classification","inputDigest","outputDigest","sourceMutated"]}},
+    "entries":{"type":"array","minItems":3,"items":{"type":"object","required":["sequence","operation","classification","inputDigest","outputDigest","sourceMutated"]}},
     "ledgerDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}
   }
 }

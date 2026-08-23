@@ -22,6 +22,7 @@ test('simple Document Tree and Page Model match committed goldens', function () 
 test('simple Structure Layout, Display List, and Modification Ledger match committed goldens', function () {
   const result = process('simple.html');
   const structure = Engine.deriveStructure(result, { requestedBy: 'golden-test' });
+  assert.equal(Canonical.stringify(structure.structureIndex), Canonical.stringify(readJson('golden/simple.structure-index.json')));
   assert.equal(Canonical.stringify(structure.layout), Canonical.stringify(readJson('golden/simple.structure-layout.json')));
   assert.equal(Canonical.stringify(structure.displayList), Canonical.stringify(readJson('golden/simple.display-list.json')));
   assert.equal(Canonical.stringify(structure.modificationLedger), Canonical.stringify(readJson('golden/simple.modification-ledger.json')));

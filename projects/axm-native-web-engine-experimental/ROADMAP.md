@@ -6,9 +6,12 @@ This roadmap records sequence; it grants no installation or promotion authority.
 
 - Digest-bound local source, tokenizer/tree subset, separate Page Model.
 - Headless semantic, structure-layout, and Display List outputs.
+- Shared semantic Structure Index, compact headless outline, and responsive
+  human document map over one digest lineage.
 - Source-ordered bounded Structure Layout with no CSS/site-rendering claim.
 - Renderer-neutral rectangle/line/text Display List.
 - Inert SVG and HTML snapshots consuming that Display List.
+- Trusted same-document outline anchors; original page targets remain inert.
 - Reversible Modification Ledger and explicit artifact receipts.
 
 Gate status: focused fixtures, deterministic goldens/examples, local schema
@@ -54,6 +57,9 @@ visible declaration of every boundary not yet isolated.
 - One-page lifecycle, links, history, back/forward/reload, address surface.
 - Focus, input, scrolling, cleanup, and failure recovery.
 - Tabs only after lifecycle cleanup and isolation evidence are solid.
+
+The generated document map is not this gate: it navigates only between entries
+inside one already-derived local snapshot and owns no page lifecycle or history.
 
 ## Bounded Workshop seams — held
 

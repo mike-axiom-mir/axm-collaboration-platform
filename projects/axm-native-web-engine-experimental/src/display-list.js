@@ -64,6 +64,7 @@ function buildDisplayList(layout) {
 
   const accentFor = {
     heading: COLORS.accent,
+    landmark: '#69d4ff',
     paragraph: COLORS.accentBlue,
     link: '#b5a2ff',
     media: '#ff9dc8',
@@ -105,6 +106,7 @@ function buildDisplayList(layout) {
     rendererProfile: 'axm.structure-display-list/v1',
     sourceDigest: layout.sourceDigest,
     pageModelDigest: layout.pageModelDigest,
+    structureIndexDigest: layout.structureIndexDigest,
     layoutDigest: layout.layoutDigest,
     width: layout.canvas.width,
     height: layout.canvas.height,

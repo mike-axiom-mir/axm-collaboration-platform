@@ -10,8 +10,9 @@ const Digest = require('./src/digest');
 const Svg = require('./src/svg-renderer');
 const BrowserSnapshot = require('./src/browser-snapshot');
 
-const COMMANDS = new Set(['tokenize', 'parse', 'inspect', 'full', 'layout', 'display', 'render-svg', 'browser-snapshot', 'profile']);
-const STRUCTURE_COMMANDS = new Set(['layout', 'display', 'render-svg', 'browser-snapshot']);
+const COMMANDS = new Set(['tokenize', 'parse', 'inspect', 'full', 'outline', 'layout', 'display', 'render-svg', 'browser-snapshot', 'profile']);
+const STRUCTURE_COMMANDS = new Set(['outline', 'layout', 'display', 'render-svg', 'browser-snapshot']);
+const VIEWPORT_COMMANDS = new Set(['layout', 'display', 'render-svg', 'browser-snapshot']);
 const ARTIFACT_COMMANDS = new Set(['render-svg', 'browser-snapshot']);
 
 function usage() {
@@ -23,6 +24,7 @@ function usage() {
     '  node cli.js parse <file|-> [--pretty] [--omit-source-bytes]',
     '  node cli.js inspect <file|-> [--pretty] [--omit-source-bytes]',
     '  node cli.js full <file|-> [--pretty] [--omit-source-bytes]',
+    '  node cli.js outline <file|-> [--pretty] [--omit-source-bytes]',
     '  node cli.js layout <file|-> [--viewport 1120x760] [--pretty]',
     '  node cli.js display <file|-> [--viewport 1120x760] [--pretty]',
     '  node cli.js render-svg <file|-> --out <file.svg> [--viewport 1120x760] [--force]',
@@ -92,7 +94,7 @@ function parseArgs(argv) {
   if (!ARTIFACT_COMMANDS.has(command) && (result.out !== null || result.force)) {
     throw Object.assign(new Error('--out and --force are only valid for visual artifact commands'), { code: 'INVALID_ARGUMENT' });
   }
-  if (!STRUCTURE_COMMANDS.has(command) && result.viewport !== null) {
+  if (!VIEWPORT_COMMANDS.has(command) && result.viewport !== null) {
     throw Object.assign(new Error('--viewport is only valid for structure-view commands'), { code: 'INVALID_ARGUMENT' });
   }
   return result;
@@ -137,6 +139,7 @@ function writeArtifact(args, input, content, bundle) {
     sha256: Digest.sha256Hex(content),
     sourceDigest: bundle.processed.source.sha256,
     pageModelDigest: bundle.processed.pageModel.pageModelDigest,
+    structureIndexDigest: bundle.structureIndex.structureIndexDigest,
     layoutDigest: bundle.layout.layoutDigest,
     displayListDigest: bundle.displayList.displayListDigest,
     ledgerDigest: bundle.modificationLedger.ledgerDigest,
@@ -214,4 +217,4 @@ function main(argv) {
 
 if (require.main === module) process.exitCode = main(process.argv.slice(2));
 
-module.exports = { COMMANDS, STRUCTURE_COMMANDS, ARTIFACT_COMMANDS, usage, parseArgs, readInput, writeArtifact, errorEnvelope, main };
+module.exports = { COMMANDS, STRUCTURE_COMMANDS, VIEWPORT_COMMANDS, ARTIFACT_COMMANDS, usage, parseArgs, readInput, writeArtifact, errorEnvelope, main };

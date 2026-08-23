@@ -37,11 +37,16 @@ test('HTML snapshot embeds the same display list under a deny-by-default policy'
   const html = BrowserSnapshot.renderBrowserSnapshot(bundle);
   assert.match(html, /Content-Security-Policy/);
   assert.match(html, /default-src 'none'/);
+  assert.match(html, /<nav class="outline"/);
+  assert.match(html, /Semantic reading surface/);
+  assert.match(html, new RegExp(bundle.structureIndex.structureIndexDigest));
   assert.match(html, new RegExp(bundle.displayList.displayListDigest));
   assert.match(html, new RegExp(bundle.modificationLedger.ledgerDigest));
   assert.doesNotMatch(html, /<script\b/i);
-  assert.doesNotMatch(html, /<a\b/i);
-  assert.doesNotMatch(html, /\shref=/i);
+  assert.doesNotMatch(html, /<form\b/i);
+  const hrefs = Array.from(html.matchAll(/\shref="([^"]*)"/g), function (match) { return match[1]; });
+  assert.ok(hrefs.length > 1);
+  assert.ok(hrefs.every(function (href) { return href.startsWith('#'); }));
   assert.doesNotMatch(html, /\sonload=|\sonclick=/i);
 });
 
@@ -59,6 +64,7 @@ test('CLI visual artifacts require explicit safe writes and share the headless d
     const svgReceipt = JSON.parse(svgRun.stdout);
     assert.equal(svgReceipt.schema, 'axm.web.artifact-receipt/v1');
     assert.equal(svgReceipt.displayListDigest, display.displayListDigest);
+    assert.equal(svgReceipt.structureIndexDigest, display.structureIndexDigest);
     assert.equal(svgReceipt.sourceMutated, false);
     assert.match(fs.readFileSync(svgPath, 'utf8'), /<svg\b/);
 
@@ -73,6 +79,7 @@ test('CLI visual artifacts require explicit safe writes and share the headless d
     assert.equal(htmlRun.status, 0, htmlRun.stderr);
     const htmlReceipt = JSON.parse(htmlRun.stdout);
     assert.equal(htmlReceipt.displayListDigest, display.displayListDigest);
+    assert.equal(htmlReceipt.structureIndexDigest, display.structureIndexDigest);
     assert.match(fs.readFileSync(htmlPath, 'utf8'), /SITE VIEW HELD/);
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });

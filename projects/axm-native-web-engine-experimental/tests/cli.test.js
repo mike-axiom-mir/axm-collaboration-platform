@@ -34,6 +34,18 @@ test('parse command exposes Document Tree without duplicating Page Model output'
   assert.equal(typeof body.source.rawSourceBase64, 'string');
 });
 
+test('outline command exposes the compact shared Structure Index', function () {
+  const result = run(['outline', 'fixtures/simple.html', '--omit-source-bytes']);
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.mode, 'axm-structure');
+  assert.equal(body.structureIndex.schema, 'axm.web.structure-index/v1');
+  assert.equal(body.structureIndexDigest, body.structureIndex.structureIndexDigest);
+  assert.equal(body.structureLayout, undefined);
+  assert.equal(body.displayList, undefined);
+  assert.ok(body.structureIndex.entries.some(function (entry) { return entry.kind === 'heading'; }));
+});
+
 test('network input is a visible held state', function () {
   const result = run(['inspect', 'https://example.org']);
   assert.equal(result.status, 2);

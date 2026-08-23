@@ -4,10 +4,10 @@ const Digest = require('./digest');
 
 const MODIFICATION_LEDGER_SCHEMA = 'axm.web.modification-ledger/v1';
 
-function createModificationLedger(processed, layout, displayList, options) {
+function createModificationLedger(processed, structureIndex, layout, displayList, options) {
   options = options || {};
   if (!processed || !processed.source || !processed.documentTree || !processed.pageModel) throw new TypeError('processed core output is required');
-  if (!layout || !displayList) throw new TypeError('layout and display list are required');
+  if (!structureIndex || !layout || !displayList) throw new TypeError('structure index, layout, and display list are required');
   const sourceDigest = processed.source.sha256;
   const material = {
     schema: MODIFICATION_LEDGER_SCHEMA,
@@ -22,6 +22,7 @@ function createModificationLedger(processed, layout, displayList, options) {
     },
     output: {
       mode: 'axm-structure',
+      structureIndexDigest: structureIndex.structureIndexDigest,
       layoutDigest: layout.layoutDigest,
       displayListDigest: displayList.displayListDigest
     },
@@ -37,14 +38,22 @@ function createModificationLedger(processed, layout, displayList, options) {
     entries: [
       {
         sequence: 1,
-        operation: 'derive-axm-structure-layout',
-        classification: 'VIEW_DERIVATION',
+        operation: 'derive-shared-semantic-structure-index',
+        classification: 'SEMANTIC_PROJECTION',
         inputDigest: processed.pageModel.pageModelDigest,
-        outputDigest: layout.layoutDigest,
+        outputDigest: structureIndex.structureIndexDigest,
         sourceMutated: false
       },
       {
         sequence: 2,
+        operation: 'derive-axm-structure-layout',
+        classification: 'VIEW_DERIVATION',
+        inputDigest: structureIndex.structureIndexDigest,
+        outputDigest: layout.layoutDigest,
+        sourceMutated: false
+      },
+      {
+        sequence: 3,
         operation: 'compile-renderer-neutral-display-list',
         classification: 'VIEW_DERIVATION',
         inputDigest: layout.layoutDigest,

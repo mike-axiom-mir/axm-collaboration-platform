@@ -8,6 +8,7 @@ module.exports = {
   tokenizer: require('./tokenizer'),
   treeBuilder: require('./tree-builder'),
   pageModel: require('./page-model'),
+  structureIndex: require('./structure-index'),
   structureLayout: require('./structure-layout'),
   displayList: require('./display-list'),
   modificationLedger: require('./modification-ledger'),
