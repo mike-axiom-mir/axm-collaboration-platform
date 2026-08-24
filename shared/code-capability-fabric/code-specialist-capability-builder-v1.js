@@ -9,7 +9,7 @@ const CapabilityFabric = require('../capability-fabric');
 const HandFoundryContract = require('../../tools/hand-specification-foundry/module.contract.json');
 const MODULE_CONTRACT = require('./module-code-specialist-capability-builder-v1.contract.json');
 
-const VERSION = '2.0.0';
+const VERSION = '2.1.0';
 const REQUEST_SCHEMA = 'axm.code-specialist-capability-build-request/v1';
 const RESULT_SCHEMA = 'axm.code-specialist-capability-candidate/v1';
 const TARGETS = BuildProfileRegistry.TARGETS;
@@ -18,6 +18,7 @@ const TARGET_SPECIALIST_ID = TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST.specialist
 const TARGET_RECIPE = TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST.recipe;
 const MARKUP_TARGET_RECIPE = TARGETS.ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST.recipe;
 const PYTHON_TARGET_RECIPE = TARGETS.ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST.recipe;
+const CSS_TARGET_RECIPE = TARGETS.ONE_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST.recipe;
 const ROOTS = IntentAdapter.ROOTS;
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
 const SAFE_ID = /^[a-z0-9][a-z0-9._-]{0,127}$/;
@@ -26,6 +27,7 @@ const LIMITATIONS = Object.freeze([
   'AUTHENTICATED_HUMAN_IDENTITY_NOT_PROVEN',
   'CANDIDATE_RUNTIME_NOT_PROVEN',
   'CONSENT_REPLAY_LEDGER_NOT_AVAILABLE',
+  'CSS_CASCADE_BROWSER_COMPATIBILITY_AND_VISUAL_QUALITY_NOT_PROVEN',
   'DIRECT_REUSE_AND_PUBLIC_COPY_REMAIN_ON_HOLD',
   'DURATION_NOT_INDEPENDENTLY_ENFORCED',
   'GENERATED_SELFTEST_EMITTED_NOT_RUN',
@@ -432,6 +434,22 @@ function buildPythonSpecializationRequest() {
   return Router.sealRequest(draft);
 }
 
+function buildCssSpecializationRequest() {
+  const draft = clone(Router.buildExampleRequest());
+  const observation = clone(draft.observation);
+  delete observation.observationDigest;
+  observation.id = 'example-css-code-artifact-observation';
+  observation.artifacts.push({
+    id: 'game-theme', path: 'styles/theme.css', sha256: Router.sha256Value('example-bytes:styles/theme.css'), byteLength: 256,
+    declaredLanguageId: 'css', artifactFamilies: ['style'], responsibilities: ['accessibility', 'layout', 'visual-presentation'], runtimes: ['browser'], frameworks: [],
+    requiredPermissions: [], networkDomains: [], interfaceContracts: [], dependsOnArtifactIds: [], sharedSeam: false
+  });
+  draft.id = 'route-example-css-style-presentation-specialist';
+  draft.observation = Router.sealObservation(observation);
+  delete draft.requestDigest;
+  return Router.sealRequest(draft);
+}
+
 function buildTargetExampleRequest(target, options) {
   const intentAdapterRequest = buildTargetExampleIntentRequest(target, options);
   const intentAdapterPlan = IntentAdapter.plan(intentAdapterRequest);
@@ -535,12 +553,38 @@ function buildPythonExampleRequest() {
   });
 }
 
+function buildCssExampleIntentRequest() {
+  return buildTargetExampleIntentRequest(TARGETS.ONE_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST, {
+    specializationRequest: buildCssSpecializationRequest(),
+    intentRequestId: 'bind-css-style-presentation-specialist-organ-intent',
+    intentName: 'Bounded CSS Style Presentation Specialist Intent',
+    intentPurpose: 'Bind one exact CSS style-presentation specialist lane to a reviewed typed design-token intent before a separate detached candidate-generation decision.'
+  });
+}
+
+function buildCssExampleRequest() {
+  return buildTargetExampleRequest(TARGETS.ONE_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST, {
+    specializationRequest: buildCssSpecializationRequest(),
+    intentRequestId: 'bind-css-style-presentation-specialist-organ-intent',
+    intentName: 'Bounded CSS Style Presentation Specialist Intent',
+    intentPurpose: 'Bind one exact CSS style-presentation specialist lane to a reviewed typed design-token intent before a separate detached candidate-generation decision.',
+    buildRequestId: 'game-theme-token-stylesheet-candidate',
+    buildPurpose: 'Generate one detached bounded CSS token stylesheet renderer for the explicitly reviewed synthetic game-theme artifact.',
+    outerRequestId: 'build-css-style-presentation-specialist-candidate',
+    decisionId: 'mike-tier-1-css-candidate-direction',
+    decisionText: 'Mike authorized bounded stepwise Code Capability Fabric improvement: create one detached CSS token stylesheet candidate; do not execute, render, write, install, integrate, publish, promote, or CANON.',
+    evaluatedAt: '2026-08-24T00:00:00.000Z', expiresAt: '2026-08-25T00:00:00.000Z', nonce: 'css-candidate-0001',
+    rootEvidencePrefix: 'css-candidate-', rootEvidenceSubject: 'css-specialist-candidate-v2.1'
+  });
+}
+
 if (!MODULE_CONTRACT || MODULE_CONTRACT.id !== 'code-specialist-capability-builder-v1') fail('module contract identity mismatch');
 
 module.exports = {
-  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, PYTHON_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
+  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, PYTHON_TARGET_RECIPE, CSS_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
   canonicalJson, clone, same, sha256Value, jsonBytes, isSafeCandidatePath, validateCandidatePaths,
   sealRequest, normalizeRequest, generate, verify, buildExampleIntentRequest, buildExampleRequest,
   buildMarkupExampleIntentRequest, buildMarkupExampleRequest,
-  buildPythonSpecializationRequest, buildPythonExampleIntentRequest, buildPythonExampleRequest
+  buildPythonSpecializationRequest, buildPythonExampleIntentRequest, buildPythonExampleRequest,
+  buildCssSpecializationRequest, buildCssExampleIntentRequest, buildCssExampleRequest
 };

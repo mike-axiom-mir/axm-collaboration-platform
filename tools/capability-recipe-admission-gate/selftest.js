@@ -76,12 +76,12 @@ function exerciseAdapterCandidate(){
 
 function main(){
   const inventory=Registry.inventory(),catalogBefore=Fabric.loadCatalog();
-  check(Registry.activeIds().length===7&&Registry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','registry contains seven reviewed active builders and one exact inactive adapter candidate');
+  check(Registry.activeIds().length===8&&Registry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','registry contains eight reviewed active builders and one exact inactive adapter candidate');
   check(inventory.registryDigest===Registry.inventory().registryDigest,'builder registry digest is deterministic');
   REVIEWED_PILOTS.forEach(exerciseReviewedPilot);
   exerciseAdapterCandidate();
   exerciseReceiptContracts();
-  check(Fabric.canonicalJson(Fabric.loadCatalog())===Fabric.canonicalJson(catalogBefore)&&Registry.activeIds().length===7&&Registry.reviewCandidateIds().length===1,'admission replay and receipt tests perform no activation or catalog mutation');
+  check(Fabric.canonicalJson(Fabric.loadCatalog())===Fabric.canonicalJson(catalogBefore)&&Registry.activeIds().length===8&&Registry.reviewCandidateIds().length===1,'admission replay and receipt tests perform no activation or catalog mutation');
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'axm-admission-tamper-'));
   try{
     fs.cpSync(REVIEWED_PILOTS[0],temp,{recursive:true});

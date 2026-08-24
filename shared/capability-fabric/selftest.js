@@ -19,11 +19,11 @@ function resealCandidate(candidate){
 function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
-  check(catalog.recipes.length===7,'reviewed catalog has one portable SKILL plus six bounded HAND recipes including Python source');
-  check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===6&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
+  check(catalog.recipes.length===8,'reviewed catalog has one portable SKILL plus seven bounded HAND recipes including Python and CSS source');
+  check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===7&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.variants.some(function(variant){return variant.id===row.candidatePolicy.defaultVariantId;});}),'every reviewed recipe explicitly defaults to one named candidate variant');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
-  check(BuilderRegistry.activeIds().length===7&&BuilderRegistry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','modular builder registry keeps seven reviewed builders active and one exact adapter review candidate inactive');
+  check(BuilderRegistry.activeIds().length===8&&BuilderRegistry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','modular builder registry keeps eight reviewed builders active and one exact adapter review candidate inactive');
   check(catalog.recipes.every(function(row){const builder=BuilderRegistry.describe(row.builderId);return builder&&row.builderDigest===builder.implementationDigest;}),'every active recipe binds the exact modular builder digest');
 
   const packages={};
@@ -55,6 +55,18 @@ function main(){
   const caseAliasPython=Fabric.clone(pythonPackage);caseAliasPython.files['Capability.py']=caseAliasPython.files['capability.py'];resealCandidate(caseAliasPython);const caseAliasCheck=Fabric.verifyCandidate(caseAliasPython);
   check(!caseAliasCheck.ok&&caseAliasCheck.errors.some(function(row){return row.code==='PACKAGE_PATH_UNSAFE';}),'Windows-style case aliases are refused even after complete rehash');
   ['CON.py','folder\\capability.py','capability.py:stream'].forEach(function(unsafePath){const drift=Fabric.clone(pythonRecipe);drift.capabilityContract.entry=unsafePath;delete drift.recipeDigest;drift.recipeDigest=Fabric.digest(drift);check(!Fabric.validateRecipe(drift).ok,'unsafe Python entry path is refused: '+unsafePath);});
+
+  const cssRecipe=catalog.recipes.find(function(row){return row.id==='bounded-css-token-stylesheet';}),cssPackage=packages[cssRecipe.id],cssSource=cssPackage.files['capability.js'],cssCompilation=JSON.parse(cssPackage.files['compilation.receipt.json']);
+  check(cssPackage.files['capability.js']&&cssPackage.files['selftest.js'],'CSS HAND emits exact inert JavaScript source and selftest paths');
+  check(!/@import|url\s*\(|<\/?style|\bfetch\s*\(|require\(['"](?:fs|node:fs|child_process|node:child_process)['"]\)|new Function|\beval\s*\(/i.test(cssSource),'generated CSS hand contains no arbitrary import, URL, style element, provider, filesystem, process, or dynamic-code surface');
+  check(cssSource.includes(":root {\\n")&&cssSource.includes("rows.push('  --"),'generated CSS hand fixes output to root custom properties');
+  check(['COLOR_HEX','INTEGER','LENGTH_PX','PERCENT','TIME_MS'].every(function(kind){return cssSource.includes("token.kind==='"+kind+"'");})&&cssRecipe.boundaries.some(function(row){return row.includes('COLOR_HEX');}),'CSS types are closed by reviewed builder logic and disclosed by the recipe boundary');
+  check(cssCompilation.generatedCodeExecuted===false&&cssCompilation.testsEmitted===true,'CSS compilation receipt distinguishes emitted tests from execution');
+  check(cssRecipe.boundaries.some(function(row){return row.includes('visual quality remain UNKNOWN');}),'CSS recipe preserves browser and visual uncertainty');
+  const cssNameInjection=Fabric.clone(cssRecipe.exampleRequest);cssNameInjection.parameters.tokens[0].name='bad;display-none';assert.throws(function(){Fabric.build(Fabric.sealRequest(cssNameInjection,true),catalog);},/invalid/);passed+=1;
+  const cssKindExpansion=Fabric.clone(cssRecipe.exampleRequest);cssKindExpansion.parameters.tokens[0].kind='RAW_CSS';assert.throws(function(){Fabric.build(Fabric.sealRequest(cssKindExpansion,true),catalog);},/unsupported/);passed+=1;
+  const cssDuplicate=Fabric.clone(cssRecipe.exampleRequest);cssDuplicate.parameters.tokens[1].name=cssDuplicate.parameters.tokens[0].name;assert.throws(function(){Fabric.build(Fabric.sealRequest(cssDuplicate,true),catalog);},/unique/);passed+=1;
+  check(true,'CSS token-name injection, raw kind expansion, and duplicate aliases are refused before candidate emission');
 
   const recipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),base=Fabric.sealRequest(recipe.exampleRequest,true),changedDraft=Fabric.clone(recipe.exampleRequest);changedDraft.parameters.defaultValue='different';const changed=Fabric.sealRequest(changedDraft,true);
   check(base.requestDigest!==changed.requestDigest,'semantic request change alters request digest');

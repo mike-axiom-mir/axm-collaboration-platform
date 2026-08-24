@@ -398,12 +398,12 @@ node shared/code-capability-fabric/selftest-code-specialist-organ-intent-adapter
 
 ## Registered code-family build profiles → detached candidates
 
-The additive v2.0 `TEST` rung moves code-family binding out of hard-coded
+The additive v2.1 `TEST` rung moves code-family binding out of hard-coded
 builder branches and into an exact, digest-bound build-profile catalog. The
 initial profiles connect `organ.code.data-schema` to the closed JSON Schema
 validator recipe and `organ.code.markup-structure` to the bounded semantic
-HTML-page renderer. It now also connects Python application logic to one
-string-only record-transform recipe through a provider-neutral source layout.
+HTML-page renderer, Python application logic to one string-only record-transform
+recipe, and CSS style presentation to one typed design-token stylesheet recipe.
 Later or broader families require their own Code Atlas language, specialist
 binding, source-reviewed recipe, builder digest, and evidence plan; unsupported
 families produce typed gaps.
@@ -414,11 +414,11 @@ selected profile bytes, research-only reuse state, and closed resource ceilings
 are all required before one detached `EXPERIMENTAL` candidate is generated in
 memory.
 
-Generated JavaScript uses `capability.js` and `selftest.js`; generated Python
+Generated JavaScript, including the CSS renderer, uses `capability.js` and `selftest.js`; generated Python
 uses `capability.py` and `selftest.py`. Every file remains inert data. They are
 not run, written, installed, integrated, published, promoted, or canonized.
-Runtime behavior remains `UNKNOWN`; HTML visual and interaction behavior also
-remains `UNKNOWN`. Unsupported specialists remain typed recipe gaps rather
+Runtime behavior remains `UNKNOWN`; HTML and CSS visual behavior, CSS cascade,
+motion timing, and quality also remain `UNKNOWN`. Unsupported specialists remain typed recipe gaps rather
 than inheriting a nearby admitted hand.
 
 See

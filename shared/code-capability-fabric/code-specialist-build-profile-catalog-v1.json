@@ -6,6 +6,45 @@
   "profiles": [
     {
       "schema": "axm.code-specialist-build-profile/v1",
+      "id": "code-family.bounded-css-token-stylesheet",
+      "version": "1.0.0",
+      "status": "TEST",
+      "mode": "ONE_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST",
+      "specialistOrganRef": {
+        "id": "organ.code.style-presentation",
+        "schema": "axm.code-specialist-organ-profile/v1",
+        "version": "1.0.0",
+        "sha256": "sha256:18cdb0ce1f613185e5071d7ebfdfab8f6a7ca02740f0aac85dca1417810ccab6"
+      },
+      "languageIds": ["css"],
+      "capability": {
+        "family": "style-creation",
+        "recipeRef": {
+          "id": "bounded-css-token-stylesheet",
+          "version": "0.1.0",
+          "digest": "sha256:b0663c70aed5a9c59ef35edf52ae5165b9f09e927ec837506fdcb00114eb4623",
+          "builderId": "bounded-css-token-stylesheet-v1",
+          "builderDigest": "sha256:1a9fa4c3a0ce626fa1adfe709dd3bbea7aa91e867c20794e9213a6e5da82d163",
+          "capabilityKind": "HAND"
+        }
+      },
+      "exampleArtifactId": "game-theme",
+      "gates": {
+        "specialist": "SELECT_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST_AND_REPLAN",
+        "recipe": "RESTORE_EXACT_SOURCE_REVIEWED_BOUNDED_CSS_RECIPE",
+        "request": "REPAIR_EXACT_HUMAN_REVIEWED_BOUNDED_CSS_REQUEST"
+      },
+      "gaps": {
+        "specialist": "code.specialist.css.style-presentation.exact-lane",
+        "recipe": "capability.recipe.bounded-css-token-stylesheet.exact",
+        "request": "capability.build-request.style-creation.exact"
+      },
+      "evidence": {"visualBehavior": "UNKNOWN", "requiredKinds": ["MOTION_TIMING", "QUALITY", "STATIC_STRUCTURE", "VISUAL_APPEARANCE"]},
+      "boundary": {"authority": "NONE", "permissions": [], "networkDomains": [], "workspaceRead": false, "workspaceWrite": false, "candidateExecution": false, "install": false, "integrate": false, "publish": false, "promote": false, "canon": false},
+      "profileDigest": "sha256:c576a8b61bdf0cc9838eef19e1831165be7478e6a342d8eb1511a144b2db5039"
+    },
+    {
+      "schema": "axm.code-specialist-build-profile/v1",
       "id": "code-family.json-schema-validator",
       "version": "1.0.0",
       "status": "TEST",
@@ -131,5 +170,5 @@
     "automaticInstall": false,
     "mikeFinalMergeGateRequired": true
   },
-  "catalogDigest": "sha256:5b853af2f1858bc3fb3f849554654344374831ff2c4a1e846dfe67299b602342"
+  "catalogDigest": "sha256:6a4e16c74aaa485fba88756cbaf2eabe7358ee1076df2ddce9462463e7778356"
 }
