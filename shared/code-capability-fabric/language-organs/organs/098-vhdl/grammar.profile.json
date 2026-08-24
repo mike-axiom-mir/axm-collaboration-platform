@@ -1,0 +1,108 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 98,
+  "organId": "code.organ.vhdl.v1",
+  "languageId": "vhdl",
+  "displayName": "VHDL",
+  "family": "hardware",
+  "kind": "hardware-description-language",
+  "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+  "grammar": {
+    "paradigm": "concurrent hardware design",
+    "compilationOrDocumentUnit": "design file",
+    "dialectsOrVariants": [
+      "VHDL93",
+      "VHDL2008",
+      "VHDL2019"
+    ],
+    "constructs": [
+      "entity",
+      "architecture",
+      "package",
+      "configuration",
+      "process",
+      "component",
+      "signal",
+      "variable",
+      "type",
+      "generic",
+      "port",
+      "generate",
+      "attribute"
+    ],
+    "dependencyForms": [
+      "library",
+      "use",
+      "component binding"
+    ],
+    "scopeModel": "design-unit/process/block",
+    "typeModel": "bit/vector/signal/domain-specific",
+    "mutationModel": "signal/register/state transition",
+    "controlModel": "concurrent plus procedural regions",
+    "effectModel": "simulation/synthesis timing and hardware connectivity"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "entity",
+      "architecture",
+      "package",
+      "configuration",
+      "process",
+      "component",
+      "signal",
+      "variable",
+      "type",
+      "generic",
+      "port",
+      "generate",
+      "attribute"
+    ],
+    "dependencyAnchors": [
+      "library",
+      "use",
+      "component binding"
+    ],
+    "semanticHazards": [
+      "signal vs variable",
+      "delta cycles",
+      "resolved types",
+      "sensitivity",
+      "numeric packages"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "signal vs variable",
+      "delta cycles",
+      "resolved types",
+      "sensitivity",
+      "numeric packages"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "VHDL parse",
+      "GHDL",
+      "simulation"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2"
+}

@@ -1,0 +1,98 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 49,
+  "organId": "code.organ.ocaml.v1",
+  "languageId": "ocaml",
+  "displayName": "OCaml",
+  "family": "functional",
+  "kind": "functional-language",
+  "organDigest": "6dd6d9427b38f5f1f8505cf53b02c8a6b9ba4feb4482fa35a6f0145ff932e49d",
+  "grammar": {
+    "paradigm": "static ML modules",
+    "compilationOrDocumentUnit": "compilation unit",
+    "dialectsOrVariants": [
+      "OCaml"
+    ],
+    "constructs": [
+      "module",
+      "module type",
+      "type",
+      "let",
+      "class",
+      "pattern",
+      "functor",
+      "variant",
+      "record",
+      "first-class module"
+    ],
+    "dependencyForms": [
+      "open",
+      "include",
+      "module reference"
+    ],
+    "scopeModel": "lexical/module",
+    "typeModel": "inferred/static-or-dynamic functional",
+    "mutationModel": "prefer values; effects language-specific",
+    "controlModel": "expression, pattern, recursion and effect abstraction",
+    "effectModel": "effect system/runtime/process model language-specific"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "module",
+      "module type",
+      "type",
+      "let",
+      "class",
+      "pattern",
+      "functor",
+      "variant",
+      "record",
+      "first-class module"
+    ],
+    "dependencyAnchors": [
+      "open",
+      "include",
+      "module reference"
+    ],
+    "semanticHazards": [
+      "type inference",
+      "module signatures",
+      "physical vs structural equality",
+      "mutable fields"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "type inference",
+      "module signatures",
+      "physical vs structural equality",
+      "mutable fields"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "ocamlc",
+      "dune",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "f1770bfaa562cf404ad7b14e4344c4997dd7d6968a8fb4bd35e94c9294f33aed"
+}

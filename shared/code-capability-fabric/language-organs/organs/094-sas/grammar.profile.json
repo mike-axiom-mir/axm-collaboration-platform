@@ -1,0 +1,106 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 94,
+  "organId": "code.organ.sas.v1",
+  "languageId": "sas",
+  "displayName": "SAS",
+  "family": "scientific",
+  "kind": "scientific-language",
+  "organDigest": "7ac0abb4b27cef9704ac87cd059f9db555b427c3859f0febf8d42840bde9b3ae",
+  "grammar": {
+    "paradigm": "statistical DATA/PROC DSL",
+    "compilationOrDocumentUnit": "program",
+    "dialectsOrVariants": [
+      "SAS"
+    ],
+    "constructs": [
+      "DATA step",
+      "PROC",
+      "macro",
+      "LIBNAME",
+      "FILENAME",
+      "format",
+      "informat",
+      "retain",
+      "BY",
+      "array",
+      "macro variable",
+      "ODS",
+      "PROC SQL"
+    ],
+    "dependencyForms": [
+      "include",
+      "libref",
+      "fileref"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "DATA step",
+      "PROC",
+      "macro",
+      "LIBNAME",
+      "FILENAME",
+      "format",
+      "informat",
+      "retain",
+      "BY",
+      "array",
+      "macro variable",
+      "ODS",
+      "PROC SQL"
+    ],
+    "dependencyAnchors": [
+      "include",
+      "libref",
+      "fileref"
+    ],
+    "semanticHazards": [
+      "macro expansion",
+      "implicit DATA-step loop",
+      "missing values",
+      "format/informat",
+      "PDV"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "macro expansion",
+      "implicit DATA-step loop",
+      "missing values",
+      "format/informat",
+      "PDV"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "SAS parse",
+      "log check",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "ab756f7e228697e338912ec7dae8d6931f86bfc402273e0355cd41c914db1ace"
+}

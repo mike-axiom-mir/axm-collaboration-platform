@@ -1,0 +1,94 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 25,
+  "organId": "code.organ.nix.v1",
+  "languageId": "nix",
+  "displayName": "Nix",
+  "family": "infrastructure",
+  "kind": "infrastructure-dsl",
+  "organDigest": "737302755fc3a4a5fb8ee6a2898c6e4cf6224156eded7ebc6971f47afc6fb3fc",
+  "grammar": {
+    "paradigm": "lazy functional configuration",
+    "compilationOrDocumentUnit": "expression file",
+    "dialectsOrVariants": [
+      "Nix",
+      "flakes"
+    ],
+    "constructs": [
+      "binding",
+      "function",
+      "let",
+      "with",
+      "inherit",
+      "attribute set",
+      "derivation",
+      "recursion"
+    ],
+    "dependencyForms": [
+      "import",
+      "flake input"
+    ],
+    "scopeModel": "lexical/module",
+    "typeModel": "inferred/static-or-dynamic functional",
+    "mutationModel": "prefer values; effects language-specific",
+    "controlModel": "expression, pattern, recursion and effect abstraction",
+    "effectModel": "effect system/runtime/process model language-specific"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "binding",
+      "function",
+      "let",
+      "with",
+      "inherit",
+      "attribute set",
+      "derivation",
+      "recursion"
+    ],
+    "dependencyAnchors": [
+      "import",
+      "flake input"
+    ],
+    "semanticHazards": [
+      "lazy evaluation",
+      "impurity",
+      "store paths",
+      "override chains",
+      "infinite recursion"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "lazy evaluation",
+      "impurity",
+      "store paths",
+      "override chains",
+      "infinite recursion"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "nix parse",
+      "eval check"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "91fe94283fb24accf2c114a8a958d6f7c14c81479aaeaa7485ebff3d98e431c4"
+}

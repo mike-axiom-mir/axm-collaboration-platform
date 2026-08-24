@@ -1,0 +1,105 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 53,
+  "organId": "code.organ.assembly.v1",
+  "languageId": "assembly",
+  "displayName": "Assembly",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "5d804e4ab65bb37d742467022418089ba6a6d48cc893a5ea5aa2f34c0f23df88",
+  "grammar": {
+    "paradigm": "architecture assembly",
+    "compilationOrDocumentUnit": "translation unit",
+    "dialectsOrVariants": [
+      "x86",
+      "x86_64",
+      "ARM",
+      "AArch64",
+      "GAS",
+      "NASM"
+    ],
+    "constructs": [
+      "label",
+      "section",
+      "directive",
+      "instruction",
+      "macro",
+      "register",
+      "memory operand",
+      "branch",
+      "call",
+      "stack"
+    ],
+    "dependencyForms": [
+      "include",
+      "extern"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "label",
+      "section",
+      "directive",
+      "instruction",
+      "macro",
+      "register",
+      "memory operand",
+      "branch",
+      "call",
+      "stack"
+    ],
+    "dependencyAnchors": [
+      "include",
+      "extern"
+    ],
+    "semanticHazards": [
+      "ABI",
+      "calling convention",
+      "register clobber",
+      "alignment",
+      "relocation",
+      "architecture drift"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "ABI",
+      "calling convention",
+      "register clobber",
+      "alignment",
+      "relocation",
+      "architecture drift"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "assembler",
+      "objdump review",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "dd487fa255a88b222845ce65e90985bd9144d7642bb607593ea89a62a8882744"
+}

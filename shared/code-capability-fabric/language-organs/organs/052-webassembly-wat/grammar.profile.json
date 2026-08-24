@@ -1,0 +1,102 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 52,
+  "organId": "code.organ.webassembly-wat.v1",
+  "languageId": "webassembly-wat",
+  "displayName": "WebAssembly / WAT",
+  "family": "wasm",
+  "kind": "bytecode-and-text-format",
+  "organDigest": "96636710bff8d61ba3639351bfdbe87afb5f851934c1e905f692020124f1fcfd",
+  "grammar": {
+    "paradigm": "typed stack bytecode text",
+    "compilationOrDocumentUnit": "module",
+    "dialectsOrVariants": [
+      "WAT",
+      "Wasm features"
+    ],
+    "constructs": [
+      "module",
+      "func",
+      "type",
+      "table",
+      "memory",
+      "global",
+      "import",
+      "export",
+      "instruction",
+      "block",
+      "loop",
+      "branch",
+      "local"
+    ],
+    "dependencyForms": [
+      "import"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "module",
+      "func",
+      "type",
+      "table",
+      "memory",
+      "global",
+      "import",
+      "export",
+      "instruction",
+      "block",
+      "loop",
+      "branch",
+      "local"
+    ],
+    "dependencyAnchors": [
+      "import"
+    ],
+    "semanticHazards": [
+      "stack typing",
+      "index spaces",
+      "memory bounds",
+      "feature gates",
+      "import contracts"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "stack typing",
+      "index spaces",
+      "memory bounds",
+      "feature gates",
+      "import contracts"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "wat2wasm",
+      "wasm validate"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "a23e1463ea2295089e6566cfb2f27fd0908e5ccd6c340c5e1c2358ed20d8bb1c"
+}

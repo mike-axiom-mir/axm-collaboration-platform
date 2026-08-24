@@ -1,0 +1,97 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 76,
+  "organId": "code.organ.d.v1",
+  "languageId": "d",
+  "displayName": "D",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "c5e3de98a91481244b8901b9e7ee80c01203d2017b3648455d0516449973139d",
+  "grammar": {
+    "paradigm": "static systems",
+    "compilationOrDocumentUnit": "module",
+    "dialectsOrVariants": [
+      "D"
+    ],
+    "constructs": [
+      "module",
+      "function",
+      "class",
+      "struct",
+      "template",
+      "mixin",
+      "enum",
+      "range",
+      "scope guard",
+      "contract",
+      "CTFE"
+    ],
+    "dependencyForms": [
+      "import"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "module",
+      "function",
+      "class",
+      "struct",
+      "template",
+      "mixin",
+      "enum",
+      "range",
+      "scope guard",
+      "contract",
+      "CTFE"
+    ],
+    "dependencyAnchors": [
+      "import"
+    ],
+    "semanticHazards": [
+      "CTFE",
+      "mixin expansion",
+      "GC/manual memory",
+      "aliasing",
+      "version conditions"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "CTFE",
+      "mixin expansion",
+      "GC/manual memory",
+      "aliasing",
+      "version conditions"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "DMD/LDC compile",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "5e39b0e0963b967bacfbf5103d3853c016bc9061791f9fa5f9fa4e7feca34f31"
+}

@@ -1,0 +1,98 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 32,
+  "organId": "code.organ.graphql.v1",
+  "languageId": "graphql",
+  "displayName": "GraphQL",
+  "family": "api-schema",
+  "kind": "schema-language",
+  "organDigest": "68708fdb5e1d696f5bb7afc1a3db2869d74d3c9d1442d7ffa5b458541adb5f75",
+  "grammar": {
+    "paradigm": "schema/query document",
+    "compilationOrDocumentUnit": "document",
+    "dialectsOrVariants": [
+      "GraphQL"
+    ],
+    "constructs": [
+      "schema",
+      "type",
+      "interface",
+      "union",
+      "enum",
+      "input",
+      "directive",
+      "operation",
+      "fragment",
+      "selection set",
+      "variable"
+    ],
+    "dependencyForms": [
+      "fragment spread",
+      "type reference"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "schema",
+      "type",
+      "interface",
+      "union",
+      "enum",
+      "input",
+      "directive",
+      "operation",
+      "fragment",
+      "selection set",
+      "variable"
+    ],
+    "dependencyAnchors": [
+      "fragment spread",
+      "type reference"
+    ],
+    "semanticHazards": [
+      "schema vs operation",
+      "nullable/list shape",
+      "fragment cycles",
+      "directive semantics"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "schema vs operation",
+      "nullable/list shape",
+      "fragment cycles",
+      "directive semantics"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "GraphQL parse",
+      "schema validate",
+      "operation validate"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "5078947d2dd5b8aa754c9e209839bdabad05bab29f9207320401eb7503f642e7"
+}

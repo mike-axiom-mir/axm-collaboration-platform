@@ -1,0 +1,107 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 63,
+  "organId": "code.organ.fortran.v1",
+  "languageId": "fortran",
+  "displayName": "Fortran",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "66b498ff9f012fc104b9805cbab025d0168e2042acaaf46974eb28cfbfddbf5e",
+  "grammar": {
+    "paradigm": "static numeric/scientific",
+    "compilationOrDocumentUnit": "program unit",
+    "dialectsOrVariants": [
+      "Fortran77",
+      "90",
+      "95",
+      "2003",
+      "2008",
+      "2018"
+    ],
+    "constructs": [
+      "program",
+      "module",
+      "subroutine",
+      "function",
+      "type",
+      "interface",
+      "array",
+      "do",
+      "where",
+      "coarray",
+      "generic interface"
+    ],
+    "dependencyForms": [
+      "use",
+      "include"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "program",
+      "module",
+      "subroutine",
+      "function",
+      "type",
+      "interface",
+      "array",
+      "do",
+      "where",
+      "coarray",
+      "generic interface"
+    ],
+    "dependencyAnchors": [
+      "use",
+      "include"
+    ],
+    "semanticHazards": [
+      "implicit typing",
+      "array shape",
+      "kind",
+      "intent",
+      "aliasing",
+      "fixed/free form"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "implicit typing",
+      "array shape",
+      "kind",
+      "intent",
+      "aliasing",
+      "fixed/free form"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "gfortran syntax",
+      "warnings",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "a185ce33f9f8510722ce576351847638bef05eac095f7ea97dd46a8549977aa4"
+}

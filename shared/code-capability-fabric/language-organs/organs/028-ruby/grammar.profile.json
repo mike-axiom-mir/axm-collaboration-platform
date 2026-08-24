@@ -1,0 +1,104 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 28,
+  "organId": "code.organ.ruby.v1",
+  "languageId": "ruby",
+  "displayName": "Ruby",
+  "family": "scripting",
+  "kind": "interpreted-language",
+  "organDigest": "685591c17405ca0ca06a6bfaa5e35ab9167a584279436aa965e144ba937fcf95",
+  "grammar": {
+    "paradigm": "dynamic message OO",
+    "compilationOrDocumentUnit": "file",
+    "dialectsOrVariants": [
+      "Ruby"
+    ],
+    "constructs": [
+      "class",
+      "module",
+      "method",
+      "constant",
+      "block",
+      "proc",
+      "lambda",
+      "mixin",
+      "metaprogramming",
+      "refinement",
+      "pattern"
+    ],
+    "dependencyForms": [
+      "require",
+      "load",
+      "autoload"
+    ],
+    "scopeModel": "lexical/module/runtime",
+    "typeModel": "dynamic or inferred",
+    "mutationModel": "runtime object/state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus dynamic dispatch/reflection where supported"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "class",
+      "module",
+      "method",
+      "constant",
+      "block",
+      "proc",
+      "lambda",
+      "mixin",
+      "metaprogramming",
+      "refinement",
+      "pattern"
+    ],
+    "dependencyAnchors": [
+      "require",
+      "load",
+      "autoload"
+    ],
+    "semanticHazards": [
+      "open classes",
+      "method_missing",
+      "eval",
+      "monkey patch",
+      "load path",
+      "symbol/string"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "open classes",
+      "method_missing",
+      "eval",
+      "monkey patch",
+      "load path",
+      "symbol/string"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "ruby -c",
+      "rubocop",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "2888c1da22588124d82c670e8de9986d07b5090ba8bc1009304873963a5f3f41"
+}

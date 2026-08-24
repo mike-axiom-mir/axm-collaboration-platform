@@ -1,0 +1,104 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 89,
+  "organId": "code.organ.tsql.v1",
+  "languageId": "tsql",
+  "displayName": "T-SQL",
+  "family": "sql-query",
+  "kind": "query-language",
+  "organDigest": "40ce3dfec76cc6061b1a778d75a853cb435d9ce711e13baea8d2d561ad411711",
+  "grammar": {
+    "paradigm": "SQL Server procedural SQL",
+    "compilationOrDocumentUnit": "batch",
+    "dialectsOrVariants": [
+      "T-SQL"
+    ],
+    "constructs": [
+      "SELECT",
+      "CTE",
+      "DDL",
+      "DML",
+      "procedure",
+      "function",
+      "trigger",
+      "DECLARE",
+      "temp table",
+      "TOP",
+      "APPLY",
+      "TRY/CATCH",
+      "MERGE"
+    ],
+    "dependencyForms": [
+      "object reference"
+    ],
+    "scopeModel": "statement/query/block",
+    "typeModel": "schema/domain-driven",
+    "mutationModel": "query-or-transaction",
+    "controlModel": "set/relational/procedural by dialect",
+    "effectModel": "database, graph, model or endpoint effects"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "SELECT",
+      "CTE",
+      "DDL",
+      "DML",
+      "procedure",
+      "function",
+      "trigger",
+      "DECLARE",
+      "temp table",
+      "TOP",
+      "APPLY",
+      "TRY/CATCH",
+      "MERGE"
+    ],
+    "dependencyAnchors": [
+      "object reference"
+    ],
+    "semanticHazards": [
+      "batch GO",
+      "transactions",
+      "temp scope",
+      "implicit conversion",
+      "MERGE semantics",
+      "dynamic SQL"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "batch GO",
+      "transactions",
+      "temp scope",
+      "implicit conversion",
+      "MERGE semantics",
+      "dynamic SQL"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "SQLFluff TSQL parse",
+      "database compile",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "b20a2abf059dc745975e3cbd149955dec931d8930573052749a0e84c1c38ff9d"
+}

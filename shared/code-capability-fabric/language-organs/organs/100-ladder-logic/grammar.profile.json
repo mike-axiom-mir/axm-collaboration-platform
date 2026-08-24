@@ -1,0 +1,103 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 100,
+  "organId": "code.organ.ladder-logic.v1",
+  "languageId": "ladder-logic",
+  "displayName": "Ladder Logic",
+  "family": "hardware",
+  "kind": "graphical-logic-representation",
+  "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+  "grammar": {
+    "paradigm": "IEC61131 graphical control",
+    "compilationOrDocumentUnit": "PLCopen document",
+    "dialectsOrVariants": [
+      "IEC61131-3 LD",
+      "PLCopen XML"
+    ],
+    "constructs": [
+      "POU",
+      "network",
+      "contact",
+      "coil",
+      "block",
+      "variable",
+      "connection",
+      "series",
+      "parallel",
+      "set/reset",
+      "timer",
+      "counter",
+      "edge"
+    ],
+    "dependencyForms": [
+      "function block reference"
+    ],
+    "scopeModel": "design-unit/process/block",
+    "typeModel": "bit/vector/signal/domain-specific",
+    "mutationModel": "signal/register/state transition",
+    "controlModel": "concurrent plus procedural regions",
+    "effectModel": "simulation/synthesis timing and hardware connectivity"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "POU",
+      "network",
+      "contact",
+      "coil",
+      "block",
+      "variable",
+      "connection",
+      "series",
+      "parallel",
+      "set/reset",
+      "timer",
+      "counter",
+      "edge"
+    ],
+    "dependencyAnchors": [
+      "function block reference"
+    ],
+    "semanticHazards": [
+      "scan cycle",
+      "network order",
+      "retentive coil",
+      "IO address",
+      "vendor extensions"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "scan cycle",
+      "network order",
+      "retentive coil",
+      "IO address",
+      "vendor extensions"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "PLCopen XML parse",
+      "network validation",
+      "PLC simulation"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1"
+}

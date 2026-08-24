@@ -1,0 +1,95 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 19,
+  "organId": "code.organ.markdown.v1",
+  "languageId": "markdown",
+  "displayName": "Markdown",
+  "family": "data-config",
+  "kind": "markup-language",
+  "organDigest": "b0059848293544b5129041fb86accc1e06096c574ca7492658004d645919048b",
+  "grammar": {
+    "paradigm": "lightweight markup",
+    "compilationOrDocumentUnit": "document",
+    "dialectsOrVariants": [
+      "CommonMark",
+      "GFM"
+    ],
+    "constructs": [
+      "heading",
+      "paragraph",
+      "list",
+      "code fence",
+      "link",
+      "image",
+      "blockquote",
+      "table"
+    ],
+    "dependencyForms": [
+      "link",
+      "image",
+      "reference link"
+    ],
+    "scopeModel": "tree/containment",
+    "typeModel": "schema-or-element-kinds",
+    "mutationModel": "structural-document",
+    "controlModel": "none",
+    "effectModel": "embedding, references and host interpretation"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "heading",
+      "paragraph",
+      "list",
+      "code fence",
+      "link",
+      "image",
+      "blockquote",
+      "table"
+    ],
+    "dependencyAnchors": [
+      "link",
+      "image",
+      "reference link"
+    ],
+    "semanticHazards": [
+      "dialect extensions",
+      "code fence language",
+      "reference links",
+      "embedded HTML"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "dialect extensions",
+      "code fence language",
+      "reference links",
+      "embedded HTML"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Markdown parse",
+      "link check",
+      "render check"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "53abb161559323e750935eb9b1fe2b72087825e5ed1a928a76860b1f6768c721"
+}

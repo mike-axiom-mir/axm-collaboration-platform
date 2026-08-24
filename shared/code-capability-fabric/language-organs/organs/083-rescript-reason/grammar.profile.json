@@ -1,0 +1,100 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 83,
+  "organId": "code.organ.rescript-reason.v1",
+  "languageId": "rescript-reason",
+  "displayName": "ReScript / Reason",
+  "family": "web",
+  "kind": "language-or-markup",
+  "organDigest": "e9794996fd3e64e525acddb63474534a5887da42f4f8497a86cb32bb9601999f",
+  "grammar": {
+    "paradigm": "static ML-to-JS",
+    "compilationOrDocumentUnit": "module/file",
+    "dialectsOrVariants": [
+      "ReScript",
+      "Reason"
+    ],
+    "constructs": [
+      "let",
+      "type",
+      "module",
+      "module type",
+      "external",
+      "variant",
+      "record",
+      "pattern",
+      "pipe",
+      "JSX"
+    ],
+    "dependencyForms": [
+      "open",
+      "include",
+      "external"
+    ],
+    "scopeModel": "lexical/module",
+    "typeModel": "inferred/static-or-dynamic functional",
+    "mutationModel": "prefer values; effects language-specific",
+    "controlModel": "expression, pattern, recursion and effect abstraction",
+    "effectModel": "effect system/runtime/process model language-specific"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "let",
+      "type",
+      "module",
+      "module type",
+      "external",
+      "variant",
+      "record",
+      "pattern",
+      "pipe",
+      "JSX"
+    ],
+    "dependencyAnchors": [
+      "open",
+      "include",
+      "external"
+    ],
+    "semanticHazards": [
+      "JS FFI",
+      "curried/uncurried",
+      "nullability",
+      "variant representation",
+      "generated JS"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "JS FFI",
+      "curried/uncurried",
+      "nullability",
+      "variant representation",
+      "generated JS"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "ReScript compile",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "6313d9b928b61129a9a5de5162b2a6b6458c5a1aaf95c981055ddfdc16623279"
+}

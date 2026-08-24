@@ -1,0 +1,111 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 18,
+  "organId": "code.organ.cpp.v1",
+  "languageId": "cpp",
+  "displayName": "C++",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+  "grammar": {
+    "paradigm": "systems generic OO",
+    "compilationOrDocumentUnit": "translation unit",
+    "dialectsOrVariants": [
+      "C++11",
+      "C++14",
+      "C++17",
+      "C++20",
+      "C++23"
+    ],
+    "constructs": [
+      "function",
+      "class",
+      "struct",
+      "enum",
+      "template",
+      "namespace",
+      "RAII",
+      "lambda",
+      "concept",
+      "coroutine",
+      "operator overload",
+      "macro"
+    ],
+    "dependencyForms": [
+      "include",
+      "module import"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "function",
+      "class",
+      "struct",
+      "enum",
+      "template",
+      "namespace",
+      "RAII",
+      "lambda",
+      "concept",
+      "coroutine",
+      "operator overload",
+      "macro"
+    ],
+    "dependencyAnchors": [
+      "include",
+      "module import"
+    ],
+    "semanticHazards": [
+      "undefined behavior",
+      "lifetime",
+      "template instantiation",
+      "ODR",
+      "move semantics",
+      "exception safety",
+      "macro expansion"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "undefined behavior",
+      "lifetime",
+      "template instantiation",
+      "ODR",
+      "move semantics",
+      "exception safety",
+      "macro expansion"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "C++ syntax",
+      "warnings",
+      "sanitizers",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39"
+}

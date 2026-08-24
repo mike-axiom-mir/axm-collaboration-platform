@@ -1,0 +1,93 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 34,
+  "organId": "code.organ.json-schema.v1",
+  "languageId": "json-schema",
+  "displayName": "JSON Schema",
+  "family": "api-schema",
+  "kind": "schema-language",
+  "organDigest": "0b73e22499c2d7aaf103052e71e46fccf18a7f47bbb8e92178ef861b6cfac7d5",
+  "grammar": {
+    "paradigm": "validation schema",
+    "compilationOrDocumentUnit": "schema document",
+    "dialectsOrVariants": [
+      "draft-07",
+      "2019-09",
+      "2020-12"
+    ],
+    "constructs": [
+      "schema",
+      "subschema",
+      "property",
+      "definition",
+      "reference",
+      "composition",
+      "conditional",
+      "format"
+    ],
+    "dependencyForms": [
+      "$ref",
+      "$dynamicRef"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "schema",
+      "subschema",
+      "property",
+      "definition",
+      "reference",
+      "composition",
+      "conditional",
+      "format"
+    ],
+    "dependencyAnchors": [
+      "$ref",
+      "$dynamicRef"
+    ],
+    "semanticHazards": [
+      "draft dialects",
+      "reference resolution",
+      "annotation vs assertion",
+      "recursive refs"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "draft dialects",
+      "reference resolution",
+      "annotation vs assertion",
+      "recursive refs"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "meta-schema validate",
+      "instance tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "7110d9d037befd8f7057552c5b0379e58c195404b47f1b26cb4c999b2b0a389d"
+}

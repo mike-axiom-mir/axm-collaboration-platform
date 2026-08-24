@@ -1,0 +1,98 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 88,
+  "organId": "code.organ.plsql.v1",
+  "languageId": "plsql",
+  "displayName": "PL/SQL",
+  "family": "sql-query",
+  "kind": "query-language",
+  "organDigest": "757aeafdd7285cffb1ab6646a15166bc42df4d971a23bda236f448660a02e185",
+  "grammar": {
+    "paradigm": "Oracle procedural SQL",
+    "compilationOrDocumentUnit": "unit",
+    "dialectsOrVariants": [
+      "Oracle PL/SQL"
+    ],
+    "constructs": [
+      "block",
+      "procedure",
+      "function",
+      "package",
+      "trigger",
+      "type",
+      "cursor",
+      "exception",
+      "bulk collect",
+      "FORALL",
+      "dynamic SQL"
+    ],
+    "dependencyForms": [
+      "schema object reference"
+    ],
+    "scopeModel": "statement/query/block",
+    "typeModel": "schema/domain-driven",
+    "mutationModel": "query-or-transaction",
+    "controlModel": "set/relational/procedural by dialect",
+    "effectModel": "database, graph, model or endpoint effects"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "block",
+      "procedure",
+      "function",
+      "package",
+      "trigger",
+      "type",
+      "cursor",
+      "exception",
+      "bulk collect",
+      "FORALL",
+      "dynamic SQL"
+    ],
+    "dependencyAnchors": [
+      "schema object reference"
+    ],
+    "semanticHazards": [
+      "transactions",
+      "exception propagation",
+      "definer/invoker rights",
+      "dynamic SQL",
+      "NULL"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "transactions",
+      "exception propagation",
+      "definer/invoker rights",
+      "dynamic SQL",
+      "NULL"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "PLSQL parse",
+      "database compile",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "3c0ffc436f55ac68429cfbbd47e1baf6d84a4240f932e81dd14e0e88f4cd31fe"
+}

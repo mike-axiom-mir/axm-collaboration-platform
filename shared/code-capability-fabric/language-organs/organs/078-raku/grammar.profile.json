@@ -1,0 +1,99 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 78,
+  "organId": "code.organ.raku.v1",
+  "languageId": "raku",
+  "displayName": "Raku",
+  "family": "scripting",
+  "kind": "interpreted-language",
+  "organDigest": "dd89d1944c79f3604067eb632c11c3dbfad546df165506f79de28f32aabc49dc",
+  "grammar": {
+    "paradigm": "dynamic multi-dispatch/grammar",
+    "compilationOrDocumentUnit": "compunit",
+    "dialectsOrVariants": [
+      "Raku"
+    ],
+    "constructs": [
+      "sub",
+      "method",
+      "class",
+      "role",
+      "grammar",
+      "multi",
+      "junction",
+      "lazy sequence",
+      "regex grammar",
+      "promise",
+      "react"
+    ],
+    "dependencyForms": [
+      "use",
+      "require"
+    ],
+    "scopeModel": "lexical/module/runtime",
+    "typeModel": "dynamic or inferred",
+    "mutationModel": "runtime object/state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus dynamic dispatch/reflection where supported"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "sub",
+      "method",
+      "class",
+      "role",
+      "grammar",
+      "multi",
+      "junction",
+      "lazy sequence",
+      "regex grammar",
+      "promise",
+      "react"
+    ],
+    "dependencyAnchors": [
+      "use",
+      "require"
+    ],
+    "semanticHazards": [
+      "context",
+      "multi dispatch",
+      "grammar backtracking",
+      "dynamic variables",
+      "NativeCall"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "context",
+      "multi dispatch",
+      "grammar backtracking",
+      "dynamic variables",
+      "NativeCall"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "raku -c",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "6539a353171fcb289f130a24d83ccd657ea2dfbf40f56c103daa5f2038b2cadb"
+}

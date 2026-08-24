@@ -1,0 +1,96 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 37,
+  "organId": "code.organ.gradle-dsl.v1",
+  "languageId": "gradle-dsl",
+  "displayName": "Gradle DSL",
+  "family": "build",
+  "kind": "build-dsl",
+  "organDigest": "5158ef4f71c71e9e5ae47c168dfda9fbf7f1be4974d9d8f64788c176fbec7cac",
+  "grammar": {
+    "paradigm": "host-language build DSL",
+    "compilationOrDocumentUnit": "build script",
+    "dialectsOrVariants": [
+      "Groovy DSL",
+      "Kotlin DSL"
+    ],
+    "constructs": [
+      "plugin",
+      "task",
+      "configuration",
+      "dependency",
+      "extension",
+      "repository",
+      "provider",
+      "source set",
+      "variant"
+    ],
+    "dependencyForms": [
+      "plugin",
+      "dependency",
+      "include build"
+    ],
+    "scopeModel": "file/block/target",
+    "typeModel": "host-dsl",
+    "mutationModel": "build/configuration graph",
+    "controlModel": "declarative plus host expressions",
+    "effectModel": "dependency resolution, build graph and generated outputs"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "plugin",
+      "task",
+      "configuration",
+      "dependency",
+      "extension",
+      "repository",
+      "provider",
+      "source set",
+      "variant"
+    ],
+    "dependencyAnchors": [
+      "plugin",
+      "dependency",
+      "include build"
+    ],
+    "semanticHazards": [
+      "configuration vs execution",
+      "dynamic Groovy",
+      "plugin versions",
+      "dependency resolution"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "configuration vs execution",
+      "dynamic Groovy",
+      "plugin versions",
+      "dependency resolution"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Gradle tasks",
+      "configuration cache check"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "2cbed148e1c642f0da3c969440d77bbb71e1c94ff6de7105033826f76deab802"
+}

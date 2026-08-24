@@ -1,0 +1,96 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 23,
+  "organId": "code.organ.github-actions.v1",
+  "languageId": "github-actions",
+  "displayName": "GitHub Actions",
+  "family": "infrastructure",
+  "kind": "workflow-dsl",
+  "organDigest": "dcc28a3567e4673e6cc69531cf5caf1479e94eba281a953de4512133f296bcd2",
+  "grammar": {
+    "paradigm": "workflow orchestration DSL",
+    "compilationOrDocumentUnit": "workflow",
+    "dialectsOrVariants": [
+      "GitHub Actions"
+    ],
+    "constructs": [
+      "workflow",
+      "job",
+      "step",
+      "matrix",
+      "expression",
+      "permission",
+      "environment",
+      "secret reference"
+    ],
+    "dependencyForms": [
+      "uses action",
+      "reusable workflow",
+      "container image"
+    ],
+    "scopeModel": "file/block/target",
+    "typeModel": "host-dsl",
+    "mutationModel": "build/configuration graph",
+    "controlModel": "declarative plus host expressions",
+    "effectModel": "dependency resolution, build graph and generated outputs"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "workflow",
+      "job",
+      "step",
+      "matrix",
+      "expression",
+      "permission",
+      "environment",
+      "secret reference"
+    ],
+    "dependencyAnchors": [
+      "uses action",
+      "reusable workflow",
+      "container image"
+    ],
+    "semanticHazards": [
+      "YAML coercion",
+      "expression context",
+      "permission escalation",
+      "secret exposure",
+      "action pinning"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "YAML coercion",
+      "expression context",
+      "permission escalation",
+      "secret exposure",
+      "action pinning"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "YAML parse",
+      "workflow schema",
+      "actionlint"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "f44ac0e317977ba176367f96617abf233e4cb41dcb25a3666e5a1c87913c6504"
+}

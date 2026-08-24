@@ -1,0 +1,98 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 40,
+  "organId": "code.organ.helm-templates.v1",
+  "languageId": "helm-templates",
+  "displayName": "Helm templates",
+  "family": "infrastructure",
+  "kind": "template-dsl",
+  "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+  "grammar": {
+    "paradigm": "Go-template plus YAML",
+    "compilationOrDocumentUnit": "chart template",
+    "dialectsOrVariants": [
+      "Helm3"
+    ],
+    "constructs": [
+      "template action",
+      "value reference",
+      "include",
+      "define",
+      "range",
+      "if",
+      "with",
+      "pipeline",
+      "YAML node"
+    ],
+    "dependencyForms": [
+      "include",
+      "template",
+      "chart dependency"
+    ],
+    "scopeModel": "file/block/target",
+    "typeModel": "host-dsl",
+    "mutationModel": "build/configuration graph",
+    "controlModel": "declarative plus host expressions",
+    "effectModel": "dependency resolution, build graph and generated outputs"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "template action",
+      "value reference",
+      "include",
+      "define",
+      "range",
+      "if",
+      "with",
+      "pipeline",
+      "YAML node"
+    ],
+    "dependencyAnchors": [
+      "include",
+      "template",
+      "chart dependency"
+    ],
+    "semanticHazards": [
+      "template/YAML duality",
+      "indentation",
+      "missing values",
+      "dot scope",
+      "rendered API version"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "template/YAML duality",
+      "indentation",
+      "missing values",
+      "dot scope",
+      "rendered API version"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "helm template",
+      "YAML parse",
+      "kube schema"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446"
+}

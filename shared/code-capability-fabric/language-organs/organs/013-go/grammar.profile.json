@@ -1,0 +1,100 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 13,
+  "organId": "code.organ.go.v1",
+  "languageId": "go",
+  "displayName": "Go",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "31c4b1208f84f45f5ae575cade2971cdeec60d282313f4fefcf0f5ae2cd9ae4b",
+  "grammar": {
+    "paradigm": "static concurrent systems",
+    "compilationOrDocumentUnit": "package",
+    "dialectsOrVariants": [
+      "Go"
+    ],
+    "constructs": [
+      "func",
+      "type",
+      "var",
+      "const",
+      "method",
+      "interface",
+      "generic",
+      "goroutine",
+      "channel",
+      "defer",
+      "select"
+    ],
+    "dependencyForms": [
+      "import"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "func",
+      "type",
+      "var",
+      "const",
+      "method",
+      "interface",
+      "generic",
+      "goroutine",
+      "channel",
+      "defer",
+      "select"
+    ],
+    "dependencyAnchors": [
+      "import"
+    ],
+    "semanticHazards": [
+      "goroutine leaks",
+      "data races",
+      "nil interface",
+      "defer order",
+      "unsafe",
+      "build tags"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "goroutine leaks",
+      "data races",
+      "nil interface",
+      "defer order",
+      "unsafe",
+      "build tags"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "go compile",
+      "go vet",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "e56961280d6856c0881582a7855260a1b16dcc148aacbc1b9b58753e25c53f81"
+}

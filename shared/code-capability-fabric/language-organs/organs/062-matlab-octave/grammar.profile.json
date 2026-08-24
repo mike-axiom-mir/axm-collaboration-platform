@@ -1,0 +1,99 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 62,
+  "organId": "code.organ.matlab-octave.v1",
+  "languageId": "matlab-octave",
+  "displayName": "MATLAB / Octave",
+  "family": "scientific",
+  "kind": "scientific-language",
+  "organDigest": "0e104655bd9a29ee423d3fc64aa8e41b376ea02622435e879c15e2252be36ecf",
+  "grammar": {
+    "paradigm": "dynamic matrix numeric",
+    "compilationOrDocumentUnit": "script/function file",
+    "dialectsOrVariants": [
+      "MATLAB",
+      "Octave"
+    ],
+    "constructs": [
+      "function",
+      "classdef",
+      "property",
+      "method",
+      "matrix",
+      "cell",
+      "struct",
+      "handle",
+      "anonymous function",
+      "end indexing"
+    ],
+    "dependencyForms": [
+      "import",
+      "path"
+    ],
+    "scopeModel": "lexical/module/runtime",
+    "typeModel": "dynamic or inferred",
+    "mutationModel": "runtime object/state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus dynamic dispatch/reflection where supported"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "function",
+      "classdef",
+      "property",
+      "method",
+      "matrix",
+      "cell",
+      "struct",
+      "handle",
+      "anonymous function",
+      "end indexing"
+    ],
+    "dependencyAnchors": [
+      "import",
+      "path"
+    ],
+    "semanticHazards": [
+      "shape",
+      "implicit expansion",
+      "1-based indexing",
+      "script workspace",
+      "handle/value semantics"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "shape",
+      "implicit expansion",
+      "1-based indexing",
+      "script workspace",
+      "handle/value semantics"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "parser",
+      "mlint/octave checks",
+      "numeric tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "c55eb281ef373837b2a76e0bf61fdd5597fea14e22c0c37aed25dbfc332ae165"
+}

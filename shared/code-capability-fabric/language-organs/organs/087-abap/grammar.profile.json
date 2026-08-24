@@ -1,0 +1,100 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 87,
+  "organId": "code.organ.abap.v1",
+  "languageId": "abap",
+  "displayName": "ABAP",
+  "family": "enterprise",
+  "kind": "enterprise-language",
+  "organDigest": "2cfe102daf6f7a8f3748b8d1906ad3ec190ff34ef0c81f31c8109bf2bd4d10ad",
+  "grammar": {
+    "paradigm": "enterprise procedural/OO",
+    "compilationOrDocumentUnit": "program/class pool",
+    "dialectsOrVariants": [
+      "ABAP"
+    ],
+    "constructs": [
+      "report",
+      "class",
+      "interface",
+      "method",
+      "function",
+      "FORM",
+      "data",
+      "types",
+      "internal table",
+      "field-symbol",
+      "Open SQL"
+    ],
+    "dependencyForms": [
+      "include",
+      "package namespace"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "report",
+      "class",
+      "interface",
+      "method",
+      "function",
+      "FORM",
+      "data",
+      "types",
+      "internal table",
+      "field-symbol",
+      "Open SQL"
+    ],
+    "dependencyAnchors": [
+      "include",
+      "package namespace"
+    ],
+    "semanticHazards": [
+      "implicit work areas",
+      "dynamic ASSIGN",
+      "authorization",
+      "database commit",
+      "include expansion"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "implicit work areas",
+      "dynamic ASSIGN",
+      "authorization",
+      "database commit",
+      "include expansion"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "ABAPLint parse",
+      "syntax check",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "a87e41834fcc9da203caa20ac202ac76c87e22e6b486eefef3e62876b89804b1"
+}

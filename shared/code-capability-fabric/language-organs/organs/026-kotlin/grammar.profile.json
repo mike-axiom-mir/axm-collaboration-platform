@@ -1,0 +1,101 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 26,
+  "organId": "code.organ.kotlin.v1",
+  "languageId": "kotlin",
+  "displayName": "Kotlin",
+  "family": "jvm",
+  "kind": "managed-language",
+  "organDigest": "0cd5eef18bb52d33235f8d03aea359043d4fc9e480af2e7d196a22b6ac9e7d4d",
+  "grammar": {
+    "paradigm": "static JVM/multiplatform",
+    "compilationOrDocumentUnit": "file",
+    "dialectsOrVariants": [
+      "Kotlin JVM",
+      "Kotlin Multiplatform"
+    ],
+    "constructs": [
+      "class",
+      "data class",
+      "object",
+      "interface",
+      "function",
+      "property",
+      "coroutine",
+      "extension",
+      "sealed class",
+      "generic",
+      "nullability",
+      "delegation"
+    ],
+    "dependencyForms": [
+      "import"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "class",
+      "data class",
+      "object",
+      "interface",
+      "function",
+      "property",
+      "coroutine",
+      "extension",
+      "sealed class",
+      "generic",
+      "nullability",
+      "delegation"
+    ],
+    "dependencyAnchors": [
+      "import"
+    ],
+    "semanticHazards": [
+      "nullability",
+      "coroutine context",
+      "inline/reified",
+      "platform types",
+      "delegation"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "nullability",
+      "coroutine context",
+      "inline/reified",
+      "platform types",
+      "delegation"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "kotlinc",
+      "detekt",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "7ff84701eac46e979268288d9e5f0040c47f381cd297778d7e6d5e4d6b4d82d7"
+}

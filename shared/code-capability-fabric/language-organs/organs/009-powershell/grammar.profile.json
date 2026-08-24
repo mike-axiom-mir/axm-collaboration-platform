@@ -1,0 +1,97 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 9,
+  "organId": "code.organ.powershell.v1",
+  "languageId": "powershell",
+  "displayName": "PowerShell",
+  "family": "shell",
+  "kind": "shell-language",
+  "organDigest": "25abae625767f277911a2417349af8b9026d406b14ae62f769b058188a97972a",
+  "grammar": {
+    "paradigm": "object pipeline shell",
+    "compilationOrDocumentUnit": "script or module",
+    "dialectsOrVariants": [
+      "Windows PowerShell",
+      "pwsh"
+    ],
+    "constructs": [
+      "function",
+      "class",
+      "param",
+      "variable",
+      "pipeline",
+      "scriptblock",
+      "try/catch",
+      "foreach",
+      "switch"
+    ],
+    "dependencyForms": [
+      "using module",
+      "Import-Module",
+      "dot-source"
+    ],
+    "scopeModel": "process/function/dynamic",
+    "typeModel": "string/object-shell-dependent",
+    "mutationModel": "environment/files/processes",
+    "controlModel": "branch, loop, pipeline and command status",
+    "effectModel": "process, filesystem, environment and external command effects"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "function",
+      "class",
+      "param",
+      "variable",
+      "pipeline",
+      "scriptblock",
+      "try/catch",
+      "foreach",
+      "switch"
+    ],
+    "dependencyAnchors": [
+      "using module",
+      "Import-Module",
+      "dot-source"
+    ],
+    "semanticHazards": [
+      "string expansion",
+      "pipeline object shape",
+      "dynamic invocation",
+      "scope drives"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "string expansion",
+      "pipeline object shape",
+      "dynamic invocation",
+      "scope drives"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "PowerShell parser",
+      "PSScriptAnalyzer",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "3730623d464f4b404e3f70437cd74957ed340ce6567ba8972160d129555b4592"
+}

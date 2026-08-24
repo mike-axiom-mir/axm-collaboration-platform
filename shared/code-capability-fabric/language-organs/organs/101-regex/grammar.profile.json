@@ -1,0 +1,98 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 101,
+  "organId": "code.organ.regex.v1",
+  "languageId": "regex",
+  "displayName": "Regex",
+  "family": "pattern",
+  "kind": "pattern-language",
+  "organDigest": "2083d8cb0ad9ead75c3bce0e686a2deccee42ecc91d74f3f580b1cf20e88eea5",
+  "grammar": {
+    "paradigm": "pattern matcher",
+    "compilationOrDocumentUnit": "pattern",
+    "dialectsOrVariants": [
+      "ECMAScript",
+      "PCRE",
+      "RE2",
+      "Python"
+    ],
+    "constructs": [
+      "group",
+      "capture",
+      "alternation",
+      "quantifier",
+      "class",
+      "anchor",
+      "lookaround",
+      "backreference",
+      "named capture",
+      "inline flag"
+    ],
+    "dependencyForms": [
+      "subpattern reference"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "group",
+      "capture",
+      "alternation",
+      "quantifier",
+      "class",
+      "anchor",
+      "lookaround",
+      "backreference",
+      "named capture",
+      "inline flag"
+    ],
+    "dependencyAnchors": [
+      "subpattern reference"
+    ],
+    "semanticHazards": [
+      "catastrophic backtracking",
+      "engine dialect",
+      "Unicode",
+      "zero-width",
+      "replacement groups"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "catastrophic backtracking",
+      "engine dialect",
+      "Unicode",
+      "zero-width",
+      "replacement groups"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "engine compile",
+      "adversarial match tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "5b48e3afad96d9f7c0d9ae6525e89768caec6d8de3c13bb43f8dfb5cbc9743de"
+}

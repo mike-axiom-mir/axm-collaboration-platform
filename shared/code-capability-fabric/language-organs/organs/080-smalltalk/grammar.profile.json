@@ -1,0 +1,94 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 80,
+  "organId": "code.organ.smalltalk.v1",
+  "languageId": "smalltalk",
+  "displayName": "Smalltalk",
+  "family": "scripting",
+  "kind": "interpreted-language",
+  "organDigest": "faeee8da9af9797a90bd3ba18110e3ad4cf67d791414e542d6dd0010f1e3e71b",
+  "grammar": {
+    "paradigm": "image-based message OO",
+    "compilationOrDocumentUnit": "method/fileout",
+    "dialectsOrVariants": [
+      "Smalltalk",
+      "Pharo/Squeak dialects"
+    ],
+    "constructs": [
+      "class",
+      "method",
+      "category",
+      "temporary",
+      "message send",
+      "block",
+      "cascade",
+      "primitive",
+      "metaclass"
+    ],
+    "dependencyForms": [
+      "image/package dependency"
+    ],
+    "scopeModel": "lexical/module/runtime",
+    "typeModel": "dynamic or inferred",
+    "mutationModel": "runtime object/state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus dynamic dispatch/reflection where supported"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "class",
+      "method",
+      "category",
+      "temporary",
+      "message send",
+      "block",
+      "cascade",
+      "primitive",
+      "metaclass"
+    ],
+    "dependencyAnchors": [
+      "image/package dependency"
+    ],
+    "semanticHazards": [
+      "image state",
+      "dynamic dispatch",
+      "become",
+      "global dictionary",
+      "method categories"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "image state",
+      "dynamic dispatch",
+      "become",
+      "global dictionary",
+      "method categories"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "parser",
+      "image tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "4792b4179bfbdb9cbb120948cc567f00acd917544f2c6eb813f9ee79fbdacf62"
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 90,
+  "organId": "code.organ.sparql.v1",
+  "languageId": "sparql",
+  "displayName": "SPARQL",
+  "family": "sql-query",
+  "kind": "query-language",
+  "organDigest": "e88cf3ab09bfec73df67f0f264b23d0bf423ed85cb6f7ce9c1292d167814967b",
+  "grammar": {
+    "paradigm": "RDF graph query",
+    "compilationOrDocumentUnit": "query/update",
+    "dialectsOrVariants": [
+      "SPARQL1.1"
+    ],
+    "constructs": [
+      "SELECT",
+      "CONSTRUCT",
+      "ASK",
+      "DESCRIBE",
+      "PREFIX",
+      "BASE",
+      "INSERT",
+      "DELETE",
+      "triple pattern",
+      "property path",
+      "OPTIONAL",
+      "UNION",
+      "FILTER",
+      "BIND",
+      "SERVICE"
+    ],
+    "dependencyForms": [
+      "IRI",
+      "prefix"
+    ],
+    "scopeModel": "statement/query/block",
+    "typeModel": "schema/domain-driven",
+    "mutationModel": "query-or-transaction",
+    "controlModel": "set/relational/procedural by dialect",
+    "effectModel": "database, graph, model or endpoint effects"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "SELECT",
+      "CONSTRUCT",
+      "ASK",
+      "DESCRIBE",
+      "PREFIX",
+      "BASE",
+      "INSERT",
+      "DELETE",
+      "triple pattern",
+      "property path",
+      "OPTIONAL",
+      "UNION",
+      "FILTER",
+      "BIND",
+      "SERVICE"
+    ],
+    "dependencyAnchors": [
+      "IRI",
+      "prefix"
+    ],
+    "semanticHazards": [
+      "blank-node scope",
+      "datasets",
+      "federation",
+      "unbound variables",
+      "datatypes"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "blank-node scope",
+      "datasets",
+      "federation",
+      "unbound variables",
+      "datatypes"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "SPARQL parse",
+      "endpoint tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "c0012da013c6577a46776e235d868d8705b8f63d5404b2a641a167be5ee5fe3c"
+}

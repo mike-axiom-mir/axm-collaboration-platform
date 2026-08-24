@@ -1,0 +1,105 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 17,
+  "organId": "code.organ.c.v1",
+  "languageId": "c",
+  "displayName": "C",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "6e234a63a08ca01c5cda4f9a6e7b35bfa8a1a918319b95c2f555e93c113ab522",
+  "grammar": {
+    "paradigm": "systems procedural",
+    "compilationOrDocumentUnit": "translation unit",
+    "dialectsOrVariants": [
+      "C89",
+      "C99",
+      "C11",
+      "C17",
+      "C23"
+    ],
+    "constructs": [
+      "function",
+      "struct",
+      "union",
+      "enum",
+      "typedef",
+      "variable",
+      "pointer",
+      "array",
+      "macro",
+      "preprocessor",
+      "goto"
+    ],
+    "dependencyForms": [
+      "include"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "function",
+      "struct",
+      "union",
+      "enum",
+      "typedef",
+      "variable",
+      "pointer",
+      "array",
+      "macro",
+      "preprocessor",
+      "goto"
+    ],
+    "dependencyAnchors": [
+      "include"
+    ],
+    "semanticHazards": [
+      "undefined behavior",
+      "pointer lifetime",
+      "integer overflow",
+      "macro expansion",
+      "aliasing",
+      "ownership conventions"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "undefined behavior",
+      "pointer lifetime",
+      "integer overflow",
+      "macro expansion",
+      "aliasing",
+      "ownership conventions"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "cc syntax",
+      "warnings",
+      "sanitizers",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "788a4113485166df488a2443eb5e79fa2843ee79279332afd8d48bd1101f1b97"
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 73,
+  "organId": "code.organ.vyper.v1",
+  "languageId": "vyper",
+  "displayName": "Vyper",
+  "family": "blockchain",
+  "kind": "smart-contract-language",
+  "organDigest": "56230bd67fe50d98f0b0bf0faf55577b245068ad06e9d9a5ef0168ae6490cfe6",
+  "grammar": {
+    "paradigm": "restricted EVM smart contract",
+    "compilationOrDocumentUnit": "module",
+    "dialectsOrVariants": [
+      "Vyper0.4"
+    ],
+    "constructs": [
+      "function",
+      "event",
+      "struct",
+      "interface",
+      "flag",
+      "storage",
+      "immutable",
+      "external/internal",
+      "payable",
+      "raw_call"
+    ],
+    "dependencyForms": [
+      "import"
+    ],
+    "scopeModel": "module/contract/function",
+    "typeModel": "static contract-domain",
+    "mutationModel": "persistent ledger/storage plus local memory",
+    "controlModel": "branch/call/revert/result",
+    "effectModel": "external calls, storage, value/assets and transaction context"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "function",
+      "event",
+      "struct",
+      "interface",
+      "flag",
+      "storage",
+      "immutable",
+      "external/internal",
+      "payable",
+      "raw_call"
+    ],
+    "dependencyAnchors": [
+      "import"
+    ],
+    "semanticHazards": [
+      "reentrancy",
+      "storage layout",
+      "external calls",
+      "decimal/integer behavior",
+      "nonreentrant"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "reentrancy",
+      "storage layout",
+      "external calls",
+      "decimal/integer behavior",
+      "nonreentrant"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Vyper compile",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "efd8ea82de476f613395342470bd7891f7af219b5f297bb4619fa550036f8557"
+}

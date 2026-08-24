@@ -1,0 +1,114 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 97,
+  "organId": "code.organ.systemverilog.v1",
+  "languageId": "systemverilog",
+  "displayName": "SystemVerilog",
+  "family": "hardware",
+  "kind": "hardware-description-language",
+  "organDigest": "6ebcce9179ebbddedeb752f503e4784de0f76dd0ee71e4b052bd4be1cbf8191f",
+  "grammar": {
+    "paradigm": "RTL/verification hardware",
+    "compilationOrDocumentUnit": "source",
+    "dialectsOrVariants": [
+      "SystemVerilog"
+    ],
+    "constructs": [
+      "module",
+      "interface",
+      "program",
+      "class",
+      "package",
+      "function",
+      "task",
+      "property",
+      "sequence",
+      "typedef",
+      "always_ff",
+      "always_comb",
+      "assertion",
+      "constraint",
+      "covergroup",
+      "clocking"
+    ],
+    "dependencyForms": [
+      "include",
+      "import",
+      "module instance"
+    ],
+    "scopeModel": "design-unit/process/block",
+    "typeModel": "bit/vector/signal/domain-specific",
+    "mutationModel": "signal/register/state transition",
+    "controlModel": "concurrent plus procedural regions",
+    "effectModel": "simulation/synthesis timing and hardware connectivity"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "module",
+      "interface",
+      "program",
+      "class",
+      "package",
+      "function",
+      "task",
+      "property",
+      "sequence",
+      "typedef",
+      "always_ff",
+      "always_comb",
+      "assertion",
+      "constraint",
+      "covergroup",
+      "clocking"
+    ],
+    "dependencyAnchors": [
+      "include",
+      "import",
+      "module instance"
+    ],
+    "semanticHazards": [
+      "races",
+      "4-state logic",
+      "randomization",
+      "clocking regions",
+      "packed/unpacked",
+      "UVM macros"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "races",
+      "4-state logic",
+      "randomization",
+      "clocking regions",
+      "packed/unpacked",
+      "UVM macros"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "SV parse",
+      "Verilator",
+      "simulation/formal"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "e1282a4ec33adfa07999a10a55b6a90dfa43b30b14003793b91bd72507610605"
+}

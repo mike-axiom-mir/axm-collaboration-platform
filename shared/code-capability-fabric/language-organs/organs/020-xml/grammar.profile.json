@@ -1,0 +1,92 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 20,
+  "organId": "code.organ.xml.v1",
+  "languageId": "xml",
+  "displayName": "XML",
+  "family": "data-config",
+  "kind": "markup-language",
+  "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+  "grammar": {
+    "paradigm": "namespaced markup",
+    "compilationOrDocumentUnit": "document",
+    "dialectsOrVariants": [
+      "XML1.0",
+      "XML1.1"
+    ],
+    "constructs": [
+      "element",
+      "attribute",
+      "text",
+      "comment",
+      "CDATA",
+      "doctype",
+      "processing instruction"
+    ],
+    "dependencyForms": [
+      "namespace",
+      "schema location",
+      "entity"
+    ],
+    "scopeModel": "tree/containment",
+    "typeModel": "schema-or-element-kinds",
+    "mutationModel": "structural-document",
+    "controlModel": "none",
+    "effectModel": "embedding, references and host interpretation"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "element",
+      "attribute",
+      "text",
+      "comment",
+      "CDATA",
+      "doctype",
+      "processing instruction"
+    ],
+    "dependencyAnchors": [
+      "namespace",
+      "schema location",
+      "entity"
+    ],
+    "semanticHazards": [
+      "entity expansion",
+      "namespace prefix",
+      "whitespace significance",
+      "encoding"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "entity expansion",
+      "namespace prefix",
+      "whitespace significance",
+      "encoding"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "XML parse",
+      "schema when bound"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f"
+}
