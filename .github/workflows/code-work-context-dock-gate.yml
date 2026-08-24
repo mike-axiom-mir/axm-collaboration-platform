@@ -31,13 +31,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Check work-context syntax
+      - name: Check work-context and production syntax
         run: |
           node --check shared/code-capability-fabric/language-organs/code-work-context-dock.js
           node --check shared/code-capability-fabric/language-organs/code-work-context-local-store.js
           node --check shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js
+          node --check shared/code-capability-fabric/language-organs/code-production-draft-fabric.js
+          node --check shared/code-capability-fabric/language-organs/code-production-draft-store.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-production-drafts.js
       - name: Prove direction, scratch, hot card and scoped local store
         run: node shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js
+      - name: Prove bounded editable production draft batches
+        run: node shared/code-capability-fabric/language-organs/selftest-code-production-drafts.js
       - name: Preserve developer relationship plane and build window
         run: |
           node shared/code-capability-fabric/language-organs/selftest-developer-relationship-plane.js
