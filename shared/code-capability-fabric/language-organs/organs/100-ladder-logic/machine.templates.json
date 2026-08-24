@@ -1,0 +1,1407 @@
+{
+  "schema": "axm.code.language-template-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "ladder-logic",
+  "organId": "code.organ.ladder-logic.v1",
+  "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+  "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+  "eyeId": "code.eye.ladder-logic.v1",
+  "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+  "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84",
+  "lanes": {
+    "verifiedVault": {
+      "meaning": "Evidence-bound machine recipe templates. Verified refers to template mechanics/evidence binding, not arbitrary generated source correctness.",
+      "templateCount": 12,
+      "templates": [
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.native-parse-snapshot.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "understand",
+          "nativeBindings": [
+            "IEC61131-3 LD",
+            "PLCopen XML",
+            "PLCopen document"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "7d28c0a9f13be47d9a6a82d0f844b9929ab6407751c470b158235166c2708be9"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.symbol-impact-map.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "impact",
+          "nativeBindings": [
+            "design-unit/process/block",
+            "network"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "REFERENCE_RESOLVED"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "3c8e863b6b3997f6083a0841e9dfcca7e7b6477f5e656ea471582cafb74ee30b"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.dependency-closure.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "dependencies",
+          "nativeBindings": [
+            "function block reference",
+            "PLCopen document"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ACYCLIC_GRAPH"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "a59146b17ef41ef46d60c37fd56e48ecd0fe121c0fbc739c229de67c69f8602c"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.type-state-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "impact",
+          "nativeBindings": [
+            "bit/vector/signal/domain-specific",
+            "network order"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "NO_COERCION_DELTA"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "373885ae791e7a797dabcff207edca2b9000ff0e2a8b72fd0dd4c14a7c193c59"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.control-effect-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "impact",
+          "nativeBindings": [
+            "simulation/synthesis timing and hardware connectivity",
+            "PLCopen document"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ORDERING_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "452bcee7630fe2dc13bb4c94bddd79ecb82f55239d63b854f7c496f741d897f8"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.rewrite-hazard-guard.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "refactor",
+          "nativeBindings": [
+            "scan cycle"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "HAZARD_NOT_RELEVANT:scan cycle"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "6ea79a6788cbffca3e61b4272d24c7cdb83f855da8bea1e0ea7a3456865672fd"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.native-verifier-ladder.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "verification",
+          "nativeBindings": [
+            "network validation"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "5a72311505f78ef36c413604544728f178a84e558e4d5580abad03e266c1011d"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.measure-before-optimization.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "performance",
+          "nativeBindings": [
+            "PLCopen document",
+            "function block reference"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.performance-build.03",
+              "phase": "performance-build",
+              "opcode": "BUILD_GRAPH_INVALIDATION",
+              "emits": "BUILD_INVALIDATION_FACT",
+              "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "BUILD_GRAPH_STABLE"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "3330f62eb1bff4ae71b3f3e8b9b45be8e21e0df51a9f008d58ae18c1130121e0"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.debug-hypothesis-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "debug",
+          "nativeBindings": [
+            "signal/register/state transition",
+            "concurrent plus procedural regions"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.debugging.04",
+              "phase": "debugging",
+              "opcode": "STATE_CONTROL_TRACE",
+              "emits": "TRACE_PLAN",
+              "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "TRACE_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "edd07a0723cc9fe491a443796ca5a8c26e757e9235a100e2ce8071f6ea962913"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.cross-language-comparison.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "discovery",
+          "nativeBindings": [
+            "PLC maintenance",
+            "relay logic",
+            "industrial control",
+            "IEC61131 graphical control"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.discovery.05",
+              "phase": "discovery",
+              "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+              "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+              "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "0bd8b4dba6e19b948c3a59dcfea9e1d9882d2df4c328d4888ef8e6b5218c2720"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.safe-refactor-preflight.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "refactor",
+          "nativeBindings": [
+            "IEC61131-3 LD",
+            "PLCopen XML",
+            "PLCopen document",
+            "design-unit/process/block",
+            "network",
+            "function block reference",
+            "bit/vector/signal/domain-specific",
+            "network order",
+            "simulation/synthesis timing and hardware connectivity",
+            "scan cycle",
+            "network validation"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            },
+            {
+              "ruleId": "code.cheat.ladder-logic.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            },
+            {
+              "ruleId": "code.cheat.ladder-logic.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            },
+            {
+              "ruleId": "code.cheat.ladder-logic.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            },
+            {
+              "ruleId": "code.cheat.ladder-logic.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            },
+            {
+              "ruleId": "code.cheat.ladder-logic.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            },
+            {
+              "ruleId": "code.cheat.ladder-logic.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE",
+            "REFERENCE_RESOLVED",
+            "ACYCLIC_GRAPH",
+            "NO_COERCION_DELTA",
+            "ORDERING_EQUIVALENT",
+            "HAZARD_NOT_RELEVANT:scan cycle",
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "e187c8efdec3dc0de9291006c30fb750aaae87b5a719ea95942d52eab617b1d5"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.ladder-logic.regression-defense-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "ladder-logic",
+          "intent": "verification",
+          "nativeBindings": [
+            "network validation",
+            "function block reference",
+            "PLCopen document",
+            "design-unit/process/block"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fe23d99e70d6fd37bef0dc7a49fc704e8caf466b5b389999a2c900371e2b10f0",
+            "grammarProfileDigest": "2c7a03b37a6004dfef7f70bce6c967f1c339556dabac07bc1c934f3c075c4fd1",
+            "eyeDigest": "a96105a70d6165f752a9455dd283e229b9fb57671ccf547a67eb92a9b57ca903",
+            "cheatcodeBankDigest": "5778a13d8351f9d0d3fd8fe0e7d58069c556df32ca2f058c0f09791d8caa7a84"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.ladder-logic.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            },
+            {
+              "ruleId": "code.cheat.ladder-logic.debugging.03",
+              "phase": "debugging",
+              "opcode": "DEPENDENCY_ISOLATION",
+              "emits": "DEPENDENCY_ISOLATION_PLAN",
+              "next": "ISOLATE_ONE_EDGE_AT_A_TIME"
+            },
+            {
+              "ruleId": "code.cheat.ladder-logic.performance-build.04",
+              "phase": "performance-build",
+              "opcode": "ANALYSIS_CACHE_INVALIDATION",
+              "emits": "ANALYSIS_INVALIDATION_SET",
+              "next": "DROP_ONLY_INVALID_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE",
+            "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED",
+            "ANALYSIS_PRESERVED"
+          ],
+          "verifierCandidates": [
+            "PLCopen XML parse",
+            "network validation",
+            "PLC simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "b581dcb5c47b6e900415cd5cdeddefde1137ebc3d10aa0650ba4c0ada04268b3"
+        }
+      ]
+    },
+    "patternNursery": {
+      "meaning": "Frequent structural or edit patterns mined from caller-supplied observations. Candidates never self-promote.",
+      "storedCandidates": [],
+      "automaticPromotion": false
+    }
+  },
+  "structuralSkeletons": [
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.ladder-logic.01.v1",
+      "languageId": "ladder-logic",
+      "construct": "POU",
+      "nativeUnit": "PLCopen document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "POU"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "4fcdc6568d3d385f7a79c85da84c0e26c3d241672f405049774cc6319a32955e"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.ladder-logic.02.v1",
+      "languageId": "ladder-logic",
+      "construct": "network",
+      "nativeUnit": "PLCopen document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "network"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "e0b4d686ef2d6ee6a7dec027368e354eb0359b5ea50eb512dd726ba1dd260439"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.ladder-logic.03.v1",
+      "languageId": "ladder-logic",
+      "construct": "contact",
+      "nativeUnit": "PLCopen document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "contact"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "420cc3a08d7dbf9d1f76e06c37369f731145bdebb33843712d89085b16aaf52a"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.ladder-logic.04.v1",
+      "languageId": "ladder-logic",
+      "construct": "coil",
+      "nativeUnit": "PLCopen document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "coil"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "6add3b89d00343d7656423ade12063cd90e86dddcc90eb651571574c6866f895"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.ladder-logic.05.v1",
+      "languageId": "ladder-logic",
+      "construct": "block",
+      "nativeUnit": "PLCopen document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "block"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "c61e10c390b5af294e3721fa48a3cac4a6cfd22161340ebcaa87bacf0f96eac8"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.ladder-logic.06.v1",
+      "languageId": "ladder-logic",
+      "construct": "variable",
+      "nativeUnit": "PLCopen document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "variable"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "0e7c309c8a9b562f17c150ab14039ff8781d12eda1c92603a76933c9acbbd545"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.ladder-logic.07.v1",
+      "languageId": "ladder-logic",
+      "construct": "connection",
+      "nativeUnit": "PLCopen document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "connection"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "57ab365e696beee8533aa0b9b9be82106a57caefd3d5f366ca6f7c75f56ff418"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.ladder-logic.08.v1",
+      "languageId": "ladder-logic",
+      "construct": "series",
+      "nativeUnit": "PLCopen document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "series"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "f14b92462c8bfeee3d380e5f14d4c3b33b1ff8ada42b67fb2687d541e98b9674"
+    }
+  ],
+  "fastUse": {
+    "indexKeys": [
+      "languageId",
+      "intent",
+      "nativeBinding"
+    ],
+    "deterministicMachineUse": true,
+    "aiCapsuleUse": true,
+    "sourceRendererOptional": true
+  },
+  "policy": {
+    "frequencyIsNotCorrectness": true,
+    "templateIsNotAuthority": true,
+    "minedCandidateIsNotVerifiedTemplate": true,
+    "automaticPromotion": false,
+    "automaticMutation": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "394d47bf385557cdf6bece547f1303748bfd764e6fae0ec3a302f9df68d65f3c"
+}

@@ -1,0 +1,1411 @@
+{
+  "schema": "axm.code.language-template-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "vhdl",
+  "organId": "code.organ.vhdl.v1",
+  "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+  "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+  "eyeId": "code.eye.vhdl.v1",
+  "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+  "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543",
+  "lanes": {
+    "verifiedVault": {
+      "meaning": "Evidence-bound machine recipe templates. Verified refers to template mechanics/evidence binding, not arbitrary generated source correctness.",
+      "templateCount": 12,
+      "templates": [
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.native-parse-snapshot.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "understand",
+          "nativeBindings": [
+            "VHDL93",
+            "VHDL2008",
+            "VHDL2019",
+            "design file"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "4ad5f24bbeb7de55ea9c183eb604340ee195e3a447459215579672fa45380624"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.symbol-impact-map.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "impact",
+          "nativeBindings": [
+            "design-unit/process/block",
+            "architecture"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "REFERENCE_RESOLVED"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "457c43cfc96485948d8841a593d732c402d963b122da660608ac92a610f7a59d"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.dependency-closure.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "dependencies",
+          "nativeBindings": [
+            "use",
+            "design file"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ACYCLIC_GRAPH"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "1edcb0e5e5f4cbe7297d7fe815aed138165391193eae3f5cc2db471dd5695ad2"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.type-state-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "impact",
+          "nativeBindings": [
+            "bit/vector/signal/domain-specific",
+            "delta cycles"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "NO_COERCION_DELTA"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "9bd4fa96d79965136c47cf3f6db93454c7b8855794ad21bee36b43bb0c848eb3"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.control-effect-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "impact",
+          "nativeBindings": [
+            "simulation/synthesis timing and hardware connectivity",
+            "design file"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ORDERING_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "78160ee145403dc7087e80795abfaaed064f4a72a9c0c9a6cb6b5b488a7525ee"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.rewrite-hazard-guard.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "refactor",
+          "nativeBindings": [
+            "signal vs variable"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "HAZARD_NOT_RELEVANT:signal vs variable"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "911a34b631a736580ae6916f18ecbf6ad8ed0bfb1fd3af9af0fa13f497ca9ac8"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.native-verifier-ladder.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "verification",
+          "nativeBindings": [
+            "GHDL"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "04f3bd2fcc52714e2a60137ec10fb31d29409284383c89e4eaba3352640d7efe"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.measure-before-optimization.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "performance",
+          "nativeBindings": [
+            "design file",
+            "library"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.performance-build.03",
+              "phase": "performance-build",
+              "opcode": "BUILD_GRAPH_INVALIDATION",
+              "emits": "BUILD_INVALIDATION_FACT",
+              "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "BUILD_GRAPH_STABLE"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "f2ebd2c70a4a8f310ecbd6a71b28fccbd5c76a9b970911bb62b8a5dce1b0c2ed"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.debug-hypothesis-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "debug",
+          "nativeBindings": [
+            "signal/register/state transition",
+            "concurrent plus procedural regions"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.debugging.04",
+              "phase": "debugging",
+              "opcode": "STATE_CONTROL_TRACE",
+              "emits": "TRACE_PLAN",
+              "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "TRACE_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "0a16e7a21ae61aa579b0f84b54b298b195ea753681415220e49188b896d3bd7d"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.cross-language-comparison.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "discovery",
+          "nativeBindings": [
+            "strongly typed RTL",
+            "FPGA",
+            "ASIC",
+            "concurrent hardware design"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.discovery.05",
+              "phase": "discovery",
+              "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+              "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+              "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "b34713c96cdc6d485443d88986d19a9597f928db580707a4f985ce840ffed56a"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.safe-refactor-preflight.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "refactor",
+          "nativeBindings": [
+            "VHDL93",
+            "VHDL2008",
+            "VHDL2019",
+            "design file",
+            "design-unit/process/block",
+            "architecture",
+            "use",
+            "bit/vector/signal/domain-specific",
+            "delta cycles",
+            "simulation/synthesis timing and hardware connectivity",
+            "signal vs variable",
+            "GHDL"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            },
+            {
+              "ruleId": "code.cheat.vhdl.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            },
+            {
+              "ruleId": "code.cheat.vhdl.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            },
+            {
+              "ruleId": "code.cheat.vhdl.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            },
+            {
+              "ruleId": "code.cheat.vhdl.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            },
+            {
+              "ruleId": "code.cheat.vhdl.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            },
+            {
+              "ruleId": "code.cheat.vhdl.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE",
+            "REFERENCE_RESOLVED",
+            "ACYCLIC_GRAPH",
+            "NO_COERCION_DELTA",
+            "ORDERING_EQUIVALENT",
+            "HAZARD_NOT_RELEVANT:signal vs variable",
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "df83fff142d37bde4f6107f3a55810220310c49bc2168504bc21286e4005ffde"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.vhdl.regression-defense-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "vhdl",
+          "intent": "verification",
+          "nativeBindings": [
+            "GHDL",
+            "library",
+            "use",
+            "component binding",
+            "design file",
+            "design-unit/process/block"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "fab3ab355473924b6062eeebfbc94d4586bcd24a748be20ac69e62bcdd28e62c",
+            "grammarProfileDigest": "bcdd97d0888d245a2a24c19fa73cd6ff74e1786efc42b03f649de38aeae605c2",
+            "eyeDigest": "0094ade4edb59706cd53a72b07a51248931adcb53ead02bc1847848049638206",
+            "cheatcodeBankDigest": "f84d9c3eda9fddf4dbb78b7005d678d619511bfda36d83450d187459408a1543"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SIGNAL_OR_PORT",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "WIDTH_OR_TYPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "CLOCK_OR_DOMAIN",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.vhdl.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            },
+            {
+              "ruleId": "code.cheat.vhdl.debugging.03",
+              "phase": "debugging",
+              "opcode": "DEPENDENCY_ISOLATION",
+              "emits": "DEPENDENCY_ISOLATION_PLAN",
+              "next": "ISOLATE_ONE_EDGE_AT_A_TIME"
+            },
+            {
+              "ruleId": "code.cheat.vhdl.performance-build.04",
+              "phase": "performance-build",
+              "opcode": "ANALYSIS_CACHE_INVALIDATION",
+              "emits": "ANALYSIS_INVALIDATION_SET",
+              "next": "DROP_ONLY_INVALID_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE",
+            "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED",
+            "ANALYSIS_PRESERVED"
+          ],
+          "verifierCandidates": [
+            "VHDL parse",
+            "GHDL",
+            "simulation"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "53279f1b79859d23b6f18bfa0864382a9eaeda4c774c64f731a4979e0dc33d34"
+        }
+      ]
+    },
+    "patternNursery": {
+      "meaning": "Frequent structural or edit patterns mined from caller-supplied observations. Candidates never self-promote.",
+      "storedCandidates": [],
+      "automaticPromotion": false
+    }
+  },
+  "structuralSkeletons": [
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.vhdl.01.v1",
+      "languageId": "vhdl",
+      "construct": "entity",
+      "nativeUnit": "design file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "entity"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SIGNAL_OR_PORT",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "WIDTH_OR_TYPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "1e2836766debf963ddda5fc641ed87e7b55da94b41b7f7093d0f1ab5a5f4eec0"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.vhdl.02.v1",
+      "languageId": "vhdl",
+      "construct": "architecture",
+      "nativeUnit": "design file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "architecture"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SIGNAL_OR_PORT",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "WIDTH_OR_TYPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "4aef71ff7e58c9baafd1446a0d8285441cc5df3f4671f8aa17341a3ce6bbd1c3"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.vhdl.03.v1",
+      "languageId": "vhdl",
+      "construct": "package",
+      "nativeUnit": "design file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "package"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SIGNAL_OR_PORT",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "WIDTH_OR_TYPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "338d8ee87f8e4f70529ed4e21d3ebe316497c3c1f97aa74afcaf88a5dd06f896"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.vhdl.04.v1",
+      "languageId": "vhdl",
+      "construct": "configuration",
+      "nativeUnit": "design file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "configuration"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SIGNAL_OR_PORT",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "WIDTH_OR_TYPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "5881e672214edb07b83346edab562abc9316b02b8a085d9d8e8e61e96c073f18"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.vhdl.05.v1",
+      "languageId": "vhdl",
+      "construct": "process",
+      "nativeUnit": "design file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "process"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SIGNAL_OR_PORT",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "WIDTH_OR_TYPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "bcebebd4de6dd9bcc41e15f19afc6938f75cf3fa5fe0e5b5c1b8a2b06f7fbd13"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.vhdl.06.v1",
+      "languageId": "vhdl",
+      "construct": "component",
+      "nativeUnit": "design file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "component"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SIGNAL_OR_PORT",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "WIDTH_OR_TYPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "76d18c83b124482addf2de6bc27767ade876ec7c5ac2fc18315d18c6eddd2b90"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.vhdl.07.v1",
+      "languageId": "vhdl",
+      "construct": "signal",
+      "nativeUnit": "design file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "signal"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SIGNAL_OR_PORT",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "WIDTH_OR_TYPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "67b4b7cbf673dc944220ebf3caceb8e6c110cb55f162ed202ac30740c67e05c2"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.vhdl.08.v1",
+      "languageId": "vhdl",
+      "construct": "variable",
+      "nativeUnit": "design file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "variable"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SIGNAL_OR_PORT",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "WIDTH_OR_TYPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "2856d91cb0b1193aa6260c7bf3abba16f47135142f0869650e343ce4705eb50b"
+    }
+  ],
+  "fastUse": {
+    "indexKeys": [
+      "languageId",
+      "intent",
+      "nativeBinding"
+    ],
+    "deterministicMachineUse": true,
+    "aiCapsuleUse": true,
+    "sourceRendererOptional": true
+  },
+  "policy": {
+    "frequencyIsNotCorrectness": true,
+    "templateIsNotAuthority": true,
+    "minedCandidateIsNotVerifiedTemplate": true,
+    "automaticPromotion": false,
+    "automaticMutation": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "4bcf0eb2967f1825e4243341551d357c295a9faf2ba80a72abe8d438b89c86b8"
+}
