@@ -145,6 +145,13 @@ function run() {
     const hostGraph = Host.compileRepository(root, { sourceCommit: 'c'.repeat(40), strictSchemas: true });
     check(hostGraph.summary.blocks === 1, 'host discovers declared module');
     check(hostGraph.schemas.some(row => row.id === 'axm.fixture/v1'), 'host discovers schemas');
+    writeJson(path.join(root, 'tools', 'fixture-sensor', '.pytest_cache', 'README.md'), { local: true });
+    writeJson(path.join(root, 'tools', 'fixture-sensor', '__pycache__', 'cache.json'), { local: true });
+    writeJson(path.join(root, 'tools', 'fixture-sensor', 'workspace', 'attempt.json'), { local: true });
+    fs.mkdirSync(path.join(root, 'tools', 'fixture-sensor', 'runtime'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'tools', 'fixture-sensor', 'runtime', 'bridge_token.txt'), 'local-only\n');
+    const localStateGraph = Host.compileRepository(root, { sourceCommit: 'c'.repeat(40), strictSchemas: true });
+    check(localStateGraph.semanticDigest === hostGraph.semanticDigest, 'host ignores local caches, workspaces, and secret-log files');
     const written = Host.writeRepositoryViews(root, { sourceCommit: 'c'.repeat(40), strictSchemas: true });
     check(written.graph.semanticDigest === hostGraph.semanticDigest, 'host write preserves graph digest');
     check(Host.checkRepository(root, { sourceCommit: 'c'.repeat(40), strictSchemas: true }).state === 'PASS', 'host check passes exact generated views');

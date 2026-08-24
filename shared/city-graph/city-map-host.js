@@ -5,7 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const Core = require('./city-map-core');
 
-const SKIP_DIRS = new Set(['.git', 'node_modules', 'vendor', 'exports', 'state', 'logs', 'backups', 'evidence', 'fixtures']);
+const SKIP_DIRS = new Set(['.git', '.pytest_cache', '__pycache__', 'node_modules', 'vendor', 'exports', 'state', 'workspace', 'logs', 'backups', 'evidence', 'fixtures']);
+const SKIP_FILES = new Set(['bridge-token.txt', 'bridge_token.txt', 'bridge.log', 'workshop.log']);
 
 function textSha256(bytes) {
   return Core.sha256(Buffer.from(bytes).toString('utf8').replace(/\r\n?/g, '\n'));
@@ -49,7 +50,7 @@ function walkFiles(start, predicate, limit) {
       const absolute = path.join(current, entry.name);
       if (entry.isDirectory()) {
         if (!SKIP_DIRS.has(entry.name)) queue.push(absolute);
-      } else if (entry.isFile() && predicate(absolute, entry.name)) found.push(absolute);
+      } else if (entry.isFile() && !SKIP_FILES.has(entry.name.toLowerCase()) && predicate(absolute, entry.name)) found.push(absolute);
     }
   }
   return found.sort((a, b) => a.localeCompare(b));
@@ -211,6 +212,7 @@ function writeRepositoryViews(repositoryRoot, options) {
 
 module.exports = {
   SKIP_DIRS,
+  SKIP_FILES,
   textSha256,
   portable,
   inside,
