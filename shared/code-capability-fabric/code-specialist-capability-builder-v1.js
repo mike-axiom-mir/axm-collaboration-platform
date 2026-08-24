@@ -2,13 +2,14 @@
 
 const crypto = require('crypto');
 const DeterministicJson = require('../../tools/deterministic-json-core');
+const Router = require('./code-specialization-router-v1');
 const IntentAdapter = require('./code-specialist-organ-intent-adapter-v1');
 const BuildProfileRegistry = require('./code-specialist-build-profile-registry-v1');
 const CapabilityFabric = require('../capability-fabric');
 const HandFoundryContract = require('../../tools/hand-specification-foundry/module.contract.json');
 const MODULE_CONTRACT = require('./module-code-specialist-capability-builder-v1.contract.json');
 
-const VERSION = '1.9.0';
+const VERSION = '2.0.0';
 const REQUEST_SCHEMA = 'axm.code-specialist-capability-build-request/v1';
 const RESULT_SCHEMA = 'axm.code-specialist-capability-candidate/v1';
 const TARGETS = BuildProfileRegistry.TARGETS;
@@ -16,6 +17,7 @@ const BUILD_PROFILE_CATALOG = BuildProfileRegistry.CATALOG;
 const TARGET_SPECIALIST_ID = TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST.specialistId;
 const TARGET_RECIPE = TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST.recipe;
 const MARKUP_TARGET_RECIPE = TARGETS.ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST.recipe;
+const PYTHON_TARGET_RECIPE = TARGETS.ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST.recipe;
 const ROOTS = IntentAdapter.ROOTS;
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
 const SAFE_ID = /^[a-z0-9][a-z0-9._-]{0,127}$/;
@@ -28,9 +30,10 @@ const LIMITATIONS = Object.freeze([
   'DURATION_NOT_INDEPENDENTLY_ENFORCED',
   'GENERATED_SELFTEST_EMITTED_NOT_RUN',
   'HTML_VISUAL_ACCESSIBILITY_AND_INTERACTION_BEHAVIOR_NOT_PROVEN',
-  'BUILD_PROFILE_CATALOG_INITIALLY_CONTAINS_ONLY_JSON_SCHEMA_AND_STATIC_HTML',
+  'BUILD_PROFILE_CATALOG_IS_BOUNDED_NOT_UNIVERSAL',
   'MEMORY_NOT_INDEPENDENTLY_ENFORCED',
   'ORGAN_INTENT_DOES_NOT_PROVE_IMPLEMENTATION_SEMANTICS',
+  'PYTHON_RUNTIME_AND_EMITTED_SELFTEST_NOT_EXECUTED',
   'SPECIALIST_PROFILE_IS_ROUTING_CONTEXT_NOT_CAPABILITY_PROOF',
   'CANON_CHANGE_NOT_AUTHORIZED'
 ].sort(compareText));
@@ -310,7 +313,8 @@ function generate(input) {
             const candidate = build && build.status === 'COMPLETE' && build.candidates.length === 1 ? build.candidates[0] : null;
             buildPasses = candidate ? 2 : 0;
             candidateBytesGeneratedTransiently = candidate !== null;
-            emittedSelftestEvidence = candidate && typeof candidate.files['selftest.js'] === 'string' ? 'EMITTED_NOT_RUN' : 'NOT_EMITTED';
+            const selftestPath = recipe && recipe.capabilityContract ? (recipe.capabilityContract.selftest || 'selftest.js') : 'selftest.js';
+            emittedSelftestEvidence = candidate && typeof candidate.files[selftestPath] === 'string' ? 'EMITTED_NOT_RUN' : 'NOT_EMITTED';
             const verification = candidate ? CapabilityFabric.verifyCandidate(candidate) : { ok: false, errors: [] };
             const pathCheck = candidate ? validateCandidatePaths(Object.keys(candidate.files)) : { pass: false, errors: ['candidate missing'] };
             candidateStructureEvidence = candidate ? (verification.ok ? 'PASS' : 'FAIL') : 'FAIL';
@@ -398,6 +402,10 @@ function resealIntentRequest(value) {
 
 function buildTargetExampleIntentRequest(target, options) {
   const draft = clone(IntentAdapter.buildExampleRequest());
+  if (options.specializationRequest) {
+    draft.specializationRequest = clone(options.specializationRequest);
+    draft.specializationPlan = Router.plan(draft.specializationRequest);
+  }
   const artifact = draft.specializationPlan.artifactPlans.find((row) => row.artifactRef.id === target.artifactId);
   const lane = artifact && artifact.specialistLanes.find((row) => row.organRef.id === target.specialistId);
   if (!artifact || !lane) fail('example specialization plan lacks target artifact or specialist lane');
@@ -406,6 +414,22 @@ function buildTargetExampleIntentRequest(target, options) {
   draft.intentDraft.name = options.intentName;
   draft.intentDraft.purpose = options.intentPurpose;
   return resealIntentRequest(draft);
+}
+
+function buildPythonSpecializationRequest() {
+  const draft = clone(Router.buildExampleRequest());
+  const observation = clone(draft.observation);
+  delete observation.observationDigest;
+  observation.id = 'example-python-code-artifact-observation';
+  observation.artifacts.push({
+    id: 'python-transform', path: 'module/record_transform.py', sha256: Router.sha256Value('example-bytes:module/record_transform.py'), byteLength: 128,
+    declaredLanguageId: 'python', artifactFamilies: ['module'], responsibilities: ['application-logic'], runtimes: ['server'], frameworks: ['python-stdlib'],
+    requiredPermissions: [], networkDomains: [], interfaceContracts: [], dependsOnArtifactIds: [], sharedSeam: false
+  });
+  draft.id = 'route-example-python-application-specialist';
+  draft.observation = Router.sealObservation(observation);
+  delete draft.requestDigest;
+  return Router.sealRequest(draft);
 }
 
 function buildTargetExampleRequest(target, options) {
@@ -486,11 +510,37 @@ function buildMarkupExampleRequest() {
   });
 }
 
+function buildPythonExampleIntentRequest() {
+  return buildTargetExampleIntentRequest(TARGETS.ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST, {
+    specializationRequest: buildPythonSpecializationRequest(),
+    intentRequestId: 'bind-python-application-specialist-organ-intent',
+    intentName: 'Bounded Python Application Specialist Intent',
+    intentPurpose: 'Bind one exact Python application-logic specialist lane to a reviewed inert record-transform intent before a separate detached candidate-generation decision.'
+  });
+}
+
+function buildPythonExampleRequest() {
+  return buildTargetExampleRequest(TARGETS.ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST, {
+    specializationRequest: buildPythonSpecializationRequest(),
+    intentRequestId: 'bind-python-application-specialist-organ-intent',
+    intentName: 'Bounded Python Application Specialist Intent',
+    intentPurpose: 'Bind one exact Python application-logic specialist lane to a reviewed inert record-transform intent before a separate detached candidate-generation decision.',
+    buildRequestId: 'python-record-transform-candidate',
+    buildPurpose: 'Generate one detached bounded Python record-transform candidate for the explicitly reviewed synthetic Python artifact.',
+    outerRequestId: 'build-python-application-specialist-candidate',
+    decisionId: 'mike-tier-1-python-candidate-direction',
+    decisionText: 'Mike authorized bounded stepwise Code Capability Fabric improvement: create one detached Python candidate; do not execute, write, install, integrate, publish, promote, or CANON.',
+    evaluatedAt: '2026-08-24T00:00:00.000Z', expiresAt: '2026-08-25T00:00:00.000Z', nonce: 'python-candidate-0001',
+    rootEvidencePrefix: 'python-candidate-', rootEvidenceSubject: 'python-specialist-candidate-v2.0'
+  });
+}
+
 if (!MODULE_CONTRACT || MODULE_CONTRACT.id !== 'code-specialist-capability-builder-v1') fail('module contract identity mismatch');
 
 module.exports = {
-  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
+  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, PYTHON_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
   canonicalJson, clone, same, sha256Value, jsonBytes, isSafeCandidatePath, validateCandidatePaths,
   sealRequest, normalizeRequest, generate, verify, buildExampleIntentRequest, buildExampleRequest,
-  buildMarkupExampleIntentRequest, buildMarkupExampleRequest
+  buildMarkupExampleIntentRequest, buildMarkupExampleRequest,
+  buildPythonSpecializationRequest, buildPythonExampleIntentRequest, buildPythonExampleRequest
 };

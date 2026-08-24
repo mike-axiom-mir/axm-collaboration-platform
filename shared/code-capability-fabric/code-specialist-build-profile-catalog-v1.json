@@ -81,6 +81,45 @@
       "evidence": {"visualBehavior": "UNKNOWN", "requiredKinds": ["INTERACTION_JOURNEY", "STATIC_STRUCTURE", "VISUAL_APPEARANCE"]},
       "boundary": {"authority": "NONE", "permissions": [], "networkDomains": [], "workspaceRead": false, "workspaceWrite": false, "candidateExecution": false, "install": false, "integrate": false, "publish": false, "promote": false, "canon": false},
       "profileDigest": "sha256:6937f9925297f8e898ce8ec0930c2f1a3b47b6645c974d77ab12e7c30a84008e"
+    },
+    {
+      "schema": "axm.code-specialist-build-profile/v1",
+      "id": "code-family.bounded-python-record-transform",
+      "version": "1.0.0",
+      "status": "TEST",
+      "mode": "ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST",
+      "specialistOrganRef": {
+        "id": "organ.code.application-logic",
+        "schema": "axm.code-specialist-organ-profile/v1",
+        "version": "1.0.0",
+        "sha256": "sha256:db17f57a04b3c70c9d54ed46042eca8e8780013e4c4f0dc5164c932a5ff29258"
+      },
+      "languageIds": ["python"],
+      "capability": {
+        "family": "python-module",
+        "recipeRef": {
+          "id": "bounded-python-record-transform",
+          "version": "0.1.0",
+          "digest": "sha256:82d04d8b78e44978f4d5a42c8c7fb62b944279c89dd498f1268d3cfa97bc5637",
+          "builderId": "bounded-python-record-transform-v1",
+          "builderDigest": "sha256:ad281fa5a1381de86d71e1c4a2ffbad30ee20683cb705b4a09d778464ea5227c",
+          "capabilityKind": "HAND"
+        }
+      },
+      "exampleArtifactId": "python-transform",
+      "gates": {
+        "specialist": "SELECT_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST_AND_REPLAN",
+        "recipe": "RESTORE_EXACT_SOURCE_REVIEWED_BOUNDED_PYTHON_RECIPE",
+        "request": "REPAIR_EXACT_HUMAN_REVIEWED_BOUNDED_PYTHON_REQUEST"
+      },
+      "gaps": {
+        "specialist": "code.specialist.python.application-logic.exact-lane",
+        "recipe": "capability.recipe.bounded-python-record-transform.exact",
+        "request": "capability.build-request.python-module.exact"
+      },
+      "evidence": {"visualBehavior": "NOT_APPLICABLE", "requiredKinds": ["DETERMINISTIC_BEHAVIOR", "STATIC_STRUCTURE"]},
+      "boundary": {"authority": "NONE", "permissions": [], "networkDomains": [], "workspaceRead": false, "workspaceWrite": false, "candidateExecution": false, "install": false, "integrate": false, "publish": false, "promote": false, "canon": false},
+      "profileDigest": "sha256:b4140fd2ae3b416802962b97bbb8131e4c8202c2e7dd9277a51efd6922fa4549"
     }
   ],
   "truth": {
@@ -92,5 +131,5 @@
     "automaticInstall": false,
     "mikeFinalMergeGateRequired": true
   },
-  "catalogDigest": "sha256:4095f9b20ac3ad7f79e0fddd151fd0e01e91f019d0cfe5b4506654e335ef9b59"
+  "catalogDigest": "sha256:5b853af2f1858bc3fb3f849554654344374831ff2c4a1e846dfe67299b602342"
 }

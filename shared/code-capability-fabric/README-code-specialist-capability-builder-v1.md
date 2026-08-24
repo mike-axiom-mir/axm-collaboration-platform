@@ -1,15 +1,16 @@
 # Code Specialist Capability Builder v1 (TEST)
 
-This v1.9 rung gives registered Code Capability Fabric specialists real but
+This v2.0 rung gives registered Code Capability Fabric specialists real but
 bounded construction routes. The initial build-profile catalog contains:
 
 - `organ.code.data-schema` → `closed-json-schema-validator@0.1.0`; and
-- `organ.code.markup-structure` → `static-accessible-html-page@0.1.0`.
+- `organ.code.markup-structure` → `static-accessible-html-page@0.1.0`; and
+- `organ.code.application-logic` + Python → `bounded-python-record-transform@0.1.0`.
 
 Each route emits one byte-bound detached candidate. Selection is exact across
 the language, specialist Organ, build profile, Capability Fabric recipe, and
-native builder digests. One specialist cannot borrow or impersonate another
-profile's recipe.
+native builder digests and the language-native source/selftest paths. One
+specialist cannot borrow or impersonate another profile's recipe.
 
 The builder requires all of the following exact inputs:
 
@@ -25,8 +26,9 @@ The builder requires all of the following exact inputs:
 
 It reuses the canonical Capability Fabric builder registry. That trusted native
 builder creates candidate source bytes twice in memory to prove deterministic
-rebuild parity. The emitted `capability.js` and `selftest.js` remain inert data:
-this rung never evaluates, imports, runs, materializes, writes, installs,
+rebuild parity. JavaScript candidates emit `capability.js` and `selftest.js`;
+the Python candidate emits `capability.py` and `selftest.py`. All remain inert
+data: this rung never evaluates, imports, runs, materializes, writes, installs,
 integrates, publishes, promotes, or canonizes them.
 
 The HTML-page hand accepts bounded structured text and emits semantic document
@@ -41,13 +43,14 @@ paths, and resource ceilings can pass. Runtime behavior remains `UNKNOWN`; the
 generated selftest remains `EMITTED_NOT_RUN`; human identity authentication and
 nonce replay prevention are not claimed.
 
-Only the closed JSON Schema validator and static HTML-page renderer are
-registered initially. CSS, Python, browser behavior, application logic,
-persistence, security, tests, build systems, shaders, hardware simulation,
-performance, documentation, and audio still require their own source-reviewed
-recipes, build profiles, and evidence. A reviewed profile can add a lane
-without rewriting this builder. Unsupported or drifted profiles produce typed
-holds instead of borrowing a nearby recipe.
+Only the closed JSON Schema validator, static HTML-page renderer, and one
+string-only Python record transform are registered. The Python lane does not
+claim general Python generation or runtime correctness. CSS, broader Python,
+browser behavior, persistence, security, tests, build systems, shaders,
+hardware simulation, performance, documentation, and audio still require
+their own source-reviewed recipes, profiles, and evidence. A reviewed profile
+can add a lane without rewriting this builder. Unsupported or drifted profiles
+produce typed holds instead of borrowing a nearby recipe.
 
 The Capability Fabric catalog and schemas now bind the HTML builder's exact
 implementation digest alongside the prior validator HAND and bounded-review

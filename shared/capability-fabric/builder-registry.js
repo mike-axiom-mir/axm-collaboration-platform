@@ -131,6 +131,75 @@
     return {capabilityKind:'HAND',source:htmlPageSource(config),selftest:htmlPageSelftest(config),provides:[parameters.resultSchemaId,'text/html'],consumes:['axm.markup-page-content/v1'],summary:'Pure deterministic accessible HTML document-structure renderer.'};
   }
 
+  function pythonField(value,label){
+    const text=String(value||'');
+    if(!/^[a-z][a-z0-9_]{0,63}$/.test(text))throw new Error(label+' is invalid');
+    return text;
+  }
+  function pythonText(value,label,maximum){
+    const text=String(value==null?'':value);
+    if(!text.trim()||text.length>maximum||text.includes('\u0000'))throw new Error(label+' is invalid');
+    return text;
+  }
+  function pythonRecordTransformSource(config){
+    return [
+      '# Generated deterministic candidate. Static data until a separately authorized host executes it.',
+      'import json',
+      '',
+      'CONFIG = '+JSON.stringify(config),
+      '',
+      'def _json_bytes(value):',
+      '    try:',
+      '        encoded = json.dumps(value, sort_keys=True, separators=(\",\", \":\"), ensure_ascii=False, allow_nan=False)',
+      '        return len(encoded.encode(\"utf-8\"))',
+      '    except (TypeError, ValueError, OverflowError, RecursionError):',
+      '        return CONFIG[\"maxInputBytes\"] + 1',
+      '',
+      'def run(payload):',
+      '    if type(payload) is not dict:',
+      '        return {\"schema\": CONFIG[\"resultSchemaId\"], \"ok\": False, \"code\": \"INPUT_OBJECT_REQUIRED\"}',
+      '    if any(type(key) is not str for key in payload):',
+      '        return {\"schema\": CONFIG[\"resultSchemaId\"], \"ok\": False, \"code\": \"INPUT_KEY_INVALID\"}',
+      '    if len(payload) > CONFIG[\"maxInputKeys\"]:',
+      '        return {\"schema\": CONFIG[\"resultSchemaId\"], \"ok\": False, \"code\": \"INPUT_KEY_LIMIT\"}',
+      '    if any(value is not None and type(value) is not str for value in payload.values()):',
+      '        return {\"schema\": CONFIG[\"resultSchemaId\"], \"ok\": False, \"code\": \"INPUT_VALUE_UNSUPPORTED\"}',
+      '    if _json_bytes(payload) > CONFIG[\"maxInputBytes\"]:',
+      '        return {\"schema\": CONFIG[\"resultSchemaId\"], \"ok\": False, \"code\": \"INPUT_BYTES_EXCEEDED\"}',
+      '    value = payload.get(CONFIG[\"sourceField\"], CONFIG[\"defaultValue\"])',
+      '    if type(value) is not str:',
+      '        return {\"schema\": CONFIG[\"resultSchemaId\"], \"ok\": False, \"code\": \"SOURCE_VALUE_INVALID\"}',
+      '    return {\"schema\": CONFIG[\"resultSchemaId\"], \"ok\": True, \"output\": {CONFIG[\"targetField\"]: value}}',
+      ''
+    ].join('\n');
+  }
+  function pythonRecordTransformSelftest(config){
+    return [
+      '# Emitted verification candidate. Not executed by Capability Fabric.',
+      'from capability import CONFIG, run',
+      '',
+      'assert CONFIG[\"sourceField\"] == '+JSON.stringify(config.sourceField),
+      'first = run({'+JSON.stringify(config.sourceField)+': \"proof\"})',
+      'second = run({'+JSON.stringify(config.sourceField)+': \"proof\"})',
+      'assert first == second',
+      'assert first[\"ok\"] is True',
+      'assert first[\"output\"]['+JSON.stringify(config.targetField)+'] == \"proof\"',
+      'assert run({})[\"output\"]['+JSON.stringify(config.targetField)+'] == '+JSON.stringify(config.defaultValue),
+      'assert run([])[\"code\"] == \"INPUT_OBJECT_REQUIRED\"',
+      'assert run({'+JSON.stringify(config.sourceField)+': 7})[\"code\"] == \"INPUT_VALUE_UNSUPPORTED\"',
+      'print(\"PASS bounded Python record transform candidate\")',
+      ''
+    ].join('\n');
+  }
+  function buildPythonRecordTransform(parameters){
+    htmlExact(parameters,['resultSchemaId','sourceField','targetField','defaultValue','maxInputKeys','maxInputBytes'],'parameters');
+    if(!/^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$/.test(parameters.resultSchemaId||''))throw new Error('resultSchemaId is invalid');
+    if(!Number.isInteger(parameters.maxInputKeys)||parameters.maxInputKeys<1||parameters.maxInputKeys>128)throw new Error('maxInputKeys is outside the bounded range');
+    if(!Number.isInteger(parameters.maxInputBytes)||parameters.maxInputBytes<128||parameters.maxInputBytes>65536)throw new Error('maxInputBytes is outside the bounded range');
+    const config={resultSchemaId:parameters.resultSchemaId,sourceField:pythonField(parameters.sourceField,'sourceField'),targetField:pythonField(parameters.targetField,'targetField'),defaultValue:pythonText(parameters.defaultValue,'defaultValue',256),maxInputKeys:parameters.maxInputKeys,maxInputBytes:parameters.maxInputBytes};
+    return {capabilityKind:'HAND',source:pythonRecordTransformSource(config),selftest:pythonRecordTransformSelftest(config),provides:[parameters.resultSchemaId],consumes:['application/json'],summary:'Pure bounded Python record-field transform candidate using only the standard-library json module.'};
+  }
+
   function exact(value, keys, label) {
     if(!value||typeof value!=='object'||Array.isArray(value))throw new Error(label+' must be an object');
     Object.keys(value).forEach(function(key){if(!keys.includes(key))throw new Error(label+' contains unsupported key '+key);});
@@ -298,7 +367,8 @@
     makeEntry('closed-json-schema-validator-v1','HAND',REVIEW_CANDIDATE,'sha256:02a61d48f5213edc9140f1720c12f84a8de1ebc0bbc7f1b338d9a9e8bf0df14f',buildSchemaValidator,[stable,byteLength,exactKeys,inspectSchema,validatorSource,validatorSelftest,exampleFor,buildSchemaValidator]),
     makeEntry('bounded-review-procedure-skill-v1','SKILL',REVIEW_CANDIDATE,'sha256:acd5678b5327fda7c2a2f1280fb4fa26f41cfd188e4788c1df3c2e539ee532ba',buildReviewSkill,[exact,list,safeId,contractId,renderSkillMarkdown,renderSkillSelftest,buildReviewSkill]),
     makeEntry('closed-object-contract-adapter-v1','HAND',REVIEW_CANDIDATE,'sha256:65a4fbfab2452f0e2c6a8fbff0f873f2b58f6b6cb7f0f533cbe1a260f9f151d1',buildObjectAdapter,[adapterFieldName,primitiveValueValid,inspectAdapterPrimitive,inspectAdapterObjectSchema,primitiveSchemaCompatible,adapterExample,inspectAdapterParameters,objectAdapterSource,objectAdapterSelftest,buildObjectAdapter]),
-    makeEntry('static-accessible-html-page-v1','HAND',REVIEW_CANDIDATE,'sha256:983ff82440f97044d5d1af9737e7656df547898b9a0753579fb01440ca4ecfc6',buildHtmlPage,[htmlExact,htmlText,htmlPageSource,htmlPageSelftest,buildHtmlPage])
+    makeEntry('static-accessible-html-page-v1','HAND',REVIEW_CANDIDATE,'sha256:983ff82440f97044d5d1af9737e7656df547898b9a0753579fb01440ca4ecfc6',buildHtmlPage,[htmlExact,htmlText,htmlPageSource,htmlPageSelftest,buildHtmlPage]),
+    makeEntry('bounded-python-record-transform-v1','HAND',ACTIVE,null,buildPythonRecordTransform,[htmlExact,pythonField,pythonText,pythonRecordTransformSource,pythonRecordTransformSelftest,buildPythonRecordTransform])
   ];
   // Lifecycle activation is applied after implementation sealing so the exact
   // source-reviewed builder digest remains the one bound by the admission plan.

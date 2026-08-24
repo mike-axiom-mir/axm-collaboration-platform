@@ -18,7 +18,7 @@
     throw new Error('AXM capability builder registry is required');
   }
 
-  const FABRIC_VERSION = '1.3.0';
+  const FABRIC_VERSION = '1.4.0';
   const REQUEST_SCHEMA = 'axm.capability-fabric.build-request/v1';
   const RECIPE_SCHEMA = 'axm.capability-recipe/v1';
   const CATALOG_SCHEMA = 'axm.capability-recipe-catalog/v1';
@@ -66,7 +66,10 @@
   function safeField(value) { return /^[a-z][a-zA-Z0-9]{0,63}$/.test(String(value||'')); }
   function safeVersion(value) { return /^[0-9]+\.[0-9]+\.[0-9]+$/.test(String(value||'')); }
   function safeDigest(value) { return /^sha256:[a-f0-9]{64}$/.test(String(value||'')); }
-  function safePackagePath(value) { return typeof value==='string'&&value.length>0&&value.length<=240&&!value.includes('\0')&&!/^(?:[A-Za-z]:|[\\/])/.test(value)&&value.replace(/\\/g,'/').split('/').every(function(part){return part&&part!=='.'&&part!=='..';}); }
+  function safePackagePath(value) {
+    const reserved=/^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/i;
+    return typeof value==='string'&&value.length>0&&value.length<=240&&!value.includes('\0')&&!value.includes('\\')&&!value.includes(':')&&!/^[\/]/.test(value)&&value.split('/').every(function(part){return /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(part)&&part!=='.'&&part!=='..'&&!/[. ]$/.test(part)&&!reserved.test(part);});
+  }
   function escapeHtml(value) { return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function mergeParameters(base, overrides) {
     const result=Object.create(null);
@@ -102,10 +105,24 @@
     if(own(rule,'maxBytes')&&(!Number.isInteger(rule.maxBytes)||rule.maxBytes<1||rule.maxBytes>MAX_PARAMETER_BYTES))errors.push(issue('PARAMETER_BYTE_RULE_INVALID',path+'.maxBytes','maxBytes must be a positive integer within the parameter ceiling.'));
   }
 
+  function handArtifactLayout(contract) {
+    return {
+      sourceLanguage:own(contract,'sourceLanguage')?contract.sourceLanguage:'javascript',
+      entry:contract.entry,
+      selftest:own(contract,'selftest')?contract.selftest:'selftest.js'
+    };
+  }
+  function runtimeContract(contract) {
+    const runtime={mode:contract.runtimeMode,entry:contract.entry,operation:contract.operation};
+    if(own(contract,'sourceLanguage'))runtime.sourceLanguage=contract.sourceLanguage;
+    if(own(contract,'selftest'))runtime.selftest=contract.selftest;
+    return runtime;
+  }
   function validateCapabilityContract(kind, contract, path, errors) {
-    const keys=['runtimeMode','entry','operation','portableForm','portablePath','resultContractPolicy','requiredHostCapabilities'];
+    const requiredKeys=['runtimeMode','entry','operation','portableForm','portablePath','resultContractPolicy','requiredHostCapabilities'];
+    const keys=requiredKeys.concat(['sourceLanguage','selftest']);
     if(!allowedKeys(contract,keys,path,errors))return;
-    requireKeys(contract,keys,path,errors);
+    requireKeys(contract,requiredKeys,path,errors);
     if(CAPABILITY_KINDS.indexOf(kind)<0)errors.push(issue('CAPABILITY_KIND_INVALID',path.replace(/\.capabilityContract$/,'.capabilityKind'),'Capability kind must be HAND or SKILL.'));
     if(['EXECUTABLE','HOST_MEDIATED','INSTRUCTION_ONLY'].indexOf(contract.runtimeMode)<0)errors.push(issue('RUNTIME_MODE_INVALID',path+'.runtimeMode','Unsupported modular capability runtime mode.'));
     if(contract.entry!==null&&(typeof contract.entry!=='string'||!safePackagePath(contract.entry)))errors.push(issue('RUNTIME_ENTRY_INVALID',path+'.entry','Runtime entry must be null or a safe package path.'));
@@ -115,7 +132,15 @@
     if(contract.resultContractPolicy!=='BUILDER_PROVIDES_EXACT')errors.push(issue('RESULT_CONTRACT_POLICY_INVALID',path+'.resultContractPolicy','Builder output must declare exact provided contracts.'));
     if(!Array.isArray(contract.requiredHostCapabilities)||contract.requiredHostCapabilities.length>32)errors.push(issue('HOST_CAPABILITIES_INVALID',path+'.requiredHostCapabilities','Host capabilities must be an array of at most 32 unique contract ids.'));
     else {const seen=new Set();contract.requiredHostCapabilities.forEach(function(value,index){if(typeof value!=='string'||!value.trim()||value.length>180||seen.has(value))errors.push(issue('HOST_CAPABILITIES_INVALID',path+'.requiredHostCapabilities['+index+']','Host capability ids must be unique strings of 1 to 180 characters.'));seen.add(value);});}
-    if(kind==='HAND'&&(contract.runtimeMode!=='EXECUTABLE'||contract.entry!=='capability.js'||contract.portableForm!=='NONE'||contract.portablePath!==null))errors.push(issue('HAND_CONTRACT_INVALID',path,'HAND requires executable capability.js and no portable skill form.'));
+    if(own(contract,'sourceLanguage')&&!['javascript','python'].includes(contract.sourceLanguage))errors.push(issue('SOURCE_LANGUAGE_INVALID',path+'.sourceLanguage','HAND source language must be javascript or python.'));
+    if(own(contract,'selftest')&&(typeof contract.selftest!=='string'||!safePackagePath(contract.selftest)))errors.push(issue('SELFTEST_PATH_INVALID',path+'.selftest','HAND selftest must be a safe package path.'));
+    if(kind==='HAND'){
+      const layout=handArtifactLayout(contract),extensions={javascript:'.js',python:'.py'};
+      if(contract.runtimeMode!=='EXECUTABLE'||contract.portableForm!=='NONE'||contract.portablePath!==null||typeof layout.entry!=='string'||typeof layout.selftest!=='string')errors.push(issue('HAND_CONTRACT_INVALID',path,'HAND requires an executable source entry, one selftest, and no portable skill form.'));
+      else if(!extensions[layout.sourceLanguage]||!layout.entry.endsWith(extensions[layout.sourceLanguage])||!layout.selftest.endsWith(extensions[layout.sourceLanguage]))errors.push(issue('HAND_LANGUAGE_LAYOUT_MISMATCH',path,'HAND entry and selftest extensions must match the declared source language.'));
+      if(typeof layout.entry==='string'&&typeof layout.selftest==='string'&&layout.entry.toLowerCase()===layout.selftest.toLowerCase())errors.push(issue('HAND_PATH_COLLISION',path,'HAND entry and selftest paths must be disjoint, including case aliases.'));
+      if(layout.sourceLanguage!=='javascript'&&(!own(contract,'sourceLanguage')||!own(contract,'selftest')))errors.push(issue('HAND_EXPLICIT_LAYOUT_REQUIRED',path,'Non-JavaScript HANDs must explicitly bind sourceLanguage and selftest.'));
+    }
     if(kind==='SKILL'&&(contract.portableForm!=='SKILL_MD'||contract.portablePath!=='SKILL.md'))errors.push(issue('SKILL_CONTRACT_INVALID',path,'SKILL requires the portable SKILL.md form.'));
     if(kind==='SKILL'&&contract.runtimeMode==='EXECUTABLE'&&contract.entry!=='capability.js')errors.push(issue('SKILL_RUNTIME_ENTRY_INVALID',path+'.entry','Executable SKILL requires capability.js.'));
     if(kind==='SKILL'&&contract.runtimeMode!=='EXECUTABLE'&&contract.entry!==null)errors.push(issue('SKILL_RUNTIME_ENTRY_INVALID',path+'.entry','Non-executable SKILL runtime entry must be null.'));
@@ -299,11 +324,11 @@
     if(!variant)throw new Error('Exact planned variant unavailable.');
     const parameters=mergeParameters(request.parameters,variant.parameterOverrides);
     const parameterCheck=validateParameters(parameters,recipe);if(!parameterCheck.ok)throw new Error('Variant parameters failed validation.');
-    const artifact=compileArtifact(recipe,parameters),moduleId=request.id+(variant.id==='standard'?'':'-'+variant.id),version='v0.1';
+    const artifact=compileArtifact(recipe,parameters),moduleId=request.id+(variant.id==='standard'?'':'-'+variant.id),version='v0.1',handLayout=recipe.capabilityKind==='HAND'?handArtifactLayout(recipe.capabilityContract):null;
     const artifactCheck=validateCompiledArtifact(recipe,artifact);if(!artifactCheck.ok)throw new Error('Compiled artifact contract failed: '+artifactCheck.errors.map(function(row){return row.code;}).join(', '));
     const manifest={schema:'axm.module-manifest/v1',id:moduleId,name:recipe.title+' — '+request.id,version:version,status:'EXPERIMENTAL',capabilityKind:recipe.capabilityKind,entry:'index.html',contract:'module.contract.json',uses:[],installed:false,promoted:false};
     const contract={schema:'axm.module-contract/v1',id:moduleId,version:version,capabilityKind:recipe.capabilityKind,modularCapabilityContract:'modular-capability.contract.json',provides:artifact.provides,consumes:artifact.consumes,permissions:[],handoffs:{emits:artifact.provides,accepts:artifact.consumes.concat(['human-review'])},lifecycle:{state_owner:'none',reload:'not-applicable',disconnect:'not-applicable',cleanup:'not-applicable'},boundaries:{writes:[],refuses:['network','filesystem','dynamic-code','implicit-randomness','automatic-test-execution','installation','registration','staging','promotion','permission-change','canon-change','foundation-mutation']}};
-    const modularContract={schema:'axm.modular-capability-contract/v1',id:moduleId,version:version,kind:recipe.capabilityKind,runtime:{mode:recipe.capabilityContract.runtimeMode,entry:recipe.capabilityContract.entry,operation:recipe.capabilityContract.operation},portable:{form:recipe.capabilityContract.portableForm,path:recipe.capabilityContract.portablePath},provides:artifact.provides,consumes:artifact.consumes,resultContractPolicy:recipe.capabilityContract.resultContractPolicy,requiredHostCapabilities:recipe.capabilityContract.requiredHostCapabilities,permissions:[],status:'EXPERIMENTAL',installed:false,promoted:false,canon:false,contractDigest:''};
+    const modularContract={schema:'axm.modular-capability-contract/v1',id:moduleId,version:version,kind:recipe.capabilityKind,runtime:runtimeContract(recipe.capabilityContract),portable:{form:recipe.capabilityContract.portableForm,path:recipe.capabilityContract.portablePath},provides:artifact.provides,consumes:artifact.consumes,resultContractPolicy:recipe.capabilityContract.resultContractPolicy,requiredHostCapabilities:recipe.capabilityContract.requiredHostCapabilities,permissions:[],status:'EXPERIMENTAL',installed:false,promoted:false,canon:false,contractDigest:''};
     modularContract.contractDigest=digest(withoutKey(modularContract,'contractDigest'));
     const compilation={schema:'axm.capability-compilation-receipt/v1',fabricVersion:FABRIC_VERSION,status:'EXPERIMENTAL',capabilityKind:recipe.capabilityKind,requestDigest:request.requestDigest,catalogDigest:catalog.catalogDigest,recipeRef:plan.recipeRef,variantId:variant.id,builderId:recipe.builderId,generatedCodeExecuted:false,testsEmitted:true,authority:clone(AUTHORITY),compilationDigest:''};
     compilation.compilationDigest=digest(withoutKey(compilation,'compilationDigest'));
@@ -312,15 +337,15 @@
       'module.contract.json':pretty(contract),
       'modular-capability.contract.json':pretty(modularContract),
       'index.html':'<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escapeHtml(manifest.name)+'</title><style>body{font:16px system-ui;max-width:52rem;margin:4rem auto;padding:0 1rem;background:#0b1118;color:#edf7f4}code{color:#79e6c2}.boundary{border:1px solid #395066;padding:1rem;border-radius:12px}</style><h1>'+escapeHtml(manifest.name)+'</h1><p>'+escapeHtml(artifact.summary)+'</p><p>Recipe: <code>'+escapeHtml(recipe.id)+'@'+escapeHtml(recipe.version)+'</code></p><div class="boundary"><strong>EXPERIMENTAL · DETACHED</strong><p>Static inspection only. This page executes no generated capability code.</p></div></html>\n',
-      'README.md':'# '+manifest.name+'\n\n'+artifact.summary+'\n\nGenerated deterministically from recipe `'+recipe.id+'@'+recipe.version+'`. The candidate is detached and EXPERIMENTAL. Run `node selftest.js` only from an explicitly trusted host entry point.\n',
+      'README.md':'# '+manifest.name+'\n\n'+artifact.summary+'\n\nGenerated deterministically from recipe `'+recipe.id+'@'+recipe.version+'`. The candidate is detached and EXPERIMENTAL. Run `'+(handLayout&&handLayout.sourceLanguage==='python'?'python '+handLayout.selftest:'node selftest.js')+'` only from an explicitly trusted host entry point.\n',
       'build-request.json':pretty(request),
       'capability-recipe.json':pretty(recipe),
       'compilation.receipt.json':pretty(compilation),
-      'evidence-route.json':pretty({schema:'axm.evidence-route/v1',claims:[{claim:'Same exact request and recipe rebuild identical candidate bytes.',evidence:'Capability Fabric deterministic rebuild test and package verification.'},{claim:'Candidate structure is ready for later governed intake.',evidence:'Detached Candidate Nursery structural scan.'},{claim:'Generated behavior meets its focused contract.',evidence:'Externally executed emitted selftest.js.'}],notProven:['general usefulness','fitness for undeclared tasks','visual approval unless separately observed','runtime safety outside declared boundaries','installation readiness','promotion or CANON status']})
+      'evidence-route.json':pretty({schema:'axm.evidence-route/v1',claims:[{claim:'Same exact request and recipe rebuild identical candidate bytes.',evidence:'Capability Fabric deterministic rebuild test and package verification.'},{claim:'Candidate structure is ready for later governed intake.',evidence:'Detached Candidate Nursery structural scan.'},{claim:'Generated behavior meets its focused contract.',evidence:'Externally executed emitted '+(handLayout?handLayout.selftest:'skill.selftest.js')+'.'}],notProven:['general usefulness','fitness for undeclared tasks','visual approval unless separately observed','runtime safety outside declared boundaries','installation readiness','promotion or CANON status']})
     };
     if(recipe.capabilityKind==='HAND'){
-      files['capability.js']=artifact.source.replace(/\r\n/g,'\n');
-      files['selftest.js']=artifact.selftest.replace(/\r\n/g,'\n');
+      files[handLayout.entry]=artifact.source.replace(/\r\n/g,'\n');
+      files[handLayout.selftest]=artifact.selftest.replace(/\r\n/g,'\n');
     }else Object.keys(artifact.portableFiles).sort().forEach(function(path){files[path]=artifact.portableFiles[path].replace(/\r\n/g,'\n');});
     const receipt={schema:'axm.module-candidate-receipt/v1',candidate:{id:moduleId,name:manifest.name,version:version,status:'EXPERIMENTAL',capabilityKind:recipe.capabilityKind,location:'detached-capability-candidate'},source:{kind:'capability-fabric',requestDigest:request.requestDigest,recipeDigest:recipe.recipeDigest,compilationDigest:compilation.compilationDigest},authority:clone(AUTHORITY),boundaries:['detached-package','no-self-install','no-self-promotion','host-review-required']};
     files['candidate.receipt.json']=pretty(receipt);
@@ -354,13 +379,14 @@
     if(!safeId(descriptor.variantId))errors.push(issue('PACKAGE_VARIANT_INVALID','$.package.variantId','Variant id must be lowercase and hyphenated.'));
     falseAuthority(descriptor.authority,'$.package.authority',errors);
 
-    const paths=Object.keys(candidate.files).sort(),declared=[],seen=new Set();let declaredBytes=0;
+    const paths=Object.keys(candidate.files).sort(),declared=[],seen=new Set(),portableSeen=new Set();let declaredBytes=0;
     if(!Array.isArray(descriptor.files)||!descriptor.files.length||descriptor.files.length>MAX_PACKAGE_FILES)errors.push(issue('PACKAGE_FILES_INVALID','$.package.files','Package must declare 1 to '+MAX_PACKAGE_FILES+' files.'));
     else descriptor.files.forEach(function(row,index){
       const at='$.package.files['+index+']';
       if(!allowedKeys(row,['path','bytes','digest'],at,errors))return;
       requireKeys(row,['path','bytes','digest'],at,errors);declared.push(row.path);
-      if(!safePackagePath(row.path)||seen.has(row.path))errors.push(issue('PACKAGE_PATH_UNSAFE',at+'.path','File path must be unique, relative, and traversal-free.'));seen.add(row.path);
+      const portableKey=typeof row.path==='string'?row.path.toLowerCase():'';
+      if(!safePackagePath(row.path)||seen.has(row.path)||portableSeen.has(portableKey))errors.push(issue('PACKAGE_PATH_UNSAFE',at+'.path','File path must be portable, case-alias unique, relative, and traversal-free.'));seen.add(row.path);portableSeen.add(portableKey);
       if(!Number.isInteger(row.bytes)||row.bytes<0)errors.push(issue('PACKAGE_FILE_BYTES_INVALID',at+'.bytes','Declared bytes must be a non-negative integer.'));
       if(!safeDigest(row.digest))errors.push(issue('PACKAGE_FILE_DIGEST_INVALID',at+'.digest','Declared file digest is malformed.'));
       if(!own(candidate.files,row.path)){errors.push(issue('PACKAGE_FILE_MISSING','$.files.'+row.path,'Declared file is missing.'));return;}
@@ -372,7 +398,12 @@
     });
     paths.forEach(function(path){if(!safePackagePath(path))errors.push(issue('PACKAGE_PATH_UNSAFE','$.files.'+path,'Actual file path is unsafe.'));if(typeof candidate.files[path]!=='string')errors.push(issue('PACKAGE_FILE_CONTENT_INVALID','$.files.'+path,'Candidate file content must be UTF-8 text.'));});
     if(canonicalJson(paths)!==canonicalJson(declared))errors.push(issue('PACKAGE_FILE_SET_MISMATCH','$.files','Declared and actual file sets or order differ.'));
-    const requiredFiles=['manifest.json','module.contract.json','modular-capability.contract.json','index.html','README.md','build-request.json','capability-recipe.json','compilation.receipt.json','evidence-route.json','candidate.receipt.json','module-bundle.json'].concat(descriptor.capabilityKind==='HAND'?['capability.js','selftest.js']:['SKILL.md','skill.contract.json','skill.selftest.js']);
+    let requiredKindFiles=['SKILL.md','skill.contract.json','skill.selftest.js'];
+    if(descriptor.capabilityKind==='HAND'){
+      requiredKindFiles=['capability.js','selftest.js'];
+      try{const embeddedRecipe=JSON.parse(candidate.files['capability-recipe.json']);if(validateRecipe(embeddedRecipe).ok){const layout=handArtifactLayout(embeddedRecipe.capabilityContract);requiredKindFiles=[layout.entry,layout.selftest];}}catch(_){/* bound JSON validation below reports the malformed recipe */}
+    }
+    const requiredFiles=['manifest.json','module.contract.json','modular-capability.contract.json','index.html','README.md','build-request.json','capability-recipe.json','compilation.receipt.json','evidence-route.json','candidate.receipt.json','module-bundle.json'].concat(requiredKindFiles);
     requiredFiles.forEach(function(path){if(!own(candidate.files,path))errors.push(issue('PACKAGE_REQUIRED_FILE_MISSING','$.files.'+path,'Required modular candidate file is missing.'));});
     if(!Number.isInteger(descriptor.totalBytes)||descriptor.totalBytes!==declaredBytes||descriptor.totalBytes>MAX_PACKAGE_BYTES)errors.push(issue('PACKAGE_TOTAL_BYTES_MISMATCH','$.package.totalBytes','Total bytes must exactly match content within the package ceiling.',{expected:declaredBytes,actual:descriptor.totalBytes}));
     const expected=digest(withoutKey(descriptor,'packageDigest'));if(expected!==descriptor.packageDigest)errors.push(issue('PACKAGE_DIGEST_MISMATCH','$.package.packageDigest','Package digest mismatch.'));
@@ -400,7 +431,7 @@
       if(contract.schema!=='axm.module-contract/v1'||contract.id!==descriptor.id||contract.version!==descriptor.version||contract.capabilityKind!==descriptor.capabilityKind||contract.modularCapabilityContract!=='modular-capability.contract.json'||!Array.isArray(contract.provides)||!Array.isArray(contract.consumes)||!Array.isArray(contract.permissions)||contract.permissions.length!==0||!isPlain(contract.boundaries)||!Array.isArray(contract.boundaries.writes)||contract.boundaries.writes.length!==0||!Array.isArray(contract.boundaries.refuses)||requiredRefusals.some(function(value){return contract.boundaries.refuses.indexOf(value)<0;}))errors.push(issue('CONTRACT_AUTHORITY_DRIFT','$.files.module.contract.json','Module contract weakened the detached execution, kind, or authority boundary.'));
       const modularKeys=['schema','id','version','kind','runtime','portable','provides','consumes','resultContractPolicy','requiredHostCapabilities','permissions','status','installed','promoted','canon','contractDigest'];
       allowedKeys(modularContract,modularKeys,'$.files.modular-capability.contract.json',errors);requireKeys(modularContract,modularKeys,'$.files.modular-capability.contract.json',errors);
-      const expectedRuntime={mode:recipe.capabilityContract.runtimeMode,entry:recipe.capabilityContract.entry,operation:recipe.capabilityContract.operation},expectedPortable={form:recipe.capabilityContract.portableForm,path:recipe.capabilityContract.portablePath};
+      const expectedRuntime=runtimeContract(recipe.capabilityContract),expectedPortable={form:recipe.capabilityContract.portableForm,path:recipe.capabilityContract.portablePath};
       if(!isPlain(modularContract.runtime)||!isPlain(modularContract.portable)||modularContract.schema!=='axm.modular-capability-contract/v1'||modularContract.id!==descriptor.id||modularContract.version!==descriptor.version||modularContract.kind!==descriptor.capabilityKind||canonicalJson(modularContract.runtime)!==canonicalJson(expectedRuntime)||canonicalJson(modularContract.portable)!==canonicalJson(expectedPortable)||canonicalJson(modularContract.provides)!==canonicalJson(contract.provides)||canonicalJson(modularContract.consumes)!==canonicalJson(contract.consumes)||modularContract.resultContractPolicy!==recipe.capabilityContract.resultContractPolicy||canonicalJson(modularContract.requiredHostCapabilities)!==canonicalJson(recipe.capabilityContract.requiredHostCapabilities)||!Array.isArray(modularContract.permissions)||modularContract.permissions.length!==0||modularContract.status!=='EXPERIMENTAL'||modularContract.installed!==false||modularContract.promoted!==false||modularContract.canon!==false||modularContract.contractDigest!==digest(withoutKey(modularContract,'contractDigest')))errors.push(issue('MODULAR_CONTRACT_DRIFT','$.files.modular-capability.contract.json','Modular capability contract is invalid, unbound, or authority-bearing.'));
       const requiredNotProven=['runtime safety outside declared boundaries','installation readiness','promotion or CANON status'];
       if(!isPlain(evidence)||evidence.schema!=='axm.evidence-route/v1'||!Array.isArray(evidence.claims)||!Array.isArray(evidence.notProven)||requiredNotProven.some(function(value){return evidence.notProven.indexOf(value)<0;}))errors.push(issue('EVIDENCE_BOUNDARY_DRIFT','$.files.evidence-route.json','Evidence route removed required not-proven boundaries.'));

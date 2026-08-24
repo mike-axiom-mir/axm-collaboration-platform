@@ -24,13 +24,16 @@ const candidate = result.detachedCandidate;
 const markupBase = Builder.buildMarkupExampleRequest();
 const markupResult = Builder.generate(markupBase);
 const markupCandidate = markupResult.detachedCandidate;
+const pythonBase = Builder.buildPythonExampleRequest();
+const pythonResult = Builder.generate(pythonBase);
+const pythonCandidate = pythonResult.detachedCandidate;
 const sourcePath = path.join(__dirname, 'code-specialist-capability-builder-v1.js');
 const requestSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-specialist-capability-build-request.schema.json'), 'utf8'));
 const resultSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-specialist-capability-candidate.schema.json'), 'utf8'));
 const capabilityRecipeSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'capability-recipe.schema.json'), 'utf8'));
 const candidatePackageSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'candidate-package.schema.json'), 'utf8'));
 
-test('example request is sealed under the v1.9 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
+test('example request is sealed under the v2.0 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
 test('request version is exact', () => assert.strictEqual(base.version, Builder.VERSION));
 test('request digest rebuilds exactly', () => assert.strictEqual(base.requestDigest, Builder.sha256Value(Object.fromEntries(Object.entries(base).filter(([key]) => key !== 'requestDigest')))));
 test('example produces one detached candidate', () => assert.strictEqual(result.status, 'COMPLETE_DETACHED_CANDIDATE'));
@@ -102,7 +105,7 @@ test('public copying remains unauthorized', () => assert.strictEqual(result.reus
 test('capability gap report is READY only for this exact rung', () => assert.deepStrictEqual(result.capabilityGapReport.missingCapabilities, []));
 test('next gate is exact candidate review before sandbox decision', () => assert.strictEqual(result.nextGate, 'HUMAN_REVIEW_EXACT_CANDIDATE_BYTES_BEFORE_SEPARATE_SANDBOX_DECISION'));
 
-test('markup example request is sealed under the v1.9 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
+test('markup example request is sealed under the v2.0 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
 test('markup example produces one detached candidate', () => assert.strictEqual(markupResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('markup result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(markupResult, markupBase), { pass: true, errors: [] }));
 test('markup generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(markupResult), Builder.canonicalJson(Builder.generate(markupBase))));
@@ -133,6 +136,31 @@ test('markup candidate remains detached and unintegrated', () => assert.strictEq
 test('markup output stays inside the exact candidate resource ceiling', () => assert(markupCandidate.package.totalBytes <= markupBase.resourceEnvelope.maxCandidateBytes && markupCandidate.package.files.length <= markupBase.resourceEnvelope.maxCandidateFiles));
 test('markup visual limitation is retained', () => assert(markupResult.limitations.includes('HTML_VISUAL_ACCESSIBILITY_AND_INTERACTION_BEHAVIOR_NOT_PROVEN')));
 
+test('Python example request is sealed under the v2.0 identity', () => assert.strictEqual(pythonBase.version, Builder.VERSION));
+test('Python example produces one detached candidate', () => assert.strictEqual(pythonResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
+test('Python result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(pythonResult, pythonBase), { pass: true, errors: [] }));
+test('Python generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(pythonResult), Builder.canonicalJson(Builder.generate(pythonBase))));
+test('Python selection binds application logic and the exact Python artifact', () => assert.strictEqual(pythonResult.specialistContext.specialistOrganRef.id, 'organ.code.application-logic') && assert.strictEqual(pythonResult.specialistContext.artifactRef.id, 'python-transform'));
+test('Python selection binds the exact profile and language', () => assert.strictEqual(pythonResult.specialistContext.buildProfileRef.id, 'code-family.bounded-python-record-transform') && assert.strictEqual(pythonResult.specialistContext.languageId, 'python'));
+test('Python candidate binds the exact source-reviewed recipe', () => assert.deepStrictEqual(pythonResult.recipeRef, Builder.PYTHON_TARGET_RECIPE));
+test('Python consent binds the exact catalog, profile, request, and recipe bytes', () => assert.strictEqual(pythonResult.consentRef.subject.catalogDigest, pythonResult.catalogRef.sha256) && assert.strictEqual(pythonResult.consentRef.subject.buildProfileCatalogDigest, pythonResult.buildProfileCatalogRef.sha256) && assert.strictEqual(pythonResult.consentRef.subject.buildProfileDigest, pythonResult.specialistContext.buildProfileRef.sha256) && assert.strictEqual(pythonResult.consentRef.subject.capabilityRequestDigest, pythonBase.capabilityBuildRequest.requestDigest) && assert.strictEqual(pythonResult.consentRef.subject.recipeDigest, Builder.PYTHON_TARGET_RECIPE.digest));
+test('Python candidate emits only language-native capability and selftest paths', () => assert.strictEqual(typeof pythonCandidate.files['capability.py'], 'string') && assert.strictEqual(typeof pythonCandidate.files['selftest.py'], 'string') && assert.strictEqual(pythonCandidate.files['capability.js'], undefined) && assert.strictEqual(pythonCandidate.files['selftest.js'], undefined));
+test('Python candidate passes both Fabric and portable path verification', () => assert(CapabilityFabric.verifyCandidate(pythonCandidate).ok) && assert(Builder.validateCandidatePaths(Object.keys(pythonCandidate.files)).pass));
+test('Python runtime contract binds language, entry, selftest, and future host capability', () => { const contract = JSON.parse(pythonCandidate.files['modular-capability.contract.json']); assert.deepStrictEqual(contract.runtime, { mode: 'EXECUTABLE', entry: 'capability.py', operation: 'run', sourceLanguage: 'python', selftest: 'selftest.py' }); assert.deepStrictEqual(contract.requiredHostCapabilities, ['python-runtime/v3']); });
+test('Python generated source uses only the reviewed json import', () => assert(/^import json$/m.test(pythonCandidate.files['capability.py'])) && assert(!/^\s*(?:import|from)\s+(?:os|sys|subprocess|socket|pathlib)/m.test(pythonCandidate.files['capability.py'])));
+test('Python generated source contains no file, network, process, dynamic-code, or reflection call', () => assert(!/\b(?:open|eval|exec|compile|__import__|globals|locals|getattr|setattr|system|popen)\s*\(/.test(pythonCandidate.files['capability.py'])));
+test('Python selftest remains emitted and explicitly unrun', () => assert.strictEqual(pythonResult.evidence.emittedSelftest, 'EMITTED_NOT_RUN') && assert.strictEqual(pythonResult.evidence.runtimeBehavior, 'UNKNOWN') && assert.strictEqual(pythonResult.resourceObservation.generatedSelftestExecuted, false));
+test('Python candidate invoked no provider, process, network, workspace read, or write', () => assert.strictEqual(pythonResult.resourceObservation.providerCalled, false) && assert.strictEqual(pythonResult.resourceObservation.processesSpawned, 0) && assert.strictEqual(pythonResult.resourceObservation.networkUsed, false) && assert.strictEqual(pythonResult.resourceObservation.workspaceRead, false) && assert.strictEqual(pythonResult.resourceObservation.workspaceWritten, false));
+test('Python candidate remains detached, uninstalled, unintegrated, unpublished, unpromoted, and non-CANON', () => assert.strictEqual(pythonResult.truth.candidateDetached, true) && assert.strictEqual(pythonResult.truth.installed, false) && assert.strictEqual(pythonResult.truth.integrated, false) && assert.strictEqual(pythonResult.truth.published, false) && assert.strictEqual(pythonResult.truth.promoted, false) && assert.strictEqual(pythonResult.truth.canonChanged, false));
+test('Python runtime limitation is retained', () => assert(pythonResult.limitations.includes('PYTHON_RUNTIME_AND_EMITTED_SELFTEST_NOT_EXECUTED')));
+test('Python lane cannot borrow the markup profile', () => held(pythonBase, (next) => { next.selection.mode = 'ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST'; }, 'SPECIALIST_HOLD'));
+test('markup lane cannot borrow the Python profile', () => held(markupBase, (next) => { next.selection.mode = 'ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST'; }, 'SPECIALIST_HOLD'));
+test('Python recipe substitution is held', () => held(pythonBase, (next) => { const catalog = CapabilityFabric.loadCatalog(), recipe = catalog.recipes.find((row) => row.id === 'pure-json-transform'), draft = clone(recipe.exampleRequest); draft.source = { kind: 'CODE_FABRIC', ref: next.intentAdapterPlan.planDigest }; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); }, 'BUILD_REQUEST_HOLD'));
+test('Python field-name expansion is held by the exact build plan', () => held(pythonBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.sourceField = 'Not_Python'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('Python key-budget expansion is held by the exact build plan', () => held(pythonBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxInputKeys = 129; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('Python string parameters cannot inject a new import line', () => { const request = changed(pythonBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.defaultValue = 'x"\nimport os\n#'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }); const built = Builder.generate(request); assert.strictEqual(built.status, 'COMPLETE_DETACHED_CANDIDATE'); assert(!/^import os$/m.test(built.detachedCandidate.files['capability.py'])); });
+test('Python candidate byte tampering fails exact result verification', () => { const tampered = clone(pythonResult); tampered.detachedCandidate.files['capability.py'] += '\n# drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, pythonBase).pass, false); });
+
 test('root HOLD stops before intent verification and build', () => {
   const originalVerify = IntentAdapter.verify, originalBuild = CapabilityFabric.build;
   let verified = 0, built = 0;
@@ -150,7 +178,7 @@ test('stale intent plan status is held', () => held(base, (next) => { next.inten
 test('specialist digest drift is held', () => held(base, (next) => { next.selection.specialistOrganRef.sha256 = Builder.sha256Value('drift'); }, 'SPECIALIST_HOLD'));
 test('build profile digest drift is held', () => held(base, (next) => { next.selection.buildProfileRef.sha256 = Builder.sha256Value('drift'); }, 'SPECIALIST_HOLD'));
 test('artifact selection drift is held', () => held(base, (next) => { next.selection.artifactId = 'game-rules'; }, 'SPECIALIST_HOLD'));
-test('application-logic specialist remains an unsupported typed hold', () => {
+test('application-logic JavaScript lane cannot borrow the data-schema profile', () => {
   const next = clone(base), intentRequest = IntentAdapter.buildExampleRequest(), intentPlan = IntentAdapter.plan(intentRequest);
   next.intentAdapterRequest = intentRequest; next.intentAdapterPlan = intentPlan;
   next.selection = { artifactId: intentPlan.specialistContext.artifactPlan.artifactRef.id, specialistOrganRef: intentPlan.specialistContext.selectedLane.organRef, buildProfileRef: clone(base.selection.buildProfileRef), mode: 'ONE_EXACT_DATA_SCHEMA_SPECIALIST' };
@@ -250,8 +278,10 @@ test('request schema is closed', () => assert.strictEqual(requestSchema.addition
 test('result schema is closed', () => assert.strictEqual(resultSchema.additionalProperties, false));
 test('active recipe schema knows the admitted validator builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('closed-json-schema-validator-v1')));
 test('active recipe schema knows the admitted HTML page builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('static-accessible-html-page-v1')));
+test('active recipe schema knows the admitted bounded Python builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('bounded-python-record-transform-v1')));
 test('candidate package schema knows the admitted validator builder', () => assert(candidatePackageSchema.$defs ? candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('closed-json-schema-validator-v1') : false));
 test('candidate package schema knows the admitted HTML page builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('static-accessible-html-page-v1')));
+test('candidate package schema knows the admitted bounded Python builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-python-record-transform-v1')));
 test('candidate package schema knows the admitted review-skill builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-review-procedure-skill-v1')));
 test('request schema admits a profile-resolved mode token', () => assert.strictEqual(requestSchema.properties.selection.properties.mode.pattern, '^[A-Z][A-Z0-9_]{2,127}$'));
 test('request schema requires an exact build-profile reference', () => assert(requestSchema.properties.selection.required.includes('buildProfileRef')));
@@ -262,4 +292,4 @@ test('source contains no child-process module import', () => assert(!/require\([
 test('source contains no fetch call', () => assert(!/\bfetch\s*\(/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source never invokes generated candidate text', () => assert(!/new Function|\beval\s*\(|vm\.(?:run|compile)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 
-if (!process.exitCode) process.stdout.write('Code specialist capability builder v1.9 selftest: ' + passed + ' PASS\n');
+if (!process.exitCode) process.stdout.write('Code specialist capability builder v2.0 selftest: ' + passed + ' PASS\n');

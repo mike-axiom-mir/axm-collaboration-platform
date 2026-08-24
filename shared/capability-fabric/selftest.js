@@ -19,11 +19,11 @@ function resealCandidate(candidate){
 function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
-  check(catalog.recipes.length===6,'reviewed catalog has one portable SKILL plus validator, code, markup, creation, and adapter HAND recipes');
-  check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===5&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
+  check(catalog.recipes.length===7,'reviewed catalog has one portable SKILL plus six bounded HAND recipes including Python source');
+  check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===6&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.variants.some(function(variant){return variant.id===row.candidatePolicy.defaultVariantId;});}),'every reviewed recipe explicitly defaults to one named candidate variant');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
-  check(BuilderRegistry.activeIds().length===6&&BuilderRegistry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','modular builder registry keeps six reviewed builders active and one exact adapter review candidate inactive');
+  check(BuilderRegistry.activeIds().length===7&&BuilderRegistry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','modular builder registry keeps seven reviewed builders active and one exact adapter review candidate inactive');
   check(catalog.recipes.every(function(row){const builder=BuilderRegistry.describe(row.builderId);return builder&&row.builderDigest===builder.implementationDigest;}),'every active recipe binds the exact modular builder digest');
 
   const packages={};
@@ -36,12 +36,25 @@ function main(){
     check(Fabric.canonicalJson(one)===Fabric.canonicalJson(two),recipe.id+' rebuild is byte-identical');
     check(Fabric.verifyCandidate(one.candidates[0]).ok,recipe.id+' package verifies');
     check(Object.values(one.candidates[0].package.authority).every(function(value){return value===false;}),recipe.id+' package carries no authority');
-    const selftestPath=recipe.capabilityKind==='HAND'?'selftest.js':'skill.selftest.js';
+    const selftestPath=recipe.capabilityKind==='HAND'?(recipe.capabilityContract.selftest||'selftest.js'):'skill.selftest.js';
     check(one.candidates[0].files[selftestPath]&&one.candidates[0].files['module-bundle.json'],recipe.id+' emits its kind-specific external test and exact bundle');
     const modular=JSON.parse(one.candidates[0].files['modular-capability.contract.json']);
     const modularBody=Fabric.clone(modular);delete modularBody.contractDigest;check(modular.kind===recipe.capabilityKind&&modular.contractDigest===Fabric.digest(modularBody),recipe.id+' emits a digest-bound modular capability contract');
     packages[recipe.id]=one.candidates[0];
   });
+
+  const pythonRecipe=catalog.recipes.find(function(row){return row.id==='bounded-python-record-transform';}),pythonPackage=packages[pythonRecipe.id],pythonRuntime=JSON.parse(pythonPackage.files['modular-capability.contract.json']).runtime,pythonCompilation=JSON.parse(pythonPackage.files['compilation.receipt.json']);
+  check(pythonPackage.files['capability.py']&&pythonPackage.files['selftest.py']&&!pythonPackage.files['capability.js']&&!pythonPackage.files['selftest.js'],'Python HAND emits exact language-native source and selftest paths without JavaScript aliases');
+  check(pythonRuntime.sourceLanguage==='python'&&pythonRuntime.entry==='capability.py'&&pythonRuntime.selftest==='selftest.py','Python runtime contract byte-binds language, entry, and selftest paths');
+  check(pythonRecipe.capabilityContract.requiredHostCapabilities.join(',')==='python-runtime/v3','Python recipe declares its future host runtime without receiving it');
+  check(/^import json$/m.test(pythonPackage.files['capability.py'])&&!/^import (?:os|sys|subprocess|socket|pathlib)|^from (?:os|sys|subprocess|socket|pathlib)/m.test(pythonPackage.files['capability.py']),'generated Python source uses the reviewed json-only import surface');
+  check(!/\b(?:open|eval|exec|compile|__import__|globals|locals|getattr|setattr)\s*\(/.test(pythonPackage.files['capability.py']),'generated Python source contains no file or dynamic-reflection call');
+  check(pythonCompilation.generatedCodeExecuted===false&&pythonCompilation.testsEmitted===true,'Python compilation receipt distinguishes emitted tests from execution');
+  const missingPythonSelftest=Fabric.clone(pythonPackage);delete missingPythonSelftest.files['selftest.py'];resealCandidate(missingPythonSelftest);const missingPythonCheck=Fabric.verifyCandidate(missingPythonSelftest);
+  check(!missingPythonCheck.ok&&missingPythonCheck.errors.some(function(row){return row.code==='PACKAGE_REQUIRED_FILE_MISSING';}),'language-native required selftest cannot be omitted and rehashed');
+  const caseAliasPython=Fabric.clone(pythonPackage);caseAliasPython.files['Capability.py']=caseAliasPython.files['capability.py'];resealCandidate(caseAliasPython);const caseAliasCheck=Fabric.verifyCandidate(caseAliasPython);
+  check(!caseAliasCheck.ok&&caseAliasCheck.errors.some(function(row){return row.code==='PACKAGE_PATH_UNSAFE';}),'Windows-style case aliases are refused even after complete rehash');
+  ['CON.py','folder\\capability.py','capability.py:stream'].forEach(function(unsafePath){const drift=Fabric.clone(pythonRecipe);drift.capabilityContract.entry=unsafePath;delete drift.recipeDigest;drift.recipeDigest=Fabric.digest(drift);check(!Fabric.validateRecipe(drift).ok,'unsafe Python entry path is refused: '+unsafePath);});
 
   const recipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),base=Fabric.sealRequest(recipe.exampleRequest,true),changedDraft=Fabric.clone(recipe.exampleRequest);changedDraft.parameters.defaultValue='different';const changed=Fabric.sealRequest(changedDraft,true);
   check(base.requestDigest!==changed.requestDigest,'semantic request change alters request digest');
