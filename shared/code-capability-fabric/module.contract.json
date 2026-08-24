@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "code-capability-fabric",
-  "version": "v0.2",
+  "version": "v0.3",
   "status": "TEST",
   "provides": [
     "axm.code-capability-provider/v1",
@@ -11,8 +11,11 @@
     "code.capability.plan",
     "code.capability.plan.verify",
     "axm.code-language-organ-registry/v1",
+    "axm.code-language-organ-lookup/v1",
     "axm.code-language-organ-detect/v1",
-    "axm.code-language-organ-plan/v1"
+    "axm.code-language-organ-plan/v1",
+    "axm.code-language-organ-snapshot/v1",
+    "axm.code-language-organ-signal-audit/v1"
   ],
   "consumes": [
     "provider descriptors",
@@ -20,20 +23,23 @@
     "host-observed availability",
     "explicit request authority policy",
     "strict-deterministic-canonical-json",
-    "axm.code.language-organ.v1 descriptors"
+    "axm.code.language-organ.v1 descriptors",
+    "axm.code.language-organ-families.v1"
   ],
   "permissions": [],
   "handoffs": {
     "emits": [
       "axm.code-capability-route-plan/v1",
-      "axm.code-language-organ-plan/v1"
+      "axm.code-language-organ-plan/v1",
+      "axm.code-language-organ-snapshot/v1"
     ],
     "accepts": [
       "axm.code-capability-request/v1",
       "axm.code-capability-provider/v1",
       "axm.code-provider-host-observation/v1",
       "caller-supplied file path metadata",
-      "caller-supplied shebang metadata"
+      "caller-supplied shebang metadata",
+      "caller-supplied explicit organ preference"
     ]
   },
   "boundaries": {
@@ -48,6 +54,7 @@
       "permission-grant",
       "provider-self-asserted-availability",
       "implicit-provider-choice-when-multiple-match",
+      "silent-explicit-preference-fallback",
       "host-observation-as-execution-proof",
       "automatic-install",
       "automatic-promotion",
@@ -55,12 +62,13 @@
       "undefined-or-non-json-representable-state",
       "language-guess-when-detection-is-ambiguous",
       "unbound-language-tool-execution",
+      "source-review-as-runtime-proof",
       "syntax-pass-as-semantic-correctness"
     ]
   },
   "lifecycle": {
     "state_owner": "none",
-    "reload": "reset",
+    "reload": "new-process-snapshot",
     "disconnect": "not-applicable",
     "cleanup": "automatic"
   }
