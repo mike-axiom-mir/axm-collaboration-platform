@@ -6,12 +6,14 @@ on:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
       - ".github/ci/code-language-toolchain-probe.js"
+      - ".github/ci/code-language-tree-sitter-pack-probe.py"
       - ".github/workflows/code-language-organs-gate.yml"
   pull_request:
     paths:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
       - ".github/ci/code-language-toolchain-probe.js"
+      - ".github/ci/code-language-tree-sitter-pack-probe.py"
       - ".github/workflows/code-language-organs-gate.yml"
   workflow_dispatch:
 
@@ -47,5 +49,30 @@ jobs:
         with:
           name: code-language-toolchain-census
           path: toolchain-census.json
+          if-no-files-found: error
+          retention-days: 1
+
+  structural-grammar-pack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact grammar-pack version
+        run: python -m pip install --disable-pip-version-check --no-input "tree-sitter-language-pack==1.13.5"
+      - name: Parse all 102 organ fixtures through selected grammars
+        env:
+          AXM_GRAMMAR_REPORT: tree-sitter-grammar-census.json
+        run: python .github/ci/code-language-tree-sitter-pack-probe.py
+      - name: Preserve structural grammar evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-language-tree-sitter-grammar-census
+          path: tree-sitter-grammar-census.json
           if-no-files-found: error
           retention-days: 1
