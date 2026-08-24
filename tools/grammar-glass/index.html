@@ -1,33 +1,76 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Grammar Glass · Code Twister</title>
-<style>
-:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#05080f;color:#edf5ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,#16274a 0,transparent 32rem),#05080f}main{max-width:1600px;margin:auto;padding:20px}.top{display:flex;gap:18px;align-items:end;justify-content:space-between;flex-wrap:wrap}h1{font-size:clamp(2.2rem,5vw,5rem);line-height:.9;margin:5px 0}h1 span,.muted{color:#91a3ba}.eyebrow{color:#63e6ff;font-size:.7rem;letter-spacing:.18em;font-weight:800}.facts{display:flex;gap:8px;flex-wrap:wrap}.fact,.pill{border:1px solid #26364d;border-radius:999px;padding:7px 10px;font:12px ui-monospace,monospace;background:#09111d}.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.7fr);gap:15px;margin-top:18px}.panel{background:#0c1422dd;border:1px solid #26364d;border-radius:16px;overflow:hidden}.head{padding:14px 16px;border-bottom:1px solid #26364d;display:flex;justify-content:space-between;gap:10px;align-items:center}.head h2{font-size:1rem;margin:0}.body{padding:14px}.field{height:610px;position:relative;background:radial-gradient(circle,#13243a66,transparent 58%)}canvas{display:block;width:100%;height:100%}.center{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:150px;height:150px;border:1px solid #63e6ff44;border-radius:50%;display:grid;place-content:center;text-align:center;pointer-events:none}.center b{color:#63e6ff;letter-spacing:.18em}.center small{color:#91a3ba;max-width:120px}.side{display:grid;gap:15px}.cards{display:grid;gap:8px;max-height:330px;overflow:auto}.card{border:1px solid #26364d;border-radius:10px;padding:10px;background:#07101b}.card b{font-size:.8rem}.card small{display:block;color:#91a3ba;margin-top:5px}.inspector{font:12px ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:390px;overflow:auto;color:#b9c7d9}.sky,.ledger,.languages{grid-column:1/-1}.skycanvas{height:280px}.stars,.langlist{display:flex;gap:7px;flex-wrap:wrap;padding:12px}.star,.lang{border:1px solid #26364d;border-radius:999px;padding:6px 9px;background:#07101b;color:#edf5ff;font-size:.7rem;cursor:pointer}.ledgergrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:12px}.tile{border:1px solid #26364d;border-radius:10px;padding:10px}.tile span{color:#91a3ba;font-size:.65rem;display:block}.load{display:grid;place-items:center;min-height:450px;border:1px dashed #405570;border-radius:16px;text-align:center;margin-top:20px}.load label{border:1px solid #63e6ff66;color:#63e6ff;border-radius:999px;padding:10px 15px;cursor:pointer}.load input{display:none}.truth{color:#91a3ba;font-size:.72rem;line-height:1.5}.green{color:#80f0bd}button{font:inherit}@media(max-width:980px){.grid{grid-template-columns:1fr}.field{height:500px}.sky,.ledger,.languages{grid-column:1}.ledgergrid{grid-template-columns:repeat(2,1fr)}}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grammar Glass · Code Twister</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body><main>
-<header class="top"><div><div class="eyebrow">POLYGLOT STRUCTURAL DRAFTING + OBSERVABILITY</div><h1>GRAMMAR GLASS <span>/ CODE TWISTER</span></h1><div class="muted">Seeded · replayable · provenance-bound · formations have no authority</div></div><div class="facts" id="facts"></div></header>
-<section class="load" id="load"><div><div class="eyebrow">NO CANNED ACTIVITY</div><h2>Load a recorded visual snapshot</h2><p class="muted">The viewer renders only recorded AXM grammar state. It creates no new evidence.</p><label>Load snapshot JSON<input id="file" type="file" accept="application/json,.json"></label></div></section>
+<header class="top">
+  <div>
+    <div class="eyebrow">POLYGLOT STRUCTURAL DRAFTING + OBSERVABILITY</div>
+    <h1>GRAMMAR GLASS <span>/ CODE TWISTER</span></h1>
+    <div class="muted">Seeded · replayable · provenance-bound · contact memory decays · formations have no authority</div>
+  </div>
+  <div class="facts" id="facts"></div>
+</header>
+
+<section class="load" id="load"><div>
+  <div class="eyebrow">NO CANNED LANGUAGE ACTIVITY</div>
+  <h2>Load a recorded Grammar Glass snapshot</h2>
+  <p class="muted">The browser animates recorded phase, velocity, influence carries and contact-memory paths. The animation itself creates no evidence.</p>
+  <label>Load snapshot JSON<input id="file" type="file" accept="application/json,.json"></label>
+</div></section>
+
 <div class="grid" id="workspace" hidden>
-<section class="panel"><div class="head"><h2>CROSS-GRAMMAR INFLUENCE · TOROIDAL FIELD</h2><span class="pill green" id="coverage"></span></div><div class="field"><canvas id="field"></canvas><div class="center"><b>CODE TWISTER</b><small>green arrows = recorded next-tick influence · not equivalence</small></div></div><div class="body truth">Typed compatibility, analogy, contrast, repulsion, boundary and unresolved relations remain distinct. A carry changes later circulation without rewriting either grammar.</div></section>
-<aside class="side"><section class="panel"><div class="head"><h2>Reactive Draft Mirrors</h2><span class="pill green">OBSERVE ONLY</span></div><div class="body cards" id="mirrors"></div></section><section class="panel"><div class="head"><h2>Inspector</h2><span class="pill">LINEAGE</span></div><pre class="body inspector" id="inspector">Select an atom, mirror or star.</pre></section></aside>
-<section class="panel sky"><div class="head"><h2>DRAFTSKY · immutable Draft Stars</h2><span class="pill">brightness ≠ quality</span></div><canvas class="skycanvas" id="sky"></canvas><div class="stars" id="stars"></div></section>
-<section class="panel ledger"><div class="head"><h2>CONSTELLATION LEDGER</h2><code id="constellation"></code></div><div class="ledgergrid" id="ledger"></div></section>
-<section class="panel languages"><div class="head"><h2>Actual grammar identities</h2><span class="pill" id="profileCount"></span></div><div class="langlist" id="languages"></div></section>
+  <section class="panel">
+    <div class="head">
+      <h2>CROSS-GRAMMAR INFLUENCE · MOVING TOROIDAL FIELD</h2>
+      <div class="motion">
+        <span class="pill green" id="coverage"></span>
+        <button class="control" id="motionToggle" aria-pressed="true">PAUSE</button>
+        <label class="pill">speed <input id="speed" type="range" min="20" max="220" value="100"></label>
+      </div>
+    </div>
+    <div class="field" id="fieldWrap">
+      <canvas id="field"></canvas>
+      <div class="mirror-shell" aria-hidden="true"></div>
+      <div class="center"><b>CODE TWISTER</b><small>moving from recorded cycle state · visual interpolation only</small></div>
+      <div class="mirror-response" id="mirrorGlass">
+        <div class="label"><span>REACTIVE DRAFT MIRROR GLASS</span><span>OBSERVE ONLY</span></div>
+        <pre id="response">Load a snapshot to reveal a structural response.</pre>
+      </div>
+    </div>
+    <div class="body truth"><span class="status-dot"></span><b>DRAFT MIRROR GLASS:</b> the glass surrounds the field visually but has no cycle authority. Direct influence pulses and multi-hop contact-memory pulses are drawn only from recorded snapshot data.</div>
+  </section>
+
+  <aside class="side">
+    <section class="panel">
+      <div class="head"><h2>Contact memory</h2><span class="pill amber">DECAYS</span></div>
+      <div class="body">
+        <div class="memory-meter" id="memoryMetrics"></div>
+        <p class="truth">Prior contact may alter later circulation through bounded two-to-three-hop carries. This is not training, learned weights, or semantic transitivity.</p>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="head"><h2>Why did this composite form?</h2><span class="pill">DERIVATION</span></div>
+      <div class="body why" id="why"></div>
+    </section>
+    <section class="panel">
+      <div class="head"><h2>Formation / mirror selector</h2><span class="pill green">NO WINNER</span></div>
+      <div class="body cards" id="mirrors"></div>
+    </section>
+    <section class="panel">
+      <div class="head"><h2>Inspector</h2><span class="pill">LINEAGE</span></div>
+      <pre class="body inspector" id="inspector">Select an atom, mirror or star.</pre>
+    </section>
+  </aside>
+
+  <section class="panel sky"><div class="head"><h2>DRAFTSKY · immutable Draft Stars</h2><span class="pill">brightness ≠ quality</span></div><canvas class="skycanvas" id="sky"></canvas><div class="stars" id="stars"></div></section>
+  <section class="panel ledger"><div class="head"><h2>CONSTELLATION LEDGER</h2><code id="constellation"></code></div><div class="ledgergrid" id="ledger"></div></section>
+  <section class="panel languages"><div class="head"><h2>Actual grammar identities</h2><span class="pill" id="profileCount"></span></div><div class="langlist" id="languages"></div></section>
 </div>
-</main><script>
-(()=>{'use strict';let S=null;const $=id=>document.getElementById(id),short=(v,n=14)=>v?String(v).slice(0,n)+'…':'—',esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const edgeColor={TYPED_COMPATIBILITY:'#63e6ff',ANALOGY:'#a88cff',CONTRAST:'#ffc86b',REPULSION:'#ff758f',BOUNDARY:'#70a8ff',UNRESOLVED_NEIGHBOURHOOD:'#91a3ba'},atomColor={STATE:'#63e6ff',CONDITION:'#80f0bd',TRANSFORMATION:'#a88cff',CONTROL_FLOW:'#70a8ff',TYPE:'#ff9fd0',INTERFACE:'#ffc86b',EFFECT:'#ff758f',DEPENDENCY:'#9ad1ff',VERIFICATION:'#d7ff8a',FAILURE:'#ff8c71',REPRESENTATION:'#edf5ff'};
-function valid(x){return x&&x.schema==='axm.code.grammar-glass-visual-snapshot.v1'&&x.cycle&&Array.isArray(x.cycle.atoms)&&Array.isArray(x.cycle.edges)&&Array.isArray(x.draftSky)}
-function fit(c){const d=Math.min(devicePixelRatio||1,2),r=c.getBoundingClientRect();c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);return[c.width,c.height,d]}
-function point(a,w,h){const scale=Math.min(w,h)*.42;return{x:w/2+Math.cos(a.position.angle)*a.position.radius*scale,y:h/2+Math.sin(a.position.angle)*a.position.radius*scale}}
-function drawField(){const c=$('field'),[w,h,d]=fit(c),x=c.getContext('2d'),p=new Map; x.clearRect(0,0,w,h);for(let i=0;i<11;i++){x.beginPath();x.arc(w/2,h/2,(.52+i/10*.31)*Math.min(w,h)*.42,0,Math.PI*2);x.strokeStyle='#91a3ba14';x.stroke()};S.cycle.atoms.forEach(a=>p.set(a.atomId,point(a,w,h)));S.cycle.edges.forEach(e=>{let a=p.get(e.leftAtomId),b=p.get(e.rightAtomId);if(!a||!b)return;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.strokeStyle=edgeColor[e.connectionClass]+'55';x.lineWidth=d*(e.thresholdMet?1.2:.6);x.stroke()});(S.cycle.influenceCarries||[]).filter(v=>v.signedDeltaPpm).forEach(v=>{let a=p.get(v.sourceAtomId),b=p.get(v.targetAtomId);if(!a||!b)return;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.strokeStyle='#80f0bd99';x.setLineDash(v.crossGrammar?[2*d,3*d]:[]);x.stroke();x.setLineDash([])});S.cycle.atoms.forEach(a=>{let q=p.get(a.atomId);x.beginPath();x.arc(q.x,q.y,(a.atomType==='REPRESENTATION'?2.7:1.5)*d,0,Math.PI*2);x.fillStyle=atomColor[a.atomType]||'#fff';x.globalAlpha=.78;x.fill();x.globalAlpha=1})}
-function drawSky(){const c=$('sky'),[w,h,d]=fit(c),x=c.getContext('2d');x.clearRect(0,0,w,h);S.draftSky.forEach(st=>{const px=w/2+st.x*w*.43,py=h/2+st.y*h*.42,r=(2+5*Number(st.brightness||0))*d;x.beginPath();x.arc(px,py,r,0,Math.PI*2);x.fillStyle='#edf5ff';x.shadowColor='#a88cff';x.shadowBlur=10*d;x.fill();x.shadowBlur=0})}
-function inspect(v){$('inspector').textContent=JSON.stringify(v,null,2)}
-function render(){ $('load').hidden=true;$('workspace').hidden=false;$('facts').innerHTML=[['profiles',S.profileCount],['atoms',S.atomCount],['tick',S.cycle.tick],['seed',short(S.rootSeed)],['condition',short(S.cycle.conditionSha256)]].map(([a,b])=>`<span class="fact">${esc(a)}: ${esc(b)}</span>`).join('');const cv=S.cycle.interactionCoverage||{};$('coverage').textContent=`observed ${cv.observedProfileCountEver||0}/${cv.availableProfileCount||S.profileCount} · carries ${(S.cycle.influenceCarries||[]).filter(x=>x.crossGrammar).length}`;$('profileCount').textContent=`${S.profileCount} profiles`;
-$('mirrors').innerHTML=(S.mirrors||[]).map((m,i)=>`<button class="card" data-m="${i}"><b>${esc(m.mirrorLens)}</b><small>${esc(m.compositeLineage?.kind||'formation')} · mutation ${m.cycleMutationPerformed}</small></button>`).join('')||'<div class="muted">No mirror observations captured.</div>';$('mirrors').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>inspect(S.mirrors[+b.dataset.m]));
-$('stars').innerHTML=(S.draftSky||[]).map((st,i)=>`<button class="star" data-s="${i}">${esc(st.languageIds.join(' × '))} · tick ${st.cycleStep}</button>`).join('');$('stars').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>inspect(S.draftSky[+b.dataset.s]));const C=S.constellation||{};$('constellation').textContent=short(C.constellationDigest,24);$('ledger').innerHTML=[['events',C.eventCount],['stars',C.starCount],['failed',C.failedFormationCount],['contradictory',C.contradictoryFormationCount],['full saves',C.fullSaveReferenceCount],['authority','NONE']].map(([a,b])=>`<div class="tile"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join('');
-let langs=[...new Map(S.cycle.atoms.map(a=>[a.languageId,a])).values()].sort((a,b)=>a.languageId.localeCompare(b.languageId));$('languages').innerHTML=langs.map((a,i)=>`<button class="lang" data-l="${i}">${esc(a.languageId)}</button>`).join('');$('languages').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>inspect(langs[+b.dataset.l]));drawField();drawSky();inspect({claim:'Recorded snapshot only; visual interpolation creates no evidence.',sourceMode:S.sourceMode,profileSnapshotSha256:S.profileSnapshotSha256,rootSeed:S.rootSeed,condition:S.cycle.conditions,influenceCarryDigest:S.cycle.influenceCarryDigest,truth:S.truth})}
-$('file').addEventListener('change',async e=>{try{const x=JSON.parse(await e.target.files[0].text());if(!valid(x))throw Error('Not a Grammar Glass visual snapshot');S=x;render()}catch(err){alert(err.message)}});addEventListener('resize',()=>{if(S){drawField();drawSky()}})})();
-</script></body></html>
+</main>
+<script src="app.js"></script>
+</body></html>

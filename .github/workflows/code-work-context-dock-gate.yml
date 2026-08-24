@@ -52,9 +52,13 @@ jobs:
           node --check shared/code-capability-fabric/language-organs/code-grammar-glass-base.js
           node --check shared/code-capability-fabric/language-organs/code-grammar-glass-cycle.js
           node --check shared/code-capability-fabric/language-organs/code-grammar-glass-observation.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-memory.js
           node --check shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js
           node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-memory.js
+          node --check tools/grammar-glass/app.js
           python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass.contract.json >/dev/null
+          python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass-memory.contract.json >/dev/null
       - name: Prove direction, scratch, hot card and scoped local store
         run: node shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js
       - name: Prove bounded editable production draft batches
@@ -65,19 +69,37 @@ jobs:
         run: node shared/code-capability-fabric/language-organs/selftest-code-built-software-experiment-sandbox.js
       - name: Probe code-creation reasoning seams without authority
         run: node shared/code-capability-fabric/language-organs/selftest-code-creation-reasoning-seam-probe.js
-      - name: Prove Grammar Glass Phase 1 cross-grammar influence without authority
+      - name: Prove Grammar Glass cross-grammar influence, contact memory and moving viewer contract
         run: |
           node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass.js
+          node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-memory.js
           visual_dir="$(mktemp -d)"
           node shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js \
             --seed 6f2d8b4abef8ebf661925d5ce9d1aeea05b584055e8bdc96b9f857fd66d65e0f \
-            --day phase-1-gate-fixture \
-            --ticks 4 \
+            --day phase-1-memory-gate-fixture \
+            --ticks 6 \
             --stars 4 > "$visual_dir/grammar-glass-snapshot.json"
           test -s "$visual_dir/grammar-glass-snapshot.json"
           python -m json.tool "$visual_dir/grammar-glass-snapshot.json" >/dev/null
-          grep -q 'CROSS-GRAMMAR INFLUENCE' tools/grammar-glass/index.html
-          grep -q 'Load snapshot JSON' tools/grammar-glass/index.html
+          python - "$visual_dir/grammar-glass-snapshot.json" <<'PY'
+          import json, sys
+          p=json.load(open(sys.argv[1], encoding='utf-8'))
+          assert p['schema']=='axm.code.grammar-glass-visual-snapshot.v1'
+          assert p['version']=='1.2.0'
+          assert p['profileCount']==102
+          assert p['atomCount']==1122
+          assert p['contactMemory']['contactEdgeCount'] > 0
+          assert p['contactMemory']['multiHopPathCount'] > 0
+          assert len(p['formationWhy']) > 0
+          assert len(p['mirrorResponses']) > 0
+          assert p['animationModel']['interpolationCreatesEvidence'] is False
+          assert p['truth']['multiHopMemoryIsNotSemanticTransitivity'] is True
+          PY
+          grep -q 'MOVING TOROIDAL FIELD' tools/grammar-glass/index.html
+          grep -q 'REACTIVE DRAFT MIRROR GLASS' tools/grammar-glass/index.html
+          grep -q 'Why did this composite form?' tools/grammar-glass/index.html
+          grep -q 'requestAnimationFrame' tools/grammar-glass/app.js
+          grep -q 'CONTACT_MEMORY_PROPAGATION' shared/code-capability-fabric/language-organs/code-grammar-glass-memory.js
       - name: Preserve developer relationship plane and build window
         run: |
           node shared/code-capability-fabric/language-organs/selftest-developer-relationship-plane.js

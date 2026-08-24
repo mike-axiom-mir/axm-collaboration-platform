@@ -30,36 +30,56 @@ function main() {
     },
     reason: 'GRAMMAR_GLASS_VISUAL_SNAPSHOT_GENERATION'
   });
+  const memoryPolicy = glass.createContactMemoryPolicy({
+    retentionTicks: 6,
+    decayPerTick: 0.58,
+    hopAttenuation: 0.52,
+    maxHopCount: 3,
+    maxMemoryCarryPpm: 1100,
+    maxMemoryCarriesPerTick: 96
+  });
   const dayStart = glass.createDayStart({
     source,
     catalog,
     conditionRevision: conditions,
     dayId,
     rootSeed: seed || null,
-    startingStateRefs: ['grammar-glass-snapshot-generator:v1.1-cross-grammar-influence']
+    startingStateRefs: ['grammar-glass-snapshot-generator:v1.2-contact-memory']
   });
   let cycle = glass.initializeCycle({ dayStart, catalog });
+  let contactMemory = null;
+  let memoryStep = null;
   let ledger = glass.createConstellationLedger({ dayStart, source, catalog });
-  const mirrors = [];
+  let visualMirrors = [];
   const stars = [];
   for (let tick = 0; tick < ticks; tick += 1) {
-    cycle = glass.stepCycle({ cycle, catalog, conditionRevision: conditions });
+    memoryStep = glass.stepCycleWithContactMemory({
+      cycle,
+      catalog,
+      conditionRevision: conditions,
+      contactMemory,
+      memoryPolicy
+    });
+    cycle = memoryStep.cycle;
+    contactMemory = memoryStep.contactMemory;
     ledger = glass.appendLedgerEvent({
       ledger,
       eventType: 'CYCLE_OBSERVATION_APPENDED',
       payloadDigest: cycle.cycleSha256,
       payloadState: `CYCLE_TICK_${cycle.tick}_OBSERVED`
     });
-    for (const formation of cycle.formations) {
+    const tickMirrors = [];
+    for (const [formationIndex, formation] of cycle.formations.entries()) {
       ledger = glass.appendFormation(ledger, formation);
-      if (stars.length >= starLimit) continue;
       const mirror = glass.observeFormation({
         cycle,
         catalog,
         formation,
-        lens: glass.MIRROR_LENSES[stars.length % glass.MIRROR_LENSES.length]
+        lens: glass.MIRROR_LENSES[formationIndex % glass.MIRROR_LENSES.length]
       });
       if (mirror.result !== 'REACTIVE_DRAFT_MIRROR_OBSERVATION_READY') continue;
+      if (tickMirrors.length < 8) tickMirrors.push(mirror);
+      if (stars.length >= starLimit) continue;
       const star = glass.captureDraftStar({
         dayStart,
         conditionRevision: conditions,
@@ -67,10 +87,10 @@ function main() {
         formation,
         mirrorObservation: mirror
       });
-      mirrors.push(mirror);
       stars.push(star);
       ledger = glass.appendDraftStar(ledger, star);
     }
+    visualMirrors = tickMirrors;
   }
   const visual = glass.createVisualSnapshot({
     source,
@@ -78,7 +98,9 @@ function main() {
     dayStart,
     conditionRevision: conditions,
     cycle,
-    mirrorObservations: mirrors,
+    contactMemory,
+    memoryStep,
+    mirrorObservations: visualMirrors,
     ledger,
     stars
   });

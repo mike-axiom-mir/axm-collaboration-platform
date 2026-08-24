@@ -3,6 +3,7 @@
 const base = require('./code-grammar-glass-base.js');
 const cycle = require('./code-grammar-glass-cycle.js');
 const observation = require('./code-grammar-glass-observation.js');
+const memory = require('./code-grammar-glass-memory.js');
 
 module.exports = Object.freeze({
   GRAMMAR_FAMILY: base.GRAMMAR_FAMILY,
@@ -12,6 +13,7 @@ module.exports = Object.freeze({
   MIRROR_LENSES: base.MIRROR_LENSES,
   FUTURE_GRAMMAR_FAMILIES: base.FUTURE_GRAMMAR_FAMILIES,
   DEFAULT_CONDITIONS: base.DEFAULT_CONDITIONS,
+  DEFAULT_CONTACT_MEMORY_POLICY: memory.DEFAULT_CONTACT_MEMORY_POLICY,
   AUTHORITY: base.AUTHORITY,
   canon: base.canon,
   hash: base.hash,
@@ -28,6 +30,16 @@ module.exports = Object.freeze({
   influenceCarryClass: cycle.influenceCarryClass,
   buildFormation: cycle.buildFormation,
   stepCycle: cycle.stepCycle,
+  createContactMemoryPolicy: memory.createContactMemoryPolicy,
+  validContactMemory: memory.validContactMemory,
+  decayContactMemory: memory.decayContactMemory,
+  buildMultiHopPaths: memory.buildMultiHopPaths,
+  evolveContactMemory: memory.evolveContactMemory,
+  memoryCarriesForNextTick: memory.memoryCarriesForNextTick,
+  injectContactMemoryCarries: memory.injectContactMemoryCarries,
+  stepCycleWithContactMemory: memory.stepCycleWithContactMemory,
+  explainCompositeFormation: memory.explainCompositeFormation,
+  createMirrorResponse: memory.createMirrorResponse,
   observeFormation: observation.observeFormation,
   captureDraftStar: observation.captureDraftStar,
   createConstellationLedger: observation.createConstellationLedger,
@@ -40,6 +52,8 @@ module.exports = Object.freeze({
   createProductionDraftCandidatePacket: observation.createProductionDraftCandidatePacket,
   bindFullSaveIntent: observation.bindFullSaveIntent,
   grammarFamilyAdapterSeam: observation.grammarFamilyAdapterSeam,
-  createVisualSnapshot: observation.createVisualSnapshot,
+  createVisualSnapshotBase: observation.createVisualSnapshot,
+  createVisualSnapshot: memory.createVisualSnapshotWithMemory,
+  contactMemorySnapshot: memory.snapshot,
   snapshot: observation.snapshot
 });
