@@ -396,15 +396,21 @@ and run:
 node shared/code-capability-fabric/selftest-code-specialist-organ-intent-adapter-v1.js
 ```
 
-## Exact data-schema and markup specialists → detached candidates
+## Registered code-family build profiles → detached candidates
 
-The additive v1.8 `TEST` rung connects the exact `organ.code.data-schema` lane to
-the closed JSON Schema validator recipe and the exact
-`organ.code.markup-structure` lane to a bounded semantic HTML-page renderer.
+The additive v1.9 `TEST` rung moves code-family binding out of hard-coded
+builder branches and into an exact, digest-bound build-profile catalog. The
+initial profiles connect `organ.code.data-schema` to the closed JSON Schema
+validator recipe and `organ.code.markup-structure` to the bounded semantic
+HTML-page renderer. Later families require their own Code Atlas language,
+specialist binding, source-reviewed recipe, builder digest, and evidence plan;
+unsupported families produce typed gaps.
+
 Four technical root passes, an exact v1.6 intent rebuild, an exact
-human-reviewed build request, byte-bound tier-1 consent, research-only reuse
-state, and closed resource ceilings are all required before one detached
-`EXPERIMENTAL` candidate is generated in memory.
+human-reviewed build request, tier-1 consent bound to the profile catalog and
+selected profile bytes, research-only reuse state, and closed resource ceilings
+are all required before one detached `EXPERIMENTAL` candidate is generated in
+memory.
 
 The generated `capability.js` and `selftest.js` remain data. They are not run,
 written, installed, integrated, published, promoted, or canonized. Runtime
@@ -412,9 +418,12 @@ behavior remains `UNKNOWN`; HTML visual and interaction behavior also remains
 `UNKNOWN`. Unsupported specialists remain typed recipe gaps rather than
 inheriting either admitted hand.
 
-See [README-code-specialist-capability-builder-v1.md](README-code-specialist-capability-builder-v1.md)
-and run:
+See
+[README-code-specialist-build-profile-registry-v1.md](README-code-specialist-build-profile-registry-v1.md)
+and [README-code-specialist-capability-builder-v1.md](README-code-specialist-capability-builder-v1.md),
+then run:
 
 ```powershell
+node shared/code-capability-fabric/selftest-code-specialist-build-profile-registry-v1.js
 node shared/code-capability-fabric/selftest-code-specialist-capability-builder-v1.js
 ```

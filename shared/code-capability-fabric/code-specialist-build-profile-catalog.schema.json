@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-specialist-build-profile-catalog/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "version", "status", "profiles", "truth", "catalogDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-specialist-build-profile-catalog/v1"},
+    "id": {"const": "workshop-code-specialist-build-profile-catalog-v1"},
+    "version": {"const": "1.0.0"},
+    "status": {"const": "TEST"},
+    "profiles": {"type": "array", "minItems": 1, "maxItems": 128, "items": {"$ref": "code-specialist-build-profile.schema.json"}},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["completeCodeFamilyUniverseClaimed", "profileProvesRuntime", "profileGrantsAuthority", "automaticRegistration", "automaticRecipeAdmission", "automaticInstall", "mikeFinalMergeGateRequired"],
+      "properties": {
+        "completeCodeFamilyUniverseClaimed": {"const": false},
+        "profileProvesRuntime": {"const": false},
+        "profileGrantsAuthority": {"const": false},
+        "automaticRegistration": {"const": false},
+        "automaticRecipeAdmission": {"const": false},
+        "automaticInstall": {"const": false},
+        "mikeFinalMergeGateRequired": {"const": true}
+      }
+    },
+    "catalogDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  }
+}

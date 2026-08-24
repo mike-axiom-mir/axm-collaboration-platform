@@ -1,0 +1,38 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-specialist-build-profile-registry-v1",
+  "version": "v1.0",
+  "status": "TEST",
+  "provides": [
+    "axm.code-specialist-build-profile/v1",
+    "axm.code-specialist-build-profile-catalog/v1",
+    "axm.code-specialist-build-profile-assessment/v1",
+    "code.specialist.build-profile.resolve-exact/v1"
+  ],
+  "consumes": [
+    "axm.code-specialization-catalog/v1",
+    "axm.code-specialist-organ-profile/v1",
+    "axm.capability-recipe-catalog/v1",
+    "axm-deterministic-json-v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "accepts": ["axm.code-specialist-build-profile/v1"],
+    "emits": ["axm.code-specialist-build-profile-assessment/v1", "axm.capability-gap-report/v1"]
+  },
+  "rootsGate": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"],
+  "boundaries": {
+    "reads": [
+      "module-local:shared/code-capability-fabric/code-specialization-catalog-v1.json",
+      "module-local:shared/code-capability-fabric/code-specialist-build-profile-catalog-v1.json",
+      "module-local:shared/capability-fabric/recipes/catalog.json"
+    ],
+    "writes": [],
+    "refuses": [
+      "workspace-read", "workspace-write", "provider-call", "provider-code-load", "network-use",
+      "child-process-spawn", "candidate-execution", "recipe-admission", "automatic-registration",
+      "automatic-merge", "installation", "integration", "publication", "promotion", "canon-change"
+    ]
+  },
+  "lifecycle": {"state_owner": "none", "reload": "deterministic-require", "disconnect": "not-applicable", "cleanup": "not-applicable"}
+}

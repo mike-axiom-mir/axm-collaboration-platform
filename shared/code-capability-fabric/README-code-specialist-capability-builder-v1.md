@@ -1,18 +1,21 @@
 # Code Specialist Capability Builder v1 (TEST)
 
-This v1.8 rung gives two exact Code Capability Fabric specialists real but
-bounded construction routes:
+This v1.9 rung gives registered Code Capability Fabric specialists real but
+bounded construction routes. The initial build-profile catalog contains:
 
 - `organ.code.data-schema` → `closed-json-schema-validator@0.1.0`; and
 - `organ.code.markup-structure` → `static-accessible-html-page@0.1.0`.
 
-Each route emits one byte-bound detached candidate. Selection is exact; one
-specialist cannot borrow or impersonate the other specialist's recipe.
+Each route emits one byte-bound detached candidate. Selection is exact across
+the language, specialist Organ, build profile, Capability Fabric recipe, and
+native builder digests. One specialist cannot borrow or impersonate another
+profile's recipe.
 
 The builder requires all of the following exact inputs:
 
 - a v1.6 specialist-to-Organ-intent request and deterministically rebuilt plan;
 - one exact admitted data-schema or markup-structure artifact lane;
+- one exact registered build profile whose language matches that artifact;
 - a human-reviewed Capability Fabric request whose source binds the v1.6 plan;
 - tier-1 consent bound to the intent, build request, catalog, and recipe digests;
 - a positive consent window no longer than 24 hours;
@@ -39,11 +42,12 @@ generated selftest remains `EMITTED_NOT_RUN`; human identity authentication and
 nonce replay prevention are not claimed.
 
 Only the closed JSON Schema validator and static HTML-page renderer are
-supported. CSS, browser behavior, application logic, persistence, security,
-tests, build systems, shaders, hardware simulation, performance,
-documentation, and audio still require their own source-reviewed recipes and
-evidence. Unsupported specialists produce typed holds instead of borrowing a
-nearby recipe.
+registered initially. CSS, Python, browser behavior, application logic,
+persistence, security, tests, build systems, shaders, hardware simulation,
+performance, documentation, and audio still require their own source-reviewed
+recipes, build profiles, and evidence. A reviewed profile can add a lane
+without rewriting this builder. Unsupported or drifted profiles produce typed
+holds instead of borrowing a nearby recipe.
 
 The Capability Fabric catalog and schemas now bind the HTML builder's exact
 implementation digest alongside the prior validator HAND and bounded-review

@@ -30,7 +30,7 @@ const resultSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-speci
 const capabilityRecipeSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'capability-recipe.schema.json'), 'utf8'));
 const candidatePackageSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'candidate-package.schema.json'), 'utf8'));
 
-test('example request is sealed under the v1.8 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
+test('example request is sealed under the v1.9 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
 test('request version is exact', () => assert.strictEqual(base.version, Builder.VERSION));
 test('request digest rebuilds exactly', () => assert.strictEqual(base.requestDigest, Builder.sha256Value(Object.fromEntries(Object.entries(base).filter(([key]) => key !== 'requestDigest')))));
 test('example produces one detached candidate', () => assert.strictEqual(result.status, 'COMPLETE_DETACHED_CANDIDATE'));
@@ -42,10 +42,14 @@ test('selected specialist is exactly data-schema', () => assert.strictEqual(resu
 test('selected artifact is exactly game-schema', () => assert.strictEqual(result.specialistContext.artifactRef.id, 'game-schema'));
 test('specialist intent plan lineage is byte-bound', () => assert.strictEqual(result.specialistContext.intentPlanRef.sha256, base.intentAdapterPlan.planDigest));
 test('organ intent lineage is byte-bound', () => assert.strictEqual(result.specialistContext.organIntentRef.sha256, base.intentAdapterPlan.organIntent.intentDigest));
+test('build-profile lineage is byte-bound', () => assert.deepStrictEqual(result.specialistContext.buildProfileRef, base.selection.buildProfileRef));
+test('selected language is bound to the build profile', () => assert.strictEqual(result.specialistContext.languageId, 'json'));
 test('consent binds the exact intent plan', () => assert.strictEqual(result.consentRef.subject.intentPlanDigest, base.intentAdapterPlan.planDigest));
 test('consent binds the exact capability request', () => assert.strictEqual(result.consentRef.subject.capabilityRequestDigest, base.capabilityBuildRequest.requestDigest));
 test('consent binds the exact catalog', () => assert.strictEqual(result.consentRef.subject.catalogDigest, result.catalogRef.sha256));
 test('consent binds the exact recipe', () => assert.strictEqual(result.consentRef.subject.recipeDigest, result.recipeRef.digest));
+test('consent binds the exact build-profile catalog', () => assert.strictEqual(result.consentRef.subject.buildProfileCatalogDigest, result.buildProfileCatalogRef.sha256));
+test('consent binds the exact build profile', () => assert.strictEqual(result.consentRef.subject.buildProfileDigest, result.specialistContext.buildProfileRef.sha256));
 test('consent is only tier 1', () => assert.strictEqual(result.consentRef.tier, 'TIER_1_DETACHED_CANDIDATE'));
 test('consent replay is not overclaimed', () => assert.strictEqual(result.consentRef.replayState, 'UNVERIFIED_SINGLE_USE_CLAIM'));
 test('human identity authentication is not overclaimed', () => assert.strictEqual(result.truth.authenticatedHumanIdentityProven, false));
@@ -98,12 +102,13 @@ test('public copying remains unauthorized', () => assert.strictEqual(result.reus
 test('capability gap report is READY only for this exact rung', () => assert.deepStrictEqual(result.capabilityGapReport.missingCapabilities, []));
 test('next gate is exact candidate review before sandbox decision', () => assert.strictEqual(result.nextGate, 'HUMAN_REVIEW_EXACT_CANDIDATE_BYTES_BEFORE_SEPARATE_SANDBOX_DECISION'));
 
-test('markup example request is sealed under the v1.8 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
+test('markup example request is sealed under the v1.9 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
 test('markup example produces one detached candidate', () => assert.strictEqual(markupResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('markup result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(markupResult, markupBase), { pass: true, errors: [] }));
 test('markup generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(markupResult), Builder.canonicalJson(Builder.generate(markupBase))));
 test('markup selection binds the exact markup-structure specialist', () => assert.strictEqual(markupResult.specialistContext.specialistOrganRef.id, 'organ.code.markup-structure'));
 test('markup selection binds the exact game-index artifact', () => assert.strictEqual(markupResult.specialistContext.artifactRef.id, 'game-index'));
+test('markup selection binds the exact HTML build profile and language', () => assert.strictEqual(markupResult.specialistContext.buildProfileRef.id, 'code-family.static-html-page') && assert.strictEqual(markupResult.specialistContext.languageId, 'html'));
 test('markup candidate binds the exact admitted HTML recipe', () => assert.deepStrictEqual(markupResult.recipeRef, Builder.MARKUP_TARGET_RECIPE));
 test('markup build request is human reviewed and Code Fabric bound', () => assert.strictEqual(markupBase.capabilityBuildRequest.humanReviewed, true) && assert.strictEqual(markupBase.capabilityBuildRequest.source.kind, 'CODE_FABRIC'));
 test('markup build request binds the exact intent plan', () => assert.strictEqual(markupBase.capabilityBuildRequest.source.ref, markupBase.intentAdapterPlan.planDigest));
@@ -143,11 +148,12 @@ test('request digest drift is refused', () => { const next = clone(base); next.i
 test('forged intent plan is held', () => held(base, (next) => { next.intentAdapterPlan.truth.canonChanged = true; }, 'INTENT_LINEAGE_HOLD'));
 test('stale intent plan status is held', () => held(base, (next) => { next.intentAdapterPlan.status = 'ROOTS_HOLD'; }, 'INTENT_LINEAGE_HOLD'));
 test('specialist digest drift is held', () => held(base, (next) => { next.selection.specialistOrganRef.sha256 = Builder.sha256Value('drift'); }, 'SPECIALIST_HOLD'));
+test('build profile digest drift is held', () => held(base, (next) => { next.selection.buildProfileRef.sha256 = Builder.sha256Value('drift'); }, 'SPECIALIST_HOLD'));
 test('artifact selection drift is held', () => held(base, (next) => { next.selection.artifactId = 'game-rules'; }, 'SPECIALIST_HOLD'));
 test('application-logic specialist remains an unsupported typed hold', () => {
   const next = clone(base), intentRequest = IntentAdapter.buildExampleRequest(), intentPlan = IntentAdapter.plan(intentRequest);
   next.intentAdapterRequest = intentRequest; next.intentAdapterPlan = intentPlan;
-  next.selection = { artifactId: intentPlan.specialistContext.artifactPlan.artifactRef.id, specialistOrganRef: intentPlan.specialistContext.selectedLane.organRef, mode: 'ONE_EXACT_DATA_SCHEMA_SPECIALIST' };
+  next.selection = { artifactId: intentPlan.specialistContext.artifactPlan.artifactRef.id, specialistOrganRef: intentPlan.specialistContext.selectedLane.organRef, buildProfileRef: clone(base.selection.buildProfileRef), mode: 'ONE_EXACT_DATA_SCHEMA_SPECIALIST' };
   const heldResult = Builder.generate(resealOuter(next)); assert.strictEqual(heldResult.status, 'SPECIALIST_HOLD'); assert(heldResult.capabilityGapReport.missingCapabilities.includes('code.specialist.data-schema.exact-lane'));
 });
 test('markup lane cannot be relabelled as the data-schema mode', () => held(markupBase, (next) => { next.selection.mode = 'ONE_EXACT_DATA_SCHEMA_SPECIALIST'; }, 'SPECIALIST_HOLD'));
@@ -177,6 +183,8 @@ test('consent intent digest drift is held', () => held(base, (next) => { next.co
 test('consent request digest drift is held', () => held(base, (next) => { next.consent.subject.capabilityRequestDigest = Builder.sha256Value('wrong-request'); }, 'CONSENT_HOLD'));
 test('consent catalog digest drift is held', () => held(base, (next) => { next.consent.subject.catalogDigest = Builder.sha256Value('wrong-catalog'); }, 'CONSENT_HOLD'));
 test('consent recipe digest drift is held', () => held(base, (next) => { next.consent.subject.recipeDigest = Builder.sha256Value('wrong-recipe'); }, 'CONSENT_HOLD'));
+test('consent build-profile catalog drift is held', () => held(base, (next) => { next.consent.subject.buildProfileCatalogDigest = Builder.sha256Value('wrong-profile-catalog'); }, 'CONSENT_HOLD'));
+test('consent build-profile digest drift is held', () => held(base, (next) => { next.consent.subject.buildProfileDigest = Builder.sha256Value('wrong-profile'); }, 'CONSENT_HOLD'));
 test('tier escalation is refused', () => assert.throws(() => changed(base, (next) => { next.consent.tier = 'TIER_2_SANDBOX_EXECUTION'; }), /tier/i));
 test('revoked consent is refused', () => assert.throws(() => changed(base, (next) => { next.consent.revoked = true; }), /revocation/i));
 test('invalid replay state is refused', () => assert.throws(() => changed(base, (next) => { next.consent.replayState = 'PROVEN'; }), /replay state/i));
@@ -245,12 +253,13 @@ test('active recipe schema knows the admitted HTML page builder', () => assert(c
 test('candidate package schema knows the admitted validator builder', () => assert(candidatePackageSchema.$defs ? candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('closed-json-schema-validator-v1') : false));
 test('candidate package schema knows the admitted HTML page builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('static-accessible-html-page-v1')));
 test('candidate package schema knows the admitted review-skill builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-review-procedure-skill-v1')));
-test('request schema admits only the two exact specialist modes', () => assert.deepStrictEqual(requestSchema.properties.selection.properties.mode.enum, ['ONE_EXACT_DATA_SCHEMA_SPECIALIST', 'ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST']));
-test('result schema byte-binds both exact specialist recipes', () => assert.deepStrictEqual(resultSchema.$defs.recipeRef.oneOf.map((row) => row.properties.id.const), ['closed-json-schema-validator', 'static-accessible-html-page']));
+test('request schema admits a profile-resolved mode token', () => assert.strictEqual(requestSchema.properties.selection.properties.mode.pattern, '^[A-Z][A-Z0-9_]{2,127}$'));
+test('request schema requires an exact build-profile reference', () => assert(requestSchema.properties.selection.required.includes('buildProfileRef')));
+test('result schema accepts registered recipe refs while runtime code resolves exact bytes', () => assert.strictEqual(resultSchema.$defs.recipeRef.properties.digest.$ref, 'semantic-common.schema.json#/$defs/digest'));
 test('result schema preserves UNKNOWN visual evidence for markup', () => assert(resultSchema.$defs.evidence.properties.visualBehavior.enum.includes('UNKNOWN')));
 test('source contains no filesystem module import', () => assert(!/require\(['"](?:fs|node:fs)['"]\)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source contains no child-process module import', () => assert(!/require\(['"](?:child_process|node:child_process)['"]\)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source contains no fetch call', () => assert(!/\bfetch\s*\(/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source never invokes generated candidate text', () => assert(!/new Function|\beval\s*\(|vm\.(?:run|compile)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 
-if (!process.exitCode) process.stdout.write('Code specialist capability builder v1.8 selftest: ' + passed + ' PASS\n');
+if (!process.exitCode) process.stdout.write('Code specialist capability builder v1.9 selftest: ' + passed + ' PASS\n');
