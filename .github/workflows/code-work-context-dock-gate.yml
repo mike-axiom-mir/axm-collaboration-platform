@@ -53,12 +53,18 @@ jobs:
           node --check shared/code-capability-fabric/language-organs/code-grammar-glass-cycle.js
           node --check shared/code-capability-fabric/language-organs/code-grammar-glass-observation.js
           node --check shared/code-capability-fabric/language-organs/code-grammar-glass-memory.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-interglass.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-interglass-core.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-interglass-receipts.js
           node --check shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js
           node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass.js
           node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-memory.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-interglass.js
+          node --check tools/grammar-glass/interglass-executor.js
           node --check tools/grammar-glass/app.js
           python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass.contract.json >/dev/null
           python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass-memory.contract.json >/dev/null
+          python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass-interglass.contract.json >/dev/null
       - name: Prove direction, scratch, hot card and scoped local store
         run: node shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js
       - name: Prove bounded editable production draft batches
@@ -69,14 +75,15 @@ jobs:
         run: node shared/code-capability-fabric/language-organs/selftest-code-built-software-experiment-sandbox.js
       - name: Probe code-creation reasoning seams without authority
         run: node shared/code-capability-fabric/language-organs/selftest-code-creation-reasoning-seam-probe.js
-      - name: Prove Grammar Glass cross-grammar influence, contact memory and moving viewer contract
+      - name: Prove Grammar Glass double-glass execution lane without authority
         run: |
           node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass.js
           node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-memory.js
+          node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-interglass.js
           visual_dir="$(mktemp -d)"
           node shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js \
             --seed 6f2d8b4abef8ebf661925d5ce9d1aeea05b584055e8bdc96b9f857fd66d65e0f \
-            --day phase-1-memory-gate-fixture \
+            --day phase-2-interglass-gate-fixture \
             --ticks 6 \
             --stars 4 > "$visual_dir/grammar-glass-snapshot.json"
           test -s "$visual_dir/grammar-glass-snapshot.json"
@@ -85,7 +92,7 @@ jobs:
           import json, sys
           p=json.load(open(sys.argv[1], encoding='utf-8'))
           assert p['schema']=='axm.code.grammar-glass-visual-snapshot.v1'
-          assert p['version']=='1.2.0'
+          assert p['version']=='1.3.0'
           assert p['profileCount']==102
           assert p['atomCount']==1122
           assert p['contactMemory']['contactEdgeCount'] > 0
@@ -94,11 +101,31 @@ jobs:
           assert len(p['mirrorResponses']) > 0
           assert p['animationModel']['interpolationCreatesEvidence'] is False
           assert p['truth']['multiHopMemoryIsNotSemanticTransitivity'] is True
+          assert p['interglass']['state']=='EXECUTION_READY'
+          assert p['interglass']['candidateModel']['result']=='DETACHED_STRUCTURED_BROWSER_CANDIDATE_MODEL_READY'
+          assert p['interglass']['candidateModel']['runtimeContract']['sourceCodeStoredInDurableModel'] is False
+          assert p['interglass']['runRequest']['result']=='INTERGLASS_EXECUTION_REQUEST_READY_NOT_EXECUTED'
+          assert p['interglass']['runRequest']['resourceCeilings']['maxAttempts']==1
+          assert p['interglass']['runRequest']['sandboxContractBinding']['saveSlotCount']==5
+          assert p['interglass']['runRequest']['sandboxContractBinding']['maxBytesPerSaveSlot']==100000000
+          assert p['interglass']['runRequest']['sandboxContractBinding']['existingSandboxSurfaces']['executionRequestAvailable'] is True
+          assert p['interglass']['runRequest']['sandboxContractBinding']['existingSandboxSurfaces']['executorReceiptSealerAvailable'] is True
+          assert p['interglass']['runRequest']['sandboxContractBinding']['existingSandboxSurfaces']['iterationPersistenceGateAvailable'] is True
+          assert p['interglass']['runRequest']['truth']['automaticReentryAllowed'] is False
+          assert p['doubleGlass']['innerGlass']=='DISPOSABLE_BROWSER_SANDBOX'
+          assert p['constellation']['eventCount'] > 1
           PY
           grep -q 'MOVING TOROIDAL FIELD' tools/grammar-glass/index.html
           grep -q 'REACTIVE DRAFT MIRROR GLASS' tools/grammar-glass/index.html
           grep -q 'Why did this composite form?' tools/grammar-glass/index.html
+          grep -q 'DOUBLE GLASS' tools/grammar-glass/index.html
+          grep -q 'INTERGLASS SANDBOX EXECUTION LANE' tools/grammar-glass/index.html
+          grep -q 'RUN ONCE' tools/grammar-glass/index.html
           grep -q 'requestAnimationFrame' tools/grammar-glass/app.js
+          grep -q 'AXM_INTERGLASS_RESULT_V1' tools/grammar-glass/interglass-executor.js
+          ! grep -q 'crypto.subtle' tools/grammar-glass/interglass-executor.js
+          node -e "const fs=require('fs'),vm=require('vm');const c={window:{},addEventListener(){},TextEncoder,structuredClone,setTimeout,clearTimeout};vm.runInNewContext(fs.readFileSync('tools/grammar-glass/interglass-executor.js','utf8'),c);if(c.window.AXMInterglassExecutor.sha256('abc')!=='ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad')throw Error('INTERGLASS_SHA256_SELFTEST_FAILED')"
+          grep -q "connect-src 'none'" shared/code-capability-fabric/language-organs/code-grammar-glass-interglass-core.js
           grep -q 'CONTACT_MEMORY_PROPAGATION' shared/code-capability-fabric/language-organs/code-grammar-glass-memory.js
       - name: Preserve developer relationship plane and build window
         run: |

@@ -21,6 +21,22 @@ Contact memory is bounded deterministic derived state. Direct contacts decay ove
 
 The **Why did this composite form?** inspector explains the simulator derivation only: exact formation digest, atom ancestry, relation classes/reasons, collision-threshold state, composite lineage and exact applied memory-carry receipts when available. It does not expose or require private chain-of-thought and it does not prove that the resulting draft is useful, novel, correct or compilable.
 
-The viewer and memory layer do not execute, compile, install, use network, admit, select, promote, merge, or change CANON. Mike remains the final merge gate.
+The Twister, contact-memory and Reactive Draft Mirror layers still do not execute, compile, install, admit, select, promote, merge, or change CANON. Phase 2 adds execution only through the explicitly armed Interglass lower executor described below; that execution authority is scoped to the exact transient candidate inside the sandbox.
 
-Grounded claim: Grammar Glass is a seeded, replayable, provenance-bound polyglot structural field and observation simulator. It uses real AXM grammar knowledge to generate, influence, remember and photograph temporary draft formations without granting those formations authority.
+Grounded claim: Grammar Glass is a seeded, replayable, provenance-bound polyglot structural field, observation surface and explicitly gated execution lane. It uses real AXM grammar knowledge to form and track temporary candidates; Phase 2 can run an exact lineage-bound candidate only inside a separately bound sandbox and returns the result as evidence rather than authority.
+
+## Phase 2 — Double Glass / Interglass Sandbox
+
+Phase 2 adds a visible execution lane without turning the Grammar Glass metadata modules into a fake OS sandbox.
+
+Path:
+
+`Twister formation -> Reactive Draft Mirror -> detached structured candidate model -> explicit Interglass run request -> disposable browser sandbox -> runtime receipt -> evidence-only return packet`
+
+The browser executor uses a sandboxed `iframe` with exactly the `allow-scripts` token and no `allow-same-origin`. The generated `srcdoc` carries a restrictive CSP with `default-src 'none'` and `connect-src 'none'`. The demo candidate deliberately attempts one forbidden network fetch; a valid PASS receipt requires that attempt to be blocked and the message origin to remain opaque (`null`). This is a real browser-enforced sandbox boundary for the demo, but it is explicitly **not** claimed to be OS/container/VM containment.
+
+The durable Interglass request stores a structured candidate model, seed lineage, digests, policy and resource bounds. It does not store runtime source bytes. The browser materializes the exact transient HTML/JS payload from that model, hashes the runtime payload, executes it once, and returns only a bounded receipt/result digest. Reload or a new explicit request is required for another execution.
+
+The user-supplied AXM Capability Growth Fabric Showcase v2.12 donor pack was reviewed selectively. Phase 2 borrows the useful patterns of bounded creation programs, detached candidate materialization, byte/digest/resource receipts, and separation of `candidateExecuted` from `runtimeQualityProven`; it does not import the donor fabric wholesale or create a competing save/authority system.
+
+Full-save persistence still delegates to the existing Built-Software Experiment Sandbox contract: five active slots, 100,000,000 bytes per slot, no silent sixth save. A browser execution receipt, Draft Star, or Interglass trace consumes no full-save slot by itself.

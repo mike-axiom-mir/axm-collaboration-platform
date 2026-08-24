@@ -4,6 +4,7 @@ const base = require('./code-grammar-glass-base.js');
 const cycle = require('./code-grammar-glass-cycle.js');
 const observation = require('./code-grammar-glass-observation.js');
 const memory = require('./code-grammar-glass-memory.js');
+const interglass = require('./code-grammar-glass-interglass.js');
 
 module.exports = Object.freeze({
   GRAMMAR_FAMILY: base.GRAMMAR_FAMILY,
@@ -55,5 +56,18 @@ module.exports = Object.freeze({
   createVisualSnapshotBase: observation.createVisualSnapshot,
   createVisualSnapshot: memory.createVisualSnapshotWithMemory,
   contactMemorySnapshot: memory.snapshot,
+  INTERGLASS_EVENT_TYPES: interglass.INTERGLASS_EVENT_TYPES,
+  INTERGLASS_STATES: interglass.INTERGLASS_STATES,
+  DEFAULT_INTERGLASS_POLICY: interglass.DEFAULT_POLICY,
+  createInterglassPolicy: interglass.createInterglassPolicy,
+  createInterglassCandidateModel: interglass.createInterglassCandidateModel,
+  createBrowserSandboxExecutorProfile: interglass.createBrowserSandboxExecutorProfile,
+  createInterglassRunRequest: interglass.createInterglassRunRequest,
+  sealBrowserExecutionReceipt: interglass.sealBrowserExecutionReceipt,
+  createExecutionReturnPacket: interglass.createExecutionReturnPacket,
+  createInterglassVisualState: interglass.visualState,
+  augmentVisualSnapshotWithInterglass: interglass.augmentVisualSnapshot,
+  interglassSandboxBinding: interglass.sandboxContractBinding,
+  interglassSnapshot: interglass.snapshot,
   snapshot: observation.snapshot
 });

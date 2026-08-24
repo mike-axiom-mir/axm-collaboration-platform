@@ -92,7 +92,37 @@ function main() {
     }
     visualMirrors = tickMirrors;
   }
-  const visual = glass.createVisualSnapshot({
+  let interglassState = glass.createInterglassVisualState();
+  if (cycle.formations.length) {
+    const formation = cycle.formations[0];
+    const mirror = glass.observeFormation({ cycle, catalog, formation, lens: 'STRUCTURAL_SEAM' });
+    if (mirror.result === 'REACTIVE_DRAFT_MIRROR_OBSERVATION_READY') {
+      const star = glass.captureDraftStar({ dayStart, conditionRevision: conditions, cycle, formation, mirrorObservation: mirror });
+      const why = glass.explainCompositeFormation({
+        formation,
+        cycle,
+        contactMemory,
+        appliedMemoryCarries: memoryStep && memoryStep.appliedMemoryCarries || []
+      });
+      const interglassPolicy = glass.createInterglassPolicy({ persistenceIntent: 'TRANSIENT', maxAttempts: 1, timeoutMs: 1800 });
+      const candidateModel = glass.createInterglassCandidateModel({ star, mirrorObservation: mirror, formationWhy: why, policy: interglassPolicy });
+      const executorProfile = glass.createBrowserSandboxExecutorProfile({ policy: interglassPolicy });
+      const runRequest = glass.createInterglassRunRequest({
+        candidateModel,
+        star,
+        mirrorObservation: mirror,
+        executorProfile,
+        policy: interglassPolicy,
+        requestedBy: 'EXPLICIT_PHASE_2_DEMO_REQUEST'
+      });
+      interglassState = glass.createInterglassVisualState({ candidateModel, runRequest });
+      ledger = glass.appendDraftStar(ledger, star);
+      visualMirrors = [mirror, ...visualMirrors.filter(item => item.mirrorObservationSha256 !== mirror.mirrorObservationSha256)].slice(0, 8);
+      if (!stars.some(item => item.starSha256 === star.starSha256)) stars.unshift(star);
+      if (stars.length > starLimit) stars.length = starLimit;
+    }
+  }
+  const visualBase = glass.createVisualSnapshot({
     source,
     catalog,
     dayStart,
@@ -104,6 +134,7 @@ function main() {
     ledger,
     stars
   });
+  const visual = glass.augmentVisualSnapshotWithInterglass({ visualSnapshot: visualBase, interglass: interglassState });
   process.stdout.write(`${JSON.stringify(visual, null, 2)}\n`);
 }
 
