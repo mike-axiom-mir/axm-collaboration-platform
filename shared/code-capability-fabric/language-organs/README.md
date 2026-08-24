@@ -5,12 +5,15 @@ Status: `TEST`
 This layer turns the 102-entry AXM Code Body Priority List into **102 separately
 addressable physical code/language organs**. It is not one universal code blob.
 
-PR 51 remains the proven Python executable-source donor. The Python organ binds
-that exact donor identity and digests. HTML and JavaScript are recorded as
-confirmed existing bodies without inventing repository paths; CSS stays
-`VERIFY_EXISTING`. The other organs are real descriptor/plan capabilities, but
-their native execution status stays `LANGUAGE_ADAPTER_REQUIRED` until an actual
-language-specific parser/toolchain/verifier binding exists.
+PR 51 remains the exact source-reviewed Python donor. The Python organ binds
+that donor's profile, recipe and builder digests, but PR 51 explicitly leaves
+generated-candidate execution and Python runtime correctness `UNKNOWN`. This
+layer preserves that boundary instead of upgrading source review into runtime
+proof. HTML and JavaScript are recorded as confirmed existing bodies without
+inventing repository paths; CSS stays `VERIFY_EXISTING`. The other organs are
+real descriptor/plan capabilities, but their native execution status stays
+`LANGUAGE_ADAPTER_REQUIRED` until an actual language-specific
+parser/toolchain/verifier binding exists.
 
 Shared family knowledge is reused through `families.json`; identity, detection,
 status, toolchain candidates and digest remain language-specific in each
