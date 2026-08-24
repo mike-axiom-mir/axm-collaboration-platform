@@ -1,0 +1,89 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-production-draft-fabric",
+  "version": "v1.0",
+  "status": "TEST",
+  "provides": [
+    "axm.code.production-batch.v1",
+    "axm.code.production-draft-set.v1",
+    "axm.code.production-draft-revision.v1",
+    "axm.code.production-draft-comparison.v1",
+    "axm.code.production-draft-selection.v1",
+    "axm.code.production-store-layout.v1",
+    "axm.code.production-store-receipt.v1",
+    "axm.code.production-store-read.v1",
+    "deterministic production comparison SVG"
+  ],
+  "consumes": [
+    "axm.code.work-direction.v1",
+    "axm.code.machine-keyboard-layout.v1",
+    "axm.code.machine-key-program.v1",
+    "optional axm.code.prebuild-plan.v1",
+    "optional axm.code.candidate-admission-report.v1",
+    "optional axm.code.build-window-state.v1",
+    "caller-supplied production draft count",
+    "caller-supplied directed variant axes",
+    "optional scoped local work-context production state root"
+  ],
+  "permissions": [],
+  "limits": {
+    "minDraftsPerBatch": 1,
+    "maxDraftsPerBatch": 16,
+    "reason": "Keep comparison, storage and verification scope bounded."
+  },
+  "behavior": {
+    "defaultDraftCount": 4,
+    "variation": "No variation is invented when no caller-declared axes are supplied.",
+    "editing": "Editing creates a new immutable revision under the same stable draft id.",
+    "comparison": "Comparison exposes observed state only; it does not rank or select a winner.",
+    "selection": "Selection creates a separate explicit receipt and does not promote, merge or delete other drafts."
+  },
+  "localStore": {
+    "recommendedRoot": "state/code-work-context/<project-id>/production",
+    "writes": [
+      "batches/<batch-sha256>.json (immutable)",
+      "drafts/<batch-sha256>/<draft-id>/revisions/<revision>-<draft-revision-sha256>.json (immutable)",
+      "drafts/<batch-sha256>/<draft-id>/active.json (pointer)",
+      "batches/<batch-sha256>.selection.json (explicit selection pointer)"
+    ],
+    "rawSourceStored": false,
+    "sourceWorkspaceRead": false,
+    "sourceWorkspaceWrite": false
+  },
+  "boundaries": {
+    "refuses": [
+      "unbounded-production-draft-count",
+      "automatic-variation-invention-without-declared-axis",
+      "draft-score-as-correctness-proof",
+      "automatic-winner-ranking",
+      "automatic-draft-selection",
+      "selected-draft-as-admission-proof",
+      "admissible-draft-as-automatic-winner",
+      "editing-as-in-place-revision-mutation",
+      "prior-draft-revision-erasure",
+      "raw-source-in-production-state",
+      "compile-or-render-execution-by-production-fabric",
+      "automatic-test-or-sandbox-execution",
+      "automatic-workspace-mutation",
+      "automatic-dependency-installation",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon"
+    ]
+  },
+  "truth": {
+    "draftsAreCandidates": true,
+    "draftRevisionsImmutable": true,
+    "draftIdentityStableAcrossRevisions": true,
+    "comparisonIsNotRanking": true,
+    "selectionIsNotPromotion": true,
+    "otherDraftsRemainAvailableAfterSelection": true,
+    "storageNearWorkerIsScopedStateNotSource": true
+  },
+  "lifecycle": {
+    "state_owner": "scoped-local-work-context-production-store",
+    "reload": "reconstruct batch and draft lineage from immutable revisions and pointers",
+    "disconnect": "retain local candidate state",
+    "cleanup": "explicit"
+  }
+}
