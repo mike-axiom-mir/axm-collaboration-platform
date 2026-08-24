@@ -1,7 +1,7 @@
 {
   "schema": "axm.twin-surface/v1",
-  "graphDigest": "c85ca56e0d03d4093cb8107db67c33cb7d66156f7ec365437220660cea977e20",
-  "schemaRegistryDigest": "49e1842cec78fed881a3833db83b4c47013fb2cf1e40b6744d0846789cdcc494",
+  "graphDigest": "a306b85190532eb9e97a706a04c7ebd449186c1a4e59e71238f6ca972fb4f259",
+  "schemaRegistryDigest": "95ca215cbb9fa77271964b1b7cda89be5f8052d784bcdbb1b3b3229cf617ad8f",
   "machinePackets": [
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -6783,7 +6783,7 @@
     {
       "schema": "axm.machine-capability-packet/v1",
       "blockId": "shared/code-capability-fabric",
-      "blockDigest": "8cedeab9a4eb5d9381095c52364a1b3f434b8474f36af5da2e0b203d1166f85c",
+      "blockDigest": "b2ed1b4e370a6d9524d43e25b750e51ee1648cfae4fce5984ec5a0d4e607a00e",
       "kind": "ORGAN",
       "classificationState": "INFERRED_UNCONFIRMED",
       "status": "EXPERIMENTAL",
@@ -6836,6 +6836,8 @@
         "axm.code-template-mine-and-select/v1",
         "axm.code-template-pattern-mining-report/v1",
         "axm.code-template-selection/v1",
+        "axm.code.action-cache-decision.v1",
+        "axm.code.action-identity.v1",
         "axm.code.artifact-preview-spec.v1",
         "axm.code.build-window-popup-safety.v1",
         "axm.code.build-window-quick-test-intent.v1",
@@ -6844,6 +6846,14 @@
         "axm.code.build-window-transition.v1",
         "axm.code.candidate-admission-policy.v1",
         "axm.code.candidate-admission-report.v1",
+        "axm.code.change-impact-report.v1",
+        "axm.code.dependency-diff.v1",
+        "axm.code.developer-relationship-graph.v1",
+        "axm.code.developer-substrate-atlas.v1",
+        "axm.code.developer-substrate-snapshot.v1",
+        "axm.code.diagnostic-batch.v1",
+        "axm.code.diagnostic-finding.v1",
+        "axm.code.impact-preview.v1",
         "axm.code.machine-key-program.v1",
         "axm.code.machine-keyboard-bank.v1",
         "axm.code.machine-keyboard-layout.v1",
@@ -6856,10 +6866,13 @@
         "axm.code.quick-test-candidate/v1",
         "axm.code.quick-test-observation.v1",
         "axm.code.quick-test-request.v1",
+        "axm.code.reanalysis-plan.v1",
         "code.capability.plan",
         "code.capability.plan.verify"
       ],
       "consumes": [
+        "LSP diagnostic evidence",
+        "SARIF 2.1.0 analysis evidence",
         "axm.code.artifact-build-window-contract.v1",
         "axm.code.human-developer-perspective.v1 review heuristics",
         "axm.code.human-discipline-perspectives.v1 discipline atlas",
@@ -6876,13 +6889,17 @@
         "axm.sandbox-static-evidence/v1 runtime evidence",
         "caller-supplied active language identities",
         "caller-supplied artifact digest and visual-state metadata",
+        "caller-supplied before/after dependency snapshots",
         "caller-supplied boundary-change declarations",
+        "caller-supplied build action identity digests",
         "caller-supplied build goals",
         "caller-supplied build-window actor and revision metadata",
         "caller-supplied candidate digests",
+        "caller-supplied changed entity identifiers",
         "caller-supplied code build observations",
         "caller-supplied composite role identifiers",
         "caller-supplied declared development pressures",
+        "caller-supplied developer relationship nodes and edges",
         "caller-supplied domain overlays",
         "caller-supplied ephemeral candidate artifact body",
         "caller-supplied existing-test presence",
@@ -6900,7 +6917,12 @@
         "exact descriptor digests",
         "explicit request authority policy",
         "host-observed availability",
+        "optional AXM dependency declaration map evidence",
+        "optional AXM diagnostic evidence",
+        "optional build-system/project graph evidence",
+        "optional data-flow/path evidence",
         "optional sandbox adapter accepting axm.code.quick-test-candidate/v1",
+        "optional test/coverage relationship evidence",
         "provider descriptors",
         "strict-deterministic-canonical-json"
       ],
@@ -6910,7 +6932,7 @@
       "unknownEffectDeclarations": [],
       "authorityGrants": [],
       "risk": "LOW",
-      "packetDigest": "7953ef432e4d4922a8620e7e819efff3353d7bef9f36d9a8ccee64b77b8d5394"
+      "packetDigest": "503b8035388c37df65333a137be87c163bf5c7555e1c7956036d5431e52441ad"
     },
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -12718,14 +12740,14 @@
     {
       "schema": "axm.effect-request-template/v1",
       "blockId": "shared/code-capability-fabric",
-      "blockDigest": "8cedeab9a4eb5d9381095c52364a1b3f434b8474f36af5da2e0b203d1166f85c",
-      "capabilityPacketDigest": "7953ef432e4d4922a8620e7e819efff3353d7bef9f36d9a8ccee64b77b8d5394",
+      "blockDigest": "b2ed1b4e370a6d9524d43e25b750e51ee1648cfae4fce5984ec5a0d4e607a00e",
+      "capabilityPacketDigest": "503b8035388c37df65333a137be87c163bf5c7555e1c7956036d5431e52441ad",
       "effectClass": "NONE",
       "requiresExactTargetDigest": true,
       "requiresExactScope": true,
       "requiresAuthorityDecision": false,
       "grantsAuthority": false,
-      "packetDigest": "3fdd6143fc6c0807729c5021d897115bd3baa222a61f7d8d14dc5aa5bff27065"
+      "packetDigest": "839ac5b05488a077c74c4d2f08d8ad781f7b44eb1722d7043155e0fce46715a6"
     },
     {
       "schema": "axm.effect-request-template/v1",
@@ -19509,7 +19531,7 @@
       "name": "shared/code-capability-fabric",
       "status": "EXPERIMENTAL",
       "kind": "ORGAN",
-      "beginnerSummary": "70 declared capability(s); 1 effect class(es); risk LOW",
+      "beginnerSummary": "81 declared capability(s); 1 effect class(es); risk LOW",
       "capabilities": [
         "axm.code-build-observation/v1",
         "axm.code-build-route-plan/v1",
@@ -19559,6 +19581,8 @@
         "axm.code-template-mine-and-select/v1",
         "axm.code-template-pattern-mining-report/v1",
         "axm.code-template-selection/v1",
+        "axm.code.action-cache-decision.v1",
+        "axm.code.action-identity.v1",
         "axm.code.artifact-preview-spec.v1",
         "axm.code.build-window-popup-safety.v1",
         "axm.code.build-window-quick-test-intent.v1",
@@ -19567,6 +19591,14 @@
         "axm.code.build-window-transition.v1",
         "axm.code.candidate-admission-policy.v1",
         "axm.code.candidate-admission-report.v1",
+        "axm.code.change-impact-report.v1",
+        "axm.code.dependency-diff.v1",
+        "axm.code.developer-relationship-graph.v1",
+        "axm.code.developer-substrate-atlas.v1",
+        "axm.code.developer-substrate-snapshot.v1",
+        "axm.code.diagnostic-batch.v1",
+        "axm.code.diagnostic-finding.v1",
+        "axm.code.impact-preview.v1",
         "axm.code.machine-key-program.v1",
         "axm.code.machine-keyboard-bank.v1",
         "axm.code.machine-keyboard-layout.v1",
@@ -19579,6 +19611,7 @@
         "axm.code.quick-test-candidate/v1",
         "axm.code.quick-test-observation.v1",
         "axm.code.quick-test-request.v1",
+        "axm.code.reanalysis-plan.v1",
         "code.capability.plan",
         "code.capability.plan.verify"
       ],
@@ -19586,9 +19619,9 @@
         "NONE"
       ],
       "risk": "LOW",
-      "machinePacketDigest": "7953ef432e4d4922a8620e7e819efff3353d7bef9f36d9a8ccee64b77b8d5394",
+      "machinePacketDigest": "503b8035388c37df65333a137be87c163bf5c7555e1c7956036d5431e52441ad",
       "effectPacketDigests": [
-        "3fdd6143fc6c0807729c5021d897115bd3baa222a61f7d8d14dc5aa5bff27065"
+        "839ac5b05488a077c74c4d2f08d8ad781f7b44eb1722d7043155e0fce46715a6"
       ],
       "safe": null,
       "grantsAuthority": false
@@ -22188,5 +22221,5 @@
     "beginnerViewPreservesCapabilities": true,
     "beginnerViewPreservesRisk": true
   },
-  "twinDigest": "7921db78d492cbf33762015acfb3bfa2f030ee36d0f58d2451fcf3357a49ac30"
+  "twinDigest": "7dcf5a376824f5efc1667fbbbec911bbae6dbf8f0bee8c24b05a2f83fb8acd34"
 }
