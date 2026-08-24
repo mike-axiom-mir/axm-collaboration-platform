@@ -5,11 +5,13 @@ on:
     paths:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
+      - ".github/ci/code-language-toolchain-probe.js"
       - ".github/workflows/code-language-organs-gate.yml"
   pull_request:
     paths:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
+      - ".github/ci/code-language-toolchain-probe.js"
       - ".github/workflows/code-language-organs-gate.yml"
   workflow_dispatch:
 
@@ -19,7 +21,7 @@ permissions:
 jobs:
   language-organs:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Check out exact review source
         uses: actions/checkout@v4
@@ -35,3 +37,15 @@ jobs:
         run: node shared/code-capability-fabric/language-organs/selftest-adversarial.js
       - name: Verify exact PR51 donor bindings
         run: node shared/code-capability-fabric/language-organs/selftest-donors.js
+      - name: Census native toolchains and bounded smoke probes
+        env:
+          AXM_TOOLCHAIN_REPORT: toolchain-census.json
+        run: node .github/ci/code-language-toolchain-probe.js
+      - name: Preserve toolchain census evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-language-toolchain-census
+          path: toolchain-census.json
+          if-no-files-found: error
+          retention-days: 1
