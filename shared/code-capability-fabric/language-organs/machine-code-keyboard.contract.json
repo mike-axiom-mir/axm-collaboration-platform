@@ -1,0 +1,47 @@
+{
+  "schema": "axm.code.machine-keyboard-contract.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "provides": [
+    "axm.code.machine-keyboard-bank.v1",
+    "axm.code.machine-keyboard-snapshot.v1",
+    "axm.code.machine-keyboard-layout.v1",
+    "axm.code.machine-keypress.v1",
+    "axm.code.machine-key-program.v1"
+  ],
+  "shape": {
+    "stableKeyboard": "48 stable semantic keycodes per grammar",
+    "contextHotboard": "12 default hot-key aliases selected from the stable keyboard using language family, prebuild role, signals and template matches",
+    "nativePalette": "grammar profile constructs, dependency forms, scope/type/state/control/effect models, hazards and verifier candidates",
+    "output": "structural edit intent packets, not raw source text"
+  },
+  "principles": {
+    "semanticActionsOverCharacterTyping": true,
+    "stableKeysRemainAddressableAcrossLayouts": true,
+    "hotKeysAreContextAliases": true,
+    "prebuildPlanMayBiasKeyPriorityButDoesNotGrantArchitectureAuthority": true,
+    "templatesMayBiasKeyPriorityButDoNotGrantCorrectness": true,
+    "keypressIsNotWorkspaceMutation": true,
+    "sourceRendererRequiredForSourceEdits": true,
+    "rendererBindingIsNotExecutionAuthority": true,
+    "admissionRequiredAfterRendering": true,
+    "unknownNativeBindingDisablesThatKeySlot": true
+  },
+  "permissions": [],
+  "refuses": [
+    "semantic-key-as-raw-text-mutation",
+    "hotkey-priority-as-architecture-authority",
+    "template-influence-as-correctness-proof",
+    "key-availability-as-renderer-proof",
+    "renderer-binding-as-execution-authority",
+    "keypress-as-tool-execution",
+    "keypress-as-workspace-mutation",
+    "keypress-as-dependency-install",
+    "keypress-as-language-switch",
+    "keypress-as-promotion",
+    "keypress-as-canon",
+    "rendered-source-as-admitted-code",
+    "stale-keyboard-layout-as-valid-input"
+  ],
+  "authority": "NONE"
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "axm.code.developer-substrate-atlas.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "authority": "NONE",
+  "selectionRule": "A developer-platform feature is FIRST_CLASS only when it creates reusable machine evidence about code relationships, invalidation, diagnostics, verification scope or reproducibility. UI convenience alone does not earn a new substrate plane.",
+  "firstClassFoundations": [
+    {
+      "id": "symbol-reference-index",
+      "purpose": "Map definitions, references, calls, imports, implementations and overrides so code can be navigated and changed with structural context.",
+      "researchBasis": ["GitHub code navigation", "Language Server Protocol / LSIF", "JetBrains project analysis"],
+      "machineValue": ["definition/reference lookup", "rename/change scope", "call/reference impact", "symbol-level context without model rediscovery"]
+    },
+    {
+      "id": "dependency-build-graph",
+      "purpose": "Represent code/package/module/build-target/action inputs and outputs, including reverse dependencies.",
+      "researchBasis": ["GitHub dependency graph", "Bazel query/rdeps", "Nx project graph", "AXM dependency declaration observatory"],
+      "machineValue": ["downstream impact", "cycle observation", "build/test scope", "route evidence"]
+    },
+    {
+      "id": "change-impact-plane",
+      "purpose": "Propagate changed entities through known relationship edges and produce a bounded affected set.",
+      "researchBasis": ["Nx affected", "Bazel reverse dependencies", "IDE find usages/project index"],
+      "machineValue": ["avoid whole-repo reanalysis", "surface hidden dependents", "select affected verifiers", "visualize blast radius"]
+    },
+    {
+      "id": "diagnostic-interchange",
+      "purpose": "Normalize diagnostics from compilers, language servers, linters and static analyzers with stable tool/rule/location/fingerprint identity.",
+      "researchBasis": ["LSP diagnostics", "SARIF 2.1.0", "JetBrains inspection reports", "GitHub code scanning"],
+      "machineValue": ["one diagnostic plane across tools", "deduplicate findings", "track result identity across revisions", "feed admission evidence"]
+    },
+    {
+      "id": "data-flow-paths",
+      "purpose": "Preserve source-to-sink/value-flow paths that imports and call graphs cannot express.",
+      "researchBasis": ["CodeQL path queries", "JetBrains data-flow analysis"],
+      "machineValue": ["security flow review", "null/value provenance", "consumer/producer reasoning", "path-specific verification"]
+    },
+    {
+      "id": "affected-verifier-selection",
+      "purpose": "Map tests, checks and verifier tasks to the code/entities they observe so only relevant evidence must be refreshed.",
+      "researchBasis": ["Nx affected tasks", "Bazel target/test graph", "IDE scoped inspections"],
+      "machineValue": ["smaller verification scope", "lower compute", "faster feedback", "explicit uncovered areas"]
+    },
+    {
+      "id": "action-identity-invalidation",
+      "purpose": "Bind build/analysis actions to declared input, toolchain, configuration and environment digests so stale evidence can be distinguished from reusable evidence.",
+      "researchBasis": ["Bazel action graph", "Bazel content-addressed/action cache", "incremental IDE project analysis"],
+      "machineValue": ["deterministic invalidation", "cache-reuse candidate detection", "reproducibility evidence", "avoid recomputing unchanged work"]
+    },
+    {
+      "id": "dependency-change-review",
+      "purpose": "Compare dependency snapshots to identify direct/transitive additions, removals and updates before candidate promotion.",
+      "researchBasis": ["GitHub dependency review", "GitHub dependency graph", "manifest/lockfile exactness"],
+      "machineValue": ["supply-chain delta", "unexpected transitive change detection", "license/vulnerability evidence carriage", "admission hints"]
+    }
+  ],
+  "composedOrDeferred": [
+    {
+      "id": "code-ownership-review-routing",
+      "verdict": "GOVERNANCE_COMPOSITION",
+      "reason": "CODEOWNERS-style path ownership is valuable for routing review, but it does not create new code truth. Keep it as a review/governance seam over the impact graph."
+    },
+    {
+      "id": "runtime-debug-trace-map",
+      "verdict": "DEFERRED_RUNTIME_EVIDENCE",
+      "reason": "Stack traces, breakpoints and runtime traces are high-value evidence, but belong beside the quick sandbox/runtime observation plane rather than the pre-source grammar ground."
+    },
+    {
+      "id": "autocomplete-breadcrumbs-editor-chrome",
+      "verdict": "UI_ONLY",
+      "reason": "Useful to humans but mostly presentation over symbol/index/diagnostic substrate already captured above."
+    },
+    {
+      "id": "ai-autocomplete-or-agent-loop",
+      "verdict": "OPTIONAL_NEURAL_CONSUMER",
+      "reason": "A model can consume the substrate, but model generation is not itself foundational deterministic evidence."
+    }
+  ],
+  "sourceClasses": [
+    "AXM_GRAMMAR",
+    "AXM_DEPENDENCY_MAP",
+    "AXM_DIAGNOSTICS",
+    "LSP",
+    "LSIF",
+    "TREE_SITTER",
+    "PACKAGE_MANIFEST",
+    "LOCKFILE",
+    "BUILD_SYSTEM",
+    "GIT_DIFF",
+    "TEST_COVERAGE",
+    "SARIF",
+    "CODEQL",
+    "RUNTIME_TRACE",
+    "MANUAL_EVIDENCE"
+  ],
+  "truth": {
+    "graphCoverageMayBePartial": true,
+    "relationshipEdgeIsNotSemanticCorrectnessProof": true,
+    "diagnosticMayBeFalsePositive": true,
+    "noFindingIsNotBugFreeProof": true,
+    "affectedSetIsOnlyAsCompleteAsInputEvidence": true,
+    "cacheIdentityMatchIsReuseCandidateNotRuntimeProof": true,
+    "dependencyMetadataIsCallerOrToolSuppliedEvidence": true,
+    "automaticMutation": false,
+    "automaticExecution": false,
+    "automaticPromotion": false
+  }
+}
