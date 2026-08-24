@@ -3,54 +3,19 @@
 const crypto = require('crypto');
 const DeterministicJson = require('../../tools/deterministic-json-core');
 const IntentAdapter = require('./code-specialist-organ-intent-adapter-v1');
+const BuildProfileRegistry = require('./code-specialist-build-profile-registry-v1');
 const CapabilityFabric = require('../capability-fabric');
 const HandFoundryContract = require('../../tools/hand-specification-foundry/module.contract.json');
 const MODULE_CONTRACT = require('./module-code-specialist-capability-builder-v1.contract.json');
 
-const VERSION = '1.8.0';
+const VERSION = '1.9.0';
 const REQUEST_SCHEMA = 'axm.code-specialist-capability-build-request/v1';
 const RESULT_SCHEMA = 'axm.code-specialist-capability-candidate/v1';
-const TARGET_SPECIALIST_ID = 'organ.code.data-schema';
-const TARGET_RECIPE = Object.freeze({
-  id: 'closed-json-schema-validator',
-  version: '0.1.0',
-  digest: 'sha256:8840621b497fda2296a370c220de52a6e18147bf5562a0ff1e050965ec454b23',
-  builderId: 'closed-json-schema-validator-v1',
-  builderDigest: 'sha256:d5bbf6fc6c4219fd90987b7b458c2d396ce5d5c421f06c8763b85338e40c38a0',
-  capabilityKind: 'HAND'
-});
-const MARKUP_TARGET_RECIPE = Object.freeze({
-  id: 'static-accessible-html-page',
-  version: '0.1.0',
-  digest: 'sha256:e5216430a135f44927364f3beb9bd7825f0aa2e4b5410be6e9cf3cc5c6a28417',
-  builderId: 'static-accessible-html-page-v1',
-  builderDigest: 'sha256:ca938e6fe3b7635c4fe30b00c1fc13edb9a875257cabdcce1c487d35640aa122',
-  capabilityKind: 'HAND'
-});
-const TARGETS = Object.freeze({
-  ONE_EXACT_DATA_SCHEMA_SPECIALIST: Object.freeze({
-    mode: 'ONE_EXACT_DATA_SCHEMA_SPECIALIST', specialistId: TARGET_SPECIALIST_ID,
-    recipe: TARGET_RECIPE, family: 'schema-validation', artifactId: 'game-schema',
-    specialistGate: 'SELECT_EXACT_DATA_SCHEMA_SPECIALIST_AND_REPLAN',
-    recipeGate: 'RESTORE_EXACT_SOURCE_REVIEWED_SCHEMA_VALIDATOR_RECIPE',
-    requestGate: 'REPAIR_EXACT_HUMAN_REVIEWED_SCHEMA_VALIDATOR_REQUEST',
-    specialistGap: 'code.specialist.data-schema.exact-lane',
-    recipeGap: 'capability.recipe.closed-json-schema-validator.exact',
-    requestGap: 'capability.build-request.data-schema.exact',
-    visualEvidence: 'NOT_APPLICABLE'
-  }),
-  ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST: Object.freeze({
-    mode: 'ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST', specialistId: 'organ.code.markup-structure',
-    recipe: MARKUP_TARGET_RECIPE, family: 'markup-creation', artifactId: 'game-index',
-    specialistGate: 'SELECT_EXACT_MARKUP_STRUCTURE_SPECIALIST_AND_REPLAN',
-    recipeGate: 'RESTORE_EXACT_SOURCE_REVIEWED_HTML_PAGE_RECIPE',
-    requestGate: 'REPAIR_EXACT_HUMAN_REVIEWED_HTML_PAGE_REQUEST',
-    specialistGap: 'code.specialist.markup-structure.exact-lane',
-    recipeGap: 'capability.recipe.static-accessible-html-page.exact',
-    requestGap: 'capability.build-request.markup-structure.exact',
-    visualEvidence: 'UNKNOWN'
-  })
-});
+const TARGETS = BuildProfileRegistry.TARGETS;
+const BUILD_PROFILE_CATALOG = BuildProfileRegistry.CATALOG;
+const TARGET_SPECIALIST_ID = TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST.specialistId;
+const TARGET_RECIPE = TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST.recipe;
+const MARKUP_TARGET_RECIPE = TARGETS.ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST.recipe;
 const ROOTS = IntentAdapter.ROOTS;
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
 const SAFE_ID = /^[a-z0-9][a-z0-9._-]{0,127}$/;
@@ -63,7 +28,7 @@ const LIMITATIONS = Object.freeze([
   'DURATION_NOT_INDEPENDENTLY_ENFORCED',
   'GENERATED_SELFTEST_EMITTED_NOT_RUN',
   'HTML_VISUAL_ACCESSIBILITY_AND_INTERACTION_BEHAVIOR_NOT_PROVEN',
-  'IMPLEMENTATION_SUPPORT_LIMITED_TO_CLOSED_SCHEMA_VALIDATOR_AND_STATIC_HTML_PAGE_RECIPES',
+  'BUILD_PROFILE_CATALOG_INITIALLY_CONTAINS_ONLY_JSON_SCHEMA_AND_STATIC_HTML',
   'MEMORY_NOT_INDEPENDENTLY_ENFORCED',
   'ORGAN_INTENT_DOES_NOT_PROVE_IMPLEMENTATION_SEMANTICS',
   'SPECIALIST_PROFILE_IS_ROUTING_CONTEXT_NOT_CAPABILITY_PROOF',
@@ -137,7 +102,7 @@ function resourceEnvelope(value) {
     if (!Number.isInteger(value[key]) || value[key] < 0) fail('request.resourceEnvelope.' + key + ' must be a non-negative integer');
   });
   if (value.maxInputBytes < 1 || value.maxOutputBytes < 1 || value.maxCandidateFiles < 1 || value.maxCandidateBytes < 1 || value.maxMemoryBytes < 1 || value.maxDurationMs < 1) fail('request resource byte, file, memory, and duration limits must be positive');
-  if (value.maxInputBytes > 8388608 || value.maxOutputBytes > 8388608 || value.maxCandidateFiles > 32 || value.maxCandidateBytes > 1048576) fail('request resource envelope exceeds v1.8 ceilings');
+  if (value.maxInputBytes > 8388608 || value.maxOutputBytes > 8388608 || value.maxCandidateFiles > 32 || value.maxCandidateBytes > 1048576) fail('request resource envelope exceeds v1.9 ceilings');
   if (value.maxBuildPasses !== 2 || value.maxAttempts !== 1 || value.maxProcesses !== 0 || value.maxCostMinorUnits !== 0) fail('request resource authority exceeds the deterministic in-memory build rung');
   return clone(value);
 }
@@ -151,7 +116,7 @@ function consent(value) {
   if (expiresMs <= evaluatedMs || expiresMs - evaluatedMs > 86400000) fail('request consent validity window must be positive and at most 24 hours');
   if (!/^[a-z0-9][a-z0-9-]{15,127}$/.test(String(value.nonce || ''))) fail('request consent nonce is invalid');
   if (value.revoked !== false || value.replayState !== 'UNVERIFIED_SINGLE_USE_CLAIM') fail('request consent revocation or replay state is invalid');
-  exact(value.subject, ['intentPlanDigest', 'capabilityRequestDigest', 'catalogDigest', 'recipeDigest'], 'request.consent.subject');
+  exact(value.subject, ['intentPlanDigest', 'capabilityRequestDigest', 'catalogDigest', 'recipeDigest', 'buildProfileCatalogDigest', 'buildProfileDigest'], 'request.consent.subject');
   exact(value.scope, ['candidateCount', 'candidateExecution', 'workspaceWrite', 'permissions', 'networkDomains', 'install', 'integrate', 'publish', 'promote', 'canon'], 'request.consent.scope');
   if (value.scope.candidateCount !== 1 || value.scope.candidateExecution !== false || value.scope.workspaceWrite !== false || value.scope.install !== false || value.scope.integrate !== false || value.scope.publish !== false || value.scope.promote !== false || value.scope.canon !== false) fail('request consent scope exceeds one detached candidate');
   if (!Array.isArray(value.scope.permissions) || value.scope.permissions.length || !Array.isArray(value.scope.networkDomains) || value.scope.networkDomains.length) fail('request consent grants permission or network authority');
@@ -162,7 +127,9 @@ function consent(value) {
       intentPlanDigest: digest(value.subject.intentPlanDigest, 'request.consent.subject.intentPlanDigest'),
       capabilityRequestDigest: digest(value.subject.capabilityRequestDigest, 'request.consent.subject.capabilityRequestDigest'),
       catalogDigest: digest(value.subject.catalogDigest, 'request.consent.subject.catalogDigest'),
-      recipeDigest: digest(value.subject.recipeDigest, 'request.consent.subject.recipeDigest')
+      recipeDigest: digest(value.subject.recipeDigest, 'request.consent.subject.recipeDigest'),
+      buildProfileCatalogDigest: digest(value.subject.buildProfileCatalogDigest, 'request.consent.subject.buildProfileCatalogDigest'),
+      buildProfileDigest: digest(value.subject.buildProfileDigest, 'request.consent.subject.buildProfileDigest')
     },
     evaluatedAt, expiresAt, nonce: value.nonce, revoked: false,
     replayState: value.replayState, scope: clone(value.scope)
@@ -181,8 +148,9 @@ function normalizeRequestCore(value) {
   object(value.intentAdapterRequest, 'request.intentAdapterRequest');
   object(value.intentAdapterPlan, 'request.intentAdapterPlan');
   object(value.capabilityBuildRequest, 'request.capabilityBuildRequest');
-  exact(value.selection, ['artifactId', 'specialistOrganRef', 'mode'], 'request.selection');
-  if (!Object.prototype.hasOwnProperty.call(TARGETS, value.selection.mode)) fail('request selection mode is unsupported');
+  exact(value.selection, ['artifactId', 'specialistOrganRef', 'buildProfileRef', 'mode'], 'request.selection');
+  const target = BuildProfileRegistry.resolveMode(value.selection.mode);
+  if (!target) fail('request selection mode is unsupported');
   if (!Array.isArray(value.rootsGate) || value.rootsGate.length !== 4) fail('request must contain exactly four root decisions');
   return {
     schema: REQUEST_SCHEMA,
@@ -193,6 +161,7 @@ function normalizeRequestCore(value) {
     selection: {
       artifactId: id(value.selection.artifactId, 'request.selection.artifactId'),
       specialistOrganRef: versionedRef(value.selection.specialistOrganRef, 'request.selection.specialistOrganRef'),
+      buildProfileRef: versionedRef(value.selection.buildProfileRef, 'request.selection.buildProfileRef'),
       mode: value.selection.mode
     },
     capabilityBuildRequest: clone(value.capabilityBuildRequest),
@@ -282,7 +251,7 @@ function generate(input) {
   let nextGate = rootHold ? 'REPAIR_ROOT_EVIDENCE_AND_REPLAN' : 'REBUILD_EXACT_SPECIALIST_INTENT_AND_REPLAN';
   let holds = rootHold ? request.rootsGate.filter((decision) => decision.verdict !== 'PASS').map((decision) => ({ code: 'ROOT_' + decision.verdict, detail: decision.root })) : [];
   let gaps = rootHold ? ['four-roots.technical-evidence.pass'] : [];
-  let specialistContext = null, consentRef = null, catalogRef = null, selectedRecipeRef = null, buildRequestRef = null, buildPlan = null, buildReceiptRef = null, detachedCandidate = null;
+  let specialistContext = null, consentRef = null, catalogRef = null, buildProfileCatalogRef = null, selectedRecipeRef = null, buildRequestRef = null, buildPlan = null, buildReceiptRef = null, detachedCandidate = null;
   let intentRebuilt = false, intentEvidence = 'NOT_RUN', candidateGenerated = false, candidateBytesGeneratedTransiently = false, nativeBuilderInvoked = false, buildPasses = 0;
   let candidateStructureEvidence = 'NOT_RUN', candidateByteEvidence = 'NOT_RUN', candidatePathEvidence = 'NOT_RUN', emittedSelftestEvidence = 'NOT_EMITTED';
 
@@ -295,21 +264,23 @@ function generate(input) {
     } else {
       intentRebuilt = true;
       const context = request.intentAdapterPlan.specialistContext;
-      const exactSelection = context && context.artifactPlan && context.selectedLane && context.artifactPlan.artifactRef.id === request.selection.artifactId && same(context.selectedLane.organRef, request.selection.specialistOrganRef);
-      const closedLane = exactSelection && context.selectedLane.organRef.id === target.specialistId && context.selectedLane.executionStatus === 'NOT_RUN' && context.selectedLane.candidateStatus === 'NOT_GENERATED' && context.selectedLane.authority === 'NONE' && context.selectedLane.permissions.length === 0 && context.selectedLane.networkDomains.length === 0;
+      const exactSelection = context && context.artifactPlan && context.selectedLane && context.artifactPlan.artifactRef.id === request.selection.artifactId && same(context.selectedLane.organRef, request.selection.specialistOrganRef) && same(request.selection.buildProfileRef, target.profileRef);
+      const selectedLanguageId = context && context.artifactPlan && context.artifactPlan.languageClassification && context.artifactPlan.languageClassification.selected ? context.artifactPlan.languageClassification.selected.id : null;
+      const closedLane = exactSelection && target.languageIds.includes(selectedLanguageId) && same(context.selectedLane.organRef, target.specialistOrganRef) && context.selectedLane.executionStatus === 'NOT_RUN' && context.selectedLane.candidateStatus === 'NOT_GENERATED' && context.selectedLane.authority === 'NONE' && context.selectedLane.permissions.length === 0 && context.selectedLane.networkDomains.length === 0;
       if (!closedLane || request.intentAdapterPlan.truth.specialistLineageBoundIntoIntent !== true || request.intentAdapterPlan.truth.organIntentCreated !== true) {
         status = 'SPECIALIST_HOLD'; nextGate = target.specialistGate;
         holds = [{ code: 'EXACT_SPECIALIST_REQUIRED', detail: 'This rung requires one closed ' + target.specialistId + ' lane bound into the reviewed specialist intent.' }];
         gaps = [target.specialistGap];
       } else {
-        specialistContext = { intentPlanRef: planReference(request.intentAdapterPlan), artifactRef: clone(context.artifactPlan.artifactRef), specialistOrganRef: clone(context.selectedLane.organRef), organIntentRef: { id: request.intentAdapterPlan.organIntent.id, schema: request.intentAdapterPlan.organIntent.schema, sha256: request.intentAdapterPlan.organIntent.intentDigest } };
+        specialistContext = { intentPlanRef: planReference(request.intentAdapterPlan), artifactRef: clone(context.artifactPlan.artifactRef), specialistOrganRef: clone(context.selectedLane.organRef), buildProfileRef: clone(target.profileRef), languageId: selectedLanguageId, organIntentRef: { id: request.intentAdapterPlan.organIntent.id, schema: request.intentAdapterPlan.organIntent.schema, sha256: request.intentAdapterPlan.organIntent.intentDigest } };
         const catalog = CapabilityFabric.loadCatalog();
         const catalogValidation = CapabilityFabric.validateCatalog(catalog);
         const recipe = catalog.recipes.find((row) => row.id === target.recipe.id);
         catalogRef = { id: 'capability-recipe-catalog', schema: catalog.schema, sha256: catalog.catalogDigest };
+        buildProfileCatalogRef = { id: BUILD_PROFILE_CATALOG.id, schema: BUILD_PROFILE_CATALOG.schema, sha256: BUILD_PROFILE_CATALOG.catalogDigest };
         selectedRecipeRef = recipe ? recipeRef(recipe) : null;
         const capabilityValidation = CapabilityFabric.validateRequest(request.capabilityBuildRequest);
-        const expectedConsentSubject = { intentPlanDigest: request.intentAdapterPlan.planDigest, capabilityRequestDigest: request.capabilityBuildRequest.requestDigest, catalogDigest: catalog.catalogDigest, recipeDigest: recipe ? recipe.recipeDigest : target.recipe.digest };
+        const expectedConsentSubject = { intentPlanDigest: request.intentAdapterPlan.planDigest, capabilityRequestDigest: request.capabilityBuildRequest.requestDigest, catalogDigest: catalog.catalogDigest, recipeDigest: recipe ? recipe.recipeDigest : target.recipe.digest, buildProfileCatalogDigest: BUILD_PROFILE_CATALOG.catalogDigest, buildProfileDigest: target.profileRef.sha256 };
         const consentExact = same(request.consent.subject, expectedConsentSubject);
         if (!catalogValidation.ok || !exactTargetRecipe(recipe, target)) {
           status = 'RECIPE_HOLD'; nextGate = target.recipeGate;
@@ -369,7 +340,7 @@ function generate(input) {
   const core = {
     schema: RESULT_SCHEMA, version: VERSION, status,
     requestRef: { id: request.id, schema: request.schema, sha256: request.requestDigest },
-    specialistContext, consentRef, catalogRef, recipeRef: selectedRecipeRef, buildRequestRef, buildPlan, buildReceiptRef, detachedCandidate,
+    specialistContext, consentRef, catalogRef, buildProfileCatalogRef, recipeRef: selectedRecipeRef, buildRequestRef, buildPlan, buildReceiptRef, detachedCandidate,
     evidence: {
       intentRebuild: intentEvidence,
       candidateStructure: candidateStructureEvidence,
@@ -449,11 +420,11 @@ function buildTargetExampleRequest(target, options) {
   buildDraft.purpose = options.buildPurpose;
   buildDraft.source = { kind: 'CODE_FABRIC', ref: intentAdapterPlan.planDigest };
   const capabilityBuildRequest = CapabilityFabric.sealRequest(buildDraft, true);
-  const subject = { intentPlanDigest: intentAdapterPlan.planDigest, capabilityRequestDigest: capabilityBuildRequest.requestDigest, catalogDigest: catalog.catalogDigest, recipeDigest: recipe.recipeDigest };
+  const subject = { intentPlanDigest: intentAdapterPlan.planDigest, capabilityRequestDigest: capabilityBuildRequest.requestDigest, catalogDigest: catalog.catalogDigest, recipeDigest: recipe.recipeDigest, buildProfileCatalogDigest: BUILD_PROFILE_CATALOG.catalogDigest, buildProfileDigest: target.profileRef.sha256 };
   return sealRequest({
     schema: REQUEST_SCHEMA, version: VERSION, id: options.outerRequestId,
     intentAdapterRequest, intentAdapterPlan,
-    selection: { artifactId: context.artifactPlan.artifactRef.id, specialistOrganRef: clone(context.selectedLane.organRef), mode: target.mode },
+    selection: { artifactId: context.artifactPlan.artifactRef.id, specialistOrganRef: clone(context.selectedLane.organRef), buildProfileRef: clone(target.profileRef), mode: target.mode },
     capabilityBuildRequest,
     consent: {
       tier: 'TIER_1_DETACHED_CANDIDATE',
@@ -488,7 +459,7 @@ function buildExampleRequest() {
     decisionId: 'mike-tier-1-schema-candidate-direction',
     decisionText: 'Mike authorized the bounded data-schema rung: create one detached validator candidate; do not execute, write, install, integrate, publish, promote, or CANON.',
     evaluatedAt: '2026-08-24T00:00:00.000Z', expiresAt: '2026-08-25T00:00:00.000Z', nonce: 'schema-candidate-0002',
-    rootEvidencePrefix: 'schema-candidate-', rootEvidenceSubject: 'schema-specialist-candidate-v1.8'
+    rootEvidencePrefix: 'schema-candidate-', rootEvidenceSubject: 'schema-specialist-candidate-v1.9'
   });
 }
 
@@ -511,14 +482,14 @@ function buildMarkupExampleRequest() {
     decisionId: 'mike-tier-1-markup-candidate-direction',
     decisionText: 'Mike authorized the next bounded rung: create one detached HTML markup candidate; do not execute, render, write, install, integrate, publish, promote, or CANON.',
     evaluatedAt: '2026-08-24T00:00:00.000Z', expiresAt: '2026-08-25T00:00:00.000Z', nonce: 'markup-candidate-0001',
-    rootEvidencePrefix: 'markup-candidate-', rootEvidenceSubject: 'markup-specialist-candidate-v1.8'
+    rootEvidencePrefix: 'markup-candidate-', rootEvidenceSubject: 'markup-specialist-candidate-v1.9'
   });
 }
 
 if (!MODULE_CONTRACT || MODULE_CONTRACT.id !== 'code-specialist-capability-builder-v1') fail('module contract identity mismatch');
 
 module.exports = {
-  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, TARGETS, ROOTS, LIMITATIONS, MODULE_CONTRACT,
+  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
   canonicalJson, clone, same, sha256Value, jsonBytes, isSafeCandidatePath, validateCandidatePaths,
   sealRequest, normalizeRequest, generate, verify, buildExampleIntentRequest, buildExampleRequest,
   buildMarkupExampleIntentRequest, buildMarkupExampleRequest
