@@ -34,9 +34,12 @@ for(const recipe of atlas.buildRecipes){
 const htmlJs=route.relate({languageA:'html',languageB:'javascript'});
 assert.strictEqual(htmlJs.result,'ROUTES_FOUND');
 assert(htmlJs.routes.some(r=>r.id==='browser-document-host'&&r.class==='HOSTED_DSL'));
+assert.strictEqual(htmlJs.routes[0].source,'EXPLICIT_BRIDGE');
 const pyC=route.relate({languageA:'python',languageB:'c'});
 assert.strictEqual(pyC.result,'ROUTES_FOUND');
 assert(pyC.routes.some(r=>r.id==='python-extended-by-c'||r.id==='c-embeds-python'));
+assert.strictEqual(pyC.routes[0].source,'EXPLICIT_BRIDGE');
+assert(pyC.routes[0].score>pyC.routes.filter(r=>r.source==='FAMILY_RULE').reduce((m,r)=>Math.max(m,r.score),-1));
 const daxVhdl=route.relate({languageA:'dax',languageB:'vhdl'});
 assert.strictEqual(daxVhdl.result,'NO_KNOWN_DIRECT_ROUTE');
 const browser=route.planGoal({goal:'build a browser game',activeLanguageIds:['html','css','javascript']});
@@ -63,4 +66,4 @@ assert.strictEqual(snap.organCount,102);
 assert.strictEqual(snap.routeClassCount,18);
 assert.strictEqual(snap.explicitBridgeCount,atlas.explicitBridges.length);
 assert.strictEqual(snap.authority,'NONE');
-console.log(JSON.stringify({ok:true,organCount:snap.organCount,routeClassCount:snap.routeClassCount,explicitBridgeCount:snap.explicitBridgeCount,familyRuleCount:snap.familyRuleCount,buildRecipeCount:snap.buildRecipeCount,browserRecipe:browser.recipes[0].id,nativeGameRecipe:nativeGame.recipes[0].id,snapshotSha256:snap.snapshotSha256,authority:snap.authority},null,2));
+console.log(JSON.stringify({ok:true,organCount:snap.organCount,routeClassCount:snap.routeClassCount,explicitBridgeCount:snap.explicitBridgeCount,familyRuleCount:snap.familyRuleCount,buildRecipeCount:snap.buildRecipeCount,browserRecipe:browser.recipes[0].id,nativeGameRecipe:nativeGame.recipes[0].id,pythonCFirstRoute:pyC.routes[0].id,pythonCFirstRouteClass:pyC.routes[0].class,snapshotSha256:snap.snapshotSha256,authority:snap.authority},null,2));
