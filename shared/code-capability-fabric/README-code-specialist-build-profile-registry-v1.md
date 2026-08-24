@@ -10,11 +10,12 @@ with a byte-bound profile catalog. A profile binds all of these exactly:
 - the capability family, evidence routes, repair gates, and typed gaps; and
 - a zero-authority detached-candidate boundary.
 
-The catalog contains five bounded build lanes: JSON schema validation, static
+The catalog contains six bounded build lanes: JSON schema validation, static
 HTML page rendering, one typed CSS token stylesheet, one strict text-only SVG
-status badge, and one string-only Python record transform. It does not
-claim that Python generally—or all languages—are implemented. A broader
-Python, broader CSS or SVG, Rust, game-script, or other profile becomes eligible only after
+status badge, and one string-only record transform in each of Python and
+JavaScript. It does not claim that Python, JavaScript, or all languages are
+generally implemented. A broader Python, JavaScript, CSS or SVG, Rust,
+game-script, or other profile becomes eligible only after
 its specialist binding and source-reviewed recipe exist. Missing or drifted
 bindings emit typed gaps; a nearby recipe is never borrowed.
 

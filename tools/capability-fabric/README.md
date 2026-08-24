@@ -11,10 +11,10 @@ host-mediated portable `SKILL` builder.
 
 Builder code is no longer selected by hard-coded branches in the Fabric core.
 A digest-bound modular registry supplies all eight active builders. The validator,
-semantic HTML renderer, bounded CSS token-stylesheet renderer, strict text-only
+semantic HTML renderer, bounded JavaScript string-record transform, bounded CSS token-stylesheet renderer, strict text-only
 SVG status-badge renderer, and bounded Python record-transform HAND are all
-selected through exact recipe and builder digests. The generated CSS, SVG, and
-Python source and selftests remain inert candidate data and are not executed by
+selected through exact recipe and builder digests. The generated JavaScript,
+CSS, SVG, and Python source and selftests remain inert candidate data and are not executed by
 this workbench. The
 portable review SKILL was admitted through the reviewed merge gate. The
 separate Capability Recipe Admission Gate can prove exact evidence and a

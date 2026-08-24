@@ -45,6 +45,45 @@
     },
     {
       "schema": "axm.code-specialist-build-profile/v1",
+      "id": "code-family.bounded-javascript-record-transform",
+      "version": "1.0.0",
+      "status": "TEST",
+      "mode": "ONE_EXACT_JAVASCRIPT_APPLICATION_LOGIC_SPECIALIST",
+      "specialistOrganRef": {
+        "id": "organ.code.application-logic",
+        "schema": "axm.code-specialist-organ-profile/v1",
+        "version": "1.0.0",
+        "sha256": "sha256:db17f57a04b3c70c9d54ed46042eca8e8780013e4c4f0dc5164c932a5ff29258"
+      },
+      "languageIds": ["javascript"],
+      "capability": {
+        "family": "code-module",
+        "recipeRef": {
+          "id": "pure-json-transform",
+          "version": "1.1.0",
+          "digest": "sha256:9b9e5463bc126b21549ac6245ed88c063d43bc0e4d94a380fb092b40b035d24d",
+          "builderId": "pure-json-transform-v1",
+          "builderDigest": "sha256:3cd18478277083397fde86db89c07138da98b756edd47d44b075283ab4ab18c0",
+          "capabilityKind": "HAND"
+        }
+      },
+      "exampleArtifactId": "javascript-transform",
+      "gates": {
+        "specialist": "SELECT_EXACT_JAVASCRIPT_APPLICATION_LOGIC_SPECIALIST_AND_REPLAN",
+        "recipe": "RESTORE_EXACT_SOURCE_REVIEWED_BOUNDED_JAVASCRIPT_RECIPE",
+        "request": "REPAIR_EXACT_HUMAN_REVIEWED_BOUNDED_JAVASCRIPT_REQUEST"
+      },
+      "gaps": {
+        "specialist": "code.specialist.javascript.application-logic.exact-lane",
+        "recipe": "capability.recipe.pure-json-transform.exact",
+        "request": "capability.build-request.code-module.exact"
+      },
+      "evidence": {"visualBehavior": "NOT_APPLICABLE", "requiredKinds": ["DETERMINISTIC_BEHAVIOR", "STATIC_STRUCTURE"]},
+      "boundary": {"authority": "NONE", "permissions": [], "networkDomains": [], "workspaceRead": false, "workspaceWrite": false, "candidateExecution": false, "install": false, "integrate": false, "publish": false, "promote": false, "canon": false},
+      "profileDigest": "sha256:90130041a3e73d38b913c0d1c21caa59938de083c22c7ba6a45f99bd568f153c"
+    },
+    {
+      "schema": "axm.code-specialist-build-profile/v1",
       "id": "code-family.json-schema-validator",
       "version": "1.0.0",
       "status": "TEST",
@@ -209,5 +248,5 @@
     "automaticInstall": false,
     "mikeFinalMergeGateRequired": true
   },
-  "catalogDigest": "sha256:fcacefcc17d265e1af4b7a64f06356d00840f29fed3d222be54ad8273b5d39d0"
+  "catalogDigest": "sha256:baead0920e519e8118daffc241a53b284612ae412e0a2fc440d84bff2b19c4bd"
 }

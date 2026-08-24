@@ -632,9 +632,9 @@
     {
       "schema": "axm.capability-recipe/v1",
       "id": "pure-json-transform",
-      "version": "1.0.0",
-      "title": "Pure JSON Transform",
-      "summary": "Compile a dependency-free bounded field transform with an emitted external selftest.",
+      "version": "1.1.0",
+      "title": "Bounded JavaScript String-Record Transform",
+      "summary": "Compile a dependency-free deterministic string-record field transform with accessor refusal, closed value types, byte ceilings, and an emitted external selftest.",
       "family": "code-module",
       "capabilityKind": "HAND",
       "capabilityContract": {
@@ -647,7 +647,7 @@
         "requiredHostCapabilities": []
       },
       "builderId": "pure-json-transform-v1",
-      "builderDigest": "sha256:79c263e8df6e941c55abd734beca53a5bf6a04c6524e3188a5ee729230b49997",
+      "builderDigest": "sha256:3cd18478277083397fde86db89c07138da98b756edd47d44b075283ab4ab18c0",
       "activation": "ACTIVE_SOURCE_REVIEWED",
       "reviewPolicy": {
         "activation": "source-review-and-merge",
@@ -697,8 +697,29 @@
           "type": "integer",
           "required": true,
           "minimum": 1,
-          "maximum": 128,
+          "maximum": 64,
           "description": "Maximum accepted top-level input keys."
+        },
+        "maxValueLength": {
+          "type": "integer",
+          "required": true,
+          "minimum": 8,
+          "maximum": 4096,
+          "description": "Maximum UTF-16 code-unit length of every accepted string value."
+        },
+        "maxInputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 128,
+          "maximum": 1048576,
+          "description": "Maximum deterministic UTF-8 byte count of the accepted string record."
+        },
+        "maxOutputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 64,
+          "maximum": 1048576,
+          "description": "Maximum UTF-8 byte count of the one-field output record."
         }
       },
       "exampleRequest": {
@@ -712,7 +733,10 @@
           "outputField": "normalizedStatus",
           "defaultValue": "unknown",
           "outputSchema": "axm.example.status-normalized/v1",
-          "maxInputKeys": 16
+          "maxInputKeys": 8,
+          "maxValueLength": 128,
+          "maxInputBytes": 512,
+          "maxOutputBytes": 256
         },
         "source": {
           "kind": "HUMAN",
@@ -720,17 +744,19 @@
         }
       },
       "boundaries": [
-        "pure JSON input only",
+        "closed own-data-property string records only; accessors, symbols, custom prototypes, unsafe fields, and non-string values are refused",
+        "explicit input-key, string-length, input-byte, and output-byte ceilings",
         "no filesystem, network, clock, environment, dynamic code, or implicit randomness",
         "detached candidate output only",
         "generated tests are emitted but never executed by the Fabric"
       ],
       "verifiers": [
         "package digest and exact deterministic rebuild",
-        "externally execute emitted selftest.js",
+        "externally execute emitted selftest.js only through a separately trusted disjoint package harness",
+        "static refusal checks for filesystem, network, process, provider, dynamic-code, environment, clock, and randomness surfaces",
         "Detached Candidate Nursery structural scan"
       ],
-      "recipeDigest": "sha256:91e29dd9c52a00bd8f91517ef4ca27d18639e6536c2230203e2ca5a97b3e6696"
+      "recipeDigest": "sha256:9b9e5463bc126b21549ac6245ed88c063d43bc0e4d94a380fb092b40b035d24d"
     },
     {
       "schema": "axm.capability-recipe/v1",
@@ -941,7 +967,10 @@
             "outputField": "normalizedStatus",
             "defaultValue": "unknown",
             "outputSchema": "axm.example.status-normalized/v1",
-            "maxInputKeys": 16
+            "maxInputKeys": 8,
+            "maxValueLength": 128,
+            "maxInputBytes": 512,
+            "maxOutputBytes": 256
           },
           "idSuffix": "capability"
         },
@@ -962,8 +991,8 @@
         "adapted request contract and digest validation",
         "Detached Candidate Nursery structural scan"
       ],
-      "recipeDigest": "sha256:754d323174787080f5d61c2c5fe515bc74ea126af21a498bbec17a6e4665594d"
+      "recipeDigest": "sha256:e3986033316cc192e916ae90d9dababc57dda7795f1a29c996ccdebfd5494a68"
     }
   ],
-  "catalogDigest": "sha256:5ff91c8a1defabb2e6dc871645c9c7622a65b2cc4d7bbff99db8309db4caffc9"
+  "catalogDigest": "sha256:13a9348305afa80626e562476590c01b2d0d75600fdd8a6664da027501d6b671"
 }

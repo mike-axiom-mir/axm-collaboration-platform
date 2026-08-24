@@ -15,15 +15,47 @@
   const digest = deterministicKernel.digest;
   const canonicalJson = deterministicKernel.canonicalJson;
 
-  function jsonTransformSource(parameters) {
-    const config={inputField:parameters.inputField,outputField:parameters.outputField,defaultValue:parameters.defaultValue,outputSchema:parameters.outputSchema,maxInputKeys:parameters.maxInputKeys};
-    return "'use strict';\nconst CONFIG=Object.freeze("+JSON.stringify(config)+");\nfunction own(v,k){return Object.prototype.hasOwnProperty.call(Object(v),k);}\nfunction run(input){if(!input||typeof input!=='object'||Array.isArray(input))return {schema:CONFIG.outputSchema,ok:false,code:'INPUT_OBJECT_REQUIRED'};if(Object.keys(input).length>CONFIG.maxInputKeys)return {schema:CONFIG.outputSchema,ok:false,code:'INPUT_KEY_LIMIT'};const output={};output[CONFIG.outputField]=own(input,CONFIG.inputField)?input[CONFIG.inputField]:CONFIG.defaultValue;return {schema:CONFIG.outputSchema,ok:true,output:output};}\nmodule.exports={CONFIG:CONFIG,run:run};\n";
+  function jsonTransformField(value,label){
+    if(typeof value!=='string'||!/^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(value)||['constructor','prototype'].includes(value))throw new Error(label+' is invalid');
+    return value;
   }
-  function jsonTransformSelftest(parameters) {
-    return "'use strict';\nconst assert=require('assert');const capability=require('./capability.js');let input={};input["+JSON.stringify(parameters.inputField)+"]='proof';const result=capability.run(input);assert.equal(result.ok,true);assert.equal(result.output["+JSON.stringify(parameters.outputField)+"],'proof');const fallback=capability.run({});assert.deepStrictEqual(fallback.output["+JSON.stringify(parameters.outputField)+"],"+JSON.stringify(parameters.defaultValue)+");console.log('PASS pure JSON transform capability');\n";
+  function jsonTransformText(value,label,maxLength){
+    if(typeof value!=='string'||value.length>maxLength)throw new Error(label+' must be a bounded string');
+    return value;
+  }
+  function jsonTransformSchema(value){
+    if(typeof value!=='string'||!/^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$/.test(value))throw new Error('outputSchema is invalid');
+    return value;
+  }
+  function jsonTransformSource(config) {
+    return [
+      "'use strict';",
+      "function deepFreeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);Object.getOwnPropertyNames(value).forEach(function(key){deepFreeze(value[key]);});}return value;}",
+      'const CONFIG=deepFreeze('+JSON.stringify(config)+');',
+      "function own(value,key){return Object.prototype.hasOwnProperty.call(Object(value),key);}",
+      "function safeField(value){return typeof value==='string'&&/^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(value)&&value!=='constructor'&&value!=='prototype';}",
+      "function recordPrototype(value){const prototype=Object.getPrototypeOf(value);if(prototype===null)return true;if(Object.getPrototypeOf(prototype)!==null||Object.getOwnPropertySymbols(prototype).length)return false;const constructor=Object.getOwnPropertyDescriptor(prototype,'constructor'),safe=['__defineGetter__','__defineSetter__','__lookupGetter__','__lookupSetter__','__proto__','constructor','hasOwnProperty','isPrototypeOf','propertyIsEnumerable','toLocaleString','toString','valueOf'];return !!constructor&&own(constructor,'value')&&typeof constructor.value==='function'&&constructor.value.name==='Object'&&Function.prototype.toString.call(constructor.value)==='function Object() { [native code] }'&&Object.getOwnPropertyNames(prototype).every(function(key){return safe.includes(key);});}",
+      "function inspectRecord(value){if(!value||typeof value!=='object'||Array.isArray(value))return 'INPUT_OBJECT_REQUIRED';if(!recordPrototype(value)||Object.getOwnPropertySymbols(value).length)return 'INPUT_FIELD_UNSUPPORTED';const names=Object.getOwnPropertyNames(value);if(names.length>CONFIG.maxInputKeys)return 'INPUT_KEY_LIMIT';for(let index=0;index<names.length;index+=1){const key=names[index],descriptor=Object.getOwnPropertyDescriptor(value,key);if(!safeField(key)||!descriptor||!descriptor.enumerable||!own(descriptor,'value'))return 'INPUT_FIELD_UNSUPPORTED';if(typeof descriptor.value!=='string'||descriptor.value.length>CONFIG.maxValueLength)return 'INPUT_VALUE_INVALID';}return null;}",
+      "function utf8Bytes(value){let total=0;for(let index=0;index<value.length;index+=1){const code=value.charCodeAt(index);if(code<128)total+=1;else if(code<2048)total+=2;else if(code>=55296&&code<=56319&&index+1<value.length){const next=value.charCodeAt(index+1);if(next>=56320&&next<=57343){total+=4;index+=1;}else total+=3;}else total+=3;}return total;}",
+      "function recordBytes(value){const keys=Object.getOwnPropertyNames(value).sort();let total=2;keys.forEach(function(key,index){const descriptor=Object.getOwnPropertyDescriptor(value,key);if(index)total+=1;total+=utf8Bytes(JSON.stringify(key))+1+utf8Bytes(JSON.stringify(descriptor.value));});return total;}",
+      "function failure(code){return {schema:CONFIG.outputSchema,ok:false,code:code};}",
+      "function run(input){const problem=inspectRecord(input);if(problem)return failure(problem);if(recordBytes(input)>CONFIG.maxInputBytes)return failure('INPUT_BYTES_EXCEEDED');const descriptor=own(input,CONFIG.inputField)?Object.getOwnPropertyDescriptor(input,CONFIG.inputField):null,value=descriptor?descriptor.value:CONFIG.defaultValue,output={};Object.defineProperty(output,CONFIG.outputField,{value:value,enumerable:true,writable:true,configurable:true});if(utf8Bytes(JSON.stringify(output))>CONFIG.maxOutputBytes)return failure('OUTPUT_BYTES_EXCEEDED');return {schema:CONFIG.outputSchema,ok:true,output:output};}",
+      'module.exports={CONFIG:CONFIG,run:run};',
+      ''
+    ].join('\n');
+  }
+  function jsonTransformSelftest(config) {
+    return "'use strict';\nconst assert=require('assert');const capability=require('./capability.js');assert(Object.isFrozen(capability.CONFIG));const input={"+JSON.stringify(config.inputField)+":'proof',note:'bounded'},first=capability.run(input),second=capability.run(input);assert.equal(first.ok,true);assert.deepStrictEqual(first,second);assert.deepStrictEqual(first.output,{"+JSON.stringify(config.outputField)+":'proof'});assert.notStrictEqual(first.output,input);const fallback=capability.run({});assert.deepStrictEqual(fallback.output,{"+JSON.stringify(config.outputField)+":"+JSON.stringify(config.defaultValue)+"});assert.equal(capability.run(null).code,'INPUT_OBJECT_REQUIRED');assert.equal(capability.run([]).code,'INPUT_OBJECT_REQUIRED');assert.equal(capability.run(new Date()).code,'INPUT_FIELD_UNSUPPORTED');assert.equal(capability.run({"+JSON.stringify(config.inputField)+":7}).code,'INPUT_VALUE_INVALID');assert.equal(capability.run({"+JSON.stringify(config.inputField)+":'x'.repeat("+(config.maxValueLength+1)+")}).code,'INPUT_VALUE_INVALID');const accessor={};let getterRead=false;Object.defineProperty(accessor,"+JSON.stringify(config.inputField)+",{enumerable:true,get(){getterRead=true;throw new Error('must not execute');}});assert.equal(capability.run(accessor).code,'INPUT_FIELD_UNSUPPORTED');assert.equal(getterRead,false);let inheritedHookRead=false;const inheritedPrototype=Object.create(null);Object.defineProperty(inheritedPrototype,'constructor',{value:Object});Object.defineProperty(inheritedPrototype,'toJSON',{get(){inheritedHookRead=true;throw new Error('must not execute');}});const inherited=Object.create(inheritedPrototype);inherited["+JSON.stringify(config.inputField)+"]='proof';assert.equal(capability.run(inherited).code,'INPUT_FIELD_UNSUPPORTED');assert.equal(inheritedHookRead,false);const custom={"+JSON.stringify(config.inputField)+":'proof',toJSON:function(){throw new Error('must not execute');}};assert.equal(capability.run(custom).code,'INPUT_VALUE_INVALID');const symbolRecord={"+JSON.stringify(config.inputField)+":'proof'};symbolRecord[Symbol('hidden')]='x';assert.equal(capability.run(symbolRecord).code,'INPUT_FIELD_UNSUPPORTED');const reserved={"+JSON.stringify(config.inputField)+":'proof'};Object.defineProperty(reserved,'__proto__',{value:'x',enumerable:true});assert.equal(capability.run(reserved).code,'INPUT_FIELD_UNSUPPORTED');class RecordValue{constructor(){this["+JSON.stringify(config.inputField)+"]='proof';}}assert.equal(capability.run(new RecordValue()).code,'INPUT_FIELD_UNSUPPORTED');const keys={};for(let index=0;index<"+(config.maxInputKeys+1)+";index+=1)keys['k'+index]='x';assert.equal(capability.run(keys).code,'INPUT_KEY_LIMIT');const byteHeavy={a:'é'.repeat("+config.maxValueLength+"),b:'é'.repeat("+config.maxValueLength+"),c:'é'.repeat("+config.maxValueLength+")};assert.equal(capability.run(byteHeavy).code,'INPUT_BYTES_EXCEEDED');assert.equal(capability.run({"+JSON.stringify(config.inputField)+":'\\\\'.repeat("+config.maxValueLength+")}).code,'OUTPUT_BYTES_EXCEEDED');console.log('PASS bounded JavaScript string-record transform capability');\n";
   }
   function buildJsonTransform(parameters) {
-    return {capabilityKind:'HAND',source:jsonTransformSource(parameters),selftest:jsonTransformSelftest(parameters),provides:[parameters.outputSchema],consumes:['application/json'],summary:'Pure bounded JSON field transform.'};
+    htmlExact(parameters,['inputField','outputField','defaultValue','outputSchema','maxInputKeys','maxValueLength','maxInputBytes','maxOutputBytes'],'parameters');
+    if(!Number.isInteger(parameters.maxInputKeys)||parameters.maxInputKeys<1||parameters.maxInputKeys>64)throw new Error('maxInputKeys is outside the bounded range');
+    if(!Number.isInteger(parameters.maxValueLength)||parameters.maxValueLength<8||parameters.maxValueLength>4096)throw new Error('maxValueLength is outside the bounded range');
+    if(!Number.isInteger(parameters.maxInputBytes)||parameters.maxInputBytes<128||parameters.maxInputBytes>1048576)throw new Error('maxInputBytes is outside the bounded range');
+    if(!Number.isInteger(parameters.maxOutputBytes)||parameters.maxOutputBytes<64||parameters.maxOutputBytes>1048576)throw new Error('maxOutputBytes is outside the bounded range');
+    const config={inputField:jsonTransformField(parameters.inputField,'inputField'),outputField:jsonTransformField(parameters.outputField,'outputField'),defaultValue:jsonTransformText(parameters.defaultValue,'defaultValue',parameters.maxValueLength),outputSchema:jsonTransformSchema(parameters.outputSchema),maxInputKeys:parameters.maxInputKeys,maxValueLength:parameters.maxValueLength,maxInputBytes:parameters.maxInputBytes,maxOutputBytes:parameters.maxOutputBytes};
+    if(byteLength(JSON.stringify(Object.fromEntries([[config.outputField,config.defaultValue]])))>config.maxOutputBytes)throw new Error('default output exceeds maxOutputBytes');
+    return {capabilityKind:'HAND',source:jsonTransformSource(config),selftest:jsonTransformSelftest(config),provides:[config.outputSchema],consumes:['axm.bounded-string-record/v1'],summary:'Strict deterministic JavaScript string-record field transform with accessor refusal and byte ceilings.'};
   }
 
   function svgXmlText(value){
@@ -475,7 +507,7 @@
     return {id:id,capabilityKind:kind,status:status,proposalDigest:proposalDigest,implementationDigest:digest(material),build:build};
   }
   const entries=[
-    makeEntry('pure-json-transform-v1','HAND',ACTIVE,null,buildJsonTransform,[jsonTransformSource,jsonTransformSelftest,buildJsonTransform]),
+    makeEntry('pure-json-transform-v1','HAND',ACTIVE,null,buildJsonTransform,[jsonTransformField,jsonTransformText,jsonTransformSchema,jsonTransformSource,jsonTransformSelftest,buildJsonTransform]),
     makeEntry('svg-status-badge-v1','HAND',ACTIVE,null,buildSvgBadge,[svgXmlText,svgText,svgColor,svgEscape,svgBadgeMarkup,svgBadgeSource,svgBadgeSelftest,buildSvgBadge]),
     makeEntry('workshop-direction-adapter-v1','HAND',ACTIVE,null,buildDirectionAdapter,[directionAdapterSource,directionAdapterSelftest,buildDirectionAdapter]),
     makeEntry('closed-json-schema-validator-v1','HAND',REVIEW_CANDIDATE,'sha256:02a61d48f5213edc9140f1720c12f84a8de1ebc0bbc7f1b338d9a9e8bf0df14f',buildSchemaValidator,[stable,byteLength,exactKeys,inspectSchema,validatorSource,validatorSelftest,exampleFor,buildSchemaValidator]),

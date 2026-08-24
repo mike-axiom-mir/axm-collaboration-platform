@@ -1,0 +1,61 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "bounded-javascript-record-transform-specialist-rung",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "code.language.javascript.catalogued/v1",
+        "capability.candidate.detached.deterministic/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "code.javascript.string-record-transform.strict/v1",
+        "code.specialist.application-logic.javascript.exact/v1",
+        "evidence.javascript.transform.static-lineage/v1"
+      ],
+      "declaredConstraints": {
+        "code.language.javascript.catalogued/v1": [
+          "JavaScript is catalogued as browser-script knowledge; catalog presence alone is not a bounded builder or exact specialist route."
+        ],
+        "code.javascript.string-record-transform.strict/v1": [
+          "The active pure-json-transform hand accepts arbitrary runtime values, can invoke accessors, copies mutable references, and enforces neither input nor output byte ceilings."
+        ],
+        "capability.candidate.detached.deterministic/v1": [
+          "Requires one exact source-reviewed recipe and active builder; grants no lifecycle authority."
+        ],
+        "evidence.javascript.transform.static-lineage/v1": [
+          "The existing transform recipe is not byte-bound and the Code Specialist Fabric does not bind an exact JavaScript profile."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "code.javascript.string-record-transform.strict/v1",
+    "code.specialist.application-logic.javascript.exact/v1",
+    "evidence.javascript.transform.static-lineage/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "code.javascript.string-record-transform.strict/v1",
+      "requiredBy": ["bounded-javascript-record-transform-specialist-rung"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "code.specialist.application-logic.javascript.exact/v1",
+      "requiredBy": ["bounded-javascript-record-transform-specialist-rung"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "evidence.javascript.transform.static-lineage/v1",
+      "requiredBy": ["bounded-javascript-record-transform-specialist-rung"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}
