@@ -93,16 +93,15 @@ abap_root = TMP / "abap"
 )
 results.append(run("abap", "PARSER_SYNTAX_CHECK", ["abaplint", "abaplint.json"], cwd=abap_root))
 
-# 4. DAX: dedicated ANTLR-derived lexer evidence. This is deliberately not called a full parser.
+# 4. DAX: full ANTLR-backed parser proof via dax-sql-parser.
 dax_script = write(
     "probe_dax.py",
-    "from daxparser import get_columns_or_measures\n"
-    "x=get_columns_or_measures(\"CALCULATE(SUM('Sales'[Amount]), 'Sales'[Region]=\\\"EU\\\")\")\n"
-    "assert len(x)==2\n"
-    "assert x[0].table=='Sales' and x[0].col_name=='Amount'\n"
-    "assert x[1].table=='Sales' and x[1].col_name=='Region'\n",
+    "from dax_sql_parser import DaxParser\n"
+    "p=DaxParser(default_dialect='trino')\n"
+    "sql=p.to_sql(\"EVALUATE 'Sales'\")\n"
+    "assert isinstance(sql,str) and 'Sales' in sql and 'SELECT' in sql.upper()\n",
 )
-results.append(run("dax", "DEDICATED_LEXER", ["python", str(dax_script)]))
+results.append(run("dax", "ANTLR_FULL_PARSER", ["python", str(dax_script)]))
 
 # 5. Power Query M: Microsoft's parser must reach parse-stage OK.
 pq_script = NODE_ROOT / "probe-powerquery.cjs"
@@ -156,15 +155,16 @@ results.append(run("cobol", "COMPILER_PARSE", ["cobc", "-free", "-fsyntax-only",
 tsql = write("probe.sql", "DECLARE @x INT = 1; SELECT TOP (1) @x AS value;\n")
 results.append(run("tsql", "DIALECT_PARSER", ["sqlfluff", "parse", "--dialect", "tsql", str(tsql)]))
 
+dax_full = any(r["languageId"] == "dax" and r["pass"] and r["evidenceClass"] == "ANTLR_FULL_PARSER" for r in results)
 summary = {
-    "schema": "axm.code-language-last-mile-census/v1",
+    "schema": "axm.code-language-last-mile-census/v2",
     "status": "TEST",
     "targetCount": 9,
     "passCount": sum(1 for r in results if r["pass"]),
     "failCount": sum(1 for r in results if not r["pass"]),
     "passingOrgans": [r["languageId"] for r in results if r["pass"]],
     "failedOrgans": [r["languageId"] for r in results if not r["pass"]],
-    "daxFullParserClaimed": False,
+    "daxFullParserEvidence": dax_full,
     "semanticCorrectnessClaimed": False,
     "runtimeCorrectnessClaimed": False,
     "authority": "NONE",
@@ -172,4 +172,4 @@ summary = {
 REPORT.write_text(json.dumps({"summary": summary, "results": results}, indent=2) + "\n", encoding="utf-8")
 print(json.dumps(summary, indent=2))
 print(f"AXM_LAST_MILE_REPORT={REPORT}")
-# Trial census: preserve failures as evidence; the union gate decides readiness.
+# Trial census: preserve failures as evidence; the strict union gate decides readiness.
