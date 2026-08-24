@@ -1,0 +1,155 @@
+name: AXM Code Artifact Build Window Materializer
+
+on:
+  pull_request:
+    branches:
+      - codex/code-machine-keyboard-v1
+    paths:
+      - ".github/workflows/code-artifact-build-window-materialize.yml"
+      - "shared/code-capability-fabric/language-organs/code-artifact-build-window.js"
+      - "shared/code-capability-fabric/language-organs/code-artifact-build-window-popup.js"
+      - "shared/code-capability-fabric/language-organs/code-artifact-build-window.contract.json"
+      - "shared/code-capability-fabric/language-organs/selftest-code-artifact-build-window.js"
+      - "shared/code-capability-fabric/module.contract.json"
+
+concurrency:
+  group: axm-code-artifact-build-window-materialize
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  materialize-build-window-views:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Check out exact branch source
+        uses: actions/checkout@v4
+        with:
+          ref: codex/code-artifact-build-window-v1
+          fetch-depth: 1
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Expose Build Window through Code Fabric v0.11
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const p='shared/code-capability-fabric/module.contract.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          const add=(a,v)=>{if(!a.includes(v))a.push(v)};
+          x.version='v0.11';
+          [
+            'axm.code.build-window-state.v1',
+            'axm.code.build-window-transition.v1',
+            'axm.code.artifact-preview-spec.v1',
+            'axm.code.quick-test-candidate/v1',
+            'axm.code.quick-test-request.v1',
+            'axm.code.quick-test-observation.v1',
+            'axm.code.build-window-snapshot.v1',
+            'axm.code.build-window-popup-safety.v1',
+            'axm.code.build-window-quick-test-intent.v1'
+          ].forEach(v=>add(x.provides,v));
+          [
+            'axm.code.artifact-build-window-contract.v1',
+            'caller-supplied ephemeral candidate artifact body',
+            'caller-supplied artifact digest and visual-state metadata',
+            'caller-supplied build-window actor and revision metadata',
+            'caller-supplied explicit quick-test action',
+            'optional sandbox adapter accepting axm.code.quick-test-candidate/v1',
+            'axm.disposable-candidate-sandbox-session/v1 runtime observation',
+            'axm.sandbox-static-evidence/v1 runtime evidence'
+          ].forEach(v=>add(x.consumes,v));
+          [
+            'axm.code.build-window-state.v1',
+            'axm.code.build-window-transition.v1',
+            'axm.code.artifact-preview-spec.v1',
+            'axm.code.quick-test-request.v1',
+            'axm.code.quick-test-observation.v1',
+            'axm.code.build-window-snapshot.v1',
+            'axm.code.build-window-quick-test-intent.v1'
+          ].forEach(v=>add(x.handoffs.emits,v));
+          [
+            'caller-supplied build-window session/revision',
+            'caller-supplied ephemeral candidate artifact body',
+            'caller-supplied artifact digest and visual-state metadata',
+            'caller-supplied quick-test runtime class',
+            'caller-supplied generic-code sandbox adapter descriptor',
+            'caller-supplied sandbox session and evidence observation'
+          ].forEach(v=>add(x.handoffs.accepts,v));
+          [
+            'build-window-preview-as-verification',
+            'build-window-preview-as-final-visual-fidelity-proof',
+            'browser-preview-as-cpu-isolation-proof',
+            'browser-preview-as-memory-isolation-proof',
+            'browser-preview-with-same-origin-privilege',
+            'raw-source-in-durable-build-window-state',
+            'raw-source-in-build-window-history',
+            'automatic-quick-test-from-build-window',
+            'existing-game-sandbox-as-generic-code-adapter-proof',
+            'quick-test-pass-as-admission-proof',
+            'quick-test-pass-as-universal-correctness',
+            'quick-test-pass-as-promotion',
+            'runtime-failure-as-in-place-source-rewrite',
+            'build-window-popup-as-workspace-authority',
+            'build-window-popup-as-execution-authority'
+          ].forEach(v=>add(x.boundaries.refuses,v));
+          fs.writeFileSync(p,JSON.stringify(x,null,2)+'\n');
+          NODE
+      - name: Prove artifact Build Window
+        run: |
+          node --check shared/code-capability-fabric/language-organs/code-artifact-build-window.js
+          node --check shared/code-capability-fabric/language-organs/code-artifact-build-window-popup.js
+          node shared/code-capability-fabric/language-organs/selftest-code-artifact-build-window.js
+      - name: Preserve code intelligence foundations
+        run: |
+          node shared/code-capability-fabric/language-organs/build-machine-keyboards.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-code-keyboard.js
+          node shared/code-capability-fabric/language-organs/selftest-prebuild-twin-admission.js
+          node shared/code-capability-fabric/language-organs/selftest-code-route-knowledge.js
+          node shared/code-capability-fabric/language-organs/selftest-human-discipline-perspectives.js
+          node shared/code-capability-fabric/language-organs/build-machine-templates.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-templates.js
+          node shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js
+          python shared/code-capability-fabric/language-organs/build-grammar-profiles.py --check
+          python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --check
+          node shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js
+          node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
+      - name: Regenerate deterministic repository views
+        run: |
+          node scripts/compile-city-graph.js --write
+          node scripts/compile-schema-registry.js --write
+          node scripts/compile-twin-surfaces.js --write
+          node scripts/compile-city-graph.js --check
+          node scripts/compile-schema-registry.js --check
+          node scripts/compile-twin-surfaces.js --check
+      - name: Run repository verification
+        run: |
+          node verify.js
+          node hub/hub-selftest.js
+          node hub/route-selftest.js
+          node hub/graft-selftest.js
+          node hub/skin-selftest.js
+          node hub/verify-plus.js
+          git diff --check
+      - name: Commit only contract and deterministic generated views
+        run: |
+          git config user.name "AXM Artifact Build Window Steward Gate"
+          git config user.email "artifact-build-window-steward@axm.invalid"
+          git add shared/code-capability-fabric/module.contract.json
+          git add registry/generated docs/generated/LEGO_CITY_MAP.md docs/generated/LEGO_CITY_BEGINNER_MAP.md
+          if git diff --cached --quiet; then
+            echo "No Build Window contract/view changes to commit."
+          else
+            git commit -m "chore(fabric): expose artifact build window and refresh views"
+            git push origin HEAD:codex/code-artifact-build-window-v1
+          fi
