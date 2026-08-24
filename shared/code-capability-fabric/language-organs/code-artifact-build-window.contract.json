@@ -1,6 +1,6 @@
 {
   "schema": "axm.code.artifact-build-window-contract.v1",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "status": "TEST",
   "authority": "NONE",
   "purpose": "Live mid-build artifact preview plus an explicit quick-test observation bridge, without turning preview or runtime observations into workspace or promotion authority.",
@@ -8,6 +8,7 @@
     "axm.code.build-window-state.v1",
     "axm.code.build-window-transition.v1",
     "axm.code.artifact-preview-spec.v1",
+    "axm.code.quick-test-candidate/v1",
     "axm.code.quick-test-request.v1",
     "axm.code.quick-test-observation.v1",
     "axm.code.build-window-snapshot.v1",
@@ -25,6 +26,7 @@
     "ephemeral-live-preview",
     "axm.disposable-candidate-sandbox-session/v1",
     "axm.sandbox-static-evidence/v1",
+    "optional generic-code sandbox adapter accepting axm.code.quick-test-candidate/v1",
     "explicit quick-test action"
   ],
   "previewModes": {
@@ -46,7 +48,9 @@
       "truthCeiling": "BROWSER_RUNTIME_OBSERVATION_ONLY"
     },
     "HOST_DISPOSABLE": {
-      "candidateExecution": "EXTERNAL_EXISTING_SANDBOX_ONLY",
+      "candidateExecution": "EXTERNAL_ADAPTER_ONLY",
+      "requiredInputSchema": "axm.code.quick-test-candidate/v1",
+      "existingRepoSandboxDirectGenericInputClaimed": false,
       "network": false,
       "inheritedHostAuthority": false,
       "workspaceMutation": false,
@@ -64,6 +68,7 @@
       "raw-source-in-durable-build-window-state",
       "raw-source-in-build-window-history",
       "automatic-quick-test",
+      "existing-game-sandbox-as-generic-code-adapter-proof",
       "quick-test-pass-as-admission-proof",
       "quick-test-pass-as-universal-correctness",
       "quick-test-pass-as-promotion",
@@ -83,14 +88,16 @@
     },
     "sandbox": {
       "requiredHandoff": "axm.disposable-candidate-sandbox-session/v1",
-      "requiresNoInheritedHostAuthority": true
+      "requiresNoInheritedHostAuthority": true,
+      "currentDirectGenericCodeInput": false,
+      "genericAdapterRequiredBeforeHostQuickTest": true
     }
   },
   "lifecycle": {
     "stateOwner": "caller-or-browser-ephemeral",
     "rawArtifactRetention": "none-by-core",
     "popupClose": "drops-dom-preview",
-    "quickTest": "separate-explicit-handoff",
-    "cleanup": "automatic-popup / existing-sandbox-policy"
+    "quickTest": "browser-direct-explicit or separate generic-sandbox adapter handoff",
+    "cleanup": "automatic-popup / adapter sandbox policy"
   }
 }
