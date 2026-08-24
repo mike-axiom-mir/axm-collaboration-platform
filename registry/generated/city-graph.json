@@ -26600,12 +26600,19 @@
           "automatic-action-from-influence",
           "automatic-canon",
           "automatic-dependency-install-from-discovery",
+          "automatic-dependency-install-from-route",
+          "automatic-deployment-from-route",
           "automatic-install",
+          "automatic-language-switch-from-route",
           "automatic-promotion",
+          "automatic-promotion-from-route",
           "automatic-repair-from-discovery",
           "automatic-source-mutation-from-template",
           "automatic-template-promotion",
+          "automatic-toolchain-execution-from-route",
+          "automatic-workspace-mutation-from-route",
           "blind-text-rewrite-when-grammar-structure-is-required",
+          "build-pass-as-semantic-correctness",
           "composite-role-as-new-fundamental-lens",
           "cross-language-discovery-as-automatic-language-switch",
           "discipline-lens-activation-as-authority",
@@ -26613,6 +26620,7 @@
           "domain-overlay-as-authority",
           "fixture-pass-as-arbitrary-program-proof",
           "frequency-as-correctness",
+          "generated-binding-as-runtime-proof",
           "grammar-profile-drift-as-pass",
           "host-observation-as-execution-proof",
           "human-expertise-heuristic-as-authority",
@@ -26621,6 +26629,7 @@
           "influence-count-as-truth",
           "job-title-as-authority",
           "job-title-as-distinct-expertise-proof",
+          "language-compatibility-as-abi-compatibility",
           "language-guess-when-detection-is-ambiguous",
           "machine-cheatcode-drift-as-pass",
           "machine-cheatcode-match-as-semantic-proof",
@@ -26635,6 +26644,8 @@
           "provider-self-asserted-availability",
           "raw-grammar-keyword-as-sufficient-cross-language-opportunity",
           "rewrite-through-unknown-or-error-grammar-nodes",
+          "route-existence-as-toolchain-availability",
+          "route-recipe-match-as-best-architecture-proof",
           "self-amplifying-influence-loop",
           "silent-explicit-preference-fallback",
           "soft-influence-as-evidence",
@@ -26650,6 +26661,7 @@
           "unbound-language-tool-execution",
           "unbounded-cheatcode-propagation",
           "undefined-or-non-json-representable-state",
+          "works-with-as-direct-callability",
           "workspace-content-reading"
         ],
         "writes": []
@@ -26678,6 +26690,7 @@
         "freshness": "UNKNOWN",
         "selftests": [
           "shared/code-capability-fabric/language-organs/selftest-adversarial.js",
+          "shared/code-capability-fabric/language-organs/selftest-code-route-knowledge.js",
           "shared/code-capability-fabric/language-organs/selftest-donors.js",
           "shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js",
           "shared/code-capability-fabric/language-organs/selftest-human-discipline-perspectives.js",
@@ -26729,6 +26742,7 @@
           "axm.code-capability-request/v1",
           "axm.code-provider-host-observation/v1",
           "caller-supplied active language identities",
+          "caller-supplied build goal",
           "caller-supplied code build observation",
           "caller-supplied composite role identifiers",
           "caller-supplied declared development pressures",
@@ -26737,8 +26751,10 @@
           "caller-supplied fact codes, semantic signals, control signals, type signals, state signals, build signals, debug signals and verifier signals",
           "caller-supplied file path metadata",
           "caller-supplied goals, capabilities, gaps, constraints, risks, requirements and notes",
+          "caller-supplied preferred language identities",
           "caller-supplied requested analysis/refactor stage",
           "caller-supplied requested discipline perspectives",
+          "caller-supplied route purpose tags",
           "caller-supplied shebang metadata"
         ],
         "consumes": [
@@ -26750,12 +26766,17 @@
           "axm.code.language-organ.v1 descriptors",
           "axm.code.language-specialist-eye.v1 profiles",
           "axm.code.language-template-bank.v1 generated template banks",
+          "axm.code.route-knowledge-atlas.v1 route knowledge",
+          "caller-supplied active language identities",
+          "caller-supplied build goals",
           "caller-supplied code build observations",
           "caller-supplied composite role identifiers",
           "caller-supplied declared development pressures",
           "caller-supplied domain overlays",
           "caller-supplied fact codes and analysis signals",
+          "caller-supplied preferred language identities",
           "caller-supplied requested discipline perspectives",
+          "caller-supplied route purpose tags",
           "caller-supplied verifier observations",
           "exact descriptor digests",
           "explicit request authority policy",
@@ -26764,6 +26785,7 @@
           "strict-deterministic-canonical-json"
         ],
         "emits": [
+          "axm.code-build-route-plan/v1",
           "axm.code-capability-route-plan/v1",
           "axm.code-discipline-grammar-intersection/v1",
           "axm.code-human-discipline-direction/v1",
@@ -26782,12 +26804,16 @@
           "axm.code-machine-cheatcode-influence-mesh-snapshot/v1",
           "axm.code-machine-cheatcode-influence-report/v1",
           "axm.code-native-discovery-seam-report/v1",
+          "axm.code-route-knowledge-snapshot/v1",
+          "axm.code-route-language-view/v1",
+          "axm.code-route-relation/v1",
           "axm.code-template-instance/v1",
           "axm.code-template-mine-and-select/v1",
           "axm.code-template-selection/v1"
         ],
         "provides": [
           "axm.code-build-observation/v1",
+          "axm.code-build-route-plan/v1",
           "axm.code-capability-provider/v1",
           "axm.code-capability-request/v1",
           "axm.code-capability-route-plan/v1",
@@ -26825,6 +26851,10 @@
           "axm.code-native-discovery-seam-report/v1",
           "axm.code-native-discovery-seam/v1",
           "axm.code-provider-host-observation/v1",
+          "axm.code-route-knowledge-atlas/v1",
+          "axm.code-route-knowledge-snapshot/v1",
+          "axm.code-route-language-view/v1",
+          "axm.code-route-relation/v1",
           "axm.code-template-admission-review/v1",
           "axm.code-template-instance/v1",
           "axm.code-template-mine-and-select/v1",
@@ -26840,9 +26870,9 @@
           "shared/code-capability-fabric/module.contract.json"
         ],
         "declaredId": "code-capability-fabric",
-        "digest": "75e4b5121c4b02a86ac43385dbffad17c23bf432a58f39e4c120bb09691be2d2",
+        "digest": "0ea52c8050da7d695064ea90765002a0d8c09ea798cff048e8e1d31a25ae9fa2",
         "manifest": null,
-        "observedSourceFileCount": 757,
+        "observedSourceFileCount": 762,
         "root": "shared/code-capability-fabric"
       },
       "status": "EXPERIMENTAL",
@@ -26851,7 +26881,7 @@
         "entry": null,
         "type": "UNDECLARED"
       },
-      "version": "v0.7"
+      "version": "v0.8"
     },
     {
       "authority": {
@@ -39527,6 +39557,13 @@
     },
     {
       "consumers": [],
+      "id": "axm.code-build-route-plan/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code-capability-provider/v1",
       "providers": [
         "shared/code-capability-fabric"
@@ -39807,6 +39844,34 @@
     },
     {
       "consumers": [],
+      "id": "axm.code-route-knowledge-atlas/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-route-knowledge-snapshot/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-route-language-view/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-route-relation/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code-template-admission-review/v1",
       "providers": [
         "shared/code-capability-fabric"
@@ -39894,6 +39959,13 @@
         "shared/code-capability-fabric"
       ],
       "id": "axm.code.language-template-bank.v1 generated template banks",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.code.route-knowledge-atlas.v1 route knowledge",
       "providers": []
     },
     {
@@ -43106,9 +43178,23 @@
     },
     {
       "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied active language identities",
+      "providers": []
+    },
+    {
+      "consumers": [
         "shared/baseline-simulation-lab"
       ],
       "id": "caller-supplied adapter and transport receipts",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied build goals",
       "providers": []
     },
     {
@@ -43193,6 +43279,13 @@
       "consumers": [
         "shared/code-capability-fabric"
       ],
+      "id": "caller-supplied preferred language identities",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
       "id": "caller-supplied requested discipline perspectives",
       "providers": []
     },
@@ -43201,6 +43294,13 @@
         "shared/research-contribution-intake"
       ],
       "id": "caller-supplied retained signals and proposal dispositions",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied route purpose tags",
       "providers": []
     },
     {
@@ -65156,18 +65256,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "4ecef8042fa2e26d0fe02a09af99c6c73e346250f71ae8243fdbc53de24d49e8",
+  "semanticDigest": "2fe25952ee20f9185f1f22869b7b19ffba5a26b8b37ee80c844ec6d7a3b1e21a",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "616686183200e80aecce125222c939048225853ecbaa4f26daa83f22c616c341",
+    "declarationDigest": "412d24bcdc28b182c6dbf5333f47645bddbe922140bb1279589c4749fd52d573",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "616686183200e80aecce125222c939048225853ecbaa4f26daa83f22c616c341"
+    "snapshotIdentity": "412d24bcdc28b182c6dbf5333f47645bddbe922140bb1279589c4749fd52d573"
   },
   "summary": {
     "blockKinds": {
@@ -65180,12 +65280,12 @@
       "SENSOR": 6
     },
     "blocks": 304,
-    "capabilities": 3037,
+    "capabilities": 3047,
     "declaredContracts": 301,
     "declaredManifests": 253,
     "edges": 86,
     "schemas": 914,
-    "unresolved": 2028
+    "unresolved": 2037
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -73936,6 +74036,24 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.code.route-knowledge-atlas.v1 route knowledge",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied active language identities",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied build goals",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied code build observations",
       "state": "UNKNOWN"
     },
@@ -73966,7 +74084,19 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied preferred language identities",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied requested discipline perspectives",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied route purpose tags",
       "state": "UNKNOWN"
     },
     {
@@ -73997,6 +74127,12 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "provider descriptors",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-build-route-plan/v1",
       "state": "UNKNOWN"
     },
     {
@@ -74099,6 +74235,24 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.code-native-discovery-seam-report/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-route-knowledge-snapshot/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-route-language-view/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-route-relation/v1",
       "state": "UNKNOWN"
     },
     {
