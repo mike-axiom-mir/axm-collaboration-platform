@@ -399,6 +399,123 @@
     },
     {
       "schema": "axm.capability-recipe/v1",
+      "id": "bounded-python-record-transform",
+      "version": "0.1.0",
+      "title": "Bounded Python Record Transform",
+      "summary": "Compile a dependency-free Python record-field transform with fixed string-only inputs and an emitted inert selftest.",
+      "family": "python-module",
+      "capabilityKind": "HAND",
+      "capabilityContract": {
+        "runtimeMode": "EXECUTABLE",
+        "sourceLanguage": "python",
+        "entry": "capability.py",
+        "selftest": "selftest.py",
+        "operation": "run",
+        "portableForm": "NONE",
+        "portablePath": null,
+        "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+        "requiredHostCapabilities": ["python-runtime/v3"]
+      },
+      "builderId": "bounded-python-record-transform-v1",
+      "builderDigest": "sha256:ad281fa5a1381de86d71e1c4a2ffbad30ee20683cb705b4a09d778464ea5227c",
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "sharedUseRequires": "MIKE_TOBI_MERGE",
+        "canonAuthority": "NONE"
+      },
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "defaultVariantId": "bounded-default",
+        "variants": [
+          {
+            "id": "bounded-default",
+            "title": "Bounded standard-library record transform",
+            "parameterOverrides": {}
+          }
+        ]
+      },
+      "parameterSpec": {
+        "resultSchemaId": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+          "maxLength": 180,
+          "description": "Exact result envelope emitted by the generated Python function."
+        },
+        "sourceField": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "maxLength": 64,
+          "description": "Exact source field read from the bounded input record."
+        },
+        "targetField": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "maxLength": 64,
+          "description": "Exact output field written into the result record."
+        },
+        "defaultValue": {
+          "type": "string",
+          "required": true,
+          "maxLength": 256,
+          "description": "Fixed fallback string used when the source field is absent."
+        },
+        "maxInputKeys": {
+          "type": "integer",
+          "required": true,
+          "minimum": 1,
+          "maximum": 128,
+          "description": "Maximum accepted top-level record keys."
+        },
+        "maxInputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 128,
+          "maximum": 65536,
+          "description": "Maximum canonical JSON input bytes before typed refusal."
+        }
+      },
+      "exampleRequest": {
+        "id": "python-status-normalizer-candidate",
+        "family": "python-module",
+        "purpose": "Build one detached bounded Python record transform for the application-logic specialist pilot.",
+        "recipeId": "bounded-python-record-transform",
+        "variantId": null,
+        "parameters": {
+          "resultSchemaId": "axm.python.status-normalized/v1",
+          "sourceField": "status",
+          "targetField": "normalized_status",
+          "defaultValue": "unknown",
+          "maxInputKeys": 16,
+          "maxInputBytes": 4096
+        },
+        "source": {
+          "kind": "HUMAN",
+          "ref": "python-specialist-v2.1"
+        }
+      },
+      "boundaries": [
+        "pure top-level string-or-null record input only",
+        "Python standard-library json import only",
+        "no filesystem, network, subprocess, socket, environment, clock, dynamic code, reflection, package installation, or randomness",
+        "generated capability.py and selftest.py are emitted as inert UTF-8 data and never executed by Capability Fabric",
+        "runtime correctness remains UNKNOWN until separate exact sandbox consent and Python host evidence",
+        "detached candidate output only; no install, merge, promotion, Foundation, or CANON authority"
+      ],
+      "verifiers": [
+        "package digest and exact deterministic rebuild",
+        "builder registry implementation-digest match",
+        "generated Python static allowlist and forbidden-capability checks",
+        "externally execute emitted selftest.py only after separate sandbox consent",
+        "Detached Candidate Nursery structural scan"
+      ],
+      "recipeDigest": "sha256:82d04d8b78e44978f4d5a42c8c7fb62b944279c89dd498f1268d3cfa97bc5637"
+    },
+    {
+      "schema": "axm.capability-recipe/v1",
       "id": "pure-json-transform",
       "version": "1.0.0",
       "title": "Pure JSON Transform",
@@ -706,5 +823,5 @@
       "recipeDigest": "sha256:754d323174787080f5d61c2c5fe515bc74ea126af21a498bbec17a6e4665594d"
     }
   ],
-  "catalogDigest": "sha256:ce4a47bfd917742e60e12d0f5b00dca12706d91c14cafb60d5c5620006e29a05"
+  "catalogDigest": "sha256:798c934b36f1032e08194439904527d4fd069e34e27ca80d5f6e4d871c813786"
 }

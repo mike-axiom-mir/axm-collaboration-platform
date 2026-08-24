@@ -10,7 +10,7 @@
     "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,79}$" },
     "version": { "const": "v0.1" },
     "kind": { "enum": ["HAND", "SKILL"] },
-    "runtime": { "type": "object", "additionalProperties": false, "required": ["mode", "entry", "operation"], "properties": { "mode": { "enum": ["EXECUTABLE", "HOST_MEDIATED", "INSTRUCTION_ONLY"] }, "entry": { "type": ["string", "null"] }, "operation": { "type": "string" } } },
+    "runtime": { "type": "object", "additionalProperties": false, "required": ["mode", "entry", "operation"], "properties": { "mode": { "enum": ["EXECUTABLE", "HOST_MEDIATED", "INSTRUCTION_ONLY"] }, "sourceLanguage": { "enum": ["javascript", "python"] }, "entry": { "type": ["string", "null"] }, "selftest": { "type": "string" }, "operation": { "type": "string" } } },
     "portable": { "type": "object", "additionalProperties": false, "required": ["form", "path"], "properties": { "form": { "enum": ["NONE", "SKILL_MD"] }, "path": { "type": ["string", "null"] } } },
     "provides": { "type": "array", "items": { "type": "string" } },
     "consumes": { "type": "array", "items": { "type": "string" } },

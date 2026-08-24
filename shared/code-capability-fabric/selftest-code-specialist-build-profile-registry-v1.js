@@ -46,19 +46,24 @@ const catalogSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-spec
 const assessmentSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-specialist-build-profile-assessment.schema.json'), 'utf8'));
 const jsonProfile = Registry.CATALOG.profiles.find((row) => row.id === 'code-family.json-schema-validator');
 const htmlProfile = Registry.CATALOG.profiles.find((row) => row.id === 'code-family.static-html-page');
+const pythonProfile = Registry.CATALOG.profiles.find((row) => row.id === 'code-family.bounded-python-record-transform');
 
 test('catalog identity is exact', () => assert.strictEqual(Registry.CATALOG.schema, Registry.CATALOG_SCHEMA));
 test('catalog digest rebuilds exactly', () => { const core = clone(Registry.CATALOG); delete core.catalogDigest; assert.strictEqual(Registry.CATALOG.catalogDigest, Registry.sha256Value(core)); });
 test('catalog normalization is byte deterministic', () => assert.strictEqual(Registry.canonicalJson(Registry.CATALOG), Registry.canonicalJson(Registry.normalizeCatalog(clone(Registry.CATALOG)))));
 test('loaded catalog and profiles are immutable', () => assert(Object.isFrozen(Registry.CATALOG) && Registry.CATALOG.profiles.every(Object.isFrozen)));
-test('catalog starts with exactly the two proven lanes', () => assert.deepStrictEqual(Registry.CATALOG.profiles.map((row) => row.id), ['code-family.json-schema-validator', 'code-family.static-html-page']));
+test('catalog contains exactly the three bounded proven lanes', () => assert.deepStrictEqual(Registry.CATALOG.profiles.map((row) => row.id), ['code-family.bounded-python-record-transform', 'code-family.json-schema-validator', 'code-family.static-html-page']));
 test('JSON profile digest rebuilds exactly', () => assert.strictEqual(jsonProfile.profileDigest, Registry.sha256Value(profileCore(jsonProfile))));
 test('HTML profile digest rebuilds exactly', () => assert.strictEqual(htmlProfile.profileDigest, Registry.sha256Value(profileCore(htmlProfile))));
+test('Python profile digest rebuilds exactly', () => assert.strictEqual(pythonProfile.profileDigest, Registry.sha256Value(profileCore(pythonProfile))));
 test('JSON mode resolves exactly', () => assert.strictEqual(Registry.resolveMode(jsonProfile.mode).profileRef.sha256, jsonProfile.profileDigest));
 test('HTML mode resolves exactly', () => assert.strictEqual(Registry.resolveMode(htmlProfile.mode).profileRef.sha256, htmlProfile.profileDigest));
+test('Python mode resolves exactly', () => assert.strictEqual(Registry.resolveMode(pythonProfile.mode).profileRef.sha256, pythonProfile.profileDigest));
 test('unknown mode does not fall back', () => assert.strictEqual(Registry.resolveMode('ONE_EXACT_UNIVERSAL_SPECIALIST'), null));
 test('JSON profile is ready for repository review', () => assert.strictEqual(Registry.assessProfile(jsonProfile).status, 'READY_FOR_PROFILE_REGISTRY_REVIEW'));
 test('HTML profile is ready for repository review', () => assert.strictEqual(Registry.assessProfile(htmlProfile).status, 'READY_FOR_PROFILE_REGISTRY_REVIEW'));
+test('Python profile is ready for repository review', () => assert.strictEqual(Registry.assessProfile(pythonProfile).status, 'READY_FOR_PROFILE_REGISTRY_REVIEW'));
+test('Python profile binds the exact Python recipe and application specialist', () => assert.strictEqual(pythonProfile.capability.recipeRef.id, 'bounded-python-record-transform') && assert.strictEqual(pythonProfile.specialistOrganRef.id, 'organ.code.application-logic'));
 test('assessment digest rebuilds exactly', () => { const assessment = Registry.assessProfile(htmlProfile), core = clone(assessment); delete core.assessmentDigest; assert.strictEqual(assessment.assessmentDigest, Registry.sha256Value(core)); });
 test('ready assessment does not self-register', () => assert.strictEqual(Registry.assessProfile(htmlProfile).registered, false));
 test('ready assessment does not execute', () => assert.strictEqual(Registry.assessProfile(htmlProfile).executed, false));

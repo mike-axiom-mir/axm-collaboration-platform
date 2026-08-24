@@ -10,12 +10,12 @@ with a byte-bound profile catalog. A profile binds all of these exactly:
 - the capability family, evidence routes, repair gates, and typed gaps; and
 - a zero-authority detached-candidate boundary.
 
-The initial catalog contains only the two already proven build lanes: JSON
-schema validation and static HTML page rendering. It does not claim that all
-languages are implemented. A Python, CSS, Rust, game-script, or other profile
-becomes eligible only after its specialist binding and source-reviewed recipe
-exist. Missing or drifted bindings emit typed gaps; a nearby recipe is never
-borrowed.
+The catalog contains three bounded build lanes: JSON schema validation, static
+HTML page rendering, and one string-only Python record transform. It does not
+claim that Python generally—or all languages—are implemented. A broader
+Python, CSS, Rust, game-script, or other profile becomes eligible only after
+its specialist binding and source-reviewed recipe exist. Missing or drifted
+bindings emit typed gaps; a nearby recipe is never borrowed.
 
 The registry validates and resolves profiles. It does not read source files,
 generate or execute candidates, call providers, register itself, install,

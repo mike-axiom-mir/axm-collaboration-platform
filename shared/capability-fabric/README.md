@@ -14,10 +14,12 @@ and required host capabilities are digest-bound in the composition plan.
 The existing Deterministic Organ Fabric remains the reused declarative kernel
 and specialized compatibility surface. This layer adds a generic recipe
 catalog and complete candidate materialization for modular capabilities.
-`HAND` recipes bind executable `capability.js`; `SKILL` recipes bind portable
-`SKILL.md` plus an explicit instruction-only, host-mediated, or executable
-runtime. Kind is digest-bound from recipe through plan, compilation, candidate,
-module contract, and receipt.
+`HAND` recipes bind one explicit source language, entry path, and selftest path;
+legacy JavaScript HANDs remain `capability.js` plus `selftest.js`, while the
+first Python lane binds `capability.py` plus `selftest.py`. `SKILL` recipes bind
+portable `SKILL.md` plus an explicit instruction-only, host-mediated, or
+executable runtime. Kind and artifact layout are digest-bound from recipe
+through plan, compilation, candidate, module contract, and receipt.
 
 ## Truth boundary
 
@@ -69,13 +71,15 @@ module contract, and receipt.
   installs output, changes permissions, promotes material, touches Foundation,
   or changes CANON.
 
-The reviewed catalog contains five executable `HAND` recipes—a closed JSON
+The reviewed catalog contains six executable `HAND` recipes—a closed JSON
 Schema validator, a pure JSON transform, a static semantic HTML-page renderer,
-an SVG status-badge creation hand, and a Workshop Direction hand-request
-adapter—plus one host-mediated portable `SKILL` for bounded evidence-first
+an SVG status-badge creation hand, a Workshop Direction hand-request adapter,
+and one bounded Python record transform—plus one host-mediated portable `SKILL` for bounded evidence-first
 capability review. The HTML renderer is source-reviewed on its review branch;
 shared use still requires Mike's merge decision and visual behavior remains
-unproven until a separate authorized browser run.
+unproven until a separate authorized browser run. The Python source and
+selftest remain inert; runtime behavior is unproven until a separately
+authorized disposable-sandbox run.
 
 Builder implementations now live behind a digest-bound modular registry.
 Recipes, plans, candidate packages, and verification all bind the exact active
