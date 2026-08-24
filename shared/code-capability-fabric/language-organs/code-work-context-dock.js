@@ -284,6 +284,43 @@ function foldScratch({ projectId, directionSha256 = null, notes = [] } = {}) {
   return Object.freeze({ ...core, scratchSha256: hash(core) });
 }
 
+function normalizeProductionState(raw, direction) {
+  if (!raw) return null;
+  if (raw.schema !== 'axm.code.production-context-summary.v1') {
+    return Object.freeze({ result: 'INVALID_PRODUCTION_CONTEXT_SUMMARY', authority: 'NONE' });
+  }
+  if (raw.projectId !== direction.projectId) {
+    return Object.freeze({ result: 'PRODUCTION_CONTEXT_PROJECT_MISMATCH', authority: 'NONE' });
+  }
+  const directionCurrent = raw.batchDirectionSha256 === direction.directionSha256 && raw.directionStatus === 'PRODUCTION_BATCH_DIRECTION_CURRENT';
+  return Object.freeze({
+    result: raw.result,
+    productionContextSha256: raw.productionContextSha256 || null,
+    batchSha256: raw.batchSha256 || null,
+    batchDirectionSha256: raw.batchDirectionSha256 || null,
+    directionStatus: directionCurrent ? 'PRODUCTION_BATCH_DIRECTION_CURRENT' : 'PRODUCTION_BATCH_DIRECTION_STALE',
+    draftCount: Number.isInteger(raw.draftCount) ? raw.draftCount : null,
+    latestDrafts: Array.isArray(raw.latestDrafts) ? raw.latestDrafts.slice(0, 16).map(d => ({
+      draftId: d.draftId || null,
+      revision: d.revision || null,
+      draftRevisionSha256: d.draftRevisionSha256 || null,
+      compileState: d.compileState || null,
+      admissionResult: d.admissionResult || null,
+      quickTest: d.quickTest || null,
+      evidenceFreshness: d.evidenceFreshness || null
+    })) : [],
+    selected: raw.selected || null,
+    duplicateProgramCandidates: Array.isArray(raw.duplicateProgramCandidates) ? raw.duplicateProgramCandidates.slice(0, 16) : [],
+    truth: {
+      derivedSummaryOnly: true,
+      noRanking: true,
+      staleBatchIsNotCurrentDirection: !directionCurrent,
+      selectedDraftIsNotPromotion: true
+    },
+    authority: 'NONE'
+  });
+}
+
 function buildContextCard({
   direction,
   progressEvents = [],
@@ -291,6 +328,7 @@ function buildContextCard({
   currentStepId = null,
   buildWindowState = null,
   relationshipImpact = null,
+  productionState = null,
   maxScratch = 8
 } = {}) {
   if (!direction || direction.schema !== 'axm.code.work-direction.v1') {
@@ -312,9 +350,10 @@ function buildContextCard({
     tags: n.tags,
     handoffCandidate: n.handoffCandidate
   }));
+  const production = normalizeProductionState(productionState, direction);
   const core = {
     schema: 'axm.code.work-context-card.v1',
-    version: '1.0.0',
+    version: '1.1.0',
     result: direction.validation.usable ? 'CONTEXT_CARD_READY' : 'CONTEXT_CARD_READY_DIRECTION_HELD',
     projectId: direction.projectId,
     directionSha256: direction.directionSha256,
@@ -345,12 +384,15 @@ function buildContextCard({
       affectedTests: Array.isArray(relationshipImpact.affectedTests) ? relationshipImpact.affectedTests.slice(0, 32) : [],
       affectedVerifiers: Array.isArray(relationshipImpact.affectedVerifiers) ? relationshipImpact.affectedVerifiers.slice(0, 32) : []
     } : null,
+    production,
     revisitTriggers: [...REVISIT_TRIGGERS],
     truth: {
       cardIsDerivedCache: true,
       cardMayBeRebuiltFromDirectionProgressScratch: true,
       focusCandidateIsNotExecutionAuthority: true,
       scratchNotesAreNotFacts: true,
+      productionSummaryIsNotRankingOrSelectionAuthority: true,
+      staleProductionBatchMustRemainVisibleAsStale: true,
       staleDirectionCardMustBeRefused: true,
       workspaceMutation: false,
       toolExecution: false
@@ -424,14 +466,14 @@ function createHandoffCandidate({ direction, progressEvents = [], scratchNotes =
 function snapshot() {
   const core = {
     schema: 'axm.code.work-context-dock-snapshot.v1',
-    version: '1.0.0',
+    version: '1.1.0',
     stepStates: [...STEP_STATES].sort(),
     scratchKinds: [...SCRATCH_KINDS].sort(),
     revisitTriggers: [...REVISIT_TRIGGERS],
     directionLane: 'IMMUTABLE_REVISIONS',
     progressLane: 'APPEND_ONLY_EVENTS',
     scratchLane: 'APPEND_ONLY_NON_AUTHORITATIVE_NOTES',
-    hotCard: 'DERIVED_REBUILDABLE_CACHE',
+    hotCard: 'DERIVED_REBUILDABLE_CACHE_WITH_OPTIONAL_PRODUCTION_SUMMARY',
     authority: 'NONE'
   };
   return Object.freeze({ ...core, snapshotSha256: hash(core) });
