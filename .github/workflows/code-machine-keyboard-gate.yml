@@ -1,0 +1,65 @@
+name: AXM Code Machine Keyboard Gate
+
+on:
+  pull_request:
+    paths:
+      - "shared/code-capability-fabric/language-organs/**"
+      - "shared/code-capability-fabric/module.contract.json"
+      - ".github/workflows/code-machine-keyboard-gate.yml"
+  push:
+    paths:
+      - "shared/code-capability-fabric/language-organs/**"
+      - "shared/code-capability-fabric/module.contract.json"
+      - ".github/workflows/code-machine-keyboard-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  machine-keyboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check keyboard syntax
+        run: |
+          node --check shared/code-capability-fabric/language-organs/machine-code-keyboard-fabric.js
+          node --check shared/code-capability-fabric/language-organs/machine-code-keyboard-router.js
+          node --check shared/code-capability-fabric/language-organs/build-machine-keyboards.js
+      - name: Refuse physical machine-keyboard drift
+        run: node shared/code-capability-fabric/language-organs/build-machine-keyboards.js --check
+      - name: Prove 102 grammar keyboards and prebuild hotboard
+        run: node shared/code-capability-fabric/language-organs/selftest-machine-code-keyboard.js
+      - name: Preserve prebuild twin and admission ground
+        run: node shared/code-capability-fabric/language-organs/selftest-prebuild-twin-admission.js
+      - name: Preserve route and discipline layers
+        run: |
+          node shared/code-capability-fabric/language-organs/selftest-code-route-knowledge.js
+          node shared/code-capability-fabric/language-organs/selftest-human-discipline-perspectives.js
+      - name: Preserve template fabric
+        run: |
+          node shared/code-capability-fabric/language-organs/build-machine-templates.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-templates.js
+      - name: Preserve cheatcode and influence fabric
+        run: |
+          node shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js
+      - name: Preserve grammar and specialist-eye foundation
+        run: |
+          python shared/code-capability-fabric/language-organs/build-grammar-profiles.py --check
+          python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --check
+          node shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js
+          node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
+      - name: Refuse whitespace or patch corruption
+        run: git diff --check
