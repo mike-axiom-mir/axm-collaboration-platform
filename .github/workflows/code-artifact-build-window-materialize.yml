@@ -1,0 +1,76 @@
+name: AXM Code Artifact Build Window Materializer
+
+on:
+  pull_request:
+    branches:
+      - codex/code-machine-keyboard-v1
+    paths:
+      - ".github/workflows/code-artifact-build-window-materialize.yml"
+      - "shared/code-capability-fabric/language-organs/code-artifact-build-window.js"
+      - "shared/code-capability-fabric/language-organs/code-artifact-build-window-popup.js"
+      - "shared/code-capability-fabric/language-organs/code-artifact-build-window.contract.json"
+      - "shared/code-capability-fabric/language-organs/selftest-code-artifact-build-window.js"
+      - "shared/code-capability-fabric/module.contract.json"
+
+concurrency:
+  group: axm-code-artifact-build-window-materialize
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-build-window-views:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Check out exact branch source
+        uses: actions/checkout@v4
+        with:
+          ref: codex/code-artifact-build-window-v1
+          fetch-depth: 1
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Prove build window and lower grammar stack
+        run: |
+          node shared/code-capability-fabric/language-organs/selftest-code-artifact-build-window.js
+          node shared/code-capability-fabric/language-organs/build-machine-keyboards.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-code-keyboard.js
+          node shared/code-capability-fabric/language-organs/selftest-prebuild-twin-admission.js
+          node shared/code-capability-fabric/language-organs/selftest-code-route-knowledge.js
+          node shared/code-capability-fabric/language-organs/selftest-human-discipline-perspectives.js
+      - name: Regenerate deterministic repository views
+        run: |
+          node scripts/compile-city-graph.js --write
+          node scripts/compile-schema-registry.js --write
+          node scripts/compile-twin-surfaces.js --write
+          node scripts/compile-city-graph.js --check
+          node scripts/compile-schema-registry.js --check
+          node scripts/compile-twin-surfaces.js --check
+      - name: Verify repository
+        run: |
+          node verify.js
+          node hub/hub-selftest.js
+          node hub/route-selftest.js
+          node hub/graft-selftest.js
+          node hub/skin-selftest.js
+          node hub/verify-plus.js
+          git diff --check
+      - name: Commit only deterministic generated views
+        run: |
+          git config user.name "AXM Build Window Steward Gate"
+          git config user.email "build-window-steward@axm.invalid"
+          git add registry/generated docs/generated/LEGO_CITY_MAP.md docs/generated/LEGO_CITY_BEGINNER_MAP.md
+          if git diff --cached --quiet; then
+            echo "No generated build-window view changes to commit."
+          else
+            git commit -m "chore(fabric): refresh build window derived views"
+            git push origin HEAD:codex/code-artifact-build-window-v1
+          fi
