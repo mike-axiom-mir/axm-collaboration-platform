@@ -4511,7 +4511,7 @@
           "tools/capability-fabric/module.contract.json"
         ],
         "declaredId": "capability-fabric",
-        "digest": "6f658123504965ade6a6d872b3425ee1c1150bd7beac861b7219dcf0e90cc2b4",
+        "digest": "86e5bd1e88666a4b6fd614931d14b573f8da20884a8cfe63f30b0bf157ae98d4",
         "manifest": "tools/capability-fabric/manifest.json",
         "observedSourceFileCount": 10,
         "root": "tools/capability-fabric"
@@ -4764,7 +4764,7 @@
           "tools/capability-recipe-admission-gate/module.contract.json"
         ],
         "declaredId": "capability-recipe-admission-gate",
-        "digest": "bd56b5c7e1c50f46068a2719ca172ca1b9337615bc9ea2a154580189478c518b",
+        "digest": "d422be257c8041969337a2c44aab33422cb7216ca00d00e5b824b11b271a890f",
         "manifest": "tools/capability-recipe-admission-gate/manifest.json",
         "observedSourceFileCount": 6,
         "root": "tools/capability-recipe-admission-gate"
@@ -26614,14 +26614,17 @@
           "automatic-install-from-admission",
           "automatic-language-selection-from-prebuild",
           "automatic-language-switch-from-route",
+          "automatic-production-draft-selection",
           "automatic-promotion",
           "automatic-promotion-from-admission",
           "automatic-promotion-from-developer-plane",
           "automatic-promotion-from-route",
           "automatic-quick-test-from-build-window",
+          "automatic-reasoning-rewrite-or-tuning",
           "automatic-repair-from-developer-plane",
           "automatic-repair-from-discovery",
           "automatic-scratch-promotion",
+          "automatic-software-experiment-execution",
           "automatic-source-mutation-from-developer-plane",
           "automatic-source-mutation-from-template",
           "automatic-template-promotion",
@@ -26643,6 +26646,8 @@
           "compile-pass-as-runtime-proof",
           "composite-role-as-new-fundamental-lens",
           "context-card-focus-as-execution-authority",
+          "creation-session-plan-as-install-merge-promotion-or-canon",
+          "creation-session-plan-as-source-generation",
           "cross-language-discovery-as-automatic-language-switch",
           "data-flow-path-as-exploitability-proof",
           "dependency-delta-as-automatic-rejection",
@@ -26652,6 +26657,7 @@
           "discipline-lens-output-as-correctness-proof",
           "domain-overlay-as-authority",
           "done-step-as-correctness-proof",
+          "draft-count-as-confidence",
           "existing-game-sandbox-as-generic-code-adapter-proof",
           "fixture-pass-as-arbitrary-program-proof",
           "frequency-as-correctness",
@@ -26660,6 +26666,7 @@
           "host-observation-as-execution-proof",
           "hotkey-priority-as-architecture-authority",
           "human-expertise-heuristic-as-authority",
+          "implicit-primary-language-selection",
           "implicit-provider-choice-when-multiple-match",
           "influence-count-as-confidence",
           "influence-count-as-truth",
@@ -26693,6 +26700,7 @@
           "prebuild-plan-as-best-architecture-proof",
           "prebuild-preview-as-runtime-proof",
           "process-execution",
+          "production-budget-fit-as-execution-permission",
           "progress-event-as-direction-rewrite",
           "provider-code-execution",
           "provider-code-loading",
@@ -26704,7 +26712,9 @@
           "raw-source-auto-copy-into-scratch",
           "raw-source-in-build-window-history",
           "raw-source-in-durable-build-window-state",
+          "reasoning-seam-candidate-as-proven-improvement",
           "rewrite-through-unknown-or-error-grammar-nodes",
+          "root-hold-or-fail-as-creation-pass",
           "route-existence-as-toolchain-availability",
           "route-recipe-match-as-best-architecture-proof",
           "runtime-failure-as-in-place-source-rewrite",
@@ -26715,6 +26725,7 @@
           "silent-explicit-preference-fallback",
           "soft-influence-as-evidence",
           "soft-influence-as-hard-activation",
+          "software-sandbox-contract-as-containment-proof",
           "source-or-candidate-mutation",
           "source-review-as-runtime-proof",
           "specialist-eye-candidate-as-decision",
@@ -26765,6 +26776,11 @@
         "selftests": [
           "shared/code-capability-fabric/language-organs/selftest-adversarial.js",
           "shared/code-capability-fabric/language-organs/selftest-code-artifact-build-window.js",
+          "shared/code-capability-fabric/language-organs/selftest-code-built-software-experiment-sandbox.js",
+          "shared/code-capability-fabric/language-organs/selftest-code-creation-reasoning-seam-probe.js",
+          "shared/code-capability-fabric/language-organs/selftest-code-creation-session-planner.js",
+          "shared/code-capability-fabric/language-organs/selftest-code-production-budget.js",
+          "shared/code-capability-fabric/language-organs/selftest-code-production-drafts.js",
           "shared/code-capability-fabric/language-organs/selftest-code-route-knowledge.js",
           "shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js",
           "shared/code-capability-fabric/language-organs/selftest-developer-relationship-plane.js",
@@ -26820,6 +26836,8 @@
           "axm.code-capability-provider/v1",
           "axm.code-capability-request/v1",
           "axm.code-provider-host-observation/v1",
+          "axm.code.creation-session-request.v1",
+          "axm.code.four-root-technical-gate.v1",
           "caller- or machine-supplied progress event",
           "caller- or machine-supplied scratch note",
           "caller-supplied active direction selection",
@@ -26833,6 +26851,7 @@
           "caller-supplied candidate digest",
           "caller-supplied changed entity ids",
           "caller-supplied code build observation",
+          "caller-supplied code-creation trace evidence",
           "caller-supplied composite role identifiers",
           "caller-supplied declared development pressures",
           "caller-supplied developer relationship observation",
@@ -26844,6 +26863,7 @@
           "caller-supplied explicit role/language bindings",
           "caller-supplied fact codes, semantic signals, control signals, type signals, state signals, build signals, debug signals and verifier signals",
           "caller-supplied file path metadata",
+          "caller-supplied finite production ceilings",
           "caller-supplied generic-code sandbox adapter descriptor",
           "caller-supplied goals, capabilities, gaps, constraints, risks, requirements and notes",
           "caller-supplied LSP diagnostics",
@@ -26851,7 +26871,10 @@
           "caller-supplied machine keyboard language id",
           "caller-supplied prebuild plan and role",
           "caller-supplied preferred language identities",
+          "caller-supplied production draft count and directed variant axes",
+          "caller-supplied production work receipts and stop signals",
           "caller-supplied quick-test runtime class",
+          "caller-supplied rendered artifact and external sandbox evidence",
           "caller-supplied renderer descriptor",
           "caller-supplied requested analysis/refactor stage",
           "caller-supplied requested discipline perspectives",
@@ -26880,16 +26903,19 @@
           "axm.sandbox-static-evidence/v1 runtime evidence",
           "caller- or machine-supplied non-authoritative scratch notes",
           "caller- or machine-supplied work progress events",
+          "caller-explicit primary language and role bindings",
           "caller-supplied active language identities",
           "caller-supplied artifact digest and visual-state metadata",
           "caller-supplied before/after dependency snapshots",
           "caller-supplied boundary-change declarations",
+          "caller-supplied bounded production draft count and directed variant axes",
           "caller-supplied build action identity digests",
           "caller-supplied build goals",
           "caller-supplied build-window actor and revision metadata",
           "caller-supplied candidate digests",
           "caller-supplied changed entity identifiers",
           "caller-supplied code build observations",
+          "caller-supplied code-creation step and reasoning receipts",
           "caller-supplied composite role identifiers",
           "caller-supplied declared development pressures",
           "caller-supplied developer relationship nodes and edges",
@@ -26900,6 +26926,7 @@
           "caller-supplied explicit quick-test action",
           "caller-supplied explicit role/language bindings",
           "caller-supplied fact codes and analysis signals",
+          "caller-supplied finite production ceilings and stop signals",
           "caller-supplied machine key arguments",
           "caller-supplied machine keyboard language and role context",
           "caller-supplied preferred language identities",
@@ -26908,8 +26935,12 @@
           "caller-supplied route purpose tags",
           "caller-supplied stable or hot key identifiers",
           "caller-supplied verifier observations",
+          "digest-bound observed production work receipts",
           "exact descriptor digests",
           "explicit request authority policy",
+          "external enforced software sandbox executor and containment receipts",
+          "external hardware-health telemetry evidence",
+          "four-root technical decisions bound to the exact creation request",
           "host-observed availability",
           "LSP diagnostic evidence",
           "optional AXM dependency declaration map evidence",
@@ -26959,10 +26990,17 @@
           "axm.code.candidate-admission-policy.v1",
           "axm.code.candidate-admission-report.v1",
           "axm.code.change-impact-report.v1",
+          "axm.code.creation-reasoning-analysis.v1",
+          "axm.code.creation-reasoning-seam-candidate.v1",
+          "axm.code.creation-session-plan-verification.v1",
+          "axm.code.creation-session-plan.v1",
+          "axm.code.creation-session-planner-snapshot.v1",
+          "axm.code.creation-session-request.v1",
           "axm.code.dependency-diff.v1",
           "axm.code.developer-relationship-graph.v1",
           "axm.code.developer-substrate-snapshot.v1",
           "axm.code.diagnostic-batch.v1",
+          "axm.code.four-root-technical-gate.v1",
           "axm.code.machine-key-program.v1",
           "axm.code.machine-keyboard-layout.v1",
           "axm.code.machine-keyboard-snapshot.v1",
@@ -26971,9 +27009,21 @@
           "axm.code.prebuild-preview.v1",
           "axm.code.prebuild-structural-simulation.v1",
           "axm.code.prebuild-twin-snapshot.v1",
+          "axm.code.production-batch.v1",
+          "axm.code.production-budget-status.v1",
+          "axm.code.production-budget.v1",
+          "axm.code.production-draft-comparison.v1",
+          "axm.code.production-draft-revision.v1",
+          "axm.code.production-draft-selection.v1",
+          "axm.code.production-draft-set.v1",
+          "axm.code.production-work-context-card.v1",
+          "axm.code.production-work-preflight.v1",
           "axm.code.quick-test-observation.v1",
           "axm.code.quick-test-request.v1",
           "axm.code.reanalysis-plan.v1",
+          "axm.code.software-experiment-execution-request.v1",
+          "axm.code.software-experiment-outcome.v1",
+          "axm.code.software-experiment-save-set.v1",
           "axm.code.work-context-card.v1",
           "axm.code.work-context-dock-snapshot.v1",
           "axm.code.work-context-handoff-candidate.v1",
@@ -27036,15 +27086,30 @@
           "axm.code.build-window-snapshot.v1",
           "axm.code.build-window-state.v1",
           "axm.code.build-window-transition.v1",
+          "axm.code.built-software-experiment.v1",
+          "axm.code.built-software-sandbox-workspace.v1",
           "axm.code.candidate-admission-policy.v1",
           "axm.code.candidate-admission-report.v1",
           "axm.code.change-impact-report.v1",
+          "axm.code.creation-reasoning-analysis.v1",
+          "axm.code.creation-reasoning-comparison.v1",
+          "axm.code.creation-reasoning-optimization-trial.v1",
+          "axm.code.creation-reasoning-seam-candidate.v1",
+          "axm.code.creation-reasoning-seam-probe-snapshot.v1",
+          "axm.code.creation-reasoning-trace.v1",
+          "axm.code.creation-reasoning-trial-observation.v1",
+          "axm.code.creation-session-plan-verification.v1",
+          "axm.code.creation-session-plan.v1",
+          "axm.code.creation-session-planner-snapshot.v1",
+          "axm.code.creation-session-request.v1",
           "axm.code.dependency-diff.v1",
           "axm.code.developer-relationship-graph.v1",
           "axm.code.developer-substrate-atlas.v1",
           "axm.code.developer-substrate-snapshot.v1",
           "axm.code.diagnostic-batch.v1",
           "axm.code.diagnostic-finding.v1",
+          "axm.code.external-sandbox-executor-receipt.v1",
+          "axm.code.four-root-technical-gate.v1",
           "axm.code.impact-preview.v1",
           "axm.code.machine-key-program.v1",
           "axm.code.machine-keyboard-bank.v1",
@@ -27055,10 +27120,35 @@
           "axm.code.prebuild-preview.v1",
           "axm.code.prebuild-structural-simulation.v1",
           "axm.code.prebuild-twin-snapshot.v1",
+          "axm.code.production-batch-direction-status.v1",
+          "axm.code.production-batch.v1",
+          "axm.code.production-budget-status.v1",
+          "axm.code.production-budget-use.v1",
+          "axm.code.production-budget.v1",
+          "axm.code.production-context-summary.v1",
+          "axm.code.production-draft-comparison.v1",
+          "axm.code.production-draft-fabric-snapshot.v1",
+          "axm.code.production-draft-revision.v1",
+          "axm.code.production-draft-selection.v1",
+          "axm.code.production-draft-set.v1",
+          "axm.code.production-store-layout.v1",
+          "axm.code.production-store-read.v1",
+          "axm.code.production-store-receipt.v1",
+          "axm.code.production-work-context-card.v1",
+          "axm.code.production-work-preflight.v1",
+          "axm.code.production-work-receipt.v1",
           "axm.code.quick-test-candidate/v1",
           "axm.code.quick-test-observation.v1",
           "axm.code.quick-test-request.v1",
           "axm.code.reanalysis-plan.v1",
+          "axm.code.software-experiment-draft-evidence.v1",
+          "axm.code.software-experiment-execution-request.v1",
+          "axm.code.software-experiment-hardware-health.v1",
+          "axm.code.software-experiment-iteration-persistence.v1",
+          "axm.code.software-experiment-outcome.v1",
+          "axm.code.software-experiment-save-set.v1",
+          "axm.code.software-experiment-save.v1",
+          "axm.code.software-experiment-summary.v1",
           "axm.code.work-context-card.v1",
           "axm.code.work-context-dock-snapshot.v1",
           "axm.code.work-context-handoff-candidate.v1",
@@ -27079,9 +27169,9 @@
           "shared/code-capability-fabric/module.contract.json"
         ],
         "declaredId": "code-capability-fabric",
-        "digest": "54ddac684e92023c721f96d002717be460e9c7840b17c671007269adf59de97f",
+        "digest": "e762e827a2e44c89a3af5fffcd0215ebdf4c0dab04fbc63e3cf4729cfcb48656",
         "manifest": null,
-        "observedSourceFileCount": 887,
+        "observedSourceFileCount": 904,
         "root": "shared/code-capability-fabric"
       },
       "status": "EXPERIMENTAL",
@@ -27090,7 +27180,7 @@
         "entry": null,
         "type": "UNDECLARED"
       },
-      "version": "v0.13"
+      "version": "v0.14"
     },
     {
       "authority": {
@@ -40179,6 +40269,20 @@
     },
     {
       "consumers": [],
+      "id": "axm.code.built-software-experiment.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.built-software-sandbox-workspace.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code.candidate-admission-policy.v1",
       "providers": [
         "shared/code-capability-fabric"
@@ -40194,6 +40298,83 @@
     {
       "consumers": [],
       "id": "axm.code.change-impact-report.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-reasoning-analysis.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-reasoning-comparison.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-reasoning-optimization-trial.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-reasoning-seam-candidate.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-reasoning-seam-probe-snapshot.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-reasoning-trace.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-reasoning-trial-observation.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-session-plan-verification.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-session-plan.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-session-planner-snapshot.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.creation-session-request.v1",
       "providers": [
         "shared/code-capability-fabric"
       ]
@@ -40236,6 +40417,20 @@
     {
       "consumers": [],
       "id": "axm.code.diagnostic-finding.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.external-sandbox-executor-receipt.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.four-root-technical-gate.v1",
       "providers": [
         "shared/code-capability-fabric"
       ]
@@ -40382,6 +40577,125 @@
     },
     {
       "consumers": [],
+      "id": "axm.code.production-batch-direction-status.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-batch.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-budget-status.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-budget-use.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-budget.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-context-summary.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-draft-comparison.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-draft-fabric-snapshot.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-draft-revision.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-draft-selection.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-draft-set.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-store-layout.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-store-read.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-store-receipt.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-work-context-card.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-work-preflight.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.production-work-receipt.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code.quick-test-candidate/v1",
       "providers": [
         "shared/code-capability-fabric"
@@ -40414,6 +40728,62 @@
       ],
       "id": "axm.code.route-knowledge-atlas.v1 route knowledge",
       "providers": []
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.software-experiment-draft-evidence.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.software-experiment-execution-request.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.software-experiment-hardware-health.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.software-experiment-iteration-persistence.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.software-experiment-outcome.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.software-experiment-save-set.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.software-experiment-save.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.software-experiment-summary.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
     },
     {
       "consumers": [],
@@ -43725,6 +44095,13 @@
       "consumers": [
         "shared/code-capability-fabric"
       ],
+      "id": "caller-explicit primary language and role bindings",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
       "id": "caller-supplied active language identities",
       "providers": []
     },
@@ -43754,6 +44131,13 @@
         "shared/code-capability-fabric"
       ],
       "id": "caller-supplied boundary-change declarations",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied bounded production draft count and directed variant axes",
       "providers": []
     },
     {
@@ -43803,6 +44187,13 @@
         "shared/code-capability-fabric"
       ],
       "id": "caller-supplied code build observations",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied code-creation step and reasoning receipts",
       "providers": []
     },
     {
@@ -43909,6 +44300,13 @@
         "shared/code-capability-fabric"
       ],
       "id": "caller-supplied fact codes and analysis signals",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied finite production ceilings and stop signals",
       "providers": []
     },
     {
@@ -46460,6 +46858,13 @@
       "providers": []
     },
     {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "digest-bound observed production work receipts",
+      "providers": []
+    },
+    {
       "consumers": [],
       "id": "digest-bound-baseline-candidate-resource-comparison",
       "providers": [
@@ -48171,6 +48576,20 @@
       "providers": []
     },
     {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "external enforced software sandbox executor and containment receipts",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "external hardware-health telemetry evidence",
+      "providers": []
+    },
+    {
       "consumers": [],
       "id": "external-codex-workspace-manager-identity",
       "providers": [
@@ -48782,6 +49201,13 @@
       "providers": [
         "technical-art-validator"
       ]
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "four-root technical decisions bound to the exact creation request",
+      "providers": []
     },
     {
       "consumers": [],
@@ -65990,18 +66416,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "d5c11d43c3836023c80e3eccae845a4d4461a81f16e6fea3109ea6f492db0a66",
+  "semanticDigest": "0741ef3a0ebe98eadb0863dbdd94a947b95d633ea11a4e469d1b4962ff59f013",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "cf4d2584c604c53d663945726fb607adbcdedf437e931638549d30225b70101f",
+    "declarationDigest": "3206de73b5bcc49bc64e0941b6521c38b4792034242f85717fd6372b75eaad53",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "cf4d2584c604c53d663945726fb607adbcdedf437e931638549d30225b70101f"
+    "snapshotIdentity": "3206de73b5bcc49bc64e0941b6521c38b4792034242f85717fd6372b75eaad53"
   },
   "summary": {
     "blockKinds": {
@@ -66014,12 +66440,12 @@
       "SENSOR": 6
     },
     "blocks": 304,
-    "capabilities": 3122,
+    "capabilities": 3170,
     "declaredContracts": 301,
     "declaredManifests": 253,
     "edges": 86,
     "schemas": 914,
-    "unresolved": 2071
+    "unresolved": 2079
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -74818,6 +75244,12 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-explicit primary language and role bindings",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied active language identities",
       "state": "UNKNOWN"
     },
@@ -74837,6 +75269,12 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied boundary-change declarations",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied bounded production draft count and directed variant axes",
       "state": "UNKNOWN"
     },
     {
@@ -74873,6 +75311,12 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied code build observations",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied code-creation step and reasoning receipts",
       "state": "UNKNOWN"
     },
     {
@@ -74938,6 +75382,12 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied finite production ceilings and stop signals",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied machine key arguments",
       "state": "UNKNOWN"
     },
@@ -74986,6 +75436,12 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "digest-bound observed production work receipts",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "exact descriptor digests",
       "state": "UNKNOWN"
     },
@@ -74993,6 +75449,24 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "explicit request authority policy",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "external enforced software sandbox executor and containment receipts",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "external hardware-health telemetry evidence",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "four-root technical decisions bound to the exact creation request",
       "state": "UNKNOWN"
     },
     {

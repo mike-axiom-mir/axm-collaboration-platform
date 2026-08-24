@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `d5c11d43c3836023c80e3eccae845a4d4461a81f16e6fea3109ea6f492db0a66`
+Semantic graph digest: `0741ef3a0ebe98eadb0863dbdd94a947b95d633ea11a4e469d1b4962ff59f013`
 
-Blocks: 304 · Capabilities: 3122 · Schemas: 914 · Unresolved edges: 2071
+Blocks: 304 · Capabilities: 3170 · Schemas: 914 · Unresolved edges: 2079
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -220,7 +220,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/baseline-simulation-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 1 selftest(s) |
 | shared/city-gates | BRIDGE (DECLARED) | EXPERIMENTAL | NETWORK_WRITE, PUBLIC_RELEASE | 5 | 3 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
-| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 91 | 59 | 45 selftest(s) |
+| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 131 | 67 | 50 selftest(s) |
 | shared/compute-substrate-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 4 | 1 selftest(s) |
 | shared/deterministic-animation-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 3 | 2 selftest(s) |
 | shared/deterministic-audio-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 2 selftest(s) |
@@ -1783,16 +1783,19 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.sandbox-static-evidence/v1 runtime evidence` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller- or machine-supplied non-authoritative scratch notes` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller- or machine-supplied work progress events` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-explicit primary language and role bindings` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied active language identities` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied artifact digest and visual-state metadata` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied before/after dependency snapshots` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied boundary-change declarations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied bounded production draft count and directed variant axes` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied build action identity digests` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied build goals` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied build-window actor and revision metadata` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied candidate digests` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied changed entity identifiers` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied code build observations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied code-creation step and reasoning receipts` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied composite role identifiers` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied declared development pressures` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied developer relationship nodes and edges` (UNKNOWN)
@@ -1803,6 +1806,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied explicit quick-test action` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied explicit role/language bindings` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied fact codes and analysis signals` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied finite production ceilings and stop signals` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied machine key arguments` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied machine keyboard language and role context` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied preferred language identities` (UNKNOWN)
@@ -1811,8 +1815,12 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied route purpose tags` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied stable or hot key identifiers` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied verifier observations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `digest-bound observed production work receipts` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `exact descriptor digests` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `explicit request authority policy` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `external enforced software sandbox executor and containment receipts` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `external hardware-health telemetry evidence` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `four-root technical decisions bound to the exact creation request` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `host-observed availability` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `LSP diagnostic evidence` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `optional AXM dependency declaration map evidence` (UNKNOWN)
