@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "code-capability-fabric",
-  "version": "v0.3",
+  "version": "v0.4",
   "status": "TEST",
   "provides": [
     "axm.code-capability-provider/v1",
@@ -15,7 +15,10 @@
     "axm.code-language-organ-detect/v1",
     "axm.code-language-organ-plan/v1",
     "axm.code-language-organ-snapshot/v1",
-    "axm.code-language-organ-signal-audit/v1"
+    "axm.code-language-organ-signal-audit/v1",
+    "axm.code-language-grammar-profile/v1",
+    "axm.code-language-grammar-specific-plan/v1",
+    "axm.code-language-grammar-profile-snapshot/v1"
   ],
   "consumes": [
     "provider descriptors",
@@ -24,14 +27,17 @@
     "explicit request authority policy",
     "strict-deterministic-canonical-json",
     "axm.code.language-organ.v1 descriptors",
-    "axm.code.language-organ-families.v1"
+    "axm.code.language-organ-families.v1",
+    "axm.code.language-grammar-profile.v1 profiles"
   ],
   "permissions": [],
   "handoffs": {
     "emits": [
       "axm.code-capability-route-plan/v1",
       "axm.code-language-organ-plan/v1",
-      "axm.code-language-organ-snapshot/v1"
+      "axm.code-language-organ-snapshot/v1",
+      "axm.code-language-grammar-specific-plan/v1",
+      "axm.code-language-grammar-profile-snapshot/v1"
     ],
     "accepts": [
       "axm.code-capability-request/v1",
@@ -39,7 +45,8 @@
       "axm.code-provider-host-observation/v1",
       "caller-supplied file path metadata",
       "caller-supplied shebang metadata",
-      "caller-supplied explicit organ preference"
+      "caller-supplied explicit organ preference",
+      "caller-supplied requested analysis/refactor stage"
     ]
   },
   "boundaries": {
@@ -63,7 +70,11 @@
       "language-guess-when-detection-is-ambiguous",
       "unbound-language-tool-execution",
       "source-review-as-runtime-proof",
-      "syntax-pass-as-semantic-correctness"
+      "syntax-pass-as-semantic-correctness",
+      "blind-text-rewrite-when-grammar-structure-is-required",
+      "rewrite-through-unknown-or-error-grammar-nodes",
+      "grammar-profile-drift-as-pass",
+      "fixture-pass-as-arbitrary-program-proof"
     ]
   },
   "lifecycle": {
