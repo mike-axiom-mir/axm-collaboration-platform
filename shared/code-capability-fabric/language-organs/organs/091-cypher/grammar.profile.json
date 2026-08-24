@@ -1,0 +1,104 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 91,
+  "organId": "code.organ.cypher.v1",
+  "languageId": "cypher",
+  "displayName": "Cypher",
+  "family": "sql-query",
+  "kind": "query-language",
+  "organDigest": "53cba385cb792257f2fb15ae887a6ae67ca194a2e62fea694443e36c46938249",
+  "grammar": {
+    "paradigm": "property graph query",
+    "compilationOrDocumentUnit": "statement",
+    "dialectsOrVariants": [
+      "openCypher",
+      "vendor Cypher"
+    ],
+    "constructs": [
+      "MATCH",
+      "OPTIONAL MATCH",
+      "CREATE",
+      "MERGE",
+      "DELETE",
+      "SET",
+      "REMOVE",
+      "UNWIND",
+      "CALL",
+      "RETURN",
+      "pattern",
+      "path",
+      "subquery"
+    ],
+    "dependencyForms": [
+      "procedure",
+      "label/type reference"
+    ],
+    "scopeModel": "statement/query/block",
+    "typeModel": "schema/domain-driven",
+    "mutationModel": "query-or-transaction",
+    "controlModel": "set/relational/procedural by dialect",
+    "effectModel": "database, graph, model or endpoint effects"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "MATCH",
+      "OPTIONAL MATCH",
+      "CREATE",
+      "MERGE",
+      "DELETE",
+      "SET",
+      "REMOVE",
+      "UNWIND",
+      "CALL",
+      "RETURN",
+      "pattern",
+      "path",
+      "subquery"
+    ],
+    "dependencyAnchors": [
+      "procedure",
+      "label/type reference"
+    ],
+    "semanticHazards": [
+      "NULL semantics",
+      "cardinality",
+      "MERGE locking",
+      "variable scope",
+      "procedure side effects"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "NULL semantics",
+      "cardinality",
+      "MERGE locking",
+      "variable scope",
+      "procedure side effects"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Cypher parse",
+      "graph tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "41a6c1eecaed8e89b8b8775ee4c8ab6f711a3a31029e8b04730e27dc82262cb4"
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 6,
+  "organId": "code.organ.json.v1",
+  "languageId": "json",
+  "displayName": "JSON",
+  "family": "data-config",
+  "kind": "data-format",
+  "organDigest": "91ae09af990a3f80d9092f5a2e608d91f244b0eb90da26ea5fa95260e106b792",
+  "grammar": {
+    "paradigm": "tree data",
+    "compilationOrDocumentUnit": "document",
+    "dialectsOrVariants": [
+      "RFC8259"
+    ],
+    "constructs": [
+      "object",
+      "array",
+      "member",
+      "string",
+      "number",
+      "boolean",
+      "null"
+    ],
+    "dependencyForms": [],
+    "scopeModel": "tree/key-path",
+    "typeModel": "scalar/container/schema-driven",
+    "mutationModel": "structural-data",
+    "controlModel": "none",
+    "effectModel": "host coercion and consumer semantics"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "object",
+      "array",
+      "member",
+      "string",
+      "number",
+      "boolean",
+      "null"
+    ],
+    "dependencyAnchors": [],
+    "semanticHazards": [
+      "duplicate keys",
+      "number precision",
+      "ordering assumptions"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": false,
+    "highRiskTransforms": [
+      "duplicate keys",
+      "number precision",
+      "ordering assumptions"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "JSON parse",
+      "schema when bound"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "35f70802292010a15b4633a3579df47c85af6acdfa7dcde02e361e75faa72ee1"
+}

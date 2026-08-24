@@ -1,0 +1,99 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 93,
+  "organId": "code.organ.power-query-m.v1",
+  "languageId": "power-query-m",
+  "displayName": "Power Query M",
+  "family": "sql-query",
+  "kind": "query-language",
+  "organDigest": "5a7862218a4018a57e0bc98106a675e33f5de29b67373323bc23cb76b414f90c",
+  "grammar": {
+    "paradigm": "lazy functional data query",
+    "compilationOrDocumentUnit": "section/expression",
+    "dialectsOrVariants": [
+      "Power Query M"
+    ],
+    "constructs": [
+      "let",
+      "section",
+      "shared",
+      "function",
+      "record",
+      "list",
+      "table",
+      "type",
+      "each",
+      "try/otherwise",
+      "metadata"
+    ],
+    "dependencyForms": [
+      "data-source function",
+      "section reference"
+    ],
+    "scopeModel": "lexical/module",
+    "typeModel": "inferred/static-or-dynamic functional",
+    "mutationModel": "prefer values; effects language-specific",
+    "controlModel": "expression, pattern, recursion and effect abstraction",
+    "effectModel": "effect system/runtime/process model language-specific"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "let",
+      "section",
+      "shared",
+      "function",
+      "record",
+      "list",
+      "table",
+      "type",
+      "each",
+      "try/otherwise",
+      "metadata"
+    ],
+    "dependencyAnchors": [
+      "data-source function",
+      "section reference"
+    ],
+    "semanticHazards": [
+      "lazy evaluation",
+      "privacy firewall",
+      "query folding",
+      "type annotations",
+      "null vs missing"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "lazy evaluation",
+      "privacy firewall",
+      "query folding",
+      "type annotations",
+      "null vs missing"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Microsoft M parser",
+      "query tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "6c10955043a9cffb37091588dcd61a63393d71e108f70e52df9e4e455b394e09"
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 61,
+  "organId": "code.organ.perl.v1",
+  "languageId": "perl",
+  "displayName": "Perl",
+  "family": "scripting",
+  "kind": "interpreted-language",
+  "organDigest": "2113b5453227dc5feac5ac619e1f66ba3a832e1f44699b1c1c3b22ed954c2082",
+  "grammar": {
+    "paradigm": "dynamic context-sensitive",
+    "compilationOrDocumentUnit": "file/module",
+    "dialectsOrVariants": [
+      "Perl5"
+    ],
+    "constructs": [
+      "sub",
+      "package",
+      "my/our/state",
+      "regex",
+      "reference",
+      "bless",
+      "tie",
+      "eval",
+      "wantarray"
+    ],
+    "dependencyForms": [
+      "use",
+      "require"
+    ],
+    "scopeModel": "lexical/module/runtime",
+    "typeModel": "dynamic or inferred",
+    "mutationModel": "runtime object/state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus dynamic dispatch/reflection where supported"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "sub",
+      "package",
+      "my/our/state",
+      "regex",
+      "reference",
+      "bless",
+      "tie",
+      "eval",
+      "wantarray"
+    ],
+    "dependencyAnchors": [
+      "use",
+      "require"
+    ],
+    "semanticHazards": [
+      "scalar/list context",
+      "symbol table",
+      "regex side effects",
+      "eval",
+      "string/number coercion"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "scalar/list context",
+      "symbol table",
+      "regex side effects",
+      "eval",
+      "string/number coercion"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "perl -c",
+      "perlcritic",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "034d89c2bb6a970400f9baeb1aa537dc67222ea1c652c6555a36ea7874c91680"
+}

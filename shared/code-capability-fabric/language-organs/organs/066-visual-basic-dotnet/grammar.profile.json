@@ -1,0 +1,100 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 66,
+  "organId": "code.organ.visual-basic-dotnet.v1",
+  "languageId": "visual-basic-dotnet",
+  "displayName": "Visual Basic .NET",
+  "family": "dotnet",
+  "kind": "managed-language",
+  "organDigest": "b99de048682bf63a3beaedf5908646d21b22693fa19b87c4bb9c6053c548a3b9",
+  "grammar": {
+    "paradigm": "managed static OO",
+    "compilationOrDocumentUnit": "compilation unit",
+    "dialectsOrVariants": [
+      "VB.NET"
+    ],
+    "constructs": [
+      "module",
+      "class",
+      "structure",
+      "interface",
+      "enum",
+      "Sub",
+      "Function",
+      "property",
+      "LINQ",
+      "async",
+      "lambda",
+      "Handles"
+    ],
+    "dependencyForms": [
+      "Imports"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "module",
+      "class",
+      "structure",
+      "interface",
+      "enum",
+      "Sub",
+      "Function",
+      "property",
+      "LINQ",
+      "async",
+      "lambda",
+      "Handles"
+    ],
+    "dependencyAnchors": [
+      "Imports"
+    ],
+    "semanticHazards": [
+      "Option Strict",
+      "default properties",
+      "late binding",
+      "ByRef",
+      "event handlers"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "Option Strict",
+      "default properties",
+      "late binding",
+      "ByRef",
+      "event handlers"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "VB compile",
+      "analyzers",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "6d7cccab27f136873d2370412e4a038e507382a5e247f8296c5a5900e8308550"
+}

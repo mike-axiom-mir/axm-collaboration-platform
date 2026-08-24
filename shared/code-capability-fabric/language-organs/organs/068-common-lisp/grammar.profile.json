@@ -1,0 +1,94 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 68,
+  "organId": "code.organ.common-lisp.v1",
+  "languageId": "common-lisp",
+  "displayName": "Common Lisp",
+  "family": "lisp",
+  "kind": "lisp-language",
+  "organDigest": "a43a43b247de2340f9fe56efac24b9092a3741d79845c4a52b852431fbdeee7f",
+  "grammar": {
+    "paradigm": "dynamic generic functional",
+    "compilationOrDocumentUnit": "file",
+    "dialectsOrVariants": [
+      "Common Lisp"
+    ],
+    "constructs": [
+      "defun",
+      "defmacro",
+      "defclass",
+      "defmethod",
+      "defpackage",
+      "reader macro",
+      "condition/restart",
+      "multiple values"
+    ],
+    "dependencyForms": [
+      "require",
+      "ASDF dependency"
+    ],
+    "scopeModel": "lexical/module",
+    "typeModel": "inferred/static-or-dynamic functional",
+    "mutationModel": "prefer values; effects language-specific",
+    "controlModel": "expression, pattern, recursion and effect abstraction",
+    "effectModel": "effect system/runtime/process model language-specific"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "defun",
+      "defmacro",
+      "defclass",
+      "defmethod",
+      "defpackage",
+      "reader macro",
+      "condition/restart",
+      "multiple values"
+    ],
+    "dependencyAnchors": [
+      "require",
+      "ASDF dependency"
+    ],
+    "semanticHazards": [
+      "reader macros",
+      "package symbols",
+      "dynamic binding",
+      "eval",
+      "macro expansion"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "reader macros",
+      "package symbols",
+      "dynamic binding",
+      "eval",
+      "macro expansion"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "reader parse",
+      "compile-file",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "0032feed8038509f94f8bd08a9a498647ae9987faac376fe5800b64b0169dbda"
+}

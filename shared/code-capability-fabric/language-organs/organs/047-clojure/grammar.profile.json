@@ -1,0 +1,104 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 47,
+  "organId": "code.organ.clojure.v1",
+  "languageId": "clojure",
+  "displayName": "Clojure",
+  "family": "lisp",
+  "kind": "lisp-language",
+  "organDigest": "37c4fce66dfcf0bc515357bc1fda38db53633eb6048e7cc771ae29f7f6cb6798",
+  "grammar": {
+    "paradigm": "dynamic persistent functional",
+    "compilationOrDocumentUnit": "namespace",
+    "dialectsOrVariants": [
+      "Clojure"
+    ],
+    "constructs": [
+      "ns",
+      "def",
+      "defn",
+      "defmacro",
+      "defrecord",
+      "deftype",
+      "persistent data",
+      "sequence",
+      "transducer",
+      "atom",
+      "ref",
+      "agent"
+    ],
+    "dependencyForms": [
+      "require",
+      "use",
+      "import"
+    ],
+    "scopeModel": "lexical/module",
+    "typeModel": "inferred/static-or-dynamic functional",
+    "mutationModel": "prefer values; effects language-specific",
+    "controlModel": "expression, pattern, recursion and effect abstraction",
+    "effectModel": "effect system/runtime/process model language-specific"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "ns",
+      "def",
+      "defn",
+      "defmacro",
+      "defrecord",
+      "deftype",
+      "persistent data",
+      "sequence",
+      "transducer",
+      "atom",
+      "ref",
+      "agent"
+    ],
+    "dependencyAnchors": [
+      "require",
+      "use",
+      "import"
+    ],
+    "semanticHazards": [
+      "macro expansion",
+      "dynamic vars",
+      "lazy sequences",
+      "nil semantics",
+      "STM"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "macro expansion",
+      "dynamic vars",
+      "lazy sequences",
+      "nil semantics",
+      "STM"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "reader parse",
+      "clj-kondo",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "74ce33db8fa7b0386af7f7668d2745980f963e197d440da6a988a4d02f80f477"
+}

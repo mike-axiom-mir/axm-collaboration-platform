@@ -1,0 +1,107 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 96,
+  "organId": "code.organ.verilog.v1",
+  "languageId": "verilog",
+  "displayName": "Verilog",
+  "family": "hardware",
+  "kind": "hardware-description-language",
+  "organDigest": "b7a7349d400a1cac950c3256e59a5fe5ca407d2e276828ae3572c2bc1bf81662",
+  "grammar": {
+    "paradigm": "RTL hardware",
+    "compilationOrDocumentUnit": "source",
+    "dialectsOrVariants": [
+      "Verilog2001",
+      "Verilog2005"
+    ],
+    "constructs": [
+      "module",
+      "primitive",
+      "function",
+      "task",
+      "parameter",
+      "wire",
+      "reg",
+      "instance",
+      "always",
+      "assign",
+      "generate",
+      "event control",
+      "delay",
+      "nonblocking assignment"
+    ],
+    "dependencyForms": [
+      "include",
+      "module instance"
+    ],
+    "scopeModel": "design-unit/process/block",
+    "typeModel": "bit/vector/signal/domain-specific",
+    "mutationModel": "signal/register/state transition",
+    "controlModel": "concurrent plus procedural regions",
+    "effectModel": "simulation/synthesis timing and hardware connectivity"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "module",
+      "primitive",
+      "function",
+      "task",
+      "parameter",
+      "wire",
+      "reg",
+      "instance",
+      "always",
+      "assign",
+      "generate",
+      "event control",
+      "delay",
+      "nonblocking assignment"
+    ],
+    "dependencyAnchors": [
+      "include",
+      "module instance"
+    ],
+    "semanticHazards": [
+      "blocking vs nonblocking",
+      "races",
+      "width/sign",
+      "timescale",
+      "implicit nets"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "blocking vs nonblocking",
+      "races",
+      "width/sign",
+      "timescale",
+      "implicit nets"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Verilog parse",
+      "iverilog/verilator",
+      "simulation"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "156486fe93527bafb6e00e0cdcad63cebc6bee8ebe8b107de6e2c2c0280b0828"
+}

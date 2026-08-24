@@ -1,0 +1,104 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 16,
+  "organId": "code.organ.java.v1",
+  "languageId": "java",
+  "displayName": "Java",
+  "family": "jvm",
+  "kind": "managed-language",
+  "organDigest": "3553d291cca79d2d0f2601da1b84b25445362941125f934e0a6b861289aec923",
+  "grammar": {
+    "paradigm": "managed nominal OO",
+    "compilationOrDocumentUnit": "compilation unit",
+    "dialectsOrVariants": [
+      "Java"
+    ],
+    "constructs": [
+      "class",
+      "record",
+      "interface",
+      "enum",
+      "method",
+      "field",
+      "lambda",
+      "stream",
+      "annotation",
+      "sealed type",
+      "pattern",
+      "try-with-resources"
+    ],
+    "dependencyForms": [
+      "import",
+      "module requires"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "class",
+      "record",
+      "interface",
+      "enum",
+      "method",
+      "field",
+      "lambda",
+      "stream",
+      "annotation",
+      "sealed type",
+      "pattern",
+      "try-with-resources"
+    ],
+    "dependencyAnchors": [
+      "import",
+      "module requires"
+    ],
+    "semanticHazards": [
+      "type erasure",
+      "reflection",
+      "classloading",
+      "nullability",
+      "checked exceptions",
+      "synchronization"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "type erasure",
+      "reflection",
+      "classloading",
+      "nullability",
+      "checked exceptions",
+      "synchronization"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "javac",
+      "static analysis",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "e5a33a6bb8265a3f09ff67cc0538ec6475962ae6b5289fc98ef0ff8f44fd0394"
+}

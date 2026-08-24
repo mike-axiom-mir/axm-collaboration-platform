@@ -1,0 +1,100 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 48,
+  "organId": "code.organ.fsharp.v1",
+  "languageId": "fsharp",
+  "displayName": "F#",
+  "family": "dotnet",
+  "kind": "managed-language",
+  "organDigest": "1baef44c4ecfb641f347bea602f943bacdfe3929826e774a7da9d2ecb0da2049",
+  "grammar": {
+    "paradigm": "static functional .NET",
+    "compilationOrDocumentUnit": "file/module",
+    "dialectsOrVariants": [
+      "F#"
+    ],
+    "constructs": [
+      "module",
+      "namespace",
+      "type",
+      "record",
+      "union",
+      "let",
+      "member",
+      "pattern",
+      "computation expression",
+      "active pattern",
+      "async"
+    ],
+    "dependencyForms": [
+      "open",
+      "reference"
+    ],
+    "scopeModel": "lexical/module",
+    "typeModel": "inferred/static-or-dynamic functional",
+    "mutationModel": "prefer values; effects language-specific",
+    "controlModel": "expression, pattern, recursion and effect abstraction",
+    "effectModel": "effect system/runtime/process model language-specific"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "module",
+      "namespace",
+      "type",
+      "record",
+      "union",
+      "let",
+      "member",
+      "pattern",
+      "computation expression",
+      "active pattern",
+      "async"
+    ],
+    "dependencyAnchors": [
+      "open",
+      "reference"
+    ],
+    "semanticHazards": [
+      "value restriction",
+      "type inference",
+      "computation expressions",
+      "mutability",
+      "interop null"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "value restriction",
+      "type inference",
+      "computation expressions",
+      "mutability",
+      "interop null"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "F# check",
+      "dotnet build",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "a35bc2139ec391ad4ebee66f7cd1a6707e1b09361cd36442a2953236f78bf87b"
+}

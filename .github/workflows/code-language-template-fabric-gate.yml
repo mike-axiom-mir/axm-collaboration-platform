@@ -1,0 +1,49 @@
+# permanent read-only gate; template materialization authority has been removed
+name: AXM Code Language Template Fabric Gate
+
+on:
+  pull_request:
+    paths:
+      - "shared/code-capability-fabric/language-organs/**"
+      - "shared/code-capability-fabric/module.contract.json"
+      - ".github/workflows/code-language-template-fabric-gate.yml"
+  push:
+    paths:
+      - "shared/code-capability-fabric/language-organs/**"
+      - "shared/code-capability-fabric/module.contract.json"
+      - ".github/workflows/code-language-template-fabric-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  template-fabric:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Refuse generated template-bank drift
+        run: node shared/code-capability-fabric/language-organs/build-machine-templates.js --check
+      - name: Prove 102 deep grammar template banks and fast AI/machine routing
+        run: node shared/code-capability-fabric/language-organs/selftest-machine-templates.js
+      - name: Preserve cheatcode and specialist-eye foundations
+        run: |
+          node shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js
+          python shared/code-capability-fabric/language-organs/build-grammar-profiles.py --check
+          python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --check
+          node shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js
+          node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
+      - name: Refuse whitespace/patch corruption
+        run: git diff --check

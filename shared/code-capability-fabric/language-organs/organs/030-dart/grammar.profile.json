@@ -1,0 +1,104 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 30,
+  "organId": "code.organ.dart.v1",
+  "languageId": "dart",
+  "displayName": "Dart",
+  "family": "mobile-app",
+  "kind": "application-language",
+  "organDigest": "5b70b15a87cafb2001f67087ade132d01d48fb28b7ef9e3a866089f3473c293e",
+  "grammar": {
+    "paradigm": "static app language",
+    "compilationOrDocumentUnit": "library",
+    "dialectsOrVariants": [
+      "Dart"
+    ],
+    "constructs": [
+      "class",
+      "mixin",
+      "extension",
+      "enum",
+      "function",
+      "Future",
+      "Stream",
+      "async",
+      "isolate",
+      "null-safety",
+      "pattern",
+      "record"
+    ],
+    "dependencyForms": [
+      "import",
+      "export",
+      "part"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "class",
+      "mixin",
+      "extension",
+      "enum",
+      "function",
+      "Future",
+      "Stream",
+      "async",
+      "isolate",
+      "null-safety",
+      "pattern",
+      "record"
+    ],
+    "dependencyAnchors": [
+      "import",
+      "export",
+      "part"
+    ],
+    "semanticHazards": [
+      "late init",
+      "null-safety",
+      "isolate boundaries",
+      "generated code",
+      "extension resolution"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "late init",
+      "null-safety",
+      "isolate boundaries",
+      "generated code",
+      "extension resolution"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "dart analyze",
+      "compile",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "ec42e0bfa0f8814b7c8a9a20d975e00d3cbe9fb67c2d59752bd22516b1c94658"
+}

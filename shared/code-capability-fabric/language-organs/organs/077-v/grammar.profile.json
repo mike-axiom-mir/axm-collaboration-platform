@@ -1,0 +1,97 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 77,
+  "organId": "code.organ.v.v1",
+  "languageId": "v",
+  "displayName": "V",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "fb4d112d287f8979f4100488443a67f324ce620462fe071c4362403cb3208dd6",
+  "grammar": {
+    "paradigm": "static systems",
+    "compilationOrDocumentUnit": "module",
+    "dialectsOrVariants": [
+      "V"
+    ],
+    "constructs": [
+      "fn",
+      "struct",
+      "interface",
+      "enum",
+      "type",
+      "const",
+      "option/result",
+      "sum type",
+      "generic",
+      "defer",
+      "go/comptime"
+    ],
+    "dependencyForms": [
+      "import"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "fn",
+      "struct",
+      "interface",
+      "enum",
+      "type",
+      "const",
+      "option/result",
+      "sum type",
+      "generic",
+      "defer",
+      "go/comptime"
+    ],
+    "dependencyAnchors": [
+      "import"
+    ],
+    "semanticHazards": [
+      "autofree/GC",
+      "unsafe",
+      "option propagation",
+      "module visibility",
+      "comptime"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "autofree/GC",
+      "unsafe",
+      "option propagation",
+      "module visibility",
+      "comptime"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "v check",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "b09e7958c64a8444485f72e7547ed3a4b9b1abf8ec27393279e9db5f66c7f96c"
+}

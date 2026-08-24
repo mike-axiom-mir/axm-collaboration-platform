@@ -1,0 +1,96 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 5,
+  "organId": "code.organ.css.v1",
+  "languageId": "css",
+  "displayName": "CSS",
+  "family": "web",
+  "kind": "stylesheet-language",
+  "organDigest": "06c66eb2dd5a33c79c7413392a90e5350e1a346cc7725d1749ae23bcb3a6acfb",
+  "grammar": {
+    "paradigm": "stylesheet cascade",
+    "compilationOrDocumentUnit": "stylesheet",
+    "dialectsOrVariants": [
+      "CSS2",
+      "CSS3",
+      "modern CSS"
+    ],
+    "constructs": [
+      "rule",
+      "selector",
+      "declaration",
+      "at-rule",
+      "custom property",
+      "media query",
+      "container query",
+      "nesting"
+    ],
+    "dependencyForms": [
+      "@import",
+      "url",
+      "font-face src"
+    ],
+    "scopeModel": "tree/containment",
+    "typeModel": "schema-or-element-kinds",
+    "mutationModel": "structural-document",
+    "controlModel": "none",
+    "effectModel": "embedding, references and host interpretation"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "rule",
+      "selector",
+      "declaration",
+      "at-rule",
+      "custom property",
+      "media query",
+      "container query",
+      "nesting"
+    ],
+    "dependencyAnchors": [
+      "@import",
+      "url",
+      "font-face src"
+    ],
+    "semanticHazards": [
+      "cascade order",
+      "specificity",
+      "custom-property cycles",
+      "vendor behavior"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "cascade order",
+      "specificity",
+      "custom-property cycles",
+      "vendor behavior"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "CSS parse",
+      "stylelint",
+      "render check"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "27b2a2fd39491ea2ac14dd364903520d066e9e0689e610a4ab97dd0ae1b587e7"
+}

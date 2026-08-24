@@ -1,0 +1,98 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 35,
+  "organId": "code.organ.openapi.v1",
+  "languageId": "openapi",
+  "displayName": "OpenAPI",
+  "family": "api-schema",
+  "kind": "api-description-language",
+  "organDigest": "c7f5d178faa8037a081557695f1a188d2093b3fc8e926c25dd046f3921e06f2d",
+  "grammar": {
+    "paradigm": "API contract schema",
+    "compilationOrDocumentUnit": "OpenAPI document",
+    "dialectsOrVariants": [
+      "OpenAPI3.0",
+      "OpenAPI3.1"
+    ],
+    "constructs": [
+      "path",
+      "operation",
+      "parameter",
+      "request body",
+      "response",
+      "schema",
+      "component",
+      "security",
+      "callback",
+      "link"
+    ],
+    "dependencyForms": [
+      "$ref",
+      "external docs",
+      "server"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "path",
+      "operation",
+      "parameter",
+      "request body",
+      "response",
+      "schema",
+      "component",
+      "security",
+      "callback",
+      "link"
+    ],
+    "dependencyAnchors": [
+      "$ref",
+      "external docs",
+      "server"
+    ],
+    "semanticHazards": [
+      "3.0 vs 3.1",
+      "schema dialect",
+      "ref resolution",
+      "operation id stability"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "3.0 vs 3.1",
+      "schema dialect",
+      "ref resolution",
+      "operation id stability"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "OpenAPI validate",
+      "contract tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "386ca1299c8199aafcda6760d5949975d0123723649486df294412d20e56508a"
+}

@@ -1,0 +1,1397 @@
+{
+  "schema": "axm.code.language-template-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "xml",
+  "organId": "code.organ.xml.v1",
+  "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+  "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+  "eyeId": "code.eye.xml.v1",
+  "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+  "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec",
+  "lanes": {
+    "verifiedVault": {
+      "meaning": "Evidence-bound machine recipe templates. Verified refers to template mechanics/evidence binding, not arbitrary generated source correctness.",
+      "templateCount": 12,
+      "templates": [
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.native-parse-snapshot.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "understand",
+          "nativeBindings": [
+            "XML1.0",
+            "XML1.1",
+            "document"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "924fb5fce407fb66862b674fc159f12dc27029dcb5022aef2ec76c2e2b0958a1"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.symbol-impact-map.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "impact",
+          "nativeBindings": [
+            "tree/containment",
+            "attribute"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "REFERENCE_RESOLVED"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "408b4d60d867c35cdda59770123cd307521d6177bfebf3eaeed59b3629753278"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.dependency-closure.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "dependencies",
+          "nativeBindings": [
+            "schema location",
+            "document"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ACYCLIC_GRAPH"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "e95b416a6814f2d78d2cf228b933eb60f3e87b13078415c3a850ee3e4e9eb812"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.type-state-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "impact",
+          "nativeBindings": [
+            "schema-or-element-kinds",
+            "namespace prefix"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "NO_COERCION_DELTA"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "44c265f0919a2b94502be5f781895347a35bc37bd1bc6abfa7c82c4e22b5798d"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.control-effect-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "impact",
+          "nativeBindings": [
+            "embedding, references and host interpretation",
+            "document"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ORDERING_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "91b00d8ff7256efe6cdc39fef402466e4dd52fcb17479387ce964752f51c94a5"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.rewrite-hazard-guard.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "refactor",
+          "nativeBindings": [
+            "entity expansion"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "HAZARD_NOT_RELEVANT:entity expansion"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "ec8ef8902f72da1ab6a9a35d2b9492e9e733443195708cb286891846dd5f0723"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.native-verifier-ladder.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "verification",
+          "nativeBindings": [
+            "schema when bound"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "e142634d8277fdcdcb67604d9b006d8127d04e8cef445eb78e2b076b8428f328"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.measure-before-optimization.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "performance",
+          "nativeBindings": [
+            "document",
+            "namespace"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.performance-build.03",
+              "phase": "performance-build",
+              "opcode": "BUILD_GRAPH_INVALIDATION",
+              "emits": "BUILD_INVALIDATION_FACT",
+              "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "BUILD_GRAPH_STABLE"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "73db20a938bbbebb4b7d08c44a8feadbc6aa6f1b981871f4127594e6e4642779"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.debug-hypothesis-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "debug",
+          "nativeBindings": [
+            "structural-document",
+            "none"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.debugging.04",
+              "phase": "debugging",
+              "opcode": "STATE_CONTROL_TRACE",
+              "emits": "TRACE_PLAN",
+              "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "TRACE_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "ddc0eebaaf8ca0f2b38f6483640bc3f89218a850871b43781c0ded319ec6d07e"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.cross-language-comparison.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "discovery",
+          "nativeBindings": [
+            "namespaced document",
+            "enterprise interchange",
+            "schema-bound document",
+            "namespaced markup"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.discovery.05",
+              "phase": "discovery",
+              "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+              "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+              "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "368dcf9dc611f232a749f49a65f0cffadedd439628301c27e5d232afcab3f4bc"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.safe-refactor-preflight.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "refactor",
+          "nativeBindings": [
+            "XML1.0",
+            "XML1.1",
+            "document",
+            "tree/containment",
+            "attribute",
+            "schema location",
+            "schema-or-element-kinds",
+            "namespace prefix",
+            "embedding, references and host interpretation",
+            "entity expansion",
+            "schema when bound"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            },
+            {
+              "ruleId": "code.cheat.xml.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            },
+            {
+              "ruleId": "code.cheat.xml.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            },
+            {
+              "ruleId": "code.cheat.xml.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            },
+            {
+              "ruleId": "code.cheat.xml.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            },
+            {
+              "ruleId": "code.cheat.xml.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            },
+            {
+              "ruleId": "code.cheat.xml.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE",
+            "REFERENCE_RESOLVED",
+            "ACYCLIC_GRAPH",
+            "NO_COERCION_DELTA",
+            "ORDERING_EQUIVALENT",
+            "HAZARD_NOT_RELEVANT:entity expansion",
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "abd56aa7262383a7ec499cac99a9b3b5b6af074214cdf205feb300c5aec19a91"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.xml.regression-defense-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "xml",
+          "intent": "verification",
+          "nativeBindings": [
+            "schema when bound",
+            "namespace",
+            "schema location",
+            "entity",
+            "document",
+            "tree/containment"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "8754020c39736a661840b52af43091ca82cf9a5cb1ca46f691d80f52dd2a3ddc",
+            "grammarProfileDigest": "0eeaac0d4d513dfdf144e86870d755ce59169d34ce6c8395276d069d37378b0f",
+            "eyeDigest": "2b33a54b6dfa3e2800867af8dea5c6d3bd048df0dd639e764aa1efaa5ac5eeca",
+            "cheatcodeBankDigest": "96e88e6218b4f71bbd0c085f14dd58399ba41e0c8afcac2749c3797a56ab2eec"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.xml.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            },
+            {
+              "ruleId": "code.cheat.xml.debugging.03",
+              "phase": "debugging",
+              "opcode": "DEPENDENCY_ISOLATION",
+              "emits": "DEPENDENCY_ISOLATION_PLAN",
+              "next": "ISOLATE_ONE_EDGE_AT_A_TIME"
+            },
+            {
+              "ruleId": "code.cheat.xml.performance-build.04",
+              "phase": "performance-build",
+              "opcode": "ANALYSIS_CACHE_INVALIDATION",
+              "emits": "ANALYSIS_INVALIDATION_SET",
+              "next": "DROP_ONLY_INVALID_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE",
+            "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED",
+            "ANALYSIS_PRESERVED"
+          ],
+          "verifierCandidates": [
+            "XML parse",
+            "schema when bound"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "92454ee67c5fa5c4eab1efa848679bb258ee58e80ca7a834558d904fc44a42b4"
+        }
+      ]
+    },
+    "patternNursery": {
+      "meaning": "Frequent structural or edit patterns mined from caller-supplied observations. Candidates never self-promote.",
+      "storedCandidates": [],
+      "automaticPromotion": false
+    }
+  },
+  "structuralSkeletons": [
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.xml.01.v1",
+      "languageId": "xml",
+      "construct": "element",
+      "nativeUnit": "document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "element"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "43025f2334c990ff0891a8d47e46c245861329cf3bd0c94e2d74c1c7282880b6"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.xml.02.v1",
+      "languageId": "xml",
+      "construct": "attribute",
+      "nativeUnit": "document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "attribute"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "9bfafb83483c463822102355e92ab14a30aa2c10dab873c8dbafcddebcca9fb9"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.xml.03.v1",
+      "languageId": "xml",
+      "construct": "text",
+      "nativeUnit": "document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "text"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "86506a03834c31c2c55b49cff5603f1f86f10d8941edca9a7a4d6913c5842eb7"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.xml.04.v1",
+      "languageId": "xml",
+      "construct": "comment",
+      "nativeUnit": "document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "comment"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "001c9d01edf206399eb2c9181f777cb378fccf014ed8c04bce1f1892fef46cc0"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.xml.05.v1",
+      "languageId": "xml",
+      "construct": "CDATA",
+      "nativeUnit": "document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "CDATA"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "09b023f70254f71b64f7f99af93d994faee90ea646d824cd2f569eea06cf573b"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.xml.06.v1",
+      "languageId": "xml",
+      "construct": "doctype",
+      "nativeUnit": "document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "doctype"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "5e8aef01038d933d00451943ee36bfad5d2f480606cd44bafce55821ca99d01d"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.xml.07.v1",
+      "languageId": "xml",
+      "construct": "processing instruction",
+      "nativeUnit": "document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "processing instruction"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "2263a4951fda76d70054afae19ff3ac0f85bd56b32cf0f1dcf5c335a8c4c99d3"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.xml.08.v1",
+      "languageId": "xml",
+      "construct": "element",
+      "nativeUnit": "document",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "element"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "82c1f38637abe5dbfa13658a27f05dbd7da0c504c5dbfd036e804e03af5e47f3"
+    }
+  ],
+  "fastUse": {
+    "indexKeys": [
+      "languageId",
+      "intent",
+      "nativeBinding"
+    ],
+    "deterministicMachineUse": true,
+    "aiCapsuleUse": true,
+    "sourceRendererOptional": true
+  },
+  "policy": {
+    "frequencyIsNotCorrectness": true,
+    "templateIsNotAuthority": true,
+    "minedCandidateIsNotVerifiedTemplate": true,
+    "automaticPromotion": false,
+    "automaticMutation": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "5b1cbb288d3e8f862cf9b7319f5a97fcab087a75a19d3d1ac709fca37cc2d4ab"
+}

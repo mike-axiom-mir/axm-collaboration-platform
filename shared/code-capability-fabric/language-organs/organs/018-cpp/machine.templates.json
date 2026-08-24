@@ -1,0 +1,1422 @@
+{
+  "schema": "axm.code.language-template-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "cpp",
+  "organId": "code.organ.cpp.v1",
+  "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+  "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+  "eyeId": "code.eye.cpp.v1",
+  "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+  "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19",
+  "lanes": {
+    "verifiedVault": {
+      "meaning": "Evidence-bound machine recipe templates. Verified refers to template mechanics/evidence binding, not arbitrary generated source correctness.",
+      "templateCount": 12,
+      "templates": [
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.native-parse-snapshot.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "understand",
+          "nativeBindings": [
+            "C++11",
+            "C++14",
+            "C++17",
+            "translation unit"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "da6df7b51e240f161543929eee48cfc4d2aa5f3603b67b2284421d51c8233f32"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.symbol-impact-map.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "impact",
+          "nativeBindings": [
+            "lexical/module/type",
+            "class"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "REFERENCE_RESOLVED"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "9a9e6c9901f63541cf7b01588e9d08ddd6cd48d6e63b3eff6d80420b89a3d32e"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.dependency-closure.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "dependencies",
+          "nativeBindings": [
+            "module import",
+            "translation unit"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ACYCLIC_GRAPH"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "719ed4d756dad71eb71334203ae6cfecc95f7bd6d1a21b8ec3179953d6b341e4"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.type-state-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "impact",
+          "nativeBindings": [
+            "compile-time static",
+            "lifetime"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "NO_COERCION_DELTA"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "512a14177a5c4569a7ed67c26e61c7386cdb0fd6dcf7edc2be5da551b62ab179"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.control-effect-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "impact",
+          "nativeBindings": [
+            "runtime plus foreign/system interfaces",
+            "translation unit"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ORDERING_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "9f22539b09d81958494b7879b77dbdf451ed30cedf69f27fe901c6702e0d7a4d"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.rewrite-hazard-guard.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "refactor",
+          "nativeBindings": [
+            "undefined behavior"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "HAZARD_NOT_RELEVANT:undefined behavior"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "2e1a32b07dbd6b95df7f681b3773d90e351a1a11848f85a165bfe44894e88bd6"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.native-verifier-ladder.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "verification",
+          "nativeBindings": [
+            "warnings"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "2dbe0c2899eb2f603066ba921421d94bcf08e11e490dcb6f954ca5a33c563f8f"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.measure-before-optimization.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "performance",
+          "nativeBindings": [
+            "translation unit",
+            "include"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.performance-build.03",
+              "phase": "performance-build",
+              "opcode": "BUILD_GRAPH_INVALIDATION",
+              "emits": "BUILD_INVALIDATION_FACT",
+              "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "BUILD_GRAPH_STABLE"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "5af8caa231a51afce7e1a8e77e4f39b8e078cf7e40eeb5f0836d970d6bd21f29"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.debug-hypothesis-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "debug",
+          "nativeBindings": [
+            "language-defined mutable state",
+            "branch, loop, call, exception/result"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.debugging.04",
+              "phase": "debugging",
+              "opcode": "STATE_CONTROL_TRACE",
+              "emits": "TRACE_PLAN",
+              "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "TRACE_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "5fe06a8f40c510be92c28aad1e8d8f75b1dd5c5e5785b31c61b4415bc887c41e"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.cross-language-comparison.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "discovery",
+          "nativeBindings": [
+            "game engine",
+            "high performance",
+            "native library",
+            "systems generic OO"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.discovery.05",
+              "phase": "discovery",
+              "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+              "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+              "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "ec3070c3aa0da377d013153e3c730ebeaf9a45de500ddcb893e7230b1c0416c8"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.safe-refactor-preflight.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "refactor",
+          "nativeBindings": [
+            "C++11",
+            "C++14",
+            "C++17",
+            "translation unit",
+            "lexical/module/type",
+            "class",
+            "module import",
+            "compile-time static",
+            "lifetime",
+            "runtime plus foreign/system interfaces",
+            "undefined behavior",
+            "warnings"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            },
+            {
+              "ruleId": "code.cheat.cpp.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            },
+            {
+              "ruleId": "code.cheat.cpp.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            },
+            {
+              "ruleId": "code.cheat.cpp.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            },
+            {
+              "ruleId": "code.cheat.cpp.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            },
+            {
+              "ruleId": "code.cheat.cpp.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            },
+            {
+              "ruleId": "code.cheat.cpp.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE",
+            "REFERENCE_RESOLVED",
+            "ACYCLIC_GRAPH",
+            "NO_COERCION_DELTA",
+            "ORDERING_EQUIVALENT",
+            "HAZARD_NOT_RELEVANT:undefined behavior",
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "124b1f9f750b0de1fef398fb1f0c15b7a4a66e08df8406c0f756ddfe0092b025"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.cpp.regression-defense-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "cpp",
+          "intent": "verification",
+          "nativeBindings": [
+            "warnings",
+            "include",
+            "module import",
+            "translation unit",
+            "lexical/module/type"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "c9225445494606d3375f166701be266684384c38385d77848c1b3bf3f7013781",
+            "grammarProfileDigest": "9e94ee259887a8e857b0ca7f6d73460766f1425bf9bb1a7746a53511d042be39",
+            "eyeDigest": "482539d14ec553e5366776b1e73e5b3d195a27e401a75b29df0557b26ff19ca2",
+            "cheatcodeBankDigest": "c13968fd0ba6d992e95ac89d4558ffbb0f11056f4727e066e0db7c4f69f21b19"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.cpp.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            },
+            {
+              "ruleId": "code.cheat.cpp.debugging.03",
+              "phase": "debugging",
+              "opcode": "DEPENDENCY_ISOLATION",
+              "emits": "DEPENDENCY_ISOLATION_PLAN",
+              "next": "ISOLATE_ONE_EDGE_AT_A_TIME"
+            },
+            {
+              "ruleId": "code.cheat.cpp.performance-build.04",
+              "phase": "performance-build",
+              "opcode": "ANALYSIS_CACHE_INVALIDATION",
+              "emits": "ANALYSIS_INVALIDATION_SET",
+              "next": "DROP_ONLY_INVALID_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE",
+            "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED",
+            "ANALYSIS_PRESERVED"
+          ],
+          "verifierCandidates": [
+            "C++ syntax",
+            "warnings",
+            "sanitizers",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "84208736d53567a12b3fd7037cdbd004185c7f0a7b1ca886f54d695c3f591362"
+        }
+      ]
+    },
+    "patternNursery": {
+      "meaning": "Frequent structural or edit patterns mined from caller-supplied observations. Candidates never self-promote.",
+      "storedCandidates": [],
+      "automaticPromotion": false
+    }
+  },
+  "structuralSkeletons": [
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.cpp.01.v1",
+      "languageId": "cpp",
+      "construct": "function",
+      "nativeUnit": "translation unit",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "function"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "75a0e10e76f24353d281ab46a64641e9f8b8350fee12631a13197357bb5ed34a"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.cpp.02.v1",
+      "languageId": "cpp",
+      "construct": "class",
+      "nativeUnit": "translation unit",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "class"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "4651f25edeaf41c5970447149596a24c8fc6083a8aa74d3a1e5f5bf5ac13e4f1"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.cpp.03.v1",
+      "languageId": "cpp",
+      "construct": "struct",
+      "nativeUnit": "translation unit",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "struct"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "32c6d4bcff6739856c105e6f7e9af83a8e5218b01363b2072f34cb3380e32f20"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.cpp.04.v1",
+      "languageId": "cpp",
+      "construct": "enum",
+      "nativeUnit": "translation unit",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "enum"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "58fd77adc57728d6f941cc39d07970794fb0f0823ac64321d216abd49c258ca4"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.cpp.05.v1",
+      "languageId": "cpp",
+      "construct": "template",
+      "nativeUnit": "translation unit",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "template"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "736febd99f78d6876e0db502a18bee1e834f4a0f55673d30c359363cd65e6e6c"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.cpp.06.v1",
+      "languageId": "cpp",
+      "construct": "namespace",
+      "nativeUnit": "translation unit",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "namespace"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "6f50717c1f0c5f11cba6c2d7298ecd435096b2a97c9204e765ef633e69d27cd7"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.cpp.07.v1",
+      "languageId": "cpp",
+      "construct": "RAII",
+      "nativeUnit": "translation unit",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "RAII"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "15bc4673c535eb996f3208fc592d466c8585a04ec53114245ac070574a11ea37"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.cpp.08.v1",
+      "languageId": "cpp",
+      "construct": "lambda",
+      "nativeUnit": "translation unit",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "lambda"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "da14904e07dc8bdb8fbccadd7cbc706423b6a0b2beefdfd30d12debf7dbbab08"
+    }
+  ],
+  "fastUse": {
+    "indexKeys": [
+      "languageId",
+      "intent",
+      "nativeBinding"
+    ],
+    "deterministicMachineUse": true,
+    "aiCapsuleUse": true,
+    "sourceRendererOptional": true
+  },
+  "policy": {
+    "frequencyIsNotCorrectness": true,
+    "templateIsNotAuthority": true,
+    "minedCandidateIsNotVerifiedTemplate": true,
+    "automaticPromotion": false,
+    "automaticMutation": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "dd44690ead8de4f83941cc7b2cc0c6576515a19a06755ad6a30cb27b84bc045d"
+}

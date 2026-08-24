@@ -1,0 +1,95 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 57,
+  "organId": "code.organ.glsl.v1",
+  "languageId": "glsl",
+  "displayName": "GLSL",
+  "family": "gpu-shader",
+  "kind": "gpu-language",
+  "organDigest": "949a3ac95b9c9cd9416d6125e9e79345e0fb934865b4098bec3bd2d33b5aca0c",
+  "grammar": {
+    "paradigm": "graphics shader",
+    "compilationOrDocumentUnit": "shader",
+    "dialectsOrVariants": [
+      "GLSL ES",
+      "desktop GLSL"
+    ],
+    "constructs": [
+      "function",
+      "struct",
+      "uniform",
+      "buffer",
+      "in/out",
+      "layout",
+      "preprocessor",
+      "sampler",
+      "precision"
+    ],
+    "dependencyForms": [
+      "host include"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "function",
+      "struct",
+      "uniform",
+      "buffer",
+      "in/out",
+      "layout",
+      "preprocessor",
+      "sampler",
+      "precision"
+    ],
+    "dependencyAnchors": [
+      "host include"
+    ],
+    "semanticHazards": [
+      "stage interfaces",
+      "precision",
+      "undefined behavior",
+      "version extensions",
+      "binding"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "stage interfaces",
+      "precision",
+      "undefined behavior",
+      "version extensions",
+      "binding"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "glslang parse",
+      "SPIR-V validation",
+      "render tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "171d37793d81e16cd8c0a7669fb06040b61371c55c82e58543777270cc1b375e"
+}

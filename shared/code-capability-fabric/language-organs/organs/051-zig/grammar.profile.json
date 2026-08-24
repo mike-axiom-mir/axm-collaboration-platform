@@ -1,0 +1,101 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 51,
+  "organId": "code.organ.zig.v1",
+  "languageId": "zig",
+  "displayName": "Zig",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "792d2ac7790ffc583e66dd842b04895bd6583306ef8bf285e6a0d72da477b6d5",
+  "grammar": {
+    "paradigm": "static comptime systems",
+    "compilationOrDocumentUnit": "file/module",
+    "dialectsOrVariants": [
+      "Zig"
+    ],
+    "constructs": [
+      "fn",
+      "const",
+      "var",
+      "struct",
+      "union",
+      "enum",
+      "error set",
+      "comptime",
+      "defer",
+      "errdefer",
+      "error union",
+      "optional",
+      "pointer"
+    ],
+    "dependencyForms": [
+      "@import"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "fn",
+      "const",
+      "var",
+      "struct",
+      "union",
+      "enum",
+      "error set",
+      "comptime",
+      "defer",
+      "errdefer",
+      "error union",
+      "optional",
+      "pointer"
+    ],
+    "dependencyAnchors": [
+      "@import"
+    ],
+    "semanticHazards": [
+      "comptime side effects",
+      "pointer lifetime",
+      "allocator ownership",
+      "undefined values",
+      "error unions"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "comptime side effects",
+      "pointer lifetime",
+      "allocator ownership",
+      "undefined values",
+      "error unions"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "zig test no-exec",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "95b3dd0ca29eda1187bffb67d4b38179a8df883a8272773547ddb4d519569f70"
+}

@@ -1,0 +1,99 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 74,
+  "organId": "code.organ.nim.v1",
+  "languageId": "nim",
+  "displayName": "Nim",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "fa1d6961f9a080012e5936b23560daf160b427a228633f75016c3a5160547779",
+  "grammar": {
+    "paradigm": "static metaprogrammed systems",
+    "compilationOrDocumentUnit": "module",
+    "dialectsOrVariants": [
+      "Nim"
+    ],
+    "constructs": [
+      "proc",
+      "func",
+      "method",
+      "iterator",
+      "template",
+      "macro",
+      "type",
+      "generic",
+      "concept",
+      "pragma",
+      "ref object"
+    ],
+    "dependencyForms": [
+      "import",
+      "include"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "proc",
+      "func",
+      "method",
+      "iterator",
+      "template",
+      "macro",
+      "type",
+      "generic",
+      "concept",
+      "pragma",
+      "ref object"
+    ],
+    "dependencyAnchors": [
+      "import",
+      "include"
+    ],
+    "semanticHazards": [
+      "macro expansion",
+      "GC/ARC/ORC",
+      "distinct types",
+      "template hygiene",
+      "unsafe"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "macro expansion",
+      "GC/ARC/ORC",
+      "distinct types",
+      "template hygiene",
+      "unsafe"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "nim check",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "45bdcfe07ac51e4e2159b4b4378810cf51c5a654f9d664a92e224791c60646b7"
+}

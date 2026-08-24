@@ -1,0 +1,1408 @@
+{
+  "schema": "axm.code.language-template-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "python",
+  "organId": "code.organ.python.v1",
+  "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+  "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+  "eyeId": "code.eye.python.v1",
+  "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+  "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d",
+  "lanes": {
+    "verifiedVault": {
+      "meaning": "Evidence-bound machine recipe templates. Verified refers to template mechanics/evidence binding, not arbitrary generated source correctness.",
+      "templateCount": 12,
+      "templates": [
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.native-parse-snapshot.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "understand",
+          "nativeBindings": [
+            "CPython",
+            "PyPy",
+            "module"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "be0b2502df36d8ce6604335753b7fd500d17749b5691654464de4c7844a40f37"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.symbol-impact-map.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "impact",
+          "nativeBindings": [
+            "lexical/module/runtime",
+            "class"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "REFERENCE_RESOLVED"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "0a40a22d6a4b7dcdc0b0b53679b1857b642118d6e74a18294bf1c905d1480d46"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.dependency-closure.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "dependencies",
+          "nativeBindings": [
+            "from-import",
+            "module"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ACYCLIC_GRAPH"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "ca1448f814fd396444c2973f08da15157708d9323bb9280cbdb4917a60b67f93"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.type-state-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "impact",
+          "nativeBindings": [
+            "dynamic or inferred",
+            "descriptor/metaclass"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "NO_COERCION_DELTA"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "0fd1324772eb33ee817b582600404bee09d7c587e33e2544041864524bd314c2"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.control-effect-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "impact",
+          "nativeBindings": [
+            "runtime plus dynamic dispatch/reflection where supported",
+            "module"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ORDERING_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "e578ae779eac11b5b990a8d7f565a62dd2a2ef35601e102bec14d0b86811d034"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.rewrite-hazard-guard.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "refactor",
+          "nativeBindings": [
+            "indentation"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "HAZARD_NOT_RELEVANT:indentation"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "afe4f69e388299c833b14be6ee7614fefd6b42a0acc411634e76912f964f83af"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.native-verifier-ladder.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "verification",
+          "nativeBindings": [
+            "py_compile"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "c66d89b7eccfedfd9f53937c1da3d9f32ab470c60bdd00b7dbb55606c22fe80f"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.measure-before-optimization.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "performance",
+          "nativeBindings": [
+            "module",
+            "import"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.performance-build.03",
+              "phase": "performance-build",
+              "opcode": "BUILD_GRAPH_INVALIDATION",
+              "emits": "BUILD_INVALIDATION_FACT",
+              "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "BUILD_GRAPH_STABLE"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "885c9a499170acccc34b4353aa3d4826b0b764dc5e24dfa4894ed82e4027b801"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.debug-hypothesis-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "debug",
+          "nativeBindings": [
+            "runtime object/state",
+            "branch, loop, call, exception/result"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.debugging.04",
+              "phase": "debugging",
+              "opcode": "STATE_CONTROL_TRACE",
+              "emits": "TRACE_PLAN",
+              "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "TRACE_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "0dac3346303f34f31dbe532cec541bb1f36800b7a2d3289cae79481829d73719"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.cross-language-comparison.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "discovery",
+          "nativeBindings": [
+            "automation",
+            "data tooling",
+            "glue code",
+            "dynamic multi-paradigm"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.discovery.05",
+              "phase": "discovery",
+              "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+              "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+              "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "9dfd8e9eab1aea0b74bb98b8c7f6d4ae01477f8dfec94f0929821cd77fc3e0de"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.safe-refactor-preflight.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "refactor",
+          "nativeBindings": [
+            "CPython",
+            "PyPy",
+            "module",
+            "lexical/module/runtime",
+            "class",
+            "from-import",
+            "dynamic or inferred",
+            "descriptor/metaclass",
+            "runtime plus dynamic dispatch/reflection where supported",
+            "indentation",
+            "py_compile"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            },
+            {
+              "ruleId": "code.cheat.python.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            },
+            {
+              "ruleId": "code.cheat.python.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            },
+            {
+              "ruleId": "code.cheat.python.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            },
+            {
+              "ruleId": "code.cheat.python.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            },
+            {
+              "ruleId": "code.cheat.python.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            },
+            {
+              "ruleId": "code.cheat.python.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE",
+            "REFERENCE_RESOLVED",
+            "ACYCLIC_GRAPH",
+            "NO_COERCION_DELTA",
+            "ORDERING_EQUIVALENT",
+            "HAZARD_NOT_RELEVANT:indentation",
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "2b8fbde0fa15bb9957a1da90212489ad9c958917a3dc1185fb5fe91bbd39b4d5"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.python.regression-defense-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "python",
+          "intent": "verification",
+          "nativeBindings": [
+            "py_compile",
+            "import",
+            "from-import",
+            "module",
+            "lexical/module/runtime"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "843b655ced55f1da57f1ffe31222b9e89060240613d8747a4fcd3c5e18ed598b",
+            "grammarProfileDigest": "df308fa59d888521d1d912460f62aadd96c62dff9d6cd8e23eab9d859b83a0bf",
+            "eyeDigest": "f3ddc7fc67adce3089afb8112d8f1da19802f12dd33cf66a107c7736e224a5fb",
+            "cheatcodeBankDigest": "ae5801689e839b731c087a221b7494facfeb156d56e7e1fab67f3ec3c3ad172d"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TYPE_OR_SHAPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION_OR_VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "DEPENDENCY_REF",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.python.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            },
+            {
+              "ruleId": "code.cheat.python.debugging.03",
+              "phase": "debugging",
+              "opcode": "DEPENDENCY_ISOLATION",
+              "emits": "DEPENDENCY_ISOLATION_PLAN",
+              "next": "ISOLATE_ONE_EDGE_AT_A_TIME"
+            },
+            {
+              "ruleId": "code.cheat.python.performance-build.04",
+              "phase": "performance-build",
+              "opcode": "ANALYSIS_CACHE_INVALIDATION",
+              "emits": "ANALYSIS_INVALIDATION_SET",
+              "next": "DROP_ONLY_INVALID_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE",
+            "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED",
+            "ANALYSIS_PRESERVED"
+          ],
+          "verifierCandidates": [
+            "AST parse",
+            "py_compile",
+            "tests"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "80fe5638bd8c9a0f064d41d2e2643d94564b37e636693c9a4b00696a0fec7df5"
+        }
+      ]
+    },
+    "patternNursery": {
+      "meaning": "Frequent structural or edit patterns mined from caller-supplied observations. Candidates never self-promote.",
+      "storedCandidates": [],
+      "automaticPromotion": false
+    }
+  },
+  "structuralSkeletons": [
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.python.01.v1",
+      "languageId": "python",
+      "construct": "function",
+      "nativeUnit": "module",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "function"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "4833572a348aeaeb6b9fff1059f1f221e641817eaf72ca6ed3b9421a241d139b"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.python.02.v1",
+      "languageId": "python",
+      "construct": "class",
+      "nativeUnit": "module",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "class"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "4d894e383c4a9f8c1ec9073e6894fc266d352e8ed6b35722f65aea4ffc6429d8"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.python.03.v1",
+      "languageId": "python",
+      "construct": "assignment",
+      "nativeUnit": "module",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "assignment"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "323db146dc48207573e5f7753ce7f23c23437b1a016473b49d8ccf03254468fa"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.python.04.v1",
+      "languageId": "python",
+      "construct": "import",
+      "nativeUnit": "module",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "import"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "5bf5176c88a39c06427f2d2175b8ac62e7719b19925a60c5a2d40d0c63b43ed9"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.python.05.v1",
+      "languageId": "python",
+      "construct": "decorator",
+      "nativeUnit": "module",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "decorator"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "2a064d2ccade87284c2f242c2770131bca10c53bab4e6f83b37b8da1e092cd35"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.python.06.v1",
+      "languageId": "python",
+      "construct": "comprehension",
+      "nativeUnit": "module",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "comprehension"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "b39e79a1edc66b5ddcb51d3ad7fbce459678b6d4008dad7ee66faec62a6ba83b"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.python.07.v1",
+      "languageId": "python",
+      "construct": "context manager",
+      "nativeUnit": "module",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "context manager"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "850d2ff863327f674d36f0d92e9fe8dd6481ebc1aeaefb0870932f5980c6f94e"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.python.08.v1",
+      "languageId": "python",
+      "construct": "async",
+      "nativeUnit": "module",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "async"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TYPE_OR_SHAPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "fdec361a60e4f357a76d8f4643f1e16bd9e19096ecdca94cc2c892445d2b41ee"
+    }
+  ],
+  "fastUse": {
+    "indexKeys": [
+      "languageId",
+      "intent",
+      "nativeBinding"
+    ],
+    "deterministicMachineUse": true,
+    "aiCapsuleUse": true,
+    "sourceRendererOptional": true
+  },
+  "policy": {
+    "frequencyIsNotCorrectness": true,
+    "templateIsNotAuthority": true,
+    "minedCandidateIsNotVerifiedTemplate": true,
+    "automaticPromotion": false,
+    "automaticMutation": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "5019fd82e40ea837fdeb19c8bfc5b022cd894c34010787f3e35492186cac1000"
+}

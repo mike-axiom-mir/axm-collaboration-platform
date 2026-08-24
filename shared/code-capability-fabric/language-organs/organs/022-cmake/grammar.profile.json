@@ -1,0 +1,93 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 22,
+  "organId": "code.organ.cmake.v1",
+  "languageId": "cmake",
+  "displayName": "CMake",
+  "family": "build",
+  "kind": "build-dsl",
+  "organDigest": "67f4ee7c191266de6a06a84f8d5b1927c85135d24c42df3e6d613f50329aac6d",
+  "grammar": {
+    "paradigm": "meta-build DSL",
+    "compilationOrDocumentUnit": "CMake file",
+    "dialectsOrVariants": [
+      "CMake"
+    ],
+    "constructs": [
+      "command",
+      "function",
+      "macro",
+      "target",
+      "property",
+      "variable",
+      "generator expression",
+      "cache variable"
+    ],
+    "dependencyForms": [
+      "include",
+      "add_subdirectory",
+      "find_package"
+    ],
+    "scopeModel": "file/block/target",
+    "typeModel": "host-dsl",
+    "mutationModel": "build/configuration graph",
+    "controlModel": "declarative plus host expressions",
+    "effectModel": "dependency resolution, build graph and generated outputs"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "command",
+      "function",
+      "macro",
+      "target",
+      "property",
+      "variable",
+      "generator expression",
+      "cache variable"
+    ],
+    "dependencyAnchors": [
+      "include",
+      "add_subdirectory",
+      "find_package"
+    ],
+    "semanticHazards": [
+      "configure vs generate",
+      "cache state",
+      "policy version",
+      "list/string semantics"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "configure vs generate",
+      "cache state",
+      "policy version",
+      "list/string semantics"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "cmake parse",
+      "configure smoke"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "67ada421d8337db11cc4f8c93832fbb383f82ccba9110cfd2b2f087d1900e088"
+}

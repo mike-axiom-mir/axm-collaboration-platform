@@ -1,0 +1,105 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 95,
+  "organId": "code.organ.stata.v1",
+  "languageId": "stata",
+  "displayName": "Stata",
+  "family": "scientific",
+  "kind": "scientific-language",
+  "organDigest": "d13da9bd2605348381f5a447c99857898457596d1f2b03216f8632aea40924c4",
+  "grammar": {
+    "paradigm": "command statistical DSL",
+    "compilationOrDocumentUnit": "do/ado file",
+    "dialectsOrVariants": [
+      "Stata"
+    ],
+    "constructs": [
+      "command",
+      "program",
+      "macro",
+      "local",
+      "global",
+      "generate",
+      "replace",
+      "BY",
+      "foreach",
+      "forvalues",
+      "varlist",
+      "qualifier",
+      "factor/time-series operator"
+    ],
+    "dependencyForms": [
+      "do",
+      "include",
+      "ado package"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "command",
+      "program",
+      "macro",
+      "local",
+      "global",
+      "generate",
+      "replace",
+      "BY",
+      "foreach",
+      "forvalues",
+      "varlist",
+      "qualifier",
+      "factor/time-series operator"
+    ],
+    "dependencyAnchors": [
+      "do",
+      "include",
+      "ado package"
+    ],
+    "semanticHazards": [
+      "macro quoting",
+      "missing values",
+      "BY sort order",
+      "version prefixes",
+      "dataset state"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "macro quoting",
+      "missing values",
+      "BY sort order",
+      "version prefixes",
+      "dataset state"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Stata grammar",
+      "do-file tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "5a94d42b3836136aa0e40796dd583a22a34ba3e4d945608c802df5b801d95fdf"
+}

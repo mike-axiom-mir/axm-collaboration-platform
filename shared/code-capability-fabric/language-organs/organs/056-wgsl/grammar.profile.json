@@ -1,0 +1,98 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 56,
+  "organId": "code.organ.wgsl.v1",
+  "languageId": "wgsl",
+  "displayName": "WGSL",
+  "family": "gpu-shader",
+  "kind": "gpu-language",
+  "organDigest": "2c0a2aa0e5f8dca3dfcb7a109a952fb75d2d63c7eea6b46b308952cbfb40455f",
+  "grammar": {
+    "paradigm": "WebGPU shader",
+    "compilationOrDocumentUnit": "shader module",
+    "dialectsOrVariants": [
+      "WGSL"
+    ],
+    "constructs": [
+      "function",
+      "struct",
+      "var",
+      "const",
+      "override",
+      "entry point",
+      "binding",
+      "address space",
+      "builtin",
+      "attribute",
+      "texture"
+    ],
+    "dependencyForms": [
+      "none"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "function",
+      "struct",
+      "var",
+      "const",
+      "override",
+      "entry point",
+      "binding",
+      "address space",
+      "builtin",
+      "attribute",
+      "texture"
+    ],
+    "dependencyAnchors": [
+      "none"
+    ],
+    "semanticHazards": [
+      "binding layouts",
+      "stage interfaces",
+      "address spaces",
+      "uniformity",
+      "alignment"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "binding layouts",
+      "stage interfaces",
+      "address spaces",
+      "uniformity",
+      "alignment"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "WGSL parse",
+      "validator",
+      "GPU tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "692aa18fe5e508005b58bb382d51c07e4fc4aa4aa6519d3a868cc64c11a61cb2"
+}

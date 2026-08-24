@@ -1,0 +1,104 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 45,
+  "organId": "code.organ.elixir.v1",
+  "languageId": "elixir",
+  "displayName": "Elixir",
+  "family": "beam",
+  "kind": "managed-language",
+  "organDigest": "dbbab91443ad1b702983ffe4836023e2824365465cc47febe83ca9c8725ccf9f",
+  "grammar": {
+    "paradigm": "dynamic functional actors",
+    "compilationOrDocumentUnit": "module",
+    "dialectsOrVariants": [
+      "Elixir"
+    ],
+    "constructs": [
+      "module",
+      "function",
+      "macro",
+      "protocol",
+      "defimpl",
+      "pattern",
+      "pipe",
+      "process",
+      "supervision",
+      "receive",
+      "with"
+    ],
+    "dependencyForms": [
+      "alias",
+      "import",
+      "require",
+      "use"
+    ],
+    "scopeModel": "lexical/module",
+    "typeModel": "inferred/static-or-dynamic functional",
+    "mutationModel": "prefer values; effects language-specific",
+    "controlModel": "expression, pattern, recursion and effect abstraction",
+    "effectModel": "effect system/runtime/process model language-specific"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "module",
+      "function",
+      "macro",
+      "protocol",
+      "defimpl",
+      "pattern",
+      "pipe",
+      "process",
+      "supervision",
+      "receive",
+      "with"
+    ],
+    "dependencyAnchors": [
+      "alias",
+      "import",
+      "require",
+      "use"
+    ],
+    "semanticHazards": [
+      "mailboxes",
+      "supervision",
+      "macro expansion",
+      "atom growth",
+      "protocol consolidation"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "mailboxes",
+      "supervision",
+      "macro expansion",
+      "atom growth",
+      "protocol consolidation"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "elixirc",
+      "mix test",
+      "credo"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "b979a686f389eddb4de6b43711eb8a94964b1ad7db195dd8c4682e0145e37a46"
+}

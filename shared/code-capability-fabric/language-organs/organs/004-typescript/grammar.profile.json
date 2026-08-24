@@ -1,0 +1,96 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 4,
+  "organId": "code.organ.typescript.v1",
+  "languageId": "typescript",
+  "displayName": "TypeScript",
+  "family": "web",
+  "kind": "language-or-markup",
+  "organDigest": "2820fd23701d408fe7fbfe936b465adc10e3d517bceaa4cde52fe297304e9602",
+  "grammar": {
+    "paradigm": "gradual structural typing",
+    "compilationOrDocumentUnit": "module",
+    "dialectsOrVariants": [
+      "TypeScript",
+      "TSX"
+    ],
+    "constructs": [
+      "function",
+      "class",
+      "interface",
+      "type alias",
+      "enum",
+      "namespace",
+      "generic",
+      "conditional type",
+      "mapped type"
+    ],
+    "dependencyForms": [
+      "import",
+      "dynamic import",
+      "reference directive"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "function",
+      "class",
+      "interface",
+      "type alias",
+      "enum",
+      "namespace",
+      "generic",
+      "conditional type",
+      "mapped type"
+    ],
+    "dependencyAnchors": [
+      "import",
+      "dynamic import",
+      "reference directive"
+    ],
+    "semanticHazards": [
+      "declaration merging",
+      "type erasure",
+      "ambient declaration",
+      "structural compatibility"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "declaration merging",
+      "type erasure",
+      "ambient declaration",
+      "structural compatibility"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "tsc noEmit",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "16673af1889ee403735b7714e6e8c8375fa4b66528cb1c0f8de15b94eee175be"
+}

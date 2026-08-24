@@ -1,0 +1,100 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 39,
+  "organId": "code.organ.kubernetes-manifests.v1",
+  "languageId": "kubernetes-manifests",
+  "displayName": "Kubernetes manifests",
+  "family": "infrastructure",
+  "kind": "resource-manifest",
+  "organDigest": "e2ad8d064595ed9ccd2eb74140ae76d385e69a2451a4ffa3ea4c6abcd36cc737",
+  "grammar": {
+    "paradigm": "resource declarative schema",
+    "compilationOrDocumentUnit": "manifest stream",
+    "dialectsOrVariants": [
+      "Kubernetes"
+    ],
+    "constructs": [
+      "resource",
+      "metadata",
+      "spec",
+      "status",
+      "selector",
+      "container",
+      "volume",
+      "probe",
+      "label",
+      "quantity"
+    ],
+    "dependencyForms": [
+      "ConfigMap/Secret ref",
+      "service account",
+      "API object ref"
+    ],
+    "scopeModel": "file/block/target",
+    "typeModel": "host-dsl",
+    "mutationModel": "build/configuration graph",
+    "controlModel": "declarative plus host expressions",
+    "effectModel": "dependency resolution, build graph and generated outputs"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "resource",
+      "metadata",
+      "spec",
+      "status",
+      "selector",
+      "container",
+      "volume",
+      "probe",
+      "label",
+      "quantity"
+    ],
+    "dependencyAnchors": [
+      "ConfigMap/Secret ref",
+      "service account",
+      "API object ref"
+    ],
+    "semanticHazards": [
+      "API version",
+      "immutable fields",
+      "defaulting",
+      "server schema",
+      "secret data"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "API version",
+      "immutable fields",
+      "defaulting",
+      "server schema",
+      "secret data"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "YAML parse",
+      "kube schema",
+      "server dry-run"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "bf25020acf573a35fd442732cc8cdb8f994eae69562173e327a416742ada91d4"
+}

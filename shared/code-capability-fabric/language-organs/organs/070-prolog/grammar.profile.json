@@ -1,0 +1,96 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 70,
+  "organId": "code.organ.prolog.v1",
+  "languageId": "prolog",
+  "displayName": "Prolog",
+  "family": "logic",
+  "kind": "logic-language",
+  "organDigest": "8fa502c294bfec2bad9b4a553eae0f2b82f6fbaace6b307c6a2fb397bf59bd19",
+  "grammar": {
+    "paradigm": "logic programming",
+    "compilationOrDocumentUnit": "module",
+    "dialectsOrVariants": [
+      "ISO Prolog",
+      "SWI-Prolog"
+    ],
+    "constructs": [
+      "fact",
+      "rule",
+      "directive",
+      "predicate",
+      "unification",
+      "backtracking",
+      "cut",
+      "DCG",
+      "meta-predicate"
+    ],
+    "dependencyForms": [
+      "use_module",
+      "consult"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "fact",
+      "rule",
+      "directive",
+      "predicate",
+      "unification",
+      "backtracking",
+      "cut",
+      "DCG",
+      "meta-predicate"
+    ],
+    "dependencyAnchors": [
+      "use_module",
+      "consult"
+    ],
+    "semanticHazards": [
+      "cut semantics",
+      "negation-as-failure",
+      "variable scope",
+      "operators",
+      "termination"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "cut semantics",
+      "negation-as-failure",
+      "variable scope",
+      "operators",
+      "termination"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Prolog parse",
+      "query tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "a98d8d7d286d573d6561c67695925ef1a7d8e6ce6fb934a5ac328781055c55f8"
+}

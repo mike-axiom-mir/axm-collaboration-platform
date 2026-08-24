@@ -1,0 +1,101 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 44,
+  "organId": "code.organ.scala.v1",
+  "languageId": "scala",
+  "displayName": "Scala",
+  "family": "jvm",
+  "kind": "managed-language",
+  "organDigest": "5e648da9eb6d3dfbf48477ddddbbea7a9b630646bf77bb1e76ef6d9ea7675e3b",
+  "grammar": {
+    "paradigm": "static functional OO",
+    "compilationOrDocumentUnit": "source file",
+    "dialectsOrVariants": [
+      "Scala2",
+      "Scala3"
+    ],
+    "constructs": [
+      "class",
+      "trait",
+      "object",
+      "enum",
+      "def",
+      "val",
+      "var",
+      "pattern",
+      "for comprehension",
+      "given/implicit",
+      "extension",
+      "higher-kinded type"
+    ],
+    "dependencyForms": [
+      "import"
+    ],
+    "scopeModel": "lexical/module",
+    "typeModel": "inferred/static-or-dynamic functional",
+    "mutationModel": "prefer values; effects language-specific",
+    "controlModel": "expression, pattern, recursion and effect abstraction",
+    "effectModel": "effect system/runtime/process model language-specific"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "class",
+      "trait",
+      "object",
+      "enum",
+      "def",
+      "val",
+      "var",
+      "pattern",
+      "for comprehension",
+      "given/implicit",
+      "extension",
+      "higher-kinded type"
+    ],
+    "dependencyAnchors": [
+      "import"
+    ],
+    "semanticHazards": [
+      "implicit resolution",
+      "variance",
+      "initialization",
+      "effect model",
+      "binary compatibility"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "implicit resolution",
+      "variance",
+      "initialization",
+      "effect model",
+      "binary compatibility"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "scalac",
+      "scalafix",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "25ef4f9d3246d9800804a6a5eb0c489cade227d6144f35946270078f8ba32aa3"
+}

@@ -1,0 +1,91 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 55,
+  "organId": "code.organ.opencl.v1",
+  "languageId": "opencl",
+  "displayName": "OpenCL",
+  "family": "gpu-shader",
+  "kind": "gpu-language",
+  "organDigest": "5c621d1d20e5e59cc9121720cf8f4ab8d95a9ef908e732b9c32b0ac1f61c840a",
+  "grammar": {
+    "paradigm": "GPU C dialect",
+    "compilationOrDocumentUnit": "translation unit",
+    "dialectsOrVariants": [
+      "OpenCL C1.2",
+      "2.x",
+      "3.0"
+    ],
+    "constructs": [
+      "kernel",
+      "function",
+      "address space",
+      "work-item",
+      "work-group",
+      "barrier",
+      "vector type"
+    ],
+    "dependencyForms": [
+      "include"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "kernel",
+      "function",
+      "address space",
+      "work-item",
+      "work-group",
+      "barrier",
+      "vector type"
+    ],
+    "dependencyAnchors": [
+      "include"
+    ],
+    "semanticHazards": [
+      "address spaces",
+      "races",
+      "barrier divergence",
+      "bounds",
+      "version extensions"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "address spaces",
+      "races",
+      "barrier divergence",
+      "bounds",
+      "version extensions"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "clang OpenCL parse",
+      "runtime tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "b296e2c20f3d05f982aea8b58d424cc5f9e69ce4c8243c975c969fc1543f7dfc"
+}

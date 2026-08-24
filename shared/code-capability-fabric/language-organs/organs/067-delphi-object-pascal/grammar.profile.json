@@ -1,0 +1,98 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 67,
+  "organId": "code.organ.delphi-object-pascal.v1",
+  "languageId": "delphi-object-pascal",
+  "displayName": "Delphi / Object Pascal",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "b361102d2756fd32b6fcb42c2272c6b86e49121da55287df89edca742a8c2054",
+  "grammar": {
+    "paradigm": "static Object Pascal",
+    "compilationOrDocumentUnit": "unit/program",
+    "dialectsOrVariants": [
+      "Object Pascal",
+      "Delphi"
+    ],
+    "constructs": [
+      "program",
+      "unit",
+      "interface",
+      "implementation",
+      "class",
+      "record",
+      "procedure",
+      "function",
+      "property",
+      "set",
+      "variant"
+    ],
+    "dependencyForms": [
+      "uses"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "program",
+      "unit",
+      "interface",
+      "implementation",
+      "class",
+      "record",
+      "procedure",
+      "function",
+      "property",
+      "set",
+      "variant"
+    ],
+    "dependencyAnchors": [
+      "uses"
+    ],
+    "semanticHazards": [
+      "ownership conventions",
+      "with scope",
+      "conditional compile",
+      "string mode",
+      "unit init order"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "ownership conventions",
+      "with scope",
+      "conditional compile",
+      "string mode",
+      "unit init order"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Pascal compile",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "5d2046c547d11e4789bac1708f3d38d5b5318bb64cdadb9da98991273a791825"
+}

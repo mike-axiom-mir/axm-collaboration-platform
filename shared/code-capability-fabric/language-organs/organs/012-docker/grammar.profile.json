@@ -1,0 +1,92 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 12,
+  "organId": "code.organ.docker.v1",
+  "languageId": "docker",
+  "displayName": "Dockerfile + Docker Compose",
+  "family": "infrastructure",
+  "kind": "container-build-and-compose-dsl",
+  "organDigest": "48006e29741c1a0eb337710f3ffb5392466b75a541928dfdb87dc361ea12c177",
+  "grammar": {
+    "paradigm": "container build DSL",
+    "compilationOrDocumentUnit": "Dockerfile",
+    "dialectsOrVariants": [
+      "Dockerfile"
+    ],
+    "constructs": [
+      "instruction",
+      "stage",
+      "ARG",
+      "ENV",
+      "COPY",
+      "RUN",
+      "CMD",
+      "ENTRYPOINT"
+    ],
+    "dependencyForms": [
+      "FROM image",
+      "COPY --from"
+    ],
+    "scopeModel": "file/block/target",
+    "typeModel": "host-dsl",
+    "mutationModel": "build/configuration graph",
+    "controlModel": "declarative plus host expressions",
+    "effectModel": "dependency resolution, build graph and generated outputs"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "instruction",
+      "stage",
+      "ARG",
+      "ENV",
+      "COPY",
+      "RUN",
+      "CMD",
+      "ENTRYPOINT"
+    ],
+    "dependencyAnchors": [
+      "FROM image",
+      "COPY --from"
+    ],
+    "semanticHazards": [
+      "secrets in layers",
+      "cache boundaries",
+      "shell expansion",
+      "base image drift"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "secrets in layers",
+      "cache boundaries",
+      "shell expansion",
+      "base image drift"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "Dockerfile parse",
+      "build check",
+      "hadolint"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "4e8fca6b00a552bcd1936373f9bf2c49837d00efec53af667c761777a183de29"
+}

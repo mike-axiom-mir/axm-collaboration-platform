@@ -1,0 +1,93 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 92,
+  "organId": "code.organ.dax.v1",
+  "languageId": "dax",
+  "displayName": "DAX",
+  "family": "sql-query",
+  "kind": "query-language",
+  "organDigest": "517a066c1e65f5220c36496501bfe0bef1756ca597b964b73025504cdaf72c06",
+  "grammar": {
+    "paradigm": "tabular analytics expression",
+    "compilationOrDocumentUnit": "expression",
+    "dialectsOrVariants": [
+      "DAX"
+    ],
+    "constructs": [
+      "measure",
+      "variable",
+      "function call",
+      "table expression",
+      "column reference",
+      "CALCULATE",
+      "FILTER",
+      "iterator",
+      "row/filter context"
+    ],
+    "dependencyForms": [
+      "model table/column reference"
+    ],
+    "scopeModel": "statement/query/block",
+    "typeModel": "schema/domain-driven",
+    "mutationModel": "query-or-transaction",
+    "controlModel": "set/relational/procedural by dialect",
+    "effectModel": "database, graph, model or endpoint effects"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "measure",
+      "variable",
+      "function call",
+      "table expression",
+      "column reference",
+      "CALCULATE",
+      "FILTER",
+      "iterator",
+      "row/filter context"
+    ],
+    "dependencyAnchors": [
+      "model table/column reference"
+    ],
+    "semanticHazards": [
+      "row vs filter context",
+      "BLANK",
+      "relationships",
+      "context transition",
+      "implicit measures"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "row vs filter context",
+      "BLANK",
+      "relationships",
+      "context transition",
+      "implicit measures"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "ANTLR DAX parse",
+      "model tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "5f5e87d1c3df4ca9cf9d417b45ca795c5556544f2e286eb8164fa116e92ed6a7"
+}

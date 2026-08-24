@@ -1,0 +1,94 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 58,
+  "organId": "code.organ.hlsl.v1",
+  "languageId": "hlsl",
+  "displayName": "HLSL",
+  "family": "gpu-shader",
+  "kind": "gpu-language",
+  "organDigest": "2d36427210aa4337551f8adc57bca0903ff37d9cda0aa19ef02b40dd6fdcb152",
+  "grammar": {
+    "paradigm": "DirectX shader",
+    "compilationOrDocumentUnit": "shader",
+    "dialectsOrVariants": [
+      "HLSL shader models"
+    ],
+    "constructs": [
+      "function",
+      "struct",
+      "cbuffer",
+      "resource",
+      "semantic",
+      "register",
+      "entry point",
+      "intrinsic",
+      "wave op"
+    ],
+    "dependencyForms": [
+      "include"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "function",
+      "struct",
+      "cbuffer",
+      "resource",
+      "semantic",
+      "register",
+      "entry point",
+      "intrinsic",
+      "wave op"
+    ],
+    "dependencyAnchors": [
+      "include"
+    ],
+    "semanticHazards": [
+      "shader model",
+      "semantic interface",
+      "binding spaces",
+      "precision",
+      "matrix layout"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "shader model",
+      "semantic interface",
+      "binding spaces",
+      "precision",
+      "matrix layout"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "DXC parse",
+      "DXIL/SPIR-V validation",
+      "render tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "ffc2f38d3bc7e69b0f0d5ebab4761609e641e4cbd82046bf664cc5021520f2e7"
+}

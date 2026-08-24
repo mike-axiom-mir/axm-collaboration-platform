@@ -1,0 +1,95 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 21,
+  "organId": "code.organ.makefile.v1",
+  "languageId": "makefile",
+  "displayName": "Makefile",
+  "family": "build",
+  "kind": "build-dsl",
+  "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+  "grammar": {
+    "paradigm": "dependency build graph",
+    "compilationOrDocumentUnit": "makefile",
+    "dialectsOrVariants": [
+      "GNU Make",
+      "POSIX make"
+    ],
+    "constructs": [
+      "target",
+      "rule",
+      "recipe",
+      "variable",
+      "define",
+      "conditional",
+      "phony",
+      "pattern rule",
+      "automatic variable"
+    ],
+    "dependencyForms": [
+      "include"
+    ],
+    "scopeModel": "file/block/target",
+    "typeModel": "host-dsl",
+    "mutationModel": "build/configuration graph",
+    "controlModel": "declarative plus host expressions",
+    "effectModel": "dependency resolution, build graph and generated outputs"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "target",
+      "rule",
+      "recipe",
+      "variable",
+      "define",
+      "conditional",
+      "phony",
+      "pattern rule",
+      "automatic variable"
+    ],
+    "dependencyAnchors": [
+      "include"
+    ],
+    "semanticHazards": [
+      "tab-sensitive recipes",
+      "shell expansion",
+      "recursive variables",
+      "parallel races",
+      "timestamp semantics"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "tab-sensitive recipes",
+      "shell expansion",
+      "recursive variables",
+      "parallel races",
+      "timestamp semantics"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "make dry-run",
+      "lint",
+      "build smoke"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187"
+}

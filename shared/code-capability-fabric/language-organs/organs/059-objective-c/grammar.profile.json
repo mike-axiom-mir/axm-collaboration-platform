@@ -1,0 +1,99 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 59,
+  "organId": "code.organ.objective-c.v1",
+  "languageId": "objective-c",
+  "displayName": "Objective-C",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "9b74194b120316582ea29de556b14bb88705e483ac23d0e7faace4a0f39f5536",
+  "grammar": {
+    "paradigm": "dynamic-runtime static OO",
+    "compilationOrDocumentUnit": "translation unit",
+    "dialectsOrVariants": [
+      "Objective-C",
+      "Objective-C++"
+    ],
+    "constructs": [
+      "interface",
+      "implementation",
+      "protocol",
+      "category",
+      "method",
+      "property",
+      "message send",
+      "selector",
+      "block",
+      "ARC"
+    ],
+    "dependencyForms": [
+      "import",
+      "include"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "interface",
+      "implementation",
+      "protocol",
+      "category",
+      "method",
+      "property",
+      "message send",
+      "selector",
+      "block",
+      "ARC"
+    ],
+    "dependencyAnchors": [
+      "import",
+      "include"
+    ],
+    "semanticHazards": [
+      "ARC ownership",
+      "runtime dispatch",
+      "selector strings",
+      "category collisions",
+      "bridging"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "ARC ownership",
+      "runtime dispatch",
+      "selector strings",
+      "category collisions",
+      "bridging"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "clang Objective-C parse",
+      "static analyzer",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "0efe246c0d773b5430ce6d99abe43aaea5e1ff83800ccd76d401c76d107854b3"
+}

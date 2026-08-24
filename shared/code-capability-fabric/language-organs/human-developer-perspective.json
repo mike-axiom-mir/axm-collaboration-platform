@@ -1,0 +1,121 @@
+{
+  "schema": "axm.code.human-developer-perspective.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "evidenceBoundary": "Empirical expert/novice and code-review findings are used as review heuristics, not universal laws about developers or proof of code quality.",
+  "researchBasis": [
+    {
+      "id": "wiedenbeck-1993-mental-representations",
+      "title": "Characteristics of the mental representations of novice and expert programmers: an empirical study",
+      "doi": "10.1006/imms.1993.1084",
+      "supports": ["hierarchical-model", "code-to-goal-mapping", "pattern-recognition", "knowledge-connection", "program-text-grounding"]
+    },
+    {
+      "id": "gugerty-olson-1985-debugging",
+      "title": "Expertise in debugging computer programs: A process analysis",
+      "doi": "10.1016/S0020-7373(85)80054-7",
+      "supports": ["system-view", "program-chunking", "breadth-first-debugging"]
+    },
+    {
+      "id": "bacchelli-bird-2013-code-review",
+      "title": "Expectations, Outcomes, and Challenges of Modern Code Review",
+      "venue": "ICSE 2013",
+      "supports": ["change-understanding", "alternative-solutions", "knowledge-transfer", "team-awareness"]
+    },
+    {
+      "id": "mental-representations-review-2020",
+      "title": "Systematic literature review of empirical studies on mental representations of programs",
+      "doi": "10.1016/j.jss.2020.110565",
+      "supports": ["mental-model-importance", "research-limit-awareness"]
+    }
+  ],
+  "reviewDimensions": [
+    {
+      "id": "system-model",
+      "intent": "Build a whole-system picture before optimizing a local edit.",
+      "questions": [
+        "What larger component or behavior does this code participate in?",
+        "Which upstream and downstream dependencies change if this moves?",
+        "Is the local fix hiding a system-level cause?"
+      ]
+    },
+    {
+      "id": "goal-mapping",
+      "intent": "Map implementation structures to user, domain, protocol, or operational goals.",
+      "questions": [
+        "What goal does this structure serve?",
+        "Which requirement would become false if it were removed?",
+        "Is the implementation still aligned with the current goal?"
+      ]
+    },
+    {
+      "id": "pattern-and-chunk-recognition",
+      "intent": "Recognize recurring structures as meaningful chunks instead of isolated tokens.",
+      "questions": [
+        "Is this an instance of a known language-native pattern?",
+        "Is repeated low-level code hiding a missing abstraction?",
+        "Does another grammar make this pattern explicit?"
+      ]
+    },
+    {
+      "id": "change-impact",
+      "intent": "Reason about effects beyond the edited line or file.",
+      "questions": [
+        "Which contracts, tests, callers, schemas, build steps, timing assumptions, or data flows are affected?",
+        "What remains compatible and what becomes migration work?",
+        "What evidence would falsify the impact estimate?"
+      ]
+    },
+    {
+      "id": "hypothesis-and-debugging",
+      "intent": "Keep multiple plausible causes alive and test them against system evidence.",
+      "questions": [
+        "What are the strongest competing explanations?",
+        "Which observation distinguishes them fastest?",
+        "Are we patching the first visible symptom rather than testing the system model?"
+      ]
+    },
+    {
+      "id": "alternative-solutions",
+      "intent": "Use review to search for better solution shapes, not only defects.",
+      "questions": [
+        "What is the strongest credible alternative?",
+        "Would another language, DSL, schema, query model, hardware description, or build grammar express this more directly?",
+        "What would be gained and what new complexity would be introduced?"
+      ]
+    },
+    {
+      "id": "rationale-and-knowledge-transfer",
+      "intent": "Preserve why a decision exists so future maintainers do not rediscover it from symptoms.",
+      "questions": [
+        "Which non-obvious constraint explains this choice?",
+        "What should a future reviewer know before replacing it?",
+        "Which assumption should be recorded alongside the code or receipt?"
+      ]
+    },
+    {
+      "id": "uncertainty-discipline",
+      "intent": "Separate observed facts, inferred models, hypotheses, and authority.",
+      "questions": [
+        "What is directly observed versus inferred?",
+        "Which claim is still UNKNOWN?",
+        "What test or source is needed before this can move from candidate to trusted?"
+      ]
+    }
+  ],
+  "generationUse": {
+    "beforeGeneration": ["goal-mapping", "system-model", "alternative-solutions"],
+    "duringGeneration": ["pattern-and-chunk-recognition", "change-impact", "uncertainty-discipline"],
+    "afterGeneration": ["hypothesis-and-debugging", "rationale-and-knowledge-transfer", "change-impact"]
+  },
+  "boundaries": {
+    "expertiseHeuristicIsAuthority": false,
+    "humanResearchIsRuntimeProof": false,
+    "automaticRewrite": false,
+    "automaticDependencyInstall": false,
+    "automaticLanguageSwitch": false,
+    "automaticPromotion": false,
+    "automaticCanon": false,
+    "authority": "NONE"
+  }
+}

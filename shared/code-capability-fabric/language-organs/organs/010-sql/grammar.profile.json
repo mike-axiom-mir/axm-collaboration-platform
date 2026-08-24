@@ -1,0 +1,103 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 10,
+  "organId": "code.organ.sql.v1",
+  "languageId": "sql",
+  "displayName": "SQL",
+  "family": "sql-query",
+  "kind": "query-language",
+  "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+  "grammar": {
+    "paradigm": "relational query",
+    "compilationOrDocumentUnit": "statement list",
+    "dialectsOrVariants": [
+      "ANSI SQL",
+      "vendor dialects"
+    ],
+    "constructs": [
+      "SELECT",
+      "CTE",
+      "DDL",
+      "DML",
+      "view",
+      "function",
+      "procedure",
+      "join",
+      "window",
+      "aggregate",
+      "transaction"
+    ],
+    "dependencyForms": [
+      "table",
+      "view",
+      "function references"
+    ],
+    "scopeModel": "statement/query/block",
+    "typeModel": "schema/domain-driven",
+    "mutationModel": "query-or-transaction",
+    "controlModel": "set/relational/procedural by dialect",
+    "effectModel": "database, graph, model or endpoint effects"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "SELECT",
+      "CTE",
+      "DDL",
+      "DML",
+      "view",
+      "function",
+      "procedure",
+      "join",
+      "window",
+      "aggregate",
+      "transaction"
+    ],
+    "dependencyAnchors": [
+      "table",
+      "view",
+      "function references"
+    ],
+    "semanticHazards": [
+      "dialect drift",
+      "NULL semantics",
+      "implicit casts",
+      "transaction boundaries",
+      "identifier case"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "dialect drift",
+      "NULL semantics",
+      "implicit casts",
+      "transaction boundaries",
+      "identifier case"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "dialect parse",
+      "query tests",
+      "migration checks"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19"
+}

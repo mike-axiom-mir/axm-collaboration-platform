@@ -1,0 +1,31 @@
+name: AXM Code Language Stock Census — TELEMETRY
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stock-native-census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Observe broad stock toolchains and smoke probes
+        env:
+          AXM_TOOLCHAIN_REPORT: stock-toolchain-census.json
+        run: node .github/ci/code-language-toolchain-probe.js
+      - name: Preserve broad stock census telemetry
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-language-stock-native-census
+          path: stock-toolchain-census.json
+          if-no-files-found: warn
+          retention-days: 1

@@ -1,0 +1,95 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 102,
+  "organId": "code.organ.tree-sitter-query.v1",
+  "languageId": "tree-sitter-query",
+  "displayName": "Tree-sitter query / structural pattern DSLs",
+  "family": "pattern",
+  "kind": "structural-query-language",
+  "organDigest": "778c60680bde8658fdec4da0f56c790d266f2499db30deed8889cac6b481d712",
+  "grammar": {
+    "paradigm": "syntax-tree query",
+    "compilationOrDocumentUnit": "query",
+    "dialectsOrVariants": [
+      "Tree-sitter query"
+    ],
+    "constructs": [
+      "pattern",
+      "capture",
+      "predicate",
+      "field",
+      "anchor",
+      "alternation",
+      "quantifier",
+      "named node",
+      "anonymous node",
+      "directive"
+    ],
+    "dependencyForms": [
+      "node-type reference",
+      "field reference"
+    ],
+    "scopeModel": "grammar-defined",
+    "typeModel": "grammar-defined",
+    "mutationModel": "grammar-defined",
+    "controlModel": "grammar-defined",
+    "effectModel": "host/domain-defined"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "pattern",
+      "capture",
+      "predicate",
+      "field",
+      "anchor",
+      "alternation",
+      "quantifier",
+      "named node",
+      "anonymous node",
+      "directive"
+    ],
+    "dependencyAnchors": [
+      "node-type reference",
+      "field reference"
+    ],
+    "semanticHazards": [
+      "grammar version",
+      "node-name drift",
+      "capture collisions",
+      "predicate semantics"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "grammar version",
+      "node-name drift",
+      "capture collisions",
+      "predicate semantics"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "query compile",
+      "fixture match tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "6d42fc2c2ad56f34b7f1ecaf7fe14ec55f0506b75fcabb4399411fca65fed84e"
+}

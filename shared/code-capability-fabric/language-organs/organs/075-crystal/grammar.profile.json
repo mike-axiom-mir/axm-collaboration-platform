@@ -1,0 +1,99 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 75,
+  "organId": "code.organ.crystal.v1",
+  "languageId": "crystal",
+  "displayName": "Crystal",
+  "family": "native",
+  "kind": "compiled-language",
+  "organDigest": "975900736b4a01a2e263d13e4a2b7bd7401bab27c75d25614cf2cf7f7020501e",
+  "grammar": {
+    "paradigm": "inferred static Ruby-like",
+    "compilationOrDocumentUnit": "file",
+    "dialectsOrVariants": [
+      "Crystal"
+    ],
+    "constructs": [
+      "class",
+      "struct",
+      "module",
+      "def",
+      "macro",
+      "alias",
+      "enum",
+      "union type",
+      "block",
+      "fiber",
+      "channel",
+      "generic"
+    ],
+    "dependencyForms": [
+      "require"
+    ],
+    "scopeModel": "lexical/module/type",
+    "typeModel": "compile-time static",
+    "mutationModel": "language-defined mutable state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus foreign/system interfaces"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "class",
+      "struct",
+      "module",
+      "def",
+      "macro",
+      "alias",
+      "enum",
+      "union type",
+      "block",
+      "fiber",
+      "channel",
+      "generic"
+    ],
+    "dependencyAnchors": [
+      "require"
+    ],
+    "semanticHazards": [
+      "nil unions",
+      "macro expansion",
+      "fiber scheduling",
+      "pointer unsafe",
+      "overload resolution"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "nil unions",
+      "macro expansion",
+      "fiber scheduling",
+      "pointer unsafe",
+      "overload resolution"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "crystal no-codegen",
+      "tests"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "388554d1450fefd25f03aedb272dca855fbb8eb63ad5f7bd3b2d104d2dcdbe2f"
+}

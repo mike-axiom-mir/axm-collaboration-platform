@@ -1,0 +1,88 @@
+{
+  "schema": "axm.code.language-grammar-profile.v1",
+  "version": "1.0.0",
+  "knowledgeVersion": "2026-08-24.v1",
+  "priority": 7,
+  "organId": "code.organ.yaml.v1",
+  "languageId": "yaml",
+  "displayName": "YAML",
+  "family": "data-config",
+  "kind": "data-format",
+  "organDigest": "ed04fd745afb08d36d0b74217a08b341d7ce2f9edcf8f5bc8e5f0032c8baaefc",
+  "grammar": {
+    "paradigm": "indentation data graph",
+    "compilationOrDocumentUnit": "stream",
+    "dialectsOrVariants": [
+      "YAML1.1",
+      "YAML1.2"
+    ],
+    "constructs": [
+      "document",
+      "mapping",
+      "sequence",
+      "scalar",
+      "anchor",
+      "alias",
+      "tag"
+    ],
+    "dependencyForms": [
+      "host include when applicable"
+    ],
+    "scopeModel": "tree/key-path",
+    "typeModel": "scalar/container/schema-driven",
+    "mutationModel": "structural-data",
+    "controlModel": "none",
+    "effectModel": "host coercion and consumer semantics"
+  },
+  "analysis": {
+    "symbolInventory": [
+      "document",
+      "mapping",
+      "sequence",
+      "scalar",
+      "anchor",
+      "alias",
+      "tag"
+    ],
+    "dependencyAnchors": [
+      "host include when applicable"
+    ],
+    "semanticHazards": [
+      "implicit typing",
+      "duplicate keys",
+      "anchor cycles",
+      "indentation"
+    ],
+    "requiredQuestionsBeforeRewrite": [
+      "Which grammar/dialect/version is active?",
+      "Which syntax nodes and dependency edges are affected?",
+      "Does the change cross a scope, type, state, effect, ABI/schema, query, timing or host-language boundary?",
+      "Which native or structural verifier can falsify the proposed rewrite?"
+    ]
+  },
+  "rewritePolicy": {
+    "blindTextRewrite": "FORBIDDEN",
+    "unknownGrammarNode": "HOLD",
+    "parseErrors": "HOLD",
+    "preserveCommentsAndTriviaWhenAdapterSupportsIt": true,
+    "requireDependencyImpactReview": true,
+    "highRiskTransforms": [
+      "implicit typing",
+      "duplicate keys",
+      "anchor cycles",
+      "indentation"
+    ],
+    "capabilityIsNotAuthority": true
+  },
+  "verification": {
+    "focus": [
+      "YAML parse",
+      "schema when bound"
+    ],
+    "syntaxPassIsNotSemanticCorrectness": true,
+    "fixturePassIsNotArbitraryProgramProof": true,
+    "runtimeCorrectnessClaimed": false,
+    "authority": "NONE"
+  },
+  "profileSha256": "2bc55f3d2f4c4ffa781db768b2af47e79b7d5ca68a2d2898a4e298f2554d58fb"
+}
