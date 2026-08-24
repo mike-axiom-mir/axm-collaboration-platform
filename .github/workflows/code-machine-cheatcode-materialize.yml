@@ -1,0 +1,82 @@
+name: AXM Code Machine Cheatcode Materializer
+
+on:
+  pull_request:
+    branches:
+      - codex/code-capability-fabric-language-organs-v1
+    paths:
+      - ".github/workflows/code-machine-cheatcode-materialize.yml"
+      - "shared/code-capability-fabric/language-organs/machine-cheatcode-fabric.js"
+      - "shared/code-capability-fabric/language-organs/machine-cheatcode-influence-mesh.js"
+      - "shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js"
+      - "shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js"
+      - "shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js"
+
+concurrency:
+  group: axm-code-machine-cheatcode-materialize
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  materialize-cheatcodes:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact branch source
+        uses: actions/checkout@v4
+        with:
+          ref: codex/code-language-machine-cheatcodes-v1
+          fetch-depth: 1
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Materialize 102 x 50 machine cheatcode banks
+        run: |
+          node shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js --write
+          node shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js --check
+      - name: Prove 5,100 machine-native rules
+        run: node shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js
+      - name: Prove bounded inter-rule influence mesh
+        run: node shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js
+      - name: Preserve lower-layer invariants
+        run: |
+          python shared/code-capability-fabric/language-organs/build-grammar-profiles.py --check
+          python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --check
+          node shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js
+          node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
+          node shared/code-capability-fabric/language-organs/selftest.js
+          node shared/code-capability-fabric/language-organs/selftest-adversarial.js
+          node shared/code-capability-fabric/language-organs/selftest-donors.js
+      - name: Regenerate deterministic repository views
+        run: |
+          node scripts/compile-city-graph.js --write
+          node scripts/compile-schema-registry.js --write
+          node scripts/compile-twin-surfaces.js --write
+          node scripts/compile-city-graph.js --check
+          node scripts/compile-schema-registry.js --check
+          node scripts/compile-twin-surfaces.js --check
+      - name: Run repository verification
+        run: |
+          node verify.js
+          node hub/hub-selftest.js
+          node hub/route-selftest.js
+          node hub/graft-selftest.js
+          node hub/skin-selftest.js
+          node hub/verify-plus.js
+          git diff --check
+      - name: Commit only generated cheatcode banks and deterministic views
+        run: |
+          git config user.name "AXM Machine Cheatcode Steward Gate"
+          git config user.email "machine-cheatcode-steward@axm.invalid"
+          git add shared/code-capability-fabric/language-organs/organs/*/machine.cheatcodes.json
+          git add registry/generated docs/generated/LEGO_CITY_MAP.md docs/generated/LEGO_CITY_BEGINNER_MAP.md
+          if git diff --cached --quiet; then
+            echo "No generated machine-cheatcode changes to commit."
+          else
+            git commit -m "feat(fabric): materialize 5,100 grammar-native machine cheatcodes"
+            git push origin HEAD:codex/code-language-machine-cheatcodes-v1
+          fi
