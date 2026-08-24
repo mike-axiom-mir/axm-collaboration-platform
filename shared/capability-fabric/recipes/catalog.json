@@ -735,9 +735,9 @@
     {
       "schema": "axm.capability-recipe/v1",
       "id": "svg-status-badge",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "title": "SVG Status Badge Creation Hand",
-      "summary": "Compile a dependency-free deterministic SVG status badge renderer with XML escaping.",
+      "summary": "Compile a strict dependency-free deterministic SVG status badge renderer with closed runtime records, XML-valid escaped text, and byte ceilings.",
       "family": "creation-hand",
       "capabilityKind": "HAND",
       "capabilityContract": {
@@ -750,7 +750,7 @@
         "requiredHostCapabilities": []
       },
       "builderId": "svg-status-badge-v1",
-      "builderDigest": "sha256:8dd49f60d84185f356c7d2df40afe90543cdfeb652727e061f132588bdbcfdad",
+      "builderDigest": "sha256:c6a33c681bf6f267dab1e269dfb65ab19708747d59ddf7573468ebb4d65436d8",
       "activation": "ACTIVE_SOURCE_REVIEWED",
       "reviewPolicy": {
         "activation": "source-review-and-merge",
@@ -769,6 +769,13 @@
         ]
       },
       "parameterSpec": {
+        "resultSchemaId": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+          "maxLength": 180,
+          "description": "Exact result record schema identifier."
+        },
         "label": {
           "type": "string",
           "required": true,
@@ -801,6 +808,20 @@
           "minimum": 120,
           "maximum": 512,
           "description": "Badge width in SVG user units."
+        },
+        "maxInputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 128,
+          "maximum": 65536,
+          "description": "Maximum UTF-8 bytes accepted by one closed runtime input record."
+        },
+        "maxOutputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 512,
+          "maximum": 65536,
+          "description": "Maximum UTF-8 bytes emitted in one SVG result."
         }
       },
       "exampleRequest": {
@@ -810,11 +831,14 @@
         "recipeId": "svg-status-badge",
         "variantId": null,
         "parameters": {
+          "resultSchemaId": "axm.creation.svg-status-badge/v1",
           "label": "CAPABILITY",
           "value": "EXPERIMENTAL",
           "background": "#17324d",
           "foreground": "#79e6c2",
-          "width": 240
+          "width": 240,
+          "maxInputBytes": 128,
+          "maxOutputBytes": 1024
         },
         "source": {
           "kind": "HUMAN",
@@ -822,18 +846,21 @@
         }
       },
       "boundaries": [
-        "text and six-digit hexadecimal colours only",
-        "bounded static SVG; no scripts, external resources, fonts, network, or filesystem",
-        "visual fitness still requires separate human observation",
+        "closed plain JSON runtime record with optional label and value only",
+        "XML-valid non-empty text of at most 48 code units and six-digit hexadecimal colours only",
+        "bounded text-only SVG with explicit input and output byte ceilings",
+        "no script, style, event handler, external resource, URL, animation, dynamic code, network, environment, or filesystem",
+        "browser rendering, accessibility behavior, and visual fitness require separate live observation",
         "detached candidate output only"
       ],
       "verifiers": [
         "package digest and exact deterministic rebuild",
-        "externally execute emitted selftest.js",
-        "live render and visual inspection",
+        "trusted package harness executes emitted selftest.js from a disjoint temporary copy",
+        "static closed-output grammar and adversarial runtime-record checks",
+        "separate live browser render and human visual inspection before any visual claim",
         "Detached Candidate Nursery structural scan"
       ],
-      "recipeDigest": "sha256:13217046a13893679ec31ae70038529df44b255dd9efb1e6ce4e653f8a9973fc"
+      "recipeDigest": "sha256:4ac6de7c2f7bc8be396612aa0db9301659a0a299cf5902a3af31dc27d4f286ee"
     },
     {
       "schema": "axm.capability-recipe/v1",
@@ -938,5 +965,5 @@
       "recipeDigest": "sha256:754d323174787080f5d61c2c5fe515bc74ea126af21a498bbec17a6e4665594d"
     }
   ],
-  "catalogDigest": "sha256:ac0e7564abf180f36dbef4957e69f347dbf80c40edbfee6859528bf1bc15ac68"
+  "catalogDigest": "sha256:5ff91c8a1defabb2e6dc871645c9c7622a65b2cc4d7bbff99db8309db4caffc9"
 }

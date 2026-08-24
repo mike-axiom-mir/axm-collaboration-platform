@@ -30,13 +30,16 @@ const pythonCandidate = pythonResult.detachedCandidate;
 const cssBase = Builder.buildCssExampleRequest();
 const cssResult = Builder.generate(cssBase);
 const cssCandidate = cssResult.detachedCandidate;
+const svgBase = Builder.buildSvgExampleRequest();
+const svgResult = Builder.generate(svgBase);
+const svgCandidate = svgResult.detachedCandidate;
 const sourcePath = path.join(__dirname, 'code-specialist-capability-builder-v1.js');
 const requestSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-specialist-capability-build-request.schema.json'), 'utf8'));
 const resultSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-specialist-capability-candidate.schema.json'), 'utf8'));
 const capabilityRecipeSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'capability-recipe.schema.json'), 'utf8'));
 const candidatePackageSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'candidate-package.schema.json'), 'utf8'));
 
-test('example request is sealed under the v2.1 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
+test('example request is sealed under the v2.2 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
 test('request version is exact', () => assert.strictEqual(base.version, Builder.VERSION));
 test('request JSON Schema version matches the implementation identity', () => assert.strictEqual(requestSchema.properties.version.const, Builder.VERSION));
 test('candidate JSON Schema version matches the implementation identity', () => assert.strictEqual(resultSchema.properties.version.const, Builder.VERSION));
@@ -110,7 +113,7 @@ test('public copying remains unauthorized', () => assert.strictEqual(result.reus
 test('capability gap report is READY only for this exact rung', () => assert.deepStrictEqual(result.capabilityGapReport.missingCapabilities, []));
 test('next gate is exact candidate review before sandbox decision', () => assert.strictEqual(result.nextGate, 'HUMAN_REVIEW_EXACT_CANDIDATE_BYTES_BEFORE_SEPARATE_SANDBOX_DECISION'));
 
-test('markup example request is sealed under the v2.1 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
+test('markup example request is sealed under the v2.2 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
 test('markup example produces one detached candidate', () => assert.strictEqual(markupResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('markup result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(markupResult, markupBase), { pass: true, errors: [] }));
 test('markup generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(markupResult), Builder.canonicalJson(Builder.generate(markupBase))));
@@ -141,7 +144,7 @@ test('markup candidate remains detached and unintegrated', () => assert.strictEq
 test('markup output stays inside the exact candidate resource ceiling', () => assert(markupCandidate.package.totalBytes <= markupBase.resourceEnvelope.maxCandidateBytes && markupCandidate.package.files.length <= markupBase.resourceEnvelope.maxCandidateFiles));
 test('markup visual limitation is retained', () => assert(markupResult.limitations.includes('HTML_VISUAL_ACCESSIBILITY_AND_INTERACTION_BEHAVIOR_NOT_PROVEN')));
 
-test('Python example request is sealed under the v2.1 identity', () => assert.strictEqual(pythonBase.version, Builder.VERSION));
+test('Python example request is sealed under the v2.2 identity', () => assert.strictEqual(pythonBase.version, Builder.VERSION));
 test('Python example produces one detached candidate', () => assert.strictEqual(pythonResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('Python result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(pythonResult, pythonBase), { pass: true, errors: [] }));
 test('Python generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(pythonResult), Builder.canonicalJson(Builder.generate(pythonBase))));
@@ -166,7 +169,7 @@ test('Python key-budget expansion is held by the exact build plan', () => held(p
 test('Python string parameters cannot inject a new import line', () => { const request = changed(pythonBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.defaultValue = 'x"\nimport os\n#'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }); const built = Builder.generate(request); assert.strictEqual(built.status, 'COMPLETE_DETACHED_CANDIDATE'); assert(!/^import os$/m.test(built.detachedCandidate.files['capability.py'])); });
 test('Python candidate byte tampering fails exact result verification', () => { const tampered = clone(pythonResult); tampered.detachedCandidate.files['capability.py'] += '\n# drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, pythonBase).pass, false); });
 
-test('CSS example request is sealed under the v2.1 identity', () => assert.strictEqual(cssBase.version, Builder.VERSION));
+test('CSS example request is sealed under the v2.2 identity', () => assert.strictEqual(cssBase.version, Builder.VERSION));
 test('CSS example produces one detached candidate', () => assert.strictEqual(cssResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('CSS result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(cssResult, cssBase), { pass: true, errors: [] }));
 test('CSS generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(cssResult), Builder.canonicalJson(Builder.generate(cssBase))));
@@ -191,6 +194,37 @@ test('CSS token-kind expansion is refused before candidate emission', () => held
 test('CSS duplicate token aliases are refused before candidate emission', () => held(cssBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.tokens[1].name = draft.parameters.tokens[0].name; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'CANDIDATE_HOLD'));
 test('CSS input budget expansion is held by the exact build plan', () => held(cssBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxInputBytes = 65537; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
 test('CSS candidate byte tampering fails exact result verification', () => { const tampered = clone(cssResult); tampered.detachedCandidate.files['capability.js'] += '\n// drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, cssBase).pass, false); });
+
+test('SVG example request is sealed under the v2.2 identity', () => assert.strictEqual(svgBase.version, Builder.VERSION));
+test('SVG example produces one detached candidate', () => assert.strictEqual(svgResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
+test('SVG result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(svgResult, svgBase), { pass: true, errors: [] }));
+test('SVG generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(svgResult), Builder.canonicalJson(Builder.generate(svgBase))));
+test('SVG selection binds the exact markup specialist and artifact', () => assert.strictEqual(svgResult.specialistContext.specialistOrganRef.id, 'organ.code.markup-structure') && assert.strictEqual(svgResult.specialistContext.artifactRef.id, 'status-badge'));
+test('SVG selection binds the exact SVG profile and language', () => assert.strictEqual(svgResult.specialistContext.buildProfileRef.id, 'code-family.svg-status-badge') && assert.strictEqual(svgResult.specialistContext.languageId, 'svg'));
+test('SVG candidate binds the exact hardened source-reviewed recipe', () => assert.deepStrictEqual(svgResult.recipeRef, Builder.SVG_TARGET_RECIPE) && assert.strictEqual(svgResult.recipeRef.version, '1.1.0'));
+test('SVG consent binds catalog, profile, request, and recipe bytes', () => assert.strictEqual(svgResult.consentRef.subject.catalogDigest, svgResult.catalogRef.sha256) && assert.strictEqual(svgResult.consentRef.subject.buildProfileCatalogDigest, svgResult.buildProfileCatalogRef.sha256) && assert.strictEqual(svgResult.consentRef.subject.buildProfileDigest, svgResult.specialistContext.buildProfileRef.sha256) && assert.strictEqual(svgResult.consentRef.subject.capabilityRequestDigest, svgBase.capabilityBuildRequest.requestDigest) && assert.strictEqual(svgResult.consentRef.subject.recipeDigest, Builder.SVG_TARGET_RECIPE.digest));
+test('SVG candidate passes Fabric and portable path verification', () => assert(CapabilityFabric.verifyCandidate(svgCandidate).ok) && assert(Builder.validateCandidatePaths(Object.keys(svgCandidate.files)).pass));
+test('SVG candidate emits inert JavaScript source and selftest text', () => assert.strictEqual(typeof svgCandidate.files['capability.js'], 'string') && assert.strictEqual(typeof svgCandidate.files['selftest.js'], 'string'));
+test('SVG generated source deep-freezes its exact configuration', () => assert(svgCandidate.files['capability.js'].includes('deepFreeze') && svgCandidate.files['capability.js'].includes('Object.freeze')));
+test('SVG generated source enforces a closed plain runtime record without input serialization hooks', () => assert(svgCandidate.files['capability.js'].includes('jsonRecord') && svgCandidate.files['capability.js'].includes('recordBytes') && !svgCandidate.files['capability.js'].includes('JSON.stringify(input)') && svgCandidate.files['capability.js'].includes('INPUT_FIELDS_UNSUPPORTED') && svgCandidate.files['capability.js'].includes('INPUT_OBJECT_REQUIRED')));
+test('SVG generated source enforces XML-valid text and inherited-hook refusal', () => assert(svgCandidate.files['capability.js'].includes('xmlText') && svgCandidate.files['selftest.js'].includes('inheritedHookRead') && svgCandidate.files['selftest.js'].includes("'TEXT_INVALID'")));
+test('SVG generated source enforces exercised input and output byte ceilings', () => assert(svgCandidate.files['capability.js'].includes('INPUT_BYTES_EXCEEDED') && svgCandidate.files['capability.js'].includes('SVG_BYTES_EXCEEDED') && svgCandidate.files['capability.js'].includes('"maxInputBytes":128') && svgCandidate.files['capability.js'].includes('"maxOutputBytes":1024') && svgCandidate.files['selftest.js'].includes("'INPUT_BYTES_EXCEEDED'") && svgCandidate.files['selftest.js'].includes("'SVG_BYTES_EXCEEDED'")));
+test('SVG generated source contains title, viewBox, and XML escaping', () => assert(svgCandidate.files['capability.js'].includes('<title>') && svgCandidate.files['capability.js'].includes('viewBox=') && svgCandidate.files['capability.js'].includes('&amp;') && svgCandidate.files['capability.js'].includes('&lt;') && svgCandidate.files['capability.js'].includes('&#39;')));
+test('SVG generated capability source contains no active or external surface', () => assert(!/(?:<script|<style|\son[a-z]+\s*=|href=|xlink:href|url\s*\(|@import|<animate|<set|<foreignObject|\bfetch\s*\(|new Function|\beval\s*\()/i.test(svgCandidate.files['capability.js'])));
+test('SVG generated capability imports no filesystem, network, or child-process module', () => assert(!/require\(['"](?:fs|node:fs|http|https|node:http|node:https|child_process|node:child_process)['"]\)/.test(svgCandidate.files['capability.js'])));
+test('SVG runtime and visual behavior remain UNKNOWN', () => assert.strictEqual(svgResult.evidence.runtimeBehavior, 'UNKNOWN') && assert.strictEqual(svgResult.evidence.visualBehavior, 'UNKNOWN'));
+test('SVG candidate and emitted selftest were not executed by the specialist Fabric', () => assert.strictEqual(svgResult.resourceObservation.candidateExecuted, false) && assert.strictEqual(svgResult.resourceObservation.generatedSelftestExecuted, false) && assert.strictEqual(svgResult.resourceObservation.processesSpawned, 0));
+test('SVG candidate has no permissions or lifecycle authority', () => { assert(Object.values(svgCandidate.package.authority).every((value) => value === false)); assert.deepStrictEqual(JSON.parse(svgCandidate.files['module.contract.json']).permissions, []); assert.strictEqual(svgResult.truth.installed, false); assert.strictEqual(svgResult.truth.integrated, false); assert.strictEqual(svgResult.truth.published, false); assert.strictEqual(svgResult.truth.promoted, false); assert.strictEqual(svgResult.truth.canonChanged, false); });
+test('SVG direct reuse remains held', () => assert.strictEqual(svgResult.reuseRights.mode, 'RESEARCH_ONLY_DIRECT_REUSE_HOLD') && assert.strictEqual(svgResult.reuseRights.directReuseAuthorized, false) && assert.strictEqual(svgResult.reuseRights.publicCopyAuthorized, false));
+test('SVG visual limitation is retained', () => assert(svgResult.limitations.includes('SVG_BROWSER_ACCESSIBILITY_AND_VISUAL_QUALITY_NOT_PROVEN')));
+test('SVG lane cannot borrow the HTML profile despite sharing one specialist Organ', () => held(svgBase, (next) => { next.selection.mode = 'ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST'; }, 'SPECIALIST_HOLD'));
+test('HTML lane cannot borrow the SVG profile despite sharing one specialist Organ', () => held(markupBase, (next) => { next.selection.mode = 'ONE_EXACT_SVG_MARKUP_STRUCTURE_SPECIALIST'; }, 'SPECIALIST_HOLD'));
+test('SVG recipe substitution is held', () => held(svgBase, (next) => { const catalog = CapabilityFabric.loadCatalog(), recipe = catalog.recipes.find((row) => row.id === 'static-accessible-html-page'), draft = clone(recipe.exampleRequest); draft.source = { kind: 'CODE_FABRIC', ref: next.intentAdapterPlan.planDigest }; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); }, 'BUILD_REQUEST_HOLD'));
+test('SVG hidden parameter expansion is held by the exact build plan', () => held(svgBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.rawSvg = '<script/>'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('SVG colour injection is held by the exact build plan', () => held(svgBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.foreground = 'url(https://example.test/a)'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('SVG input budget expansion is held by the exact build plan', () => held(svgBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxInputBytes = 65537; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('SVG native builder refuses NUL text before candidate emission', () => { const heldResult = held(svgBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.label = 'unsafe\u0000label'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'CANDIDATE_HOLD'); assert.strictEqual(heldResult.holds[0].code, 'NATIVE_BUILDER_REFUSAL'); });
+test('SVG candidate byte tampering fails exact result verification', () => { const tampered = clone(svgResult); tampered.detachedCandidate.files['capability.js'] += '\n// drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, svgBase).pass, false); });
 
 test('root HOLD stops before intent verification and build', () => {
   const originalVerify = IntentAdapter.verify, originalBuild = CapabilityFabric.build;
@@ -325,4 +359,4 @@ test('source contains no child-process module import', () => assert(!/require\([
 test('source contains no fetch call', () => assert(!/\bfetch\s*\(/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source never invokes generated candidate text', () => assert(!/new Function|\beval\s*\(|vm\.(?:run|compile)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 
-if (!process.exitCode) process.stdout.write('Code specialist capability builder v2.1 selftest: ' + passed + ' PASS\n');
+if (!process.exitCode) process.stdout.write('Code specialist capability builder v2.2 selftest: ' + passed + ' PASS\n');
