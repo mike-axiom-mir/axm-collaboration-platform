@@ -22,9 +22,11 @@ prospective active recipe, catalog, and builder-registry descriptors. It still
 writes none of them. A normal reviewed source diff and Workshop verification
 remain required.
 
-The registry now contains four active HAND builders and one active host-mediated
-SKILL builder. The closed-schema validator and portable evidence-review SKILL
-entered through this exact reviewed-merge route; their inactive Foundry packets
+The registry now contains six active HAND builders and one active host-mediated
+SKILL builder. The bounded Python builder emits inert source and selftest bytes;
+this admission gate does not execute them. The closed-schema validator and
+portable evidence-review SKILL entered through this exact reviewed-merge route;
+their inactive Foundry packets
 and external receipts remain provenance, not activation surfaces. The closed
 object-contract adapter is now the one exact inactive review candidate. Its
 trusted builder/selftest receipt passes, but it deliberately stops at

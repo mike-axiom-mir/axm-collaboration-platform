@@ -13,10 +13,16 @@ const Nursery = require('../tools/detached-candidate-nursery/core/nursery-core.j
 let passed=0;
 function check(condition,label){assert(condition,label);passed+=1;process.stdout.write('PASS '+label+'\n');}
 function safeRemove(root){const resolved=path.resolve(root),prefix=path.resolve(os.tmpdir())+path.sep;if(!resolved.startsWith(prefix)||!path.basename(resolved).startsWith('axm-capability-fabric-test-'))throw new Error('temporary cleanup boundary refused');fs.rmSync(resolved,{recursive:true,force:true});}
+function pythonInvocation(args){
+  const configured=process.env.AXM_PYTHON||process.env.PYTHON;
+  if(configured)return {command:configured,args:args};
+  return process.platform==='win32'?{command:'py',args:['-3'].concat(args)}:{command:'python3',args:args};
+}
 
 function main(){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'axm-capability-fabric-test-'));
   try{
+    const nurseryRoot=path.join(root,'nursery'),executionRoot=path.join(root,'execution');fs.mkdirSync(nurseryRoot);fs.mkdirSync(executionRoot);
     const catalog=Fabric.loadCatalog();
     const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'../tools/capability-fabric/manifest.json'),'utf8'));
     const contract=JSON.parse(fs.readFileSync(path.join(__dirname,'../tools/capability-fabric/module.contract.json'),'utf8'));
@@ -42,18 +48,26 @@ function main(){
       const modular=JSON.parse(candidate.files['modular-capability.contract.json']);
       check(candidate.package.capabilityKind===recipe.capabilityKind&&modular.kind===recipe.capabilityKind&&modular.installed===false&&modular.promoted===false&&modular.canon===false,recipe.id+' candidate binds its modular kind without authority');
       check(candidate.files['index.html'].includes('executes no generated capability code'),recipe.id+' candidate inspection entry stays static');
-      const selftestFile=recipe.capabilityKind==='HAND'?'selftest.js':'skill.selftest.js';
-      if(recipe.capabilityKind==='HAND'){new Function(candidate.files['capability.js']);}
+      const runtime=modular.runtime,sourceLanguage=recipe.capabilityKind==='HAND'?(runtime.sourceLanguage||'javascript'):'javascript',entryFile=recipe.capabilityKind==='HAND'?(runtime.entry||'capability.js'):null,selftestFile=recipe.capabilityKind==='HAND'?(runtime.selftest||'selftest.js'):'skill.selftest.js';
+      if(recipe.capabilityKind==='HAND'&&sourceLanguage==='javascript'){new Function(candidate.files[entryFile]);new Function(candidate.files[selftestFile]);}
+      else if(recipe.capabilityKind==='HAND'){check(sourceLanguage==='python'&&entryFile.endsWith('.py')&&selftestFile.endsWith('.py'),recipe.id+' binds an exact supported non-JavaScript runtime layout');}
       else{check(typeof candidate.files['SKILL.md']==='string'&&JSON.parse(candidate.files['skill.contract.json']).runtimeMode==='HOST_MEDIATED',recipe.id+' emits its portable host-mediated skill contract');}
-      new Function(candidate.files[selftestFile]);check(true,recipe.id+' emitted JavaScript parses');
-      const materialized=Cli.materialize(candidate,root);check(materialized.nursery.status==='READY_FOR_LATER_INTAKE',recipe.id+' materializes as Nursery-ready structure');
+      if(sourceLanguage==='javascript'){new Function(candidate.files[selftestFile]);check(true,recipe.id+' emitted JavaScript source parses');}
+      const materialized=Cli.materialize(candidate,nurseryRoot);check(materialized.nursery.status==='READY_FOR_LATER_INTAKE',recipe.id+' materializes as Nursery-ready structure');
       check(materialized.nursery.codeExecuted===false,recipe.id+' Nursery scan executes no candidate code');
-      const run=childProcess.spawnSync(process.execPath,[path.join(materialized.directory,selftestFile)],{cwd:materialized.directory,encoding:'utf8'});check(run.status===0&&/PASS/.test(run.stdout),recipe.id+' emitted selftest passes when explicitly run by trusted test host');
+      const executionDirectory=path.join(executionRoot,recipe.id);fs.cpSync(materialized.directory,executionDirectory,{recursive:true});
+      const executionRelative=path.relative(nurseryRoot,executionDirectory);check(executionRelative.startsWith('..'+path.sep)&&!path.isAbsolute(executionRelative),recipe.id+' trusted-test execution copy is disjoint from detached Nursery source');
+      if(sourceLanguage==='python'){
+        const parse=pythonInvocation(['-c','import ast, pathlib, sys; [ast.parse(pathlib.Path(item).read_text(encoding="utf-8"), filename=item) for item in sys.argv[1:]]',path.join(executionDirectory,entryFile),path.join(executionDirectory,selftestFile)]),parsed=childProcess.spawnSync(parse.command,parse.args,{cwd:executionDirectory,encoding:'utf8',timeout:10000});
+        check(parsed.status===0,recipe.id+' emitted Python source and selftest parse through the declared runtime family');
+      }
+      const selftestPath=path.join(executionDirectory,selftestFile),invocation=sourceLanguage==='python'?pythonInvocation([selftestPath]):{command:process.execPath,args:[selftestPath]};
+      const run=childProcess.spawnSync(invocation.command,invocation.args,{cwd:executionDirectory,encoding:'utf8',timeout:10000});check(run.status===0&&/PASS/.test(run.stdout),recipe.id+' emitted selftest passes when explicitly run by trusted test host');
       packageDigests.push(candidate.package.packageDigest);
-      assert.throws(function(){Cli.materialize(candidate,root);},function(error){return error&&error.receipt&&error.receipt.code==='OUTPUT_OVERWRITE_REFUSED';});passed+=1;process.stdout.write('PASS '+recipe.id+' refuses overwrite of exact materialization\n');
+      assert.throws(function(){Cli.materialize(candidate,nurseryRoot);},function(error){return error&&error.receipt&&error.receipt.code==='OUTPUT_OVERWRITE_REFUSED';});passed+=1;process.stdout.write('PASS '+recipe.id+' refuses overwrite of exact materialization\n');
     });
-    check(new Set(packageDigests).size===5,'five capability recipes produce distinct packages');
-    const registry=Nursery.scanSupply(root);check(registry.summary.total===5&&registry.summary.readyForLaterIntake===5,'Nursery independently sees all five exact candidates ready for later intake');
+    check(new Set(packageDigests).size===7,'seven capability recipes produce distinct packages');
+    const registry=Nursery.scanSupply(nurseryRoot);check(registry.summary.total===7&&registry.summary.readyForLaterIntake===7,'Nursery independently sees all seven exact candidates ready for later intake after disjoint trusted tests');
     check(registry.truth.candidateCodeExecuted===false&&registry.truth.installationPerformed===false,'Nursery proves scan-only authority boundary');
 
     const tamperRecipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),request=Fabric.sealRequest(tamperRecipe.exampleRequest,true),candidate=Fabric.build(request,catalog).candidates[0],tampered=Fabric.clone(candidate);tampered.files['module-bundle.json']=tampered.files['module-bundle.json'].replace('pure-json-transform','changed-transform');
