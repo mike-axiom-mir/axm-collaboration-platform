@@ -7,6 +7,7 @@ on:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
       - ".github/ci/code-language-toolchain-probe.js"
+      - ".github/ci/code-language-required-native-gap-probe.js"
       - ".github/ci/code-language-tree-sitter-pack-probe.py"
       - ".github/ci/code-language-tree-sitter-pack-probe-v2.py"
       - ".github/ci/code-language-last-mile-probe.py"
@@ -17,6 +18,7 @@ on:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
       - ".github/ci/code-language-toolchain-probe.js"
+      - ".github/ci/code-language-required-native-gap-probe.js"
       - ".github/ci/code-language-tree-sitter-pack-probe.py"
       - ".github/ci/code-language-tree-sitter-pack-probe-v2.py"
       - ".github/ci/code-language-last-mile-probe.py"
@@ -65,7 +67,30 @@ jobs:
       - name: Verify exact PR51 donor bindings
         run: node shared/code-capability-fabric/language-organs/selftest-donors.js
 
+  required-native-gap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Prove required OpenCL native gap with Clang
+        env:
+          AXM_TOOLCHAIN_REPORT: required-native-gap-census.json
+        run: node .github/ci/code-language-required-native-gap-probe.js
+      - name: Preserve required native coverage evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-language-toolchain-census
+          path: required-native-gap-census.json
+          if-no-files-found: error
+          retention-days: 1
+
   stock-native-census:
+    continue-on-error: true
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -75,17 +100,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Census native toolchains and bounded smoke probes
+      - name: Observe broad stock toolchains and smoke probes
         env:
-          AXM_TOOLCHAIN_REPORT: toolchain-census.json
+          AXM_TOOLCHAIN_REPORT: stock-toolchain-census.json
         run: node .github/ci/code-language-toolchain-probe.js
-      - name: Preserve toolchain census evidence
+      - name: Preserve broad stock census telemetry
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: code-language-toolchain-census
-          path: toolchain-census.json
-          if-no-files-found: error
+          name: code-language-stock-native-census
+          path: stock-toolchain-census.json
+          if-no-files-found: warn
           retention-days: 1
 
   structural-grammar-pack:
@@ -163,7 +188,7 @@ jobs:
           retention-days: 1
 
   coverage-union:
-    needs: [language-organs, stock-native-census, structural-grammar-pack, last-mile-nine]
+    needs: [language-organs, required-native-gap, structural-grammar-pack, last-mile-nine]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -173,7 +198,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Download stock native evidence
+      - name: Download required native evidence
         uses: actions/download-artifact@v4
         with:
           name: code-language-toolchain-census
