@@ -1,0 +1,1321 @@
+{
+  "schema": "axm.code.machine-keyboard-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "julia",
+  "organId": "code.organ.julia.v1",
+  "organDigest": "a50970aa09f8623d69465ebefcfc0fe3a244bc1eef3f3d375abf02283b2eccec",
+  "grammarProfileDigest": "be92401fa7a2564cef6b0e447a643bad6989ad90a48ec5780242b7ae8975bf9d",
+  "family": "scientific",
+  "kind": "scientific-language",
+  "nativePalette": {
+    "compilationOrDocumentUnit": "module",
+    "constructs": [
+      "function",
+      "struct",
+      "abstract type",
+      "macro",
+      "module",
+      "multiple dispatch",
+      "broadcast",
+      "generated function",
+      "task"
+    ],
+    "dependencyForms": [
+      "using",
+      "import"
+    ],
+    "scopeModel": "lexical/module/runtime",
+    "typeModel": "dynamic or inferred",
+    "mutationModel": "runtime object/state",
+    "controlModel": "branch, loop, call, exception/result",
+    "effectModel": "runtime plus dynamic dispatch/reflection where supported",
+    "semanticHazards": [
+      "world age",
+      "type instability",
+      "mutation aliasing",
+      "macro hygiene",
+      "global performance"
+    ],
+    "verifierCandidates": [
+      "Julia parse",
+      "static checks",
+      "tests"
+    ]
+  },
+  "keys": [
+    {
+      "keyId": "K01",
+      "actionId": "create-native-unit",
+      "category": "STRUCTURE",
+      "opcode": "CREATE_NATIVE_UNIT",
+      "argumentSchema": {
+        "fields": [
+          "unitName",
+          "targetRef"
+        ]
+      },
+      "nativeBindings": [
+        "module"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "architecture"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K02",
+      "actionId": "enter-scope",
+      "category": "STRUCTURE",
+      "opcode": "ENTER_SCOPE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef"
+        ]
+      },
+      "nativeBindings": [
+        "lexical/module/runtime"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "symbols",
+        "scope"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K03",
+      "actionId": "leave-scope",
+      "category": "STRUCTURE",
+      "opcode": "LEAVE_SCOPE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef"
+        ]
+      },
+      "nativeBindings": [
+        "lexical/module/runtime"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "symbols",
+        "scope"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K04",
+      "actionId": "insert-native-construct-01",
+      "category": "STRUCTURE",
+      "opcode": "INSERT_NATIVE_CONSTRUCT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "function"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K05",
+      "actionId": "insert-native-construct-02",
+      "category": "STRUCTURE",
+      "opcode": "INSERT_NATIVE_CONSTRUCT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "struct"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K06",
+      "actionId": "insert-native-construct-03",
+      "category": "STRUCTURE",
+      "opcode": "INSERT_NATIVE_CONSTRUCT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "abstract type"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K07",
+      "actionId": "insert-native-construct-04",
+      "category": "STRUCTURE",
+      "opcode": "INSERT_NATIVE_CONSTRUCT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "macro"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K08",
+      "actionId": "insert-native-construct-05",
+      "category": "STRUCTURE",
+      "opcode": "INSERT_NATIVE_CONSTRUCT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "module"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K09",
+      "actionId": "insert-native-construct-06",
+      "category": "STRUCTURE",
+      "opcode": "INSERT_NATIVE_CONSTRUCT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "multiple dispatch"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K10",
+      "actionId": "insert-native-construct-07",
+      "category": "STRUCTURE",
+      "opcode": "INSERT_NATIVE_CONSTRUCT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "broadcast"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K11",
+      "actionId": "insert-native-construct-08",
+      "category": "STRUCTURE",
+      "opcode": "INSERT_NATIVE_CONSTRUCT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "generated function"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K12",
+      "actionId": "insert-native-dependency-01",
+      "category": "DEPENDENCY",
+      "opcode": "INSERT_NATIVE_DEPENDENCY",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "dependencyRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "using"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "dependencies",
+        "impact",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K13",
+      "actionId": "insert-native-dependency-02",
+      "category": "DEPENDENCY",
+      "opcode": "INSERT_NATIVE_DEPENDENCY",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "dependencyRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "import"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "dependencies",
+        "impact",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K14",
+      "actionId": "insert-native-dependency-03",
+      "category": "DEPENDENCY",
+      "opcode": "INSERT_NATIVE_DEPENDENCY",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "dependencyRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "DISABLED_NO_NATIVE_BINDING",
+      "requiresRenderer": true,
+      "invalidates": [
+        "dependencies",
+        "impact",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K15",
+      "actionId": "remove-dependency",
+      "category": "DEPENDENCY",
+      "opcode": "REMOVE_DEPENDENCY",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "dependencyRef"
+        ]
+      },
+      "nativeBindings": [
+        "using",
+        "import"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "dependencies",
+        "impact",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K16",
+      "actionId": "declare-symbol",
+      "category": "SYMBOL",
+      "opcode": "DECLARE_SYMBOL",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "symbol",
+          "kind"
+        ]
+      },
+      "nativeBindings": [
+        "function",
+        "struct",
+        "abstract type",
+        "macro",
+        "module",
+        "multiple dispatch",
+        "broadcast",
+        "generated function",
+        "task"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "symbols",
+        "dependencies",
+        "types-state"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K17",
+      "actionId": "reference-symbol",
+      "category": "SYMBOL",
+      "opcode": "REFERENCE_SYMBOL",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "symbol"
+        ]
+      },
+      "nativeBindings": [
+        "function",
+        "struct",
+        "abstract type",
+        "macro",
+        "module",
+        "multiple dispatch",
+        "broadcast",
+        "generated function",
+        "task"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "symbols",
+        "dependencies"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K18",
+      "actionId": "rename-symbol",
+      "category": "SYMBOL",
+      "opcode": "RENAME_SYMBOL",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "symbol",
+          "newSymbol"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "symbols",
+        "dependencies",
+        "api",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K19",
+      "actionId": "move-symbol",
+      "category": "SYMBOL",
+      "opcode": "MOVE_SYMBOL",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "destinationRef"
+        ]
+      },
+      "nativeBindings": [
+        "lexical/module/runtime"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "symbols",
+        "dependencies",
+        "architecture",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K20",
+      "actionId": "bind-type-or-shape",
+      "category": "TYPE_STATE",
+      "opcode": "BIND_TYPE_OR_SHAPE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "typeOrShape"
+        ]
+      },
+      "nativeBindings": [
+        "dynamic or inferred"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "types-state",
+        "api",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K21",
+      "actionId": "bind-value",
+      "category": "TYPE_STATE",
+      "opcode": "BIND_VALUE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "valueRef"
+        ]
+      },
+      "nativeBindings": [
+        "dynamic or inferred"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "types-state",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K22",
+      "actionId": "add-state",
+      "category": "TYPE_STATE",
+      "opcode": "ADD_STATE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "stateName",
+          "initialValue"
+        ]
+      },
+      "nativeBindings": [
+        "runtime object/state"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "types-state",
+        "control-effects",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K23",
+      "actionId": "mutate-state",
+      "category": "TYPE_STATE",
+      "opcode": "MUTATE_STATE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "stateRef",
+          "valueRef"
+        ]
+      },
+      "nativeBindings": [
+        "runtime object/state"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "types-state",
+        "control-effects",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K24",
+      "actionId": "add-branch",
+      "category": "CONTROL",
+      "opcode": "ADD_BRANCH",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "conditionRef"
+        ]
+      },
+      "nativeBindings": [
+        "branch, loop, call, exception/result"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "control-effects",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K25",
+      "actionId": "add-loop",
+      "category": "CONTROL",
+      "opcode": "ADD_LOOP",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "conditionOrIterator"
+        ]
+      },
+      "nativeBindings": [
+        "branch, loop, call, exception/result"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "control-effects",
+        "performance",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K26",
+      "actionId": "add-call",
+      "category": "CONTROL",
+      "opcode": "ADD_CALL",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "calleeRef",
+          "arguments"
+        ]
+      },
+      "nativeBindings": [
+        "branch, loop, call, exception/result"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "dependencies",
+        "control-effects",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K27",
+      "actionId": "add-return-result",
+      "category": "CONTROL",
+      "opcode": "ADD_RETURN_RESULT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "valueRef"
+        ]
+      },
+      "nativeBindings": [
+        "branch, loop, call, exception/result"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "control-effects",
+        "api",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K28",
+      "actionId": "add-error-path",
+      "category": "CONTROL",
+      "opcode": "ADD_ERROR_PATH",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "errorRef",
+          "handling"
+        ]
+      },
+      "nativeBindings": [
+        "branch, loop, call, exception/result"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "control-effects",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K29",
+      "actionId": "add-effect-boundary",
+      "category": "EFFECT",
+      "opcode": "ADD_EFFECT_BOUNDARY",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "effectRef"
+        ]
+      },
+      "nativeBindings": [
+        "runtime plus dynamic dispatch/reflection where supported"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "control-effects",
+        "architecture",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K30",
+      "actionId": "bind-route-boundary",
+      "category": "INTEROP",
+      "opcode": "BIND_ROUTE_BOUNDARY",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "routeClass",
+          "contractRef"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "dependencies",
+        "architecture",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K31",
+      "actionId": "bind-schema-contract",
+      "category": "INTEROP",
+      "opcode": "BIND_SCHEMA_OR_CONTRACT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "schemaRef"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "api",
+        "dependencies",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K32",
+      "actionId": "bind-resource",
+      "category": "INTEROP",
+      "opcode": "BIND_RESOURCE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "resourceRef",
+          "binding"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "dependencies",
+        "control-effects",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K33",
+      "actionId": "apply-verified-template",
+      "category": "TEMPLATE",
+      "opcode": "APPLY_VERIFIED_TEMPLATE",
+      "argumentSchema": {
+        "fields": [
+          "templateId",
+          "bindings",
+          "targetRef"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K34",
+      "actionId": "instantiate-template",
+      "category": "TEMPLATE",
+      "opcode": "INSTANTIATE_TEMPLATE",
+      "argumentSchema": {
+        "fields": [
+          "templateId",
+          "bindings"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "verification"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K35",
+      "actionId": "extract-unit",
+      "category": "REFACTOR",
+      "opcode": "EXTRACT_UNIT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "newUnitName"
+        ]
+      },
+      "nativeBindings": [
+        "module"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "symbols",
+        "dependencies",
+        "architecture",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K36",
+      "actionId": "inline-unit",
+      "category": "REFACTOR",
+      "opcode": "INLINE_UNIT",
+      "argumentSchema": {
+        "fields": [
+          "targetRef"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "symbols",
+        "dependencies",
+        "control-effects",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K37",
+      "actionId": "wrap-node",
+      "category": "REFACTOR",
+      "opcode": "WRAP_NODE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "wrapperKind"
+        ]
+      },
+      "nativeBindings": [
+        "function",
+        "struct",
+        "abstract type",
+        "macro",
+        "module",
+        "multiple dispatch",
+        "broadcast",
+        "generated function",
+        "task"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "control-effects"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K38",
+      "actionId": "replace-node",
+      "category": "REFACTOR",
+      "opcode": "REPLACE_NODE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "replacementIntent"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K39",
+      "actionId": "remove-node",
+      "category": "REFACTOR",
+      "opcode": "REMOVE_NODE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef"
+        ]
+      },
+      "nativeBindings": [],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [
+        "parse",
+        "symbols",
+        "dependencies",
+        "types-state",
+        "control-effects",
+        "tests"
+      ],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K40",
+      "actionId": "add-assertion",
+      "category": "VERIFY",
+      "opcode": "ADD_ASSERTION",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "predicateRef"
+        ]
+      },
+      "nativeBindings": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [],
+      "verificationHints": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K41",
+      "actionId": "add-negative-case",
+      "category": "VERIFY",
+      "opcode": "ADD_NEGATIVE_CASE",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "caseRef"
+        ]
+      },
+      "nativeBindings": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [],
+      "verificationHints": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K42",
+      "actionId": "add-fixture",
+      "category": "VERIFY",
+      "opcode": "ADD_FIXTURE",
+      "argumentSchema": {
+        "fields": [
+          "fixtureRef",
+          "targetRef"
+        ]
+      },
+      "nativeBindings": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": true,
+      "invalidates": [],
+      "verificationHints": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K43",
+      "actionId": "request-native-validation",
+      "category": "VERIFY",
+      "opcode": "REQUEST_NATIVE_VALIDATION",
+      "argumentSchema": {
+        "fields": [
+          "candidateRef"
+        ]
+      },
+      "nativeBindings": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": false,
+      "invalidates": [],
+      "verificationHints": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K44",
+      "actionId": "request-static-analysis",
+      "category": "VERIFY",
+      "opcode": "REQUEST_STATIC_ANALYSIS",
+      "argumentSchema": {
+        "fields": [
+          "candidateRef"
+        ]
+      },
+      "nativeBindings": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": false,
+      "invalidates": [],
+      "verificationHints": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K45",
+      "actionId": "request-tests",
+      "category": "VERIFY",
+      "opcode": "REQUEST_TESTS",
+      "argumentSchema": {
+        "fields": [
+          "candidateRef",
+          "testScope"
+        ]
+      },
+      "nativeBindings": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": false,
+      "invalidates": [],
+      "verificationHints": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K46",
+      "actionId": "trace-symbol-dependency",
+      "category": "INSPECT",
+      "opcode": "TRACE_SYMBOL_DEPENDENCY",
+      "argumentSchema": {
+        "fields": [
+          "targetRef",
+          "symbolOrDependency"
+        ]
+      },
+      "nativeBindings": [
+        "using",
+        "import",
+        "function",
+        "struct",
+        "abstract type",
+        "macro",
+        "module",
+        "multiple dispatch",
+        "broadcast",
+        "generated function",
+        "task"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": false,
+      "invalidates": [],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K47",
+      "actionId": "request-admission",
+      "category": "GOVERNANCE",
+      "opcode": "REQUEST_ADMISSION",
+      "argumentSchema": {
+        "fields": [
+          "candidateDigest",
+          "mode"
+        ]
+      },
+      "nativeBindings": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": false,
+      "invalidates": [],
+      "verificationHints": [
+        "Julia parse",
+        "static checks",
+        "tests"
+      ],
+      "sourceCode": null,
+      "authority": "NONE"
+    },
+    {
+      "keyId": "K48",
+      "actionId": "hold-mark-unknown",
+      "category": "GOVERNANCE",
+      "opcode": "HOLD_MARK_UNKNOWN",
+      "argumentSchema": {
+        "fields": [
+          "reason",
+          "targetRef"
+        ]
+      },
+      "nativeBindings": [
+        "world age",
+        "type instability",
+        "mutation aliasing",
+        "macro hygiene",
+        "global performance"
+      ],
+      "availability": "AVAILABLE_INTENT_ONLY",
+      "requiresRenderer": false,
+      "invalidates": [],
+      "verificationHints": [],
+      "sourceCode": null,
+      "authority": "NONE"
+    }
+  ],
+  "truth": {
+    "semanticKeyboardNotTextKeyboard": true,
+    "keyAvailabilityIsNotRendererProof": true,
+    "keyPressIsEditIntentNotSource": true,
+    "sourceRendererRequiredForSourceMutations": true,
+    "admissionRequiredAfterRendering": true
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "keyboardSha256": "663e30e885e9ec9db13ca448a19b508fb3d4d4b7e5f6a11f983cf0b53a91ed16"
+}

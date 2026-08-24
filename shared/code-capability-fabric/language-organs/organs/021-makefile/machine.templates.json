@@ -1,0 +1,1407 @@
+{
+  "schema": "axm.code.language-template-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "makefile",
+  "organId": "code.organ.makefile.v1",
+  "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+  "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+  "eyeId": "code.eye.makefile.v1",
+  "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+  "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361",
+  "lanes": {
+    "verifiedVault": {
+      "meaning": "Evidence-bound machine recipe templates. Verified refers to template mechanics/evidence binding, not arbitrary generated source correctness.",
+      "templateCount": 12,
+      "templates": [
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.native-parse-snapshot.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "understand",
+          "nativeBindings": [
+            "GNU Make",
+            "POSIX make",
+            "makefile"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "c707444a7a43acaf48418c1e9040a254d1f217d178545451a3e6c4a336215344"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.symbol-impact-map.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "impact",
+          "nativeBindings": [
+            "file/block/target",
+            "rule"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "REFERENCE_RESOLVED"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "7541ddb7ec3c376b221c9f36e5e16dae44bc78cdf67ebd86433fc6338552b92e"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.dependency-closure.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "dependencies",
+          "nativeBindings": [
+            "include",
+            "makefile"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ACYCLIC_GRAPH"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "7ada0d601a0d7a9b2dad8c319a92a2b184c492d1149022af39b6d57b360fe43d"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.type-state-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "impact",
+          "nativeBindings": [
+            "host-dsl",
+            "shell expansion"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "NO_COERCION_DELTA"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "860f674f71e232aa74a7472fd37093d52c70393261f60fe30bee5eb6310d98e0"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.control-effect-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "impact",
+          "nativeBindings": [
+            "dependency resolution, build graph and generated outputs",
+            "makefile"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ORDERING_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "8fea9fd1256f7a9c3a8af1f0dc5b8eafc954da2ea32deade0ee1c5d38f58488a"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.rewrite-hazard-guard.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "refactor",
+          "nativeBindings": [
+            "tab-sensitive recipes"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "HAZARD_NOT_RELEVANT:tab-sensitive recipes"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "ec49cb2a509eba3efef320a984650a4fb8433fa2540a654a822a26dfdc8967ee"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.native-verifier-ladder.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "verification",
+          "nativeBindings": [
+            "lint"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "e3b064fb39d79ed47f7b8a1cffd99253add4290ed1d14a6796af4c4d72b87474"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.measure-before-optimization.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "performance",
+          "nativeBindings": [
+            "makefile",
+            "include"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.performance-build.03",
+              "phase": "performance-build",
+              "opcode": "BUILD_GRAPH_INVALIDATION",
+              "emits": "BUILD_INVALIDATION_FACT",
+              "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "BUILD_GRAPH_STABLE"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "e3fe48064d65e5674e7fde0c41808b6f0805052c04ecb161820d43fe25164bc2"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.debug-hypothesis-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "debug",
+          "nativeBindings": [
+            "build/configuration graph",
+            "declarative plus host expressions"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.debugging.04",
+              "phase": "debugging",
+              "opcode": "STATE_CONTROL_TRACE",
+              "emits": "TRACE_PLAN",
+              "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "TRACE_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "1cfe18a09095bcdbda346f36145624f814610e63df7fec74ada1244669b2274c"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.cross-language-comparison.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "discovery",
+          "nativeBindings": [
+            "incremental build",
+            "target dependency",
+            "simple native build",
+            "dependency build graph"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.discovery.05",
+              "phase": "discovery",
+              "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+              "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+              "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "3c98d16a47c9304861e9a5d4c272a90f02bedd13d1fe4879da29825141c43ec9"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.safe-refactor-preflight.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "refactor",
+          "nativeBindings": [
+            "GNU Make",
+            "POSIX make",
+            "makefile",
+            "file/block/target",
+            "rule",
+            "include",
+            "host-dsl",
+            "shell expansion",
+            "dependency resolution, build graph and generated outputs",
+            "tab-sensitive recipes",
+            "lint"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            },
+            {
+              "ruleId": "code.cheat.makefile.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            },
+            {
+              "ruleId": "code.cheat.makefile.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            },
+            {
+              "ruleId": "code.cheat.makefile.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            },
+            {
+              "ruleId": "code.cheat.makefile.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            },
+            {
+              "ruleId": "code.cheat.makefile.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            },
+            {
+              "ruleId": "code.cheat.makefile.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE",
+            "REFERENCE_RESOLVED",
+            "ACYCLIC_GRAPH",
+            "NO_COERCION_DELTA",
+            "ORDERING_EQUIVALENT",
+            "HAZARD_NOT_RELEVANT:tab-sensitive recipes",
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "1aaea91e1ce175ad6b15143c4a7f635be55625bbfaf5c5646c70486c0d8d0fb8"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.makefile.regression-defense-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "makefile",
+          "intent": "verification",
+          "nativeBindings": [
+            "lint",
+            "include",
+            "makefile",
+            "file/block/target"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "b6ce7f6b91008defa4d459cabfce7c315fa78fa79b2f2ce6f10bb785c5f62e78",
+            "grammarProfileDigest": "ac3b3ef0d47079aacc3942534e6054d798844f74140cde458c0b3b41aff07187",
+            "eyeDigest": "61f39b69285df534561fc9ac12ab04473a66c413f2cbc28c559f9d37744f9b04",
+            "cheatcodeBankDigest": "4a626d64caa714bb60626f1f2e02e1c4cbfb6ba00161d6452a698ae903d73361"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.makefile.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            },
+            {
+              "ruleId": "code.cheat.makefile.debugging.03",
+              "phase": "debugging",
+              "opcode": "DEPENDENCY_ISOLATION",
+              "emits": "DEPENDENCY_ISOLATION_PLAN",
+              "next": "ISOLATE_ONE_EDGE_AT_A_TIME"
+            },
+            {
+              "ruleId": "code.cheat.makefile.performance-build.04",
+              "phase": "performance-build",
+              "opcode": "ANALYSIS_CACHE_INVALIDATION",
+              "emits": "ANALYSIS_INVALIDATION_SET",
+              "next": "DROP_ONLY_INVALID_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE",
+            "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED",
+            "ANALYSIS_PRESERVED"
+          ],
+          "verifierCandidates": [
+            "make dry-run",
+            "lint",
+            "build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "f8bdb43d8011b83822ddb9281878f74d7263be35f0d2e21842ed0df3228b0de9"
+        }
+      ]
+    },
+    "patternNursery": {
+      "meaning": "Frequent structural or edit patterns mined from caller-supplied observations. Candidates never self-promote.",
+      "storedCandidates": [],
+      "automaticPromotion": false
+    }
+  },
+  "structuralSkeletons": [
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.makefile.01.v1",
+      "languageId": "makefile",
+      "construct": "target",
+      "nativeUnit": "makefile",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "target"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "e1271b2372f8ead9e364d61ac7d154c15a0a02e5c03cb9ca4e6e9580d4bf23ed"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.makefile.02.v1",
+      "languageId": "makefile",
+      "construct": "rule",
+      "nativeUnit": "makefile",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "rule"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "3cd7127224e97efb70403b3f28655659b930ca12e4ad39bb8aaf446ce7957de9"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.makefile.03.v1",
+      "languageId": "makefile",
+      "construct": "recipe",
+      "nativeUnit": "makefile",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "recipe"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "3acded2ddb95c15a29c45b68c042b0ac5c71ae50a9a40c9911493d31159a55ab"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.makefile.04.v1",
+      "languageId": "makefile",
+      "construct": "variable",
+      "nativeUnit": "makefile",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "variable"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "ae86b7ef097499755e3d2e6dfc892f2f9ee647a119c0593950060318e249e021"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.makefile.05.v1",
+      "languageId": "makefile",
+      "construct": "define",
+      "nativeUnit": "makefile",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "define"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "e4df1344241d6c8649eb8b1b68ca82b77f6e44a73bea85eeb4b967242fa2877d"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.makefile.06.v1",
+      "languageId": "makefile",
+      "construct": "conditional",
+      "nativeUnit": "makefile",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "conditional"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "1bd5f1e9aae3bdc3064ea0a4ffed6b407efda584c6bbce75d7519e3d3fc80423"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.makefile.07.v1",
+      "languageId": "makefile",
+      "construct": "phony",
+      "nativeUnit": "makefile",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "phony"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "9c44b2daa2360d87ac2c66b83a7fe20e949dcedbe4b5c78e38abfffce4938abc"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.makefile.08.v1",
+      "languageId": "makefile",
+      "construct": "pattern rule",
+      "nativeUnit": "makefile",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "pattern rule"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "0dd0c7d38557c07b25186284ac8e89f651e50c6fb78077300ec4c962739c851e"
+    }
+  ],
+  "fastUse": {
+    "indexKeys": [
+      "languageId",
+      "intent",
+      "nativeBinding"
+    ],
+    "deterministicMachineUse": true,
+    "aiCapsuleUse": true,
+    "sourceRendererOptional": true
+  },
+  "policy": {
+    "frequencyIsNotCorrectness": true,
+    "templateIsNotAuthority": true,
+    "minedCandidateIsNotVerifiedTemplate": true,
+    "automaticPromotion": false,
+    "automaticMutation": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "af0cc8473ba26bae04567f0377bbfa54fad3e4a1953e81543d409aa7a38aee80"
+}

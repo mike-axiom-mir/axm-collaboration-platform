@@ -1,0 +1,1407 @@
+{
+  "schema": "axm.code.language-template-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "helm-templates",
+  "organId": "code.organ.helm-templates.v1",
+  "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+  "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+  "eyeId": "code.eye.helm-templates.v1",
+  "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+  "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1",
+  "lanes": {
+    "verifiedVault": {
+      "meaning": "Evidence-bound machine recipe templates. Verified refers to template mechanics/evidence binding, not arbitrary generated source correctness.",
+      "templateCount": 12,
+      "templates": [
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.native-parse-snapshot.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "understand",
+          "nativeBindings": [
+            "Helm3",
+            "chart template"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "e31d02305b4d8cf8ac39295541aceb1394956d5e2f9cde9842487292276640aa"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.symbol-impact-map.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "impact",
+          "nativeBindings": [
+            "file/block/target",
+            "value reference"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "REFERENCE_RESOLVED"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "35d5649cf5588854abaeee891156a5d66f3af39e301deee65812eeae81f59c55"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.dependency-closure.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "dependencies",
+          "nativeBindings": [
+            "template",
+            "chart template"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ACYCLIC_GRAPH"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "d10cf60c9052ba832df48811556499e2dac58c9214397bdc9846073ee431aeb4"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.type-state-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "impact",
+          "nativeBindings": [
+            "host-dsl",
+            "indentation"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "NO_COERCION_DELTA"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "2ea373c6177c01d66d9526dbfbb17b497fde587c61a596f224778ea92dc0e6d7"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.control-effect-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "impact",
+          "nativeBindings": [
+            "dependency resolution, build graph and generated outputs",
+            "chart template"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ORDERING_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "f3aa2d712e28ed9d5a618719bae8c5f490421e3cf1da15e8a0c6fb86a19b7bab"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.rewrite-hazard-guard.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "refactor",
+          "nativeBindings": [
+            "template/YAML duality"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "HAZARD_NOT_RELEVANT:template/YAML duality"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "0e3c3ccf0747c2814b5a05e987a8a014869fc64e13d8153607e0e5914c220a36"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.native-verifier-ladder.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "verification",
+          "nativeBindings": [
+            "YAML parse"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "92620f03768efd7883916aea7404eb196e40f89e15338a9e48471d054f9c5647"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.measure-before-optimization.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "performance",
+          "nativeBindings": [
+            "chart template",
+            "include"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.performance-build.03",
+              "phase": "performance-build",
+              "opcode": "BUILD_GRAPH_INVALIDATION",
+              "emits": "BUILD_INVALIDATION_FACT",
+              "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "BUILD_GRAPH_STABLE"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "ccec5c0bda68ef1b22c342b09fce26b2352493fb8171865fe8e03bb89b9b442d"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.debug-hypothesis-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "debug",
+          "nativeBindings": [
+            "build/configuration graph",
+            "declarative plus host expressions"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.debugging.04",
+              "phase": "debugging",
+              "opcode": "STATE_CONTROL_TRACE",
+              "emits": "TRACE_PLAN",
+              "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "TRACE_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "eae64afa350c02a2de997fcf8f33fac62853ae1e938487ea1b64958bf75005ea"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.cross-language-comparison.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "discovery",
+          "nativeBindings": [
+            "templated Kubernetes",
+            "chart packaging",
+            "environment overlays",
+            "Go-template plus YAML"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.discovery.05",
+              "phase": "discovery",
+              "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+              "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+              "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "96d9191d7119b9c8a158e8767c124a6c7c9aa2156c5ad23c214609f6d568ee3b"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.safe-refactor-preflight.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "refactor",
+          "nativeBindings": [
+            "Helm3",
+            "chart template",
+            "file/block/target",
+            "value reference",
+            "template",
+            "host-dsl",
+            "indentation",
+            "dependency resolution, build graph and generated outputs",
+            "template/YAML duality",
+            "YAML parse"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            },
+            {
+              "ruleId": "code.cheat.helm-templates.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            },
+            {
+              "ruleId": "code.cheat.helm-templates.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            },
+            {
+              "ruleId": "code.cheat.helm-templates.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            },
+            {
+              "ruleId": "code.cheat.helm-templates.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            },
+            {
+              "ruleId": "code.cheat.helm-templates.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            },
+            {
+              "ruleId": "code.cheat.helm-templates.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE",
+            "REFERENCE_RESOLVED",
+            "ACYCLIC_GRAPH",
+            "NO_COERCION_DELTA",
+            "ORDERING_EQUIVALENT",
+            "HAZARD_NOT_RELEVANT:template/YAML duality",
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "577b5dcdffda978a79f8cfc8f7da2a17bed45cbf8c0fc46112cf6b755b2e993d"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.helm-templates.regression-defense-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "helm-templates",
+          "intent": "verification",
+          "nativeBindings": [
+            "YAML parse",
+            "include",
+            "template",
+            "chart dependency",
+            "chart template",
+            "file/block/target"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "e4439f768401e4ccb03d2030d8486317e9bd3603dd06d77f2e241f49c15af14f",
+            "grammarProfileDigest": "4f23889301e1e3861bd2904ed0a3b74c10c079a541a439b5ed47b77ed3307446",
+            "eyeDigest": "91017998bdf9c258bc3386b110568a13d930a49252107a63e64a7b0bf5087b51",
+            "cheatcodeBankDigest": "d009276c446b2e71ab1a9f156e01f14f089bcced12f09a0df38a70040a0c87d1"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "VALUE_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "TEMPLATE_SCOPE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "RESOURCE_SHAPE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "RENDER_TARGET",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.helm-templates.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            },
+            {
+              "ruleId": "code.cheat.helm-templates.debugging.03",
+              "phase": "debugging",
+              "opcode": "DEPENDENCY_ISOLATION",
+              "emits": "DEPENDENCY_ISOLATION_PLAN",
+              "next": "ISOLATE_ONE_EDGE_AT_A_TIME"
+            },
+            {
+              "ruleId": "code.cheat.helm-templates.performance-build.04",
+              "phase": "performance-build",
+              "opcode": "ANALYSIS_CACHE_INVALIDATION",
+              "emits": "ANALYSIS_INVALIDATION_SET",
+              "next": "DROP_ONLY_INVALID_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE",
+            "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED",
+            "ANALYSIS_PRESERVED"
+          ],
+          "verifierCandidates": [
+            "helm template",
+            "YAML parse",
+            "kube schema"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "b5432750b8bd74183c780268822aa6db43c607ce7164223f6f2a82b374f32a07"
+        }
+      ]
+    },
+    "patternNursery": {
+      "meaning": "Frequent structural or edit patterns mined from caller-supplied observations. Candidates never self-promote.",
+      "storedCandidates": [],
+      "automaticPromotion": false
+    }
+  },
+  "structuralSkeletons": [
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.helm-templates.01.v1",
+      "languageId": "helm-templates",
+      "construct": "template action",
+      "nativeUnit": "chart template",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "template action"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "VALUE_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TEMPLATE_SCOPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "349e2cf3abf650822a3f86e26a118e312ba0a61cb486fe8cde9d86e586950028"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.helm-templates.02.v1",
+      "languageId": "helm-templates",
+      "construct": "value reference",
+      "nativeUnit": "chart template",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "value reference"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "VALUE_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TEMPLATE_SCOPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "7a93ea25347d2aa9373bc26cdbbf17391e881bc3610b611db9a0c6a30df82de5"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.helm-templates.03.v1",
+      "languageId": "helm-templates",
+      "construct": "include",
+      "nativeUnit": "chart template",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "include"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "VALUE_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TEMPLATE_SCOPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "cd3d5230a8bcf170d8c2b999bd15777d72ad56b64cd185a7657b32c0ee90252b"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.helm-templates.04.v1",
+      "languageId": "helm-templates",
+      "construct": "define",
+      "nativeUnit": "chart template",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "define"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "VALUE_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TEMPLATE_SCOPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "100ccacaa12f1f7e8d5ad443068279cc987058de33bbe88a6efcd0ac2dd2885b"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.helm-templates.05.v1",
+      "languageId": "helm-templates",
+      "construct": "range",
+      "nativeUnit": "chart template",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "range"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "VALUE_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TEMPLATE_SCOPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "bcbec36214cb8cf36e9829a0ade11cfcc9b989f1c1b1efc700abf4e82b5ad6b5"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.helm-templates.06.v1",
+      "languageId": "helm-templates",
+      "construct": "if",
+      "nativeUnit": "chart template",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "if"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "VALUE_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TEMPLATE_SCOPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "b8c43971782a568ba018987bb568e953586f326702ba00878e6da46cf73d52cb"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.helm-templates.07.v1",
+      "languageId": "helm-templates",
+      "construct": "with",
+      "nativeUnit": "chart template",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "with"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "VALUE_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TEMPLATE_SCOPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "495ce5fb9bfedcf26ae2d8a2b844fd427f05959f800df7b9484f5cdcf5011e42"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.helm-templates.08.v1",
+      "languageId": "helm-templates",
+      "construct": "pipeline",
+      "nativeUnit": "chart template",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "pipeline"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "VALUE_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "TEMPLATE_SCOPE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "03f3160a6f4887b4d04fce0ee973708bc1d8f98ff5b3b16389e0dd9511a9060d"
+    }
+  ],
+  "fastUse": {
+    "indexKeys": [
+      "languageId",
+      "intent",
+      "nativeBinding"
+    ],
+    "deterministicMachineUse": true,
+    "aiCapsuleUse": true,
+    "sourceRendererOptional": true
+  },
+  "policy": {
+    "frequencyIsNotCorrectness": true,
+    "templateIsNotAuthority": true,
+    "minedCandidateIsNotVerifiedTemplate": true,
+    "automaticPromotion": false,
+    "automaticMutation": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "fd0bd45829ef9ad129061b7b5fdb82089f6e10a5515e02353b0df80cf65c8f93"
+}

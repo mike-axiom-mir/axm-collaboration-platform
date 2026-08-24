@@ -1,0 +1,69 @@
+{
+  "schema": "axm.code.prebuild-preview-topologies.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "authority": "NONE",
+  "meaning": "Role-level construction topologies for visualizing and structurally simulating a build recipe before source generation. Connections are candidate boundaries until concrete role languages/adapters are bound.",
+  "topologies": [
+    {"recipeId":"browser-game","connections":[
+      {"from":"document-shell","to":"style-layout","routeClassCandidates":["HOSTED_DSL"],"required":true},
+      {"from":"document-shell","to":"game-runtime","routeClassCandidates":["HOSTED_DSL","SAME_RUNTIME_IMPORT"],"required":true},
+      {"from":"game-runtime","to":"gpu-stage","routeClassCandidates":["SHADER_PIPELINE"],"required":false},
+      {"from":"high-performance-module","to":"game-runtime","routeClassCandidates":["FFI_ABI","COMPILE_TARGET"],"required":false},
+      {"from":"config-assets","to":"game-runtime","routeClassCandidates":["FILE_DATA_CONTRACT","HOSTED_DSL"],"required":false}
+    ]},
+    {"recipeId":"native-game","connections":[
+      {"from":"build","to":"engine-runtime","routeClassCandidates":["BUILD_ORCHESTRATION","COMPILE_LINK"],"required":true},
+      {"from":"engine-runtime","to":"gameplay-scripting","routeClassCandidates":["EMBED_RUNTIME","COMPILE_LINK","SAME_RUNTIME_IMPORT"],"required":false},
+      {"from":"engine-runtime","to":"gpu-stage","routeClassCandidates":["SHADER_PIPELINE"],"required":true},
+      {"from":"config-assets","to":"engine-runtime","routeClassCandidates":["FILE_DATA_CONTRACT","HOSTED_DSL"],"required":false}
+    ]},
+    {"recipeId":"web-application","connections":[
+      {"from":"document-ui","to":"browser-runtime","routeClassCandidates":["HOSTED_DSL","SAME_RUNTIME_IMPORT"],"required":true},
+      {"from":"browser-runtime","to":"service-runtime","routeClassCandidates":["NETWORK_PROTOCOL"],"required":false},
+      {"from":"api-contract","to":"browser-runtime","routeClassCandidates":["SCHEMA_CODEGEN"],"required":false},
+      {"from":"api-contract","to":"service-runtime","routeClassCandidates":["SCHEMA_CODEGEN"],"required":false},
+      {"from":"service-runtime","to":"data-store","routeClassCandidates":["DATA_QUERY_BOUNDARY"],"required":false},
+      {"from":"deployment","to":"service-runtime","routeClassCandidates":["INFRA_DEPLOYMENT"],"required":false}
+    ]},
+    {"recipeId":"api-service","connections":[
+      {"from":"api-contract","to":"service-runtime","routeClassCandidates":["SCHEMA_CODEGEN"],"required":false},
+      {"from":"service-runtime","to":"data-store","routeClassCandidates":["DATA_QUERY_BOUNDARY"],"required":false},
+      {"from":"build","to":"service-runtime","routeClassCandidates":["BUILD_ORCHESTRATION"],"required":false},
+      {"from":"deployment","to":"service-runtime","routeClassCandidates":["INFRA_DEPLOYMENT"],"required":false}
+    ]},
+    {"recipeId":"embedded-device","connections":[
+      {"from":"build-toolchain","to":"firmware-runtime","routeClassCandidates":["BUILD_ORCHESTRATION","COMPILE_LINK"],"required":true},
+      {"from":"firmware-runtime","to":"hardware-contract","routeClassCandidates":["HARDWARE_INTERFACE"],"required":false},
+      {"from":"configuration","to":"firmware-runtime","routeClassCandidates":["FILE_DATA_CONTRACT","HOSTED_DSL"],"required":false},
+      {"from":"protocol","to":"firmware-runtime","routeClassCandidates":["SCHEMA_CODEGEN","FILE_DATA_CONTRACT"],"required":false}
+    ]},
+    {"recipeId":"mobile-application","connections":[
+      {"from":"app-runtime","to":"backend","routeClassCandidates":["NETWORK_PROTOCOL"],"required":false},
+      {"from":"service-contract","to":"app-runtime","routeClassCandidates":["SCHEMA_CODEGEN"],"required":false},
+      {"from":"service-contract","to":"backend","routeClassCandidates":["SCHEMA_CODEGEN"],"required":false},
+      {"from":"local-config","to":"app-runtime","routeClassCandidates":["FILE_DATA_CONTRACT","HOSTED_DSL"],"required":false}
+    ]},
+    {"recipeId":"data-pipeline","connections":[
+      {"from":"orchestration-transform","to":"query","routeClassCandidates":["DATA_QUERY_BOUNDARY"],"required":true},
+      {"from":"schema-config","to":"orchestration-transform","routeClassCandidates":["FILE_DATA_CONTRACT","SCHEMA_CODEGEN","HOSTED_DSL"],"required":false},
+      {"from":"build-deploy","to":"orchestration-transform","routeClassCandidates":["BUILD_ORCHESTRATION","INFRA_DEPLOYMENT"],"required":false}
+    ]},
+    {"recipeId":"compiler-tool","connections":[
+      {"from":"grammar-pattern","to":"compiler-runtime","routeClassCandidates":["HOSTED_DSL","TEST_HARNESS"],"required":true},
+      {"from":"build","to":"compiler-runtime","routeClassCandidates":["BUILD_ORCHESTRATION"],"required":true},
+      {"from":"schema-config","to":"compiler-runtime","routeClassCandidates":["FILE_DATA_CONTRACT","HOSTED_DSL"],"required":false}
+    ]},
+    {"recipeId":"blockchain-application","connections":[
+      {"from":"client-ui","to":"contract-runtime","routeClassCandidates":["NETWORK_PROTOCOL"],"required":false},
+      {"from":"schema-interface","to":"client-ui","routeClassCandidates":["SCHEMA_CODEGEN"],"required":false},
+      {"from":"schema-interface","to":"contract-runtime","routeClassCandidates":["SCHEMA_CODEGEN"],"required":false},
+      {"from":"build-deploy","to":"contract-runtime","routeClassCandidates":["BUILD_ORCHESTRATION","INFRA_DEPLOYMENT"],"required":false}
+    ]},
+    {"recipeId":"scientific-compute-app","connections":[
+      {"from":"numeric-runtime","to":"accelerator","routeClassCandidates":["FFI_ABI","SHADER_PIPELINE"],"required":false},
+      {"from":"data-contract","to":"numeric-runtime","routeClassCandidates":["DATA_QUERY_BOUNDARY","FILE_DATA_CONTRACT"],"required":false},
+      {"from":"build","to":"numeric-runtime","routeClassCandidates":["BUILD_ORCHESTRATION"],"required":false}
+    ]}
+  ]
+}

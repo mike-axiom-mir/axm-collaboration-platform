@@ -1,0 +1,1395 @@
+{
+  "schema": "axm.code.language-template-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "bazel-starlark",
+  "organId": "code.organ.bazel-starlark.v1",
+  "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+  "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+  "eyeId": "code.eye.bazel-starlark.v1",
+  "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+  "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53",
+  "lanes": {
+    "verifiedVault": {
+      "meaning": "Evidence-bound machine recipe templates. Verified refers to template mechanics/evidence binding, not arbitrary generated source correctness.",
+      "templateCount": 12,
+      "templates": [
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.native-parse-snapshot.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "understand",
+          "nativeBindings": [
+            "Starlark",
+            "Bazel",
+            "bzl/build file"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "8144747299254e6ec001d40d396bb94e1cd8c9a597a33ab2308f683eaa9225d7"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.symbol-impact-map.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "impact",
+          "nativeBindings": [
+            "file/block/target",
+            "macro"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "REFERENCE_RESOLVED"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "32f2c8773c659ed279cd07531c1e60700682adfe4b52d9e5417ebb2635d949ad"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.dependency-closure.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "dependencies",
+          "nativeBindings": [
+            "load",
+            "bzl/build file"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ACYCLIC_GRAPH"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "ea4c1ecdd62e907031b9b121835bb9134f09925983df26c7e88cc920102f03a9"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.type-state-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "impact",
+          "nativeBindings": [
+            "host-dsl",
+            "label resolution"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "NO_COERCION_DELTA"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "14d733defa24d1f0a117c3874012d54d5d0a2149ba36e4228491ec96862f1aac"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.control-effect-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "impact",
+          "nativeBindings": [
+            "dependency resolution, build graph and generated outputs",
+            "bzl/build file"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ORDERING_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "316a8e0f2f8fd045061675baf3eb58ef57d9acf0ba92fbf3a503b462087322dd"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.rewrite-hazard-guard.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "refactor",
+          "nativeBindings": [
+            "analysis vs execution"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "HAZARD_NOT_RELEVANT:analysis vs execution"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "ede958e03afaf8b0006bdc17e043408e70ccad7b19977066a97aec26b17b15bb"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.native-verifier-ladder.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "verification",
+          "nativeBindings": [
+            "bazel query/build smoke"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "e8cce98afcd129bb1e5a10329032431fea2bf262474b547da75b6399206feca5"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.measure-before-optimization.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "performance",
+          "nativeBindings": [
+            "bzl/build file",
+            "load"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.performance-build.03",
+              "phase": "performance-build",
+              "opcode": "BUILD_GRAPH_INVALIDATION",
+              "emits": "BUILD_INVALIDATION_FACT",
+              "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "BUILD_GRAPH_STABLE"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "a934c98ea216188526f1543087880f4de7bde4f827ddc0aaed19212fcdeddc4c"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.debug-hypothesis-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "debug",
+          "nativeBindings": [
+            "build/configuration graph",
+            "declarative plus host expressions"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.debugging.04",
+              "phase": "debugging",
+              "opcode": "STATE_CONTROL_TRACE",
+              "emits": "TRACE_PLAN",
+              "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "TRACE_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "2600101598617de8f5870e70f5cfc4caa26ec989e54ed192eba1672910c74e15"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.cross-language-comparison.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "discovery",
+          "nativeBindings": [
+            "large monorepo build",
+            "hermetic build",
+            "remote cache",
+            "hermetic build DSL"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.discovery.05",
+              "phase": "discovery",
+              "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+              "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+              "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "3954bf544207822c3f7bae5fca14d14a856b70452d8a1edf14ca2fe7aa18ba57"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.safe-refactor-preflight.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "refactor",
+          "nativeBindings": [
+            "Starlark",
+            "Bazel",
+            "bzl/build file",
+            "file/block/target",
+            "macro",
+            "load",
+            "host-dsl",
+            "label resolution",
+            "dependency resolution, build graph and generated outputs",
+            "analysis vs execution",
+            "bazel query/build smoke"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            },
+            {
+              "ruleId": "code.cheat.bazel-starlark.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            },
+            {
+              "ruleId": "code.cheat.bazel-starlark.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            },
+            {
+              "ruleId": "code.cheat.bazel-starlark.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            },
+            {
+              "ruleId": "code.cheat.bazel-starlark.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            },
+            {
+              "ruleId": "code.cheat.bazel-starlark.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            },
+            {
+              "ruleId": "code.cheat.bazel-starlark.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE",
+            "REFERENCE_RESOLVED",
+            "ACYCLIC_GRAPH",
+            "NO_COERCION_DELTA",
+            "ORDERING_EQUIVALENT",
+            "HAZARD_NOT_RELEVANT:analysis vs execution",
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "e4c909bbac3a4cce08600a34a56b0d04ec8a005296cdd89ba8ee560972eb1d25"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.bazel-starlark.regression-defense-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "bazel-starlark",
+          "intent": "verification",
+          "nativeBindings": [
+            "bazel query/build smoke",
+            "load",
+            "bzl/build file",
+            "file/block/target"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "1f43cfd8e179f0ddb013bb96bb237be852968df403597bd62c7dc8ecbbbc30dd",
+            "grammarProfileDigest": "d17e81303ad607d811ef579d57dfcdaee2d2ce515dbbcfa8842471922e28f5df",
+            "eyeDigest": "de71fe93f4f2b6918448ceb2225001dd7a80e24d36806dd61ee515f4c45dac01",
+            "cheatcodeBankDigest": "cfc2fadd5cf6c9e5ddaa3665861aeba2d20c04639f28761a2269b21c90000a53"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "TARGET_OR_RESOURCE",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "DEPENDENCY_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "VALUE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PATH_OR_SELECTOR",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.bazel-starlark.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            },
+            {
+              "ruleId": "code.cheat.bazel-starlark.debugging.03",
+              "phase": "debugging",
+              "opcode": "DEPENDENCY_ISOLATION",
+              "emits": "DEPENDENCY_ISOLATION_PLAN",
+              "next": "ISOLATE_ONE_EDGE_AT_A_TIME"
+            },
+            {
+              "ruleId": "code.cheat.bazel-starlark.performance-build.04",
+              "phase": "performance-build",
+              "opcode": "ANALYSIS_CACHE_INVALIDATION",
+              "emits": "ANALYSIS_INVALIDATION_SET",
+              "next": "DROP_ONLY_INVALID_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE",
+            "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED",
+            "ANALYSIS_PRESERVED"
+          ],
+          "verifierCandidates": [
+            "Starlark parse",
+            "bazel query/build smoke"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "0d7e9ded5c838e86aee32d5be6328026c4fc83ec73ef97ec063bdc7e16abb6c1"
+        }
+      ]
+    },
+    "patternNursery": {
+      "meaning": "Frequent structural or edit patterns mined from caller-supplied observations. Candidates never self-promote.",
+      "storedCandidates": [],
+      "automaticPromotion": false
+    }
+  },
+  "structuralSkeletons": [
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.bazel-starlark.01.v1",
+      "languageId": "bazel-starlark",
+      "construct": "rule",
+      "nativeUnit": "bzl/build file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "rule"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "aecba6c8b7d27e806c2bd0f679e7ddf34c3462381e91c774ca03293a5bdd5822"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.bazel-starlark.02.v1",
+      "languageId": "bazel-starlark",
+      "construct": "macro",
+      "nativeUnit": "bzl/build file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "macro"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "8ebfed6851e32d8fcb56fea4b9839689b42ced3ce0bbf596cfd702ab74a64d4c"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.bazel-starlark.03.v1",
+      "languageId": "bazel-starlark",
+      "construct": "function",
+      "nativeUnit": "bzl/build file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "function"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "b09778d1540d8b9fb76e31108a6155736504e9428452db460f97ab40b7038f09"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.bazel-starlark.04.v1",
+      "languageId": "bazel-starlark",
+      "construct": "load",
+      "nativeUnit": "bzl/build file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "load"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "7a3d9552900628ebf6ea77bd82e0d0b215d469405da11dc432097bad19ee47c3"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.bazel-starlark.05.v1",
+      "languageId": "bazel-starlark",
+      "construct": "target",
+      "nativeUnit": "bzl/build file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "target"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "94ec2d3ddccdf47219f3208a700a6171ae953050608da2c41fb8f084d338404e"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.bazel-starlark.06.v1",
+      "languageId": "bazel-starlark",
+      "construct": "attribute",
+      "nativeUnit": "bzl/build file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "attribute"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "9b4cdcc92950e5564b4a9d4ff6d835bf058dd1dbb5a3696867f0b653c83cdcd0"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.bazel-starlark.07.v1",
+      "languageId": "bazel-starlark",
+      "construct": "select",
+      "nativeUnit": "bzl/build file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "select"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "36156a70fc39070fe2270145c8af26dc156a9fd87d617e3b25a95b9ea83f8966"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.bazel-starlark.08.v1",
+      "languageId": "bazel-starlark",
+      "construct": "provider",
+      "nativeUnit": "bzl/build file",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "provider"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "TARGET_OR_RESOURCE",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "DEPENDENCY_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "6b05dc86cd71ed9dc11a8bf7d582a049c58d95e2009ce978f81ec2ef036b7ef3"
+    }
+  ],
+  "fastUse": {
+    "indexKeys": [
+      "languageId",
+      "intent",
+      "nativeBinding"
+    ],
+    "deterministicMachineUse": true,
+    "aiCapsuleUse": true,
+    "sourceRendererOptional": true
+  },
+  "policy": {
+    "frequencyIsNotCorrectness": true,
+    "templateIsNotAuthority": true,
+    "minedCandidateIsNotVerifiedTemplate": true,
+    "automaticPromotion": false,
+    "automaticMutation": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "72791983732e1b055c2837e5ab19bb987844824f90c532472c578af995f245eb"
+}
