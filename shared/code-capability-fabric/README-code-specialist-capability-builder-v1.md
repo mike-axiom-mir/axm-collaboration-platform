@@ -1,11 +1,12 @@
 # Code Specialist Capability Builder v1 (TEST)
 
-This v2.2 rung gives registered Code Capability Fabric specialists real but
+This v2.3 rung gives registered Code Capability Fabric specialists real but
 bounded construction routes. The initial build-profile catalog contains:
 
 - `organ.code.data-schema` → `closed-json-schema-validator@0.1.0`; and
 - `organ.code.markup-structure` → `static-accessible-html-page@0.1.0`; and
 - `organ.code.application-logic` + Python → `bounded-python-record-transform@0.1.0`; and
+- `organ.code.application-logic` + JavaScript → `pure-json-transform@1.1.0`; and
 - `organ.code.style-presentation` + CSS → `bounded-css-token-stylesheet@0.1.0`; and
 - `organ.code.markup-structure` + SVG → `svg-status-badge@1.1.0`.
 
@@ -18,7 +19,7 @@ The builder requires all of the following exact inputs:
 
 - a v1.6 specialist-to-Organ-intent request and deterministically rebuilt plan;
 - one exact admitted data-schema, HTML markup-structure, Python
-  application-logic, CSS style-presentation, or SVG markup-structure artifact
+  application-logic, JavaScript application-logic, CSS style-presentation, or SVG markup-structure artifact
   lane;
 - one exact registered build profile whose language matches that artifact;
 - a human-reviewed Capability Fabric request whose source binds the v1.6 plan;
@@ -56,6 +57,14 @@ raw SVG, paths, style, script, events, URLs, external
 resources, and animation are not accepted. Static fixture parity is not a
 browser, accessibility, or visual-quality claim.
 
+The JavaScript hand consumes only a bounded own-data-property string record
+and emits one declared string field. It rejects accessors without invoking
+them, symbols, custom prototypes, unsafe field names, non-string values,
+excessive keys, excessive string lengths, and byte-ceiling violations. Its
+configuration is deeply frozen and it does not copy an arbitrary input value
+or reference. This is one narrow Node-compatible transform contract, not
+general JavaScript or browser behavior.
+
 The result distinguishes what is proven from what remains unknown. Exact
 specialist lineage, recipe lineage, candidate structure, byte lineage, portable
 paths, and resource ceilings can pass. Runtime behavior remains `UNKNOWN`; the
@@ -64,7 +73,7 @@ nonce replay prevention are not claimed.
 
 Only the closed JSON Schema validator, static HTML-page renderer, one typed CSS
 token-stylesheet renderer, one strict SVG status-badge renderer, and one
-string-only Python record transform are registered. The CSS lane does not claim
+string-only transform in each of Python and JavaScript are registered. The CSS lane does not claim
 arbitrary CSS generation or visual correctness; the SVG lane does not claim
 general SVG, vector-scene creation, or browser correctness; the Python lane does
 not claim general Python generation or runtime correctness. Broader CSS, SVG,

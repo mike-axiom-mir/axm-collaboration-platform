@@ -19,7 +19,7 @@ function resealCandidate(candidate){
 function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
-  check(catalog.recipes.length===8,'reviewed catalog has one portable SKILL plus seven bounded HAND recipes including Python, CSS, and strict SVG source');
+  check(catalog.recipes.length===8,'reviewed catalog has one portable SKILL plus seven bounded HAND recipes including Python, strict JavaScript, CSS, and strict SVG source');
   check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===7&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.variants.some(function(variant){return variant.id===row.candidatePolicy.defaultVariantId;});}),'every reviewed recipe explicitly defaults to one named candidate variant');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
@@ -84,6 +84,17 @@ function main(){
   check(svgHiddenPlan.status==='HELD'&&svgHiddenPlan.holds[0].code==='CONTRACT_HOLD','SVG raw-source parameter expansion is held before builder invocation');
   const svgColorInjection=Fabric.clone(svgRecipe.exampleRequest);svgColorInjection.parameters.foreground='url(https://example.test/a)';const svgColorPlan=Fabric.planBuild(Fabric.sealRequest(svgColorInjection,true),catalog);
   check(svgColorPlan.status==='HELD'&&svgColorPlan.holds[0].code==='CONTRACT_HOLD','SVG colour URL injection is held by the exact recipe contract');
+
+  const javascriptRecipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),javascriptPackage=packages[javascriptRecipe.id],javascriptSource=javascriptPackage.files['capability.js'],javascriptCompilation=JSON.parse(javascriptPackage.files['compilation.receipt.json']);
+  check(javascriptRecipe.version==='1.1.0'&&javascriptRecipe.builderDigest===BuilderRegistry.describe('pure-json-transform-v1').implementationDigest,'JavaScript transform recipe binds the exact hardened builder version and digest');
+  check(javascriptSource.includes('inspectRecord')&&javascriptSource.includes('recordBytes')&&!javascriptSource.includes('JSON.stringify(input)'),'JavaScript transform validates own data descriptors and measures only inspected string records without serializing arbitrary input');
+  check(javascriptSource.includes('INPUT_OBJECT_REQUIRED')&&javascriptSource.includes('INPUT_FIELD_UNSUPPORTED')&&javascriptSource.includes('INPUT_VALUE_INVALID')&&javascriptSource.includes('INPUT_KEY_LIMIT')&&javascriptSource.includes('INPUT_BYTES_EXCEEDED')&&javascriptSource.includes('OUTPUT_BYTES_EXCEEDED'),'JavaScript transform emits the complete typed refusal surface');
+  check(javascriptPackage.files['selftest.js'].includes('getterRead')&&javascriptPackage.files['selftest.js'].includes('inheritedHookRead')&&javascriptPackage.files['selftest.js'].includes("'INPUT_BYTES_EXCEEDED'")&&javascriptPackage.files['selftest.js'].includes("'OUTPUT_BYTES_EXCEEDED'"),'JavaScript emitted proof covers accessor and inherited-hook non-invocation plus both real byte-budget adversaries');
+  check(javascriptSource.includes('deepFreeze')&&javascriptSource.includes('Object.defineProperty(output'),'JavaScript transform freezes exact configuration and emits a fresh one-field output record');
+  check(!/require\(['"](?:fs|node:fs|child_process|node:child_process|http|https|net|tls|dgram)['"]\)|\bfetch\s*\(|provider\.call|process\.(?:env|cwd)|Date\.now|Math\.random|new Function|\beval\s*\(/.test(javascriptSource),'JavaScript transform source contains no filesystem, process, network, provider, environment, clock, randomness, or dynamic-code surface');
+  check(javascriptCompilation.generatedCodeExecuted===false&&javascriptCompilation.testsEmitted===true,'JavaScript compilation receipt distinguishes emitted tests from execution');
+  const javascriptHidden=Fabric.clone(javascriptRecipe.exampleRequest);javascriptHidden.parameters.inputField='__proto__';const javascriptHiddenPlan=Fabric.planBuild(Fabric.sealRequest(javascriptHidden,true),catalog);
+  check(javascriptHiddenPlan.status==='HELD'&&javascriptHiddenPlan.holds[0].code==='CONTRACT_HOLD','JavaScript unsafe field expansion is held before builder invocation');
 
   const recipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),base=Fabric.sealRequest(recipe.exampleRequest,true),changedDraft=Fabric.clone(recipe.exampleRequest);changedDraft.parameters.defaultValue='different';const changed=Fabric.sealRequest(changedDraft,true);
   check(base.requestDigest!==changed.requestDigest,'semantic request change alters request digest');

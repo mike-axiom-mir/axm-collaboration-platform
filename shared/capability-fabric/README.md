@@ -72,7 +72,7 @@ through plan, compilation, candidate, module contract, and receipt.
   or changes CANON.
 
 The reviewed catalog contains seven executable `HAND` recipes—a closed JSON
-Schema validator, a pure JSON transform, a static semantic HTML-page renderer,
+Schema validator, a strict bounded JavaScript string-record transform, a static semantic HTML-page renderer,
 one bounded CSS token stylesheet, a strict text-only SVG status-badge creation
 hand, a Workshop Direction hand-request adapter, and one bounded Python record
 transform—plus one host-mediated portable `SKILL` for bounded evidence-first
@@ -81,6 +81,15 @@ shared use still requires Mike's merge decision and visual behavior remains
 unproven until a separate authorized browser run. The Python source and
 selftest remain inert; runtime behavior is unproven until a separately
 authorized disposable-sandbox run.
+
+The JavaScript transform accepts only a closed own-data-property record whose
+keys are safe bounded field names and whose values are bounded strings. It
+refuses accessors without invoking them, symbols, custom prototypes, unsafe
+fields, non-string values, excessive keys, and input/output byte overflow. It
+emits one fresh declared string field and has no filesystem, process, provider,
+network, environment, clock, randomness, or lifecycle authority. The narrow
+trusted composition fixture proves this exact contract only; general
+JavaScript and browser behavior remain unproven.
 
 The SVG badge hand accepts only a closed plain JSON record containing optional
 `label` and `value` strings. It refuses XML-invalid text and inherited

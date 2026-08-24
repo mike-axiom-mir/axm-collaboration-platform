@@ -398,13 +398,14 @@ node shared/code-capability-fabric/selftest-code-specialist-organ-intent-adapter
 
 ## Registered code-family build profiles → detached candidates
 
-The additive v2.2 `TEST` rung moves code-family binding out of hard-coded
+The additive v2.3 `TEST` rung moves code-family binding out of hard-coded
 builder branches and into an exact, digest-bound build-profile catalog. The
 initial profiles connect `organ.code.data-schema` to the closed JSON Schema
 validator recipe and `organ.code.markup-structure` to the bounded semantic
 HTML-page renderer, Python application logic to one string-only record-transform
-recipe, CSS style presentation to one typed design-token stylesheet recipe, and
-SVG markup structure to the strict existing text-only status-badge recipe.
+recipe, JavaScript application logic to one strict byte-bound string-record
+transform recipe, CSS style presentation to one typed design-token stylesheet
+recipe, and SVG markup structure to the strict existing text-only status-badge recipe.
 Later or broader families require their own Code Atlas language, specialist
 binding, source-reviewed recipe, builder digest, and evidence plan; unsupported
 families produce typed gaps.
