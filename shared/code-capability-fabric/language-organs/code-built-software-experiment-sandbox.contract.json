@@ -1,0 +1,107 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-built-software-experiment-sandbox",
+  "version": "v1.0",
+  "status": "TEST",
+  "provides": [
+    "axm.code.built-software-sandbox-workspace.v1",
+    "axm.code.built-software-experiment.v1",
+    "axm.code.software-experiment-execution-request.v1",
+    "axm.code.software-experiment-hardware-health.v1",
+    "axm.code.external-sandbox-executor-receipt.v1",
+    "axm.code.software-experiment-outcome.v1",
+    "axm.code.software-experiment-save.v1",
+    "axm.code.software-experiment-save-set.v1",
+    "axm.code.software-experiment-iteration-persistence.v1",
+    "axm.code.software-experiment-draft-evidence.v1",
+    "axm.code.software-experiment-summary.v1"
+  ],
+  "consumes": [
+    "axm.code.work-direction.v1",
+    "axm.code.production-batch.v1",
+    "axm.code.production-draft-revision.v1 with rendered or compiled artifact digest",
+    "external enforced sandbox executor adapter identity",
+    "external containment evidence receipt",
+    "external hardware-health telemetry evidence",
+    "optional physical save-payload store below this contract layer"
+  ],
+  "permissions": [],
+  "sandboxScope": {
+    "inside": "software built by the creator",
+    "outside": [
+      "creator reasoning",
+      "bold idea formation",
+      "production draft comparison",
+      "human review"
+    ],
+    "runtimeEnforcement": "external OS process, container, VM, WASM runtime, mobile app sandbox or equivalent required",
+    "thisModuleProvidesRuntimeContainment": false
+  },
+  "resourceModel": {
+    "experimentWork": "May continue while externally observed hardware health and shared pressure remain acceptable.",
+    "notHardwareSafetySignals": [
+      "token count alone",
+      "reasoning depth alone",
+      "high utilization alone"
+    ],
+    "pressureResponsesInOrder": [
+      "reduce concurrency",
+      "reduce batch size",
+      "queue work",
+      "pause and resume after fresh health evidence"
+    ],
+    "forbiddenSilentResponses": [
+      "lower reasoning quality",
+      "reduce verification depth",
+      "rewrite the requested product into a cheaper one"
+    ]
+  },
+  "saveGate": {
+    "activeSlots": 5,
+    "maxBytesPerActiveSlot": 100000000,
+    "maxActiveBytesAcrossSlots": 500000000,
+    "scope": "persistent active experiment payloads",
+    "transientExperimentVolume": "not capped by save-slot count while hardware remains healthy",
+    "sixthSlot": "refused",
+    "fullSetBehavior": "remain transient or explicitly replace one named slot using its current save digest",
+    "replacementHistory": "retain old digest and metadata receipt; old payload bytes need not remain active",
+    "physicalPayloadStorage": "provided by a lower bound storage adapter, not by this contract module"
+  },
+  "behavior": {
+    "experiment": "Bind a rendered production draft artifact to hypotheses, unknowns, fixtures and required observations.",
+    "execution": "Issue an inert request to an explicitly bound external enforced executor; this module executes nothing.",
+    "observation": "Seal digest-bound executor, containment, hardware and outcome evidence without retaining raw stdout, stderr, source or generated bulk data.",
+    "retention": "A large experiment may retain a coverage summary, recipes, representative outputs and selected artifacts while declaring transient release before the run.",
+    "return": "Produce draft-evidence candidates that remain separate from admission, selection, promotion, merge and CANON."
+  },
+  "boundaries": {
+    "refuses": [
+      "sandboxing the creator's reasoning",
+      "calling a text declaration OS containment",
+      "candidate execution by this metadata module",
+      "execution without an explicit enforced executor adapter",
+      "source workspace write from candidate software",
+      "network by default",
+      "containment claims without evidence digest",
+      "hardware safety defined only by token or compute quota",
+      "silent reasoning-quality downgrade under pressure",
+      "more than five active save slots",
+      "more than 100000000 active payload bytes in one slot",
+      "silent save-slot overwrite",
+      "sixth save creation during a loop",
+      "transient release without predeclared retention and coverage evidence",
+      "experiment success as correctness admission or promotion",
+      "automatic workspace mutation install deployment merge or canon"
+    ]
+  },
+  "truth": {
+    "creatorIdeasRemainUnsandboxed": true,
+    "builtSoftwareRequiresExternalRuntimeContainment": true,
+    "runtimeContainmentProvidedHere": false,
+    "fiveSaveSlotsArePersistenceGate": true,
+    "saveGateIsNotExperimentVolumeCap": true,
+    "millionItemExperimentRepresentable": true,
+    "outcomeIsNotCorrectness": true,
+    "noAutomaticPromotion": true
+  }
+}
