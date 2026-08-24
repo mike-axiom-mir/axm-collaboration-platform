@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "code-capability-fabric",
-  "version": "v0.8",
+  "version": "v0.9",
   "status": "TEST",
   "provides": [
     "axm.code-capability-provider/v1",
@@ -53,7 +53,13 @@
     "axm.code-route-relation/v1",
     "axm.code-build-route-plan/v1",
     "axm.code-route-language-view/v1",
-    "axm.code-route-knowledge-snapshot/v1"
+    "axm.code-route-knowledge-snapshot/v1",
+    "axm.code.prebuild-plan.v1",
+    "axm.code.prebuild-structural-simulation.v1",
+    "axm.code.prebuild-preview.v1",
+    "axm.code.prebuild-twin-snapshot.v1",
+    "axm.code.candidate-admission-policy.v1",
+    "axm.code.candidate-admission-report.v1"
   ],
   "consumes": [
     "provider descriptors",
@@ -70,6 +76,7 @@
     "axm.code.language-machine-cheatcode-bank.v1 generated banks",
     "axm.code.language-template-bank.v1 generated template banks",
     "axm.code.route-knowledge-atlas.v1 route knowledge",
+    "axm.code.prebuild-preview-topologies.v1 role-level preview topology",
     "caller-supplied code build observations",
     "caller-supplied requested discipline perspectives",
     "caller-supplied composite role identifiers",
@@ -77,10 +84,14 @@
     "caller-supplied build goals",
     "caller-supplied active language identities",
     "caller-supplied preferred language identities",
+    "caller-supplied explicit role/language bindings",
     "caller-supplied route purpose tags",
+    "caller-supplied candidate digests",
+    "caller-supplied verifier observations",
+    "caller-supplied boundary-change declarations",
+    "caller-supplied existing-test presence",
     "caller-supplied declared development pressures",
-    "caller-supplied fact codes and analysis signals",
-    "caller-supplied verifier observations"
+    "caller-supplied fact codes and analysis signals"
   ],
   "permissions": [],
   "handoffs": {
@@ -109,7 +120,13 @@
       "axm.code-route-relation/v1",
       "axm.code-build-route-plan/v1",
       "axm.code-route-language-view/v1",
-      "axm.code-route-knowledge-snapshot/v1"
+      "axm.code-route-knowledge-snapshot/v1",
+      "axm.code.prebuild-plan.v1",
+      "axm.code.prebuild-structural-simulation.v1",
+      "axm.code.prebuild-preview.v1",
+      "axm.code.prebuild-twin-snapshot.v1",
+      "axm.code.candidate-admission-policy.v1",
+      "axm.code.candidate-admission-report.v1"
     ],
     "accepts": [
       "axm.code-capability-request/v1",
@@ -123,7 +140,13 @@
       "caller-supplied active language identities",
       "caller-supplied preferred language identities",
       "caller-supplied build goal",
+      "caller-supplied explicit role/language bindings",
       "caller-supplied route purpose tags",
+      "caller-supplied candidate digest",
+      "caller-supplied verifier observations",
+      "caller-supplied boundary changes",
+      "caller-supplied existing-test presence",
+      "caller-supplied admission mode",
       "caller-supplied requested discipline perspectives",
       "caller-supplied composite role identifiers",
       "caller-supplied domain overlays",
@@ -201,7 +224,22 @@
       "automatic-toolchain-execution-from-route",
       "automatic-workspace-mutation-from-route",
       "automatic-deployment-from-route",
-      "automatic-promotion-from-route"
+      "automatic-promotion-from-route",
+      "prebuild-preview-as-runtime-proof",
+      "prebuild-plan-as-best-architecture-proof",
+      "automatic-language-selection-from-prebuild",
+      "unresolved-required-role-as-source-generation-ready",
+      "unresolved-required-route-as-source-generation-ready",
+      "compile-pass-as-runtime-proof",
+      "static-analysis-clean-as-bug-free-proof",
+      "test-pass-as-universal-correctness",
+      "unknown-required-admission-check-as-pass",
+      "admissible-candidate-as-promoted-code",
+      "automatic-workspace-mutation-from-admission",
+      "automatic-tool-execution-from-admission",
+      "automatic-install-from-admission",
+      "automatic-deployment-from-admission",
+      "automatic-promotion-from-admission"
     ]
   },
   "lifecycle": {
