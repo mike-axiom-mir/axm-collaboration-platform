@@ -9,6 +9,12 @@ on:
       - "shared/code-capability-fabric/language-organs/build-grammar-profiles.py"
       - "shared/code-capability-fabric/language-organs/grammar-profile-registry.js"
       - "shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js"
+      - "shared/code-capability-fabric/language-organs/registry.js"
+      - "shared/code-capability-fabric/module.contract.json"
+
+concurrency:
+  group: axm-language-grammar-profile-steward-regen
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -69,6 +75,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No generated grammar-profile changes to commit."
           else
-            git commit -m "feat(fabric): materialize 102 grammar-specific organ profiles"
+            git commit -m "chore(fabric): refresh grammar-aware derived views"
             git push origin HEAD:codex/code-capability-fabric-language-organs-v1
           fi
