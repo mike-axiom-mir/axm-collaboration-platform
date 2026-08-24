@@ -130,6 +130,7 @@ assert.strictEqual(card.focusStep.id, 'runtime');
 assert.strictEqual(card.focusSelection, 'DERIVED_ACTIVE_STEP');
 assert.strictEqual(card.recentScratch.length, 2);
 assert.strictEqual(card.impact.affectedCount, 2);
+assert.strictEqual(card.production, null);
 assert(card.revisitTriggers.includes('BEFORE_EDIT_PROGRAM'));
 assert(card.revisitTriggers.includes('AFTER_CONTEXT_COMPACTION'));
 assert.strictEqual(dock.verifyContextCard({ card, direction }).result, 'CONTEXT_CARD_DIRECTION_CURRENT');
@@ -209,7 +210,7 @@ const snapshot = dock.snapshot();
 assert.strictEqual(snapshot.directionLane, 'IMMUTABLE_REVISIONS');
 assert.strictEqual(snapshot.progressLane, 'APPEND_ONLY_EVENTS');
 assert.strictEqual(snapshot.scratchLane, 'APPEND_ONLY_NON_AUTHORITATIVE_NOTES');
-assert.strictEqual(snapshot.hotCard, 'DERIVED_REBUILDABLE_CACHE');
+assert.strictEqual(snapshot.hotCard, 'DERIVED_REBUILDABLE_CACHE_WITH_OPTIONAL_PRODUCTION_SUMMARY');
 assert.strictEqual(snapshot.authority, 'NONE');
 
 console.log(JSON.stringify({
