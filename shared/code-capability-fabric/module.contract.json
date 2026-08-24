@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "code-capability-fabric",
-  "version": "v0.1",
+  "version": "v0.2",
   "status": "TEST",
   "provides": [
     "axm.code-capability-provider/v1",
@@ -9,22 +9,31 @@
     "axm.code-provider-host-observation/v1",
     "axm.code-capability-route-plan/v1",
     "code.capability.plan",
-    "code.capability.plan.verify"
+    "code.capability.plan.verify",
+    "axm.code-language-organ-registry/v1",
+    "axm.code-language-organ-detect/v1",
+    "axm.code-language-organ-plan/v1"
   ],
   "consumes": [
     "provider descriptors",
     "exact descriptor digests",
     "host-observed availability",
     "explicit request authority policy",
-    "strict-deterministic-canonical-json"
+    "strict-deterministic-canonical-json",
+    "axm.code.language-organ.v1 descriptors"
   ],
   "permissions": [],
   "handoffs": {
-    "emits": ["axm.code-capability-route-plan/v1"],
+    "emits": [
+      "axm.code-capability-route-plan/v1",
+      "axm.code-language-organ-plan/v1"
+    ],
     "accepts": [
       "axm.code-capability-request/v1",
       "axm.code-capability-provider/v1",
-      "axm.code-provider-host-observation/v1"
+      "axm.code-provider-host-observation/v1",
+      "caller-supplied file path metadata",
+      "caller-supplied shebang metadata"
     ]
   },
   "boundaries": {
@@ -43,7 +52,10 @@
       "automatic-install",
       "automatic-promotion",
       "automatic-canon",
-      "undefined-or-non-json-representable-state"
+      "undefined-or-non-json-representable-state",
+      "language-guess-when-detection-is-ambiguous",
+      "unbound-language-tool-execution",
+      "syntax-pass-as-semantic-correctness"
     ]
   },
   "lifecycle": {
