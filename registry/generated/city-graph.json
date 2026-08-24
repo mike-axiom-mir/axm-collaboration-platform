@@ -791,9 +791,9 @@
           "tools/ai-habitat/module.contract.json"
         ],
         "declaredId": "ai-habitat",
-        "digest": "f4b509aae52fda714563568b51c759b9f9daf5aee4651d0b5ab9c5d48a1ed8ec",
+        "digest": "77b3c0c8bc6cf1ae9621f32ecd6ee2e9fd0c8cccfd2477eeb2de50b0d4dffa02",
         "manifest": "tools/ai-habitat/manifest.json",
-        "observedSourceFileCount": 30,
+        "observedSourceFileCount": 29,
         "root": "tools/ai-habitat"
       },
       "status": "TEST",
@@ -4511,7 +4511,7 @@
           "tools/capability-fabric/module.contract.json"
         ],
         "declaredId": "capability-fabric",
-        "digest": "01471fb0258297e088a8a3559324cbfc98fc1cd43ba63373992152020e6dc276",
+        "digest": "6f658123504965ade6a6d872b3425ee1c1150bd7beac861b7219dcf0e90cc2b4",
         "manifest": "tools/capability-fabric/manifest.json",
         "observedSourceFileCount": 10,
         "root": "tools/capability-fabric"
@@ -4764,7 +4764,7 @@
           "tools/capability-recipe-admission-gate/module.contract.json"
         ],
         "declaredId": "capability-recipe-admission-gate",
-        "digest": "50d23261678432bd8720b19cf2df6eae8faad751a7889b48a46c48a79fdfc2a0",
+        "digest": "bd56b5c7e1c50f46068a2719ca172ca1b9337615bc9ea2a154580189478c518b",
         "manifest": "tools/capability-recipe-admission-gate/manifest.json",
         "observedSourceFileCount": 6,
         "root": "tools/capability-recipe-admission-gate"
@@ -5033,9 +5033,9 @@
           "tools/challenge-arena/module.contract.json"
         ],
         "declaredId": "challenge-arena",
-        "digest": "6fcf8073f732e526427f2bffc99c39591f6d144b20cc6c32ef9a1a881c79d07c",
+        "digest": "e3f6dd9f27cbb90d4a8dcfcd6f77871ad6a46e887025c0525f512fcff50773cb",
         "manifest": "tools/challenge-arena/manifest.json",
-        "observedSourceFileCount": 166,
+        "observedSourceFileCount": 105,
         "root": "tools/challenge-arena"
       },
       "status": "TEST",
@@ -11603,6 +11603,129 @@
       },
       "boundaries": {
         "refuses": [
+          "automatic-apply",
+          "automatic-canon-change",
+          "automatic-installation",
+          "automatic-integration",
+          "automatic-learning",
+          "automatic-promotion",
+          "candidate-execution",
+          "candidate-generation",
+          "decision-authentication",
+          "identity-proof",
+          "live-presence-claim",
+          "mirror-observation",
+          "network-access",
+          "provider-call",
+          "review-inbox-write",
+          "workspace-read",
+          "workspace-write"
+        ],
+        "writes": [
+          "browser-memory:ephemeral-decision-draft"
+        ]
+      },
+      "classification": {
+        "basis": [
+          "human-facing entry/type"
+        ],
+        "kind": "ROOM",
+        "state": "INFERRED_UNCONFIRMED"
+      },
+      "effects": {
+        "capable": [
+          "NONE"
+        ],
+        "declarationInputs": [
+          "browser-memory:ephemeral-decision-draft"
+        ],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": [
+          "browser-memory:ephemeral-decision-draft"
+        ]
+      },
+      "id": "fabric-collaboration-room",
+      "name": "Fabric Collaboration Room",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "tools/fabric-collaboration-room/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "browser-dom"
+        ],
+        "uses": [
+          "code-capability-fabric",
+          "code-recipe-foundry",
+          "evidence-desk",
+          "mirror-observation-contracts",
+          "review-inbox"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "human-supplied-decision-note",
+          "human-supplied-exact-candidate-digest",
+          "human-supplied-goal"
+        ],
+        "consumes": [
+          "declared-workshop-collaborator-map",
+          "human-supplied-decision-note",
+          "human-supplied-exact-candidate-digest",
+          "human-supplied-goal"
+        ],
+        "emits": [
+          "axm.collaboration-decision-draft/v1"
+        ],
+        "provides": [
+          "collaborator-role-visualization",
+          "declared-versus-observed-state-separation",
+          "ephemeral-human-decision-draft",
+          "review-inbox-route",
+          "scenario-specific-authority-path"
+        ]
+      },
+      "source": {
+        "contract": "tools/fabric-collaboration-room/module.contract.json",
+        "declarationFiles": [
+          "tools/fabric-collaboration-room/manifest.json",
+          "tools/fabric-collaboration-room/module.contract.json"
+        ],
+        "declaredId": "fabric-collaboration-room",
+        "digest": "44dcd61c1c87b92abbd0e5b9c038a18153f0291a96ef73e8cebc4f8cdd961d11",
+        "manifest": "tools/fabric-collaboration-room/manifest.json",
+        "observedSourceFileCount": 9,
+        "root": "tools/fabric-collaboration-room"
+      },
+      "status": "TEST",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "index.html",
+        "type": "hub-module"
+      },
+      "version": "v0.1"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
           "advertisement-as-proof",
           "automatic-purchase",
           "hardware-execution",
@@ -12899,6 +13022,8 @@
           "tools/game-hub/game-library/017-small-odds/tests/package-selftest.js",
           "tools/game-hub/game-library/018-last-stop-nebula/tests/package-selftest.cjs",
           "tools/game-hub/game-library/019-brace-room/tests/brace-room-selftest.js",
+          "tools/game-hub/game-library/020-four-roots-adventure/media/trailer-selftest.js",
+          "tools/game-hub/game-library/020-four-roots-adventure/tests/package-selftest.js",
           "tools/game-hub/game-library/021-hearthgate-two-sides/tests/hearthgate-3d-selftest.js",
           "tools/game-hub/game-library/021-hearthgate-two-sides/tests/hearthgate-selftest.js",
           "tools/game-hub/game-library/022-shardrunner/tests/package-selftest.js",
@@ -12949,9 +13074,9 @@
           "tools/game-hub/module.contract.json"
         ],
         "declaredId": "game-hub",
-        "digest": "a746ef9ed58d4cf8e228a5ba30fc7ff57427e6028a99e2e864fcc1a1f4da8e26",
+        "digest": "b611353d82995543309dc18f06c7c82dcc66a75610315a8b2ef43ae292590ce6",
         "manifest": "tools/game-hub/manifest.json",
-        "observedSourceFileCount": 1072,
+        "observedSourceFileCount": 1103,
         "root": "tools/game-hub"
       },
       "status": "TEST",
@@ -24458,21 +24583,41 @@
       },
       "boundaries": {
         "refuses": [
+          "active-lesson-admission",
+          "arbitrary-command",
           "arbitrary-filesystem-write",
+          "automatic-canon",
+          "automatic-installation",
+          "automatic-integration",
           "automatic-promotion",
           "browser-create-without-explicit-action-header",
+          "candidate-child-process",
+          "candidate-host-credentials",
+          "candidate-host-environment",
+          "candidate-network",
           "engine-entity-clock-or-renderer-claim",
           "external-browser-origin",
+          "machine-path-in-durable-evidence",
           "non-json-create-request",
           "oversized-create-request",
           "path-traversal",
           "project-deletion",
           "project-folder-overwrite",
+          "raw-source-in-durable-evidence",
           "remote-network-access",
+          "repair-in-place",
+          "source-iteration-mutation",
+          "source-output-evidence-overlap",
+          "stale-repair-lineage",
+          "stdout-or-stderr-in-durable-evidence",
           "symbolic-link-project-root-or-read-escape",
           "undeclared-loopback-origin"
         ],
         "writes": [
+          "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/evidence",
+          "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/lessons",
+          "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/output",
+          "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/source",
           "tools/sandbox/projects/<safe-project-folder>/project.manifest.json",
           "tools/sandbox/projects/<safe-project-folder>/saves",
           "tools/sandbox/projects/<safe-project-folder>/world/scene.json"
@@ -24490,6 +24635,10 @@
           "WRITE_CANDIDATE"
         ],
         "declarationInputs": [
+          "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/evidence",
+          "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/lessons",
+          "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/output",
+          "state/disposable-candidate-sandboxes/<direct-session-parent>/<session>/source",
           "tools/sandbox/projects/<safe-project-folder>/project.manifest.json",
           "tools/sandbox/projects/<safe-project-folder>/saves",
           "tools/sandbox/projects/<safe-project-folder>/world/scene.json"
@@ -24508,6 +24657,9 @@
         "evidenceLocators": [],
         "freshness": "UNKNOWN",
         "selftests": [
+          "tools/sandbox/selftest-disposable-candidate-sandbox-v1.js",
+          "tools/sandbox/selftest-workshop-contract-repair-sandbox-v1.js",
+          "tools/sandbox/selftest-workshop-shadow-sandbox-v1.js",
           "tools/sandbox/selftest.js"
         ]
       },
@@ -24524,14 +24676,24 @@
       "schema": "axm.block-view/v1",
       "sockets": {
         "accepts": [
+          "axm.disposable-candidate-repair-plan/v1",
+          "axm.game-candidate-generation-request/v1",
+          "axm.game-candidate-packet/v1",
           "explicit-local-project-name"
         ],
         "consumes": [
+          "axm.bounded-sandbox-growth-authorization/v1",
+          "axm.game-candidate-generation-request/v1",
+          "axm.game-candidate-packet/v1",
+          "filesystem:state/disposable-candidate-sandboxes",
           "filesystem:tools/sandbox/projects",
           "http:declared-loopback-origins",
           "human:explicit-create-project-action"
         ],
         "emits": [
+          "axm.capability-lesson-candidate/v1",
+          "axm.disposable-candidate-sandbox-session/v1",
+          "axm.sandbox-static-evidence/v1",
           "sandbox-project-folder-format-1",
           "sandbox-project-status-json"
         ],
@@ -24540,7 +24702,13 @@
           "portable-project-folder-creation",
           "project-folder-discovery",
           "project-manifest-validation",
-          "read-only-project-file-inspection"
+          "read-only-project-file-inspection",
+          "sandbox.candidate.build.allowlisted",
+          "sandbox.candidate.preview.static-loopback",
+          "sandbox.candidate.repair.immutable-iterations",
+          "sandbox.host-authority.not-inherited",
+          "sandbox.lesson.candidate.privacy-safe",
+          "sandbox.source-output-evidence.disjoint"
         ]
       },
       "source": {
@@ -24550,9 +24718,9 @@
           "tools/sandbox/module.contract.json"
         ],
         "declaredId": "sandbox",
-        "digest": "77eb5415bb5ba5f17d76b44491edd57bd76dddf19c5932ed8f70a331bafa001a",
+        "digest": "f17cf438ba718a798c2155e35e7090813ae21859ff4c7659b8630056e5d30e2e",
         "manifest": "tools/sandbox/manifest.json",
-        "observedSourceFileCount": 17,
+        "observedSourceFileCount": 33,
         "root": "tools/sandbox"
       },
       "status": "TEST",
@@ -24561,7 +24729,7 @@
         "entry": "index.html",
         "type": "local-module"
       },
-      "version": "v0.2-session1"
+      "version": "v0.3-session1-plus-disposable-candidate-v1"
     },
     {
       "authority": {
@@ -25843,7 +26011,7 @@
           "shared/asset-hands/service.contract.json"
         ],
         "declaredId": "asset-hands",
-        "digest": "b88c4cb98c245c170042ecf8ab176ea4426ce6a4637416a18565525e27d06d26",
+        "digest": "e689071c926f2dc7e5b43a9d79eae149323b4073725933d53b3399e3d1a0f239",
         "manifest": null,
         "observedSourceFileCount": 336,
         "root": "shared/asset-hands"
@@ -26469,15 +26637,33 @@
         "freshness": "UNKNOWN",
         "selftests": [
           "shared/code-capability-fabric/selftest-blueprint-schema-compiler-v1.js",
+          "shared/code-capability-fabric/selftest-bounded-creation-program-planner-v1.js",
+          "shared/code-capability-fabric/selftest-code-recipe-application-planner-v1.js",
+          "shared/code-capability-fabric/selftest-code-recipe-discovery-v1.js",
+          "shared/code-capability-fabric/selftest-code-recipe-fabric-bridge-v1.js",
+          "shared/code-capability-fabric/selftest-code-specialist-capability-builder-v1.js",
+          "shared/code-capability-fabric/selftest-code-specialist-organ-intent-adapter-v1.js",
+          "shared/code-capability-fabric/selftest-code-specialization-router-v1.js",
           "shared/code-capability-fabric/selftest-declarative-blueprint-composer-v1.js",
+          "shared/code-capability-fabric/selftest-deterministic-adventure-content-generator-v1.js",
+          "shared/code-capability-fabric/selftest-deterministic-game-candidate-generator-v1.js",
+          "shared/code-capability-fabric/selftest-deterministic-game-trailer-planner-v1.js",
+          "shared/code-capability-fabric/selftest-deterministic-gameplay-replay-v1.js",
+          "shared/code-capability-fabric/selftest-deterministic-gameplay-trailer-planner-v1.js",
           "shared/code-capability-fabric/selftest-git-object-inventory-comparator-v1.js",
           "shared/code-capability-fabric/selftest-grounded-consent-scope-v1.js",
+          "shared/code-capability-fabric/selftest-human-candidate-selection-binder-v1.js",
           "shared/code-capability-fabric/selftest-independent-assurance-v1.js",
+          "shared/code-capability-fabric/selftest-native-game-rule-candidate-generator-v1.js",
           "shared/code-capability-fabric/selftest-policy-bound-assurance-v1.js",
           "shared/code-capability-fabric/selftest-readiness-v1.js",
           "shared/code-capability-fabric/selftest-schema-packet-mirror-verifier-v1.js",
+          "shared/code-capability-fabric/selftest-semantic-candidate-generator-v1.js",
+          "shared/code-capability-fabric/selftest-semantic-candidate-materializer-v1.js",
           "shared/code-capability-fabric/selftest-slow-creation-pilot-v1.js",
           "shared/code-capability-fabric/selftest-v2.js",
+          "shared/code-capability-fabric/selftest-workshop-contract-repair-planner-v1.js",
+          "shared/code-capability-fabric/selftest-workshop-shadow-improvement-planner-v1.js",
           "shared/code-capability-fabric/selftest.js"
         ]
       },
@@ -26517,9 +26703,9 @@
           "shared/code-capability-fabric/module.contract.json"
         ],
         "declaredId": "code-capability-fabric",
-        "digest": "8318f490acea39fcbc30114ce08f4aa38f6f51020b8d0ec3de4409cc4bef940e",
+        "digest": "6acbfd4adcd9baf5e438e56b0d011edf4b5fcf6904f82a5ed425f17b100d389f",
         "manifest": null,
-        "observedSourceFileCount": 86,
+        "observedSourceFileCount": 210,
         "root": "shared/code-capability-fabric"
       },
       "status": "EXPERIMENTAL",
@@ -37038,6 +37224,173 @@
       "authority": {
         "availableIsAuthorized": false,
         "canon": false,
+        "declaredPermissions": [],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
+          "arbitrary-command",
+          "automatic-canon",
+          "automatic-installation",
+          "automatic-integration",
+          "automatic-promotion",
+          "automatic-publication",
+          "candidate-child-process",
+          "candidate-host-credentials",
+          "candidate-host-environment",
+          "candidate-network",
+          "machine-alternative-selection",
+          "machine-path-in-durable-evidence",
+          "raw-source-in-durable-evidence",
+          "repair-beyond-legacy-schema-and-kind",
+          "required-test-as-executed-test",
+          "semantic-fitness-from-structural-validation",
+          "silent-alternative-ranking",
+          "source-iteration-mutation",
+          "source-output-evidence-overlap",
+          "stale-workshop-draft-preview",
+          "stdout-or-stderr-in-durable-evidence",
+          "unscoped-workshop-file-retention",
+          "unsupported-workshop-improvement-recipe",
+          "workshop-candidate-execution",
+          "workshop-recovery-or-missing-file-restoration-claim",
+          "workshop-source-writeback"
+        ],
+        "writes": [
+          "state/workshop-contract-repair-sandboxes/<session>/evidence/<immutable-plan-and-receipt>",
+          "state/workshop-contract-repair-sandboxes/<session>/output/<immutable-unranked-alternatives>",
+          "state/workshop-contract-repair-sandboxes/<session>/source/<immutable-observation-record>",
+          "state/workshop-shadow-sandboxes/<session>/evidence/<immutable-plan-and-receipt>",
+          "state/workshop-shadow-sandboxes/<session>/output/<immutable-iteration>/tools-index.json",
+          "state/workshop-shadow-sandboxes/<session>/source/<immutable-snapshot-record>"
+        ]
+      },
+      "classification": {
+        "basis": [
+          "observer/verifier vocabulary"
+        ],
+        "kind": "SENSOR",
+        "state": "INFERRED_UNCONFIRMED"
+      },
+      "effects": {
+        "capable": [
+          "NONE"
+        ],
+        "declarationInputs": [
+          "state/workshop-contract-repair-sandboxes/<session>/evidence/<immutable-plan-and-receipt>",
+          "state/workshop-contract-repair-sandboxes/<session>/output/<immutable-unranked-alternatives>",
+          "state/workshop-contract-repair-sandboxes/<session>/source/<immutable-observation-record>",
+          "state/workshop-shadow-sandboxes/<session>/evidence/<immutable-plan-and-receipt>",
+          "state/workshop-shadow-sandboxes/<session>/output/<immutable-iteration>/tools-index.json",
+          "state/workshop-shadow-sandboxes/<session>/source/<immutable-snapshot-record>"
+        ],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": [
+          "state/workshop-contract-repair-sandboxes/<session>/evidence/<immutable-plan-and-receipt>",
+          "state/workshop-contract-repair-sandboxes/<session>/output/<immutable-unranked-alternatives>",
+          "state/workshop-contract-repair-sandboxes/<session>/source/<immutable-observation-record>",
+          "state/workshop-shadow-sandboxes/<session>/evidence/<immutable-plan-and-receipt>",
+          "state/workshop-shadow-sandboxes/<session>/output/<immutable-iteration>/tools-index.json",
+          "state/workshop-shadow-sandboxes/<session>/source/<immutable-snapshot-record>"
+        ]
+      },
+      "id": "workshop-shadow",
+      "name": "Workshop Shadow",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "tools/workshop-shadow/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "local-filesystem",
+          "loopback-http"
+        ],
+        "uses": [
+          "code-capability-fabric",
+          "deterministic-json-core",
+          "local-filesystem",
+          "loopback-http",
+          "module-contract-verifier",
+          "tool-readiness"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.workshop-contract-observation/v1",
+          "axm.workshop-contract-repair-request/v1",
+          "axm.workshop-shadow-improvement-plan/v1",
+          "axm.workshop-shadow-refresh-request/v1"
+        ],
+        "consumes": [
+          "axm.workshop-contract-observation/v1",
+          "axm.workshop-contract-repair-request/v1",
+          "axm.workshop-shadow-improvement-plan/v1",
+          "axm.workshop-shadow-refresh-request/v1",
+          "filesystem:state/workshop-contract-repair-sandboxes",
+          "filesystem:state/workshop-shadow-sandboxes",
+          "hub/module-contract-verifier",
+          "shared/readiness/tool-readiness",
+          "tools/deterministic-json-core"
+        ],
+        "emits": [
+          "axm.workshop-contract-repair-candidate/v1",
+          "axm.workshop-contract-repair-draft-receipt/v1",
+          "axm.workshop-contract-repair-plan/v1",
+          "axm.workshop-shadow-draft-receipt/v1",
+          "axm.workshop-shadow-snapshot/v1",
+          "detached-tools-index-json"
+        ],
+        "provides": [
+          "workshop.contract-repair.alternatives.unranked/v1",
+          "workshop.contract-repair.human-selection.required/v1",
+          "workshop.contract-repair.legacy-declaration.detect/v1",
+          "workshop.contract-repair.required-tests.not-run/v1",
+          "workshop.improvement.draft.detached-overlay",
+          "workshop.improvement.draft.stale-block",
+          "workshop.improvement.preview.current-snapshot-only",
+          "workshop.improvement.preview.no-candidate-execution",
+          "workshop.improvement.source-writeback.impossible",
+          "workshop.shadow.snapshot.byte-bound",
+          "workshop.shadow.snapshot.privacy-scoped",
+          "workshop.shadow.snapshot.refresh"
+        ]
+      },
+      "source": {
+        "contract": "tools/workshop-shadow/module.contract.json",
+        "declarationFiles": [
+          "tools/workshop-shadow/manifest.json",
+          "tools/workshop-shadow/module.contract.json"
+        ],
+        "declaredId": "workshop-shadow",
+        "digest": "071452c0d4bb67eb44dc3b66d91bfa40f2275d5d62b302cd8e43b9d7d81eeca5",
+        "manifest": "tools/workshop-shadow/manifest.json",
+        "observedSourceFileCount": 5,
+        "root": "tools/workshop-shadow"
+      },
+      "status": "TEST",
+      "surfaces": {
+        "audience": "human",
+        "entry": "index.js",
+        "type": "local-module"
+      },
+      "version": "1.1.0"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
         "declaredPermissions": [
           "files.stage",
           "network.read"
@@ -38939,6 +39292,13 @@
     },
     {
       "consumers": [
+        "sandbox"
+      ],
+      "id": "axm.bounded-sandbox-growth-authorization/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
         "shared/simulation-lab-extension-intake"
       ],
       "id": "axm.branch-return-receipt/v1",
@@ -39449,6 +39809,20 @@
         "game-hub"
       ],
       "id": "axm.game-asset/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "sandbox"
+      ],
+      "id": "axm.game-candidate-generation-request/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "sandbox"
+      ],
+      "id": "axm.game-candidate-packet/v1",
       "providers": []
     },
     {
@@ -41237,6 +41611,20 @@
     },
     {
       "consumers": [
+        "workshop-shadow"
+      ],
+      "id": "axm.workshop-contract-observation/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "workshop-shadow"
+      ],
+      "id": "axm.workshop-contract-repair-request/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
         "capability-fabric"
       ],
       "id": "axm.workshop-direction.hand-request/v1",
@@ -41293,6 +41681,20 @@
         "workshop-command-center"
       ],
       "id": "axm.workshop-readiness-view/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "workshop-shadow"
+      ],
+      "id": "axm.workshop-shadow-improvement-plan/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "workshop-shadow"
+      ],
+      "id": "axm.workshop-shadow-refresh-request/v1",
       "providers": []
     },
     {
@@ -43382,6 +43784,13 @@
     },
     {
       "consumers": [],
+      "id": "collaborator-role-visualization",
+      "providers": [
+        "fabric-collaboration-room"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "collision-and-navigation-candidates",
       "providers": [
         "shared/game-asset-foundation"
@@ -44142,6 +44551,13 @@
     },
     {
       "consumers": [],
+      "id": "declared-versus-observed-state-separation",
+      "providers": [
+        "fabric-collaboration-room"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "declared-visual-capability-route-and-loss-reporting",
       "providers": [
         "asset-fabric"
@@ -44153,6 +44569,13 @@
       "providers": [
         "repairbuddy"
       ]
+    },
+    {
+      "consumers": [
+        "fabric-collaboration-room"
+      ],
+      "id": "declared-workshop-collaborator-map",
+      "providers": []
     },
     {
       "consumers": [],
@@ -45190,6 +45613,13 @@
       "id": "entry-human-control-text-pattern-inventory",
       "providers": [
         "human-control-binding-observatory"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "ephemeral-human-decision-draft",
+      "providers": [
+        "fabric-collaboration-room"
       ]
     },
     {
@@ -46782,6 +47212,27 @@
         "axm-platform-courier"
       ],
       "id": "filesystem:state/axm-platform-courier/inbox",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "sandbox"
+      ],
+      "id": "filesystem:state/disposable-candidate-sandboxes",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "workshop-shadow"
+      ],
+      "id": "filesystem:state/workshop-contract-repair-sandboxes",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "workshop-shadow"
+      ],
+      "id": "filesystem:state/workshop-shadow-sandboxes",
       "providers": []
     },
     {
@@ -49132,6 +49583,13 @@
       "providers": []
     },
     {
+      "consumers": [
+        "workshop-shadow"
+      ],
+      "id": "hub/module-contract-verifier",
+      "providers": []
+    },
+    {
       "consumers": [],
       "id": "human-ai-project-updates",
       "providers": [
@@ -49376,6 +49834,27 @@
         "mesh-retopology-optimizer"
       ],
       "id": "human-silhouette-approval",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "fabric-collaboration-room"
+      ],
+      "id": "human-supplied-decision-note",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "fabric-collaboration-room"
+      ],
+      "id": "human-supplied-exact-candidate-digest",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "fabric-collaboration-room"
+      ],
+      "id": "human-supplied-goal",
       "providers": []
     },
     {
@@ -54334,6 +54813,13 @@
     },
     {
       "consumers": [],
+      "id": "review-inbox-route",
+      "providers": [
+        "fabric-collaboration-room"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "review-json-and-zip-export",
       "providers": [
         "agent-tool-forge"
@@ -54798,6 +55284,48 @@
     },
     {
       "consumers": [],
+      "id": "sandbox.candidate.build.allowlisted",
+      "providers": [
+        "sandbox"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "sandbox.candidate.preview.static-loopback",
+      "providers": [
+        "sandbox"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "sandbox.candidate.repair.immutable-iterations",
+      "providers": [
+        "sandbox"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "sandbox.host-authority.not-inherited",
+      "providers": [
+        "sandbox"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "sandbox.lesson.candidate.privacy-safe",
+      "providers": [
+        "sandbox"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "sandbox.source-output-evidence.disjoint",
+      "providers": [
+        "sandbox"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "saved-direction-lifecycle-controls",
       "providers": [
         "workshop-command-center"
@@ -54808,6 +55336,13 @@
       "id": "scale-axis-pivot-parity-verification",
       "providers": [
         "asset-engine-roundtrip-bridge"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "scenario-specific-authority-path",
+      "providers": [
+        "fabric-collaboration-room"
       ]
     },
     {
@@ -56021,6 +56556,13 @@
       "providers": []
     },
     {
+      "consumers": [
+        "workshop-shadow"
+      ],
+      "id": "shared/readiness/tool-readiness",
+      "providers": []
+    },
+    {
       "consumers": [],
       "id": "shell-guardian-dashboard",
       "providers": [
@@ -57092,6 +57634,13 @@
         "asset-fabric"
       ],
       "id": "Timeline.1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "workshop-shadow"
+      ],
+      "id": "tools/deterministic-json-core",
       "providers": []
     },
     {
@@ -58750,6 +59299,69 @@
     },
     {
       "consumers": [],
+      "id": "workshop.contract-repair.alternatives.unranked/v1",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.contract-repair.human-selection.required/v1",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.contract-repair.legacy-declaration.detect/v1",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.contract-repair.required-tests.not-run/v1",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.improvement.draft.detached-overlay",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.improvement.draft.stale-block",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.improvement.preview.current-snapshot-only",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.improvement.preview.no-candidate-execution",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.improvement.source-writeback.impossible",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "workshop.need.reconcile",
       "providers": [
         "workshop-needs-observatory"
@@ -58767,6 +59379,27 @@
       "id": "workshop.readiness.observe/v1",
       "providers": [
         "workshop-needs-observatory"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.shadow.snapshot.byte-bound",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.shadow.snapshot.privacy-scoped",
+      "providers": [
+        "workshop-shadow"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "workshop.shadow.snapshot.refresh",
+      "providers": [
+        "workshop-shadow"
       ]
     },
     {
@@ -59593,6 +60226,16 @@
       "sha256": "eeeedc291151a69427182720ace1f3a74ee55590e0d8c8a58bbbbe009ccd6b70"
     },
     {
+      "id": "axm.adventure-content-growth-request/v1",
+      "path": "shared/code-capability-fabric/adventure-content-growth-request.schema.json",
+      "sha256": "30f8ebd798feb26e64bae4767891d95cc6fa49fba24a39981772b1708c4c6e5f"
+    },
+    {
+      "id": "axm.adventure-content-release-packet/v1",
+      "path": "shared/code-capability-fabric/adventure-content-release-packet.schema.json",
+      "sha256": "4fed89a685cbf05aab46d3abb48b8cc3fd3df3c1fbe2c7ab565a9c74340cc817"
+    },
+    {
       "id": "axm.ai-seat-courier.request/v1",
       "path": "tools/game-hub/ai-seat-courier/schemas/request.schema.json",
       "sha256": "fd865480dcb892575630f0b20f74ec0eb12eccee6926d8057957704de32df6c5"
@@ -59678,6 +60321,16 @@
       "sha256": "cec7ef092e5e52d26345060d80fb97e5d5322761b5b72d677ef00d01ff00f292"
     },
     {
+      "id": "axm.authenticated-human-decision-evaluation/v1",
+      "path": "shared/code-capability-fabric/authenticated-human-decision-evaluation.schema.json",
+      "sha256": "c8e17fa9486c9a861db673ff4e4075eee3bbce90db77c08d0793af09c2c59602"
+    },
+    {
+      "id": "axm.authenticated-human-decision/v1",
+      "path": "shared/code-capability-fabric/authenticated-human-decision.schema.json",
+      "sha256": "122338838ca66f064df60019881a2f4636398ba72749da25ba7a59be3300dbd8"
+    },
+    {
       "id": "axm.authenticated-review-envelope/v1",
       "path": "shared/operations/authenticated-review-envelope.schema.json",
       "sha256": "622318d678b8100c044307f1715dc1fee11be59f82de2283c76e5f863f291b8f"
@@ -59708,6 +60361,16 @@
       "sha256": "385061b3fd5b89b0ed6f21a1189892842e24aa012206cbec9812bf8d704c2cc9"
     },
     {
+      "id": "axm.bounded-creation-program-request/v1",
+      "path": "shared/code-capability-fabric/bounded-creation-program-request.schema.json",
+      "sha256": "08a15c75043450b0b1e39838fb223b799d733fcee8440a96887833ad0227bd73"
+    },
+    {
+      "id": "axm.bounded-creation-program/v1",
+      "path": "shared/code-capability-fabric/bounded-creation-program.schema.json",
+      "sha256": "f009c8d273e42ba31d63ee2b6176a81f8bed8c468c1ef5258f75d2e4d95b79bc"
+    },
+    {
       "id": "axm.branch-module-return/v1",
       "path": "tools/branch-module-return-gate/schemas/branch-module-return.schema.json",
       "sha256": "6424c1370792602c02c9d2b8be6116132c92a9f882d56ce57fd55f5b556ee540"
@@ -59726,6 +60389,11 @@
       "id": "axm.brep-step-capability-receipt/v1",
       "path": "shared/asset-hands/substrate-pack/brep-step-capability-receipt.schema.json",
       "sha256": "ccc772df8174cf4f24ffe5df73ca04521f1e4bda6b12a3a413e97cc4b05d6625"
+    },
+    {
+      "id": "axm.candidate-alternative-comparison/v1",
+      "path": "shared/code-capability-fabric/candidate-alternative-comparison.schema.json",
+      "sha256": "cb6bd64fe89a57d7ecad70ec21f97e3b025558bd0c187a4f420aa5b7eb123dfb"
     },
     {
       "id": "axm.capability-build-plan/v1",
@@ -59750,7 +60418,7 @@
     {
       "id": "axm.capability-candidate-package/v1",
       "path": "shared/capability-fabric/schemas/candidate-package.schema.json",
-      "sha256": "df233f44058931c16a45dbe561c263cd707779e234b4c6c0929d6a8e793a3901"
+      "sha256": "2b20e91e573ec1d9b118a5dea69548f846d6498739931ccc3469f68135a9e9a5"
     },
     {
       "id": "axm.capability-composition-materialization-receipt/v1",
@@ -59791,6 +60459,11 @@
       "id": "axm.capability-intervention-link/v2",
       "path": "shared/grounded-growth-human-bridge-v2/capability-intervention-link.schema.json",
       "sha256": "1055ed1f59f9203096dedf53f3894e827c9d7e08a4f6fd7baf2d02ab094412cf"
+    },
+    {
+      "id": "axm.capability-lesson-candidate/v1",
+      "path": "tools/sandbox/capability-lesson-candidate.schema.json",
+      "sha256": "c0fc7d1281ab1f7203f6fb8555a9d18b5ba3042edd86b08e3822b337492ae5ef"
     },
     {
       "id": "axm.capability-recipe-admission-decision/v1",
@@ -59840,7 +60513,7 @@
     {
       "id": "axm.capability-recipe/v1",
       "path": "shared/capability-fabric/schemas/capability-recipe.schema.json",
-      "sha256": "c90654b4b1b1671b6bb3cdf671ff5ff6394c0d263df50c89b3b8f3a91f48f1eb"
+      "sha256": "fa7ce696f4ad8e67213b37e831bcfda8959ce5878900fe9ac1c2a0a07df76ba9"
     },
     {
       "id": "axm.challenge-arena-capabilities/0.5",
@@ -60003,6 +60676,11 @@
       "sha256": "ad856a43efc0f449bff76cac2bc9736f24e490ec270dfd73e7272fec7e53df55"
     },
     {
+      "id": "axm.code-artifact-observation/v1",
+      "path": "shared/code-capability-fabric/code-artifact-observation.schema.json",
+      "sha256": "7d2712482a593df266c98fbd3c0ee731cb35221489386005e729050f574cd7df"
+    },
+    {
       "id": "axm.code-assurance-attestation/v1",
       "path": "shared/code-capability-fabric/code-assurance-attestation.schema.json",
       "sha256": "76fe7050eb95335bd6704b20653b2dee14fad847e49a8254bc6b7ec43a603e75"
@@ -60088,6 +60766,26 @@
       "sha256": "8230ef122c3dd9b629df2cb6becb8d9f5c70e3fcca179d9fcb9ddc3007384326"
     },
     {
+      "id": "axm.code-recipe-application-plan/v1",
+      "path": "shared/code-capability-fabric/code-recipe-application-plan.schema.json",
+      "sha256": "bc33fcabb506ec534cbad078ca73bfc695420349a5592ad47f3d907520592b74"
+    },
+    {
+      "id": "axm.code-recipe-application-request/v1",
+      "path": "shared/code-capability-fabric/code-recipe-application-request.schema.json",
+      "sha256": "d675c873e36f5cd2ed8b21678dae5e4d739a25b2f6f9208469af1bcc737bbcee"
+    },
+    {
+      "id": "axm.code-recipe-discovery-evidence-packet/v1",
+      "path": "shared/code-capability-fabric/code-recipe-discovery-evidence-packet.schema.json",
+      "sha256": "302b8ddc5ba49e09a750e79a3fc9834f46cba503eeeb437b3e559ea76c145699"
+    },
+    {
+      "id": "axm.code-recipe-discovery-request/v1",
+      "path": "shared/code-capability-fabric/code-recipe-discovery-request.schema.json",
+      "sha256": "863928f60bb14214e7eadd84a1b697146d30117db7b317c2af65b512102c43e4"
+    },
+    {
       "id": "axm.code-recipe-intake-receipt/v1",
       "path": "tools/code-recipe-foundry/schemas/code-recipe-intake-receipt.schema.json",
       "sha256": "843521fc48424165fd062f8a174579b4cd645798c42d1ce2bc9c079ae391fe3d"
@@ -60098,9 +60796,59 @@
       "sha256": "635a289d7497d7190a81a9cda904ce67076531ac779c7574e8f09bbcf9a27e03"
     },
     {
+      "id": "axm.code-recipe-selection-packet/v1",
+      "path": "shared/code-capability-fabric/code-recipe-selection-packet.schema.json",
+      "sha256": "83aaf37e0abcf4332329b42a290cfd7b6b66be1ab0c72bd9d35ef3ecf03ea53e"
+    },
+    {
+      "id": "axm.code-recipe-selection-request/v1",
+      "path": "shared/code-capability-fabric/code-recipe-selection-request.schema.json",
+      "sha256": "f24ad6090548acb60f87b8f35ee67daed8fb7b0ef21b638d99e4cf3058b83c86"
+    },
+    {
       "id": "axm.code-recipe/v1",
       "path": "tools/code-recipe-foundry/schemas/code-recipe.schema.json",
       "sha256": "79407a47677f03903c516df4dfc4f6087849990f86281ecb2efdc56d59cbecc4"
+    },
+    {
+      "id": "axm.code-specialist-capability-build-request/v1",
+      "path": "shared/code-capability-fabric/code-specialist-capability-build-request.schema.json",
+      "sha256": "e7009bc61d42f39ea19c227295e1f94b1e72839ce745329de6f539afbe9e62ab"
+    },
+    {
+      "id": "axm.code-specialist-capability-candidate/v1",
+      "path": "shared/code-capability-fabric/code-specialist-capability-candidate.schema.json",
+      "sha256": "22916e995e588f9d0136558f9fe2bd0e1436572078062b4217be73f1452c1eb2"
+    },
+    {
+      "id": "axm.code-specialist-organ-intent-plan/v1",
+      "path": "shared/code-capability-fabric/code-specialist-organ-intent-plan.schema.json",
+      "sha256": "20fb0b2e67f4eea564b15626ef629f124a3c32c227e25bbfe1e74b7a4f201096"
+    },
+    {
+      "id": "axm.code-specialist-organ-intent-request/v1",
+      "path": "shared/code-capability-fabric/code-specialist-organ-intent-request.schema.json",
+      "sha256": "b346d2920460436cd6e48d982d418633bf546350db553226fe34015a2fcc3aff"
+    },
+    {
+      "id": "axm.code-specialist-organ-profile/v1",
+      "path": "shared/code-capability-fabric/code-specialist-organ-profile.schema.json",
+      "sha256": "13a13f6550b5fee268a0db09e54ac4faea6674ef4dda75531b6229773d649d99"
+    },
+    {
+      "id": "axm.code-specialization-catalog/v1",
+      "path": "shared/code-capability-fabric/code-specialization-catalog.schema.json",
+      "sha256": "798e661ef52c5986f4f5ba571000800b98c65df9c8b21292fb767ae16f06d83b"
+    },
+    {
+      "id": "axm.code-specialization-plan/v1",
+      "path": "shared/code-capability-fabric/code-specialization-plan.schema.json",
+      "sha256": "6667c228421b5f6830ef13e585f9b0b1457eabdff0295e7226a80b2521132bf2"
+    },
+    {
+      "id": "axm.code-specialization-request/v1",
+      "path": "shared/code-capability-fabric/code-specialization-request.schema.json",
+      "sha256": "54491a91944ab5b2fe6486efd99ed055e9be24b4e9ca643027181e549c8e2055"
     },
     {
       "id": "axm.code-trust-key/v1",
@@ -60111,6 +60859,11 @@
       "id": "axm.code-workspace-boundary-declaration/v1",
       "path": "shared/code-capability-fabric/code-workspace-boundary-declaration.schema.json",
       "sha256": "18d7d79e1401a00870316af193363b9734c15785ec6f80f0dbb5360a64369e33"
+    },
+    {
+      "id": "axm.collaboration-decision-draft/v1",
+      "path": "tools/fabric-collaboration-room/collaboration-decision-draft.schema.json",
+      "sha256": "701022fc8265fa276b172a3a733aea63a2aa2b79e8a7b7dc5d537bf9fe8c366c"
     },
     {
       "id": "axm.compute-root-change-decision/v1",
@@ -60158,6 +60911,11 @@
       "sha256": "bd589366367f8dc8bb3a4097fdcaad999831d6fb5747e8275ec4e5cda635c1d8"
     },
     {
+      "id": "axm.creation-review-card/v1",
+      "path": "shared/code-capability-fabric/creation-review-card.schema.json",
+      "sha256": "8169903d9f4619d6082fb05132b36c021fd2fe221d1911b99f2f1354799c904c"
+    },
+    {
       "id": "axm.decision-consumption/v1",
       "path": "shared/authority-grid/decision-consumption.schema.json",
       "sha256": "20688b844a7df4b431d8c7e169f17bdf53866d66ff3766a2c316d5b4f6611d4b"
@@ -60196,6 +60954,16 @@
       "id": "axm.deterministic-run-integration-receipt/v1",
       "path": "shared/deterministic-run-integrator/integration-receipt.schema.json",
       "sha256": "eedb869004dc2175ddb28d88d07e23583dc13d28fad8fff698683f7083402727"
+    },
+    {
+      "id": "axm.disposable-candidate-repair-plan/v1",
+      "path": "tools/sandbox/disposable-candidate-repair-plan.schema.json",
+      "sha256": "5e67a3111dd30db69528b9a00c7e1d3ea71f91c0faa020c1499f9b589f97044c"
+    },
+    {
+      "id": "axm.disposable-candidate-sandbox-session/v1",
+      "path": "tools/sandbox/disposable-candidate-sandbox-session.schema.json",
+      "sha256": "bb72ce6245279100cd83fb86be14558d62b5ca721fe71d039e199f91352ace36"
     },
     {
       "id": "axm.effect-receipt/v1",
@@ -60378,9 +61146,29 @@
       "sha256": "104b7ce7d45ce23ea4bda55ed2f830ec065cd55f6e779ce9a2b06b3251a7057b"
     },
     {
+      "id": "axm.four-roots-adventure-content/v1",
+      "path": "shared/code-capability-fabric/four-roots-adventure-content.schema.json",
+      "sha256": "73c0c1f1450067d9d5f7d9a9952b205c573a367d2f080454b3fb61ee0ae25fa1"
+    },
+    {
+      "id": "axm.four-roots-adventure-gameplay-replay/v1",
+      "path": "shared/code-capability-fabric/four-roots-gameplay-replay.schema.json",
+      "sha256": "6631f52ba34a6a1f92f88f27192976947f740bc4010f2dc8dfbdbbdff1e97bae"
+    },
+    {
       "id": "axm.game-asset-pack/v1",
       "path": "shared/game-asset-foundation/game-asset-pack.schema.json",
       "sha256": "3df11a92eaf64956dc0d43f749745280efa1893fa6a3f7197e76833a4737bded"
+    },
+    {
+      "id": "axm.game-candidate-generation-request/v1",
+      "path": "shared/code-capability-fabric/game-candidate-generation-request.schema.json",
+      "sha256": "24ff316e1d544aa189b5fd09bcedafa7f5038df823b7fb5209e7ca2d74d29f89"
+    },
+    {
+      "id": "axm.game-candidate-packet/v1",
+      "path": "shared/code-capability-fabric/game-candidate-packet.schema.json",
+      "sha256": "a7c133a2c1f69f84a799cfe95cf72a89065714824392024cce21bd1fc5768148"
     },
     {
       "id": "axm.game-capability-plan/v1",
@@ -60391,6 +61179,11 @@
       "id": "axm.game-fsm/v1",
       "path": "shared/game-fsm/game-fsm.schema.json",
       "sha256": "92a5cbea51ac694d0dea743528f7d6fd07c946f919a735b401d3bb7566863707"
+    },
+    {
+      "id": "axm.game-generation-brief/v1",
+      "path": "shared/code-capability-fabric/game-generation-brief.schema.json",
+      "sha256": "f585e73019523f1f58d5c99fa7b67931134d24e0facae1d3c2f975db0d7d3fc6"
     },
     {
       "id": "axm.game-intent-lock/v1",
@@ -60428,9 +61221,34 @@
       "sha256": "d563418a89a57467fc55990b8d0e4839b2abe20419fbfa92950a45d768c3756b"
     },
     {
+      "id": "axm.game-test-promotion-decision/v1",
+      "path": "shared/code-capability-fabric/game-test-promotion-decision.schema.json",
+      "sha256": "e2480ae8aeb76d59d5f50f4387c163cee857a66d4ad4616c6131000340dcebb0"
+    },
+    {
+      "id": "axm.game-trailer-generation-request/v1",
+      "path": "shared/code-capability-fabric/game-trailer-generation-request.schema.json",
+      "sha256": "a4b2d2a0902cf44e36779dc7c4f391247b912d7b4e782b78ac116e1770288775"
+    },
+    {
+      "id": "axm.game-trailer-plan/v1",
+      "path": "shared/code-capability-fabric/game-trailer-plan.schema.json",
+      "sha256": "85a9a999eab434e55b56ceeed1a581bf8862f95cce89c0da8def0ba873f6d6e5"
+    },
+    {
       "id": "axm.gameplay-organ/v1",
       "path": "shared/gameplay-organ/gameplay-organ.schema.json",
       "sha256": "2daa2aa8d3a77db1d53c4dbe5da6db145b9cc0d478c38147f72b5d1739546d3d"
+    },
+    {
+      "id": "axm.gameplay-trailer-generation-request/v1",
+      "path": "shared/code-capability-fabric/gameplay-trailer-generation-request.schema.json",
+      "sha256": "084be5e214667b90edef349221c80ec2bc84a975cf611343df021464f64dcc6c"
+    },
+    {
+      "id": "axm.gameplay-trailer-plan/v1",
+      "path": "shared/code-capability-fabric/gameplay-trailer-plan.schema.json",
+      "sha256": "67d325da0ff7ec85fc36d0912804523c6c60a183598feae310c0b9bb20c350e8"
     },
     {
       "id": "axm.gate-import/v1",
@@ -60743,6 +61561,31 @@
       "sha256": "b35b0f9ba0e141ee1ab0a760815efc28059ea21866ed4d510d7d214a98b780cc"
     },
     {
+      "id": "axm.human-candidate-selection-declaration/v1",
+      "path": "shared/code-capability-fabric/human-candidate-selection-declaration.schema.json",
+      "sha256": "16acbc441cb08e5da8b7b20e1b4682be06529a9bedba6fd6f51c15655a5502d0"
+    },
+    {
+      "id": "axm.human-candidate-selection-evaluation/v1",
+      "path": "shared/code-capability-fabric/human-candidate-selection-evaluation.schema.json",
+      "sha256": "35f5b6969fc9733c0ddcf1a5b9160b49079aa1d6938b8684819a260525e441d8"
+    },
+    {
+      "id": "axm.human-decision-replay-reservation/v1",
+      "path": "shared/code-capability-fabric/human-decision-replay-reservation.schema.json",
+      "sha256": "582c114c356657ac3ab844b5a568e7a3f29d84e82bb500e96a75826026fbeebe"
+    },
+    {
+      "id": "axm.human-decision-revocation-snapshot/v1",
+      "path": "shared/code-capability-fabric/human-decision-revocation-snapshot.schema.json",
+      "sha256": "b8776dadb585c09d5b7b29acb5efd12e319a38c4f1a57092dd65347f226bb190"
+    },
+    {
+      "id": "axm.human-decision-trust-policy/v1",
+      "path": "shared/code-capability-fabric/human-decision-trust-policy.schema.json",
+      "sha256": "eaa62109c53f573e840ac4990ef0ffc05e405ed4db78ef9d376355538494d952"
+    },
+    {
       "id": "axm.identity-shell.adapter-descriptor/v1",
       "path": "shared/identity-shell-fabric/schemas/adapter-descriptor.schema.json",
       "sha256": "07de537398fec5fd30c3a2c4d70b126a998085774f247fb4c89ecff20a6bceb7"
@@ -61041,6 +61884,21 @@
       "id": "axm.module-job/0.1",
       "path": "tools/challenge-arena/schemas/module-job.schema.json",
       "sha256": "189fe75b466b89eef6d26c695b2c6f02bb5948fd5f7278a7cf5ef5758f304388"
+    },
+    {
+      "id": "axm.native-game-rule-candidate-packet/v1",
+      "path": "shared/code-capability-fabric/native-game-rule-candidate-packet.schema.json",
+      "sha256": "60c88459c24140e98431533c9f54f44f87e3248c695b39b36f6ff5a414b38890"
+    },
+    {
+      "id": "axm.native-game-rule-candidate-request/v1",
+      "path": "shared/code-capability-fabric/native-game-rule-candidate-request.schema.json",
+      "sha256": "c52bdf05b3144ddb5b4d37916fb66dccd6d4c628ec5227ffa30dd4c2e423b921"
+    },
+    {
+      "id": "axm.native-recipe-library/v1",
+      "path": "shared/code-capability-fabric/native-recipe-library.schema.json",
+      "sha256": "c94b452cead973da3281bf558ccbc975d5e0c50f7cc1514721e6317c18b8fe86"
     },
     {
       "id": "axm.neural-visual-request/v1",
@@ -62103,6 +62961,51 @@
       "sha256": "a9206cdfdcc49dd9af3f4b9e5acfbe47a18806ae44678d43e3c4b3aafc73f9ca"
     },
     {
+      "id": "axm.selection-replay-ledger-snapshot/v1",
+      "path": "shared/code-capability-fabric/selection-replay-ledger-snapshot.schema.json",
+      "sha256": "9af933f09ca59823fef9cfb1b991461356dfbe2bf6d3198ba176814f12120b8a"
+    },
+    {
+      "id": "axm.semantic-candidate-generator-profile/v1",
+      "path": "shared/code-capability-fabric/semantic-candidate-generator-profile.schema.json",
+      "sha256": "1b8c2864394da33582a73c5fb1f42aa435a581bcfbdee5ff547fabf812c15a3a"
+    },
+    {
+      "id": "axm.semantic-candidate-materialization-receipt/v1",
+      "path": "shared/code-capability-fabric/semantic-candidate-materialization-receipt.schema.json",
+      "sha256": "4cd2e16f87d53d8d0ba563a9a9a65c0a18c87ae66a4cb90e0bbbddc246cb4f35"
+    },
+    {
+      "id": "axm.semantic-candidate-materialization-subject/v1",
+      "path": "shared/code-capability-fabric/semantic-candidate-materialization-subject.schema.json",
+      "sha256": "5ea4fb4998b0013a364a545e09477d656244fe78066b2f81e2d785d5698af0b1"
+    },
+    {
+      "id": "axm.semantic-candidate-packet/v1",
+      "path": "shared/code-capability-fabric/semantic-candidate-packet.schema.json",
+      "sha256": "2370b1314f1f1e49ab8c62f58cab16c312c4abfff328878549e9eeed27c1960a"
+    },
+    {
+      "id": "axm.semantic-candidate-test-plan/v1",
+      "path": "shared/code-capability-fabric/semantic-candidate-test-plan.schema.json",
+      "sha256": "14e8250e51a0888399a332e19a722daef4d0b3659ed63963151ba9d5cef3edaa"
+    },
+    {
+      "id": "axm.semantic-common/v1",
+      "path": "shared/code-capability-fabric/semantic-common.schema.json",
+      "sha256": "f8946937d200d91960c4340d96f9d8bf388e7c853c95364bcdb8bfd29ef70477"
+    },
+    {
+      "id": "axm.semantic-generation-capability-gap/v1",
+      "path": "shared/code-capability-fabric/semantic-generation-capability-gap.schema.json",
+      "sha256": "fcbd80136485ed4c40af2032563219c0284981d93545dc7d5871d22855f35c68"
+    },
+    {
+      "id": "axm.semantic-generation-request/v1",
+      "path": "shared/code-capability-fabric/semantic-generation-request.schema.json",
+      "sha256": "6da4edbe7d2d164626bb06c2535cf69b9ada0194194415042407003ccb8ccccc"
+    },
+    {
       "id": "axm.sensorium-host-adapter/v1",
       "path": "shared/sensorium/schemas/host-adapter.schema.json",
       "sha256": "d65607499cdc934dd619c1456aa7009fc566833614b798f67a08c4431c4cdd57"
@@ -62496,6 +63399,51 @@
       "id": "axm.warning-delta/v1",
       "path": "shared/evidence-grid/warning-delta.schema.json",
       "sha256": "f61ae135eb64a4e2724ca133046d00ec8529350132878ddfb7309ef5b28c745b"
+    },
+    {
+      "id": "axm.workshop-contract-observation/v1",
+      "path": "shared/code-capability-fabric/workshop-contract-observation.schema.json",
+      "sha256": "caf995fe18780deed21a9d824500f3212d7be60e998edca2c64ec20a2aa5fb8d"
+    },
+    {
+      "id": "axm.workshop-contract-repair-candidate/v1",
+      "path": "shared/code-capability-fabric/workshop-contract-repair-candidate.schema.json",
+      "sha256": "7a8445aee7b1a4ff5ecc8f4902847c2f472b223f0286d04b6af3d1ed38b568ec"
+    },
+    {
+      "id": "axm.workshop-contract-repair-draft-receipt/v1",
+      "path": "tools/sandbox/workshop-contract-repair-draft-receipt.schema.json",
+      "sha256": "fe37f4136ffbfc92e90e55abc5d957aabf88ebee45ae6d793942ee3ec7937a17"
+    },
+    {
+      "id": "axm.workshop-contract-repair-plan/v1",
+      "path": "shared/code-capability-fabric/workshop-contract-repair-plan.schema.json",
+      "sha256": "e009ff028d694c734eb9e982b4a1bcee81590669dedab00e896186f6eb275a43"
+    },
+    {
+      "id": "axm.workshop-contract-repair-request/v1",
+      "path": "shared/code-capability-fabric/workshop-contract-repair-request.schema.json",
+      "sha256": "50bb30264f3dd308ff513feaf143cad0136d90268e25933f58da95781e45a09d"
+    },
+    {
+      "id": "axm.workshop-shadow-draft-receipt/v1",
+      "path": "tools/sandbox/workshop-shadow-draft-receipt.schema.json",
+      "sha256": "9f10b4d71748c85e834fcf23c5c43cae28f0c12d11b56ea7ad31c7b493106764"
+    },
+    {
+      "id": "axm.workshop-shadow-improvement-plan/v1",
+      "path": "shared/code-capability-fabric/workshop-shadow-improvement-plan.schema.json",
+      "sha256": "7223f6c9d5eb9fff6db4efdd190ffc4d75003ab271e07c409cf1c5664a32c2a8"
+    },
+    {
+      "id": "axm.workshop-shadow-refresh-request/v1",
+      "path": "shared/code-capability-fabric/workshop-shadow-refresh-request.schema.json",
+      "sha256": "c16eecc075c32153410a85d0c62c7fdb15f7023027aff2fb494fb107186c8d53"
+    },
+    {
+      "id": "axm.workshop-shadow-snapshot/v1",
+      "path": "shared/code-capability-fabric/workshop-shadow-snapshot.schema.json",
+      "sha256": "41b330daa610ea45a536b40ed3754c2a830932040a6a06a25ea4dae60789fef9"
     },
     {
       "id": "axm.workshop-update-manifest/v1",
@@ -63673,18 +64621,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "aef4b5639e24b24ad7abd43c286fc4952c4252a50de7e64ffee39751c187ff09",
+  "semanticDigest": "f2ec0e17b4890cc8cd78ae902f08932ca626f127623f5142f6080f9dc53b6542",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "105a62550439168b0adbf10087993536db7b48889799ec5f3a4efb46b48040ba",
+    "declarationDigest": "bf198f9008f6632d15c1974cca8ce04904cec46264d5418b88086e046f660a03",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "105a62550439168b0adbf10087993536db7b48889799ec5f3a4efb46b48040ba"
+    "snapshotIdentity": "bf198f9008f6632d15c1974cca8ce04904cec46264d5418b88086e046f660a03"
   },
   "summary": {
     "blockKinds": {
@@ -63692,17 +64640,17 @@
       "BRIDGE": 32,
       "HAND": 140,
       "ORGAN": 45,
-      "ROOM": 40,
+      "ROOM": 41,
       "ROUTE": 30,
-      "SENSOR": 5
+      "SENSOR": 6
     },
-    "blocks": 302,
-    "capabilities": 2943,
-    "declaredContracts": 299,
-    "declaredManifests": 251,
+    "blocks": 304,
+    "capabilities": 2983,
+    "declaredContracts": 301,
+    "declaredManifests": 253,
     "edges": 86,
-    "schemas": 847,
-    "unresolved": 1975
+    "schemas": 910,
+    "unresolved": 1993
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -68047,6 +68995,30 @@
       "state": "UNKNOWN"
     },
     {
+      "blockId": "fabric-collaboration-room",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "declared-workshop-collaborator-map",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "fabric-collaboration-room",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "human-supplied-decision-note",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "fabric-collaboration-room",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "human-supplied-exact-candidate-digest",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "fabric-collaboration-room",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "human-supplied-goal",
+      "state": "UNKNOWN"
+    },
+    {
       "blockId": "fabrication-readiness-lab",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.fabrication-candidate/v1",
@@ -72015,6 +72987,30 @@
     {
       "blockId": "sandbox",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.bounded-sandbox-growth-authorization/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "sandbox",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.game-candidate-generation-request/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "sandbox",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.game-candidate-packet/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "sandbox",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "filesystem:state/disposable-candidate-sandboxes",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "sandbox",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "filesystem:tools/sandbox/projects",
       "state": "UNKNOWN"
     },
@@ -72028,6 +73024,12 @@
       "blockId": "sandbox",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "human:explicit-create-project-action",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "sandbox",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.sandbox-static-evidence/v1",
       "state": "UNKNOWN"
     },
     {
@@ -75436,6 +76438,60 @@
       "blockId": "workshop-search-provenance",
       "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.workshop-search-results/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "workshop-shadow",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.workshop-contract-observation/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "workshop-shadow",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.workshop-contract-repair-request/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "workshop-shadow",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.workshop-shadow-improvement-plan/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "workshop-shadow",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.workshop-shadow-refresh-request/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "workshop-shadow",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "filesystem:state/workshop-contract-repair-sandboxes",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "workshop-shadow",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "filesystem:state/workshop-shadow-sandboxes",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "workshop-shadow",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hub/module-contract-verifier",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "workshop-shadow",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "shared/readiness/tool-readiness",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "workshop-shadow",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "tools/deterministic-json-core",
       "state": "UNKNOWN"
     },
     {

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.candidate-alternative-comparison/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "goal", "requestRef", "alternatives", "fileDelta", "permissionDelta", "evidenceDelta", "ranking", "selection", "combination", "dissentPreserved", "truth", "authority", "comparisonDigest"],
+  "properties": {
+    "schema": {"const": "axm.candidate-alternative-comparison/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"enum": ["NATIVE_ONLY", "ALTERNATIVES_PRESERVED"]},
+    "goal": {"type": "string", "minLength": 1, "maxLength": 600},
+    "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "alternatives": {"type": "array", "minItems": 1, "maxItems": 2, "items": {"$ref": "#/$defs/alternative"}},
+    "fileDelta": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/fileDelta"}]},
+    "permissionDelta": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/permissionDelta"}]},
+    "evidenceDelta": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/evidenceDelta"}]},
+    "ranking": {"const": null},
+    "selection": {"const": null},
+    "combination": {"const": "NEW_REQUEST_AND_EXACT_CONSENT_REQUIRED"},
+    "dissentPreserved": {"const": true},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "comparisonDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "alternative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lane", "candidateRef", "generator", "permissions", "networkDomains", "reuseRights", "testPlanRef"],
+      "properties": {
+        "lane": {"enum": ["NATIVE", "AI_CHALLENGER"]},
+        "candidateRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "generator": {"$ref": "semantic-candidate-packet.schema.json#/$defs/generator"},
+        "permissions": {"type": "array", "maxItems": 64, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+        "networkDomains": {"type": "array", "maxItems": 32, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+        "reuseRights": {"$ref": "semantic-candidate-packet.schema.json#/$defs/reuseRights"},
+        "testPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"}
+      }
+    },
+    "changedFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "nativeSha256", "challengerSha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 240},
+        "nativeSha256": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+        "challengerSha256": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "fileDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["addedByChallenger", "removedByChallenger", "changed"],
+      "properties": {
+        "addedByChallenger": {"type": "array", "maxItems": 16, "items": {"$ref": "semantic-common.schema.json#/$defs/sourceFile"}},
+        "removedByChallenger": {"type": "array", "maxItems": 16, "items": {"$ref": "semantic-common.schema.json#/$defs/sourceFile"}},
+        "changed": {"type": "array", "maxItems": 16, "items": {"$ref": "#/$defs/changedFile"}}
+      }
+    },
+    "permissionDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["addedByChallenger", "removedByChallenger", "networkAddedByChallenger", "networkRemovedByChallenger"],
+      "properties": {
+        "addedByChallenger": {"type": "array", "maxItems": 64, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+        "removedByChallenger": {"type": "array", "maxItems": 64, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+        "networkAddedByChallenger": {"type": "array", "maxItems": 32, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+        "networkRemovedByChallenger": {"type": "array", "maxItems": 32, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}}
+      }
+    },
+    "evidenceDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nativeTestPlanRef", "challengerTestPlanRef", "sameTestPlanBytes"],
+      "properties": {
+        "nativeTestPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "challengerTestPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+        "sameTestPlanBytes": {"type": "boolean"}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alternativesExecuted", "semanticEquivalenceProven", "qualityWinnerProven", "automaticChoiceMade", "automaticMergeMade"],
+      "properties": {
+        "alternativesExecuted": {"const": false},
+        "semanticEquivalenceProven": {"const": false},
+        "qualityWinnerProven": {"const": false},
+        "automaticChoiceMade": {"const": false},
+        "automaticMergeMade": {"const": false}
+      }
+    }
+  }
+}

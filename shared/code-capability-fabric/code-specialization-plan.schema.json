@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-specialization-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","requestRef","catalogRef","observationRef","classificationSummary","artifactPlans","capabilityGapReport","resourceObservation","limitations","nextGate","truth","authority","planDigest"],
+  "properties": {
+    "schema":{"const":"axm.code-specialization-plan/v1"},"version":{"const":"1.5.0"},
+    "status":{"enum":["ROOTS_HOLD","STALE_OBSERVATION_HOLD","AUTHORITY_HOLD","CLASSIFICATION_HOLD","CAPABILITY_GAPS","READY_FOR_SPECIALIST_IMPROVEMENT_REQUEST"]},
+    "requestRef":{"$ref":"semantic-common.schema.json#/$defs/reference"},"catalogRef":{"$ref":"semantic-common.schema.json#/$defs/reference"},"observationRef":{"$ref":"semantic-common.schema.json#/$defs/reference"},
+    "classificationSummary":{"$ref":"#/$defs/summary"},
+    "artifactPlans":{"type":"array","minItems":1,"maxItems":256,"items":{"$ref":"#/$defs/artifactPlan"}},
+    "capabilityGapReport":{"$ref":"#/$defs/gapReport"},"resourceObservation":{"$ref":"#/$defs/resources"},
+    "limitations":{"type":"array","minItems":1,"maxItems":32,"uniqueItems":true,"items":{"type":"string","pattern":"^[A-Z0-9_]+$"}},
+    "nextGate":{"enum":["REPAIR_ROOT_EVIDENCE_AND_REPLAN","REFRESH_EXACT_ARTIFACT_OBSERVATION_AND_REPLAN","REMOVE_AUTHORITY_EXPANSION_OR_REQUEST_SEPARATE_HIGHER_TIER_POLICY","DECLARE_OR_DISAMBIGUATE_EXACT_CODE_LANGUAGE","ADD_REVIEWED_TAXONOMY_OR_SPECIALIST_PROFILE_AND_REPLAN","NEW_EXACT_TIER_1_DETACHED_CANDIDATE_REQUEST_REQUIRED"]},
+    "truth":{"$ref":"#/$defs/truth"},"authority":{"const":"NONE"},"planDigest":{"$ref":"semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "summary": {
+      "type":"object","additionalProperties":false,
+      "required":["artifactCount","classifiedCount","classificationHoldCount","capabilityGapCount","authorityHoldCount","specialistLaneCount","coordinationRequiredCount"],
+      "properties":{"artifactCount":{"type":"integer","minimum":1},"classifiedCount":{"type":"integer","minimum":0},"classificationHoldCount":{"type":"integer","minimum":0},"capabilityGapCount":{"type":"integer","minimum":0},"authorityHoldCount":{"type":"integer","minimum":0},"specialistLaneCount":{"type":"integer","minimum":0},"coordinationRequiredCount":{"type":"integer","minimum":0}}
+    },
+    "versionedRef": {
+      "type":"object","additionalProperties":false,"required":["id","schema","version","sha256"],
+      "properties":{"id":{"type":"string"},"schema":{"type":"string"},"version":{"type":"string"},"sha256":{"$ref":"semantic-common.schema.json#/$defs/digest"}}
+    },
+    "language": {
+      "type":"object","additionalProperties":false,"required":["candidates","declaredLanguageId","selected","method","status","semanticProof"],
+      "properties": {
+        "candidates":{"type":"array","maxItems":16,"items":{"type":"object","additionalProperties":false,"required":["id","family"],"properties":{"id":{"type":"string"},"family":{"type":"string"}}}},
+        "declaredLanguageId":{"type":["string","null"]},"selected":{"oneOf":[{"type":"null"},{"type":"object","additionalProperties":false,"required":["id","family"],"properties":{"id":{"type":"string"},"family":{"type":"string"}}}]},
+        "method":{"enum":["DECLARED_PLUS_PATH_TABLE","PATH_TABLE_ONLY","NOT_EVALUATED"]},
+        "status":{"enum":["UNSUPPORTED_DECLARED_LANGUAGE","DECLARATION_PATH_UNVERIFIED","DECLARATION_PATH_CONFLICT","DECLARED_PATH_COMPATIBLE","UNKNOWN_PATH_KIND","AMBIGUOUS_PATH_KIND","MECHANICAL_SINGLE_CANDIDATE","ROOTS_HOLD_NOT_CLASSIFIED","STALE_OBSERVATION_NOT_CLASSIFIED"]},
+        "semanticProof":{"const":false}
+      }
+    },
+    "gap": {
+      "type":"object","additionalProperties":false,"required":["id","artifactId","type","capability","status","detail"],
+      "properties":{"id":{"type":"string"},"artifactId":{"type":"string"},"type":{"enum":["AUTHORITY","CONTRACT","EVIDENCE","SKILL","SUBSTRATE","UNKNOWN"]},"capability":{"type":"string"},"status":{"const":"OPEN"},"detail":{"type":"string"}}
+    },
+    "lane": {
+      "type":"object","additionalProperties":false,
+      "required":["organRef","artifactRef","proposedPaths","methodMaskRefs","knowledge","evidencePlan","permissions","networkDomains","executionStatus","candidateStatus","authority"],
+      "properties": {
+        "organRef":{"$ref":"#/$defs/versionedRef"},"artifactRef":{"$ref":"semantic-common.schema.json#/$defs/reference"},
+        "proposedPaths":{"type":"array","minItems":1,"maxItems":1,"items":{"type":"string"}},
+        "methodMaskRefs":{"type":"array","minItems":1,"maxItems":8,"items":{"$ref":"#/$defs/versionedRef"}},
+        "knowledge":{"type":"object","additionalProperties":false,"required":["laneId","state","allowedLessonKinds","admittedLessonRefs","admissionGate","knowledgeLoaded","lessonCandidateGenerated"],"properties":{"laneId":{"type":"string"},"state":{"const":"REFERENCE_ONLY_EMPTY"},"allowedLessonKinds":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string"}},"admittedLessonRefs":{"const":[]},"admissionGate":{"const":"SEPARATE_TIER_3_DECISION_AND_HELD_OUT_REGRESSION"},"knowledgeLoaded":{"const":false},"lessonCandidateGenerated":{"const":false}}},
+        "evidencePlan":{"type":"array","minItems":1,"maxItems":16,"items":{"type":"object","additionalProperties":false,"required":["kind","verdict","executionStatus"],"properties":{"kind":{"type":"string"},"verdict":{"const":"UNKNOWN"},"executionStatus":{"const":"NOT_RUN"}}}},
+        "permissions":{"const":[]},"networkDomains":{"const":[]},"executionStatus":{"const":"NOT_RUN"},"candidateStatus":{"const":"NOT_GENERATED"},"authority":{"const":"NONE"}
+      }
+    },
+    "artifactPlan": {
+      "type":"object","additionalProperties":false,"required":["artifactRef","path","languageClassification","declaredAxes","axisGaps","specialistLanes","coordination","status"],
+      "properties": {
+        "artifactRef":{"$ref":"semantic-common.schema.json#/$defs/reference"},"path":{"type":"string"},"languageClassification":{"$ref":"#/$defs/language"},
+        "declaredAxes":{"type":"object","additionalProperties":false,"required":["artifactFamilies","responsibilities","runtimes","frameworks","interfaceContracts"],"properties":{"artifactFamilies":{"type":"array","items":{"type":"string"}},"responsibilities":{"type":"array","items":{"type":"string"}},"runtimes":{"type":"array","items":{"type":"string"}},"frameworks":{"type":"array","items":{"type":"string"}},"interfaceContracts":{"type":"array","items":{"type":"string"}}}},
+        "axisGaps":{"type":"array","maxItems":64,"items":{"$ref":"#/$defs/gap"}},"specialistLanes":{"type":"array","maxItems":16,"items":{"$ref":"#/$defs/lane"}},
+        "coordination":{"type":"object","additionalProperties":false,"required":["required","sharedSeam","mode","automaticMerge"],"properties":{"required":{"type":"boolean"},"sharedSeam":{"type":"boolean"},"mode":{"enum":["NOT_PLANNED","SINGLE_LANE","SEPARATE_CONTRIBUTIONS_COORDINATION_REQUIRED"]},"automaticMerge":{"const":false}}},
+        "status":{"enum":["ROOTS_HOLD_NOT_CLASSIFIED","STALE_OBSERVATION_NOT_CLASSIFIED","CLASSIFICATION_HOLD","AUTHORITY_HOLD","ROUTED_WITH_CAPABILITY_GAPS","ROUTED_FOR_INERT_IMPROVEMENT_PLANNING"]}
+      }
+    },
+    "gapReport": {
+      "type":"object","additionalProperties":false,
+      "required":["schema","overall","missingCapabilities","proposedContracts","handoff","automaticInstall","automaticPermission","automaticQualityReduction","truth"],
+      "properties": {
+        "schema":{"const":"axm.capability-gap-report/v1"},"overall":{"enum":["READY","DEGRADED"]},
+        "missingCapabilities":{"type":"array","maxItems":200,"uniqueItems":true,"items":{"type":"string","minLength":1,"maxLength":220}},
+        "proposedContracts":{"type":"array","maxItems":200,"items":{"$ref":"#/$defs/proposedContract"}},
+        "handoff":{"type":"object","additionalProperties":false,"required":["capability","contractRef","automaticSpecification"],"properties":{"capability":{"const":"capability.specify.missing-hand/v1"},"contractRef":{"$ref":"semantic-common.schema.json#/$defs/reference"},"automaticSpecification":{"const":false}}},
+        "automaticInstall":{"const":false},"automaticPermission":{"const":false},"automaticQualityReduction":{"const":false},
+        "truth":{"type":"object","additionalProperties":false,"required":["implementationAvailableForEveryGap","specificationClosesGap","unsupportedCapabilityPretendedAvailable"],"properties":{"implementationAvailableForEveryGap":{"const":false},"specificationClosesGap":{"const":false},"unsupportedCapabilityPretendedAvailable":{"const":false}}}
+      }
+    },
+    "proposedContract": {
+      "type":"object","additionalProperties":false,
+      "required":["capabilityId","requestedCapability","gapType","requiredBy","contractState","requiredFields"],
+      "properties": {
+        "capabilityId":{"type":"string","minLength":1,"maxLength":220},"requestedCapability":{"type":"string","minLength":1,"maxLength":220},
+        "gapType":{"enum":["AUTHORITY","CONTRACT","EVIDENCE","SKILL","SUBSTRATE","UNKNOWN"]},
+        "requiredBy":{"type":"array","minItems":1,"maxItems":256,"uniqueItems":true,"items":{"type":"string"}},
+        "contractState":{"const":"SPEC_REQUIRED"},
+        "requiredFields":{"const":["inputs","outputs","sideEffects","permissions","resourceBudget","failureRecovery","compatibility","verification"]}
+      }
+    },
+    "resources": {
+      "type":"object","additionalProperties":false,"required":["inputBytes","outputBytes","artifactCount","specialistLaneCount","attemptsEnforced","artifactCountEnforced","specialistCountEnforced","durationEnforced","memoryEnforced","processesSpawned","networkUsed","sourceBytesRead","workspaceRead","workspaceWritten"],
+      "properties":{"inputBytes":{"type":"integer","minimum":1},"outputBytes":{"type":"integer","minimum":1},"artifactCount":{"type":"integer","minimum":1},"specialistLaneCount":{"type":"integer","minimum":0},"attemptsEnforced":{"const":true},"artifactCountEnforced":{"const":true},"specialistCountEnforced":{"const":true},"durationEnforced":{"const":false},"memoryEnforced":{"const":false},"processesSpawned":{"const":0},"networkUsed":{"const":false},"sourceBytesRead":{"const":false},"workspaceRead":{"const":false},"workspaceWritten":{"const":false}}
+    },
+    "truth": {
+      "type":"object","additionalProperties":false,
+      "required":["deterministicPlanOnly","rootsEvaluatedBeforeClassification","observationDigestVerified","observationAttestationPresent","hostObservationIndependentlyTrusted","pathClassificationProvesLanguage","declarationsProveSemantics","specialistProfileProvesCapability","sourceBytesIncluded","sourceBytesRead","frameworkKnowledgeLoaded","persistentLearningAdmitted","candidateGenerated","candidateExecuted","testsRun","permissionGranted","networkUsed","workspaceWritten","installed","integrated","published","promoted","canonChanged","mikeFinalMergeGatePreserved"],
+      "properties":{"deterministicPlanOnly":{"const":true},"rootsEvaluatedBeforeClassification":{"const":true},"observationDigestVerified":{"const":true},"observationAttestationPresent":{"type":"boolean"},"hostObservationIndependentlyTrusted":{"const":false},"pathClassificationProvesLanguage":{"const":false},"declarationsProveSemantics":{"const":false},"specialistProfileProvesCapability":{"const":false},"sourceBytesIncluded":{"const":false},"sourceBytesRead":{"const":false},"frameworkKnowledgeLoaded":{"const":false},"persistentLearningAdmitted":{"const":false},"candidateGenerated":{"const":false},"candidateExecuted":{"const":false},"testsRun":{"const":false},"permissionGranted":{"const":false},"networkUsed":{"const":false},"workspaceWritten":{"const":false},"installed":{"const":false},"integrated":{"const":false},"published":{"const":false},"promoted":{"const":false},"canonChanged":{"const":false},"mikeFinalMergeGatePreserved":{"const":true}}
+    }
+  }
+}

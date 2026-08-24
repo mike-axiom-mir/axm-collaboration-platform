@@ -1,0 +1,70 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-recipe-discovery-v1",
+  "version": "v1.1",
+  "status": "TEST",
+  "provides": [
+    "axm.code-recipe-discovery-request/v1",
+    "axm.code-recipe-discovery-evidence-packet/v1",
+    "code.recipe.discovery.query-metadata/v1"
+  ],
+  "consumes": [
+    "axm.code-recipe-pack/v1",
+    "axm.code-recipe-syntax-audit/v1",
+    "code.recipe.verify.installed-lineage",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.code-recipe-discovery-evidence-packet/v1"],
+    "accepts": ["axm.code-recipe-discovery-request/v1"]
+  },
+  "rootsGate": [
+    "truth",
+    "agency-non-domination",
+    "continuity",
+    "wisdom-over-speed"
+  ],
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "reads": [
+      "module-local:code-recipe-foundry/catalog/code-cheats-1000.code-recipes.json",
+      "module-local:code-recipe-foundry/catalog/code-cheats-1000.syntax-audit.json",
+      "module-local:code-recipe-foundry/module.contract.json"
+    ],
+    "writes": [],
+    "refuses": [
+      "arbitrary-recipe-pack",
+      "unbounded-query",
+      "unknown-query-field",
+      "snippet-byte-emission",
+      "snippet-execution",
+      "dynamic-code-loading",
+      "provider-call",
+      "network-use",
+      "workspace-read",
+      "workspace-write",
+      "locale-dependent-ordering",
+      "mechanical-score-as-quality-rank",
+      "semantic-inference-claim",
+      "automatic-recipe-selection",
+      "authenticated-human-selection-claim",
+      "direct-reuse-authorization",
+      "source-claim-verification",
+      "license-verification",
+      "runtime-proof",
+      "correctness-proof",
+      "safety-proof",
+      "candidate-generation",
+      "installation",
+      "integration",
+      "promotion",
+      "canon-change"
+    ]
+  }
+}

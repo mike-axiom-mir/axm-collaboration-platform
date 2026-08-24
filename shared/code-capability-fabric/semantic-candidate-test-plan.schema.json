@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.semantic-candidate-test-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "candidate", "cases", "truth", "authority"],
+  "properties": {
+    "schema": {"const": "axm.semantic-candidate-test-plan/v1"},
+    "version": {"const": "0.1.0"},
+    "candidate": {"$ref": "semantic-common.schema.json#/$defs/candidate"},
+    "cases": {"type": "array", "minItems": 7, "maxItems": 32, "items": {"$ref": "#/$defs/case"}},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"}
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "claim", "evidenceKind", "verdict"],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "claim": {"type": "string", "minLength": 1, "maxLength": 500},
+        "evidenceKind": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "verdict": {"const": "UNRUN"}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateCodeExecuted", "runtimeQualityProven", "visualQualityProven", "humanApproved"],
+      "properties": {
+        "candidateCodeExecuted": {"const": false},
+        "runtimeQualityProven": {"const": false},
+        "visualQualityProven": {"const": false},
+        "humanApproved": {"const": false}
+      }
+    }
+  }
+}

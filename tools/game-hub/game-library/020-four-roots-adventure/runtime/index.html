@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Four Roots Adventure · AXM TEST</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#game-map">Skip to the adventure map</a>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Workshop Game 020 · TEST · Local only</p>
+        <h1>Four Roots <span>Adventure</span></h1>
+        <p id="tagline" class="tagline">Loading the byte-bound content release…</p>
+      </div>
+      <div class="utility-bar" aria-label="Display and help controls">
+        <a class="quiet-button trailer-link" href="trailer/">Watch trailer</a>
+        <button id="help-button" class="quiet-button" type="button" aria-expanded="false" aria-controls="help-panel">Help <kbd>H</kbd></button>
+        <button id="contrast-button" class="quiet-button" type="button" aria-pressed="false">Contrast <kbd>C</kbd></button>
+        <button id="motion-button" class="quiet-button" type="button" aria-pressed="true">Calm motion <kbd>M</kbd></button>
+      </div>
+    </header>
+
+    <section id="help-panel" class="help-panel" hidden aria-labelledby="help-title">
+      <div>
+        <p class="panel-kicker">How to play</p>
+        <h2 id="help-title">Explore, inspect, carry forward</h2>
+      </div>
+      <p>Move with <strong>WASD</strong> or the <strong>arrow keys</strong>. Press <strong>E</strong> or <strong>Space</strong> near a person, relic, path, or gate. Visible controls use the same action seam. Press <strong>Escape</strong> to close this panel.</p>
+      <button id="help-close" class="quiet-button" type="button">Close help</button>
+    </section>
+
+    <div class="game-layout">
+      <section class="world-card" aria-labelledby="zone-title">
+        <div class="world-heading">
+          <div>
+            <p class="panel-kicker">Current place</p>
+            <h2 id="zone-title">Workshop Crossroads</h2>
+            <p id="zone-subtitle">Every path returns to review.</p>
+          </div>
+          <div class="move-counter" aria-label="Move count"><span id="move-count">0</span><small>moves</small></div>
+        </div>
+
+        <div class="map-frame">
+          <div id="game-map" class="game-map" role="img" aria-label="Adventure map; use the controls below to explore" tabindex="0"></div>
+          <div class="map-vignette" aria-hidden="true"></div>
+        </div>
+
+        <div class="legend" aria-label="Map legend">
+          <span><i class="legend-player" aria-hidden="true"></i>You</span>
+          <span><i class="legend-keeper" aria-hidden="true">K</i>Keeper</span>
+          <span><i class="legend-relic" aria-hidden="true">◇</i>Discovery</span>
+          <span><i class="legend-portal" aria-hidden="true">↗</i>Path</span>
+        </div>
+
+        <section class="story-box" aria-label="Story and interaction status">
+          <p class="panel-kicker">Field note</p>
+          <p id="story-message" class="story-message" aria-live="polite">The Workshop paths are coming into focus…</p>
+          <p id="nearby-message" class="nearby-message">Nothing nearby asks for interaction.</p>
+        </section>
+
+        <div class="control-deck" aria-label="Adventure controls">
+          <div class="direction-pad">
+            <button class="direction up" type="button" data-direction="up" aria-label="Move up">↑</button>
+            <button class="direction left" type="button" data-direction="left" aria-label="Move left">←</button>
+            <button class="direction down" type="button" data-direction="down" aria-label="Move down">↓</button>
+            <button class="direction right" type="button" data-direction="right" aria-label="Move right">→</button>
+          </div>
+          <button id="interact-button" class="interact-button" type="button" disabled>
+            <span class="interact-key">E</span>
+            <span><small>Interact</small><strong id="interact-label">Nothing nearby</strong></span>
+          </button>
+        </div>
+      </section>
+
+      <aside class="journal" aria-label="Adventure journal">
+        <section class="journal-card roots-card">
+          <p class="panel-kicker">The technical gate</p>
+          <h2>Four living seals</h2>
+          <ol id="root-list" class="root-list"></ol>
+        </section>
+
+        <section class="journal-card quest-card">
+          <p class="panel-kicker">Quest log</p>
+          <h2>What remains</h2>
+          <ol id="quest-list" class="quest-list"></ol>
+        </section>
+
+        <section class="journal-card inventory-card">
+          <p class="panel-kicker">Kept distinct</p>
+          <h2>Field inventory</h2>
+          <ul id="inventory-list" class="inventory-list"><li class="empty-item">No discoveries carried yet.</li></ul>
+        </section>
+
+        <section class="journal-card save-card">
+          <div class="save-status"><span class="save-pulse" aria-hidden="true"></span><div><strong>Server-owned progress</strong><small>Reload and restart resume this exact content release.</small></div></div>
+          <button id="reset-button" class="reset-button" type="button">Start a new journey</button>
+          <p id="reset-note" class="reset-note">Reset needs two deliberate clicks and never alters the installed release.</p>
+        </section>
+      </aside>
+    </div>
+
+    <section id="ending-panel" class="ending-panel" hidden aria-labelledby="ending-title">
+      <p class="ending-mark" aria-hidden="true">✦</p>
+      <p class="panel-kicker">Journey complete · TEST remains TEST</p>
+      <h2 id="ending-title">A Door Into Review</h2>
+      <p id="ending-message"></p>
+      <p id="ending-next" class="ending-next"></p>
+    </section>
+
+    <footer>
+      <p><strong>Authority boundary:</strong> this game can save its own progress. It cannot use outbound internet, alter Foundation, install another release, promote itself, or change CANON.</p>
+      <p id="release-line">Waiting for release lineage…</p>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

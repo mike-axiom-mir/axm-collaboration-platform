@@ -69,10 +69,13 @@ module contract, and receipt.
   installs output, changes permissions, promotes material, touches Foundation,
   or changes CANON.
 
-The reviewed catalog contains four executable `HAND` recipes—a closed JSON
-Schema validator, a pure JSON transform, an SVG status-badge creation hand,
-and a Workshop Direction hand-request adapter—plus one host-mediated portable
-`SKILL` for bounded evidence-first capability review.
+The reviewed catalog contains five executable `HAND` recipes—a closed JSON
+Schema validator, a pure JSON transform, a static semantic HTML-page renderer,
+an SVG status-badge creation hand, and a Workshop Direction hand-request
+adapter—plus one host-mediated portable `SKILL` for bounded evidence-first
+capability review. The HTML renderer is source-reviewed on its review branch;
+shared use still requires Mike's merge decision and visual behavior remains
+unproven until a separate authorized browser run.
 
 Builder implementations now live behind a digest-bound modular registry.
 Recipes, plans, candidate packages, and verification all bind the exact active

@@ -1,0 +1,13 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "status": "TEST",
+  "claims": [
+    {"id": "deterministic-binding", "kind": "deterministic behavior", "risk": "high", "passCondition": "identical exact candidate, consent, declaration, bytes, ledger, and time produce identical evaluation bytes", "primarySurface": "focused binder selftest", "secondarySurface": "evaluation normalization and deterministic rebuild", "counterevidence": "digest or output drift", "verdict": "PASS"},
+    {"id": "actual-byte-verification", "kind": "deterministic behavior", "risk": "high", "passCondition": "changed selected bytes fail before authentication gate", "primarySurface": "selected-byte digest and length adversarial tests", "secondarySurface": "output truth field selectedCandidateBytesVerified", "counterevidence": "changed bytes accepted or retained", "verdict": "PASS"},
+    {"id": "consent-subject-binding", "kind": "authorization", "risk": "high", "passCondition": "consent for another candidate or with authority cannot enter binding", "primarySurface": "consent-instance subject and scope countertests", "secondarySurface": "closed module contract and source inspection", "counterevidence": "foreign candidate consent accepted", "verdict": "PASS"},
+    {"id": "human-authentication", "kind": "authorization", "risk": "high", "passCondition": "trusted identity, clock, revocation, replay, and host authorization services verify the exact declaration", "primarySurface": "independent services", "secondarySurface": "audit trail", "counterevidence": "seat reference alone treated as identity proof", "verdict": "UNKNOWN", "namedSeam": "trusted human-decision service is absent"},
+    {"id": "no-lifecycle-authority", "kind": "authorization", "risk": "high", "passCondition": "all success and hold outputs retain authority NONE and false execution/lifecycle truth", "primarySurface": "35 adversarial cases", "secondarySurface": "source and module-contract inspection", "counterevidence": "any output claims execution, install, promotion, or CANON", "verdict": "PASS"},
+    {"id": "visual-surface", "kind": "visual appearance", "risk": "low", "passCondition": "not applicable because no visual surface changed", "primarySurface": "changed-path inspection", "secondarySurface": "none", "counterevidence": "UI path changed", "verdict": "NOT_APPLICABLE"},
+    {"id": "integration-now", "kind": "authorization", "risk": "high", "passCondition": "Mike-selected clean target contains v0.6 and has no overlapping recovery state", "primarySurface": "Git ancestry and status", "secondarySurface": "separate integration worktree", "counterevidence": "dirty target or absent v0.6 ancestor", "verdict": "HOLD"}
+  ]
+}

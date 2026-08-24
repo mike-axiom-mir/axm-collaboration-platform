@@ -1,0 +1,243 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "observe-current-workshop-scope",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [
+        "workshop.shadow.snapshot.privacy-scoped"
+      ],
+      "unknown": [],
+      "missing": [
+        "workshop.shadow.snapshot.byte-bound",
+        "workshop.shadow.snapshot.refresh"
+      ],
+      "declaredConstraints": {
+        "workshop.shadow.snapshot.byte-bound": [
+          "Workshop Census inventories declared bodies but does not bind the exact source set used by an improvement draft."
+        ],
+        "workshop.shadow.snapshot.privacy-scoped": [
+          "Existing scanners exclude broad local-state zones, but no shadow-draft request declares an exact readable source scope."
+        ]
+      }
+    },
+    {
+      "id": "detect-and-draft-one-real-improvement",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "workshop.improvement.detect.deterministic",
+        "workshop.improvement.draft.detached-overlay",
+        "workshop.improvement.draft.byte-bound-diff"
+      ],
+      "declaredConstraints": {
+        "workshop.improvement.draft.detached-overlay": [
+          "The disposable sandbox materializes game packets only, not Workshop source improvements."
+        ]
+      }
+    },
+    {
+      "id": "keep-drafts-current-without-rebasing-history",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [
+        "workshop.improvement.draft.immutable-iterations"
+      ],
+      "unknown": [],
+      "missing": [
+        "workshop.improvement.draft.stale-block",
+        "workshop.improvement.preview.current-snapshot-only"
+      ],
+      "declaredConstraints": {
+        "workshop.improvement.draft.immutable-iterations": [
+          "The disposable game sandbox has immutable repair iterations, but they are not bound to refreshed Workshop source snapshots."
+        ]
+      }
+    },
+    {
+      "id": "preserve-source-and-install-boundary",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "sandbox.source-output-evidence.disjoint",
+        "workshop.improvement.install.separate-human-gate"
+      ],
+      "degraded": [
+        "workshop.improvement.preview.no-candidate-execution"
+      ],
+      "unknown": [],
+      "missing": [
+        "workshop.improvement.source-writeback.impossible"
+      ],
+      "declaredConstraints": {
+        "sandbox.source-output-evidence.disjoint": [
+          "The existing disposable candidate sandbox enforces four physically disjoint roots."
+        ],
+        "workshop.improvement.source-writeback.impossible": [
+          "No Workshop-shadow draft service exists yet with an output-only writer and an independently rehashed source boundary."
+        ],
+        "workshop.improvement.install.separate-human-gate": [
+          "Existing Workshop contracts keep installation and merge behind separate human gates."
+        ],
+        "workshop.improvement.preview.no-candidate-execution": [
+          "The existing game preview intentionally allows candidate scripts; a Workshop diff preview must require no candidate execution."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "workshop.improvement.detect.deterministic",
+    "workshop.improvement.draft.byte-bound-diff",
+    "workshop.improvement.draft.detached-overlay",
+    "workshop.improvement.draft.stale-block",
+    "workshop.improvement.preview.current-snapshot-only",
+    "workshop.improvement.source-writeback.impossible",
+    "workshop.shadow.snapshot.byte-bound",
+    "workshop.shadow.snapshot.refresh"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "workshop.improvement.detect.deterministic",
+      "requiredBy": [
+        "detect-and-draft-one-real-improvement"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "workshop.improvement.draft.byte-bound-diff",
+      "requiredBy": [
+        "detect-and-draft-one-real-improvement"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "workshop.improvement.draft.detached-overlay",
+      "requiredBy": [
+        "detect-and-draft-one-real-improvement"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "workshop.improvement.draft.stale-block",
+      "requiredBy": [
+        "keep-drafts-current-without-rebasing-history"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "workshop.improvement.preview.current-snapshot-only",
+      "requiredBy": [
+        "keep-drafts-current-without-rebasing-history"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "workshop.improvement.source-writeback.impossible",
+      "requiredBy": [
+        "preserve-source-and-install-boundary"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "workshop.shadow.snapshot.byte-bound",
+      "requiredBy": [
+        "observe-current-workshop-scope"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "workshop.shadow.snapshot.refresh",
+      "requiredBy": [
+        "observe-current-workshop-scope"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

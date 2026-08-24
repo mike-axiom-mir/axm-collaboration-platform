@@ -8,7 +8,7 @@ const AdmissionSelftest = require('../capability-recipe-admission-gate/selftest.
 
 (async function(){
   const catalog=Fabric.loadCatalog(),request=Fabric.sealRequest(catalog.recipes[0].exampleRequest,true);
-  const list=await Machine.run({action:'catalog.list'});const reviewCandidates=list.catalog.builderRegistry.entries.filter(function(row){return row.status==='REVIEW_CANDIDATE';});assert(list.ok&&list.catalog.recipes.length===5&&reviewCandidates.length===1&&reviewCandidates[0].id==='closed-object-contract-adapter-v1'&&list.generatedCodeExecuted===false&&list.providerCalled===false&&Object.values(list.authority).every(function(value){return value===false;}));
+  const list=await Machine.run({action:'catalog.list'});const reviewCandidates=list.catalog.builderRegistry.entries.filter(function(row){return row.status==='REVIEW_CANDIDATE';});assert(list.ok&&list.catalog.recipes.length===6&&reviewCandidates.length===1&&reviewCandidates[0].id==='closed-object-contract-adapter-v1'&&list.generatedCodeExecuted===false&&list.providerCalled===false&&Object.values(list.authority).every(function(value){return value===false;}));
   const valid=await Machine.run({action:'request.validate',input:{request:request}});assert(valid.ok);
   const plan=await Machine.run({action:'build.plan',input:{request:request}});assert(plan.ok&&plan.plan.status==='READY');
   const built=await Machine.run({action:'build.run',input:{request:request}});assert(built.ok&&built.run.generatedCodeExecuted===false);

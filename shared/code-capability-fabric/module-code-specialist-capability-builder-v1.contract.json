@@ -1,0 +1,63 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-specialist-capability-builder-v1",
+  "version": "v1.8",
+  "status": "TEST",
+  "provides": [
+    "axm.code-specialist-capability-build-request/v1",
+    "axm.code-specialist-capability-candidate/v1",
+    "code.specialist.data-schema.generate-detached-validator-candidate/v1",
+    "code.specialist.markup-structure.generate-detached-html-page-candidate/v1"
+  ],
+  "consumes": [
+    "axm.code-specialist-organ-intent-request/v1",
+    "axm.code-specialist-organ-intent-plan/v1",
+    "axm.capability-fabric.build-request/v1",
+    "axm.capability-build-plan/v1",
+    "axm.capability-candidate-package/v1",
+    "axm.capability-build-receipt/v1",
+    "axm-deterministic-json-v1",
+    "capability.specify.missing-hand/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "accepts": ["axm.code-specialist-capability-build-request/v1"],
+    "emits": ["axm.code-specialist-capability-candidate/v1", "axm.capability-candidate-package/v1", "axm.capability-gap-report/v1"]
+  },
+  "rootsGate": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"],
+  "boundaries": {
+    "reads": [
+      "module-local:shared/code-capability-fabric/code-specialization-catalog-v1.json",
+      "module-local:shared/capability-fabric/recipes/catalog.json",
+      "module-local:shared/capability-fabric/builder-registry.js"
+    ],
+    "writes": [],
+    "refuses": [
+      "external-source-read",
+      "workspace-read",
+      "workspace-write",
+      "provider-call",
+      "provider-code-load",
+      "network-use",
+      "child-process-spawn",
+      "candidate-execution",
+      "generated-selftest-execution",
+      "permission-grant",
+      "automatic-merge",
+      "knowledge-loading",
+      "lesson-admission",
+      "physical-actuation",
+      "installation",
+      "integration",
+      "publication",
+      "promotion",
+      "canon-change"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "deterministic-rebuild",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-specialist-organ-intent-adapter-v1",
+  "version": "v1.6",
+  "status": "TEST",
+  "provides": [
+    "axm.code-specialist-organ-intent-request/v1",
+    "axm.code-specialist-organ-intent-plan/v1",
+    "code.specialist.exact-lane.bind.reviewed-organ-intent/v1"
+  ],
+  "consumes": [
+    "axm.code-specialization-request/v1",
+    "axm.code-specialization-plan/v1",
+    "axm.code-specialist-organ-profile/v1",
+    "axm.organ-intent/v1",
+    "axm.organ-field-pack/v1",
+    "axm-deterministic-json-v1",
+    "capability.specify.missing-hand/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "accepts": ["axm.code-specialist-organ-intent-request/v1"],
+    "emits": ["axm.code-specialist-organ-intent-plan/v1", "axm.organ-intent/v1", "axm.capability-gap-report/v1"]
+  },
+  "rootsGate": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"],
+  "boundaries": {
+    "reads": [
+      "module-local:shared/code-capability-fabric/code-specialization-catalog-v1.json",
+      "module-local:shared/deterministic-organ-fabric/field-packs/software-workshop.json"
+    ],
+    "writes": [],
+    "refuses": [
+      "source-byte-read",
+      "workspace-read",
+      "workspace-write",
+      "provider-call",
+      "provider-code-load",
+      "network-use",
+      "child-process-spawn",
+      "filename-to-semantic-intent-inference",
+      "specialist-profile-as-capability-proof",
+      "knowledge-loading",
+      "lesson-generation",
+      "lesson-admission",
+      "organ-generation",
+      "generated-organ-execution",
+      "candidate-execution",
+      "test-execution",
+      "permission-grant",
+      "automatic-merge",
+      "physical-actuation",
+      "installation",
+      "integration",
+      "publication",
+      "promotion",
+      "canon-change"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "deterministic-rebuild",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  }
+}

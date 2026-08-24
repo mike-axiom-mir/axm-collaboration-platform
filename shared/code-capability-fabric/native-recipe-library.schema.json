@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.native-recipe-library/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "id", "status", "recipes", "authority", "libraryDigest"],
+  "properties": {
+    "schema": {"const": "axm.native-recipe-library/v1"},
+    "version": {"const": "v1"},
+    "id": {"const": "axm-native-semantic-recipes"},
+    "status": {"const": "TEST"},
+    "recipes": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "#/$defs/recipe"}},
+    "authority": {"const": "NONE"},
+    "libraryDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "outputSchema", "operations", "candidateStatus"],
+      "properties": {
+        "id": {"const": "creation-review-card-adapter"},
+        "version": {"const": "1.0.0"},
+        "outputSchema": {"const": "axm.creation-review-card/v1"},
+        "operations": {"const": ["VALIDATION", "MAPPING", "FILTERING", "COMPARISON", "SUMMARIZATION", "PLAIN_LANGUAGE_RENDERING"]},
+        "candidateStatus": {"const": "EXPERIMENTAL"}
+      }
+    }
+  }
+}

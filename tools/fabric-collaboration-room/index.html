@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Fabric Collaboration Room</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="back" href="../../hub/index.html" aria-label="Back to Workshop Hub">AXM / HUB</a>
+      <div class="title-block">
+        <p>COLLABORATION ROOM · LOCAL VISUALIZATION</p>
+        <h1>See who can do what.</h1>
+        <span>One shared goal. Separate bodies. Exact authority.</span>
+      </div>
+      <div class="truth-chips" aria-label="Current truth boundaries">
+        <span class="chip test">TEST · v0.1</span>
+        <span class="chip">DECLARED STATES</span>
+        <span class="chip locked">INSTALL LOCKED</span>
+      </div>
+    </header>
+
+    <section class="root-rail" aria-label="AXM four-root order">
+      <span><b>01</b> Truth</span>
+      <span><b>02</b> Agency / non-domination</span>
+      <span><b>03</b> Continuity</span>
+      <span><b>04</b> Wisdom over speed</span>
+      <strong>Mike remains merge gate</strong>
+    </section>
+
+    <main class="room-layout">
+      <aside class="panel scenario-panel" aria-labelledby="scenario-heading">
+        <div class="panel-heading">
+          <p>01 / QUESTION</p>
+          <h2 id="scenario-heading">What are we deciding?</h2>
+        </div>
+        <div class="scenario-tabs" role="group" aria-label="Decision scenario">
+          <button type="button" class="selected" data-scenario="plan">Plan a change</button>
+          <button type="button" data-scenario="trial">Try a candidate</button>
+          <button type="button" data-scenario="install">Install / integrate</button>
+        </div>
+        <section class="scenario-summary" aria-live="polite">
+          <span id="scenario-state">PLANNABLE</span>
+          <h3 id="scenario-title">Plan a change</h3>
+          <p id="scenario-summary"></p>
+        </section>
+        <ol id="flow" class="flow" aria-label="Current decision flow"></ol>
+        <div class="next-gate">
+          <span>NEXT REAL GATE</span>
+          <strong id="next-gate"></strong>
+        </div>
+        <p class="small-truth">Changing this view changes only the explanation. It does not activate an AI, call Mirror, run Fabric, or create a candidate.</p>
+      </aside>
+
+      <section class="panel constellation-panel" aria-labelledby="constellation-heading">
+        <div class="panel-heading room-heading">
+          <div>
+            <p>02 / COLLABORATORS</p>
+            <h2 id="constellation-heading">The bounded room</h2>
+          </div>
+          <span class="observer"><i></i> VISUAL OBSERVER ONLY</span>
+        </div>
+        <div class="constellation" id="constellation">
+          <div class="grid-floor" aria-hidden="true"></div>
+          <svg id="links" class="links" viewBox="0 0 1000 680" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div class="goal-core" aria-hidden="true">
+            <i></i>
+            <span id="core-state">PLAN</span>
+            <strong>SHARED<br>GOAL</strong>
+            <small>authority 0</small>
+          </div>
+          <div id="actors" class="actors" role="list" aria-label="Workshop collaborators"></div>
+          <div class="room-legend" aria-label="Visualization legend">
+            <span><i class="active-dot"></i>in this route</span>
+            <span><i class="declared-dot"></i>declared, not live proof</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel inspector-panel" aria-labelledby="inspector-heading">
+        <div class="panel-heading">
+          <p>03 / EXACT ROLE</p>
+          <h2 id="inspector-heading">Inspect a collaborator</h2>
+        </div>
+        <div id="portrait" class="portrait tone-gold" aria-hidden="true"><span>M</span><i></i></div>
+        <p id="actor-kind" class="actor-kind">HUMAN MERGE GATE</p>
+        <h3 id="actor-name">Mike</h3>
+        <span id="actor-state" class="state-pill">HUMAN DECISION</span>
+        <p id="actor-role" class="actor-role"></p>
+        <section class="evidence-note">
+          <span>EVIDENCE CEILING</span>
+          <p id="actor-evidence"></p>
+        </section>
+        <div class="limits-grid">
+          <section><h4>Can</h4><ul id="actor-can"></ul></section>
+          <section><h4>Cannot</h4><ul id="actor-cannot"></ul></section>
+        </div>
+      </aside>
+    </main>
+
+    <section class="decision-dock panel" aria-labelledby="decision-heading">
+      <div class="decision-copy">
+        <p>04 / HUMAN INPUT</p>
+        <h2 id="decision-heading">Prepare a decision draft</h2>
+        <span>This makes Mike’s intent visible on this page. It is not identity proof, a signature, consent authentication, execution authority, or an Inbox vote.</span>
+      </div>
+      <div class="decision-form">
+        <label class="goal-field"><span>Goal</span><textarea id="goal" maxlength="280">Improve one small game rule as a detached candidate and show the evidence before any installation decision.</textarea></label>
+        <label><span>Exact candidate digest · needed only for trial</span><input id="candidate-digest" autocomplete="off" spellcheck="false" placeholder="sha256:64 lowercase hexadecimal characters"></label>
+        <label><span>Human note</span><input id="decision-note" maxlength="600" autocomplete="off" placeholder="Why hold, repair, or prepare a bounded trial?"></label>
+        <label class="ack"><input id="draft-ack" type="checkbox"><span>I understand “prepare trial” creates an unauthenticated draft with no effect.</span></label>
+        <div class="decision-actions" role="group" aria-label="Prepare decision draft">
+          <button type="button" data-decision="HOLD">Hold</button>
+          <button type="button" data-decision="ASK_REPAIR">Ask repair</button>
+          <button type="button" class="primary" data-decision="PREPARE_SANDBOX_TRIAL">Prepare trial</button>
+          <button type="button" class="quiet" id="clear-draft">Clear</button>
+        </div>
+      </div>
+      <aside class="draft-output">
+        <div class="draft-heading">
+          <div><span>EPHEMERAL RECORD</span><strong id="draft-state">NO DRAFT</strong></div>
+          <a href="../review-inbox/index.html">Open exact Review Inbox →</a>
+        </div>
+        <pre id="draft-json">Choose Hold, Ask repair, or Prepare trial.</pre>
+        <p id="status" role="status" aria-live="polite">Nothing has been submitted, saved, or authorized.</p>
+      </aside>
+    </section>
+
+    <footer>
+      <span>Provider-neutral · no network · no storage · no workspace read · no execution</span>
+      <strong>Visualization is not presence. A draft is not authority.</strong>
+    </footer>
+  </div>
+  <script src="collaboration-room-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

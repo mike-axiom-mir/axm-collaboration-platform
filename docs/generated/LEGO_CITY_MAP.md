@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `aef4b5639e24b24ad7abd43c286fc4952c4252a50de7e64ffee39751c187ff09`
+Semantic graph digest: `f2ec0e17b4890cc8cd78ae902f08932ca626f127623f5142f6080f9dc53b6542`
 
-Blocks: 302 · Capabilities: 2943 · Schemas: 847 · Unresolved edges: 1975
+Blocks: 304 · Capabilities: 2983 · Schemas: 910 · Unresolved edges: 1993
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -101,6 +101,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | evidence-desk | ROUTE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 10 | 6 | 1 selftest(s) |
 | evolution-foundry | ROOM (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 4 | 1 selftest(s) |
 | external-pattern-observatory | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 4 | 1 selftest(s) |
+| fabric-collaboration-room | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 5 | 4 | 1 selftest(s) |
 | fabrication-readiness-lab | ROOM (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 3 | 2 | 1 selftest(s) |
 | film-motion-studio | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 12 | 9 | 1 selftest(s) |
 | finance-world-room | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, WRITE_CANDIDATE | 6 | 4 | 1 selftest(s) |
@@ -111,7 +112,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | game-balance-telemetry-advisor | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | game-capability-atlas | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | game-forge | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 21 | 8 | 2 selftest(s) |
-| game-hub | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 3 | 3 | 51 selftest(s) |
+| game-hub | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 3 | 3 | 53 selftest(s) |
 | game-organism-lab | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 3 | 2 | 1 selftest(s) |
 | game-production-runner | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, ROOT_CHANGE | 40 | 4 | 1 selftest(s) |
 | game-ui-hud-menu-runtime | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
@@ -203,7 +204,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | route | ROUTE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 8 | 3 | 1 selftest(s) |
 | runner | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 3 | 5 | 1 selftest(s) |
 | runtime-channel-observatory | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 5 | 2 | 1 selftest(s) |
-| sandbox | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 3 | 1 selftest(s) |
+| sandbox | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 11 | 7 | 4 selftest(s) |
 | save-migration-replay-service | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | schema-contract-migration-registry | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | schema-identity-observatory | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 4 | 1 | 1 selftest(s) |
@@ -219,7 +220,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/baseline-simulation-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 1 selftest(s) |
 | shared/city-gates | BRIDGE (DECLARED) | EXPERIMENTAL | NETWORK_WRITE, PUBLIC_RELEASE | 5 | 3 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
-| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 5 | 11 selftest(s) |
+| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 5 | 29 selftest(s) |
 | shared/compute-substrate-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 4 | 1 selftest(s) |
 | shared/deterministic-animation-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 3 | 2 selftest(s) |
 | shared/deterministic-audio-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 2 selftest(s) |
@@ -309,6 +310,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | workshop-needs-observatory | ROOM (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 3 | 3 selftest(s) |
 | workshop-packager | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 13 | 4 | 3 selftest(s) |
 | workshop-search-provenance | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 8 | 5 | 1 selftest(s) |
+| workshop-shadow | SENSOR (INFERRED_UNCONFIRMED) | TEST | NONE | 12 | 9 | 1 selftest(s) |
 | workshop-updater | HAND (INFERRED_UNCONFIRMED) | TEST | NETWORK_READ, WRITE_CANDIDATE | 8 | 6 | 1 selftest(s) |
 | world-partition-streaming-compiler | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | world-tile-foundry | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 10 | 4 | 1 selftest(s) |
@@ -1039,6 +1041,10 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `external-pattern-observatory` → `axm.external-pattern-snapshot-diff/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `external-pattern-observatory` → `axm.external-repo-pattern-matrix/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `external-pattern-observatory` → `axm.external-source-assertion-set/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `fabric-collaboration-room` → `declared-workshop-collaborator-map` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `fabric-collaboration-room` → `human-supplied-decision-note` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `fabric-collaboration-room` → `human-supplied-exact-candidate-digest` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `fabric-collaboration-room` → `human-supplied-goal` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `fabrication-readiness-lab` → `axm.fabrication-candidate/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `fabrication-readiness-lab` → `axm.fabrication-research-signal/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `fabrication-readiness-lab` → `axm.fabrication-bounded-test-package/v1` (UNKNOWN)
@@ -1700,9 +1706,14 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `runtime-channel-observatory` → `axm.entry-resource-graph/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `runtime-channel-observatory` → `axm.runtime-channel-map/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `runtime-channel-observatory` → `axm.runtime-channel-review-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `sandbox` → `axm.bounded-sandbox-growth-authorization/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `sandbox` → `axm.game-candidate-generation-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `sandbox` → `axm.game-candidate-packet/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `sandbox` → `filesystem:state/disposable-candidate-sandboxes` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `sandbox` → `filesystem:tools/sandbox/projects` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `sandbox` → `http:declared-loopback-origins` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `sandbox` → `human:explicit-create-project-action` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `sandbox` → `axm.sandbox-static-evidence/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `save-migration-replay-service` → `bounded-local-fixture` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `save-migration-replay-service` → `human-direction` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `save-migration-replay-service` → `human-review` (UNKNOWN)
@@ -2271,6 +2282,15 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `workshop-search-provenance` → `axm.source-reference/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `workshop-search-provenance` → `axm.workshop-search-query/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `workshop-search-provenance` → `axm.workshop-search-results/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `workshop-shadow` → `axm.workshop-contract-observation/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `workshop-shadow` → `axm.workshop-contract-repair-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `workshop-shadow` → `axm.workshop-shadow-improvement-plan/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `workshop-shadow` → `axm.workshop-shadow-refresh-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `workshop-shadow` → `filesystem:state/workshop-contract-repair-sandboxes` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `workshop-shadow` → `filesystem:state/workshop-shadow-sandboxes` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `workshop-shadow` → `hub/module-contract-verifier` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `workshop-shadow` → `shared/readiness/tool-readiness` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `workshop-shadow` → `tools/deterministic-json-core` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `workshop-updater` → `axm.workshop-update-manifest/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `workshop-updater` → `bounded-body-pulse-lease` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `workshop-updater` → `explicit-human-network-consent` (UNKNOWN)

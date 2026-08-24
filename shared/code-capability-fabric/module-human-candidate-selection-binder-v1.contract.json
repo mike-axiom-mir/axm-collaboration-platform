@@ -1,0 +1,16 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "human-candidate-selection-binder-v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "provides": ["candidate.selection.declaration.bind-bytes", "candidate.selection.replay.detect-declared-ledger", "candidate.selection.authentication-gap.preserve", "candidate.selection.authority.none"],
+  "consumes": ["axm.workshop-contract-repair-candidate/v1", "axm.grounded-consent-instance/v1", "axm.grounded-consent-evaluation/v1", "axm.human-candidate-selection-declaration/v1", "selected-candidate-bytes", "axm.selection-replay-ledger-snapshot/v1", "tools/deterministic-json-core"],
+  "permissions": [],
+  "handoffs": {"accepts": ["axm.workshop-contract-repair-candidate/v1", "axm.grounded-consent-instance/v1", "axm.grounded-consent-evaluation/v1", "axm.human-candidate-selection-declaration/v1", "axm.selection-replay-ledger-snapshot/v1"], "emits": ["axm.human-candidate-selection-evaluation/v1"]},
+  "rootsGate": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"],
+  "boundaries": {
+    "writes": [],
+    "refuses": ["consent-for-another-candidate", "consent-with-selection-permission-or-lifecycle-authority", "declaration-as-authentication-proof", "seat-reference-as-natural-person-proof", "provided-clock-as-trusted-clock-proof", "provided-ledger-as-independent-replay-proof", "selection-as-semantic-fitness-proof", "selection-as-host-authorization", "candidate-execution", "test-execution", "source-writeback", "permission-expansion", "network-use", "child-process", "environment-access", "automatic-installation", "automatic-integration", "automatic-publication", "automatic-promotion", "automatic-canon"]
+  },
+  "lifecycle": {"state_owner": "none", "reload": "deterministic-rebuild", "disconnect": "not-applicable", "cleanup": "none"}
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axm.human-candidate-selection-evaluation/v1",
+  "title": "AXM Human Candidate Selection Evaluation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "evaluatedAt", "candidateRef", "consentEvaluationRef", "consentInstanceRef", "declarationRef", "replayLedgerRef", "selectedAlternative", "effect", "holds", "limitations", "nextGate", "truth", "authority", "evaluationDigest"],
+  "properties": {
+    "schema": {"const": "axm.human-candidate-selection-evaluation/v1"},
+    "version": {"const": "1.0.0"},
+    "status": {"enum": ["CANDIDATE_HOLD", "CONSENT_EVALUATION_HOLD", "CONSENT_INSTANCE_HOLD", "CONSENT_BINDING_HOLD", "DECLARATION_HOLD", "LEDGER_HOLD", "BINDING_HOLD", "SELECTED_BYTES_HOLD", "TIME_WINDOW_HOLD", "REPLAY_HOLD", "AUTHENTICATION_REQUIRED"]},
+    "evaluatedAt": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/timestamp"}]},
+    "candidateRef": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/reference"}]},
+    "consentEvaluationRef": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/digestReference"}]},
+    "consentInstanceRef": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/reference"}]},
+    "declarationRef": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/reference"}]},
+    "replayLedgerRef": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/reference"}]},
+    "selectedAlternative": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/selection"}]},
+    "effect": {"const": "INERT_REVIEW_BINDING"},
+    "holds": {"type": "array", "maxItems": 16, "items": {"type": "string", "minLength": 1, "maxLength": 1000}},
+    "limitations": {"type": "array", "minItems": 11, "maxItems": 11, "items": {"type": "string"}},
+    "nextGate": {"enum": ["REPAIR_SELECTION_INPUTS_THEN_REEVALUATE", "AUTHENTICATE_EXACT_DECLARATION_WITH_TRUSTED_CLOCK_LIVE_REVOCATION_AND_HOST_AUTHORIZATION"]},
+    "truth": {"$ref": "#/definitions/truth"},
+    "authority": {"const": "NONE"},
+    "evaluationDigest": {"$ref": "#/definitions/digest"}
+  },
+  "definitions": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "token": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"},
+    "reference": {"type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"], "properties": {"id": {"$ref": "#/definitions/id"}, "schema": {"$ref": "#/definitions/token"}, "sha256": {"$ref": "#/definitions/digest"}}},
+    "digestReference": {"type": "object", "additionalProperties": false, "required": ["schema", "sha256"], "properties": {"schema": {"$ref": "#/definitions/token"}, "sha256": {"$ref": "#/definitions/digest"}}},
+    "fileReference": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "byteLength"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/definitions/digest"}, "byteLength": {"type": "integer", "minimum": 1}}},
+    "selection": {"type": "object", "additionalProperties": false, "required": ["id", "kind", "candidateRef"], "properties": {"id": {"enum": ["kind-adapter", "kind-machine-capability", "kind-product", "kind-scaffold", "kind-service"]}, "kind": {"enum": ["adapter", "machine-capability", "product", "scaffold", "service"]}, "candidateRef": {"$ref": "#/definitions/fileReference"}}},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateIntegrityVerified", "consentEvaluationIntegrityVerified", "consentInstanceIntegrityVerified", "consentSubjectBound", "declarationIntegrityVerified", "candidateChoiceReferenceBound", "selectedCandidateBytesVerified", "declaredTimeWindowValid", "nonceAbsentFromProvidedLedger", "authenticatedHumanDecisionVerified", "naturalPersonIdentityProven", "informedUnderstandingProven", "trustedClockObserved", "liveRevocationChecked", "replayLedgerIndependentlyTrusted", "hostAuthorizationGranted", "candidateExecuted", "testsExecuted", "sourceWritten", "permissionsChanged", "installed", "integrated", "published", "promoted", "canonChanged"],
+      "properties": {
+        "candidateIntegrityVerified": {"type": "boolean"}, "consentEvaluationIntegrityVerified": {"type": "boolean"}, "consentInstanceIntegrityVerified": {"type": "boolean"}, "consentSubjectBound": {"type": "boolean"}, "declarationIntegrityVerified": {"type": "boolean"}, "candidateChoiceReferenceBound": {"type": "boolean"}, "selectedCandidateBytesVerified": {"type": "boolean"}, "declaredTimeWindowValid": {"type": "boolean"}, "nonceAbsentFromProvidedLedger": {"type": "boolean"},
+        "authenticatedHumanDecisionVerified": {"const": false}, "naturalPersonIdentityProven": {"const": false}, "informedUnderstandingProven": {"const": false}, "trustedClockObserved": {"const": false}, "liveRevocationChecked": {"const": false}, "replayLedgerIndependentlyTrusted": {"const": false}, "hostAuthorizationGranted": {"const": false}, "candidateExecuted": {"const": false}, "testsExecuted": {"const": false}, "sourceWritten": {"const": false}, "permissionsChanged": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "published": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}
+      }
+    }
+  }
+}

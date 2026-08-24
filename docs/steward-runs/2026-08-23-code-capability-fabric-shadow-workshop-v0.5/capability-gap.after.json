@@ -1,0 +1,65 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "observe-current-workshop-scope",
+      "required": true,
+      "status": "READY",
+      "available": ["workshop.shadow.snapshot.byte-bound", "workshop.shadow.snapshot.refresh", "workshop.shadow.snapshot.privacy-scoped"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "workshop.shadow.snapshot.byte-bound": ["Exact file refs and rebuilt-index digest bind the tools-index-declarations-and-selftests-v1 scope; this is not a full-repository byte snapshot."],
+        "workshop.shadow.snapshot.refresh": ["Refresh uses the same sealed request time and appends only when the scoped source-state digest changes."],
+        "workshop.shadow.snapshot.privacy-scoped": ["Reads the promotion ladder, tools index, manifests, contracts, discovered selftests, and derived entry/readme/discovery state; retains no raw source or machine paths."]
+      }
+    },
+    {
+      "id": "detect-and-draft-one-real-improvement",
+      "required": true,
+      "status": "READY",
+      "available": ["workshop.improvement.detect.deterministic", "workshop.improvement.draft.detached-overlay", "workshop.improvement.draft.byte-bound-diff"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "workshop.improvement.detect.deterministic": ["Only detects missing, invalid, or source-digest-stale tools-index.json; it does not claim general code-quality judgment."],
+        "workshop.improvement.draft.detached-overlay": ["The only supported candidate is one detached tools-index.json under a disjoint shadow-state root."],
+        "workshop.improvement.draft.byte-bound-diff": ["Plan binds expected current digest, exact replacement digest and bytes, summaries, and tool-id additions/removals."]
+      }
+    },
+    {
+      "id": "keep-drafts-current-without-rebasing-history",
+      "required": true,
+      "status": "READY",
+      "available": ["workshop.improvement.draft.stale-block", "workshop.improvement.draft.immutable-iterations", "workshop.improvement.preview.current-snapshot-only"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "workshop.improvement.draft.stale-block": ["Source is re-observed before and after materialization and again before preview; scoped drift blocks reuse."],
+        "workshop.improvement.draft.immutable-iterations": ["Direct-child iteration-NNN roots are exclusive-created, contiguous, digest-checked, and never repaired in place."],
+        "workshop.improvement.preview.current-snapshot-only": ["Preview opens only when current scoped source, deterministic plan, generator refs, and candidate refs still match."]
+      }
+    },
+    {
+      "id": "preserve-source-and-install-boundary",
+      "required": true,
+      "status": "READY",
+      "available": ["sandbox.source-output-evidence.disjoint", "workshop.improvement.source-writeback.impossible", "workshop.improvement.install.separate-human-gate", "workshop.improvement.preview.no-candidate-execution"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "sandbox.source-output-evidence.disjoint": ["Workshop source, shadow parent, and source/output/evidence roots are canonicalized and physically disjoint; aliases are rejected."],
+        "workshop.improvement.source-writeback.impossible": ["The allowlisted adapter has no source writer; pre/post source digests and adversarial tests verify no write-back in this bounded recipe."],
+        "workshop.improvement.install.separate-human-gate": ["All lifecycle claims remain false and authority NONE; the service exposes no installation or integration operation."],
+        "workshop.improvement.preview.no-candidate-execution": ["Trusted loopback shell contains no script and serves the candidate as inert JSON; candidate processes and child processes are zero."]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

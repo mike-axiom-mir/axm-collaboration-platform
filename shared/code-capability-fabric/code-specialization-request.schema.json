@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-specialization-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","id","plannedAt","maxObservationAgeMs","observation","catalogRef","settings","resourceEnvelope","rootsGate","instructionRef","authority","requestDigest"],
+  "properties": {
+    "schema":{"const":"axm.code-specialization-request/v1"},"version":{"const":"1.5.0"},
+    "id":{"$ref":"semantic-common.schema.json#/$defs/id"},"plannedAt":{"type":"string","format":"date-time"},
+    "maxObservationAgeMs":{"type":"integer","minimum":1,"maximum":86400000},
+    "observation":{"$ref":"code-artifact-observation.schema.json"},
+    "catalogRef":{"$ref":"semantic-common.schema.json#/$defs/reference"},
+    "settings": {
+      "type":"object","additionalProperties":false,
+      "required":["requireExplicitLanguageForAmbiguousPath","knowledgeMode","allowedPermissions","allowedNetworkDomains"],
+      "properties": {
+        "requireExplicitLanguageForAmbiguousPath":{"const":true},"knowledgeMode":{"const":"REFERENCE_LANES_ONLY"},
+        "allowedPermissions":{"const":[]},"allowedNetworkDomains":{"const":[]}
+      }
+    },
+    "resourceEnvelope": {
+      "type":"object","additionalProperties":false,
+      "required":["maxInputBytes","maxOutputBytes","maxArtifacts","maxSpecialistsPerArtifact","maxMemoryBytes","maxDurationMs","maxProcesses","maxAttempts","maxCostMinorUnits"],
+      "properties": {
+        "maxInputBytes":{"type":"integer","minimum":1,"maximum":4194304},"maxOutputBytes":{"type":"integer","minimum":1,"maximum":8388608},
+        "maxArtifacts":{"type":"integer","minimum":1,"maximum":256},"maxSpecialistsPerArtifact":{"type":"integer","minimum":1,"maximum":16},
+        "maxMemoryBytes":{"type":"integer","minimum":1},"maxDurationMs":{"type":"integer","minimum":1},
+        "maxProcesses":{"const":1},"maxAttempts":{"const":1},"maxCostMinorUnits":{"const":0}
+      }
+    },
+    "rootsGate":{"type":"array","minItems":4,"maxItems":4,"items":{"$ref":"semantic-common.schema.json#/$defs/rootDecision"}},
+    "instructionRef":{"$ref":"semantic-common.schema.json#/$defs/reference"},"authority":{"const":"NONE"},
+    "requestDigest":{"$ref":"semantic-common.schema.json#/$defs/digest"}
+  }
+}
+

@@ -7,7 +7,7 @@ const path = require('path');
 const Core = require('./shardrunner-core.cjs');
 
 const HOST = '0.0.0.0';
-const PORT = Number(process.env.PORT || 8820);
+const PORT = Number(process.env.PORT || 8822);
 const ROOT = __dirname;
 const CLIENT_FILE = path.join(ROOT, 'index.html');
 const TICK_MS = 1000 / 30;

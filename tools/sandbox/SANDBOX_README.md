@@ -19,3 +19,21 @@ Long-goal guardrails already baked in:
 
 Run:  node tools/sandbox/sandbox-server.js  ->  http://localhost:8795
 Test: node tools/sandbox/selftest.js
+
+Disposable candidate extension (`TEST`):
+
+- accepts only the exact byte-bound native game packet and bounded growth authorization
+- writes only below `state/disposable-candidate-sandboxes/`
+- keeps `source/`, `output/`, `evidence/`, and `lessons/` as disjoint roots
+- parses and validates candidate structure without executing it
+- launches no candidate process and passes no host environment or credentials
+- repairs by new immutable iteration; it never edits the source packet or prior output
+- serves one selected static iteration on `127.0.0.1` inside a script-only iframe with network-denying CSP
+- lessons remain privacy-safe, inactive `EXPERIMENTAL` candidates pending a separate Tier 3 decision
+- install, integrate, publish, promote, and `CANON` remain outside this service
+
+See `README-disposable-candidate-sandbox-v1.md`.
+
+```powershell
+node tools/sandbox/selftest-disposable-candidate-sandbox-v1.js
+```

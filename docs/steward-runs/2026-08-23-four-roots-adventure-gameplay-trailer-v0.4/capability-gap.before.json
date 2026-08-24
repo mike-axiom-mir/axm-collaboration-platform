@@ -1,0 +1,212 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "derive-replay-from-real-game-semantics",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [
+        "game.replay.action-log.deterministic"
+      ],
+      "unknown": [],
+      "missing": [
+        "game.replay.engine-byte-lineage",
+        "game.replay.state-checkpoints.byte-bound"
+      ],
+      "declaredConstraints": {
+        "game.replay.action-log.deterministic": [
+          "The complete semantic journey deterministically reaches the ending, but it emits no reusable replay packet."
+        ],
+        "game.replay.engine-byte-lineage": [
+          "The runtime engine is tracked and tested but no replay binds the exact engine bytes it used."
+        ]
+      }
+    },
+    {
+      "id": "render-gameplay-not-only-marketing-cards",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.trailer.replay-state-renderer",
+        "game.trailer.player-motion.visible",
+        "game.trailer.five-zone-state-evidence"
+      ],
+      "declaredConstraints": {
+        "game.trailer.replay-state-renderer": [
+          "The v0.3 trailer renders abstract text and graphics only."
+        ]
+      }
+    },
+    {
+      "id": "preserve-bounded-authority",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [
+        "game.replay.fixed-trusted-entrypoint",
+        "game.trailer.publication-rights-hold"
+      ],
+      "degraded": [
+        "game.replay.no-provider-network-children"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.replay.fixed-trusted-entrypoint": [
+          "Only the reviewed native Four Roots engine is in scope; uploads and generated runtimes remain data."
+        ],
+        "game.replay.no-provider-network-children": [
+          "The existing trailer proves this for abstract rendering, not yet for replay generation."
+        ],
+        "game.trailer.publication-rights-hold": [
+          "Public distribution remains HOLD and publish authority false."
+        ]
+      }
+    },
+    {
+      "id": "prove-real-gameplay-media",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "video.container.structure.verify",
+        "video.first-middle-last.decode",
+        "video.browser.playback.observe"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.trailer.replay-scene.visual-compare"
+      ],
+      "declaredConstraints": {
+        "video.container.structure.verify": [
+          "Existing Asset Hands parse real MP4 and WebM structure."
+        ],
+        "video.first-middle-last.decode": [
+          "The pinned native media runtime decodes selected proof frames."
+        ],
+        "video.browser.playback.observe": [
+          "The in-app Chromium surface can verify local playback separately from scripts."
+        ],
+        "game.trailer.replay-scene.visual-compare": [
+          "No replay-state-to-visible-frame comparison exists yet."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "game.replay.engine-byte-lineage",
+    "game.replay.state-checkpoints.byte-bound",
+    "game.trailer.five-zone-state-evidence",
+    "game.trailer.player-motion.visible",
+    "game.trailer.replay-scene.visual-compare",
+    "game.trailer.replay-state-renderer"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "game.replay.engine-byte-lineage",
+      "requiredBy": [
+        "derive-replay-from-real-game-semantics"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.replay.state-checkpoints.byte-bound",
+      "requiredBy": [
+        "derive-replay-from-real-game-semantics"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.trailer.five-zone-state-evidence",
+      "requiredBy": [
+        "render-gameplay-not-only-marketing-cards"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.trailer.player-motion.visible",
+      "requiredBy": [
+        "render-gameplay-not-only-marketing-cards"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.trailer.replay-scene.visual-compare",
+      "requiredBy": [
+        "prove-real-gameplay-media"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.trailer.replay-state-renderer",
+      "requiredBy": [
+        "render-gameplay-not-only-marketing-cards"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

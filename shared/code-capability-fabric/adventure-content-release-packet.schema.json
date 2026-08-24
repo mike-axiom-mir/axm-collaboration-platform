@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.adventure-content-release-packet/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "releaseId", "requestRef", "decisionRef", "ancestorRef", "generator", "contentFile", "contentSummary", "installPlan", "declaredAuthority", "resources", "reuseRights", "limitations", "truth", "authority", "packetDigest"],
+  "properties": {
+    "schema": {"const": "axm.adventure-content-release-packet/v1"},
+    "version": {"const": "0.2.0"},
+    "status": {"const": "TEST_CONTENT_CANDIDATE"},
+    "releaseId": {"const": "four-roots-adventure-content-v0.2"},
+    "requestRef": {"$ref": "#/$defs/reference"},
+    "decisionRef": {"$ref": "#/$defs/reference"},
+    "ancestorRef": {"$ref": "#/$defs/reference"},
+    "generator": {
+      "type": "object", "additionalProperties": false, "required": ["id", "version", "recipeId", "aiUsed"],
+      "properties": {"id": {"const": "axm-native-adventure-content-recipe-engine"}, "version": {"const": "0.2.0"}, "recipeId": {"const": "four-roots-adventure-content-v0.2"}, "aiUsed": {"const": false}}
+    },
+    "contentFile": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256", "byteLength", "content"],
+      "properties": {"path": {"const": "content/adventure-content.v0.2.json"}, "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "byteLength": {"type": "integer", "minimum": 1, "maximum": 262144}, "content": {"type": "string", "contentEncoding": "base64"}}
+    },
+    "contentSummary": {
+      "type": "object", "additionalProperties": false, "required": ["zones", "actors", "quests", "roots", "hasEnding"],
+      "properties": {"zones": {"const": 5}, "actors": {"const": 25}, "quests": {"const": 6}, "roots": {"const": 4}, "hasEnding": {"const": true}}
+    },
+    "installPlan": {
+      "type": "object", "additionalProperties": false, "required": ["targetRoot", "materialize", "overwriteExisting", "status", "canon", "requiresHostApplication"],
+      "properties": {"targetRoot": {"const": "tools/game-hub/game-library/020-four-roots-adventure"}, "materialize": {"const": ["content/adventure-content.v0.2.json"]}, "overwriteExisting": {"const": false}, "status": {"const": "TEST"}, "canon": {"const": false}, "requiresHostApplication": {"const": true}}
+    },
+    "declaredAuthority": {
+      "type": "object", "additionalProperties": false, "required": ["permissions", "networkDomains", "lifecycleEffects"],
+      "properties": {"permissions": {"const": []}, "networkDomains": {"const": []}, "lifecycleEffects": {"const": []}}
+    },
+    "resources": {
+      "type": "object", "additionalProperties": false, "required": ["files", "recipeBytes", "runtimeProcesses", "networkRequests", "enforced"],
+      "properties": {"files": {"const": 1}, "recipeBytes": {"type": "integer", "minimum": 1, "maximum": 262144}, "runtimeProcesses": {"const": 0}, "networkRequests": {"const": 0}, "enforced": {"const": true}}
+    },
+    "reuseRights": {
+      "type": "object", "additionalProperties": false, "required": ["internalWorkshopUse", "publicDirectReuse"],
+      "properties": {"internalWorkshopUse": {"const": "MIKE_AUTHORIZED_TEST"}, "publicDirectReuse": {"const": "HOLD"}}
+    },
+    "limitations": {"type": "array", "minItems": 5},
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": ["deterministicBytes", "providerCalled", "runtimeExecuted", "workspaceWritten", "installedByGenerator", "promotedByGenerator", "canonChanged"],
+      "properties": {"deterministicBytes": {"const": true}, "providerCalled": {"const": false}, "runtimeExecuted": {"const": false}, "workspaceWritten": {"const": false}, "installedByGenerator": {"const": false}, "promotedByGenerator": {"const": false}, "canonChanged": {"const": false}}
+    },
+    "authority": {"const": "NONE"},
+    "packetDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "reference": {
+      "type": "object", "additionalProperties": false, "required": ["id", "schema", "sha256"],
+      "properties": {"id": {"type": "string", "minLength": 2, "maxLength": 128}, "schema": {"type": "string", "minLength": 1, "maxLength": 220}, "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
+    }
+  }
+}
