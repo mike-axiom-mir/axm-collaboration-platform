@@ -1,0 +1,2005 @@
+> node scripts/compile-city-graph.js
+{
+  "schema": "axm.city-map-command-error/v1",
+  "state": "FAIL",
+  "code": "UNCAUGHT_ERROR",
+  "message": "exactly one of --check, --write, or --print is required",
+  "details": null
+}
+exit=1
+
+> node scripts/compile-schema-registry.js
+{
+  "schema": "axm.schema-registry-command-error/v1",
+  "state": "FAIL",
+  "code": "UNCAUGHT_ERROR",
+  "message": "exactly one of --check, --write, or --print is required",
+  "details": null
+}
+exit=1
+
+> node scripts/compile-twin-surfaces.js
+{
+  "schema": "axm.twin-command-error/v1",
+  "state": "FAIL",
+  "code": "UNCAUGHT_ERROR",
+  "message": "exactly one of --check, --write, or --print is required"
+}
+exit=1
+
+> node --check shared/code-capability-fabric/language-organs/registry.js
+exit=0
+
+> node shared/code-capability-fabric/language-organs/selftest.js
+{
+  "ok": true,
+  "organCount": 102,
+  "uniqueDigests": 102,
+  "familyCount": 23,
+  "pythonSourceReviewedDonorBound": true,
+  "pythonRuntimeCorrectness": "UNKNOWN",
+  "ambiguity": [
+    ".m",
+    ".v"
+  ],
+  "authority": "NONE"
+}
+exit=0
+
+> node shared/code-capability-fabric/language-organs/selftest-adversarial.js
+{
+  "ok": true,
+  "organCount": 102,
+  "signalRoundTrips": 263,
+  "extensionAmbiguities": 8,
+  "basenameAmbiguities": 0,
+  "pathAmbiguities": 0,
+  "shebangAmbiguities": 1,
+  "snapshotSha256": "d3ae157d5c6f43ea73fb85b3976ebf988830e99eb1615554de73f9744073ff46",
+  "authority": "NONE"
+}
+exit=0
+
+> node shared/code-capability-fabric/language-organs/selftest-donors.js
+{
+  "ok": true,
+  "boundOrgans": [
+    "code.organ.html.v1",
+    "code.organ.python.v1",
+    "code.organ.json-schema.v1"
+  ],
+  "runtimeCorrectness": "UNKNOWN",
+  "authority": "NONE"
+}
+exit=0
+
+> node scripts/compile-city-graph.js --check
+{
+  "schema": "axm.city-map-command-result/v1",
+  "state": "FAIL",
+  "mode": "READ_ONLY_CHECK",
+  "observedSourceCommit": "287fd04f1cd348713e3d6fca566c32187044a96b",
+  "graphDigest": "afbd4582015ed8fe70f9926e80470b06c717344d7bd9b0ba39a6f602127e361c",
+  "failures": [
+    {
+      "code": "CITY_GRAPH_DRIFT",
+      "path": "registry/generated/city-graph.json",
+      "expectedSha256": "836b9fc61b7963488754b74f04daff585deb506a7550c59ceaf4cdde98e1e748",
+      "observedSha256": "756fe04c95df5384d63548bcaa202157a3b29473bafde1ecbc0b37eb80f842a1"
+    },
+    {
+      "code": "GENERATED_VIEW_DRIFT",
+      "path": "registry/generated/city-modules.json",
+      "expectedSha256": "43c4e493b685f906ec0afc1b7c313aa7a0954d65c418528b915fa8aed0b70188",
+      "observedSha256": "879634e56d9310f7ebd2fee97c1c894b9e5a96c85d44139f1cd165b3b2d69ee2"
+    },
+    {
+      "code": "GENERATED_VIEW_DRIFT",
+      "path": "registry/generated/city-capabilities.jsonl",
+      "expectedSha256": "849e63a0205e5b722245f4e9fd806c0a9ef342ae0c3304d6b9b68de501cf48a4",
+      "observedSha256": "2721f3de18c7653b490e57a8d9f3cde1fa5415b71cc1d084e5f71edf61575b03"
+    },
+    {
+      "code": "AUTHORITY_MAP_STALE",
+      "path": "registry/generated/city-authority-map.json",
+      "expectedSha256": "c6af5273c767e548c57f506160cc4b922f40846cfd7133ce9137f68a9885ec60",
+      "observedSha256": "d3906a56205403b95908452c6dd74c441d372f09a1dd546c3a233f7465874cd4"
+    },
+    {
+      "code": "GENERATED_VIEW_DRIFT",
+      "path": "registry/generated/city-proof-map.json",
+      "expectedSha256": "f1711d1aa913688acc4297e83b99589e945fc5ad0cf250b1bcd154945bd97a32",
+      "observedSha256": "736efee0430f72f56aa3fa91bd56dd9a226e7010dfd29e51371194e2c4e9f176"
+    },
+    {
+      "code": "GENERATED_VIEW_DRIFT",
+      "path": "registry/generated/city-dependencies.json",
+      "expectedSha256": "494eb7a91c1bb638bb7bbb546b55eca605eb86b29c5c65492a52a8939e8ce2cd",
+      "observedSha256": "d1bc4432b19b24c6d3480028880b6c139dcfedc734784d0fe4bf5779e7e9ab68"
+    },
+    {
+      "code": "GENERATED_VIEW_DRIFT",
+      "path": "registry/generated/city-unresolved-edges.json",
+      "expectedSha256": "d1c5529325d00013f5e98556e4a10027135ef7e13c3b7ace282e0a44ef4327b3",
+      "observedSha256": "554b15e3fc29107ca72459f142a3fc8d9f4d2497b3afb7c677f79575d2c3184e"
+    },
+    {
+      "code": "HUMAN_VIEW_DRIFT",
+      "path": "docs/generated/LEGO_CITY_MAP.md",
+      "expectedSha256": "6059f1e06ee261916dc69c829e49f10c2980536881db49ef54a88d922ed1cb89",
+      "observedSha256": "165fc6d0e4b6a07093499c1b7fa0fafe8bdcd6d428a3c271c4106a0a2174ac89"
+    },
+    {
+      "code": "GENERATED_VIEW_DRIFT",
+      "path": "registry/generated/city-graph.receipt.json",
+      "expectedSha256": "9e5ffea3ae41a9dea8aacd1bfb39a2489dc9f970fccfe9b92b18cdc30f1700e0",
+      "observedSha256": "2c1044ce73763a715b9256377ba4eed253fc05c4e3a59fe2e9575bf862577fe3"
+    }
+  ]
+}
+exit=1
+
+> node scripts/compile-schema-registry.js --check
+{
+  "schema": "axm.schema-registry-command/v1",
+  "state": "PASS",
+  "mode": "READ_ONLY_CHECK",
+  "code": null,
+  "graphDigest": "5438ae3630d45cbfd5e7871c3ecf6980641a7527d3c27c42b51f10a83ec9c5d4",
+  "registryDigest": "145fa38d16d7dc7e144bfde441c0f44622daa6cde7262eb8c4ad726c50a75766"
+}
+exit=0
+
+> node scripts/compile-twin-surfaces.js --check
+{
+  "schema": "axm.twin-command/v1",
+  "state": "PASS",
+  "mode": "READ_ONLY_CHECK",
+  "twinDigest": "de41b28eaa94ec2b05cfa42a076a3ec9b37c6ce007465478e6a45c68bff50d07",
+  "failures": []
+}
+exit=0
+
+> node verify.js
+artifact-depot selftest passed: 10 assertions
+event-journal selftest passed: 9 assertions
+workflow-transit selftest passed: 16 assertions
+evidence-grid selftest passed: 13 assertions
+local-sync selftest passed: 12 assertions
+twin-surfaces selftest passed: 12 assertions
+intake-harbor selftest passed: 12 assertions
+city-gates selftest passed: 14 assertions
+LEGO city blueprint conformance passed: 15 assertions
+AXM VERIFY — 2026-08-24T04:42:14.741Z
+9 FAIL · 25 warn · spine b618c5762240070c
+A failing zip is not evil — it is UNREVIEWED. Hand this report to the builder.
+
+  PASS  spine intact: launcher/axm-foundation.js
+  PASS  spine intact: site/guest/full/launcher/axm-foundation.js
+  PASS  spine intact: site/guest/full/tools/studio/axm-foundation.js
+  PASS  spine intact: tools/_templates/basic-tool/axm-foundation.js
+  PASS  spine intact: tools/agent-command-center/axm-foundation.js
+  PASS  spine intact: tools/agent-tool-forge/axm-foundation.js
+  PASS  spine intact: tools/ai-task-talk/axm-foundation.js
+  PASS  spine intact: tools/asset-pack-lab/axm-foundation.js
+  PASS  spine intact: tools/asset-vault/axm-foundation.js
+  PASS  spine intact: tools/discovery-engine/axm-foundation.js
+  PASS  spine intact: tools/duo-test/axm-foundation.js
+  PASS  spine intact: tools/evidence-desk/axm-foundation.js
+  PASS  spine intact: tools/forge/axm-foundation.js
+  PASS  spine intact: tools/forge-line/axm-foundation.js
+  PASS  spine intact: tools/game-hub/axm-foundation.js
+  PASS  spine intact: tools/hermes/axm-foundation.js
+  PASS  spine intact: tools/launcher-card-installer/axm-foundation.js
+  PASS  spine intact: tools/main-hub/axm-foundation.js
+  PASS  spine intact: tools/model-lab/axm-foundation.js
+  PASS  spine intact: tools/prehub/axm-foundation.js
+  PASS  spine intact: tools/prompt-vault/axm-foundation.js
+  PASS  spine intact: tools/reasoning-shell/axm-foundation.js
+  PASS  spine intact: tools/studio/axm-foundation.js
+  PASS  spine intact: tools/workshop-packager/axm-foundation.js
+  PASS  underscore folder skipped by convention: tools/_module-template
+  PASS  underscore folder skipped by convention: tools/_templates
+  PASS  tools/accessibility-adaptation-lab: uses declared [filesystem-read,storage,browser-dom]
+  PASS  tools/adapter-translation-garden: uses declared [filesystem-read,python-standard-library,local-iana-timezone-data]
+  PASS  tools/aetherfx: uses declared [storage,files,export,clipboard,web-crypto-with-local-sha256-fallback,node-runtime,python-standard-library-static-svg-optional,visual-fx,aetherglass,style-fabric]
+  PASS  tools/agent-command-center: uses declared [storage,wisdom,identity,ai,gate]
+  PASS  tools/agent-tool-forge: uses declared [storage,gate,export]
+  PASS  tools/ai-habitat: uses declared [workshop-presence,python-standard-library,loopback-http,explicit-local-launch]
+  PASS  tools/ai-task-talk: uses declared [storage,ai,bridge,identity,gate]
+  PASS  tools/ai-team: uses declared [storage,ai,bridge,identity,gate,runtime,contract-preflight,source-parity-operations]
+  PASS  tools/ai-team-steward-lab: uses declared [filesystem-read,browser-dom,existing-ai-team-entrypoint]
+  PASS  tools/ai-tool-skill-regression-harness: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/anim-kit: uses declared [game-animation-foundation,universal-component-protocol,files,export]
+  PASS  tools/archive-intake-cartographer: uses declared [filesystem-read,storage]
+  PASS  tools/asset-audio-sensory-workbench: uses declared [filesystem-read,browser-dom,loopback-http,explicit-download]
+  PASS  tools/asset-engine-roundtrip-bridge: uses declared [local-3d-game-runtime,gltf-2.0,files,export]
+  PASS  tools/asset-fabric: uses declared [storage,export,game-runtime-optional,creation-incubator,asset-hands,visual-kernel,spatial-core,film-motion-core,jspdf,basis-universal-wasm]
+  PASS  tools/asset-filesystem-service: uses declared [files,storage,export,asset-vault]
+  PASS  tools/asset-material-sensory-workbench: uses declared [filesystem-read,browser-dom,webgl2,loopback-http,explicit-download]
+  PASS  tools/asset-pack-lab: uses declared [storage,gate,asset-librarian,settings,registry,template-source,server-export]
+  PASS  tools/asset-sensory-workbench: uses declared [filesystem-read,browser-dom,explicit-download]
+  PASS  tools/asset-spatial-sensory-workbench: uses declared [filesystem-read,browser-dom,webgl2,loopback-http,explicit-download]
+  PASS  tools/asset-ui-sensory-workbench: uses declared [local-cpu,canvas-2d,loopback-host,export]
+  PASS  tools/asset-vault: uses declared [storage,gate,optional-ai,asset-librarian,settings,registry,server-export]
+  PASS  tools/audio-listening-quality-lab: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/audio-studio: uses declared [storage,export,files,ai,asset-vault,shared-engines]
+  PASS  tools/authority-surface-observatory: uses declared [filesystem-read,storage]
+  PASS  tools/automated-playtester-scenario-agent: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/axm-platform-courier: uses declared [files,storage,gate,workshop-search,asset-hands,loopback-api,platform-heartbeat,holodeck-kernel,human-settings]
+  PASS  tools/body-pulse: uses declared [storage,host-telemetry,resource-governance]
+  PASS  tools/branch-backfeed-lab: uses declared [files]
+  PASS  tools/branch-module-return-gate: uses declared [filesystem-read,storage,schema:axm.modular-piece-package/v1]
+  PASS  tools/browser-global-surface-observatory: uses declared [browser-global]
+  PASS  tools/browser-lan-hardware-qa-lab: uses declared [runtime,local-network,gate,qa.run,review-inbox]
+  PASS  tools/bulk-intake-conveyor: uses declared [filesystem-read,storage]
+  PASS  tools/capability-fabric: uses declared []
+  PASS  tools/capability-gap-workbench: uses declared [shared:ai-native-hands,browser-dom,explicit-download]
+  PASS  tools/capability-recipe-admission-gate: uses declared [capability-fabric,capability-recipe-foundry,local-node-runtime,explicit-review-evidence,explicit-mike-decision]
+  PASS  tools/capability-recipe-foundry: uses declared [capability-fabric,hand-specification-foundry,hand-verification-lab,browser-dom,explicit-download]
+  PASS  tools/challenge-arena: uses declared [python>=3.10,tool-local-filesystem,localhost-observer,axm.module-job/0.1]
+  PASS  tools/character-animation-mocap-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/character-creature-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/chatgpt-connector: uses declared [bridge,files,gate]
+  PASS  tools/choice-first-visual-lab: uses declared [asset-hands,asset-fabric,style-fabric,aetherfx,visual-fx,pbr-material-baker,raster-codec,pixel-animation,pixel-3d-codec,native-webgl2-renderer,final-video]
+  PASS  tools/chroma-studio: uses declared [asset-filesystem-service,device-handoff,browser-canvas,explicit-output-folder]
+  PASS  tools/claude-connector: uses declared [gate,storage,bridge]
+  PASS  tools/code-recipe-foundry: uses declared [storage,export,clipboard,user-selected-csv-json,module-local-code-recipe-catalog,native-parse-only-runtimes,workshop-search-provenance]
+  PASS  tools/codec-container-foundry: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/cognitive-calibration-lab: uses declared [storage,gate,cognitive-resource-meter,cognitive.calibration.write]
+  PASS  tools/cognitive-evidence-explorer: uses declared [runtime,cognitive-resource-meter,cognitive-evidence-labs]
+  PASS  tools/cognitive-resource-meter: uses declared [storage,files,export,gate,provider-declarations,technical-glasses,cognitive.evidence.write,cognitive.measure.local]
+  PASS  tools/compute-substrate-lab: uses declared [files,deterministic-research-foundry,evidence-router,hardware-research-registry]
+  PASS  tools/consent-agent-memory-dataset-curator: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/copy-composer-hand: uses declared [workshop-direction,body-pulse,local-browser]
+  PASS  tools/crash-replay-symbolication-center: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/dedicated-session-orchestrator: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/dependency-declaration-observatory: uses declared [storage]
+  PASS  tools/design-lineage-lab: uses declared [web-crypto,export]
+  PASS  tools/detached-candidate-nursery: uses declared [filesystem-read,storage]
+  PASS  tools/deterministic-build-cook-patch-pipeline: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/deterministic-continuation-capsule: uses declared [deterministic-json-core,filesystem-read,explicit-source-declaration,memory-continuity-garden:axm.memory.reentry-capsule-reference,memory-continuity-garden:axm.memory.session-handoff-packet-reference]
+  PASS  tools/deterministic-job-cache-scheduler: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/deterministic-json-core: uses declared []
+  PASS  tools/deterministic-organ-fabric: uses declared [storage]
+  PASS  tools/deterministic-pr-base-refresh: uses declared [deterministic-pr-checkpoint,local-git-runtime,explicit-clean-publish-lane-worktree]
+  PASS  tools/deterministic-pr-checkpoint: uses declared [local-git-runtime,filesystem-read,deterministic-json-core,explicit-scope-policy,optional-declared-evidence-receipts]
+  PASS  tools/deterministic-pr-publisher: uses declared [deterministic-pr-checkpoint,clean-publish-lane-worktree,local-git-runtime,host-authenticated-github-cli,explicit-one-use-confirmation]
+  PASS  tools/deterministic-pr-sequencer: uses declared [deterministic-pr-checkpoint,deterministic-pr-publisher,platform-merge-handoff-receipts,host-authenticated-github-cli,explicit-sequence-policy]
+  PASS  tools/deterministic-run-integrator: uses declared [deterministic-json-core,local-git-runtime,explicit-run-integration-policy]
+  PASS  tools/device-handoff: uses declared [files,storage,gate,device.listen]
+  PASS  tools/diagnostics-operations-center: uses declared [runtime,storage,logs,capability-index,evidence-retention,machine-host,review-inbox,recovery-center,workshop-search-provenance,asset-filesystem-service,secrets-permissions-console,device-handoff,reviewed-windows-gate-packets]
+  PASS  tools/discord-bridge: uses declared [network-optional,gate,files]
+  PASS  tools/discovery-engine: uses declared [storage,gate,ai,export]
+  PASS  tools/documentation-tutorial-capture-studio: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/dual-door-observatory: uses declared [storage]
+  PASS  tools/duo-test: uses declared [storage,ai,bridge,identity,loopback-local-model-discovery]
+  PASS  tools/element-foundry: uses declared [axm.modular-element/v1,axm.element-composition/v1,axm.universal-component/v1,browser-local-metadata,explicit-download,verification-spine]
+  PASS  tools/entry-resource-closure-observatory: uses declared [storage]
+  PASS  tools/errol-core-return-lab: uses declared []
+  PASS  tools/evidence-chain-application-drill-runner: uses declared [evidence-chain-inspector,evidence-chain-application-plan-foundry,node-filesystem,explicit-new-sandbox-root,browser-file-picker,web-crypto,stdout]
+  PASS  tools/evidence-chain-application-plan-foundry: uses declared [evidence-chain-inspector,evidence-chain-candidate-review-gate,recovery-center-contract,browser-file-picker,web-crypto,explicit-download]
+  PASS  tools/evidence-chain-candidate-review-gate: uses declared [evidence-chain-inspector,evidence-chain-recovery-foundry,browser-file-picker,web-crypto,explicit-download]
+  PASS  tools/evidence-chain-inspector: uses declared [service:evidence-retention-contract,browser-file-picker,node-standard-library,explicit-download,stdout]
+  PASS  tools/evidence-chain-recovery-adapter-conformance-lab: uses declared [evidence-chain-inspector,evidence-chain-application-plan-foundry,evidence-chain-application-drill-runner,trusted-preloaded-node-adapter,browser-file-picker,web-crypto]
+  PASS  tools/evidence-chain-recovery-adapter-integration-foundry: uses declared [evidence-chain-inspector,evidence-chain-application-plan-foundry,evidence-chain-recovery-adapter-conformance-lab,recovery-center,browser-file-picker,web-crypto,explicit-download]
+  PASS  tools/evidence-chain-recovery-foundry: uses declared [evidence-chain-inspector,browser-file-picker,web-crypto,explicit-download]
+  PASS  tools/evidence-chain-recovery-snapshot-placement-foundry: uses declared [evidence-chain-recovery-snapshot-staging-foundry,evidence-chain-inspector,Workshop-Packager-output-layout,Recovery-Center-discovery-contract,node-filesystem,browser-file-picker]
+  PASS  tools/evidence-chain-recovery-snapshot-staging-foundry: uses declared [evidence-chain-inspector,evidence-chain-application-drill-runner,evidence-chain-recovery-adapter-conformance-lab,evidence-chain-recovery-adapter-integration-foundry,Workshop-Packager-layout,node-filesystem,explicit-new-staging-root,browser-file-picker]
+  PASS  tools/evidence-desk: uses declared [storage,gate,browser-download,knowledge-canvas]
+  PASS  tools/evolution-foundry: uses declared [storage,workshop-direction,body-pulse,governed-evolution-lab,asset-fabric]
+  PASS  tools/external-pattern-observatory: uses declared [deterministic-json-core,runtime:sha256]
+  PASS  tools/fabric-collaboration-room: uses declared [code-capability-fabric,code-recipe-foundry,review-inbox,evidence-desk,mirror-observation-contracts]
+  PASS  tools/fabrication-readiness-lab: uses declared [universal-component-protocol,asset-hands,output-receipts,verification]
+  PASS  tools/film-motion-studio: uses declared [storage,export,files,gate,asset-vault,shared-engines,asset-hands,camera]
+  PASS  tools/finance-world-room: uses declared [storage,gate,export,network]
+  PASS  tools/forge: uses declared [storage,export]
+  PASS  tools/forge-line: uses declared [storage,export,gate]
+  PASS  tools/fsm-kit: uses declared [game-fsm,game-animation-foundation,shapeable-builder,files,export]
+  PASS  tools/fx-blocks: uses declared [visual-fx,asset-hands,universal-component-protocol,shapeable-builder,export]
+  PASS  tools/game-balance-telemetry-advisor: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/game-capability-atlas: uses declared [storage,export]
+  PASS  tools/game-forge: uses declared [storage,export,gate,files]
+  PASS  tools/game-hub: uses declared [files,gate,presentation-spine]
+  PASS  tools/game-organism-lab: uses declared [universal-component-protocol,game-forge,physics,game-animation,sensorium,verification-spine]
+  PASS  tools/game-production-runner: uses declared [files,runtime,local-loopback,network.listen,verification-spine,game-organism,game-forge,game-hub,local-godot-substrate]
+  PASS  tools/game-ui-hud-menu-runtime: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/gameplay-ability-rules-graph: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/geographic-market-map: uses declared [storage,gate,export]
+  PASS  tools/governed-evolution-lab: uses declared [mirror-native,storage,export,discovery,evidence,project-room]
+  PASS  tools/graft: uses declared []
+  PASS  tools/grounded-evolution-intelligence: uses declared [files,capability-records,interface-observations,evidence-router,merge-gate]
+  PASS  tools/hand-forge-bridge: uses declared [hand-specification-foundry,hand-verification-lab,agent-tool-forge,browser-dom,explicit-download]
+  PASS  tools/hand-specification-foundry: uses declared [capability-gap-workbench,browser-dom,explicit-download]
+  PASS  tools/hand-verification-lab: uses declared [hand-specification-foundry,browser-dom,explicit-download]
+  PASS  tools/handoff-wiring-observatory: uses declared [filesystem-read,capability-index,storage]
+  PASS  tools/hardware-research-registry: uses declared [files,deterministic-research-foundry,evidence-router]
+  PASS  tools/hermes: uses declared [node-runtime,git-runtime,configured-external-hermes-source,configured-external-command,loopback-http,local-filesystem,agent-tool-forge-prompt-packs]
+  PASS  tools/holodeck-composer: uses declared [holodeck-kernel,holodeck-screen-adapter,local-webgl,shared-three-r160,browser-storage-explicit,local-files-export]
+  PASS  tools/holodeck-screen-deck: uses declared [local-webgl,shared-three-r160,browser-storage-explicit,local-human-input,machine-intent,holodeck-kernel]
+  PASS  tools/host-assumption-observatory: uses declared [storage]
+  PASS  tools/hub-test-room: uses declared [hub-module-bridge,browser-local-storage,same-origin-module-template]
+  PASS  tools/human-attention-ledger: uses declared [storage,gate,human.attention.write]
+  PASS  tools/human-capability-atlas: uses declared [files,module-contracts,public-discovery,capability-intelligence-adapter]
+  PASS  tools/human-control-binding-observatory: uses declared [human-control-binding]
+  PASS  tools/human-interface-intelligence: uses declared [files,capability-records,capability-intelligence-adapter,grounded-evolution-signals]
+  PASS  tools/immutable-history-guard: uses declared []
+  PASS  tools/input-accessibility-haptics-studio: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/judgement-chamber: uses declared [review-inbox,workshop-direction,storage]
+  PASS  tools/knowledge-canvas: uses declared [storage,export]
+  PASS  tools/launcher-card-installer: uses declared [gate,registry,export]
+  PASS  tools/learning-lab: uses declared [storage,export,shared-engines,project-room,knowledge-canvas,ai-team,mirror-learning-forge]
+  PASS  tools/license-rights-attribution-auditor: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/lighting-probe-baker: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/living-world-ruleset-physics-adapter-kit: uses declared [storage,shared-physics,gate,adapter.register]
+  PASS  tools/living-world-state-server: uses declared [storage,gate,world.mutate,world.restore]
+  PASS  tools/local-3d-game-runtime: uses declared [local-webgl2,gltf-2.0,ps2-asset-forge-proof-fixtures,digest-bound-local-pack-textures,p0-production-cell]
+  PASS  tools/localization-release-pipeline: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/lod-hlod-impostor-builder: uses declared [mesh-retopology-optimizer,local-3d-game-runtime,canvas,export]
+  PASS  tools/machine-host: uses declared [runtime,gate,storage,machine.execute]
+  PASS  tools/main-hub: uses declared [foundation-runtime,same-origin-navigation]
+  PASS  tools/marketplace-compatibility-certifier: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/marketplace-deployment: uses declared [storage,gate,export,plugins,backup,runtime,publish-library]
+  PASS  tools/media-render-transcode-service: uses declared [runtime,files,export,review-inbox,gate,media.render]
+  PASS  tools/memory-continuity-garden: uses declared [filesystem-read,python-standard-library,local-reference-contracts]
+  PASS  tools/mesh-retopology-optimizer: uses declared [local-3d-game-runtime,gltf-2.0,export]
+  PASS  tools/mirror-code-clone: uses declared [local-cpu,filesystem,verification]
+  PASS  tools/mirror-holo-shoebox: uses declared [experiment-world-kernel,holodeck-observer-pattern,universal-component-protocol,modular-elements,verification-spine]
+  PASS  tools/mirror-intake-monitor: uses declared [storage,gate,cognitive-resource-meter,mirror.intake-receipt.import]
+  PASS  tools/mirror-learning-shell: uses declared [mirror-kernel,identity-core,wisdom,profile,specialists,reasoning,training]
+  PASS  tools/model-lab: uses declared [storage,ai]
+  PASS  tools/modern-asset-forge: uses declared [local-files,local-processes,module-local-job-writes,export,glTF.2.0,KTX.2.0,three-webgl2,asset-hands]
+  PASS  tools/modular-environment-kit-builder: uses declared [native-glb,canvas,sha256,export]
+  PASS  tools/modular-intake-gate: uses declared [storage,review-inbox,module-installer,component.promote,component.family.register]
+  PASS  tools/modular-seed-foundry: uses declared [browser-local-metadata,web-crypto,explicit-download,modular-intake-gate,module-contracts,verification-spine]
+  PASS  tools/module-contract-workbench: uses declared [storage,plugins,gate,review]
+  PASS  tools/module-footprint-observatory: uses declared [storage]
+  PASS  tools/module-installer: uses declared [storage,gate,backup,review-inbox,machine-host]
+  PASS  tools/module-lineage-comparator: uses declared [filesystem-read,storage]
+  PASS  tools/multiplayer-controller-transport: uses declared [local-network,runtime,gate,network.listen]
+  PASS  tools/native-dependency-foundry: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/navigation-crowd-behavior-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/network-replication-prediction-lab: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/neural-room: uses declared [ai-provider-optional,neural-visual-seam,visual-draft-room,export]
+  PASS  tools/novelty-diversity-engine: uses declared [storage,runtime]
+  PASS  tools/p1-production-foundation: uses declared [local-cpu,web-crypto]
+  PASS  tools/p2-experience-foundation: uses declared [local-cpu,web-crypto]
+  PASS  tools/p34-release-foundation: uses declared [local-cpu,web-crypto]
+  PASS  tools/pbr-material-baker: uses declared [local-cpu,canvas,export]
+  PASS  tools/performance-frame-profiler: uses declared [local-3d-game-runtime,webgl2-timer-query,sha256,canvas,gpu-timing,export]
+  PASS  tools/physics-destruction-ragdoll-runtime: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/prehub: uses declared [storage]
+  PASS  tools/presentation-spine: uses declared [visual-kernel,filesystem-read]
+  PASS  tools/procedural-city-interior-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/project-room: uses declared [storage,export]
+  PASS  tools/prompt-vault: uses declared [storage,gate,optional-ai,settings,registry,server-export]
+  PASS  tools/protocol-version-observatory: uses declared [storage]
+  PASS  tools/ps2-asset-forge: uses declared [local-cc0-source-library,game-animation-foundation,three-webgl,gltf-2.0,files,export]
+  PASS  tools/public-release-deployment-adapter: uses declared [files,export,review-inbox,identity,gate,release.deploy]
+  PASS  tools/publish-library: uses declared [storage,export,gate,asset-librarian,server-export,shared-output-engine,worker-threads]
+  PASS  tools/quest-dialogue-narrative-runtime: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/read-only-mirror-world-adapter: uses declared [storage,identity,gate,mirror.observe]
+  PASS  tools/reasoning-shell: uses declared [foundation-runtime,foundation-storage,optional-ai-connector,foundation-gate,local-profile-catalog,browser-file-selection,browser-blob-download]
+  PASS  tools/recovery-center: uses declared [storage,backup,gate,workshop-packager,secrets-permissions-console]
+  PASS  tools/reference-to-3d-reconstruction-lab: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/release-size-delta-patch-optimizer: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/repair-resilience-library: uses declared [local-cpu,filesystem-read]
+  PASS  tools/repairbuddy: uses declared [local-cpu,deterministic-json-core,axm.verify-report/v1]
+  PASS  tools/reproducible-build-sbom-generator: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/research-foundry: uses declared [files,workshop-direction,module-contracts,capability-gap-scout,evidence-router,discovery-engine]
+  PASS  tools/review-inbox: uses declared [storage,gate,governance,tools-index,host-trust-policy,signed-intent-ledger,exclusive-create-operation-lease,host-local-retirement-cli,raw-owner-evidence-quarantine,bounded-retirement-recovery-status,exact-interrupted-retirement-recovery,digest-verified-recovery-checkpoint-observation,append-only-retirement-decision,exact-retirement-intent-withdrawal,same-filesystem-hard-link-retirement-publication,bounded-retirement-publication-status,exact-retirement-publication-stage-plan,digest-bound-lossless-stage-archival,durable-exact-request-archival-intent,bounded-archival-intent-publication-status,diagnostic-redaction,reason-digest-commitment]
+  PASS  tools/rigging-retargeting-studio: uses declared [native-glb,native-math,canvas,export]
+  PASS  tools/route: uses declared []
+  PASS  tools/runner: uses declared [hub-module-bridge,same-origin-health-endpoint,same-origin-verify-report-export,browser-blob-download]
+  PASS  tools/runtime-channel-observatory: uses declared [runtime-channel]
+  PASS  tools/sandbox: uses declared [local-filesystem,loopback-http]
+  PASS  tools/save-migration-replay-service: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/schema-contract-migration-registry: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/schema-identity-observatory: uses declared [storage]
+  PASS  tools/secrets-permissions-console: uses declared [storage,gate,identity,module-manifests]
+  PASS  tools/security-fuzz-supply-chain-lab: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/sensorium-lab: uses declared [sensorium-registry,sensorium-conformance,technical-glasses-feed]
+  PASS  tools/shapeable-builder: uses declared [storage,export,universal-component-protocol,visual-kernel,verification-spine]
+  PASS  tools/shell-guardian: uses declared [gate,storage,bridge]
+  PASS  tools/skinner: uses declared []
+  PASS  tools/source-connector-hub: uses declared [network-optional,review-inbox,gate,network.fetch]
+  PASS  tools/source-control-merge-workbench: uses declared [local-git-runtime,separate-git-working-copy,git-credential-manager-or-existing-git-auth,workshop-public-safe-policy,machine-host-background-job-ledger]
+  PASS  tools/spatial-studio: uses declared [storage,export,files,gate,shared-engines,shared-physics,asset-hands,publish-library]
+  PASS  tools/storage-namespace-observatory: uses declared [storage]
+  PASS  tools/studio: uses declared [storage,ai,export,files,gate,asset-vault,asset-hands,visual-kernel,visual-actions,presentation-spine]
+  PASS  tools/sustainability-metrology-lab: uses declared [storage,gate,sustainability.evidence.write]
+  PASS  tools/technical-art-validator: uses declared [native-glb,sha256,human-visual-review,export]
+  PASS  tools/technical-glasses: uses declared [runtime,storage,capability-index,tools-index,gate]
+  PASS  tools/template-runtime-pack-engine: uses declared [storage,export]
+  PASS  tools/terrain-biome-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/text-fabric: uses declared [browser-local-storage,python-standard-library-optional,project-owned-font-files-explicit,local-svg-renderer-optional,user-selected-output-paths,asset-hands-font-shaping,style-fabric,aetherglass]
+  PASS  tools/texture-trimsheet-decal-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/ui-fx: uses declared [visual-kernel,modular-elements,clipboard]
+  PASS  tools/ui-ux-builder: uses declared [storage,export,gate]
+  PASS  tools/universal-object-fabric: uses declared [asset-fabric,game-forge,modular-intake-gate,verification-spine,shared/universal-object-fabric/source-stage-v0.7/game-stage]
+  PASS  tools/uv-lightmap-studio: uses declared [local-3d-game-runtime,gltf-2.0,canvas,export]
+  PASS  tools/vehicle-assembly-damage-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/verification-entry-observatory: uses declared [storage]
+  PASS  tools/verification-proof-lab: uses declared [filesystem-read,python-standard-library,node-standard-library,machine.execute,shared:verification-proof/public-proof-batch1,shared:verification-proof/public-proof-intake]
+  PASS  tools/verifier: uses declared [verification-spine,same-origin-workshop-evidence,same-origin-verify-config,browser-blob-download,hub-module-bridge]
+  PASS  tools/vfx-particle-shader-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/visual-art-director-lab: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/visual-draft-room: uses declared [storage-metadata-only,neural-room-optional,raster-compositor,export]
+  PASS  tools/visual-mirror-platform-clone: uses declared [local-static-evidence,hash-bound-platform-snapshot]
+  PASS  tools/visual-mold-foundry: uses declared [browser-local-storage,explicit-user-download,protected-vendored-package,no-network]
+  PASS  tools/vram-memory-streaming-analyzer: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/workshop-census-observatory: uses declared [filesystem-read,storage]
+  PASS  tools/workshop-command-center: uses declared [storage,body-pulse,workshop-direction,workshop-needs-observatory,review-inbox,technical-glasses,cognitive-resource-meter,chroma-studio,device-handoff,ui-fx,presentation-spine]
+  PASS  tools/workshop-direction: uses declared [storage,body-pulse,capability-index,review-inbox]
+  PASS  tools/workshop-needs-observatory: uses declared [storage,modular-intake-gate,module-contracts,tools-index]
+  PASS  tools/workshop-packager: uses declared [workshop-filesystem,package-planner,runtime-manifest-verifier,restore-test,github-api-optional]
+  PASS  tools/workshop-search-provenance: uses declared [files,storage,capability-index,code-recipe-foundry]
+  PASS  tools/workshop-shadow: uses declared [local-filesystem,loopback-http,code-capability-fabric,deterministic-json-core,tool-readiness,module-contract-verifier]
+  PASS  tools/workshop-updater: uses declared [platform-heartbeat,body-pulse,github-public-api,ed25519-release-trust,local-state-staging]
+  PASS  tools/world-partition-streaming-compiler: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/world-tile-foundry: uses declared [game-forge,storage,export,verification-spine]
+  PASS  AXM_UNIVERSAL_CONTROL_SYSTEM_v0_2_1_TEST_READY/migrations/robo-pong/robo-pong-semantic-phone.html DOM order clean
+  PASS  cloud-test/axm-studio-cloud.html DOM order clean
+  PASS  hub/index.html DOM order clean
+  PASS  launcher/index.html DOM order clean
+  PASS  mobile/pocket-adventure/index.html DOM order clean
+  PASS  museum/first-mirror/original/mirror.html DOM order clean
+  PASS  pocket/hub-mobile.html DOM order clean
+  PASS  pocket/prehub-mobile.html DOM order clean
+  PASS  shared/aetherglass/tests/authoring.html DOM order clean
+  PASS  shared/aetherglass/tests/smoke.html DOM order clean
+  PASS  shared/aetherglass/tests/storycraft.html DOM order clean
+  PASS  shared/ai-native-hands/computed-style-fixture.html DOM order clean
+  PASS  shared/css-skin-fabric/candidates/local-command-surface-62d539023eaf37cb/specimen.html DOM order clean
+  PASS  shared/universal-object-fabric/source-stage-v0.7/game-stage/game_geometry/AXM_ASSET_PICKER.html DOM order clean
+  PASS  site/guest/full/tools/audio-studio/sound-lab-engine.html DOM order clean
+  PASS  site/guest/full/tools/game-forge/preview.html DOM order clean
+  PASS  site/guest/full/tools/studio/engine.html DOM order clean
+  PASS  site/guest/full/tools/studio/index.html DOM order clean
+  PASS  tools/_module-template/index.html DOM order clean
+  PASS  tools/_templates/basic-tool/index.html DOM order clean
+  PASS  tools/aetherfx/runtime/OPEN_STUDIO.html DOM order clean
+  PASS  tools/aetherfx/runtime/dist/AXM_AETHERFX_VISUAL_EFFECT_FABRIC_STUDIO_v1_3_0.html DOM order clean
+  PASS  tools/agent-command-center/index.html DOM order clean
+  PASS  tools/agent-tool-forge/index.html DOM order clean
+  PASS  tools/ai-habitat/workshop.html DOM order clean
+  PASS  tools/ai-task-talk/index.html DOM order clean
+  PASS  tools/asset-pack-lab/index.html DOM order clean
+  PASS  tools/asset-vault/index.html DOM order clean
+  PASS  tools/audio-studio/sound-lab-engine.html DOM order clean
+  PASS  tools/challenge-arena/index.html DOM order clean
+  PASS  tools/claude-connector/index.html DOM order clean
+  PASS  tools/discovery-engine/index.html DOM order clean
+  PASS  tools/duo-test/index.html DOM order clean
+  PASS  tools/forge/index.html DOM order clean
+  PASS  tools/forge-line/index.html DOM order clean
+  PASS  tools/fsm-kit/index.html DOM order clean
+  PASS  tools/game-forge/preview.html DOM order clean
+  PASS  tools/game-hub/game-library/002-robo-pong/runtime/ROBO_PONG_PHASER4_PHONE_CLIENT.html DOM order clean
+  PASS  tools/game-hub/game-library/003-robo-pong-cross/runtime/robo-pong-cross-client.html DOM order clean
+  PASS  tools/game-hub/game-library/004-relaybound/runtime/relaybound-client.html DOM order clean
+  PASS  tools/game-hub/game-library/004-relaybound/runtime/relaybound-debrief.html DOM order clean
+  PASS  tools/game-hub/game-library/005-briarfront/runtime/briarfront-client.html DOM order clean
+  PASS  tools/game-hub/game-library/006-lumenwake/runtime/lumenwake-client.html DOM order clean
+  PASS  tools/game-hub/game-library/011-axm-buddyfarm/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/game-library/012-pulse-choir/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/game-library/015-axm-mirrorshift/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/game-library/019-brace-room/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/game-library/021-hearthgate-two-sides/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/lobby-controller.html DOM order clean
+  PASS  tools/graft/index.html DOM order clean
+  PASS  tools/hermes/index.html DOM order clean
+  PASS  tools/hub-test-room/index.html DOM order clean
+  PASS  tools/launcher-card-installer/index.html DOM order clean
+  PASS  tools/main-hub/index.html DOM order clean
+  PASS  tools/mirror-code-clone/index.html DOM order clean
+  PASS  tools/model-lab/index.html DOM order clean
+  PASS  tools/prehub/index.html DOM order clean
+  PASS  tools/prompt-vault/index.html DOM order clean
+  PASS  tools/reasoning-shell/index.html DOM order clean
+  PASS  tools/route/index.html DOM order clean
+  PASS  tools/runner/index.html DOM order clean
+  PASS  tools/sandbox/index.html DOM order clean
+  PASS  tools/sandbox/projects/robo-pong/index.html DOM order clean
+  PASS  tools/shell-guardian/index.html DOM order clean
+  PASS  tools/skinner/index.html DOM order clean
+  PASS  tools/studio/engine.html DOM order clean
+  PASS  tools/studio/index.html DOM order clean
+  PASS  tools/text-fabric/runtime/LAYOUT_STRESS_LAB.html DOM order clean
+  PASS  tools/text-fabric/runtime/START_HERE.html DOM order clean
+  PASS  tools/ui-ux-builder/index.html DOM order clean
+  PASS  tools/verifier/index.html DOM order clean
+  PASS  tools/workshop-packager/index.html DOM order clean
+  PASS  namespace declared: assets/packs/launcher/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/sound/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/music/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/video/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/lang/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/template/base/NAMESPACE.txt
+  PASS  template index honest (2 entries)
+  PASS  registry: user-choice rule, AI proposal-first, truth patch all present
+  PASS  settings use the reserved spine slot
+  PASS  reasoning-shell: tweaks proposal-only, rejection_reason enforced
+  PASS  present: TRUST_CHARTER.txt
+  PASS  present: TEMPLATE_SEAMS.txt
+  PASS  present: prompts/local/axm-core.txt
+  PASS  present: WORKSHOP_TESTS_RUN.txt
+  PASS  core roots file is the CANON BASE version
+  PASS  shared game engine seams: 8 regression assertion(s) passed
+  PASS  game-library adapter: 21 modular game package(s) verified
+  warn  game package 002-robo-pong: physical phone qa is pending
+  warn  game package 003-robo-pong-cross: physical phone qa is pending
+  warn  game package 004-relaybound: physical phone qa is pending
+  warn  game package 005-briarfront: physical phone qa is pending
+  warn  game package 006-lumenwake: physical phone qa is pending
+  warn  game package 007-casino-alpha: physical phone qa is pending
+  warn  game package 008-district-party: physical phone qa is pending
+  warn  game package 009-circuitseed-protocol-wilds: physical phone qa is pending
+  warn  game package 010-living-globe-tycoon: physical phone qa is pending
+  warn  game package 011-axm-buddyfarm: physical phone qa is pending
+  warn  game package 012-pulse-choir: physical phone qa is pending
+  warn  game package 015-axm-mirrorshift: physical phone qa is pending
+  warn  game package 016-hexbound-rooftops: physical phone qa is pending
+  warn  game package 017-small-odds: physical phone qa is pending
+  warn  game package 018-last-stop-nebula: physical phone qa is pending
+  warn  game package 019-brace-room: physical phone qa is pending
+  warn  game package 021-hearthgate-two-sides: physical phone qa is pending
+  warn  game package 022-shardrunner: disconnect recovery is pending
+  warn  game package 022-shardrunner: blocking overlay escape is pending
+  warn  game package 022-shardrunner: physical phone qa is pending
+  PASS  module contract: accessibility-adaptation-lab (tools/accessibility-adaptation-lab/module.contract.json)
+  PASS  module contract: adapter-translation-garden (tools/adapter-translation-garden/module.contract.json)
+  PASS  module contract: aetherfx (tools/aetherfx/module.contract.json)
+  PASS  module contract: agent-command-center (tools/agent-command-center/module.contract.json)
+  PASS  module contract: agent-tool-forge (tools/agent-tool-forge/module.contract.json)
+  PASS  module contract: ai-habitat (tools/ai-habitat/module.contract.json)
+  PASS  module contract: ai-task-talk (tools/ai-task-talk/module.contract.json)
+  PASS  module contract: ai-team (tools/ai-team/module.contract.json)
+  PASS  module contract: ai-team-steward-lab (tools/ai-team-steward-lab/module.contract.json)
+  PASS  module contract: ai-tool-skill-regression-harness (tools/ai-tool-skill-regression-harness/module.contract.json)
+  PASS  module contract: anim-kit (tools/anim-kit/module.contract.json)
+  PASS  module contract: archive-intake-cartographer (tools/archive-intake-cartographer/module.contract.json)
+  PASS  module contract: asset-audio-sensory-workbench (tools/asset-audio-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-engine-roundtrip-bridge (tools/asset-engine-roundtrip-bridge/module.contract.json)
+  PASS  module contract: asset-fabric (tools/asset-fabric/module.contract.json)
+  PASS  module contract: asset-filesystem-service (tools/asset-filesystem-service/module.contract.json)
+  PASS  module contract: asset-material-sensory-workbench (tools/asset-material-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-pack-lab (tools/asset-pack-lab/module.contract.json)
+  PASS  module contract: asset-sensory-workbench (tools/asset-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-spatial-sensory-workbench (tools/asset-spatial-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-ui-sensory-workbench (tools/asset-ui-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-vault (tools/asset-vault/module.contract.json)
+  PASS  module contract: audio-listening-quality-lab (tools/audio-listening-quality-lab/module.contract.json)
+  PASS  module contract: audio-studio (tools/audio-studio/module.contract.json)
+  PASS  module contract: authority-surface-observatory (tools/authority-surface-observatory/module.contract.json)
+  PASS  module contract: automated-playtester-scenario-agent (tools/automated-playtester-scenario-agent/module.contract.json)
+  PASS  module contract: axm-platform-courier (tools/axm-platform-courier/module.contract.json)
+  PASS  module contract: body-pulse (tools/body-pulse/module.contract.json)
+  PASS  module contract: branch-backfeed-lab (tools/branch-backfeed-lab/module.contract.json)
+  PASS  module contract: branch-module-return-gate (tools/branch-module-return-gate/module.contract.json)
+  PASS  module contract: browser-global-surface-observatory (tools/browser-global-surface-observatory/module.contract.json)
+  PASS  module contract: browser-lan-hardware-qa-lab (tools/browser-lan-hardware-qa-lab/module.contract.json)
+  PASS  module contract: bulk-intake-conveyor (tools/bulk-intake-conveyor/module.contract.json)
+  PASS  module contract: capability-fabric (tools/capability-fabric/module.contract.json)
+  PASS  module contract: capability-gap-workbench (tools/capability-gap-workbench/module.contract.json)
+  PASS  module contract: capability-recipe-admission-gate (tools/capability-recipe-admission-gate/module.contract.json)
+  PASS  module contract: capability-recipe-foundry (tools/capability-recipe-foundry/module.contract.json)
+  PASS  module contract: challenge-arena (tools/challenge-arena/module.contract.json)
+  PASS  module contract: character-animation-mocap-studio (tools/character-animation-mocap-studio/module.contract.json)
+  PASS  module contract: character-creature-studio (tools/character-creature-studio/module.contract.json)
+  PASS  module contract: chatgpt-connector (tools/chatgpt-connector/module.contract.json)
+  PASS  module contract: choice-first-visual-lab (tools/choice-first-visual-lab/module.contract.json)
+  PASS  module contract: chroma-studio (tools/chroma-studio/module.contract.json)
+  PASS  module contract: claude-connector (tools/claude-connector/module.contract.json)
+  PASS  module contract: code-recipe-foundry (tools/code-recipe-foundry/module.contract.json)
+  PASS  module contract: codec-container-foundry (tools/codec-container-foundry/module.contract.json)
+  PASS  module contract: cognitive-calibration-lab (tools/cognitive-calibration-lab/module.contract.json)
+  PASS  module contract: cognitive-evidence-explorer (tools/cognitive-evidence-explorer/module.contract.json)
+  PASS  module contract: cognitive-resource-meter (tools/cognitive-resource-meter/module.contract.json)
+  PASS  module contract: compute-substrate-lab (tools/compute-substrate-lab/module.contract.json)
+  PASS  module contract: consent-agent-memory-dataset-curator (tools/consent-agent-memory-dataset-curator/module.contract.json)
+  PASS  module contract: copy-composer-hand (tools/copy-composer-hand/module.contract.json)
+  PASS  module contract: crash-replay-symbolication-center (tools/crash-replay-symbolication-center/module.contract.json)
+  PASS  module contract: dedicated-session-orchestrator (tools/dedicated-session-orchestrator/module.contract.json)
+  PASS  module contract: dependency-declaration-observatory (tools/dependency-declaration-observatory/module.contract.json)
+  PASS  module contract: design-lineage-lab (tools/design-lineage-lab/module.contract.json)
+  PASS  module contract: detached-candidate-nursery (tools/detached-candidate-nursery/module.contract.json)
+  PASS  module contract: deterministic-build-cook-patch-pipeline (tools/deterministic-build-cook-patch-pipeline/module.contract.json)
+  PASS  module contract: deterministic-continuation-capsule (tools/deterministic-continuation-capsule/module.contract.json)
+  PASS  module contract: deterministic-job-cache-scheduler (tools/deterministic-job-cache-scheduler/module.contract.json)
+  PASS  module contract: deterministic-json-core (tools/deterministic-json-core/module.contract.json)
+  PASS  module contract: deterministic-organ-fabric (tools/deterministic-organ-fabric/module.contract.json)
+  PASS  module contract: deterministic-pr-base-refresh (tools/deterministic-pr-base-refresh/module.contract.json)
+  PASS  module contract: deterministic-pr-checkpoint (tools/deterministic-pr-checkpoint/module.contract.json)
+  PASS  module contract: deterministic-pr-publisher (tools/deterministic-pr-publisher/module.contract.json)
+  PASS  module contract: deterministic-pr-sequencer (tools/deterministic-pr-sequencer/module.contract.json)
+  PASS  module contract: deterministic-run-integrator (tools/deterministic-run-integrator/module.contract.json)
+  PASS  module contract: device-handoff (tools/device-handoff/module.contract.json)
+  PASS  module contract: diagnostics-operations-center (tools/diagnostics-operations-center/module.contract.json)
+  PASS  module contract: discord-bridge (tools/discord-bridge/module.contract.json)
+  PASS  module contract: discovery-engine (tools/discovery-engine/module.contract.json)
+  PASS  module contract: documentation-tutorial-capture-studio (tools/documentation-tutorial-capture-studio/module.contract.json)
+  PASS  module contract: dual-door-observatory (tools/dual-door-observatory/module.contract.json)
+  PASS  module contract: duo-test (tools/duo-test/module.contract.json)
+  PASS  module contract: element-foundry (tools/element-foundry/module.contract.json)
+  PASS  module contract: entry-resource-closure-observatory (tools/entry-resource-closure-observatory/module.contract.json)
+  PASS  module contract: errol-core-return-lab (tools/errol-core-return-lab/module.contract.json)
+  PASS  module contract: evidence-chain-application-drill-runner (tools/evidence-chain-application-drill-runner/module.contract.json)
+  PASS  module contract: evidence-chain-application-plan-foundry (tools/evidence-chain-application-plan-foundry/module.contract.json)
+  PASS  module contract: evidence-chain-candidate-review-gate (tools/evidence-chain-candidate-review-gate/module.contract.json)
+  PASS  module contract: evidence-chain-inspector (tools/evidence-chain-inspector/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-adapter-conformance-lab (tools/evidence-chain-recovery-adapter-conformance-lab/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-adapter-integration-foundry (tools/evidence-chain-recovery-adapter-integration-foundry/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-foundry (tools/evidence-chain-recovery-foundry/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-snapshot-placement-foundry (tools/evidence-chain-recovery-snapshot-placement-foundry/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-snapshot-staging-foundry (tools/evidence-chain-recovery-snapshot-staging-foundry/module.contract.json)
+  PASS  module contract: evidence-desk (tools/evidence-desk/module.contract.json)
+  PASS  module contract: evolution-foundry (tools/evolution-foundry/module.contract.json)
+  PASS  module contract: external-pattern-observatory (tools/external-pattern-observatory/module.contract.json)
+  PASS  module contract: fabric-collaboration-room (tools/fabric-collaboration-room/module.contract.json)
+  PASS  module contract: fabrication-readiness-lab (tools/fabrication-readiness-lab/module.contract.json)
+  PASS  module contract: film-motion-studio (tools/film-motion-studio/module.contract.json)
+  PASS  module contract: finance-world-room (tools/finance-world-room/module.contract.json)
+  PASS  module contract: forge (tools/forge/module.contract.json)
+  PASS  module contract: forge-line (tools/forge-line/module.contract.json)
+  PASS  module contract: fsm-kit (tools/fsm-kit/module.contract.json)
+  PASS  module contract: fx-blocks (tools/fx-blocks/module.contract.json)
+  PASS  module contract: game-balance-telemetry-advisor (tools/game-balance-telemetry-advisor/module.contract.json)
+  PASS  module contract: game-capability-atlas (tools/game-capability-atlas/module.contract.json)
+  PASS  module contract: game-forge (tools/game-forge/module.contract.json)
+  PASS  module contract: game-hub (tools/game-hub/module.contract.json)
+  PASS  module contract: game-organism-lab (tools/game-organism-lab/module.contract.json)
+  PASS  module contract: game-production-runner (tools/game-production-runner/module.contract.json)
+  PASS  module contract: game-ui-hud-menu-runtime (tools/game-ui-hud-menu-runtime/module.contract.json)
+  PASS  module contract: gameplay-ability-rules-graph (tools/gameplay-ability-rules-graph/module.contract.json)
+  PASS  module contract: geographic-market-map (tools/geographic-market-map/module.contract.json)
+  PASS  module contract: governed-evolution-lab (tools/governed-evolution-lab/module.contract.json)
+  PASS  module contract: graft (tools/graft/module.contract.json)
+  PASS  module contract: grounded-evolution-intelligence (tools/grounded-evolution-intelligence/module.contract.json)
+  PASS  module contract: hand-forge-bridge (tools/hand-forge-bridge/module.contract.json)
+  PASS  module contract: hand-specification-foundry (tools/hand-specification-foundry/module.contract.json)
+  PASS  module contract: hand-verification-lab (tools/hand-verification-lab/module.contract.json)
+  PASS  module contract: handoff-wiring-observatory (tools/handoff-wiring-observatory/module.contract.json)
+  PASS  module contract: hardware-research-registry (tools/hardware-research-registry/module.contract.json)
+  PASS  module contract: hermes-local (tools/hermes/module.contract.json)
+  PASS  module contract: holodeck-composer (tools/holodeck-composer/module.contract.json)
+  PASS  module contract: holodeck-screen-deck (tools/holodeck-screen-deck/module.contract.json)
+  PASS  module contract: host-assumption-observatory (tools/host-assumption-observatory/module.contract.json)
+  PASS  module contract: hub-test-room (tools/hub-test-room/module.contract.json)
+  PASS  module contract: human-attention-ledger (tools/human-attention-ledger/module.contract.json)
+  PASS  module contract: human-capability-atlas (tools/human-capability-atlas/module.contract.json)
+  PASS  module contract: human-control-binding-observatory (tools/human-control-binding-observatory/module.contract.json)
+  PASS  module contract: human-interface-intelligence (tools/human-interface-intelligence/module.contract.json)
+  PASS  module contract: immutable-history-guard (tools/immutable-history-guard/module.contract.json)
+  PASS  module contract: input-accessibility-haptics-studio (tools/input-accessibility-haptics-studio/module.contract.json)
+  PASS  module contract: judgement-chamber (tools/judgement-chamber/module.contract.json)
+  PASS  module contract: knowledge-canvas (tools/knowledge-canvas/module.contract.json)
+  PASS  module contract: launcher-card-installer (tools/launcher-card-installer/module.contract.json)
+  PASS  module contract: learning-lab (tools/learning-lab/module.contract.json)
+  PASS  module contract: license-rights-attribution-auditor (tools/license-rights-attribution-auditor/module.contract.json)
+  PASS  module contract: lighting-probe-baker (tools/lighting-probe-baker/module.contract.json)
+  PASS  module contract: living-world-ruleset-physics-adapter-kit (tools/living-world-ruleset-physics-adapter-kit/module.contract.json)
+  PASS  module contract: living-world-state-server (tools/living-world-state-server/module.contract.json)
+  PASS  module contract: local-3d-game-runtime (tools/local-3d-game-runtime/module.contract.json)
+  PASS  module contract: localization-release-pipeline (tools/localization-release-pipeline/module.contract.json)
+  PASS  module contract: lod-hlod-impostor-builder (tools/lod-hlod-impostor-builder/module.contract.json)
+  PASS  module contract: machine-host (tools/machine-host/module.contract.json)
+  PASS  module contract: main-hub (tools/main-hub/module.contract.json)
+  PASS  module contract: marketplace-compatibility-certifier (tools/marketplace-compatibility-certifier/module.contract.json)
+  PASS  module contract: marketplace-deployment (tools/marketplace-deployment/module.contract.json)
+  PASS  module contract: media-render-transcode-service (tools/media-render-transcode-service/module.contract.json)
+  PASS  module contract: memory-continuity-garden (tools/memory-continuity-garden/module.contract.json)
+  PASS  module contract: mesh-retopology-optimizer (tools/mesh-retopology-optimizer/module.contract.json)
+  PASS  module contract: mirror-code-clone (tools/mirror-code-clone/module.contract.json)
+  PASS  module contract: mirror-holo-shoebox (tools/mirror-holo-shoebox/module.contract.json)
+  PASS  module contract: mirror-intake-monitor (tools/mirror-intake-monitor/module.contract.json)
+  PASS  module contract: mirror-learning-shell (tools/mirror-learning-shell/module.contract.json)
+  PASS  module contract: model-lab (tools/model-lab/module.contract.json)
+  PASS  module contract: modern-asset-forge (tools/modern-asset-forge/module.contract.json)
+  PASS  module contract: modular-environment-kit-builder (tools/modular-environment-kit-builder/module.contract.json)
+  PASS  module contract: modular-intake-gate (tools/modular-intake-gate/module.contract.json)
+  PASS  module contract: modular-seed-foundry (tools/modular-seed-foundry/module.contract.json)
+  PASS  module contract: module-contract-workbench (tools/module-contract-workbench/module.contract.json)
+  PASS  module contract: module-footprint-observatory (tools/module-footprint-observatory/module.contract.json)
+  PASS  module contract: module-installer (tools/module-installer/module.contract.json)
+  PASS  module contract: module-lineage-comparator (tools/module-lineage-comparator/module.contract.json)
+  PASS  module contract: multiplayer-controller-transport (tools/multiplayer-controller-transport/module.contract.json)
+  PASS  module contract: native-dependency-foundry (tools/native-dependency-foundry/module.contract.json)
+  PASS  module contract: navigation-crowd-behavior-studio (tools/navigation-crowd-behavior-studio/module.contract.json)
+  PASS  module contract: network-replication-prediction-lab (tools/network-replication-prediction-lab/module.contract.json)
+  PASS  module contract: neural-room (tools/neural-room/module.contract.json)
+  PASS  module contract: novelty-diversity-engine (tools/novelty-diversity-engine/module.contract.json)
+  PASS  module contract: p1-production-foundation (tools/p1-production-foundation/module.contract.json)
+  PASS  module contract: p2-experience-foundation (tools/p2-experience-foundation/module.contract.json)
+  PASS  module contract: p34-release-foundation (tools/p34-release-foundation/module.contract.json)
+  PASS  module contract: pbr-material-baker (tools/pbr-material-baker/module.contract.json)
+  PASS  module contract: performance-frame-profiler (tools/performance-frame-profiler/module.contract.json)
+  PASS  module contract: physics-destruction-ragdoll-runtime (tools/physics-destruction-ragdoll-runtime/module.contract.json)
+  PASS  module contract: prehub (tools/prehub/module.contract.json)
+  PASS  module contract: presentation-spine (tools/presentation-spine/module.contract.json)
+  PASS  module contract: procedural-city-interior-studio (tools/procedural-city-interior-studio/module.contract.json)
+  PASS  module contract: project-room (tools/project-room/module.contract.json)
+  PASS  module contract: prompt-vault (tools/prompt-vault/module.contract.json)
+  PASS  module contract: protocol-version-observatory (tools/protocol-version-observatory/module.contract.json)
+  PASS  module contract: ps2-asset-forge (tools/ps2-asset-forge/module.contract.json)
+  PASS  module contract: public-release-deployment-adapter (tools/public-release-deployment-adapter/module.contract.json)
+  PASS  module contract: publish-library (tools/publish-library/module.contract.json)
+  PASS  module contract: quest-dialogue-narrative-runtime (tools/quest-dialogue-narrative-runtime/module.contract.json)
+  PASS  module contract: read-only-mirror-world-adapter (tools/read-only-mirror-world-adapter/module.contract.json)
+  PASS  module contract: reasoning-shell (tools/reasoning-shell/module.contract.json)
+  PASS  module contract: recovery-center (tools/recovery-center/module.contract.json)
+  PASS  module contract: reference-to-3d-reconstruction-lab (tools/reference-to-3d-reconstruction-lab/module.contract.json)
+  PASS  module contract: release-size-delta-patch-optimizer (tools/release-size-delta-patch-optimizer/module.contract.json)
+  PASS  module contract: repair-resilience-library (tools/repair-resilience-library/module.contract.json)
+  PASS  module contract: repairbuddy (tools/repairbuddy/module.contract.json)
+  PASS  module contract: reproducible-build-sbom-generator (tools/reproducible-build-sbom-generator/module.contract.json)
+  PASS  module contract: research-foundry (tools/research-foundry/module.contract.json)
+  PASS  module contract: review-inbox (tools/review-inbox/module.contract.json)
+  PASS  module contract: rigging-retargeting-studio (tools/rigging-retargeting-studio/module.contract.json)
+  PASS  module contract: route (tools/route/module.contract.json)
+  PASS  module contract: runner (tools/runner/module.contract.json)
+  PASS  module contract: runtime-channel-observatory (tools/runtime-channel-observatory/module.contract.json)
+  PASS  module contract: sandbox (tools/sandbox/module.contract.json)
+  PASS  module contract: save-migration-replay-service (tools/save-migration-replay-service/module.contract.json)
+  PASS  module contract: schema-contract-migration-registry (tools/schema-contract-migration-registry/module.contract.json)
+  PASS  module contract: schema-identity-observatory (tools/schema-identity-observatory/module.contract.json)
+  PASS  module contract: secrets-permissions-console (tools/secrets-permissions-console/module.contract.json)
+  PASS  module contract: security-fuzz-supply-chain-lab (tools/security-fuzz-supply-chain-lab/module.contract.json)
+  PASS  module contract: sensorium-lab (tools/sensorium-lab/module.contract.json)
+  PASS  module contract: shapeable-builder (tools/shapeable-builder/module.contract.json)
+  PASS  module contract: shell-guardian (tools/shell-guardian/module.contract.json)
+  PASS  module contract: skinner (tools/skinner/module.contract.json)
+  PASS  module contract: source-connector-hub (tools/source-connector-hub/module.contract.json)
+  PASS  module contract: source-control-merge-workbench (tools/source-control-merge-workbench/module.contract.json)
+  PASS  module contract: spatial-studio (tools/spatial-studio/module.contract.json)
+  PASS  module contract: storage-namespace-observatory (tools/storage-namespace-observatory/module.contract.json)
+  PASS  module contract: studio (tools/studio/module.contract.json)
+  PASS  module contract: sustainability-metrology-lab (tools/sustainability-metrology-lab/module.contract.json)
+  PASS  module contract: technical-art-validator (tools/technical-art-validator/module.contract.json)
+  PASS  module contract: technical-glasses (tools/technical-glasses/module.contract.json)
+  PASS  module contract: template-runtime-pack-engine (tools/template-runtime-pack-engine/module.contract.json)
+  PASS  module contract: terrain-biome-studio (tools/terrain-biome-studio/module.contract.json)
+  PASS  module contract: text-fabric (tools/text-fabric/module.contract.json)
+  PASS  module contract: texture-trimsheet-decal-studio (tools/texture-trimsheet-decal-studio/module.contract.json)
+  PASS  module contract: ui-fx (tools/ui-fx/module.contract.json)
+  PASS  module contract: ui-ux-builder (tools/ui-ux-builder/module.contract.json)
+  PASS  module contract: universal-object-fabric (tools/universal-object-fabric/module.contract.json)
+  PASS  module contract: uv-lightmap-studio (tools/uv-lightmap-studio/module.contract.json)
+  PASS  module contract: vehicle-assembly-damage-studio (tools/vehicle-assembly-damage-studio/module.contract.json)
+  PASS  module contract: verification-entry-observatory (tools/verification-entry-observatory/module.contract.json)
+  PASS  module contract: verification-proof-lab (tools/verification-proof-lab/module.contract.json)
+  PASS  module contract: verifier (tools/verifier/module.contract.json)
+  PASS  module contract: vfx-particle-shader-studio (tools/vfx-particle-shader-studio/module.contract.json)
+  PASS  module contract: visual-art-director-lab (tools/visual-art-director-lab/module.contract.json)
+  PASS  module contract: visual-draft-room (tools/visual-draft-room/module.contract.json)
+  PASS  module contract: visual-mirror-platform-clone (tools/visual-mirror-platform-clone/module.contract.json)
+  PASS  module contract: visual-mold-foundry (tools/visual-mold-foundry/module.contract.json)
+  PASS  module contract: vram-memory-streaming-analyzer (tools/vram-memory-streaming-analyzer/module.contract.json)
+  PASS  module contract: workshop-census-observatory (tools/workshop-census-observatory/module.contract.json)
+  PASS  module contract: workshop-command-center (tools/workshop-command-center/module.contract.json)
+  PASS  module contract: workshop-direction (tools/workshop-direction/module.contract.json)
+  PASS  module contract: workshop-needs-observatory (tools/workshop-needs-observatory/module.contract.json)
+  PASS  module contract: workshop-packager (tools/workshop-packager/module.contract.json)
+  PASS  module contract: workshop-search-provenance (tools/workshop-search-provenance/module.contract.json)
+  PASS  module contract: workshop-shadow (tools/workshop-shadow/module.contract.json)
+  PASS  module contract: workshop-updater (tools/workshop-updater/module.contract.json)
+  PASS  module contract: world-partition-streaming-compiler (tools/world-partition-streaming-compiler/module.contract.json)
+  PASS  module contract: world-tile-foundry (tools/world-tile-foundry/module.contract.json)
+  PASS  module lifecycle seam inventory complete: 238 module(s) declared
+  PASS  RepairBuddy warning route: 20 item(s) from 20 warning line(s); 0 replayable, 20 evidence, 0 repair design
+  PASS  tools index schema valid: 238 tools · 2273 contract capabilities
+  PASS  all tool manifests declare permissions
+  PASS  all tools have module contracts
+  PASS  all tools have executable selftests
+  warn  manifest kind migration backlog: 1 tool(s) remain legacy UNDECLARED
+  warn  promotion claim needs reverification: adapter-translation-garden · current selftest PASS result is missing
+  warn  promotion claim needs reverification: memory-continuity-garden · current selftest PASS result is missing
+  warn  promotion claim needs reverification: prehub · current selftest PASS result is missing
+  warn  promotion claim needs reverification: repair-resilience-library · current selftest PASS result is missing
+  PASS  tools-index.json matches current structural source digest
+  FAIL  LEGO city map CITY_GRAPH_DRIFT: registry/generated/city-graph.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-modules.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-capabilities.jsonl
+  FAIL  LEGO city map AUTHORITY_MAP_STALE: registry/generated/city-authority-map.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-proof-map.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-dependencies.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-unresolved-edges.json
+  FAIL  LEGO city map HUMAN_VIEW_DRIFT: docs/generated/LEGO_CITY_MAP.md
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-graph.receipt.json
+  PASS  city schema registry exact: 145fa38d16d7dc7e144bfde441c0f44622daa6cde7262eb8c4ad726c50a75766; 913 schema identities; 731 unresolved socket(s) retained
+  PASS  city state primitives focused suite: 19 assertion(s); no delete, rewrite, or event-as-authority path
+  PASS  city authority/hands focused suite: 22 assertion(s); external decision-maker verification required; no real executor bundled
+  PASS  city workflow/evidence focused suite: 29 assertion(s); workflow execution remains external
+  PASS  city local-sync/twins focused suite: 24 assertion(s); 304 human/machine packets bind twin de41b28eaa94ec2b05cfa42a076a3ec9b37c6ce007465478e6a45c68bff50d07
+  PASS  city intake/gates/blueprint focused suite: 41 assertion(s); all external transports disabled
+  PASS  Workshop continuity intact: 19365 protected paths · 234 tools · 2039 provided capabilities · no unauthorized disappearance
+  PASS  Workshop scope transition ledger is structurally bound: 1 permanent receipt(s)
+  PASS  Workshop scope transition fail-closed suite: 15 assertion(s) passed
+
+exit=1
+
+> node hub/hub-selftest.js
+AXM HUB SELFTEST — 2026-08-24T04:42:14.800Z
+0 FAIL
+
+  PASS  sidebar: visible collapse/reopen handle exists
+  PASS  lifecycle: visible power dialog offers keep-running and explicit stop choices
+  PASS  lifecycle: stop is explicit and no browser-close auto-shutdown hook exists
+  PASS  lifecycle: server and stopper enforce local, bundled-runtime ownership
+  PASS  radio: picker spans genuinely different high-energy and genre choices
+  PASS  radio: nine distinct choices replace the sleepy duplicate set
+  PASS  radio: diverse picker choices have matching primary and fallback stream definitions
+  PASS  growth: exact cached measurements run off the request thread and remain source-content-free
+  PASS  growth: Workshop responds before the separately loaded Mirror inventory
+  PASS  growth: permanent scope-transition reconciliation is bound into API and UI
+  PASS  growth: archive proof is re-audited for the current server run before the UI reports verified
+  PASS  growth: Growth and Observatory remain two explicit destinations
+  PASS  growth: stale or unknown API routes fail as JSON instead of leaking Hub HTML
+  PASS  presentation: Hub owns a visible shared/module control plane
+  PASS  presentation: portable layer recipe persists, exports and accepts explicit same-origin composition
+  PASS  presentation: bounded Body to Behavior to Presentation to Screen editor is wired
+  PASS  presentation: deterministic purpose presets expose screen freedom without behavior authority
+  PASS  navigation: stale module-load timers cannot replace the current screen
+  PASS  navigation: a screen chosen during startup cannot be replaced by late boot restore
+  PASS  navigation: visible iframe paint is accepted when a host drops its load event
+  PASS  presentation: host styling is scoped to Shared and leaves Module mode alone
+  PASS  presentation: shared default and explicit module choice resolve honestly
+  PASS  presentation: recipe is bounded data and refuses permission authority
+  PASS  sidebar: layered UI-FX and visible 2030 Visual System route are wired
+  PASS  visual stewardship: professional layer is wired and status styling stays presentation-only
+  PASS  visual stewardship: accepted skin data mounts and tears down Aetherglass through its owned bridge
+  PASS  visual stewardship: Hub resolves direct, Studio, and standalone Skinner checkpoints without stale-route loss
+  PASS  visual stewardship: 1280px command bar uses a balanced presence instrument without clipping
+  PASS  visual stewardship: header presents AXM once, with Hub as its destination label
+  PASS  sidebar: generated modules use compact navigation-deck instruments
+  PASS  sidebar: permanent, workflow and layer controls share compact instruments; collapse lives inside rail
+  PASS  sidebar: navigation-deck header exposes the same bounded collapse action
+  PASS  navigation: universal previous-screen control is visible and shared
+  PASS  navigation: session-only trail is isolated from project saves
+  PASS  sidebar: collapsed state gives workspace full width
+  PASS  sidebar: preference persists and toggles
+  PASS  capability guide: plain-language form and accessible results exist
+  PASS  capability guide: shared index and explicit open action are wired
+  PASS  capability guide: creation exposes three explicit human choices without auto-start
+  PASS  readiness: installed Creation Hands and upgrades have honest probes
+  PASS  continuity: explicit Continue and Forget surface is wired
+  PASS  handoff broker: declared-format chooser and explicit proposal are wired
+  PASS  readiness: beginner explanation preserves manual repair boundary
+  PASS  module lifecycle: declared shutdown checkpoint is awaited before navigation
+  PASS  module lifecycle: right-click menu reaches local CLAIMED/TEST/WORKING only
+  PASS  module lifecycle: labels synchronize through explicit Workshop state
+  PASS  module lifecycle: synchronized labels carry readable evidence and keep CANON manual
+  PASS  module lifecycle: compact accessible color chips preserve the sidebar name lane
+  PASS  presence: Bridge health remains independent from optional local-model availability
+  PASS  temporary session: visible Mike/Ivan switch and dialog are wired
+  PASS  temporary session: explicit save/discard close owns retention
+  PASS  temporary session: dialog uses the Hub visible-overlay contract
+  PASS  temporary session: separate origin, state and output roots are declared
+  PASS  temporary session: shared bodies held, heartbeat leased, export explicit
+  PASS  reopen: last module survived
+  PASS  reopen: settings survived switch/reopen
+  PASS  reopen: module state survived
+  PASS  reopen: lifecycle survived
+  PASS  reopen: module list survived (2)
+  PASS  reopen: action log survived
+  PASS  reopen: per-module presentation choice survived
+  PASS  reopen: portable presentation layers survived
+  PASS  quick lifecycle: CLAIMED, TEST and WORKING are reversible local labels
+  PASS  quick lifecycle: convenience control cannot reach CANON
+  PASS  valid passport accepted
+  PASS  missing-field passport rejected
+  PASS  major API mismatch rejected
+  PASS  legacy passport is honest (no invented perms)
+  PASS  ready → NEEDS VERIFY
+  PASS  declared permission granted
+  PASS  undeclared permission DENIED
+  PASS  verify:pass → WORKING
+  PASS  save after working → SAVED CHECKPOINT
+  PASS  save emits persist-state intent
+  PASS  registry preserves a manifest layer suggestion
+  PASS  registry preserves beginner-facing and machine-readable capability metadata
+  PASS  roadmap: Hub cards preserve and expose rank plus phase
+  PASS  roadmap: ranked arrivals route to their five declared parent rooms
+  PASS  roadmap: legacy Build fallback is repaired without moving a custom placement
+  PASS  roadmap: existing browser profiles receive the ranked visibility wave once
+  PASS  first run: all discovered modules added (no-loss)
+  PASS  minimal set: only added modules are visible
+  PASS  catalog flags added vs available correctly
+  PASS  stale added-id dropped cleanly
+  PASS  upgrade: integrated parent enabled when an existing child was chosen
+  PASS  reopen: added-module choice survived
+  PASS  removing a module leaves its saved state addressable (kept)
+  PASS  friendly names remove repeated AXM branding
+  PASS  friendly names fall back safely for future modules
+  PASS  capability guide: duplicate Studio routes collapse to the usable door
+  PASS  capability guide: blocked destinations remain visible only as held explanations
+  PASS  check: file-exists (present) PASS
+  PASS  check: file-exists (absent) correctly FAILs
+  PASS  check: file-contains PASS
+  PASS  check: json-has-field nested PASS
+  PASS  check: json missing field FAILs honestly
+  PASS  runUserChecks reports per-check pass/fail
+  PASS  acknowledged warn is annotated, not hidden
+  PASS  retire: one FAIL neutralised, other still counts (1 left)
+  PASS  retire: retired line still shown + provenance stamped
+  PASS  retire: no-reason retirement IGNORED (both FAILs stand)
+  PASS  layers: three defaults (open/private/machine)
+  PASS  layers: manifest suggestion honoured
+  PASS  layers: unassigned module lands in Open
+  PASS  layers: user assignment overrides manifest
+  PASS  layers: unknown layer falls back, module never lost
+  PASS  door: private layer starts locked
+  PASS  door: unlocks for the session
+  PASS  door: correct passphrase opens
+  PASS  door: wrong passphrase refused
+  PASS  door: gate with no phrase is not a gate (honest)
+  PASS  door: phrase not stored in plaintext
+  PASS  workflow layout: Create and Play assignments are useful
+  PASS  workflow layout: Audio, Film & Motion, and Spatial Studio are in Create
+  PASS  workflow layout: PS2 Asset Forge is in Create
+  PASS  workflow layout: integrated UI/UX route stays behind Studio
+  PASS  workflow layout: Project Room is in Build
+  PASS  workflow layout: Knowledge Canvas is in Build
+  PASS  workflow layout: Learning Lab is visible in Build and its school child stays integrated
+  PASS  workflow layout: Finance World Room sandbox is in Build
+  PASS  workflow layout: Cognitive Resource Meter evidence producer is in Build
+  PASS  workflow layout: cognitive evidence rooms stay integrated behind the Meter
+  PASS  workflow layout: Marketplace & Deployment owns the visible publish route
+  PASS  workflow layout: AI Team and Advanced assignments are useful
+  PASS  workflow layout: AI tools/connectors stay behind unified AI Team
+  PASS  workflow layout preserves existing closed-door sign
+  PASS  workflow layout keeps system internals hidden, not deleted
+  PASS  workflow layout places all twenty governed roadmap foundations by purpose
+  PASS  workflow layout gives every parent a meaningful governed foundation
+  PASS  upgrade: all roadmap arrivals appear without overwriting custom placements
+  PASS  upgrade: untouched flat browser layout gains workflow categories
+  PASS  upgrade: custom browser assignments remain untouched
+  PASS  upgrade: renamed browser layer remains user-owned
+  PASS  upgrade: existing workflow gains Marketplace & Deployment
+  PASS  upgrade: publish migration preserves assignments and closed-door hash
+  PASS  upgrade: publish and output compatibility views stay behind parent
+  PASS  same-gates: identical grants in open / machine / private layers
+  PASS  same-gates: undeclared perm denied in EVERY layer (incl. AI-native)
+  PASS  reopen: layers + assignments survived
+  PASS  machine: audience:"machine" auto-routes to AI-Native (no sorting needed)
+  PASS  machine: AI-Native hidden from sidebar by default
+  PASS  machine: both machine modules land there (2)
+  PASS  machine: human sidebar unbothered (1 human module)
+  PASS  machine: one click reveals (hidden is not secret)
+  PASS  machine: hidden module still denied an undeclared permission
+  PASS  host field is inert (reserved, not faked)
+  PASS  hub-test-room manifest has required fields
+  PASS  hub-test-room status is verifier-legal (TEST)
+  PASS  hub-test-room declares uses
+
+exit=0
+
+> node hub/route-selftest.js
+AXM ROUTE SELFTEST — 2026-08-24T04:42:14.839Z
+0 FAIL
+
+  PASS  no-fake-done: cannot mark a checkless step WORKING by ticking
+  PASS  no-fake-done: forcing is allowed but records a reason
+  PASS  no-fake-done: a step WITH a check may pass normally
+  PASS  progress separates VERIFIED from merely CLAIMED
+  PASS  a claim without a source is refused (it is a note)
+  PASS  a claim WITH a source is accepted
+  PASS  validate() passes a well-formed route
+  PASS  update-25: two answers stored as TWO claims, not averaged
+  PASS  a contested need announces itself (no scheduler)
+  PASS  need is ANSWERED_BY someone at a time — not "closed"
+  PASS  re-pointing a need keeps the decision HISTORY
+  PASS  supersede without a reason is refused
+  PASS  nothing deleted — superseded with a reason
+  PASS  stale step is FLAGGED when its claim is superseded
+  PASS  stale step is NOT auto-failed (visible, not tyrannical)
+  PASS  all steps green does NOT close the route
+  PASS  closing without a reason is refused (it is a decision)
+  PASS  closing with a reason works
+  PASS  goal reached + route still LIVING (independent fields)
+  PASS  a route can go QUIET without the goal being reached
+  PASS  resume packet is scoped to ONE step (Nova can read it)
+  PASS  resume packet does not dump all 51 steps
+  PASS  resume packet carries WHAT WAS REJECTED and why
+  PASS  every claim in the packet carries its source_kind
+  PASS  packet warns a returning model that claims are not equal
+  PASS  settled decisions are shown to a returning worker as settled-but-reopenable
+  PASS  an answered need is not shown as open
+  PASS  conflict of unequal evidence resolves on PROVENANCE — no human needed
+  PASS  conflict output is a DIAGNOSIS, not a fourth claim
+  PASS  cross-check added NO new claim (does not widen the fan)
+  PASS  equal-evidence disagreement ESCALATES rather than voting
+  PASS  a NULL result requires a note saying why no answer exists
+  PASS  NULL is a legal outcome: "no right answer yet"
+  PASS  merge accepts the same route from two people
+  PASS  merge is a UNION — ivan's new step kept
+  PASS  notes from both sides append (never conflict)
+  PASS  a step-state disagreement is REPORTED, not auto-picked
+  PASS  merge did not silently overwrite my state
+  PASS  merging different routes is refused
+  PASS  ids are collision-free across 500 generations
+
+exit=0
+
+> node hub/graft-selftest.js
+AXM GRAFT SELFTEST — 2026-08-24T04:42:14.870Z
+0 FAIL
+
+  PASS  state-aware: the patch records the spine, module count, and verify count it was computed against
+  PASS  state-aware: the patch carries a fingerprint of the state
+  PASS  spine: touching axm-foundation.js is a BLOCKING conflict
+  PASS  spine: a patch that touches the spine is marked blocked
+  PASS  conflict: a taken module id is a blocking conflict
+  PASS  conflict: a needed capability that no module provides is blocked, and named
+  PASS  conflict: a capability provided by a module is accepted
+  PASS  conflict: Foundation gate capability is recognized
+  PASS  conflict: a version pin that disagrees with an installed module is flagged, both versions named
+  PASS  conflict: overwriting an existing file WARNS (does not block)
+  PASS  plan: a clean idea is not blocked
+  PASS  plan: the install order runs the verifier BEFORE and AFTER wiring in
+  PASS  plan: the after-check requires the PASS count not to drop
+  PASS  plan: no-fake-done — generated modules stay EXPERIMENTAL
+  PASS  staleness: a patch is fresh against the state it was computed on
+  PASS  staleness: a patch goes STALE when the workshop changes under it
+  PASS  data-not-code: the patch contains a plan and checks, no executable diff
+  PASS  data-not-code: every step is a described action, not a command to run
+  PASS  non-hidden: the patch reports what it did NOT examine
+  PASS  non-hidden: it admits it cannot read the intent of an idea
+  PASS  non-hidden: it admits runtime was never executed
+  PASS  portable: a patch yields back the IDEA, with a note that each workshop recomputes its own patch
+  PASS  portable: the same idea produces a different patch for a different workshop
+  PASS  explain: renders a plain-words plan that states blockers, blind spots, and that nothing was applied
+
+exit=0
+
+> node hub/skin-selftest.js
+AXM SKIN SELFTEST — 2026-08-24T04:42:14.909Z
+0 FAIL
+
+  PASS  freedom: the default skin passes its own gate
+  PASS  freedom: a totally different palette + right-hand nav + compact is accepted
+  PASS  freedom: 13 changes allowed in one skin
+  PASS  freedom: the nav can become an icon rail
+  PASS  freedom: a one-token skin works (defaults fill the rest)
+  PASS  resolve(): gaps fall back to default
+  PASS  safety: a skin carrying raw css is refused
+  PASS  safety: a skin carrying script is refused
+  PASS  safety: url(javascript:) in a colour is refused
+  PASS  safety: var() chains refused (no indirection)
+  PASS  safety: calc() refused in a numeric token
+  PASS  safety: font url() refused — named families only
+  PASS  freedom: an allowed font family is accepted
+  PASS  surface: an undeclared token is refused, with a reason
+  PASS  surface: an illegal slot arrangement is refused, and the legal ones are named
+  PASS  surface: a slot that does not exist is refused
+  PASS  surface: numeric tokens are range-checked
+  PASS  local-first: a remote asset URL is refused
+  PASS  local-first: a vault: reference is accepted
+  PASS  ATTACK BLOCKED: warnings painted black-on-black fail the readability floor
+  PASS  the refusal names the exact pair that would have hidden the warning
+  PASS  the refusal explains WHAT truth would have been hidden
+  PASS  ATTACK BLOCKED: changing only the panel to hide default warnings is caught (merged check)
+  PASS  ATTACK BLOCKED: error red washed into the panel is caught
+  PASS  ATTACK BLOCKED: the hidden-machine-module count cannot be washed out
+  PASS  not a cage: a full LIGHT theme passes every invariant
+  PASS  contrast: white on black = 21:1
+  PASS  contrast: identical colours = 1:1
+  PASS  contrast: mid-grey on white ≈ 4.5:1 (WCAG AA boundary)
+  PASS  parse: 3-digit hex and rgb() both understood
+  PASS  parse: out-of-range rgb refused
+  PASS  elements: a healthy shell passes
+  PASS  elements: hiding the module list (and its hidden-count line) is caught, with why
+  PASS  elements: shrinking the action log to nothing is caught
+  PASS  elements: removing the permissions screen is caught
+  PASS  elements: removing the layers screen names the door-sign notice it carries
+  PASS  accept(): passes when validate + readability + elements all pass
+  PASS  accept(): fails at the element stage, and says so
+  PASS  non-hidden: the diff reports every change (token + slot + asset)
+  PASS  non-hidden: the diff shows FROM and TO, not just TO
+  PASS  non-hidden: the diff is GENERATED — a lying "declares" field is ignored
+  PASS  non-hidden: an authorless skin warns about provenance
+  PASS  share: fingerprint is of the LOOK, not the name/id
+  PASS  share: a one-digit colour change changes the fingerprint
+  PASS  share: fingerprint is stable across key order
+  PASS  share: fingerprint is a fixed 16 chars
+  PASS  provenance: an imported author is recorded as CLAIMED, never verified
+  PASS  provenance: origin, importer, time and fingerprint are stamped on import
+  PASS  pack: good skins accepted, the hiding skin refused — one bad skin does not poison the pack
+  PASS  pack: the refused skin is REPORTED with its stage and reason, never silently dropped
+  PASS  pack: every accepted skin carries a fingerprint
+  PASS  pack: a file that is not an AXM pack is refused
+  PASS  pack: a pack with nothing usable fails
+  PASS  aetherglass: legacy skins stay visually disabled by default
+  PASS  aetherglass: disabled legacy skins keep their pre-integration fingerprint
+  PASS  aetherglass: an allowlisted visual composition passes the skin gate
+  PASS  aetherglass: every non-default visual setting appears in the generated diff
+  PASS  aetherglass: unknown enum values are refused
+  PASS  aetherglass: numeric gains are bounded
+  PASS  aetherglass: toggles require real booleans
+  PASS  aetherglass: undeclared visual fields remain outside the editable surface
+  PASS  aetherglass: visual settings participate in the skin fingerprint
+  PASS  web: a downloaded skin with missing assets still APPLIES (colours work)
+  PASS  web: both missing assets are detected
+  PASS  web: missing assets WARN loudly — never a silent blank
+  PASS  web: with the assets present, no false warning
+  PASS  web: without a vault probe, the gate makes no claim about assets
+  PASS  web: a hostile download is refused before assets are even considered
+  PASS  web: checkAssets names exactly which asset is absent
+  PASS  assets: a slot registry exists (10 slots)
+  PASS  assets: an undeclared slot is refused, and the legal ones are named
+  PASS  assets: a declared slot is accepted
+  PASS  assets: EVERY slot is optional — a skin with zero assets is complete
+  PASS  assets: the spec sheet is generated from the registry (cannot drift)
+  PASS  assets: every slot declares size, format, location and a note
+  PASS  assets: every slot declares concrete production files
+  PASS  production sheet: 43 skin and Aetherglass controls
+  PASS  production sheet: 20 concrete image files
+  PASS  production sheet: 14 readability and honesty checks
+  PASS  production sheet: complete sheet has 77 generated targets
+  PASS  assets: no slot is required — a missing asset can never break a hub
+  PASS  assets: brand.mark is 30x30, matching .mark in the shell CSS
+  PASS  assets: nav icons are 20x20 vector, matching .mod .ic
+  PASS  assets: sidebar bg is 210px, matching grid-template-columns
+  PASS  assets: an image does not exempt a skin from the readability floor
+
+exit=0
+
+> node hub/verify-plus.js
+artifact-depot selftest passed: 10 assertions
+event-journal selftest passed: 9 assertions
+workflow-transit selftest passed: 16 assertions
+evidence-grid selftest passed: 13 assertions
+local-sync selftest passed: 12 assertions
+twin-surfaces selftest passed: 12 assertions
+intake-harbor selftest passed: 12 assertions
+city-gates selftest passed: 14 assertions
+LEGO city blueprint conformance passed: 15 assertions
+AXM VERIFY — 2026-08-24T04:42:17.276Z
+9 FAIL · 25 warn · spine b618c5762240070c
+A failing zip is not evil — it is UNREVIEWED. Hand this report to the builder.
+
+  PASS  spine intact: launcher/axm-foundation.js
+  PASS  spine intact: site/guest/full/launcher/axm-foundation.js
+  PASS  spine intact: site/guest/full/tools/studio/axm-foundation.js
+  PASS  spine intact: tools/_templates/basic-tool/axm-foundation.js
+  PASS  spine intact: tools/agent-command-center/axm-foundation.js
+  PASS  spine intact: tools/agent-tool-forge/axm-foundation.js
+  PASS  spine intact: tools/ai-task-talk/axm-foundation.js
+  PASS  spine intact: tools/asset-pack-lab/axm-foundation.js
+  PASS  spine intact: tools/asset-vault/axm-foundation.js
+  PASS  spine intact: tools/discovery-engine/axm-foundation.js
+  PASS  spine intact: tools/duo-test/axm-foundation.js
+  PASS  spine intact: tools/evidence-desk/axm-foundation.js
+  PASS  spine intact: tools/forge/axm-foundation.js
+  PASS  spine intact: tools/forge-line/axm-foundation.js
+  PASS  spine intact: tools/game-hub/axm-foundation.js
+  PASS  spine intact: tools/hermes/axm-foundation.js
+  PASS  spine intact: tools/launcher-card-installer/axm-foundation.js
+  PASS  spine intact: tools/main-hub/axm-foundation.js
+  PASS  spine intact: tools/model-lab/axm-foundation.js
+  PASS  spine intact: tools/prehub/axm-foundation.js
+  PASS  spine intact: tools/prompt-vault/axm-foundation.js
+  PASS  spine intact: tools/reasoning-shell/axm-foundation.js
+  PASS  spine intact: tools/studio/axm-foundation.js
+  PASS  spine intact: tools/workshop-packager/axm-foundation.js
+  PASS  underscore folder skipped by convention: tools/_module-template
+  PASS  underscore folder skipped by convention: tools/_templates
+  PASS  tools/accessibility-adaptation-lab: uses declared [filesystem-read,storage,browser-dom]
+  PASS  tools/adapter-translation-garden: uses declared [filesystem-read,python-standard-library,local-iana-timezone-data]
+  PASS  tools/aetherfx: uses declared [storage,files,export,clipboard,web-crypto-with-local-sha256-fallback,node-runtime,python-standard-library-static-svg-optional,visual-fx,aetherglass,style-fabric]
+  PASS  tools/agent-command-center: uses declared [storage,wisdom,identity,ai,gate]
+  PASS  tools/agent-tool-forge: uses declared [storage,gate,export]
+  PASS  tools/ai-habitat: uses declared [workshop-presence,python-standard-library,loopback-http,explicit-local-launch]
+  PASS  tools/ai-task-talk: uses declared [storage,ai,bridge,identity,gate]
+  PASS  tools/ai-team: uses declared [storage,ai,bridge,identity,gate,runtime,contract-preflight,source-parity-operations]
+  PASS  tools/ai-team-steward-lab: uses declared [filesystem-read,browser-dom,existing-ai-team-entrypoint]
+  PASS  tools/ai-tool-skill-regression-harness: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/anim-kit: uses declared [game-animation-foundation,universal-component-protocol,files,export]
+  PASS  tools/archive-intake-cartographer: uses declared [filesystem-read,storage]
+  PASS  tools/asset-audio-sensory-workbench: uses declared [filesystem-read,browser-dom,loopback-http,explicit-download]
+  PASS  tools/asset-engine-roundtrip-bridge: uses declared [local-3d-game-runtime,gltf-2.0,files,export]
+  PASS  tools/asset-fabric: uses declared [storage,export,game-runtime-optional,creation-incubator,asset-hands,visual-kernel,spatial-core,film-motion-core,jspdf,basis-universal-wasm]
+  PASS  tools/asset-filesystem-service: uses declared [files,storage,export,asset-vault]
+  PASS  tools/asset-material-sensory-workbench: uses declared [filesystem-read,browser-dom,webgl2,loopback-http,explicit-download]
+  PASS  tools/asset-pack-lab: uses declared [storage,gate,asset-librarian,settings,registry,template-source,server-export]
+  PASS  tools/asset-sensory-workbench: uses declared [filesystem-read,browser-dom,explicit-download]
+  PASS  tools/asset-spatial-sensory-workbench: uses declared [filesystem-read,browser-dom,webgl2,loopback-http,explicit-download]
+  PASS  tools/asset-ui-sensory-workbench: uses declared [local-cpu,canvas-2d,loopback-host,export]
+  PASS  tools/asset-vault: uses declared [storage,gate,optional-ai,asset-librarian,settings,registry,server-export]
+  PASS  tools/audio-listening-quality-lab: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/audio-studio: uses declared [storage,export,files,ai,asset-vault,shared-engines]
+  PASS  tools/authority-surface-observatory: uses declared [filesystem-read,storage]
+  PASS  tools/automated-playtester-scenario-agent: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/axm-platform-courier: uses declared [files,storage,gate,workshop-search,asset-hands,loopback-api,platform-heartbeat,holodeck-kernel,human-settings]
+  PASS  tools/body-pulse: uses declared [storage,host-telemetry,resource-governance]
+  PASS  tools/branch-backfeed-lab: uses declared [files]
+  PASS  tools/branch-module-return-gate: uses declared [filesystem-read,storage,schema:axm.modular-piece-package/v1]
+  PASS  tools/browser-global-surface-observatory: uses declared [browser-global]
+  PASS  tools/browser-lan-hardware-qa-lab: uses declared [runtime,local-network,gate,qa.run,review-inbox]
+  PASS  tools/bulk-intake-conveyor: uses declared [filesystem-read,storage]
+  PASS  tools/capability-fabric: uses declared []
+  PASS  tools/capability-gap-workbench: uses declared [shared:ai-native-hands,browser-dom,explicit-download]
+  PASS  tools/capability-recipe-admission-gate: uses declared [capability-fabric,capability-recipe-foundry,local-node-runtime,explicit-review-evidence,explicit-mike-decision]
+  PASS  tools/capability-recipe-foundry: uses declared [capability-fabric,hand-specification-foundry,hand-verification-lab,browser-dom,explicit-download]
+  PASS  tools/challenge-arena: uses declared [python>=3.10,tool-local-filesystem,localhost-observer,axm.module-job/0.1]
+  PASS  tools/character-animation-mocap-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/character-creature-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/chatgpt-connector: uses declared [bridge,files,gate]
+  PASS  tools/choice-first-visual-lab: uses declared [asset-hands,asset-fabric,style-fabric,aetherfx,visual-fx,pbr-material-baker,raster-codec,pixel-animation,pixel-3d-codec,native-webgl2-renderer,final-video]
+  PASS  tools/chroma-studio: uses declared [asset-filesystem-service,device-handoff,browser-canvas,explicit-output-folder]
+  PASS  tools/claude-connector: uses declared [gate,storage,bridge]
+  PASS  tools/code-recipe-foundry: uses declared [storage,export,clipboard,user-selected-csv-json,module-local-code-recipe-catalog,native-parse-only-runtimes,workshop-search-provenance]
+  PASS  tools/codec-container-foundry: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/cognitive-calibration-lab: uses declared [storage,gate,cognitive-resource-meter,cognitive.calibration.write]
+  PASS  tools/cognitive-evidence-explorer: uses declared [runtime,cognitive-resource-meter,cognitive-evidence-labs]
+  PASS  tools/cognitive-resource-meter: uses declared [storage,files,export,gate,provider-declarations,technical-glasses,cognitive.evidence.write,cognitive.measure.local]
+  PASS  tools/compute-substrate-lab: uses declared [files,deterministic-research-foundry,evidence-router,hardware-research-registry]
+  PASS  tools/consent-agent-memory-dataset-curator: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/copy-composer-hand: uses declared [workshop-direction,body-pulse,local-browser]
+  PASS  tools/crash-replay-symbolication-center: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/dedicated-session-orchestrator: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/dependency-declaration-observatory: uses declared [storage]
+  PASS  tools/design-lineage-lab: uses declared [web-crypto,export]
+  PASS  tools/detached-candidate-nursery: uses declared [filesystem-read,storage]
+  PASS  tools/deterministic-build-cook-patch-pipeline: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/deterministic-continuation-capsule: uses declared [deterministic-json-core,filesystem-read,explicit-source-declaration,memory-continuity-garden:axm.memory.reentry-capsule-reference,memory-continuity-garden:axm.memory.session-handoff-packet-reference]
+  PASS  tools/deterministic-job-cache-scheduler: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/deterministic-json-core: uses declared []
+  PASS  tools/deterministic-organ-fabric: uses declared [storage]
+  PASS  tools/deterministic-pr-base-refresh: uses declared [deterministic-pr-checkpoint,local-git-runtime,explicit-clean-publish-lane-worktree]
+  PASS  tools/deterministic-pr-checkpoint: uses declared [local-git-runtime,filesystem-read,deterministic-json-core,explicit-scope-policy,optional-declared-evidence-receipts]
+  PASS  tools/deterministic-pr-publisher: uses declared [deterministic-pr-checkpoint,clean-publish-lane-worktree,local-git-runtime,host-authenticated-github-cli,explicit-one-use-confirmation]
+  PASS  tools/deterministic-pr-sequencer: uses declared [deterministic-pr-checkpoint,deterministic-pr-publisher,platform-merge-handoff-receipts,host-authenticated-github-cli,explicit-sequence-policy]
+  PASS  tools/deterministic-run-integrator: uses declared [deterministic-json-core,local-git-runtime,explicit-run-integration-policy]
+  PASS  tools/device-handoff: uses declared [files,storage,gate,device.listen]
+  PASS  tools/diagnostics-operations-center: uses declared [runtime,storage,logs,capability-index,evidence-retention,machine-host,review-inbox,recovery-center,workshop-search-provenance,asset-filesystem-service,secrets-permissions-console,device-handoff,reviewed-windows-gate-packets]
+  PASS  tools/discord-bridge: uses declared [network-optional,gate,files]
+  PASS  tools/discovery-engine: uses declared [storage,gate,ai,export]
+  PASS  tools/documentation-tutorial-capture-studio: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/dual-door-observatory: uses declared [storage]
+  PASS  tools/duo-test: uses declared [storage,ai,bridge,identity,loopback-local-model-discovery]
+  PASS  tools/element-foundry: uses declared [axm.modular-element/v1,axm.element-composition/v1,axm.universal-component/v1,browser-local-metadata,explicit-download,verification-spine]
+  PASS  tools/entry-resource-closure-observatory: uses declared [storage]
+  PASS  tools/errol-core-return-lab: uses declared []
+  PASS  tools/evidence-chain-application-drill-runner: uses declared [evidence-chain-inspector,evidence-chain-application-plan-foundry,node-filesystem,explicit-new-sandbox-root,browser-file-picker,web-crypto,stdout]
+  PASS  tools/evidence-chain-application-plan-foundry: uses declared [evidence-chain-inspector,evidence-chain-candidate-review-gate,recovery-center-contract,browser-file-picker,web-crypto,explicit-download]
+  PASS  tools/evidence-chain-candidate-review-gate: uses declared [evidence-chain-inspector,evidence-chain-recovery-foundry,browser-file-picker,web-crypto,explicit-download]
+  PASS  tools/evidence-chain-inspector: uses declared [service:evidence-retention-contract,browser-file-picker,node-standard-library,explicit-download,stdout]
+  PASS  tools/evidence-chain-recovery-adapter-conformance-lab: uses declared [evidence-chain-inspector,evidence-chain-application-plan-foundry,evidence-chain-application-drill-runner,trusted-preloaded-node-adapter,browser-file-picker,web-crypto]
+  PASS  tools/evidence-chain-recovery-adapter-integration-foundry: uses declared [evidence-chain-inspector,evidence-chain-application-plan-foundry,evidence-chain-recovery-adapter-conformance-lab,recovery-center,browser-file-picker,web-crypto,explicit-download]
+  PASS  tools/evidence-chain-recovery-foundry: uses declared [evidence-chain-inspector,browser-file-picker,web-crypto,explicit-download]
+  PASS  tools/evidence-chain-recovery-snapshot-placement-foundry: uses declared [evidence-chain-recovery-snapshot-staging-foundry,evidence-chain-inspector,Workshop-Packager-output-layout,Recovery-Center-discovery-contract,node-filesystem,browser-file-picker]
+  PASS  tools/evidence-chain-recovery-snapshot-staging-foundry: uses declared [evidence-chain-inspector,evidence-chain-application-drill-runner,evidence-chain-recovery-adapter-conformance-lab,evidence-chain-recovery-adapter-integration-foundry,Workshop-Packager-layout,node-filesystem,explicit-new-staging-root,browser-file-picker]
+  PASS  tools/evidence-desk: uses declared [storage,gate,browser-download,knowledge-canvas]
+  PASS  tools/evolution-foundry: uses declared [storage,workshop-direction,body-pulse,governed-evolution-lab,asset-fabric]
+  PASS  tools/external-pattern-observatory: uses declared [deterministic-json-core,runtime:sha256]
+  PASS  tools/fabric-collaboration-room: uses declared [code-capability-fabric,code-recipe-foundry,review-inbox,evidence-desk,mirror-observation-contracts]
+  PASS  tools/fabrication-readiness-lab: uses declared [universal-component-protocol,asset-hands,output-receipts,verification]
+  PASS  tools/film-motion-studio: uses declared [storage,export,files,gate,asset-vault,shared-engines,asset-hands,camera]
+  PASS  tools/finance-world-room: uses declared [storage,gate,export,network]
+  PASS  tools/forge: uses declared [storage,export]
+  PASS  tools/forge-line: uses declared [storage,export,gate]
+  PASS  tools/fsm-kit: uses declared [game-fsm,game-animation-foundation,shapeable-builder,files,export]
+  PASS  tools/fx-blocks: uses declared [visual-fx,asset-hands,universal-component-protocol,shapeable-builder,export]
+  PASS  tools/game-balance-telemetry-advisor: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/game-capability-atlas: uses declared [storage,export]
+  PASS  tools/game-forge: uses declared [storage,export,gate,files]
+  PASS  tools/game-hub: uses declared [files,gate,presentation-spine]
+  PASS  tools/game-organism-lab: uses declared [universal-component-protocol,game-forge,physics,game-animation,sensorium,verification-spine]
+  PASS  tools/game-production-runner: uses declared [files,runtime,local-loopback,network.listen,verification-spine,game-organism,game-forge,game-hub,local-godot-substrate]
+  PASS  tools/game-ui-hud-menu-runtime: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/gameplay-ability-rules-graph: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/geographic-market-map: uses declared [storage,gate,export]
+  PASS  tools/governed-evolution-lab: uses declared [mirror-native,storage,export,discovery,evidence,project-room]
+  PASS  tools/graft: uses declared []
+  PASS  tools/grounded-evolution-intelligence: uses declared [files,capability-records,interface-observations,evidence-router,merge-gate]
+  PASS  tools/hand-forge-bridge: uses declared [hand-specification-foundry,hand-verification-lab,agent-tool-forge,browser-dom,explicit-download]
+  PASS  tools/hand-specification-foundry: uses declared [capability-gap-workbench,browser-dom,explicit-download]
+  PASS  tools/hand-verification-lab: uses declared [hand-specification-foundry,browser-dom,explicit-download]
+  PASS  tools/handoff-wiring-observatory: uses declared [filesystem-read,capability-index,storage]
+  PASS  tools/hardware-research-registry: uses declared [files,deterministic-research-foundry,evidence-router]
+  PASS  tools/hermes: uses declared [node-runtime,git-runtime,configured-external-hermes-source,configured-external-command,loopback-http,local-filesystem,agent-tool-forge-prompt-packs]
+  PASS  tools/holodeck-composer: uses declared [holodeck-kernel,holodeck-screen-adapter,local-webgl,shared-three-r160,browser-storage-explicit,local-files-export]
+  PASS  tools/holodeck-screen-deck: uses declared [local-webgl,shared-three-r160,browser-storage-explicit,local-human-input,machine-intent,holodeck-kernel]
+  PASS  tools/host-assumption-observatory: uses declared [storage]
+  PASS  tools/hub-test-room: uses declared [hub-module-bridge,browser-local-storage,same-origin-module-template]
+  PASS  tools/human-attention-ledger: uses declared [storage,gate,human.attention.write]
+  PASS  tools/human-capability-atlas: uses declared [files,module-contracts,public-discovery,capability-intelligence-adapter]
+  PASS  tools/human-control-binding-observatory: uses declared [human-control-binding]
+  PASS  tools/human-interface-intelligence: uses declared [files,capability-records,capability-intelligence-adapter,grounded-evolution-signals]
+  PASS  tools/immutable-history-guard: uses declared []
+  PASS  tools/input-accessibility-haptics-studio: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/judgement-chamber: uses declared [review-inbox,workshop-direction,storage]
+  PASS  tools/knowledge-canvas: uses declared [storage,export]
+  PASS  tools/launcher-card-installer: uses declared [gate,registry,export]
+  PASS  tools/learning-lab: uses declared [storage,export,shared-engines,project-room,knowledge-canvas,ai-team,mirror-learning-forge]
+  PASS  tools/license-rights-attribution-auditor: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/lighting-probe-baker: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/living-world-ruleset-physics-adapter-kit: uses declared [storage,shared-physics,gate,adapter.register]
+  PASS  tools/living-world-state-server: uses declared [storage,gate,world.mutate,world.restore]
+  PASS  tools/local-3d-game-runtime: uses declared [local-webgl2,gltf-2.0,ps2-asset-forge-proof-fixtures,digest-bound-local-pack-textures,p0-production-cell]
+  PASS  tools/localization-release-pipeline: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/lod-hlod-impostor-builder: uses declared [mesh-retopology-optimizer,local-3d-game-runtime,canvas,export]
+  PASS  tools/machine-host: uses declared [runtime,gate,storage,machine.execute]
+  PASS  tools/main-hub: uses declared [foundation-runtime,same-origin-navigation]
+  PASS  tools/marketplace-compatibility-certifier: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/marketplace-deployment: uses declared [storage,gate,export,plugins,backup,runtime,publish-library]
+  PASS  tools/media-render-transcode-service: uses declared [runtime,files,export,review-inbox,gate,media.render]
+  PASS  tools/memory-continuity-garden: uses declared [filesystem-read,python-standard-library,local-reference-contracts]
+  PASS  tools/mesh-retopology-optimizer: uses declared [local-3d-game-runtime,gltf-2.0,export]
+  PASS  tools/mirror-code-clone: uses declared [local-cpu,filesystem,verification]
+  PASS  tools/mirror-holo-shoebox: uses declared [experiment-world-kernel,holodeck-observer-pattern,universal-component-protocol,modular-elements,verification-spine]
+  PASS  tools/mirror-intake-monitor: uses declared [storage,gate,cognitive-resource-meter,mirror.intake-receipt.import]
+  PASS  tools/mirror-learning-shell: uses declared [mirror-kernel,identity-core,wisdom,profile,specialists,reasoning,training]
+  PASS  tools/model-lab: uses declared [storage,ai]
+  PASS  tools/modern-asset-forge: uses declared [local-files,local-processes,module-local-job-writes,export,glTF.2.0,KTX.2.0,three-webgl2,asset-hands]
+  PASS  tools/modular-environment-kit-builder: uses declared [native-glb,canvas,sha256,export]
+  PASS  tools/modular-intake-gate: uses declared [storage,review-inbox,module-installer,component.promote,component.family.register]
+  PASS  tools/modular-seed-foundry: uses declared [browser-local-metadata,web-crypto,explicit-download,modular-intake-gate,module-contracts,verification-spine]
+  PASS  tools/module-contract-workbench: uses declared [storage,plugins,gate,review]
+  PASS  tools/module-footprint-observatory: uses declared [storage]
+  PASS  tools/module-installer: uses declared [storage,gate,backup,review-inbox,machine-host]
+  PASS  tools/module-lineage-comparator: uses declared [filesystem-read,storage]
+  PASS  tools/multiplayer-controller-transport: uses declared [local-network,runtime,gate,network.listen]
+  PASS  tools/native-dependency-foundry: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/navigation-crowd-behavior-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/network-replication-prediction-lab: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/neural-room: uses declared [ai-provider-optional,neural-visual-seam,visual-draft-room,export]
+  PASS  tools/novelty-diversity-engine: uses declared [storage,runtime]
+  PASS  tools/p1-production-foundation: uses declared [local-cpu,web-crypto]
+  PASS  tools/p2-experience-foundation: uses declared [local-cpu,web-crypto]
+  PASS  tools/p34-release-foundation: uses declared [local-cpu,web-crypto]
+  PASS  tools/pbr-material-baker: uses declared [local-cpu,canvas,export]
+  PASS  tools/performance-frame-profiler: uses declared [local-3d-game-runtime,webgl2-timer-query,sha256,canvas,gpu-timing,export]
+  PASS  tools/physics-destruction-ragdoll-runtime: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/prehub: uses declared [storage]
+  PASS  tools/presentation-spine: uses declared [visual-kernel,filesystem-read]
+  PASS  tools/procedural-city-interior-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/project-room: uses declared [storage,export]
+  PASS  tools/prompt-vault: uses declared [storage,gate,optional-ai,settings,registry,server-export]
+  PASS  tools/protocol-version-observatory: uses declared [storage]
+  PASS  tools/ps2-asset-forge: uses declared [local-cc0-source-library,game-animation-foundation,three-webgl,gltf-2.0,files,export]
+  PASS  tools/public-release-deployment-adapter: uses declared [files,export,review-inbox,identity,gate,release.deploy]
+  PASS  tools/publish-library: uses declared [storage,export,gate,asset-librarian,server-export,shared-output-engine,worker-threads]
+  PASS  tools/quest-dialogue-narrative-runtime: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/read-only-mirror-world-adapter: uses declared [storage,identity,gate,mirror.observe]
+  PASS  tools/reasoning-shell: uses declared [foundation-runtime,foundation-storage,optional-ai-connector,foundation-gate,local-profile-catalog,browser-file-selection,browser-blob-download]
+  PASS  tools/recovery-center: uses declared [storage,backup,gate,workshop-packager,secrets-permissions-console]
+  PASS  tools/reference-to-3d-reconstruction-lab: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/release-size-delta-patch-optimizer: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/repair-resilience-library: uses declared [local-cpu,filesystem-read]
+  PASS  tools/repairbuddy: uses declared [local-cpu,deterministic-json-core,axm.verify-report/v1]
+  PASS  tools/reproducible-build-sbom-generator: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/research-foundry: uses declared [files,workshop-direction,module-contracts,capability-gap-scout,evidence-router,discovery-engine]
+  PASS  tools/review-inbox: uses declared [storage,gate,governance,tools-index,host-trust-policy,signed-intent-ledger,exclusive-create-operation-lease,host-local-retirement-cli,raw-owner-evidence-quarantine,bounded-retirement-recovery-status,exact-interrupted-retirement-recovery,digest-verified-recovery-checkpoint-observation,append-only-retirement-decision,exact-retirement-intent-withdrawal,same-filesystem-hard-link-retirement-publication,bounded-retirement-publication-status,exact-retirement-publication-stage-plan,digest-bound-lossless-stage-archival,durable-exact-request-archival-intent,bounded-archival-intent-publication-status,diagnostic-redaction,reason-digest-commitment]
+  PASS  tools/rigging-retargeting-studio: uses declared [native-glb,native-math,canvas,export]
+  PASS  tools/route: uses declared []
+  PASS  tools/runner: uses declared [hub-module-bridge,same-origin-health-endpoint,same-origin-verify-report-export,browser-blob-download]
+  PASS  tools/runtime-channel-observatory: uses declared [runtime-channel]
+  PASS  tools/sandbox: uses declared [local-filesystem,loopback-http]
+  PASS  tools/save-migration-replay-service: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/schema-contract-migration-registry: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/schema-identity-observatory: uses declared [storage]
+  PASS  tools/secrets-permissions-console: uses declared [storage,gate,identity,module-manifests]
+  PASS  tools/security-fuzz-supply-chain-lab: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/sensorium-lab: uses declared [sensorium-registry,sensorium-conformance,technical-glasses-feed]
+  PASS  tools/shapeable-builder: uses declared [storage,export,universal-component-protocol,visual-kernel,verification-spine]
+  PASS  tools/shell-guardian: uses declared [gate,storage,bridge]
+  PASS  tools/skinner: uses declared []
+  PASS  tools/source-connector-hub: uses declared [network-optional,review-inbox,gate,network.fetch]
+  PASS  tools/source-control-merge-workbench: uses declared [local-git-runtime,separate-git-working-copy,git-credential-manager-or-existing-git-auth,workshop-public-safe-policy,machine-host-background-job-ledger]
+  PASS  tools/spatial-studio: uses declared [storage,export,files,gate,shared-engines,shared-physics,asset-hands,publish-library]
+  PASS  tools/storage-namespace-observatory: uses declared [storage]
+  PASS  tools/studio: uses declared [storage,ai,export,files,gate,asset-vault,asset-hands,visual-kernel,visual-actions,presentation-spine]
+  PASS  tools/sustainability-metrology-lab: uses declared [storage,gate,sustainability.evidence.write]
+  PASS  tools/technical-art-validator: uses declared [native-glb,sha256,human-visual-review,export]
+  PASS  tools/technical-glasses: uses declared [runtime,storage,capability-index,tools-index,gate]
+  PASS  tools/template-runtime-pack-engine: uses declared [storage,export]
+  PASS  tools/terrain-biome-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/text-fabric: uses declared [browser-local-storage,python-standard-library-optional,project-owned-font-files-explicit,local-svg-renderer-optional,user-selected-output-paths,asset-hands-font-shaping,style-fabric,aetherglass]
+  PASS  tools/texture-trimsheet-decal-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/ui-fx: uses declared [visual-kernel,modular-elements,clipboard]
+  PASS  tools/ui-ux-builder: uses declared [storage,export,gate]
+  PASS  tools/universal-object-fabric: uses declared [asset-fabric,game-forge,modular-intake-gate,verification-spine,shared/universal-object-fabric/source-stage-v0.7/game-stage]
+  PASS  tools/uv-lightmap-studio: uses declared [local-3d-game-runtime,gltf-2.0,canvas,export]
+  PASS  tools/vehicle-assembly-damage-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/verification-entry-observatory: uses declared [storage]
+  PASS  tools/verification-proof-lab: uses declared [filesystem-read,python-standard-library,node-standard-library,machine.execute,shared:verification-proof/public-proof-batch1,shared:verification-proof/public-proof-intake]
+  PASS  tools/verifier: uses declared [verification-spine,same-origin-workshop-evidence,same-origin-verify-config,browser-blob-download,hub-module-bridge]
+  PASS  tools/vfx-particle-shader-studio: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/visual-art-director-lab: uses declared [local-cpu,canvas,web-crypto,axm-native-foundation,export]
+  PASS  tools/visual-draft-room: uses declared [storage-metadata-only,neural-room-optional,raster-compositor,export]
+  PASS  tools/visual-mirror-platform-clone: uses declared [local-static-evidence,hash-bound-platform-snapshot]
+  PASS  tools/visual-mold-foundry: uses declared [browser-local-storage,explicit-user-download,protected-vendored-package,no-network]
+  PASS  tools/vram-memory-streaming-analyzer: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/workshop-census-observatory: uses declared [filesystem-read,storage]
+  PASS  tools/workshop-command-center: uses declared [storage,body-pulse,workshop-direction,workshop-needs-observatory,review-inbox,technical-glasses,cognitive-resource-meter,chroma-studio,device-handoff,ui-fx,presentation-spine]
+  PASS  tools/workshop-direction: uses declared [storage,body-pulse,capability-index,review-inbox]
+  PASS  tools/workshop-needs-observatory: uses declared [storage,modular-intake-gate,module-contracts,tools-index]
+  PASS  tools/workshop-packager: uses declared [workshop-filesystem,package-planner,runtime-manifest-verifier,restore-test,github-api-optional]
+  PASS  tools/workshop-search-provenance: uses declared [files,storage,capability-index,code-recipe-foundry]
+  PASS  tools/workshop-shadow: uses declared [local-filesystem,loopback-http,code-capability-fabric,deterministic-json-core,tool-readiness,module-contract-verifier]
+  PASS  tools/workshop-updater: uses declared [platform-heartbeat,body-pulse,github-public-api,ed25519-release-trust,local-state-staging]
+  PASS  tools/world-partition-streaming-compiler: uses declared [local-cpu,canvas,web-crypto,export]
+  PASS  tools/world-tile-foundry: uses declared [game-forge,storage,export,verification-spine]
+  PASS  AXM_UNIVERSAL_CONTROL_SYSTEM_v0_2_1_TEST_READY/migrations/robo-pong/robo-pong-semantic-phone.html DOM order clean
+  PASS  cloud-test/axm-studio-cloud.html DOM order clean
+  PASS  hub/index.html DOM order clean
+  PASS  launcher/index.html DOM order clean
+  PASS  mobile/pocket-adventure/index.html DOM order clean
+  PASS  museum/first-mirror/original/mirror.html DOM order clean
+  PASS  pocket/hub-mobile.html DOM order clean
+  PASS  pocket/prehub-mobile.html DOM order clean
+  PASS  shared/aetherglass/tests/authoring.html DOM order clean
+  PASS  shared/aetherglass/tests/smoke.html DOM order clean
+  PASS  shared/aetherglass/tests/storycraft.html DOM order clean
+  PASS  shared/ai-native-hands/computed-style-fixture.html DOM order clean
+  PASS  shared/css-skin-fabric/candidates/local-command-surface-62d539023eaf37cb/specimen.html DOM order clean
+  PASS  shared/universal-object-fabric/source-stage-v0.7/game-stage/game_geometry/AXM_ASSET_PICKER.html DOM order clean
+  PASS  site/guest/full/tools/audio-studio/sound-lab-engine.html DOM order clean
+  PASS  site/guest/full/tools/game-forge/preview.html DOM order clean
+  PASS  site/guest/full/tools/studio/engine.html DOM order clean
+  PASS  site/guest/full/tools/studio/index.html DOM order clean
+  PASS  tools/_module-template/index.html DOM order clean
+  PASS  tools/_templates/basic-tool/index.html DOM order clean
+  PASS  tools/aetherfx/runtime/OPEN_STUDIO.html DOM order clean
+  PASS  tools/aetherfx/runtime/dist/AXM_AETHERFX_VISUAL_EFFECT_FABRIC_STUDIO_v1_3_0.html DOM order clean
+  PASS  tools/agent-command-center/index.html DOM order clean
+  PASS  tools/agent-tool-forge/index.html DOM order clean
+  PASS  tools/ai-habitat/workshop.html DOM order clean
+  PASS  tools/ai-task-talk/index.html DOM order clean
+  PASS  tools/asset-pack-lab/index.html DOM order clean
+  PASS  tools/asset-vault/index.html DOM order clean
+  PASS  tools/audio-studio/sound-lab-engine.html DOM order clean
+  PASS  tools/challenge-arena/index.html DOM order clean
+  PASS  tools/claude-connector/index.html DOM order clean
+  PASS  tools/discovery-engine/index.html DOM order clean
+  PASS  tools/duo-test/index.html DOM order clean
+  PASS  tools/forge/index.html DOM order clean
+  PASS  tools/forge-line/index.html DOM order clean
+  PASS  tools/fsm-kit/index.html DOM order clean
+  PASS  tools/game-forge/preview.html DOM order clean
+  PASS  tools/game-hub/game-library/002-robo-pong/runtime/ROBO_PONG_PHASER4_PHONE_CLIENT.html DOM order clean
+  PASS  tools/game-hub/game-library/003-robo-pong-cross/runtime/robo-pong-cross-client.html DOM order clean
+  PASS  tools/game-hub/game-library/004-relaybound/runtime/relaybound-client.html DOM order clean
+  PASS  tools/game-hub/game-library/004-relaybound/runtime/relaybound-debrief.html DOM order clean
+  PASS  tools/game-hub/game-library/005-briarfront/runtime/briarfront-client.html DOM order clean
+  PASS  tools/game-hub/game-library/006-lumenwake/runtime/lumenwake-client.html DOM order clean
+  PASS  tools/game-hub/game-library/011-axm-buddyfarm/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/game-library/012-pulse-choir/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/game-library/015-axm-mirrorshift/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/game-library/019-brace-room/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/game-library/021-hearthgate-two-sides/runtime/controller.html DOM order clean
+  PASS  tools/game-hub/lobby-controller.html DOM order clean
+  PASS  tools/graft/index.html DOM order clean
+  PASS  tools/hermes/index.html DOM order clean
+  PASS  tools/hub-test-room/index.html DOM order clean
+  PASS  tools/launcher-card-installer/index.html DOM order clean
+  PASS  tools/main-hub/index.html DOM order clean
+  PASS  tools/mirror-code-clone/index.html DOM order clean
+  PASS  tools/model-lab/index.html DOM order clean
+  PASS  tools/prehub/index.html DOM order clean
+  PASS  tools/prompt-vault/index.html DOM order clean
+  PASS  tools/reasoning-shell/index.html DOM order clean
+  PASS  tools/route/index.html DOM order clean
+  PASS  tools/runner/index.html DOM order clean
+  PASS  tools/sandbox/index.html DOM order clean
+  PASS  tools/sandbox/projects/robo-pong/index.html DOM order clean
+  PASS  tools/shell-guardian/index.html DOM order clean
+  PASS  tools/skinner/index.html DOM order clean
+  PASS  tools/studio/engine.html DOM order clean
+  PASS  tools/studio/index.html DOM order clean
+  PASS  tools/text-fabric/runtime/LAYOUT_STRESS_LAB.html DOM order clean
+  PASS  tools/text-fabric/runtime/START_HERE.html DOM order clean
+  PASS  tools/ui-ux-builder/index.html DOM order clean
+  PASS  tools/verifier/index.html DOM order clean
+  PASS  tools/workshop-packager/index.html DOM order clean
+  PASS  namespace declared: assets/packs/launcher/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/sound/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/music/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/video/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/lang/base/NAMESPACE.txt
+  PASS  namespace declared: assets/packs/template/base/NAMESPACE.txt
+  PASS  template index honest (2 entries)
+  PASS  registry: user-choice rule, AI proposal-first, truth patch all present
+  PASS  settings use the reserved spine slot
+  PASS  reasoning-shell: tweaks proposal-only, rejection_reason enforced
+  PASS  present: TRUST_CHARTER.txt
+  PASS  present: TEMPLATE_SEAMS.txt
+  PASS  present: prompts/local/axm-core.txt
+  PASS  present: WORKSHOP_TESTS_RUN.txt
+  PASS  core roots file is the CANON BASE version
+  PASS  shared game engine seams: 8 regression assertion(s) passed
+  PASS  game-library adapter: 21 modular game package(s) verified
+  warn  game package 002-robo-pong: physical phone qa is pending
+  warn  game package 003-robo-pong-cross: physical phone qa is pending
+  warn  game package 004-relaybound: physical phone qa is pending
+  warn  game package 005-briarfront: physical phone qa is pending
+  warn  game package 006-lumenwake: physical phone qa is pending
+  warn  game package 007-casino-alpha: physical phone qa is pending
+  warn  game package 008-district-party: physical phone qa is pending
+  warn  game package 009-circuitseed-protocol-wilds: physical phone qa is pending
+  warn  game package 010-living-globe-tycoon: physical phone qa is pending
+  warn  game package 011-axm-buddyfarm: physical phone qa is pending
+  warn  game package 012-pulse-choir: physical phone qa is pending
+  warn  game package 015-axm-mirrorshift: physical phone qa is pending
+  warn  game package 016-hexbound-rooftops: physical phone qa is pending
+  warn  game package 017-small-odds: physical phone qa is pending
+  warn  game package 018-last-stop-nebula: physical phone qa is pending
+  warn  game package 019-brace-room: physical phone qa is pending
+  warn  game package 021-hearthgate-two-sides: physical phone qa is pending
+  warn  game package 022-shardrunner: disconnect recovery is pending
+  warn  game package 022-shardrunner: blocking overlay escape is pending
+  warn  game package 022-shardrunner: physical phone qa is pending
+  PASS  module contract: accessibility-adaptation-lab (tools/accessibility-adaptation-lab/module.contract.json)
+  PASS  module contract: adapter-translation-garden (tools/adapter-translation-garden/module.contract.json)
+  PASS  module contract: aetherfx (tools/aetherfx/module.contract.json)
+  PASS  module contract: agent-command-center (tools/agent-command-center/module.contract.json)
+  PASS  module contract: agent-tool-forge (tools/agent-tool-forge/module.contract.json)
+  PASS  module contract: ai-habitat (tools/ai-habitat/module.contract.json)
+  PASS  module contract: ai-task-talk (tools/ai-task-talk/module.contract.json)
+  PASS  module contract: ai-team (tools/ai-team/module.contract.json)
+  PASS  module contract: ai-team-steward-lab (tools/ai-team-steward-lab/module.contract.json)
+  PASS  module contract: ai-tool-skill-regression-harness (tools/ai-tool-skill-regression-harness/module.contract.json)
+  PASS  module contract: anim-kit (tools/anim-kit/module.contract.json)
+  PASS  module contract: archive-intake-cartographer (tools/archive-intake-cartographer/module.contract.json)
+  PASS  module contract: asset-audio-sensory-workbench (tools/asset-audio-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-engine-roundtrip-bridge (tools/asset-engine-roundtrip-bridge/module.contract.json)
+  PASS  module contract: asset-fabric (tools/asset-fabric/module.contract.json)
+  PASS  module contract: asset-filesystem-service (tools/asset-filesystem-service/module.contract.json)
+  PASS  module contract: asset-material-sensory-workbench (tools/asset-material-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-pack-lab (tools/asset-pack-lab/module.contract.json)
+  PASS  module contract: asset-sensory-workbench (tools/asset-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-spatial-sensory-workbench (tools/asset-spatial-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-ui-sensory-workbench (tools/asset-ui-sensory-workbench/module.contract.json)
+  PASS  module contract: asset-vault (tools/asset-vault/module.contract.json)
+  PASS  module contract: audio-listening-quality-lab (tools/audio-listening-quality-lab/module.contract.json)
+  PASS  module contract: audio-studio (tools/audio-studio/module.contract.json)
+  PASS  module contract: authority-surface-observatory (tools/authority-surface-observatory/module.contract.json)
+  PASS  module contract: automated-playtester-scenario-agent (tools/automated-playtester-scenario-agent/module.contract.json)
+  PASS  module contract: axm-platform-courier (tools/axm-platform-courier/module.contract.json)
+  PASS  module contract: body-pulse (tools/body-pulse/module.contract.json)
+  PASS  module contract: branch-backfeed-lab (tools/branch-backfeed-lab/module.contract.json)
+  PASS  module contract: branch-module-return-gate (tools/branch-module-return-gate/module.contract.json)
+  PASS  module contract: browser-global-surface-observatory (tools/browser-global-surface-observatory/module.contract.json)
+  PASS  module contract: browser-lan-hardware-qa-lab (tools/browser-lan-hardware-qa-lab/module.contract.json)
+  PASS  module contract: bulk-intake-conveyor (tools/bulk-intake-conveyor/module.contract.json)
+  PASS  module contract: capability-fabric (tools/capability-fabric/module.contract.json)
+  PASS  module contract: capability-gap-workbench (tools/capability-gap-workbench/module.contract.json)
+  PASS  module contract: capability-recipe-admission-gate (tools/capability-recipe-admission-gate/module.contract.json)
+  PASS  module contract: capability-recipe-foundry (tools/capability-recipe-foundry/module.contract.json)
+  PASS  module contract: challenge-arena (tools/challenge-arena/module.contract.json)
+  PASS  module contract: character-animation-mocap-studio (tools/character-animation-mocap-studio/module.contract.json)
+  PASS  module contract: character-creature-studio (tools/character-creature-studio/module.contract.json)
+  PASS  module contract: chatgpt-connector (tools/chatgpt-connector/module.contract.json)
+  PASS  module contract: choice-first-visual-lab (tools/choice-first-visual-lab/module.contract.json)
+  PASS  module contract: chroma-studio (tools/chroma-studio/module.contract.json)
+  PASS  module contract: claude-connector (tools/claude-connector/module.contract.json)
+  PASS  module contract: code-recipe-foundry (tools/code-recipe-foundry/module.contract.json)
+  PASS  module contract: codec-container-foundry (tools/codec-container-foundry/module.contract.json)
+  PASS  module contract: cognitive-calibration-lab (tools/cognitive-calibration-lab/module.contract.json)
+  PASS  module contract: cognitive-evidence-explorer (tools/cognitive-evidence-explorer/module.contract.json)
+  PASS  module contract: cognitive-resource-meter (tools/cognitive-resource-meter/module.contract.json)
+  PASS  module contract: compute-substrate-lab (tools/compute-substrate-lab/module.contract.json)
+  PASS  module contract: consent-agent-memory-dataset-curator (tools/consent-agent-memory-dataset-curator/module.contract.json)
+  PASS  module contract: copy-composer-hand (tools/copy-composer-hand/module.contract.json)
+  PASS  module contract: crash-replay-symbolication-center (tools/crash-replay-symbolication-center/module.contract.json)
+  PASS  module contract: dedicated-session-orchestrator (tools/dedicated-session-orchestrator/module.contract.json)
+  PASS  module contract: dependency-declaration-observatory (tools/dependency-declaration-observatory/module.contract.json)
+  PASS  module contract: design-lineage-lab (tools/design-lineage-lab/module.contract.json)
+  PASS  module contract: detached-candidate-nursery (tools/detached-candidate-nursery/module.contract.json)
+  PASS  module contract: deterministic-build-cook-patch-pipeline (tools/deterministic-build-cook-patch-pipeline/module.contract.json)
+  PASS  module contract: deterministic-continuation-capsule (tools/deterministic-continuation-capsule/module.contract.json)
+  PASS  module contract: deterministic-job-cache-scheduler (tools/deterministic-job-cache-scheduler/module.contract.json)
+  PASS  module contract: deterministic-json-core (tools/deterministic-json-core/module.contract.json)
+  PASS  module contract: deterministic-organ-fabric (tools/deterministic-organ-fabric/module.contract.json)
+  PASS  module contract: deterministic-pr-base-refresh (tools/deterministic-pr-base-refresh/module.contract.json)
+  PASS  module contract: deterministic-pr-checkpoint (tools/deterministic-pr-checkpoint/module.contract.json)
+  PASS  module contract: deterministic-pr-publisher (tools/deterministic-pr-publisher/module.contract.json)
+  PASS  module contract: deterministic-pr-sequencer (tools/deterministic-pr-sequencer/module.contract.json)
+  PASS  module contract: deterministic-run-integrator (tools/deterministic-run-integrator/module.contract.json)
+  PASS  module contract: device-handoff (tools/device-handoff/module.contract.json)
+  PASS  module contract: diagnostics-operations-center (tools/diagnostics-operations-center/module.contract.json)
+  PASS  module contract: discord-bridge (tools/discord-bridge/module.contract.json)
+  PASS  module contract: discovery-engine (tools/discovery-engine/module.contract.json)
+  PASS  module contract: documentation-tutorial-capture-studio (tools/documentation-tutorial-capture-studio/module.contract.json)
+  PASS  module contract: dual-door-observatory (tools/dual-door-observatory/module.contract.json)
+  PASS  module contract: duo-test (tools/duo-test/module.contract.json)
+  PASS  module contract: element-foundry (tools/element-foundry/module.contract.json)
+  PASS  module contract: entry-resource-closure-observatory (tools/entry-resource-closure-observatory/module.contract.json)
+  PASS  module contract: errol-core-return-lab (tools/errol-core-return-lab/module.contract.json)
+  PASS  module contract: evidence-chain-application-drill-runner (tools/evidence-chain-application-drill-runner/module.contract.json)
+  PASS  module contract: evidence-chain-application-plan-foundry (tools/evidence-chain-application-plan-foundry/module.contract.json)
+  PASS  module contract: evidence-chain-candidate-review-gate (tools/evidence-chain-candidate-review-gate/module.contract.json)
+  PASS  module contract: evidence-chain-inspector (tools/evidence-chain-inspector/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-adapter-conformance-lab (tools/evidence-chain-recovery-adapter-conformance-lab/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-adapter-integration-foundry (tools/evidence-chain-recovery-adapter-integration-foundry/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-foundry (tools/evidence-chain-recovery-foundry/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-snapshot-placement-foundry (tools/evidence-chain-recovery-snapshot-placement-foundry/module.contract.json)
+  PASS  module contract: evidence-chain-recovery-snapshot-staging-foundry (tools/evidence-chain-recovery-snapshot-staging-foundry/module.contract.json)
+  PASS  module contract: evidence-desk (tools/evidence-desk/module.contract.json)
+  PASS  module contract: evolution-foundry (tools/evolution-foundry/module.contract.json)
+  PASS  module contract: external-pattern-observatory (tools/external-pattern-observatory/module.contract.json)
+  PASS  module contract: fabric-collaboration-room (tools/fabric-collaboration-room/module.contract.json)
+  PASS  module contract: fabrication-readiness-lab (tools/fabrication-readiness-lab/module.contract.json)
+  PASS  module contract: film-motion-studio (tools/film-motion-studio/module.contract.json)
+  PASS  module contract: finance-world-room (tools/finance-world-room/module.contract.json)
+  PASS  module contract: forge (tools/forge/module.contract.json)
+  PASS  module contract: forge-line (tools/forge-line/module.contract.json)
+  PASS  module contract: fsm-kit (tools/fsm-kit/module.contract.json)
+  PASS  module contract: fx-blocks (tools/fx-blocks/module.contract.json)
+  PASS  module contract: game-balance-telemetry-advisor (tools/game-balance-telemetry-advisor/module.contract.json)
+  PASS  module contract: game-capability-atlas (tools/game-capability-atlas/module.contract.json)
+  PASS  module contract: game-forge (tools/game-forge/module.contract.json)
+  PASS  module contract: game-hub (tools/game-hub/module.contract.json)
+  PASS  module contract: game-organism-lab (tools/game-organism-lab/module.contract.json)
+  PASS  module contract: game-production-runner (tools/game-production-runner/module.contract.json)
+  PASS  module contract: game-ui-hud-menu-runtime (tools/game-ui-hud-menu-runtime/module.contract.json)
+  PASS  module contract: gameplay-ability-rules-graph (tools/gameplay-ability-rules-graph/module.contract.json)
+  PASS  module contract: geographic-market-map (tools/geographic-market-map/module.contract.json)
+  PASS  module contract: governed-evolution-lab (tools/governed-evolution-lab/module.contract.json)
+  PASS  module contract: graft (tools/graft/module.contract.json)
+  PASS  module contract: grounded-evolution-intelligence (tools/grounded-evolution-intelligence/module.contract.json)
+  PASS  module contract: hand-forge-bridge (tools/hand-forge-bridge/module.contract.json)
+  PASS  module contract: hand-specification-foundry (tools/hand-specification-foundry/module.contract.json)
+  PASS  module contract: hand-verification-lab (tools/hand-verification-lab/module.contract.json)
+  PASS  module contract: handoff-wiring-observatory (tools/handoff-wiring-observatory/module.contract.json)
+  PASS  module contract: hardware-research-registry (tools/hardware-research-registry/module.contract.json)
+  PASS  module contract: hermes-local (tools/hermes/module.contract.json)
+  PASS  module contract: holodeck-composer (tools/holodeck-composer/module.contract.json)
+  PASS  module contract: holodeck-screen-deck (tools/holodeck-screen-deck/module.contract.json)
+  PASS  module contract: host-assumption-observatory (tools/host-assumption-observatory/module.contract.json)
+  PASS  module contract: hub-test-room (tools/hub-test-room/module.contract.json)
+  PASS  module contract: human-attention-ledger (tools/human-attention-ledger/module.contract.json)
+  PASS  module contract: human-capability-atlas (tools/human-capability-atlas/module.contract.json)
+  PASS  module contract: human-control-binding-observatory (tools/human-control-binding-observatory/module.contract.json)
+  PASS  module contract: human-interface-intelligence (tools/human-interface-intelligence/module.contract.json)
+  PASS  module contract: immutable-history-guard (tools/immutable-history-guard/module.contract.json)
+  PASS  module contract: input-accessibility-haptics-studio (tools/input-accessibility-haptics-studio/module.contract.json)
+  PASS  module contract: judgement-chamber (tools/judgement-chamber/module.contract.json)
+  PASS  module contract: knowledge-canvas (tools/knowledge-canvas/module.contract.json)
+  PASS  module contract: launcher-card-installer (tools/launcher-card-installer/module.contract.json)
+  PASS  module contract: learning-lab (tools/learning-lab/module.contract.json)
+  PASS  module contract: license-rights-attribution-auditor (tools/license-rights-attribution-auditor/module.contract.json)
+  PASS  module contract: lighting-probe-baker (tools/lighting-probe-baker/module.contract.json)
+  PASS  module contract: living-world-ruleset-physics-adapter-kit (tools/living-world-ruleset-physics-adapter-kit/module.contract.json)
+  PASS  module contract: living-world-state-server (tools/living-world-state-server/module.contract.json)
+  PASS  module contract: local-3d-game-runtime (tools/local-3d-game-runtime/module.contract.json)
+  PASS  module contract: localization-release-pipeline (tools/localization-release-pipeline/module.contract.json)
+  PASS  module contract: lod-hlod-impostor-builder (tools/lod-hlod-impostor-builder/module.contract.json)
+  PASS  module contract: machine-host (tools/machine-host/module.contract.json)
+  PASS  module contract: main-hub (tools/main-hub/module.contract.json)
+  PASS  module contract: marketplace-compatibility-certifier (tools/marketplace-compatibility-certifier/module.contract.json)
+  PASS  module contract: marketplace-deployment (tools/marketplace-deployment/module.contract.json)
+  PASS  module contract: media-render-transcode-service (tools/media-render-transcode-service/module.contract.json)
+  PASS  module contract: memory-continuity-garden (tools/memory-continuity-garden/module.contract.json)
+  PASS  module contract: mesh-retopology-optimizer (tools/mesh-retopology-optimizer/module.contract.json)
+  PASS  module contract: mirror-code-clone (tools/mirror-code-clone/module.contract.json)
+  PASS  module contract: mirror-holo-shoebox (tools/mirror-holo-shoebox/module.contract.json)
+  PASS  module contract: mirror-intake-monitor (tools/mirror-intake-monitor/module.contract.json)
+  PASS  module contract: mirror-learning-shell (tools/mirror-learning-shell/module.contract.json)
+  PASS  module contract: model-lab (tools/model-lab/module.contract.json)
+  PASS  module contract: modern-asset-forge (tools/modern-asset-forge/module.contract.json)
+  PASS  module contract: modular-environment-kit-builder (tools/modular-environment-kit-builder/module.contract.json)
+  PASS  module contract: modular-intake-gate (tools/modular-intake-gate/module.contract.json)
+  PASS  module contract: modular-seed-foundry (tools/modular-seed-foundry/module.contract.json)
+  PASS  module contract: module-contract-workbench (tools/module-contract-workbench/module.contract.json)
+  PASS  module contract: module-footprint-observatory (tools/module-footprint-observatory/module.contract.json)
+  PASS  module contract: module-installer (tools/module-installer/module.contract.json)
+  PASS  module contract: module-lineage-comparator (tools/module-lineage-comparator/module.contract.json)
+  PASS  module contract: multiplayer-controller-transport (tools/multiplayer-controller-transport/module.contract.json)
+  PASS  module contract: native-dependency-foundry (tools/native-dependency-foundry/module.contract.json)
+  PASS  module contract: navigation-crowd-behavior-studio (tools/navigation-crowd-behavior-studio/module.contract.json)
+  PASS  module contract: network-replication-prediction-lab (tools/network-replication-prediction-lab/module.contract.json)
+  PASS  module contract: neural-room (tools/neural-room/module.contract.json)
+  PASS  module contract: novelty-diversity-engine (tools/novelty-diversity-engine/module.contract.json)
+  PASS  module contract: p1-production-foundation (tools/p1-production-foundation/module.contract.json)
+  PASS  module contract: p2-experience-foundation (tools/p2-experience-foundation/module.contract.json)
+  PASS  module contract: p34-release-foundation (tools/p34-release-foundation/module.contract.json)
+  PASS  module contract: pbr-material-baker (tools/pbr-material-baker/module.contract.json)
+  PASS  module contract: performance-frame-profiler (tools/performance-frame-profiler/module.contract.json)
+  PASS  module contract: physics-destruction-ragdoll-runtime (tools/physics-destruction-ragdoll-runtime/module.contract.json)
+  PASS  module contract: prehub (tools/prehub/module.contract.json)
+  PASS  module contract: presentation-spine (tools/presentation-spine/module.contract.json)
+  PASS  module contract: procedural-city-interior-studio (tools/procedural-city-interior-studio/module.contract.json)
+  PASS  module contract: project-room (tools/project-room/module.contract.json)
+  PASS  module contract: prompt-vault (tools/prompt-vault/module.contract.json)
+  PASS  module contract: protocol-version-observatory (tools/protocol-version-observatory/module.contract.json)
+  PASS  module contract: ps2-asset-forge (tools/ps2-asset-forge/module.contract.json)
+  PASS  module contract: public-release-deployment-adapter (tools/public-release-deployment-adapter/module.contract.json)
+  PASS  module contract: publish-library (tools/publish-library/module.contract.json)
+  PASS  module contract: quest-dialogue-narrative-runtime (tools/quest-dialogue-narrative-runtime/module.contract.json)
+  PASS  module contract: read-only-mirror-world-adapter (tools/read-only-mirror-world-adapter/module.contract.json)
+  PASS  module contract: reasoning-shell (tools/reasoning-shell/module.contract.json)
+  PASS  module contract: recovery-center (tools/recovery-center/module.contract.json)
+  PASS  module contract: reference-to-3d-reconstruction-lab (tools/reference-to-3d-reconstruction-lab/module.contract.json)
+  PASS  module contract: release-size-delta-patch-optimizer (tools/release-size-delta-patch-optimizer/module.contract.json)
+  PASS  module contract: repair-resilience-library (tools/repair-resilience-library/module.contract.json)
+  PASS  module contract: repairbuddy (tools/repairbuddy/module.contract.json)
+  PASS  module contract: reproducible-build-sbom-generator (tools/reproducible-build-sbom-generator/module.contract.json)
+  PASS  module contract: research-foundry (tools/research-foundry/module.contract.json)
+  PASS  module contract: review-inbox (tools/review-inbox/module.contract.json)
+  PASS  module contract: rigging-retargeting-studio (tools/rigging-retargeting-studio/module.contract.json)
+  PASS  module contract: route (tools/route/module.contract.json)
+  PASS  module contract: runner (tools/runner/module.contract.json)
+  PASS  module contract: runtime-channel-observatory (tools/runtime-channel-observatory/module.contract.json)
+  PASS  module contract: sandbox (tools/sandbox/module.contract.json)
+  PASS  module contract: save-migration-replay-service (tools/save-migration-replay-service/module.contract.json)
+  PASS  module contract: schema-contract-migration-registry (tools/schema-contract-migration-registry/module.contract.json)
+  PASS  module contract: schema-identity-observatory (tools/schema-identity-observatory/module.contract.json)
+  PASS  module contract: secrets-permissions-console (tools/secrets-permissions-console/module.contract.json)
+  PASS  module contract: security-fuzz-supply-chain-lab (tools/security-fuzz-supply-chain-lab/module.contract.json)
+  PASS  module contract: sensorium-lab (tools/sensorium-lab/module.contract.json)
+  PASS  module contract: shapeable-builder (tools/shapeable-builder/module.contract.json)
+  PASS  module contract: shell-guardian (tools/shell-guardian/module.contract.json)
+  PASS  module contract: skinner (tools/skinner/module.contract.json)
+  PASS  module contract: source-connector-hub (tools/source-connector-hub/module.contract.json)
+  PASS  module contract: source-control-merge-workbench (tools/source-control-merge-workbench/module.contract.json)
+  PASS  module contract: spatial-studio (tools/spatial-studio/module.contract.json)
+  PASS  module contract: storage-namespace-observatory (tools/storage-namespace-observatory/module.contract.json)
+  PASS  module contract: studio (tools/studio/module.contract.json)
+  PASS  module contract: sustainability-metrology-lab (tools/sustainability-metrology-lab/module.contract.json)
+  PASS  module contract: technical-art-validator (tools/technical-art-validator/module.contract.json)
+  PASS  module contract: technical-glasses (tools/technical-glasses/module.contract.json)
+  PASS  module contract: template-runtime-pack-engine (tools/template-runtime-pack-engine/module.contract.json)
+  PASS  module contract: terrain-biome-studio (tools/terrain-biome-studio/module.contract.json)
+  PASS  module contract: text-fabric (tools/text-fabric/module.contract.json)
+  PASS  module contract: texture-trimsheet-decal-studio (tools/texture-trimsheet-decal-studio/module.contract.json)
+  PASS  module contract: ui-fx (tools/ui-fx/module.contract.json)
+  PASS  module contract: ui-ux-builder (tools/ui-ux-builder/module.contract.json)
+  PASS  module contract: universal-object-fabric (tools/universal-object-fabric/module.contract.json)
+  PASS  module contract: uv-lightmap-studio (tools/uv-lightmap-studio/module.contract.json)
+  PASS  module contract: vehicle-assembly-damage-studio (tools/vehicle-assembly-damage-studio/module.contract.json)
+  PASS  module contract: verification-entry-observatory (tools/verification-entry-observatory/module.contract.json)
+  PASS  module contract: verification-proof-lab (tools/verification-proof-lab/module.contract.json)
+  PASS  module contract: verifier (tools/verifier/module.contract.json)
+  PASS  module contract: vfx-particle-shader-studio (tools/vfx-particle-shader-studio/module.contract.json)
+  PASS  module contract: visual-art-director-lab (tools/visual-art-director-lab/module.contract.json)
+  PASS  module contract: visual-draft-room (tools/visual-draft-room/module.contract.json)
+  PASS  module contract: visual-mirror-platform-clone (tools/visual-mirror-platform-clone/module.contract.json)
+  PASS  module contract: visual-mold-foundry (tools/visual-mold-foundry/module.contract.json)
+  PASS  module contract: vram-memory-streaming-analyzer (tools/vram-memory-streaming-analyzer/module.contract.json)
+  PASS  module contract: workshop-census-observatory (tools/workshop-census-observatory/module.contract.json)
+  PASS  module contract: workshop-command-center (tools/workshop-command-center/module.contract.json)
+  PASS  module contract: workshop-direction (tools/workshop-direction/module.contract.json)
+  PASS  module contract: workshop-needs-observatory (tools/workshop-needs-observatory/module.contract.json)
+  PASS  module contract: workshop-packager (tools/workshop-packager/module.contract.json)
+  PASS  module contract: workshop-search-provenance (tools/workshop-search-provenance/module.contract.json)
+  PASS  module contract: workshop-shadow (tools/workshop-shadow/module.contract.json)
+  PASS  module contract: workshop-updater (tools/workshop-updater/module.contract.json)
+  PASS  module contract: world-partition-streaming-compiler (tools/world-partition-streaming-compiler/module.contract.json)
+  PASS  module contract: world-tile-foundry (tools/world-tile-foundry/module.contract.json)
+  PASS  module lifecycle seam inventory complete: 238 module(s) declared
+  PASS  RepairBuddy warning route: 20 item(s) from 20 warning line(s); 0 replayable, 20 evidence, 0 repair design
+  PASS  tools index schema valid: 238 tools · 2273 contract capabilities
+  PASS  all tool manifests declare permissions
+  PASS  all tools have module contracts
+  PASS  all tools have executable selftests
+  warn  manifest kind migration backlog: 1 tool(s) remain legacy UNDECLARED
+  warn  promotion claim needs reverification: adapter-translation-garden · current selftest PASS result is missing
+  warn  promotion claim needs reverification: memory-continuity-garden · current selftest PASS result is missing
+  warn  promotion claim needs reverification: prehub · current selftest PASS result is missing
+  warn  promotion claim needs reverification: repair-resilience-library · current selftest PASS result is missing
+  PASS  tools-index.json matches current structural source digest
+  FAIL  LEGO city map CITY_GRAPH_DRIFT: registry/generated/city-graph.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-modules.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-capabilities.jsonl
+  FAIL  LEGO city map AUTHORITY_MAP_STALE: registry/generated/city-authority-map.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-proof-map.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-dependencies.json
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-unresolved-edges.json
+  FAIL  LEGO city map HUMAN_VIEW_DRIFT: docs/generated/LEGO_CITY_MAP.md
+  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-graph.receipt.json
+  PASS  city schema registry exact: 145fa38d16d7dc7e144bfde441c0f44622daa6cde7262eb8c4ad726c50a75766; 913 schema identities; 731 unresolved socket(s) retained
+  PASS  city state primitives focused suite: 19 assertion(s); no delete, rewrite, or event-as-authority path
+  PASS  city authority/hands focused suite: 22 assertion(s); external decision-maker verification required; no real executor bundled
+  PASS  city workflow/evidence focused suite: 29 assertion(s); workflow execution remains external
+  PASS  city local-sync/twins focused suite: 24 assertion(s); 304 human/machine packets bind twin de41b28eaa94ec2b05cfa42a076a3ec9b37c6ce007465478e6a45c68bff50d07
+  PASS  city intake/gates/blueprint focused suite: 41 assertion(s); all external transports disabled
+  PASS  Workshop continuity intact: 19365 protected paths · 234 tools · 2039 provided capabilities · no unauthorized disappearance
+  PASS  Workshop scope transition ledger is structurally bound: 1 permanent receipt(s)
+  PASS  Workshop scope transition fail-closed suite: 15 assertion(s) passed
+
+=== YOUR CHECKS (verify.config.json) ===
+  PASS  core roots file is present  ·  prompts/local/axm-core.txt
+  PASS  test-room declares a hub API version  ·  tools/hub-test-room/manifest.json . hubApiVersion
+
+CORE FAILED (9 unretired) · 0 of 2 your-checks failed
+
+=== COMPLETE WARNING DELTA ===
+  DRIFT  25 current known-open warning(s) - added 6, resolved 23, changed 1, unchanged 18
+  baseline: workshop-main-c2dbeb69 - 31bbe165099be8723db08a3859b615763f7d0b717c6d2786edcd615bbc01665c
+  ADDED     game package 022-shardrunner: physical phone qa is pending
+  ADDED     game package 022-shardrunner: disconnect recovery is pending
+  ADDED     game package 021-hearthgate-two-sides: physical phone qa is pending
+  ADDED     game package 017-small-odds: physical phone qa is pending
+  ADDED     game package 010-living-globe-tycoon: physical phone qa is pending
+  ADDED     game package 022-shardrunner: blocking overlay escape is pending
+  RESOLVED  game package 010-living-globe-tycoon: blocking overlay escape is pending
+  RESOLVED  game package 005-briarfront: disconnect recovery is pending
+  RESOLVED  game package 010-living-globe-tycoon: external collaborator state interface is pending
+  RESOLVED  game package 007-casino-alpha: disconnect recovery is pending
+  RESOLVED  game package 004-relaybound: external collaborator state interface is pending
+  RESOLVED  game package 004-relaybound: disconnect recovery is pending
+  RESOLVED  game package 016-hexbound-rooftops: disconnect recovery is pending
+  RESOLVED  game package 004-relaybound: blocking overlay escape is pending
+  RESOLVED  game package 011-axm-buddyfarm: disconnect recovery is pending
+  RESOLVED  game package 006-lumenwake: blocking overlay escape is pending
+  RESOLVED  game package 010-living-globe-tycoon: disconnect recovery is pending
+  RESOLVED  game package 006-lumenwake: disconnect recovery is pending
+  RESOLVED  game package 008-district-party: disconnect recovery is pending
+  RESOLVED  game package 005-briarfront: external collaborator state interface is pending
+  RESOLVED  game package 002-robo-pong: disconnect recovery is pending
+  RESOLVED  game package 006-lumenwake: external collaborator state interface is pending
+  RESOLVED  game package 009-circuitseed-protocol-wilds: blocking overlay escape is pending
+  RESOLVED  game package 016-hexbound-rooftops: blocking overlay escape is pending
+  RESOLVED  game package 005-briarfront: blocking overlay escape is pending
+  RESOLVED  game package 019-brace-room: disconnect recovery is pending
+  RESOLVED  game package 007-casino-alpha: external collaborator state interface is pending
+  RESOLVED  game package 008-district-party: blocking overlay escape is pending
+  RESOLVED  game package 002-robo-pong: external collaborator state interface is pending
+  CHANGED   manifest kind migration backlog: 60 tool(s) remain legacy UNDECLARED -> manifest kind migration backlog: 1 tool(s) remain legacy UNDECLARED
+  Known-open means tracked, not acknowledged, suppressed, retired, or passed.
+
+=== VERIFICATION SPINE V2 ===
+  FAILED  profile workshop-full - 6 receipts - 9 atomic claims
+  foundation - 3 claims - FAIL=1, PASS=1, WARNING=1
+  game - 3 claims - PASS=2, WARNING=1
+  module - 3 claims - PASS=3
+  failure memory - 1 lessons (candidate 0, active 1, monitor 0, human 0, retired 0)
+  receipt: exports/verification-spine-report.json
+
+exit=1
+
+> node tests/html-script-syntax-test.js
+PASS tools/agent-command-center/index.html · 3 local script(s) compile
+PASS tools/agent-tool-forge/index.html · 4 local script(s) compile
+PASS tools/capability-fabric/index.html · 1 local script(s) compile
+PASS tools/deterministic-organ-fabric/index.html · 2 local script(s) compile
+PASS tools/forge/index.html · 2 local script(s) compile
+PASS tools/ai-team/index.html · 3 local script(s) compile
+PASS tools/technical-glasses/index.html · 1 local script(s) compile
+PASS tools/publish-library/index.html · 2 local script(s) compile
+PASS tools/game-forge/index.html · 2 local script(s) compile
+PASS tools/game-forge/preview.html · 1 local script(s) compile
+PASS tools/knowledge-canvas/index.html · 2 local script(s) compile
+PASS tools/finance-world-room/index.html · 5 local script(s) compile
+PASS tools/cognitive-resource-meter/index.html · 2 local script(s) compile
+PASS tools/audio-studio/index.html · 2 local script(s) compile
+PASS tools/audio-studio/sound-lab-engine.html · 1 local script(s) compile
+PASS tools/film-motion-studio/index.html · 2 local script(s) compile
+PASS tools/launcher-card-installer/index.html · 1 local script(s) compile
+PASS tools/evidence-desk/index.html · 3 local script(s) compile
+PASS tools/model-lab/index.html · 3 local script(s) compile
+PASS tools/duo-test/index.html · 3 local script(s) compile
+PASS tools/game-hub/index.html · 5 local script(s) compile
+PASS tools/game-hub/game-library/006-lumenwake/runtime/lumenwake-client.html · 2 local script(s) compile
+PASS tools/chatgpt-connector/index.html · 2 local script(s) compile
+PASS tools/project-room/index.html · 2 local script(s) compile
+PASS tools/prompt-vault/index.html · 2 local script(s) compile
+PASS tools/ui-ux-builder/index.html · 3 local script(s) compile
+PASS tools/skinner/index.html · 2 local script(s) compile
+PASS tools/sandbox/projects/robo-pong/index.html · 1 local script(s) compile
+PASS tools/studio/index.html · 5 local script(s) compile
+PASS tools/asset-fabric/index.html · 90 local script(s) compile
+PASS tools/cognitive-evidence-explorer/index.html · 2 local script(s) compile
+PASS tools/cognitive-calibration-lab/index.html · 2 local script(s) compile
+PASS tools/human-attention-ledger/index.html · 2 local script(s) compile
+PASS tools/sustainability-metrology-lab/index.html · 2 local script(s) compile
+PASS tools/mirror-intake-monitor/index.html · 2 local script(s) compile
+PASS tools/workshop-command-center/index.html · 3 local script(s) compile
+PASS tools/recovery-center/index.html · 2 local script(s) compile
+PASS tools/module-installer/index.html · 2 local script(s) compile
+PASS tools/machine-host/index.html · 2 local script(s) compile
+PASS tools/review-inbox/index.html · 5 local script(s) compile
+PASS tools/module-contract-workbench/index.html · 2 local script(s) compile
+PASS tools/secrets-permissions-console/index.html · 2 local script(s) compile
+PASS tools/diagnostics-operations-center/index.html · 2 local script(s) compile
+PASS tools/workshop-search-provenance/index.html · 2 local script(s) compile
+PASS tools/asset-filesystem-service/index.html · 2 local script(s) compile
+PASS tools/device-handoff/index.html · 3 local script(s) compile
+PASS tools/browser-lan-hardware-qa-lab/index.html · 2 local script(s) compile
+PASS tools/template-runtime-pack-engine/index.html · 2 local script(s) compile
+PASS tools/source-connector-hub/index.html · 2 local script(s) compile
+PASS tools/media-render-transcode-service/index.html · 2 local script(s) compile
+PASS tools/living-world-state-server/index.html · 2 local script(s) compile
+PASS tools/multiplayer-controller-transport/index.html · 2 local script(s) compile
+PASS tools/living-world-ruleset-physics-adapter-kit/index.html · 2 local script(s) compile
+PASS tools/read-only-mirror-world-adapter/index.html · 2 local script(s) compile
+PASS tools/novelty-diversity-engine/index.html · 2 local script(s) compile
+PASS tools/public-release-deployment-adapter/index.html · 2 local script(s) compile
+PASS shared/asset-hands/index.html · 87 local script(s) compile
+
+57 PASS · 0 FAIL
+exit=0
+
+> node tests/tool-forge-package-test.js
+{
+  "ok": true,
+  "route": "workspace-local-transient",
+  "workspaceRootDrive": "/",
+  "transientPath": "state/test-scratch/agent-tool-forge/package-proof-4cai7E/mike.package-proof-EXPERIMENTAL.zip",
+  "storageState": "CLEANED",
+  "writeVerified": true,
+  "archiveBytes": 98389,
+  "archiveSha256": "1de73f7e170457b362e5d8455c90896a9ec64a907633443169b48b3cfba94aa4",
+  "files": [
+    "README.md",
+    "axm-foundation.js",
+    "draft.json",
+    "index.html",
+    "machine.js",
+    "manifest.json"
+  ],
+  "packageFingerprint": "8d43927820e0177361638a008a6cbb8d713ec83b98a67353eeed4b7391653268",
+  "installed": false
+}
+exit=0
+
+> node tools/agent-tool-forge/selftest.js
+PASS manifest and contract agree
+PASS contract refuses installation and execution
+PASS SHA-256 known vector
+PASS valid draft passes
+PASS missing boundary fails
+PASS invalid id fails
+PASS fingerprint is deterministic
+PASS fingerprint changes with purpose
+PASS foundation package renders
+PASS generated status is experimental
+PASS package says install not performed
+PASS dual door carries machine adapter
+PASS zip has local header
+PASS machine refuses missing gate
+PASS machine obeys denied gate
+PASS machine creates same normalized draft
+PASS machine cannot install
+
+17 PASS · 0 FAIL
+exit=0
+
+> node tools/evidence-desk/selftest.js
+PASS  legacy observation remains compatible and UNKNOWN
+PASS  visual claims route to live visual observation
+PASS  persistence claims route to restart and reload evidence
+PASS  receipt emits the v2 schema
+PASS  complete routed evidence reaches recorded-scope verification
+PASS  claim and check counts use effective evidence states
+PASS  execution and CANON boundaries stay false
+PASS  receipt carries a full SHA-256 content digest
+PASS  fresh sealed receipt verifies
+PASS  content digest is stable across generation timestamps
+PASS  changed receipt content fails integrity verification
+PASS  declared PASS is preserved but not counted without evidence
+PASS  PASS without evidence cannot produce verified status
+PASS  mismatched evidence surface cannot become effective PASS
+PASS  surface mismatch remains visible
+PASS  UNKNOWN stays open
+PASS  high-risk verdict requires a source pointer
+PASS  evidenced FAIL remains contradicted
+PASS  Action Report states no-fake-done and integrity boundaries
+PASS  handoff preview does not claim receiver acceptance
+PASS  handoff preview is digest bound
+PASS  Knowledge Canvas v1 intake accepts the bounded v0.2 packet
+PASS  changed handoff packet fails digest verification
+PASS  inbox write and receiver acceptance remain separate
+PASS  machine adapter refuses a missing authenticated host gate
+PASS  machine adapter preserves gate refusal
+PASS  machine build is read-only and sealed
+PASS  machine adapter recomputes receipt integrity
+PASS  machine handoff preview performs no write
+PASS  undeclared machine action is refused before authorization
+PASS  modern manifest declares product v0.2
+PASS  manifest and contract permissions agree exactly
+PASS  contract refuses fake acceptance and inbox overwrite
+PASS  human door exposes separate preview and placement controls
+PASS  human door preserves an existing inbox and verifies readback
+PASS  user-facing interface avoids alarming negative-proof wording
+
+36 PASS · 0 FAIL · Evidence Desk v0.2 focused suite
+exit=0
+
+> git diff --check
+exit=0
+
+overall_failed=1
