@@ -110,6 +110,12 @@ function layout(rootInput, projectId, batchSha256 = null, draftId = null) {
   return paths;
 }
 
+function revisionFile(paths, revision, digest) {
+  if (!Number.isInteger(revision) || revision < 1) throw new Error('PRODUCTION_STORE_REVISION_INVALID');
+  const d = safeSegment(digest, 'PRODUCTION_STORE_REVISION_DIGEST_UNSAFE');
+  return path.join(paths.revisions, `${String(revision).padStart(6, '0')}-${d}.json`);
+}
+
 function rejectRawSource(value) {
   if (!value || typeof value !== 'object') return;
   if (value.sourceCode != null || value.body != null || value.bytes != null) throw new Error('PRODUCTION_STORE_RAW_SOURCE_REFUSED');
@@ -137,7 +143,12 @@ function putDraftRevision({ root, draft } = {}) {
   if (!draft || draft.schema !== 'axm.code.production-draft-revision.v1') throw new Error('PRODUCTION_STORE_DRAFT_INVALID');
   rejectRawSource(draft);
   const paths = layout(root, draft.projectId, draft.batchSha256, draft.draftId);
-  const file = path.join(paths.revisions, `${String(draft.revision).padStart(6, '0')}-${draft.draftRevisionSha256}.json`);
+  const batch = readJson(paths.batchFile);
+  if (!batch) throw new Error('PRODUCTION_STORE_BATCH_NOT_PRESENT');
+  if (batch.projectId !== draft.projectId || batch.batchSha256 !== draft.batchSha256 || batch.directionSha256 !== draft.directionSha256) {
+    throw new Error('PRODUCTION_STORE_DRAFT_BATCH_BINDING_MISMATCH');
+  }
+  const file = revisionFile(paths, draft.revision, draft.draftRevisionSha256);
   const write = writeImmutable(file, draft);
   return Object.freeze({
     schema: 'axm.code.production-store-receipt.v1',
@@ -155,7 +166,7 @@ function putDraftRevision({ root, draft } = {}) {
 function selectActiveDraftRevision({ root, draft, actorClass = 'UNKNOWN' } = {}) {
   if (!draft || draft.schema !== 'axm.code.production-draft-revision.v1') throw new Error('PRODUCTION_STORE_DRAFT_INVALID');
   const paths = layout(root, draft.projectId, draft.batchSha256, draft.draftId);
-  const expected = path.join(paths.revisions, `${String(draft.revision).padStart(6, '0')}-${draft.draftRevisionSha256}.json`);
+  const expected = revisionFile(paths, draft.revision, draft.draftRevisionSha256);
   if (!readJson(expected)) throw new Error('PRODUCTION_STORE_DRAFT_REVISION_NOT_PRESENT');
   const pointer = {
     schema: 'axm.code.active-production-draft-revision.v1',
@@ -181,10 +192,37 @@ function selectActiveDraftRevision({ root, draft, actorClass = 'UNKNOWN' } = {})
   });
 }
 
+function selectionIntegrity({ root, selection } = {}) {
+  if (!selection || selection.schema !== 'axm.code.production-draft-selection.v1') {
+    return Object.freeze({ result: 'NO_SELECTION', authority: 'NONE' });
+  }
+  const paths = layout(root, selection.projectId, selection.batchSha256, selection.draftId);
+  const batch = readJson(paths.batchFile);
+  if (!batch) return Object.freeze({ result: 'SELECTION_BATCH_MISSING', authority: 'NONE' });
+  if (!Number.isInteger(selection.revision) || selection.revision < 1) return Object.freeze({ result: 'SELECTION_REVISION_IDENTITY_MISSING', authority: 'NONE' });
+  const file = revisionFile(paths, selection.revision, selection.draftRevisionSha256);
+  const revision = readJson(file);
+  if (!revision) return Object.freeze({ result: 'SELECTION_REVISION_MISSING', authority: 'NONE' });
+  if (revision.batchSha256 !== selection.batchSha256 || revision.draftId !== selection.draftId || revision.draftRevisionSha256 !== selection.draftRevisionSha256) {
+    return Object.freeze({ result: 'SELECTION_REVISION_BINDING_MISMATCH', authority: 'NONE' });
+  }
+  return Object.freeze({
+    result: 'SELECTION_REFERENCE_CURRENT',
+    batchSha256: selection.batchSha256,
+    draftId: selection.draftId,
+    revision: selection.revision,
+    draftRevisionSha256: selection.draftRevisionSha256,
+    truth: { referenceResolutionIsNotPromotion: true, referenceResolutionIsNotCorrectnessProof: true },
+    authority: 'NONE'
+  });
+}
+
 function putSelection({ root, selection } = {}) {
   if (!selection || selection.schema !== 'axm.code.production-draft-selection.v1' || selection.result !== 'DRAFT_SELECTED_NOT_PROMOTED') throw new Error('PRODUCTION_STORE_SELECTION_INVALID');
+  const integrity = selectionIntegrity({ root, selection });
+  if (integrity.result !== 'SELECTION_REFERENCE_CURRENT') throw new Error(`PRODUCTION_STORE_${integrity.result}`);
   const paths = layout(root, selection.projectId, selection.batchSha256);
-  const value = { ...selection, truth: { ...selection.truth, storedSelectionIsNotPromotion: true } };
+  const value = { ...selection, truth: { ...selection.truth, storedSelectionIsNotPromotion: true, selectedRevisionResolvedBeforeWrite: true } };
   const write = writeAtomic(paths.selectionFile, value);
   return Object.freeze({
     schema: 'axm.code.production-store-receipt.v1',
@@ -192,6 +230,7 @@ function putSelection({ root, selection } = {}) {
     projectId: selection.projectId,
     batchSha256: selection.batchSha256,
     relativePath: path.relative(paths.root, paths.selectionFile).split(path.sep).join('/'),
+    selectionIntegrity: integrity.result,
     ...write,
     authority: 'SCOPED_LOCAL_STATE_ONLY'
   });
@@ -216,20 +255,25 @@ function readBatch({ root, projectId, batchSha256 } = {}) {
     }
   }
   const selection = readJson(paths.selectionFile);
+  const integrity = selection ? selectionIntegrity({ root, selection }) : { result: 'NO_SELECTION' };
   return Object.freeze({
     schema: 'axm.code.production-store-read.v1',
-    version: '1.0.0',
-    result: 'PRODUCTION_BATCH_STATE_READY',
+    version: '1.1.0',
+    result: integrity.result.startsWith('SELECTION_') && integrity.result !== 'SELECTION_REFERENCE_CURRENT'
+      ? 'PRODUCTION_BATCH_STATE_READY_WITH_BROKEN_SELECTION_REFERENCE'
+      : 'PRODUCTION_BATCH_STATE_READY',
     projectId: batch.projectId,
     batch,
     drafts,
     selection,
+    selectionIntegrity: integrity,
     truth: {
       readScope: 'OWN_WORK_CONTEXT_PRODUCTION_STATE_ONLY',
       sourceWorkspaceRead: false,
       rawSourceStored: false,
       immutableDraftRevisions: true,
-      activeRevisionPointersAreNotPromotion: true
+      activeRevisionPointersAreNotPromotion: true,
+      selectionPointerMustResolveExactRevision: true
     },
     authority: 'SCOPED_LOCAL_STATE_ONLY'
   });
@@ -252,6 +296,7 @@ function storeDescriptor(projectId) {
       rawSourceStored: false,
       batchAndRevisionObjectsImmutable: true,
       pointersMutableAndRebuildable: true,
+      selectionPointersReferentiallyChecked: true,
       arbitraryFilesystemAccess: false
     },
     authority: 'SCOPED_LOCAL_STATE_ONLY'
@@ -263,6 +308,7 @@ module.exports = {
   putBatch,
   putDraftRevision,
   selectActiveDraftRevision,
+  selectionIntegrity,
   putSelection,
   readBatch,
   storeDescriptor
