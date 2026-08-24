@@ -430,3 +430,31 @@ then run:
 node shared/code-capability-fabric/selftest-code-specialist-build-profile-registry-v1.js
 node shared/code-capability-fabric/selftest-code-specialist-capability-builder-v1.js
 ```
+
+## 102-organ Creation Session Planner
+
+The additive v2.12 `TEST` rung connects the stacked PR #50–#61 Creation Fabric
+into one deterministic planning call. A caller supplies one exact goal, an
+explicit primary language, explicit role/language bindings, bounded observation
+data, draft count, variant axes, and finite production ceilings. A separate
+four-root technical record must bind the exact request bytes and contain PASS for
+Truth, Agency / non-domination, Continuity, and Wisdom over speed.
+
+Only then does the planner compose the existing language organ, grammar profile,
+specialist eye, discipline/template direction, machine-cheatcode guidance,
+route/prebuild twin, machine keyboard, admission policy, production draft slots,
+budget, Build Window state, and Work Context card. All 102 organs remain
+available as alternatives, but the planner never silently chooses one.
+
+The result contains planning records and empty editable draft slots. It generates
+no source, calls no provider, executes no candidate or tool, reads or mutates no
+workspace, installs nothing, selects no winner, and cannot merge, promote, or
+change CANON. Renderer, developer-relationship evidence, reasoning-trace review,
+enforced sandbox execution, candidate admission, and integration remain typed
+later seams with their own evidence and authority.
+
+Run:
+
+```powershell
+node shared/code-capability-fabric/language-organs/selftest-code-creation-session-planner.js
+```
