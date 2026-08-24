@@ -33,6 +33,10 @@ jobs:
     steps:
       - name: Check out exact review source
         uses: actions/checkout@v4
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -40,9 +44,13 @@ jobs:
       - name: Check registry syntax
         run: node --check shared/code-capability-fabric/language-organs/registry.js
       - name: Refuse generated grammar-profile drift
-        run: python3 shared/code-capability-fabric/language-organs/build-grammar-profiles.py --check
+        run: python shared/code-capability-fabric/language-organs/build-grammar-profiles.py --check
       - name: Verify 102 grammar-specific profiles and main planner bindings
         run: node shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js
+      - name: Refuse generated specialist-eye drift
+        run: python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --check
+      - name: Verify human-developer lens, 102 specialist eyes and code-native discovery seam
+        run: node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
       - name: Run core organ contract test
         run: node shared/code-capability-fabric/language-organs/selftest.js
       - name: Run adversarial routing and snapshot test
