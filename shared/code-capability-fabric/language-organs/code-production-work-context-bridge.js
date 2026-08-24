@@ -14,6 +14,36 @@ function hash(v) {
   return crypto.createHash('sha256').update(canon(v)).digest('hex');
 }
 
+function normalizeBudgetStatus(raw, batch) {
+  if (raw == null) return null;
+  if (
+    !raw ||
+    raw.schema !== 'axm.code.production-budget-status.v1' ||
+    !['PRODUCTION_WORK_WITHIN_BUDGET', 'PRODUCTION_WORK_HELD'].includes(raw.result) ||
+    raw.batchSha256 !== batch.batchSha256 ||
+    !raw.budgetStatusSha256
+  ) {
+    return Object.freeze({
+      result: 'PRODUCTION_BUDGET_STATUS_INVALID_OR_FOREIGN',
+      authority: 'NONE'
+    });
+  }
+  return Object.freeze({
+    result: raw.result,
+    budgetStatusSha256: raw.budgetStatusSha256,
+    budgetSha256: raw.budgetSha256 || null,
+    directionStatus: raw.directionStatus || null,
+    limits: raw.limits || {},
+    stopConditions: Array.isArray(raw.stopConditions) ? raw.stopConditions : [],
+    truth: {
+      compactDerivedStatusOnly: true,
+      withinBudgetIsNotExecutionPermission: true,
+      heldDoesNotDeleteDrafts: true
+    },
+    authority: 'NONE'
+  });
+}
+
 function buildProductionContextCard({
   direction,
   progressEvents = [],
@@ -24,7 +54,8 @@ function buildProductionContextCard({
   maxScratch = 8,
   batch = null,
   drafts = [],
-  selection = null
+  selection = null,
+  budgetStatus = null
 } = {}) {
   const card = dock.buildContextCard({
     direction,
@@ -67,7 +98,10 @@ function buildProductionContextCard({
 
   const summary = production.summarizeProduction({ batch, drafts, selection, direction });
   const stale = summary.directionStatus === 'PRODUCTION_BATCH_DIRECTION_STALE';
-  const warning = !['PRODUCTION_BATCH_DIRECTION_CURRENT', 'PRODUCTION_BATCH_DIRECTION_STALE'].includes(summary.directionStatus);
+  const budget = normalizeBudgetStatus(budgetStatus, batch);
+  const budgetInvalid = budget && budget.result === 'PRODUCTION_BUDGET_STATUS_INVALID_OR_FOREIGN';
+  const budgetHeld = budget && budget.result === 'PRODUCTION_WORK_HELD';
+  const warning = !['PRODUCTION_BATCH_DIRECTION_CURRENT', 'PRODUCTION_BATCH_DIRECTION_STALE'].includes(summary.directionStatus) || budgetInvalid;
   const core = {
     schema: 'axm.code.production-work-context-card.v1',
     version: '1.0.0',
@@ -75,6 +109,8 @@ function buildProductionContextCard({
       ? 'CONTEXT_CARD_READY_WITH_STALE_PRODUCTION_BATCH'
       : warning
         ? 'CONTEXT_CARD_READY_WITH_PRODUCTION_WARNING'
+        : budgetHeld
+          ? 'CONTEXT_CARD_READY_WITH_PRODUCTION_HELD'
         : 'CONTEXT_CARD_READY_WITH_PRODUCTION',
     projectId: direction.projectId,
     directionSha256: direction.directionSha256,
@@ -88,7 +124,8 @@ function buildProductionContextCard({
       draftCount: summary.draftCount || 0,
       latestDrafts: summary.latestDrafts || [],
       selected: summary.selected || null,
-      duplicateProgramCandidates: summary.duplicateProgramCandidates || []
+      duplicateProgramCandidates: summary.duplicateProgramCandidates || [],
+      budget
     },
     truth: {
       derivedCacheOnly: true,
@@ -96,6 +133,8 @@ function buildProductionContextCard({
       staleBatchDoesNotDisappear: true,
       staleBatchMustNotBeSilentlyTreatedAsCurrent: true,
       selectedDraftIsNotPromoted: true,
+      withinBudgetIsNotExecutionPermission: true,
+      heldBudgetDoesNotDeleteDrafts: true,
       noRanking: true,
       noWorkspaceMutation: true
     },
@@ -121,6 +160,16 @@ function verifyProductionContextCard({ card, direction } = {}) {
       projectId: direction.projectId,
       directionSha256: direction.directionSha256,
       batchSha256: card.production.batchSha256,
+      authority: 'NONE'
+    });
+  }
+  if (card.production && card.production.budget && card.production.budget.result === 'PRODUCTION_WORK_HELD') {
+    return Object.freeze({
+      result: 'PRODUCTION_CONTEXT_CARD_CURRENT_WORK_HELD',
+      projectId: direction.projectId,
+      directionSha256: direction.directionSha256,
+      batchSha256: card.production.batchSha256,
+      budgetStatusSha256: card.production.budget.budgetStatusSha256,
       authority: 'NONE'
     });
   }

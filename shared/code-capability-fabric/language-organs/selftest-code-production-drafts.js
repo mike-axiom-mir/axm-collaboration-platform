@@ -9,6 +9,7 @@ const dock = require('./code-work-context-dock.js');
 const production = require('./code-production-draft-fabric.js');
 const productionStore = require('./code-production-draft-store.js');
 const productionContext = require('./code-production-work-context-bridge.js');
+const productionBudget = require('./code-production-budget.js');
 const keyboard = require('./machine-code-keyboard-router.js');
 const admission = require('./code-candidate-admission-ground.js');
 
@@ -284,16 +285,64 @@ assert.strictEqual(summary.directionStatus, 'PRODUCTION_BATCH_DIRECTION_CURRENT'
 assert.strictEqual(summary.latestDrafts.length, 4);
 assert.strictEqual(summary.selected.draftRevisionSha256, draft1v5.draftRevisionSha256);
 
+const budget = productionBudget.createBudget({
+  batch,
+  ceilings: {
+    maxTotalDraftRevisions: 16,
+    maxRevisionsPerDraft: 8,
+    maxArtifactBuilds: 8,
+    maxAdmissionChecks: 8,
+    maxQuickTests: 8,
+    maxHeavyVerifierRuns: 1
+  },
+  label: 'production-hot-context-budget'
+});
+const budgetStatus = productionBudget.assessBudget({
+  batch,
+  budget,
+  drafts: [draft1v5, draft2v2, ...set.drafts.slice(2)],
+  currentDirection: direction
+});
+assert.strictEqual(budgetStatus.result, 'PRODUCTION_WORK_WITHIN_BUDGET');
+
 const hotCard = productionContext.buildProductionContextCard({
   direction,
   batch,
   drafts: [draft1v5, draft2v2, ...set.drafts.slice(2)],
-  selection
+  selection,
+  budgetStatus
 });
 assert.strictEqual(hotCard.result, 'CONTEXT_CARD_READY_WITH_PRODUCTION');
 assert.strictEqual(hotCard.production.draftCount, 4);
 assert.strictEqual(hotCard.production.selected.draftRevisionSha256, draft1v5.draftRevisionSha256);
+assert.strictEqual(hotCard.production.budget.result, 'PRODUCTION_WORK_WITHIN_BUDGET');
 assert.strictEqual(productionContext.verifyProductionContextCard({ card: hotCard, direction }).result, 'PRODUCTION_CONTEXT_CARD_CURRENT');
+
+const heavyVerifierReceipt = productionBudget.createWorkReceipt({
+  batch,
+  kind: 'HEAVY_VERIFIER',
+  draftId: draft1v5.draftId,
+  draftRevisionSha256: draft1v5.draftRevisionSha256,
+  evidenceDigest: 'sha256:production-heavy-verifier-fixture',
+  outcome: 'PASS'
+});
+const heldBudgetStatus = productionBudget.assessBudget({
+  batch,
+  budget,
+  drafts: [draft1v5, draft2v2, ...set.drafts.slice(2)],
+  workReceipts: [heavyVerifierReceipt],
+  currentDirection: direction
+});
+assert.strictEqual(heldBudgetStatus.result, 'PRODUCTION_WORK_HELD');
+const heldHotCard = productionContext.buildProductionContextCard({
+  direction,
+  batch,
+  drafts: [draft1v5, draft2v2, ...set.drafts.slice(2)],
+  selection,
+  budgetStatus: heldBudgetStatus
+});
+assert.strictEqual(heldHotCard.result, 'CONTEXT_CARD_READY_WITH_PRODUCTION_HELD');
+assert.strictEqual(productionContext.verifyProductionContextCard({ card: heldHotCard, direction }).result, 'PRODUCTION_CONTEXT_CARD_CURRENT_WORK_HELD');
 
 const staleHotCard = productionContext.buildProductionContextCard({
   direction: directionV2,
@@ -381,6 +430,8 @@ console.log(JSON.stringify({
   selectionIntegrity: 'SELECTION_REFERENCE_CURRENT',
   productionContext: hotCard.result,
   staleProductionContext: staleHotCard.result,
+  productionBudget: budgetStatus.result,
+  heldProductionBudgetContext: heldHotCard.result,
   storeRootClass: 'state/code-work-context/<project-id>/production',
   snapshotSha256: snapshot.snapshotSha256,
   authority: snapshot.authority
