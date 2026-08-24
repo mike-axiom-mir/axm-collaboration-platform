@@ -1,0 +1,103 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-work-context-dock",
+  "version": "v1.0",
+  "status": "TEST",
+  "provides": [
+    "axm.code.work-direction.v1",
+    "axm.code.work-progress-event.v1",
+    "axm.code.work-progress-snapshot.v1",
+    "axm.code.work-scratch-note.v1",
+    "axm.code.work-scratch-view.v1",
+    "axm.code.work-context-card.v1",
+    "axm.code.work-context-store-intent.v1",
+    "axm.code.work-context-local-store-layout.v1",
+    "axm.code.work-context-store-receipt.v1",
+    "axm.code.work-context-read.v1",
+    "axm.code.work-context-handoff-candidate.v1",
+    "axm.code.work-context-dock-snapshot.v1"
+  ],
+  "consumes": [
+    "caller-supplied directional prompt / roadmap / step plan",
+    "caller-supplied plan revision selection",
+    "caller- or machine-supplied progress events",
+    "caller- or machine-supplied scratch notes",
+    "optional artifact Build Window state",
+    "optional Developer Relationship Plane impact report",
+    "optional explicit local work-context state root",
+    "optional Deterministic Continuation Capsule adapter"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.code.work-context-card.v1",
+      "axm.code.work-context-store-intent.v1",
+      "axm.code.work-context-handoff-candidate.v1"
+    ],
+    "accepts": [
+      "directional prompt / roadmap / step plan",
+      "progress events",
+      "machine or AI scratch notes",
+      "build-window digest/status state",
+      "change-impact digest/status state"
+    ]
+  },
+  "localStore": {
+    "recommendedRoot": "state/code-work-context/<project-id>",
+    "writes": [
+      "direction/revisions/<direction-sha256>.json (immutable)",
+      "direction/active.json (explicit active-pointer selection)",
+      "progress/events/<sequence>-<event-sha256>.json (immutable)",
+      "scratch/notes/<sequence>-<note-sha256>.json (immutable)",
+      "hot/context-card.json (derived rebuildable cache)"
+    ],
+    "readScope": "own work-context state root only",
+    "sourceWorkspaceRead": false,
+    "sourceWorkspaceWrite": false
+  },
+  "boundaries": {
+    "refuses": [
+      "scratch-note-as-fact",
+      "scratch-note-as-plan-decision",
+      "scratch-note-as-admission-evidence",
+      "machine-note-as-user-instruction",
+      "machine-plan-as-user-approved-plan-without-explicit-selection",
+      "progress-event-as-direction-rewrite",
+      "done-step-as-correctness-proof",
+      "context-card-focus-as-execution-authority",
+      "stale-context-card-as-current-direction",
+      "automatic-direction-switch",
+      "automatic-scratch-promotion",
+      "automatic-handoff-export",
+      "automatic-long-term-memory-promotion",
+      "raw-source-auto-copy-into-scratch",
+      "credential-or-secret-vault-claim",
+      "arbitrary-filesystem-read",
+      "arbitrary-filesystem-write",
+      "source-tree-mutation",
+      "tool-execution",
+      "network-use",
+      "dependency-installation",
+      "deployment",
+      "promotion",
+      "merge",
+      "canon-change"
+    ]
+  },
+  "truth": {
+    "directionRevisionsImmutable": true,
+    "progressSeparateFromDirection": true,
+    "scratchAppendOnlyAndNonAuthoritative": true,
+    "scratchUserInspectable": true,
+    "hotContextCardDerivedAndRebuildable": true,
+    "reentryRejectsStaleDirectionCard": true,
+    "selectedScratchCanBecomeHandoffCandidateButNotAutomaticMemory": true,
+    "storageNearWorkerIsLocalScopedStateNotSource": true
+  },
+  "lifecycle": {
+    "state_owner": "scoped-local-work-context-store",
+    "reload": "rebuild-hot-card-from-active-direction-progress-scratch",
+    "disconnect": "retain-local-state",
+    "cleanup": "explicit"
+  }
+}
