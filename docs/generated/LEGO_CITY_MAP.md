@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `be3bc14d4aeb4fd6d01aedde86dbfed5ca8914b5787e4199100418360bdad89b`
+Semantic graph digest: `64a3265744ebff8a007f3244e8507d86266c0e2771f410a99c7e84569779b7e4`
 
-Blocks: 304 · Capabilities: 2995 · Schemas: 914 · Unresolved edges: 2000
+Blocks: 304 · Capabilities: 3006 · Schemas: 914 · Unresolved edges: 2007
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -220,7 +220,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/baseline-simulation-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 1 selftest(s) |
 | shared/city-gates | BRIDGE (DECLARED) | EXPERIMENTAL | NETWORK_WRITE, PUBLIC_RELEASE | 5 | 3 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
-| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 15 | 8 | 35 selftest(s) |
+| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 22 | 12 | 35 selftest(s) |
 | shared/compute-substrate-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 4 | 1 selftest(s) |
 | shared/deterministic-animation-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 3 | 2 selftest(s) |
 | shared/deterministic-audio-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 2 selftest(s) |
@@ -1767,9 +1767,13 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `filesystem:explicit-workshop-root` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `git:local-source-commit` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `json-schema:draft-2020-12` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.human-developer-perspective.v1 review heuristics` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-grammar-profile.v1 profiles` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-organ-families.v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-organ.v1 descriptors` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-specialist-eye.v1 profiles` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied code build observations` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied declared development pressures` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `exact descriptor digests` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `explicit request authority policy` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `host-observed availability` (UNKNOWN)
@@ -1778,6 +1782,9 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-grammar-specific-plan/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-organ-plan/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-organ-snapshot/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-specialist-eye-plan/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-specialist-eye-snapshot/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-native-discovery-seam-report/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.compute-hardware-reference/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.compute-substrate-intake/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.research-observation/v1` (UNKNOWN)

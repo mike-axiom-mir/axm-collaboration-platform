@@ -1,7 +1,7 @@
 {
   "schema": "axm.twin-surface/v1",
-  "graphDigest": "be3bc14d4aeb4fd6d01aedde86dbfed5ca8914b5787e4199100418360bdad89b",
-  "schemaRegistryDigest": "05c5364a5891b6acda1bc1efad592c0945fe411855a28002e64c5b0bcf4e152d",
+  "graphDigest": "64a3265744ebff8a007f3244e8507d86266c0e2771f410a99c7e84569779b7e4",
+  "schemaRegistryDigest": "655953df5a6d3ff54fec3f213a80c6e061c5d0672af288ca5e05aef4aa21fb18",
   "machinePackets": [
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -6783,14 +6783,16 @@
     {
       "schema": "axm.machine-capability-packet/v1",
       "blockId": "shared/code-capability-fabric",
-      "blockDigest": "343bb0b945639994da88651e898a3d28dcfb687d702ea7459324961c59c6c5fe",
+      "blockDigest": "ecf7860ccc5698b631050dd6da953400647bbde9e9b6c8f53daca2e7559b2285",
       "kind": "ORGAN",
       "classificationState": "INFERRED_UNCONFIRMED",
       "status": "EXPERIMENTAL",
       "capabilities": [
+        "axm.code-build-observation/v1",
         "axm.code-capability-provider/v1",
         "axm.code-capability-request/v1",
         "axm.code-capability-route-plan/v1",
+        "axm.code-human-developer-perspective/v1",
         "axm.code-language-grammar-profile-snapshot/v1",
         "axm.code-language-grammar-profile/v1",
         "axm.code-language-grammar-specific-plan/v1",
@@ -6800,14 +6802,23 @@
         "axm.code-language-organ-registry/v1",
         "axm.code-language-organ-signal-audit/v1",
         "axm.code-language-organ-snapshot/v1",
+        "axm.code-language-specialist-eye-plan/v1",
+        "axm.code-language-specialist-eye-registry/v1",
+        "axm.code-language-specialist-eye-snapshot/v1",
+        "axm.code-native-discovery-seam-report/v1",
+        "axm.code-native-discovery-seam/v1",
         "axm.code-provider-host-observation/v1",
         "code.capability.plan",
         "code.capability.plan.verify"
       ],
       "consumes": [
+        "axm.code.human-developer-perspective.v1 review heuristics",
         "axm.code.language-grammar-profile.v1 profiles",
         "axm.code.language-organ-families.v1",
         "axm.code.language-organ.v1 descriptors",
+        "axm.code.language-specialist-eye.v1 profiles",
+        "caller-supplied code build observations",
+        "caller-supplied declared development pressures",
         "exact descriptor digests",
         "explicit request authority policy",
         "host-observed availability",
@@ -6820,7 +6831,7 @@
       "unknownEffectDeclarations": [],
       "authorityGrants": [],
       "risk": "LOW",
-      "packetDigest": "ac0867fbc398080fdc3f5387a835a0d159bc6c6a314d373381d2d494d2fd99a1"
+      "packetDigest": "60ccec9d6715f8e748005bda3220d059bc2bd5982490d64bffba9d3ffb9ea7ee"
     },
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -12628,14 +12639,14 @@
     {
       "schema": "axm.effect-request-template/v1",
       "blockId": "shared/code-capability-fabric",
-      "blockDigest": "343bb0b945639994da88651e898a3d28dcfb687d702ea7459324961c59c6c5fe",
-      "capabilityPacketDigest": "ac0867fbc398080fdc3f5387a835a0d159bc6c6a314d373381d2d494d2fd99a1",
+      "blockDigest": "ecf7860ccc5698b631050dd6da953400647bbde9e9b6c8f53daca2e7559b2285",
+      "capabilityPacketDigest": "60ccec9d6715f8e748005bda3220d059bc2bd5982490d64bffba9d3ffb9ea7ee",
       "effectClass": "NONE",
       "requiresExactTargetDigest": true,
       "requiresExactScope": true,
       "requiresAuthorityDecision": false,
       "grantsAuthority": false,
-      "packetDigest": "eb748866f93827540ca503a4eacdda9c42dac5c7ce99bd9a280edf9a6a2fee9f"
+      "packetDigest": "2d261dd9f8e4dc20158885d79dca899d7299a6bb192f0e9a170b77c042509c6e"
     },
     {
       "schema": "axm.effect-request-template/v1",
@@ -19419,11 +19430,13 @@
       "name": "shared/code-capability-fabric",
       "status": "EXPERIMENTAL",
       "kind": "ORGAN",
-      "beginnerSummary": "15 declared capability(s); 1 effect class(es); risk LOW",
+      "beginnerSummary": "22 declared capability(s); 1 effect class(es); risk LOW",
       "capabilities": [
+        "axm.code-build-observation/v1",
         "axm.code-capability-provider/v1",
         "axm.code-capability-request/v1",
         "axm.code-capability-route-plan/v1",
+        "axm.code-human-developer-perspective/v1",
         "axm.code-language-grammar-profile-snapshot/v1",
         "axm.code-language-grammar-profile/v1",
         "axm.code-language-grammar-specific-plan/v1",
@@ -19433,6 +19446,11 @@
         "axm.code-language-organ-registry/v1",
         "axm.code-language-organ-signal-audit/v1",
         "axm.code-language-organ-snapshot/v1",
+        "axm.code-language-specialist-eye-plan/v1",
+        "axm.code-language-specialist-eye-registry/v1",
+        "axm.code-language-specialist-eye-snapshot/v1",
+        "axm.code-native-discovery-seam-report/v1",
+        "axm.code-native-discovery-seam/v1",
         "axm.code-provider-host-observation/v1",
         "code.capability.plan",
         "code.capability.plan.verify"
@@ -19441,9 +19459,9 @@
         "NONE"
       ],
       "risk": "LOW",
-      "machinePacketDigest": "ac0867fbc398080fdc3f5387a835a0d159bc6c6a314d373381d2d494d2fd99a1",
+      "machinePacketDigest": "60ccec9d6715f8e748005bda3220d059bc2bd5982490d64bffba9d3ffb9ea7ee",
       "effectPacketDigests": [
-        "eb748866f93827540ca503a4eacdda9c42dac5c7ce99bd9a280edf9a6a2fee9f"
+        "2d261dd9f8e4dc20158885d79dca899d7299a6bb192f0e9a170b77c042509c6e"
       ],
       "safe": null,
       "grantsAuthority": false
@@ -22043,5 +22061,5 @@
     "beginnerViewPreservesCapabilities": true,
     "beginnerViewPreservesRisk": true
   },
-  "twinDigest": "9602ac5ecff412a10dd1041d6e12665da3c8f4ac55f31cba6e785a435aa463ff"
+  "twinDigest": "fafd75b842aeb31dc6cde5bfb8aa4827810f00d2fecc7f28fd0b2bc04a87a3c7"
 }
