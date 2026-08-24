@@ -21,6 +21,8 @@ assert.strictEqual(r.detect({filePath:'dockerfile'}).organ.organId,'code.organ.d
 assert.strictEqual(r.detect({filePath:'.github\\workflows\\CI.YML'}).organ.organId,'code.organ.github-actions.v1');
 assert.strictEqual(r.detect({filePath:'probe',firstLine:'#!/usr/bin/env -S python3 -u'}).organ.organId,'code.organ.python.v1');
 assert.strictEqual(r.detect({filePath:'x.schema.json'}).organ.organId,'code.organ.json-schema.v1');
+assert.strictEqual(r.detect({filePath:'app/templates/config.yml'}).organ.organId,'code.organ.yaml.v1');
+assert.strictEqual(r.detect({filePath:'charts/app/templates/deploy.yml'}).organ.organId,'code.organ.helm-templates.v1');
 assert.strictEqual(r.detect({filePath:'src/main.py',preferredOrganId:'code.organ.rust.v1'}).result,'PREFERRED_ORGAN_NOT_CANDIDATE');
 assert.strictEqual(r.detect({filePath:'src/main.py',preferredOrganId:'code.organ.does-not-exist.v1'}).result,'UNKNOWN_PREFERRED_ORGAN');
 assert.strictEqual(r.plan({organId:'code.organ.python.v1',requestedStages:'parse'}).result,'INVALID_STAGES');
