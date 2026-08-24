@@ -5,11 +5,13 @@ on:
     paths:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
+      - "tools/grammar-glass/**"
       - ".github/workflows/code-work-context-dock-gate.yml"
   push:
     paths:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
+      - "tools/grammar-glass/**"
       - ".github/workflows/code-work-context-dock-gate.yml"
   workflow_dispatch:
 
@@ -46,6 +48,13 @@ jobs:
           node --check shared/code-capability-fabric/language-organs/selftest-code-production-budget.js
           node --check shared/code-capability-fabric/language-organs/selftest-code-built-software-experiment-sandbox.js
           node --check shared/code-capability-fabric/language-organs/selftest-code-creation-reasoning-seam-probe.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-base.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-cycle.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-observation.js
+          node --check shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass.js
+          python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass.contract.json >/dev/null
       - name: Prove direction, scratch, hot card and scoped local store
         run: node shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js
       - name: Prove bounded editable production draft batches
@@ -56,6 +65,19 @@ jobs:
         run: node shared/code-capability-fabric/language-organs/selftest-code-built-software-experiment-sandbox.js
       - name: Probe code-creation reasoning seams without authority
         run: node shared/code-capability-fabric/language-organs/selftest-code-creation-reasoning-seam-probe.js
+      - name: Prove Grammar Glass Phase 1 cross-grammar influence without authority
+        run: |
+          node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass.js
+          visual_dir="$(mktemp -d)"
+          node shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js \
+            --seed 6f2d8b4abef8ebf661925d5ce9d1aeea05b584055e8bdc96b9f857fd66d65e0f \
+            --day phase-1-gate-fixture \
+            --ticks 4 \
+            --stars 4 > "$visual_dir/grammar-glass-snapshot.json"
+          test -s "$visual_dir/grammar-glass-snapshot.json"
+          python -m json.tool "$visual_dir/grammar-glass-snapshot.json" >/dev/null
+          grep -q 'CROSS-GRAMMAR INFLUENCE' tools/grammar-glass/index.html
+          grep -q 'Load snapshot JSON' tools/grammar-glass/index.html
       - name: Preserve developer relationship plane and build window
         run: |
           node shared/code-capability-fabric/language-organs/selftest-developer-relationship-plane.js
