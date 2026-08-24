@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "code-capability-fabric",
-  "version": "v0.11",
+  "version": "v0.12",
   "status": "TEST",
   "provides": [
     "axm.code-capability-provider/v1",
@@ -73,7 +73,18 @@
     "axm.code.quick-test-observation.v1",
     "axm.code.build-window-snapshot.v1",
     "axm.code.build-window-popup-safety.v1",
-    "axm.code.build-window-quick-test-intent.v1"
+    "axm.code.build-window-quick-test-intent.v1",
+    "axm.code.developer-substrate-atlas.v1",
+    "axm.code.developer-relationship-graph.v1",
+    "axm.code.change-impact-report.v1",
+    "axm.code.reanalysis-plan.v1",
+    "axm.code.diagnostic-finding.v1",
+    "axm.code.diagnostic-batch.v1",
+    "axm.code.action-identity.v1",
+    "axm.code.action-cache-decision.v1",
+    "axm.code.dependency-diff.v1",
+    "axm.code.impact-preview.v1",
+    "axm.code.developer-substrate-snapshot.v1"
   ],
   "consumes": [
     "provider descriptors",
@@ -118,7 +129,18 @@
     "caller-supplied explicit quick-test action",
     "optional sandbox adapter accepting axm.code.quick-test-candidate/v1",
     "axm.disposable-candidate-sandbox-session/v1 runtime observation",
-    "axm.sandbox-static-evidence/v1 runtime evidence"
+    "axm.sandbox-static-evidence/v1 runtime evidence",
+    "caller-supplied developer relationship nodes and edges",
+    "caller-supplied changed entity identifiers",
+    "caller-supplied build action identity digests",
+    "caller-supplied before/after dependency snapshots",
+    "LSP diagnostic evidence",
+    "SARIF 2.1.0 analysis evidence",
+    "optional AXM dependency declaration map evidence",
+    "optional AXM diagnostic evidence",
+    "optional build-system/project graph evidence",
+    "optional test/coverage relationship evidence",
+    "optional data-flow/path evidence"
   ],
   "permissions": [],
   "handoffs": {
@@ -164,7 +186,14 @@
       "axm.code.quick-test-request.v1",
       "axm.code.quick-test-observation.v1",
       "axm.code.build-window-snapshot.v1",
-      "axm.code.build-window-quick-test-intent.v1"
+      "axm.code.build-window-quick-test-intent.v1",
+      "axm.code.developer-relationship-graph.v1",
+      "axm.code.change-impact-report.v1",
+      "axm.code.reanalysis-plan.v1",
+      "axm.code.diagnostic-batch.v1",
+      "axm.code.action-cache-decision.v1",
+      "axm.code.dependency-diff.v1",
+      "axm.code.developer-substrate-snapshot.v1"
     ],
     "accepts": [
       "axm.code-capability-request/v1",
@@ -201,7 +230,12 @@
       "caller-supplied artifact digest and visual-state metadata",
       "caller-supplied quick-test runtime class",
       "caller-supplied generic-code sandbox adapter descriptor",
-      "caller-supplied sandbox session and evidence observation"
+      "caller-supplied sandbox session and evidence observation",
+      "caller-supplied developer relationship observation",
+      "caller-supplied changed entity ids",
+      "caller-supplied LSP diagnostics",
+      "caller-supplied SARIF 2.1.0 results",
+      "caller-supplied build/package/test/data-flow evidence"
     ]
   },
   "boundaries": {
@@ -316,7 +350,24 @@
       "quick-test-pass-as-promotion",
       "runtime-failure-as-in-place-source-rewrite",
       "build-window-popup-as-workspace-authority",
-      "build-window-popup-as-execution-authority"
+      "build-window-popup-as-execution-authority",
+      "developer-relationship-edge-as-semantic-correctness-proof",
+      "missing-developer-relationship-edge-as-no-relationship-proof",
+      "partial-developer-graph-as-complete-impact-proof",
+      "affected-node-as-broken-code-proof",
+      "unaffected-node-as-safe-code-proof",
+      "observed-code-cycle-as-defect-proof",
+      "diagnostic-finding-as-correctness-proof",
+      "no-diagnostic-as-bug-free-proof",
+      "data-flow-path-as-exploitability-proof",
+      "cache-identity-match-as-correct-output-proof",
+      "automatic-cache-read-or-write-from-developer-plane",
+      "automatic-build-or-test-execution-from-impact",
+      "dependency-delta-as-automatic-rejection",
+      "automatic-source-mutation-from-developer-plane",
+      "automatic-repair-from-developer-plane",
+      "automatic-admission-change-from-developer-plane",
+      "automatic-promotion-from-developer-plane"
     ]
   },
   "lifecycle": {
