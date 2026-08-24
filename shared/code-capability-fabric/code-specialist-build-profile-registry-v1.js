@@ -223,7 +223,7 @@ function normalizeCatalogCore(value) {
   const unique = (rows, label) => { if (new Set(rows).size !== rows.length) fail('catalog ' + label + ' must be unique'); };
   unique(profiles.map((row) => row.id), 'profile ids');
   unique(profiles.map((row) => row.mode), 'profile modes');
-  unique(profiles.flatMap((row) => row.languageIds.map((languageId) => row.specialistOrganRef.id + '|' + languageId)), 'specialist-language bindings');
+  unique(profiles.flatMap((row) => row.languageIds.map((languageId) => row.specialistOrganRef.id + '|' + languageId + '|' + row.capability.recipeRef.id + '|' + row.exampleArtifactId)), 'exact specialist-language-recipe-artifact bindings');
   profiles.forEach((profile) => {
     const assessment = assessProfile(profile);
     if (assessment.status !== 'READY_FOR_PROFILE_REGISTRY_REVIEW') fail('catalog profile is not ready: ' + profile.id + ' (' + assessment.holds.map((row) => row.code).join(',') + ')');

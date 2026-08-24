@@ -22,15 +22,16 @@ prospective active recipe, catalog, and builder-registry descriptors. It still
 writes none of them. A normal reviewed source diff and Workshop verification
 remain required.
 
-The registry now contains six active HAND builders and one active host-mediated
+The registry now contains eight active HAND builders and one active host-mediated
 SKILL builder. The bounded Python builder emits inert source and selftest bytes;
 this admission gate does not execute them. The closed-schema validator and
 portable evidence-review SKILL entered through this exact reviewed-merge route;
 their inactive Foundry packets
 and external receipts remain provenance, not activation surfaces. The closed
-object-contract adapter is now the one exact inactive review candidate. Its
-trusted builder/selftest receipt passes, but it deliberately stops at
-`AWAITING_SOURCE_REVIEW`; no activation or catalog write has occurred.
+object-contract adapter v1 remains the one exact inactive review candidate.
+Because the separately hardened v2 adapter now owns the active recipe id on
+this `TEST` branch, replaying v1 is held with `RECIPE_ID_ALREADY_ACTIVE` and
+projects no replacement recipe, catalog, registry, or activation effect.
 
 The gate cannot activate a recipe, install, register, stage, promote, mutate
 Foundation, or change CANON.

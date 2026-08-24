@@ -46,6 +46,9 @@ closed flat-object schemas plus explicit copy/rename/default/drop declarations.
 The review candidate refuses hidden loss, incomplete target coverage, narrowing
 copies, invalid defaults, undeclared fields, and resource excess. Its proof is
 deliberately structural: domain meaning and end-to-end fitness remain unproven.
+The packet remains immutable historical evidence. On the strict v2 Fabric
+`TEST` branch its recipe id is already active through a separately reviewed
+v2 builder, so admission replay is collision-held and cannot replace v2.
 
 Materialize that exact inactive packet with:
 

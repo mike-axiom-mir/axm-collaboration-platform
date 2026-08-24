@@ -19,11 +19,11 @@ function resealCandidate(candidate){
 function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
-  check(catalog.recipes.length===8,'reviewed catalog has one portable SKILL plus seven bounded HAND recipes including Python, strict JavaScript, CSS, and strict SVG source');
-  check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===7&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
+  check(catalog.recipes.length===9,'reviewed catalog has one portable SKILL plus eight bounded HAND recipes including the strict closed-object adapter');
+  check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===8&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.variants.some(function(variant){return variant.id===row.candidatePolicy.defaultVariantId;});}),'every reviewed recipe explicitly defaults to one named candidate variant');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
-  check(BuilderRegistry.activeIds().length===8&&BuilderRegistry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','modular builder registry keeps eight reviewed builders active and one exact adapter review candidate inactive');
+  check(BuilderRegistry.activeIds().length===9&&BuilderRegistry.activeIds().includes('closed-object-contract-adapter-v2')&&BuilderRegistry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','modular builder registry activates only the strict v2 adapter while retaining the exact historical v1 review candidate');
   check(catalog.recipes.every(function(row){const builder=BuilderRegistry.describe(row.builderId);return builder&&row.builderDigest===builder.implementationDigest;}),'every active recipe binds the exact modular builder digest');
 
   const packages={};
@@ -95,6 +95,14 @@ function main(){
   check(javascriptCompilation.generatedCodeExecuted===false&&javascriptCompilation.testsEmitted===true,'JavaScript compilation receipt distinguishes emitted tests from execution');
   const javascriptHidden=Fabric.clone(javascriptRecipe.exampleRequest);javascriptHidden.parameters.inputField='__proto__';const javascriptHiddenPlan=Fabric.planBuild(Fabric.sealRequest(javascriptHidden,true),catalog);
   check(javascriptHiddenPlan.status==='HELD'&&javascriptHiddenPlan.holds[0].code==='CONTRACT_HOLD','JavaScript unsafe field expansion is held before builder invocation');
+
+  const adapterRecipe=catalog.recipes.find(function(row){return row.id==='closed-object-contract-adapter';}),adapterPackage=packages[adapterRecipe.id],adapterSource=adapterPackage.files['capability.js'],adapterSelftest=adapterPackage.files['selftest.js'],adapterContract=JSON.parse(adapterPackage.files['modular-capability.contract.json']);
+  check(adapterRecipe.version==='0.2.0'&&adapterRecipe.builderId==='closed-object-contract-adapter-v2'&&adapterRecipe.builderDigest===BuilderRegistry.describe('closed-object-contract-adapter-v2').implementationDigest,'adapter recipe binds the exact strict v2 builder version and digest');
+  check(adapterContract.consumes.join(',')==='axm.example.legacy-player/v1'&&adapterContract.provides.join(',')==='axm.example.player-summary/v1','adapter contract byte-binds its exact source and target contracts');
+  check(adapterSource.includes('inspectRecord')&&adapterSource.includes('PROPERTY_LIMIT_EXCEEDED')&&adapterSource.includes('INPUT_BYTES_EXCEEDED')&&adapterSource.includes('OUTPUT_BYTES_EXCEEDED'),'adapter enforces closed records plus property, input-byte, and output-byte ceilings');
+  check(!adapterSource.includes('JSON.stringify(input)')&&!adapterSource.includes('JSON.stringify(output)')&&!/\bBuffer\b/.test(adapterSource),'adapter byte accounting does not delegate arbitrary records to host serialization or Buffer');
+  check(adapterSelftest.includes('getterRead')&&adapterSelftest.includes('const hidden=')&&adapterSelftest.includes('const symbolRecord=')&&adapterSelftest.includes('originalStringify')&&adapterSelftest.includes('originalBuffer'),'adapter emitted proof covers accessors, hidden and symbol fields, and hostile host serializer globals');
+  check(!/require\(['"](?:fs|node:fs|child_process|node:child_process|http|https|net|tls|dgram)['"]\)|\bfetch\s*\(|provider\.call|process\.(?:env|cwd)|Date\.now|Math\.random|new Function|\beval\s*\(/.test(adapterSource),'adapter source contains no filesystem, process, network, provider, environment, clock, randomness, or dynamic-code surface');
 
   const recipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),base=Fabric.sealRequest(recipe.exampleRequest,true),changedDraft=Fabric.clone(recipe.exampleRequest);changedDraft.parameters.defaultValue='different';const changed=Fabric.sealRequest(changedDraft,true);
   check(base.requestDigest!==changed.requestDigest,'semantic request change alters request digest');

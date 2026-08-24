@@ -71,11 +71,11 @@ through plan, compilation, candidate, module contract, and receipt.
   installs output, changes permissions, promotes material, touches Foundation,
   or changes CANON.
 
-The reviewed catalog contains seven executable `HAND` recipes—a closed JSON
+The reviewed catalog contains eight executable `HAND` recipes—a closed JSON
 Schema validator, a strict bounded JavaScript string-record transform, a static semantic HTML-page renderer,
 one bounded CSS token stylesheet, a strict text-only SVG status-badge creation
 hand, a Workshop Direction hand-request adapter, and one bounded Python record
-transform—plus one host-mediated portable `SKILL` for bounded evidence-first
+transform, plus a strict closed primitive-object contract adapter—alongside one host-mediated portable `SKILL` for bounded evidence-first
 capability review. The HTML renderer is source-reviewed on its review branch;
 shared use still requires Mike's merge decision and visual behavior remains
 unproven until a separate authorized browser run. The Python source and
@@ -90,6 +90,14 @@ emits one fresh declared string field and has no filesystem, process, provider,
 network, environment, clock, randomness, or lifecycle authority. The narrow
 trusted composition fixture proves this exact contract only; general
 JavaScript and browser behavior remain unproven.
+
+The closed-object adapter maps one declared flat primitive object contract into
+another using explicit rename/copy/default/drop rules. Every source property
+must be mapped or dropped and every target property must be mapped. The strict
+v2 runtime refuses accessors without invoking them, symbols, hidden fields,
+custom prototypes, unsupported primitive values, excessive properties, and
+independently measured input/output byte overflow. It proves only successful
+output shape compatibility, never domain meaning or end-to-end fitness.
 
 The SVG badge hand accepts only a closed plain JSON record containing optional
 `label` and `value` strings. It refuses XML-invalid text and inherited
@@ -106,8 +114,10 @@ the deterministic admission gate after exact packet inspection, trusted tests,
 nine-case source review, and Mike's merge decision. The portable review SKILL
 entered through the same route and remains instruction material: its authorized
 host must re-check every capability and permission at use time. No review
-authority is inherited. The registry now also carries one exact inactive
-`closed-object-contract-adapter-v1` review candidate. Ordinary Fabric builds
-cannot compile it; its source, structural-versus-semantic boundary, evidence,
-and catalog diff still require the full admission route and Mike's decision.
+authority is inherited. The registry retains the exact inactive
+`closed-object-contract-adapter-v1` proposal as historical review material,
+while normal builds on this `TEST` branch bind only the separately hardened
+`closed-object-contract-adapter-v2`. Replaying v1 is collision-held with
+`RECIPE_ID_ALREADY_ACTIVE`; it cannot replace v2 or produce a catalog diff.
+Shared use of v2 still requires Mike's merge decision.
 `tools/capability-recipe-admission-gate` has no apply or activation action.
