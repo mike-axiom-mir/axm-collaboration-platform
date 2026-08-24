@@ -1,7 +1,7 @@
 {
   "schema": "axm.twin-surface/v1",
-  "graphDigest": "0fb05c043e7c07df4b3ae0d5b3498df729aed1e91ad0f53270a021478b9e6be3",
-  "schemaRegistryDigest": "ac1743890ad736cacdbe081c885cad74bd5500ae0c220cc6033e22258053d6f1",
+  "graphDigest": "a306b85190532eb9e97a706a04c7ebd449186c1a4e59e71238f6ca972fb4f259",
+  "schemaRegistryDigest": "95ca215cbb9fa77271964b1b7cda89be5f8052d784bcdbb1b3b3229cf617ad8f",
   "machinePackets": [
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -6783,7 +6783,7 @@
     {
       "schema": "axm.machine-capability-packet/v1",
       "blockId": "shared/code-capability-fabric",
-      "blockDigest": "59428339d2b0bd6b75fb89f53b92431f3b1f36b4ccdb28691431d266ea0f0629",
+      "blockDigest": "b2ed1b4e370a6d9524d43e25b750e51ee1648cfae4fce5984ec5a0d4e607a00e",
       "kind": "ORGAN",
       "classificationState": "INFERRED_UNCONFIRMED",
       "status": "EXPERIMENTAL",
@@ -6836,8 +6836,24 @@
         "axm.code-template-mine-and-select/v1",
         "axm.code-template-pattern-mining-report/v1",
         "axm.code-template-selection/v1",
+        "axm.code.action-cache-decision.v1",
+        "axm.code.action-identity.v1",
+        "axm.code.artifact-preview-spec.v1",
+        "axm.code.build-window-popup-safety.v1",
+        "axm.code.build-window-quick-test-intent.v1",
+        "axm.code.build-window-snapshot.v1",
+        "axm.code.build-window-state.v1",
+        "axm.code.build-window-transition.v1",
         "axm.code.candidate-admission-policy.v1",
         "axm.code.candidate-admission-report.v1",
+        "axm.code.change-impact-report.v1",
+        "axm.code.dependency-diff.v1",
+        "axm.code.developer-relationship-graph.v1",
+        "axm.code.developer-substrate-atlas.v1",
+        "axm.code.developer-substrate-snapshot.v1",
+        "axm.code.diagnostic-batch.v1",
+        "axm.code.diagnostic-finding.v1",
+        "axm.code.impact-preview.v1",
         "axm.code.machine-key-program.v1",
         "axm.code.machine-keyboard-bank.v1",
         "axm.code.machine-keyboard-layout.v1",
@@ -6847,10 +6863,17 @@
         "axm.code.prebuild-preview.v1",
         "axm.code.prebuild-structural-simulation.v1",
         "axm.code.prebuild-twin-snapshot.v1",
+        "axm.code.quick-test-candidate/v1",
+        "axm.code.quick-test-observation.v1",
+        "axm.code.quick-test-request.v1",
+        "axm.code.reanalysis-plan.v1",
         "code.capability.plan",
         "code.capability.plan.verify"
       ],
       "consumes": [
+        "LSP diagnostic evidence",
+        "SARIF 2.1.0 analysis evidence",
+        "axm.code.artifact-build-window-contract.v1",
         "axm.code.human-developer-perspective.v1 review heuristics",
         "axm.code.human-discipline-perspectives.v1 discipline atlas",
         "axm.code.language-grammar-profile.v1 profiles",
@@ -6862,15 +6885,25 @@
         "axm.code.machine-keyboard-bank.v1 generated keyboard banks",
         "axm.code.prebuild-preview-topologies.v1 role-level preview topology",
         "axm.code.route-knowledge-atlas.v1 route knowledge",
+        "axm.disposable-candidate-sandbox-session/v1 runtime observation",
+        "axm.sandbox-static-evidence/v1 runtime evidence",
         "caller-supplied active language identities",
+        "caller-supplied artifact digest and visual-state metadata",
+        "caller-supplied before/after dependency snapshots",
         "caller-supplied boundary-change declarations",
+        "caller-supplied build action identity digests",
         "caller-supplied build goals",
+        "caller-supplied build-window actor and revision metadata",
         "caller-supplied candidate digests",
+        "caller-supplied changed entity identifiers",
         "caller-supplied code build observations",
         "caller-supplied composite role identifiers",
         "caller-supplied declared development pressures",
+        "caller-supplied developer relationship nodes and edges",
         "caller-supplied domain overlays",
+        "caller-supplied ephemeral candidate artifact body",
         "caller-supplied existing-test presence",
+        "caller-supplied explicit quick-test action",
         "caller-supplied explicit role/language bindings",
         "caller-supplied fact codes and analysis signals",
         "caller-supplied machine key arguments",
@@ -6884,6 +6917,12 @@
         "exact descriptor digests",
         "explicit request authority policy",
         "host-observed availability",
+        "optional AXM dependency declaration map evidence",
+        "optional AXM diagnostic evidence",
+        "optional build-system/project graph evidence",
+        "optional data-flow/path evidence",
+        "optional sandbox adapter accepting axm.code.quick-test-candidate/v1",
+        "optional test/coverage relationship evidence",
         "provider descriptors",
         "strict-deterministic-canonical-json"
       ],
@@ -6893,7 +6932,7 @@
       "unknownEffectDeclarations": [],
       "authorityGrants": [],
       "risk": "LOW",
-      "packetDigest": "9d68cdfccf8dabed57216ed0ec4b9c772e17fd36b6d6badeaf8235f820e83cd7"
+      "packetDigest": "503b8035388c37df65333a137be87c163bf5c7555e1c7956036d5431e52441ad"
     },
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -12701,14 +12740,14 @@
     {
       "schema": "axm.effect-request-template/v1",
       "blockId": "shared/code-capability-fabric",
-      "blockDigest": "59428339d2b0bd6b75fb89f53b92431f3b1f36b4ccdb28691431d266ea0f0629",
-      "capabilityPacketDigest": "9d68cdfccf8dabed57216ed0ec4b9c772e17fd36b6d6badeaf8235f820e83cd7",
+      "blockDigest": "b2ed1b4e370a6d9524d43e25b750e51ee1648cfae4fce5984ec5a0d4e607a00e",
+      "capabilityPacketDigest": "503b8035388c37df65333a137be87c163bf5c7555e1c7956036d5431e52441ad",
       "effectClass": "NONE",
       "requiresExactTargetDigest": true,
       "requiresExactScope": true,
       "requiresAuthorityDecision": false,
       "grantsAuthority": false,
-      "packetDigest": "e4c78583e54af435462ed089fe6fbb3324327414d313bdaa87c2e32742350d82"
+      "packetDigest": "839ac5b05488a077c74c4d2f08d8ad781f7b44eb1722d7043155e0fce46715a6"
     },
     {
       "schema": "axm.effect-request-template/v1",
@@ -19492,7 +19531,7 @@
       "name": "shared/code-capability-fabric",
       "status": "EXPERIMENTAL",
       "kind": "ORGAN",
-      "beginnerSummary": "61 declared capability(s); 1 effect class(es); risk LOW",
+      "beginnerSummary": "81 declared capability(s); 1 effect class(es); risk LOW",
       "capabilities": [
         "axm.code-build-observation/v1",
         "axm.code-build-route-plan/v1",
@@ -19542,8 +19581,24 @@
         "axm.code-template-mine-and-select/v1",
         "axm.code-template-pattern-mining-report/v1",
         "axm.code-template-selection/v1",
+        "axm.code.action-cache-decision.v1",
+        "axm.code.action-identity.v1",
+        "axm.code.artifact-preview-spec.v1",
+        "axm.code.build-window-popup-safety.v1",
+        "axm.code.build-window-quick-test-intent.v1",
+        "axm.code.build-window-snapshot.v1",
+        "axm.code.build-window-state.v1",
+        "axm.code.build-window-transition.v1",
         "axm.code.candidate-admission-policy.v1",
         "axm.code.candidate-admission-report.v1",
+        "axm.code.change-impact-report.v1",
+        "axm.code.dependency-diff.v1",
+        "axm.code.developer-relationship-graph.v1",
+        "axm.code.developer-substrate-atlas.v1",
+        "axm.code.developer-substrate-snapshot.v1",
+        "axm.code.diagnostic-batch.v1",
+        "axm.code.diagnostic-finding.v1",
+        "axm.code.impact-preview.v1",
         "axm.code.machine-key-program.v1",
         "axm.code.machine-keyboard-bank.v1",
         "axm.code.machine-keyboard-layout.v1",
@@ -19553,6 +19608,10 @@
         "axm.code.prebuild-preview.v1",
         "axm.code.prebuild-structural-simulation.v1",
         "axm.code.prebuild-twin-snapshot.v1",
+        "axm.code.quick-test-candidate/v1",
+        "axm.code.quick-test-observation.v1",
+        "axm.code.quick-test-request.v1",
+        "axm.code.reanalysis-plan.v1",
         "code.capability.plan",
         "code.capability.plan.verify"
       ],
@@ -19560,9 +19619,9 @@
         "NONE"
       ],
       "risk": "LOW",
-      "machinePacketDigest": "9d68cdfccf8dabed57216ed0ec4b9c772e17fd36b6d6badeaf8235f820e83cd7",
+      "machinePacketDigest": "503b8035388c37df65333a137be87c163bf5c7555e1c7956036d5431e52441ad",
       "effectPacketDigests": [
-        "e4c78583e54af435462ed089fe6fbb3324327414d313bdaa87c2e32742350d82"
+        "839ac5b05488a077c74c4d2f08d8ad781f7b44eb1722d7043155e0fce46715a6"
       ],
       "safe": null,
       "grantsAuthority": false
@@ -22162,5 +22221,5 @@
     "beginnerViewPreservesCapabilities": true,
     "beginnerViewPreservesRisk": true
   },
-  "twinDigest": "1c0171a72770d1b285536d6d4a72c6f847ef3ada684c20ba8e2c957fcd440648"
+  "twinDigest": "7dcf5a376824f5efc1667fbbbec911bbae6dbf8f0bee8c24b05a2f83fb8acd34"
 }
