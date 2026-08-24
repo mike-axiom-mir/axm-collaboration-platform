@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `5438ae3630d45cbfd5e7871c3ecf6980641a7527d3c27c42b51f10a83ec9c5d4`
+Semantic graph digest: `afbd4582015ed8fe70f9926e80470b06c717344d7bd9b0ba39a6f602127e361c`
 
-Blocks: 304 · Capabilities: 2983 · Schemas: 913 · Unresolved edges: 1993
+Blocks: 304 · Capabilities: 2991 · Schemas: 914 · Unresolved edges: 1997
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -220,7 +220,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/baseline-simulation-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 1 selftest(s) |
 | shared/city-gates | BRIDGE (DECLARED) | EXPERIMENTAL | NETWORK_WRITE, PUBLIC_RELEASE | 5 | 3 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
-| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 5 | 30 selftest(s) |
+| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 7 | 33 selftest(s) |
 | shared/compute-substrate-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 4 | 1 selftest(s) |
 | shared/deterministic-animation-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 3 | 2 selftest(s) |
 | shared/deterministic-audio-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 2 selftest(s) |
@@ -1767,10 +1767,14 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `filesystem:explicit-workshop-root` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `git:local-source-commit` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `json-schema:draft-2020-12` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-organ-families.v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-organ.v1 descriptors` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `exact descriptor digests` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `explicit request authority policy` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `host-observed availability` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `provider descriptors` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-organ-plan/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-organ-snapshot/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.compute-hardware-reference/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.compute-substrate-intake/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.research-observation/v1` (UNKNOWN)

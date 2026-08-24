@@ -26601,13 +26601,18 @@
           "automatic-promotion",
           "host-observation-as-execution-proof",
           "implicit-provider-choice-when-multiple-match",
+          "language-guess-when-detection-is-ambiguous",
           "network-use",
           "permission-grant",
           "process-execution",
           "provider-code-execution",
           "provider-code-loading",
           "provider-self-asserted-availability",
+          "silent-explicit-preference-fallback",
           "source-or-candidate-mutation",
+          "source-review-as-runtime-proof",
+          "syntax-pass-as-semantic-correctness",
+          "unbound-language-tool-execution",
           "undefined-or-non-json-representable-state",
           "workspace-content-reading"
         ],
@@ -26636,6 +26641,9 @@
         "evidenceLocators": [],
         "freshness": "UNKNOWN",
         "selftests": [
+          "shared/code-capability-fabric/language-organs/selftest-adversarial.js",
+          "shared/code-capability-fabric/language-organs/selftest-donors.js",
+          "shared/code-capability-fabric/language-organs/selftest.js",
           "shared/code-capability-fabric/selftest-blueprint-schema-compiler-v1.js",
           "shared/code-capability-fabric/selftest-bounded-creation-program-planner-v1.js",
           "shared/code-capability-fabric/selftest-code-recipe-application-planner-v1.js",
@@ -26677,9 +26685,14 @@
         "accepts": [
           "axm.code-capability-provider/v1",
           "axm.code-capability-request/v1",
-          "axm.code-provider-host-observation/v1"
+          "axm.code-provider-host-observation/v1",
+          "caller-supplied explicit organ preference",
+          "caller-supplied file path metadata",
+          "caller-supplied shebang metadata"
         ],
         "consumes": [
+          "axm.code.language-organ-families.v1",
+          "axm.code.language-organ.v1 descriptors",
           "exact descriptor digests",
           "explicit request authority policy",
           "host-observed availability",
@@ -26687,12 +26700,20 @@
           "strict-deterministic-canonical-json"
         ],
         "emits": [
-          "axm.code-capability-route-plan/v1"
+          "axm.code-capability-route-plan/v1",
+          "axm.code-language-organ-plan/v1",
+          "axm.code-language-organ-snapshot/v1"
         ],
         "provides": [
           "axm.code-capability-provider/v1",
           "axm.code-capability-request/v1",
           "axm.code-capability-route-plan/v1",
+          "axm.code-language-organ-detect/v1",
+          "axm.code-language-organ-lookup/v1",
+          "axm.code-language-organ-plan/v1",
+          "axm.code-language-organ-registry/v1",
+          "axm.code-language-organ-signal-audit/v1",
+          "axm.code-language-organ-snapshot/v1",
           "axm.code-provider-host-observation/v1",
           "code.capability.plan",
           "code.capability.plan.verify"
@@ -26704,9 +26725,9 @@
           "shared/code-capability-fabric/module.contract.json"
         ],
         "declaredId": "code-capability-fabric",
-        "digest": "022f0ac158c20882405899c72128acf2a9f671d02f8b5adcb0ce5e0fb2f552a1",
+        "digest": "d459fe939236407f11da18266b3a7ff98c6fec8d358afd7a9e203d08b7c7d05f",
         "manifest": null,
-        "observedSourceFileCount": 218,
+        "observedSourceFileCount": 329,
         "root": "shared/code-capability-fabric"
       },
       "status": "EXPERIMENTAL",
@@ -26715,7 +26736,7 @@
         "entry": null,
         "type": "UNDECLARED"
       },
-      "version": "v0.1"
+      "version": "v0.3"
     },
     {
       "authority": {
@@ -39405,6 +39426,48 @@
     },
     {
       "consumers": [],
+      "id": "axm.code-language-organ-detect/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-organ-lookup/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-organ-plan/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-organ-registry/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-organ-signal-audit/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-organ-snapshot/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code-provider-host-observation/v1",
       "providers": [
         "shared/code-capability-fabric"
@@ -39429,6 +39492,20 @@
         "code-recipe-foundry"
       ],
       "id": "axm.code-recipe/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.code.language-organ-families.v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.code.language-organ.v1 descriptors",
       "providers": []
     },
     {
@@ -60877,6 +60954,11 @@
       "sha256": "18d7d79e1401a00870316af193363b9734c15785ec6f80f0dbb5360a64369e33"
     },
     {
+      "id": "axm.code.language-organ.v1",
+      "path": "shared/code-capability-fabric/language-organs/organ.schema.json",
+      "sha256": "b26538f511491bf4aec970ed3ac22b2e918e55e2cd54b5675730073c6ae9d6e2"
+    },
+    {
       "id": "axm.collaboration-decision-draft/v1",
       "path": "tools/fabric-collaboration-room/collaboration-decision-draft.schema.json",
       "sha256": "701022fc8265fa276b172a3a733aea63a2aa2b79e8a7b7dc5d537bf9fe8c366c"
@@ -64637,18 +64719,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "5438ae3630d45cbfd5e7871c3ecf6980641a7527d3c27c42b51f10a83ec9c5d4",
+  "semanticDigest": "afbd4582015ed8fe70f9926e80470b06c717344d7bd9b0ba39a6f602127e361c",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "cb19ae18b3977997e52e54d0b5b666a8dfff726ed4d7573797082ea18bf0a2fd",
+    "declarationDigest": "391b487fba2ada413f6380a93708da8cfe52e65ba3ac032b532b48fe438b5948",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "cb19ae18b3977997e52e54d0b5b666a8dfff726ed4d7573797082ea18bf0a2fd"
+    "snapshotIdentity": "391b487fba2ada413f6380a93708da8cfe52e65ba3ac032b532b48fe438b5948"
   },
   "summary": {
     "blockKinds": {
@@ -64661,12 +64743,12 @@
       "SENSOR": 6
     },
     "blocks": 304,
-    "capabilities": 2983,
+    "capabilities": 2991,
     "declaredContracts": 301,
     "declaredManifests": 253,
     "edges": 86,
-    "schemas": 913,
-    "unresolved": 1993
+    "schemas": 914,
+    "unresolved": 1997
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -73369,6 +73451,18 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.code.language-organ-families.v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.code.language-organ.v1 descriptors",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "exact descriptor digests",
       "state": "UNKNOWN"
     },
@@ -73388,6 +73482,18 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "provider descriptors",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-language-organ-plan/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-language-organ-snapshot/v1",
       "state": "UNKNOWN"
     },
     {

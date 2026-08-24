@@ -1,31 +1,80 @@
-> node scripts/compile-city-graph.js
+> node scripts/compile-city-graph.js --write
 {
-  "schema": "axm.city-map-command-error/v1",
-  "state": "FAIL",
-  "code": "UNCAUGHT_ERROR",
-  "message": "exactly one of --check, --write, or --print is required",
-  "details": null
+  "schema": "axm.city-map-command-result/v1",
+  "state": "PASS",
+  "mode": "WRITE_GENERATED_VIEWS",
+  "observedSourceCommit": "c79342accc4c9844e416943181faa15b650cc940",
+  "sourceBinding": {
+    "commit": null,
+    "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
+    "snapshotIdentity": "391b487fba2ada413f6380a93708da8cfe52e65ba3ac032b532b48fe438b5948",
+    "roots": [
+      "shared",
+      "tools",
+      "worlds"
+    ],
+    "declarationDigest": "391b487fba2ada413f6380a93708da8cfe52e65ba3ac032b532b48fe438b5948",
+    "pathForm": "repository-relative-posix"
+  },
+  "graphDigest": "afbd4582015ed8fe70f9926e80470b06c717344d7bd9b0ba39a6f602127e361c",
+  "blocks": 304,
+  "files": [
+    "registry/generated/city-graph.json",
+    "registry/generated/city-modules.json",
+    "registry/generated/city-capabilities.jsonl",
+    "registry/generated/city-authority-map.json",
+    "registry/generated/city-proof-map.json",
+    "registry/generated/city-dependencies.json",
+    "registry/generated/city-unresolved-edges.json",
+    "docs/generated/LEGO_CITY_MAP.md",
+    "registry/generated/city-graph.receipt.json"
+  ],
+  "authority": {
+    "install": false,
+    "execute": false,
+    "networkWrite": false,
+    "promote": false,
+    "merge": false,
+    "canon": false,
+    "roots": false
+  }
 }
-exit=1
+exit=0
 
-> node scripts/compile-schema-registry.js
+> node scripts/compile-schema-registry.js --write
 {
-  "schema": "axm.schema-registry-command-error/v1",
-  "state": "FAIL",
-  "code": "UNCAUGHT_ERROR",
-  "message": "exactly one of --check, --write, or --print is required",
-  "details": null
+  "schema": "axm.schema-registry-command/v1",
+  "state": "PASS",
+  "mode": "WRITE_GENERATED_VIEW",
+  "graphDigest": "afbd4582015ed8fe70f9926e80470b06c717344d7bd9b0ba39a6f602127e361c",
+  "registryDigest": "3a1d9f5ccb9ceadd691a5741879cfd2e2e93dbdf26f18c1185631a5109a95ed9",
+  "entries": 914,
+  "unresolvedSockets": 733,
+  "authority": {
+    "migrate": false,
+    "rewrite": false,
+    "executeAdapter": false,
+    "promote": false,
+    "canon": false
+  }
 }
-exit=1
+exit=0
 
-> node scripts/compile-twin-surfaces.js
+> node scripts/compile-twin-surfaces.js --write
 {
-  "schema": "axm.twin-command-error/v1",
-  "state": "FAIL",
-  "code": "UNCAUGHT_ERROR",
-  "message": "exactly one of --check, --write, or --print is required"
+  "schema": "axm.twin-command/v1",
+  "state": "PASS",
+  "mode": "WRITE_GENERATED_VIEWS",
+  "twinDigest": "7dce6ad722858e3b3ec94067489f41978d399f03cf81e5a180852c152a23ef50",
+  "blocks": 304,
+  "authority": {
+    "execute": false,
+    "grant": false,
+    "promote": false,
+    "canon": false
+  }
 }
-exit=1
+exit=0
 
 > node --check shared/code-capability-fabric/language-organs/registry.js
 exit=0
@@ -76,68 +125,13 @@ exit=0
 > node scripts/compile-city-graph.js --check
 {
   "schema": "axm.city-map-command-result/v1",
-  "state": "FAIL",
+  "state": "PASS",
   "mode": "READ_ONLY_CHECK",
-  "observedSourceCommit": "287fd04f1cd348713e3d6fca566c32187044a96b",
+  "observedSourceCommit": "c79342accc4c9844e416943181faa15b650cc940",
   "graphDigest": "afbd4582015ed8fe70f9926e80470b06c717344d7bd9b0ba39a6f602127e361c",
-  "failures": [
-    {
-      "code": "CITY_GRAPH_DRIFT",
-      "path": "registry/generated/city-graph.json",
-      "expectedSha256": "836b9fc61b7963488754b74f04daff585deb506a7550c59ceaf4cdde98e1e748",
-      "observedSha256": "756fe04c95df5384d63548bcaa202157a3b29473bafde1ecbc0b37eb80f842a1"
-    },
-    {
-      "code": "GENERATED_VIEW_DRIFT",
-      "path": "registry/generated/city-modules.json",
-      "expectedSha256": "43c4e493b685f906ec0afc1b7c313aa7a0954d65c418528b915fa8aed0b70188",
-      "observedSha256": "879634e56d9310f7ebd2fee97c1c894b9e5a96c85d44139f1cd165b3b2d69ee2"
-    },
-    {
-      "code": "GENERATED_VIEW_DRIFT",
-      "path": "registry/generated/city-capabilities.jsonl",
-      "expectedSha256": "849e63a0205e5b722245f4e9fd806c0a9ef342ae0c3304d6b9b68de501cf48a4",
-      "observedSha256": "2721f3de18c7653b490e57a8d9f3cde1fa5415b71cc1d084e5f71edf61575b03"
-    },
-    {
-      "code": "AUTHORITY_MAP_STALE",
-      "path": "registry/generated/city-authority-map.json",
-      "expectedSha256": "c6af5273c767e548c57f506160cc4b922f40846cfd7133ce9137f68a9885ec60",
-      "observedSha256": "d3906a56205403b95908452c6dd74c441d372f09a1dd546c3a233f7465874cd4"
-    },
-    {
-      "code": "GENERATED_VIEW_DRIFT",
-      "path": "registry/generated/city-proof-map.json",
-      "expectedSha256": "f1711d1aa913688acc4297e83b99589e945fc5ad0cf250b1bcd154945bd97a32",
-      "observedSha256": "736efee0430f72f56aa3fa91bd56dd9a226e7010dfd29e51371194e2c4e9f176"
-    },
-    {
-      "code": "GENERATED_VIEW_DRIFT",
-      "path": "registry/generated/city-dependencies.json",
-      "expectedSha256": "494eb7a91c1bb638bb7bbb546b55eca605eb86b29c5c65492a52a8939e8ce2cd",
-      "observedSha256": "d1bc4432b19b24c6d3480028880b6c139dcfedc734784d0fe4bf5779e7e9ab68"
-    },
-    {
-      "code": "GENERATED_VIEW_DRIFT",
-      "path": "registry/generated/city-unresolved-edges.json",
-      "expectedSha256": "d1c5529325d00013f5e98556e4a10027135ef7e13c3b7ace282e0a44ef4327b3",
-      "observedSha256": "554b15e3fc29107ca72459f142a3fc8d9f4d2497b3afb7c677f79575d2c3184e"
-    },
-    {
-      "code": "HUMAN_VIEW_DRIFT",
-      "path": "docs/generated/LEGO_CITY_MAP.md",
-      "expectedSha256": "6059f1e06ee261916dc69c829e49f10c2980536881db49ef54a88d922ed1cb89",
-      "observedSha256": "165fc6d0e4b6a07093499c1b7fa0fafe8bdcd6d428a3c271c4106a0a2174ac89"
-    },
-    {
-      "code": "GENERATED_VIEW_DRIFT",
-      "path": "registry/generated/city-graph.receipt.json",
-      "expectedSha256": "9e5ffea3ae41a9dea8aacd1bfb39a2489dc9f970fccfe9b92b18cdc30f1700e0",
-      "observedSha256": "2c1044ce73763a715b9256377ba4eed253fc05c4e3a59fe2e9575bf862577fe3"
-    }
-  ]
+  "failures": []
 }
-exit=1
+exit=0
 
 > node scripts/compile-schema-registry.js --check
 {
@@ -145,8 +139,8 @@ exit=1
   "state": "PASS",
   "mode": "READ_ONLY_CHECK",
   "code": null,
-  "graphDigest": "5438ae3630d45cbfd5e7871c3ecf6980641a7527d3c27c42b51f10a83ec9c5d4",
-  "registryDigest": "145fa38d16d7dc7e144bfde441c0f44622daa6cde7262eb8c4ad726c50a75766"
+  "graphDigest": "afbd4582015ed8fe70f9926e80470b06c717344d7bd9b0ba39a6f602127e361c",
+  "registryDigest": "3a1d9f5ccb9ceadd691a5741879cfd2e2e93dbdf26f18c1185631a5109a95ed9"
 }
 exit=0
 
@@ -155,7 +149,7 @@ exit=0
   "schema": "axm.twin-command/v1",
   "state": "PASS",
   "mode": "READ_ONLY_CHECK",
-  "twinDigest": "de41b28eaa94ec2b05cfa42a076a3ec9b37c6ce007465478e6a45c68bff50d07",
+  "twinDigest": "7dce6ad722858e3b3ec94067489f41978d399f03cf81e5a180852c152a23ef50",
   "failures": []
 }
 exit=0
@@ -170,8 +164,8 @@ twin-surfaces selftest passed: 12 assertions
 intake-harbor selftest passed: 12 assertions
 city-gates selftest passed: 14 assertions
 LEGO city blueprint conformance passed: 15 assertions
-AXM VERIFY — 2026-08-24T04:42:14.741Z
-9 FAIL · 25 warn · spine b618c5762240070c
+AXM VERIFY — 2026-08-24T04:44:06.387Z
+0 FAIL · 25 warn · spine b618c5762240070c
 A failing zip is not evil — it is UNREVIEWED. Hand this report to the builder.
 
   PASS  spine intact: launcher/axm-foundation.js
@@ -797,29 +791,21 @@ A failing zip is not evil — it is UNREVIEWED. Hand this report to the builder.
   warn  promotion claim needs reverification: prehub · current selftest PASS result is missing
   warn  promotion claim needs reverification: repair-resilience-library · current selftest PASS result is missing
   PASS  tools-index.json matches current structural source digest
-  FAIL  LEGO city map CITY_GRAPH_DRIFT: registry/generated/city-graph.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-modules.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-capabilities.jsonl
-  FAIL  LEGO city map AUTHORITY_MAP_STALE: registry/generated/city-authority-map.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-proof-map.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-dependencies.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-unresolved-edges.json
-  FAIL  LEGO city map HUMAN_VIEW_DRIFT: docs/generated/LEGO_CITY_MAP.md
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-graph.receipt.json
-  PASS  city schema registry exact: 145fa38d16d7dc7e144bfde441c0f44622daa6cde7262eb8c4ad726c50a75766; 913 schema identities; 731 unresolved socket(s) retained
+  PASS  LEGO city map exact: afbd4582015ed8fe70f9926e80470b06c717344d7bd9b0ba39a6f602127e361c; no omitted declared module or generated-view drift
+  PASS  city schema registry exact: 3a1d9f5ccb9ceadd691a5741879cfd2e2e93dbdf26f18c1185631a5109a95ed9; 914 schema identities; 733 unresolved socket(s) retained
   PASS  city state primitives focused suite: 19 assertion(s); no delete, rewrite, or event-as-authority path
   PASS  city authority/hands focused suite: 22 assertion(s); external decision-maker verification required; no real executor bundled
   PASS  city workflow/evidence focused suite: 29 assertion(s); workflow execution remains external
-  PASS  city local-sync/twins focused suite: 24 assertion(s); 304 human/machine packets bind twin de41b28eaa94ec2b05cfa42a076a3ec9b37c6ce007465478e6a45c68bff50d07
+  PASS  city local-sync/twins focused suite: 24 assertion(s); 304 human/machine packets bind twin 7dce6ad722858e3b3ec94067489f41978d399f03cf81e5a180852c152a23ef50
   PASS  city intake/gates/blueprint focused suite: 41 assertion(s); all external transports disabled
   PASS  Workshop continuity intact: 19365 protected paths · 234 tools · 2039 provided capabilities · no unauthorized disappearance
   PASS  Workshop scope transition ledger is structurally bound: 1 permanent receipt(s)
   PASS  Workshop scope transition fail-closed suite: 15 assertion(s) passed
 
-exit=1
+exit=0
 
 > node hub/hub-selftest.js
-AXM HUB SELFTEST — 2026-08-24T04:42:14.800Z
+AXM HUB SELFTEST — 2026-08-24T04:44:06.443Z
 0 FAIL
 
   PASS  sidebar: visible collapse/reopen handle exists
@@ -975,7 +961,7 @@ AXM HUB SELFTEST — 2026-08-24T04:42:14.800Z
 exit=0
 
 > node hub/route-selftest.js
-AXM ROUTE SELFTEST — 2026-08-24T04:42:14.839Z
+AXM ROUTE SELFTEST — 2026-08-24T04:44:06.478Z
 0 FAIL
 
   PASS  no-fake-done: cannot mark a checkless step WORKING by ticking
@@ -1022,7 +1008,7 @@ AXM ROUTE SELFTEST — 2026-08-24T04:42:14.839Z
 exit=0
 
 > node hub/graft-selftest.js
-AXM GRAFT SELFTEST — 2026-08-24T04:42:14.870Z
+AXM GRAFT SELFTEST — 2026-08-24T04:44:06.510Z
 0 FAIL
 
   PASS  state-aware: the patch records the spine, module count, and verify count it was computed against
@@ -1053,7 +1039,7 @@ AXM GRAFT SELFTEST — 2026-08-24T04:42:14.870Z
 exit=0
 
 > node hub/skin-selftest.js
-AXM SKIN SELFTEST — 2026-08-24T04:42:14.909Z
+AXM SKIN SELFTEST — 2026-08-24T04:44:06.547Z
 0 FAIL
 
   PASS  freedom: the default skin passes its own gate
@@ -1154,8 +1140,8 @@ twin-surfaces selftest passed: 12 assertions
 intake-harbor selftest passed: 12 assertions
 city-gates selftest passed: 14 assertions
 LEGO city blueprint conformance passed: 15 assertions
-AXM VERIFY — 2026-08-24T04:42:17.276Z
-9 FAIL · 25 warn · spine b618c5762240070c
+AXM VERIFY — 2026-08-24T04:44:08.846Z
+0 FAIL · 25 warn · spine b618c5762240070c
 A failing zip is not evil — it is UNREVIEWED. Hand this report to the builder.
 
   PASS  spine intact: launcher/axm-foundation.js
@@ -1781,20 +1767,12 @@ A failing zip is not evil — it is UNREVIEWED. Hand this report to the builder.
   warn  promotion claim needs reverification: prehub · current selftest PASS result is missing
   warn  promotion claim needs reverification: repair-resilience-library · current selftest PASS result is missing
   PASS  tools-index.json matches current structural source digest
-  FAIL  LEGO city map CITY_GRAPH_DRIFT: registry/generated/city-graph.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-modules.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-capabilities.jsonl
-  FAIL  LEGO city map AUTHORITY_MAP_STALE: registry/generated/city-authority-map.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-proof-map.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-dependencies.json
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-unresolved-edges.json
-  FAIL  LEGO city map HUMAN_VIEW_DRIFT: docs/generated/LEGO_CITY_MAP.md
-  FAIL  LEGO city map GENERATED_VIEW_DRIFT: registry/generated/city-graph.receipt.json
-  PASS  city schema registry exact: 145fa38d16d7dc7e144bfde441c0f44622daa6cde7262eb8c4ad726c50a75766; 913 schema identities; 731 unresolved socket(s) retained
+  PASS  LEGO city map exact: afbd4582015ed8fe70f9926e80470b06c717344d7bd9b0ba39a6f602127e361c; no omitted declared module or generated-view drift
+  PASS  city schema registry exact: 3a1d9f5ccb9ceadd691a5741879cfd2e2e93dbdf26f18c1185631a5109a95ed9; 914 schema identities; 733 unresolved socket(s) retained
   PASS  city state primitives focused suite: 19 assertion(s); no delete, rewrite, or event-as-authority path
   PASS  city authority/hands focused suite: 22 assertion(s); external decision-maker verification required; no real executor bundled
   PASS  city workflow/evidence focused suite: 29 assertion(s); workflow execution remains external
-  PASS  city local-sync/twins focused suite: 24 assertion(s); 304 human/machine packets bind twin de41b28eaa94ec2b05cfa42a076a3ec9b37c6ce007465478e6a45c68bff50d07
+  PASS  city local-sync/twins focused suite: 24 assertion(s); 304 human/machine packets bind twin 7dce6ad722858e3b3ec94067489f41978d399f03cf81e5a180852c152a23ef50
   PASS  city intake/gates/blueprint focused suite: 41 assertion(s); all external transports disabled
   PASS  Workshop continuity intact: 19365 protected paths · 234 tools · 2039 provided capabilities · no unauthorized disappearance
   PASS  Workshop scope transition ledger is structurally bound: 1 permanent receipt(s)
@@ -1804,7 +1782,7 @@ A failing zip is not evil — it is UNREVIEWED. Hand this report to the builder.
   PASS  core roots file is present  ·  prompts/local/axm-core.txt
   PASS  test-room declares a hub API version  ·  tools/hub-test-room/manifest.json . hubApiVersion
 
-CORE FAILED (9 unretired) · 0 of 2 your-checks failed
+core ok · 0 of 2 your-checks failed
 
 === COMPLETE WARNING DELTA ===
   DRIFT  25 current known-open warning(s) - added 6, resolved 23, changed 1, unchanged 18
@@ -1842,14 +1820,14 @@ CORE FAILED (9 unretired) · 0 of 2 your-checks failed
   Known-open means tracked, not acknowledged, suppressed, retired, or passed.
 
 === VERIFICATION SPINE V2 ===
-  FAILED  profile workshop-full - 6 receipts - 9 atomic claims
-  foundation - 3 claims - FAIL=1, PASS=1, WARNING=1
+  VERIFIED_WITH_LIMITS  profile workshop-full - 6 receipts - 9 atomic claims
+  foundation - 3 claims - PASS=2, WARNING=1
   game - 3 claims - PASS=2, WARNING=1
   module - 3 claims - PASS=3
   failure memory - 1 lessons (candidate 0, active 1, monitor 0, human 0, retired 0)
   receipt: exports/verification-spine-report.json
 
-exit=1
+exit=0
 
 > node tests/html-script-syntax-test.js
 PASS tools/agent-command-center/index.html · 3 local script(s) compile
@@ -1918,7 +1896,7 @@ exit=0
   "ok": true,
   "route": "workspace-local-transient",
   "workspaceRootDrive": "/",
-  "transientPath": "state/test-scratch/agent-tool-forge/package-proof-4cai7E/mike.package-proof-EXPERIMENTAL.zip",
+  "transientPath": "state/test-scratch/agent-tool-forge/package-proof-wGqzRr/mike.package-proof-EXPERIMENTAL.zip",
   "storageState": "CLEANED",
   "writeVerified": true,
   "archiveBytes": 98389,
@@ -2002,4 +1980,4 @@ exit=0
 > git diff --check
 exit=0
 
-overall_failed=1
+overall_failed=0
