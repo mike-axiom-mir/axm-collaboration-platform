@@ -10,7 +10,7 @@ recipes include eight reviewed executable `HAND` builders and one reviewed
 host-mediated portable `SKILL` builder.
 
 Builder code is no longer selected by hard-coded branches in the Fabric core.
-A digest-bound modular registry supplies all nine active builders. The validator,
+A digest-bound modular registry supplies all ten active builders. The validator,
 semantic HTML renderer, bounded JavaScript string-record transform, bounded CSS token-stylesheet renderer, strict text-only
 SVG status-badge renderer, bounded Python record-transform HAND, and strict
 closed primitive-object contract adapter are all

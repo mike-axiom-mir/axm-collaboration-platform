@@ -71,11 +71,12 @@ through plan, compilation, candidate, module contract, and receipt.
   installs output, changes permissions, promotes material, touches Foundation,
   or changes CANON.
 
-The reviewed catalog contains eight executable `HAND` recipes—a closed JSON
+The reviewed catalog contains nine executable `HAND` recipes—a closed JSON
 Schema validator, a strict bounded JavaScript string-record transform, a static semantic HTML-page renderer,
 one bounded CSS token stylesheet, a strict text-only SVG status-badge creation
 hand, a Workshop Direction hand-request adapter, and one bounded Python record
-transform, plus a strict closed primitive-object contract adapter—alongside one host-mediated portable `SKILL` for bounded evidence-first
+transform, plus a strict closed primitive-object contract adapter and a bounded
+closed-record collection query—alongside one host-mediated portable `SKILL` for bounded evidence-first
 capability review. The HTML renderer is source-reviewed on its review branch;
 shared use still requires Mike's merge decision and visual behavior remains
 unproven until a separate authorized browser run. The Python source and
@@ -98,6 +99,15 @@ v2 runtime refuses accessors without invoking them, symbols, hidden fields,
 custom prototypes, unsupported primitive values, excessive properties, and
 independently measured input/output byte overflow. It proves only successful
 output shape compatibility, never domain meaning or end-to-end fitness.
+
+The record-query hand accepts only closed primitive records under one reviewed
+field declaration. It combines bounded typed predicates with `AND`, orders by
+explicit unique keys, breaks ties by original input index, projects explicit
+unique fields, applies an exact result limit, and reports scanned, matched, and
+returned counts. It refuses sparse or decorated arrays, accessors, symbols,
+custom prototypes, unknown fields, duplicate order/projection fields, unsafe
+integers, unsupported operators, and input/output byte overflow. It is not SQL,
+an expression evaluator, a grouping engine, or proof of domain meaning.
 
 The SVG badge hand accepts only a closed plain JSON record containing optional
 `label` and `value` strings. It refuses XML-invalid text and inherited

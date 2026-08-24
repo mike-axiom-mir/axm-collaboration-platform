@@ -1,0 +1,101 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "bounded-record-query-specialist-rung",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "code.language.javascript.catalogued/v1",
+        "capability.candidate.detached.deterministic/v1",
+        "authority.detached-zero/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "record.collection.closed-query.strict/v1",
+        "code.specialist.application-logic.javascript.exact-record-query/v1",
+        "evidence.record-query.behavior-lineage-authority/v1"
+      ],
+      "declaredConstraints": {
+        "code.language.javascript.catalogued/v1": [
+          "JavaScript is catalogued and exact application-logic profiles exist; catalog presence alone does not provide collection filtering, stable ordering, projection, or bounded query summaries."
+        ],
+        "record.collection.closed-query.strict/v1": [
+          "The active recipe catalog contains validators, single-record transforms, contract adapters, renderers, and a review skill, but no source-reviewed bounded collection-query recipe or builder."
+        ],
+        "code.specialist.application-logic.javascript.exact-record-query/v1": [
+          "No exact Code Specialist profile binds the application-logic Organ and JavaScript language to a collection-query artifact, recipe, builder, and evidence requirements."
+        ],
+        "capability.candidate.detached.deterministic/v1": [
+          "Requires one exact source-reviewed recipe and active builder; output remains detached and grants no lifecycle authority."
+        ],
+        "authority.detached-zero/v1": [
+          "The Fabric and Code Specialist contracts refuse execution, workspace writes, network, install, integration, publication, promotion, and CANON change."
+        ],
+        "evidence.record-query.behavior-lineage-authority/v1": [
+          "No focused proof currently binds exact record-query candidate bytes to malformed-input refusals, stable tie behavior, typed predicate limits, deterministic rebuilds, and zero-authority lineage."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "code.specialist.application-logic.javascript.exact-record-query/v1",
+    "evidence.record-query.behavior-lineage-authority/v1",
+    "record.collection.closed-query.strict/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "code.specialist.application-logic.javascript.exact-record-query/v1",
+      "requiredBy": [
+        "bounded-record-query-specialist-rung"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "evidence.record-query.behavior-lineage-authority/v1",
+      "requiredBy": [
+        "bounded-record-query-specialist-rung"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "record.collection.closed-query.strict/v1",
+      "requiredBy": [
+        "bounded-record-query-specialist-rung"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

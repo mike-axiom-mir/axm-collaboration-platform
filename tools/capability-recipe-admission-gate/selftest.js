@@ -76,12 +76,12 @@ function exerciseAdapterCandidate(){
 
 function main(){
   const inventory=Registry.inventory(),catalogBefore=Fabric.loadCatalog();
-  check(Registry.activeIds().length===9&&Registry.activeIds().includes('closed-object-contract-adapter-v2')&&Registry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','registry contains the strict active v2 adapter and retains the exact inactive v1 adapter candidate');
+  check(Registry.activeIds().length===10&&Registry.activeIds().includes('closed-object-contract-adapter-v2')&&Registry.activeIds().includes('bounded-record-query-v1')&&Registry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','registry contains the strict active adapter and record-query builders while retaining the exact inactive v1 adapter candidate');
   check(inventory.registryDigest===Registry.inventory().registryDigest,'builder registry digest is deterministic');
   REVIEWED_PILOTS.forEach(exerciseReviewedPilot);
   exerciseAdapterCandidate();
   exerciseReceiptContracts();
-  check(Fabric.canonicalJson(Fabric.loadCatalog())===Fabric.canonicalJson(catalogBefore)&&Registry.activeIds().length===9&&Registry.reviewCandidateIds().length===1,'admission replay and receipt tests perform no activation or catalog mutation');
+  check(Fabric.canonicalJson(Fabric.loadCatalog())===Fabric.canonicalJson(catalogBefore)&&Registry.activeIds().length===10&&Registry.reviewCandidateIds().length===1,'admission replay and receipt tests perform no activation or catalog mutation');
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'axm-admission-tamper-'));
   try{
     fs.cpSync(REVIEWED_PILOTS[0],temp,{recursive:true});

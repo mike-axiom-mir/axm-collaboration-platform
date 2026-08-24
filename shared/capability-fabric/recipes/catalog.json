@@ -631,6 +631,109 @@
     },
     {
       "schema": "axm.capability-recipe/v1",
+      "id": "bounded-record-query",
+      "version": "0.1.0",
+      "title": "Bounded Closed-Record Collection Query",
+      "summary": "Compile a dependency-free deterministic query hand for closed primitive record collections with typed AND predicates, stable ordering, projection, limits, and count summaries.",
+      "family": "record-query",
+      "capabilityKind": "HAND",
+      "capabilityContract": {
+        "runtimeMode": "EXECUTABLE",
+        "entry": "capability.js",
+        "operation": "query",
+        "portableForm": "NONE",
+        "portablePath": null,
+        "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+        "requiredHostCapabilities": []
+      },
+      "builderId": "bounded-record-query-v1",
+      "builderDigest": "sha256:501e7ac2c984beec72a99dddfb576cd0d6b2899787d4a19881a59613e0f2b973",
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "sharedUseRequires": "MIKE_TOBI_MERGE",
+        "canonAuthority": "NONE"
+      },
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "defaultVariantId": "closed-record-query",
+        "variants": [
+          {
+            "id": "closed-record-query",
+            "title": "Closed primitive records with explicit query vocabulary",
+            "parameterOverrides": {}
+          }
+        ]
+      },
+      "parameterSpec": {
+        "inputSchemaId": {
+          "type": "string", "required": true, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$", "maxLength": 180,
+          "description": "Exact closed-record collection input contract consumed by the generated hand."
+        },
+        "resultSchemaId": {
+          "type": "string", "required": true, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$", "maxLength": 180,
+          "description": "Exact result envelope emitted by the generated hand."
+        },
+        "fields": {
+          "type": "array", "required": true, "maxBytes": 8192,
+          "description": "One to 32 unique closed STRING, INTEGER, or BOOLEAN field declarations."
+        },
+        "maxRecords": {"type": "integer", "required": true, "minimum": 1, "maximum": 1024, "description": "Maximum input records inspected."},
+        "maxPredicates": {"type": "integer", "required": true, "minimum": 0, "maximum": 16, "description": "Maximum exact AND predicates."},
+        "maxSortKeys": {"type": "integer", "required": true, "minimum": 0, "maximum": 8, "description": "Maximum stable sort keys."},
+        "maxProjectionFields": {"type": "integer", "required": true, "minimum": 1, "maximum": 32, "description": "Maximum unique projected fields."},
+        "maxResultRecords": {"type": "integer", "required": true, "minimum": 1, "maximum": 1024, "description": "Maximum records a runtime query may return."},
+        "maxInputBytes": {"type": "integer", "required": true, "minimum": 256, "maximum": 1048576, "description": "Maximum normalized UTF-8 query-input bytes."},
+        "maxOutputBytes": {"type": "integer", "required": true, "minimum": 128, "maximum": 1048576, "description": "Maximum UTF-8 result-envelope bytes."}
+      },
+      "exampleRequest": {
+        "id": "adventure-content-record-query-candidate",
+        "family": "record-query",
+        "purpose": "Build one detached bounded record-query hand for synthetic adventure content selection.",
+        "recipeId": "bounded-record-query",
+        "variantId": null,
+        "parameters": {
+          "inputSchemaId": "axm.example.adventure-content-records/v1",
+          "resultSchemaId": "axm.example.adventure-content-query-result/v1",
+          "fields": [
+            {"name": "active", "kind": "BOOLEAN", "maxLength": null},
+            {"name": "id", "kind": "STRING", "maxLength": 40},
+            {"name": "kind", "kind": "STRING", "maxLength": 32},
+            {"name": "label", "kind": "STRING", "maxLength": 80},
+            {"name": "score", "kind": "INTEGER", "maxLength": null}
+          ],
+          "maxRecords": 16,
+          "maxPredicates": 8,
+          "maxSortKeys": 4,
+          "maxProjectionFields": 5,
+          "maxResultRecords": 16,
+          "maxInputBytes": 2048,
+          "maxOutputBytes": 512
+        },
+        "source": {"kind": "HUMAN", "ref": "bounded-record-query-v2.18"}
+      },
+      "boundaries": [
+        "closed own-data-property records with exact reviewed STRING, INTEGER, and BOOLEAN fields only",
+        "predicates use explicit EQ, NE, LT, LTE, GT, and GTE operators joined only by AND; BOOLEAN permits EQ and NE only",
+        "ordering uses explicit ASC or DESC keys, UTF-16 code-unit string comparison, and original input index for deterministic ties",
+        "no callback, regex, expression language, SQL parser, grouping, numeric aggregation, floating point, filesystem, network, process, provider, environment, clock, dynamic code, or randomness",
+        "record, predicate, sort, projection, result-count, input-byte, and output-byte ceilings fail closed",
+        "generated capability.js and selftest.js are inert UTF-8 data and are never executed by Capability Fabric",
+        "hostile Proxy traps and domain-semantic correctness remain unproven",
+        "detached candidate output only; no install, merge, publication, promotion, Foundation, or CANON authority"
+      ],
+      "verifiers": [
+        "package digest and exact deterministic rebuild",
+        "builder registry implementation-digest match",
+        "generated JavaScript syntax and forbidden-authority static checks",
+        "trusted disjoint harness execution of exact emitted selftest bytes with malformed-input countertests",
+        "stable-tie, typed-predicate, projection, resource-ceiling, lineage, and authority proofs",
+        "Detached Candidate Nursery structural scan"
+      ],
+      "recipeDigest": "sha256:6e947f83cdd83775d1182165fc67f8797c56497875de94d31054febff318f69a"
+    },
+    {
+      "schema": "axm.capability-recipe/v1",
       "id": "pure-json-transform",
       "version": "1.1.0",
       "title": "Bounded JavaScript String-Record Transform",
@@ -1155,5 +1258,5 @@
       "recipeDigest": "sha256:e3986033316cc192e916ae90d9dababc57dda7795f1a29c996ccdebfd5494a68"
     }
   ],
-  "catalogDigest": "sha256:d080e6b7ad16637e6019459930f0ebf6095f3dced3dfa7547781613bcbcc9b5f"
+  "catalogDigest": "sha256:d4055fc19f95122e4d4ec21fa445203a0c9e64681ba91c4fc69736dd3ada35c3"
 }
