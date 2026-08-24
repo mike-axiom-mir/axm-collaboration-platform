@@ -1,0 +1,87 @@
+name: AXM Code Prebuild Twin Admission Materializer
+
+on:
+  pull_request:
+    branches:
+      - codex/code-route-knowledge-v1
+    paths:
+      - ".github/workflows/code-prebuild-twin-admission-materialize.yml"
+      - "shared/code-capability-fabric/language-organs/code-prebuild-twin.js"
+      - "shared/code-capability-fabric/language-organs/code-candidate-admission-ground.js"
+      - "shared/code-capability-fabric/language-organs/prebuild-preview-topologies.json"
+      - "shared/code-capability-fabric/language-organs/prebuild-twin-admission.contract.json"
+      - "shared/code-capability-fabric/language-organs/selftest-prebuild-twin-admission.js"
+      - "shared/code-capability-fabric/module.contract.json"
+
+concurrency:
+  group: axm-code-prebuild-twin-admission-materialize
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  materialize-prebuild-views:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact branch source
+        uses: actions/checkout@v4
+        with:
+          ref: codex/code-prebuild-twin-admission-v1
+          fetch-depth: 1
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Prove prebuild twin and admission ground
+        run: |
+          node --check shared/code-capability-fabric/language-organs/code-prebuild-twin.js
+          node --check shared/code-capability-fabric/language-organs/code-candidate-admission-ground.js
+          node shared/code-capability-fabric/language-organs/selftest-prebuild-twin-admission.js
+      - name: Preserve code intelligence foundations
+        run: |
+          node shared/code-capability-fabric/language-organs/selftest-code-route-knowledge.js
+          node shared/code-capability-fabric/language-organs/selftest-human-discipline-perspectives.js
+          node shared/code-capability-fabric/language-organs/build-machine-templates.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-templates.js
+          node shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js
+          python shared/code-capability-fabric/language-organs/build-grammar-profiles.py --check
+          python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --check
+          node shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js
+          node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
+      - name: Regenerate deterministic repository views
+        run: |
+          node scripts/compile-city-graph.js --write
+          node scripts/compile-schema-registry.js --write
+          node scripts/compile-twin-surfaces.js --write
+          node scripts/compile-city-graph.js --check
+          node scripts/compile-schema-registry.js --check
+          node scripts/compile-twin-surfaces.js --check
+      - name: Run repository verification
+        run: |
+          node verify.js
+          node hub/hub-selftest.js
+          node hub/route-selftest.js
+          node hub/graft-selftest.js
+          node hub/skin-selftest.js
+          node hub/verify-plus.js
+          git diff --check
+      - name: Commit only deterministic generated views
+        run: |
+          git config user.name "AXM Prebuild Twin Steward Gate"
+          git config user.email "prebuild-twin-steward@axm.invalid"
+          git add registry/generated docs/generated/LEGO_CITY_MAP.md docs/generated/LEGO_CITY_BEGINNER_MAP.md
+          if git diff --cached --quiet; then
+            echo "No generated prebuild-view changes to commit."
+          else
+            git commit -m "chore(fabric): refresh prebuild twin derived views"
+            git push origin HEAD:codex/code-prebuild-twin-admission-v1
+          fi
