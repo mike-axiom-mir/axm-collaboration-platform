@@ -1,0 +1,37 @@
+name: AXM Code Language Organs Gate
+
+on:
+  push:
+    paths:
+      - "shared/code-capability-fabric/language-organs/**"
+      - "shared/code-capability-fabric/module.contract.json"
+      - ".github/workflows/code-language-organs-gate.yml"
+  pull_request:
+    paths:
+      - "shared/code-capability-fabric/language-organs/**"
+      - "shared/code-capability-fabric/module.contract.json"
+      - ".github/workflows/code-language-organs-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  language-organs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check registry syntax
+        run: node --check shared/code-capability-fabric/language-organs/registry.js
+      - name: Run core organ contract test
+        run: node shared/code-capability-fabric/language-organs/selftest.js
+      - name: Run adversarial routing and snapshot test
+        run: node shared/code-capability-fabric/language-organs/selftest-adversarial.js
+      - name: Verify exact PR51 donor bindings
+        run: node shared/code-capability-fabric/language-organs/selftest-donors.js
