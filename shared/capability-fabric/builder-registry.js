@@ -131,6 +131,73 @@
     return {capabilityKind:'HAND',source:htmlPageSource(config),selftest:htmlPageSelftest(config),provides:[parameters.resultSchemaId,'text/html'],consumes:['axm.markup-page-content/v1'],summary:'Pure deterministic accessible HTML document-structure renderer.'};
   }
 
+  function cssTokenName(value,label,maximum){
+    const text=String(value||'');
+    if(!/^[a-z][a-z0-9-]*$/.test(text)||text.length>maximum)throw new Error(label+' is invalid');
+    return text;
+  }
+  function cssTokenValue(kind,value,label){
+    if(kind==='COLOR_HEX'){
+      if(typeof value!=='string'||!/^#[0-9a-fA-F]{6}$/.test(value))throw new Error(label+' must be a six-digit hexadecimal color');
+      return value.toLowerCase();
+    }
+    if(kind==='LENGTH_PX'){
+      if(!Number.isInteger(value)||value<0||value>4096)throw new Error(label+' must be an integer from 0 to 4096');
+      return String(value)+'px';
+    }
+    if(kind==='INTEGER'){
+      if(!Number.isInteger(value)||value<-1000||value>1000)throw new Error(label+' must be an integer from -1000 to 1000');
+      return String(value);
+    }
+    if(kind==='PERCENT'){
+      if(!Number.isInteger(value)||value<0||value>100)throw new Error(label+' must be an integer from 0 to 100');
+      return String(value)+'%';
+    }
+    if(kind==='TIME_MS'){
+      if(!Number.isInteger(value)||value<0||value>60000)throw new Error(label+' must be an integer from 0 to 60000');
+      return String(value)+'ms';
+    }
+    throw new Error(label+' has an unsupported token kind');
+  }
+  function cssStylesheetSource(config){
+    return [
+      "'use strict';",
+      'function deepFreeze(value){if(value&&typeof value===\'object\'&&!Object.isFrozen(value)){Object.freeze(value);Object.keys(value).forEach(function(key){deepFreeze(value[key]);});}return value;}',
+      'const CONFIG=deepFreeze('+JSON.stringify(config)+');',
+      'function own(value,key){return Object.prototype.hasOwnProperty.call(Object(value),key);}',
+      'function jsonRecord(value){if(!value||typeof value!==\'object\'||Array.isArray(value))return false;const prototype=Object.getPrototypeOf(value);if(prototype!==Object.prototype&&prototype!==null)return false;if(Object.getOwnPropertySymbols(value).length)return false;return Object.getOwnPropertyNames(value).every(function(key){const descriptor=Object.getOwnPropertyDescriptor(value,key);return descriptor&&descriptor.enumerable&&own(descriptor,\'value\');});}',
+      'function bytes(value){try{return Buffer.byteLength(JSON.stringify(value),\'utf8\');}catch(_){return Infinity;}}',
+      'function cssValue(token,value){if(token.kind===\'COLOR_HEX\')return typeof value===\'string\'&&/^#[0-9a-fA-F]{6}$/.test(value)?value.toLowerCase():null;if(token.kind===\'LENGTH_PX\')return Number.isInteger(value)&&value>=0&&value<=4096?String(value)+\'px\':null;if(token.kind===\'INTEGER\')return Number.isInteger(value)&&value>=-1000&&value<=1000?String(value):null;if(token.kind===\'PERCENT\')return Number.isInteger(value)&&value>=0&&value<=100?String(value)+\'%\':null;if(token.kind===\'TIME_MS\')return Number.isInteger(value)&&value>=0&&value<=60000?String(value)+\'ms\':null;return null;}',
+      'function render(input){if(!jsonRecord(input))return {schema:CONFIG.resultSchemaId,ok:false,code:\'INPUT_OBJECT_REQUIRED\'};const inputKeys=Object.keys(input);if(inputKeys.some(function(key){return key!==\'overrides\';}))return {schema:CONFIG.resultSchemaId,ok:false,code:\'INPUT_FIELDS_UNSUPPORTED\'};const overrides=own(input,\'overrides\')?input.overrides:{};if(!jsonRecord(overrides))return {schema:CONFIG.resultSchemaId,ok:false,code:\'OVERRIDES_OBJECT_REQUIRED\'};const overrideKeys=Object.keys(overrides);if(overrideKeys.length>CONFIG.tokens.length)return {schema:CONFIG.resultSchemaId,ok:false,code:\'OVERRIDE_KEY_LIMIT\'};const known=new Set(CONFIG.tokens.map(function(token){return token.name;}));const unknown=overrideKeys.filter(function(key){return !known.has(key);}).sort();if(unknown.length)return {schema:CONFIG.resultSchemaId,ok:false,code:\'UNKNOWN_TOKEN\',token:unknown[0]};const rows=[];for(const token of CONFIG.tokens){const raw=own(overrides,token.name)?overrides[token.name]:token.defaultValue;const value=cssValue(token,raw);if(value===null)return {schema:CONFIG.resultSchemaId,ok:false,code:\'TOKEN_VALUE_INVALID\',token:token.name};rows.push(\'  --\'+CONFIG.prefix+\'-\'+token.name+\': \'+value+\';\');}if(bytes(input)>CONFIG.maxInputBytes)return {schema:CONFIG.resultSchemaId,ok:false,code:\'INPUT_BYTES_EXCEEDED\'};const css=\':root {\\n\'+rows.join(\'\\n\')+\'\\n}\\n\';if(Buffer.byteLength(css,\'utf8\')>CONFIG.maxOutputBytes)return {schema:CONFIG.resultSchemaId,ok:false,code:\'CSS_BYTES_EXCEEDED\'};return {schema:CONFIG.resultSchemaId,ok:true,mimeType:\'text/css; charset=utf-8\',css:css,tokenCount:CONFIG.tokens.length};}',
+      'module.exports={CONFIG:CONFIG,render:render};',
+      ''
+    ].join('\n');
+  }
+  function cssStylesheetSelftest(config){
+    const first=config.tokens[0],override=first.kind==='COLOR_HEX'?'#A1B2C3':first.kind==='INTEGER'?-7:first.kind==='PERCENT'?75:first.kind==='TIME_MS'?250:24;
+    return "'use strict';\nconst assert=require('assert');const stylesheet=require('./capability.js');const defaults=stylesheet.render({}),again=stylesheet.render({});assert.equal(defaults.ok,true);assert.equal(defaults.css,again.css);assert(defaults.css.startsWith(':root {\\n'));assert(defaults.css.includes('--"+config.prefix+"-"+first.name+":'));assert(!/@import|url\\s*\\(|<\\/?style/i.test(defaults.css));const changed=stylesheet.render({overrides:{"+JSON.stringify(first.name)+":"+JSON.stringify(override)+"}});assert.equal(changed.ok,true);assert.equal(stylesheet.render({overrides:{unknown:'red'}}).code,'UNKNOWN_TOKEN');assert.equal(stylesheet.render({overrides:{"+JSON.stringify(first.name)+":'red;display:none'}}).code,'TOKEN_VALUE_INVALID');assert.equal(stylesheet.render({extra:true}).code,'INPUT_FIELDS_UNSUPPORTED');process.stdout.write('bounded CSS token stylesheet candidate selftest PASS\\n');\n";
+  }
+  function buildCssTokenStylesheet(parameters){
+    htmlExact(parameters,['resultSchemaId','prefix','tokens','maxInputBytes','maxOutputBytes'],'parameters');
+    if(!/^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$/.test(parameters.resultSchemaId||''))throw new Error('resultSchemaId is invalid');
+    const prefix=cssTokenName(parameters.prefix,'prefix',24);
+    if(!Array.isArray(parameters.tokens)||parameters.tokens.length<1||parameters.tokens.length>32)throw new Error('tokens must contain 1 to 32 entries');
+    const seen=new Set(),tokens=parameters.tokens.map(function(row,index){
+      htmlExact(row,['name','kind','defaultValue'],'tokens['+index+']');
+      const name=cssTokenName(row.name,'tokens['+index+'].name',32);
+      if(seen.has(name))throw new Error('token names must be unique');seen.add(name);
+      if(!['COLOR_HEX','INTEGER','LENGTH_PX','PERCENT','TIME_MS'].includes(row.kind))throw new Error('tokens['+index+'].kind is unsupported');
+      cssTokenValue(row.kind,row.defaultValue,'tokens['+index+'].defaultValue');
+      return {name:name,kind:row.kind,defaultValue:row.defaultValue};
+    }).sort(function(left,right){return left.name.localeCompare(right.name);});
+    if(!Number.isInteger(parameters.maxInputBytes)||parameters.maxInputBytes<128||parameters.maxInputBytes>65536)throw new Error('maxInputBytes is outside the bounded range');
+    if(!Number.isInteger(parameters.maxOutputBytes)||parameters.maxOutputBytes<128||parameters.maxOutputBytes>65536)throw new Error('maxOutputBytes is outside the bounded range');
+    const defaultCss=':root {\n'+tokens.map(function(token){return '  --'+prefix+'-'+token.name+': '+cssTokenValue(token.kind,token.defaultValue,'defaultValue')+';';}).join('\n')+'\n}\n';
+    if(Buffer.byteLength(defaultCss,'utf8')>parameters.maxOutputBytes)throw new Error('default stylesheet exceeds maxOutputBytes');
+    const config={resultSchemaId:parameters.resultSchemaId,prefix:prefix,tokens:tokens,maxInputBytes:parameters.maxInputBytes,maxOutputBytes:parameters.maxOutputBytes};
+    return {capabilityKind:'HAND',source:cssStylesheetSource(config),selftest:cssStylesheetSelftest(config),provides:[parameters.resultSchemaId,'text/css'],consumes:['axm.css-token-overrides/v1'],summary:'Pure bounded CSS custom-property stylesheet renderer with typed design tokens.'};
+  }
+
   function pythonField(value,label){
     const text=String(value||'');
     if(!/^[a-z][a-z0-9_]{0,63}$/.test(text))throw new Error(label+' is invalid');
@@ -368,6 +435,7 @@
     makeEntry('bounded-review-procedure-skill-v1','SKILL',REVIEW_CANDIDATE,'sha256:acd5678b5327fda7c2a2f1280fb4fa26f41cfd188e4788c1df3c2e539ee532ba',buildReviewSkill,[exact,list,safeId,contractId,renderSkillMarkdown,renderSkillSelftest,buildReviewSkill]),
     makeEntry('closed-object-contract-adapter-v1','HAND',REVIEW_CANDIDATE,'sha256:65a4fbfab2452f0e2c6a8fbff0f873f2b58f6b6cb7f0f533cbe1a260f9f151d1',buildObjectAdapter,[adapterFieldName,primitiveValueValid,inspectAdapterPrimitive,inspectAdapterObjectSchema,primitiveSchemaCompatible,adapterExample,inspectAdapterParameters,objectAdapterSource,objectAdapterSelftest,buildObjectAdapter]),
     makeEntry('static-accessible-html-page-v1','HAND',REVIEW_CANDIDATE,'sha256:983ff82440f97044d5d1af9737e7656df547898b9a0753579fb01440ca4ecfc6',buildHtmlPage,[htmlExact,htmlText,htmlPageSource,htmlPageSelftest,buildHtmlPage]),
+    makeEntry('bounded-css-token-stylesheet-v1','HAND',ACTIVE,null,buildCssTokenStylesheet,[htmlExact,cssTokenName,cssTokenValue,cssStylesheetSource,cssStylesheetSelftest,buildCssTokenStylesheet]),
     makeEntry('bounded-python-record-transform-v1','HAND',ACTIVE,null,buildPythonRecordTransform,[htmlExact,pythonField,pythonText,pythonRecordTransformSource,pythonRecordTransformSelftest,buildPythonRecordTransform])
   ];
   // Lifecycle activation is applied after implementation sealing so the exact

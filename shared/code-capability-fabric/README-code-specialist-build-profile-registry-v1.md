@@ -10,10 +10,11 @@ with a byte-bound profile catalog. A profile binds all of these exactly:
 - the capability family, evidence routes, repair gates, and typed gaps; and
 - a zero-authority detached-candidate boundary.
 
-The catalog contains three bounded build lanes: JSON schema validation, static
-HTML page rendering, and one string-only Python record transform. It does not
+The catalog contains four bounded build lanes: JSON schema validation, static
+HTML page rendering, one typed CSS token stylesheet, and one string-only Python
+record transform. It does not
 claim that Python generally—or all languages—are implemented. A broader
-Python, CSS, Rust, game-script, or other profile becomes eligible only after
+Python, broader CSS, Rust, game-script, or other profile becomes eligible only after
 its specialist binding and source-reviewed recipe exist. Missing or drifted
 bindings emit typed gaps; a nearby recipe is never borrowed.
 

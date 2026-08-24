@@ -1,11 +1,12 @@
 # Code Specialist Capability Builder v1 (TEST)
 
-This v2.0 rung gives registered Code Capability Fabric specialists real but
+This v2.1 rung gives registered Code Capability Fabric specialists real but
 bounded construction routes. The initial build-profile catalog contains:
 
 - `organ.code.data-schema` → `closed-json-schema-validator@0.1.0`; and
 - `organ.code.markup-structure` → `static-accessible-html-page@0.1.0`; and
-- `organ.code.application-logic` + Python → `bounded-python-record-transform@0.1.0`.
+- `organ.code.application-logic` + Python → `bounded-python-record-transform@0.1.0`; and
+- `organ.code.style-presentation` + CSS → `bounded-css-token-stylesheet@0.1.0`.
 
 Each route emits one byte-bound detached candidate. Selection is exact across
 the language, specialist Organ, build profile, Capability Fabric recipe, and
@@ -15,7 +16,8 @@ specialist cannot borrow or impersonate another profile's recipe.
 The builder requires all of the following exact inputs:
 
 - a v1.6 specialist-to-Organ-intent request and deterministically rebuilt plan;
-- one exact admitted data-schema or markup-structure artifact lane;
+- one exact admitted data-schema, markup-structure, Python application-logic,
+  or CSS style-presentation artifact lane;
 - one exact registered build profile whose language matches that artifact;
 - a human-reviewed Capability Fabric request whose source binds the v1.6 plan;
 - tier-1 consent bound to the intent, build request, catalog, and recipe digests;
@@ -37,16 +39,24 @@ heading hierarchy, escaped text, and no CSS, script, inline event handler, or
 external resource. That is static source evidence only; it is not a visual or
 accessibility-usability claim.
 
+The CSS hand emits only a fixed `:root` custom-property sheet. Callers may
+override declared tokens through five closed value types; they cannot inject a
+selector, property, at-rule, import, URL, comment, escape, or raw declaration.
+That is source and contract evidence only. Cascade behavior, compatibility,
+motion timing, accessibility effect, and visual quality require separate live
+browser evidence.
+
 The result distinguishes what is proven from what remains unknown. Exact
 specialist lineage, recipe lineage, candidate structure, byte lineage, portable
 paths, and resource ceilings can pass. Runtime behavior remains `UNKNOWN`; the
 generated selftest remains `EMITTED_NOT_RUN`; human identity authentication and
 nonce replay prevention are not claimed.
 
-Only the closed JSON Schema validator, static HTML-page renderer, and one
-string-only Python record transform are registered. The Python lane does not
-claim general Python generation or runtime correctness. CSS, broader Python,
-browser behavior, persistence, security, tests, build systems, shaders,
+Only the closed JSON Schema validator, static HTML-page renderer, one typed CSS
+token-stylesheet renderer, and one string-only Python record transform are
+registered. The CSS lane does not claim arbitrary CSS generation or visual
+correctness; the Python lane does not claim general Python generation or runtime
+correctness. Broader CSS or Python, browser behavior, persistence, security, tests, build systems, shaders,
 hardware simulation, performance, documentation, and audio still require
 their own source-reviewed recipes, profiles, and evidence. A reviewed profile
 can add a lane without rewriting this builder. Unsupported or drifted profiles

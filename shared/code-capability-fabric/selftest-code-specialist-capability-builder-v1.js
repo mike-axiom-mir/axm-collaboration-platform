@@ -27,14 +27,19 @@ const markupCandidate = markupResult.detachedCandidate;
 const pythonBase = Builder.buildPythonExampleRequest();
 const pythonResult = Builder.generate(pythonBase);
 const pythonCandidate = pythonResult.detachedCandidate;
+const cssBase = Builder.buildCssExampleRequest();
+const cssResult = Builder.generate(cssBase);
+const cssCandidate = cssResult.detachedCandidate;
 const sourcePath = path.join(__dirname, 'code-specialist-capability-builder-v1.js');
 const requestSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-specialist-capability-build-request.schema.json'), 'utf8'));
 const resultSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-specialist-capability-candidate.schema.json'), 'utf8'));
 const capabilityRecipeSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'capability-recipe.schema.json'), 'utf8'));
 const candidatePackageSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'candidate-package.schema.json'), 'utf8'));
 
-test('example request is sealed under the v2.0 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
+test('example request is sealed under the v2.1 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
 test('request version is exact', () => assert.strictEqual(base.version, Builder.VERSION));
+test('request JSON Schema version matches the implementation identity', () => assert.strictEqual(requestSchema.properties.version.const, Builder.VERSION));
+test('candidate JSON Schema version matches the implementation identity', () => assert.strictEqual(resultSchema.properties.version.const, Builder.VERSION));
 test('request digest rebuilds exactly', () => assert.strictEqual(base.requestDigest, Builder.sha256Value(Object.fromEntries(Object.entries(base).filter(([key]) => key !== 'requestDigest')))));
 test('example produces one detached candidate', () => assert.strictEqual(result.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('result schema is exact', () => assert.strictEqual(result.schema, Builder.RESULT_SCHEMA));
@@ -105,7 +110,7 @@ test('public copying remains unauthorized', () => assert.strictEqual(result.reus
 test('capability gap report is READY only for this exact rung', () => assert.deepStrictEqual(result.capabilityGapReport.missingCapabilities, []));
 test('next gate is exact candidate review before sandbox decision', () => assert.strictEqual(result.nextGate, 'HUMAN_REVIEW_EXACT_CANDIDATE_BYTES_BEFORE_SEPARATE_SANDBOX_DECISION'));
 
-test('markup example request is sealed under the v2.0 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
+test('markup example request is sealed under the v2.1 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
 test('markup example produces one detached candidate', () => assert.strictEqual(markupResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('markup result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(markupResult, markupBase), { pass: true, errors: [] }));
 test('markup generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(markupResult), Builder.canonicalJson(Builder.generate(markupBase))));
@@ -136,7 +141,7 @@ test('markup candidate remains detached and unintegrated', () => assert.strictEq
 test('markup output stays inside the exact candidate resource ceiling', () => assert(markupCandidate.package.totalBytes <= markupBase.resourceEnvelope.maxCandidateBytes && markupCandidate.package.files.length <= markupBase.resourceEnvelope.maxCandidateFiles));
 test('markup visual limitation is retained', () => assert(markupResult.limitations.includes('HTML_VISUAL_ACCESSIBILITY_AND_INTERACTION_BEHAVIOR_NOT_PROVEN')));
 
-test('Python example request is sealed under the v2.0 identity', () => assert.strictEqual(pythonBase.version, Builder.VERSION));
+test('Python example request is sealed under the v2.1 identity', () => assert.strictEqual(pythonBase.version, Builder.VERSION));
 test('Python example produces one detached candidate', () => assert.strictEqual(pythonResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('Python result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(pythonResult, pythonBase), { pass: true, errors: [] }));
 test('Python generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(pythonResult), Builder.canonicalJson(Builder.generate(pythonBase))));
@@ -160,6 +165,32 @@ test('Python field-name expansion is held by the exact build plan', () => held(p
 test('Python key-budget expansion is held by the exact build plan', () => held(pythonBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxInputKeys = 129; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
 test('Python string parameters cannot inject a new import line', () => { const request = changed(pythonBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.defaultValue = 'x"\nimport os\n#'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }); const built = Builder.generate(request); assert.strictEqual(built.status, 'COMPLETE_DETACHED_CANDIDATE'); assert(!/^import os$/m.test(built.detachedCandidate.files['capability.py'])); });
 test('Python candidate byte tampering fails exact result verification', () => { const tampered = clone(pythonResult); tampered.detachedCandidate.files['capability.py'] += '\n# drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, pythonBase).pass, false); });
+
+test('CSS example request is sealed under the v2.1 identity', () => assert.strictEqual(cssBase.version, Builder.VERSION));
+test('CSS example produces one detached candidate', () => assert.strictEqual(cssResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
+test('CSS result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(cssResult, cssBase), { pass: true, errors: [] }));
+test('CSS generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(cssResult), Builder.canonicalJson(Builder.generate(cssBase))));
+test('CSS selection binds style presentation and the exact theme artifact', () => assert.strictEqual(cssResult.specialistContext.specialistOrganRef.id, 'organ.code.style-presentation') && assert.strictEqual(cssResult.specialistContext.artifactRef.id, 'game-theme'));
+test('CSS selection binds the exact profile and language', () => assert.strictEqual(cssResult.specialistContext.buildProfileRef.id, 'code-family.bounded-css-token-stylesheet') && assert.strictEqual(cssResult.specialistContext.languageId, 'css'));
+test('CSS candidate binds the exact source-reviewed recipe', () => assert.deepStrictEqual(cssResult.recipeRef, Builder.CSS_TARGET_RECIPE));
+test('CSS consent binds exact catalog, profile, request, and recipe bytes', () => assert.strictEqual(cssResult.consentRef.subject.catalogDigest, cssResult.catalogRef.sha256) && assert.strictEqual(cssResult.consentRef.subject.buildProfileCatalogDigest, cssResult.buildProfileCatalogRef.sha256) && assert.strictEqual(cssResult.consentRef.subject.buildProfileDigest, cssResult.specialistContext.buildProfileRef.sha256) && assert.strictEqual(cssResult.consentRef.subject.capabilityRequestDigest, cssBase.capabilityBuildRequest.requestDigest) && assert.strictEqual(cssResult.consentRef.subject.recipeDigest, Builder.CSS_TARGET_RECIPE.digest));
+test('CSS candidate passes Fabric and portable path verification', () => assert(CapabilityFabric.verifyCandidate(cssCandidate).ok) && assert(Builder.validateCandidatePaths(Object.keys(cssCandidate.files)).pass));
+test('CSS generated source and selftest remain inert candidate text', () => assert.strictEqual(typeof cssCandidate.files['capability.js'], 'string') && assert.strictEqual(typeof cssCandidate.files['selftest.js'], 'string'));
+test('CSS generated source is syntactically valid without invoking it', () => assert.doesNotThrow(() => new Function(cssCandidate.files['capability.js'])));
+test('CSS generated source fixes the selector to root custom properties', () => assert(cssCandidate.files['capability.js'].includes(":root {\\n") && cssCandidate.files['capability.js'].includes("rows.push('  --")));
+test('CSS generated source contains no import, URL, style element, fetch, filesystem, process, or dynamic evaluation', () => { const source = cssCandidate.files['capability.js']; assert(!/@import|url\s*\(|<\/?style|\bfetch\s*\(|require\(['\"](?:fs|node:fs|child_process|node:child_process)['\"]\)|new Function|\beval\s*\(/i.test(source)); });
+test('CSS runtime, cascade, visual, motion, and quality evidence remain UNKNOWN or unrun', () => assert.strictEqual(cssResult.evidence.runtimeBehavior, 'UNKNOWN') && assert.strictEqual(cssResult.evidence.visualBehavior, 'UNKNOWN') && assert.strictEqual(cssResult.evidence.emittedSelftest, 'EMITTED_NOT_RUN'));
+test('CSS candidate and emitted selftest were not executed', () => assert.strictEqual(cssResult.resourceObservation.candidateExecuted, false) && assert.strictEqual(cssResult.resourceObservation.generatedSelftestExecuted, false) && assert.strictEqual(cssResult.resourceObservation.processesSpawned, 0));
+test('CSS candidate has no permissions or lifecycle authority', () => { assert(Object.values(cssCandidate.package.authority).every((value) => value === false)); assert.deepStrictEqual(JSON.parse(cssCandidate.files['module.contract.json']).permissions, []); assert.strictEqual(cssResult.truth.installed, false); assert.strictEqual(cssResult.truth.integrated, false); assert.strictEqual(cssResult.truth.published, false); assert.strictEqual(cssResult.truth.promoted, false); assert.strictEqual(cssResult.truth.canonChanged, false); });
+test('CSS visual limitation is retained', () => assert(cssResult.limitations.includes('CSS_CASCADE_BROWSER_COMPATIBILITY_AND_VISUAL_QUALITY_NOT_PROVEN')));
+test('CSS lane cannot borrow the Python profile', () => held(cssBase, (next) => { next.selection.mode = 'ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST'; }, 'SPECIALIST_HOLD'));
+test('Python lane cannot borrow the CSS profile', () => held(pythonBase, (next) => { next.selection.mode = 'ONE_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST'; }, 'SPECIALIST_HOLD'));
+test('CSS recipe substitution is held', () => held(cssBase, (next) => { const catalog = CapabilityFabric.loadCatalog(), recipe = catalog.recipes.find((row) => row.id === 'static-accessible-html-page'), draft = clone(recipe.exampleRequest); draft.source = { kind: 'CODE_FABRIC', ref: next.intentAdapterPlan.planDigest }; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); }, 'BUILD_REQUEST_HOLD'));
+test('CSS token-name injection is refused before candidate emission', () => held(cssBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.tokens[0].name = 'bad;display-none'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'CANDIDATE_HOLD'));
+test('CSS token-kind expansion is refused before candidate emission', () => held(cssBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.tokens[0].kind = 'RAW_CSS'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'CANDIDATE_HOLD'));
+test('CSS duplicate token aliases are refused before candidate emission', () => held(cssBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.tokens[1].name = draft.parameters.tokens[0].name; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'CANDIDATE_HOLD'));
+test('CSS input budget expansion is held by the exact build plan', () => held(cssBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxInputBytes = 65537; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('CSS candidate byte tampering fails exact result verification', () => { const tampered = clone(cssResult); tampered.detachedCandidate.files['capability.js'] += '\n// drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, cssBase).pass, false); });
 
 test('root HOLD stops before intent verification and build', () => {
   const originalVerify = IntentAdapter.verify, originalBuild = CapabilityFabric.build;
@@ -279,9 +310,11 @@ test('result schema is closed', () => assert.strictEqual(resultSchema.additional
 test('active recipe schema knows the admitted validator builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('closed-json-schema-validator-v1')));
 test('active recipe schema knows the admitted HTML page builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('static-accessible-html-page-v1')));
 test('active recipe schema knows the admitted bounded Python builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('bounded-python-record-transform-v1')));
+test('active recipe schema knows the admitted bounded CSS builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('bounded-css-token-stylesheet-v1')));
 test('candidate package schema knows the admitted validator builder', () => assert(candidatePackageSchema.$defs ? candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('closed-json-schema-validator-v1') : false));
 test('candidate package schema knows the admitted HTML page builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('static-accessible-html-page-v1')));
 test('candidate package schema knows the admitted bounded Python builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-python-record-transform-v1')));
+test('candidate package schema knows the admitted bounded CSS builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-css-token-stylesheet-v1')));
 test('candidate package schema knows the admitted review-skill builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-review-procedure-skill-v1')));
 test('request schema admits a profile-resolved mode token', () => assert.strictEqual(requestSchema.properties.selection.properties.mode.pattern, '^[A-Z][A-Z0-9_]{2,127}$'));
 test('request schema requires an exact build-profile reference', () => assert(requestSchema.properties.selection.required.includes('buildProfileRef')));
@@ -292,4 +325,4 @@ test('source contains no child-process module import', () => assert(!/require\([
 test('source contains no fetch call', () => assert(!/\bfetch\s*\(/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source never invokes generated candidate text', () => assert(!/new Function|\beval\s*\(|vm\.(?:run|compile)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 
-if (!process.exitCode) process.stdout.write('Code specialist capability builder v2.0 selftest: ' + passed + ' PASS\n');
+if (!process.exitCode) process.stdout.write('Code specialist capability builder v2.1 selftest: ' + passed + ' PASS\n');

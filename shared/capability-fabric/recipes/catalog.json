@@ -399,6 +399,121 @@
     },
     {
       "schema": "axm.capability-recipe/v1",
+      "id": "bounded-css-token-stylesheet",
+      "version": "0.1.0",
+      "title": "Bounded CSS Token Stylesheet Hand",
+      "summary": "Compile a dependency-free renderer for one fixed :root custom-property stylesheet from typed design-token overrides.",
+      "family": "style-creation",
+      "capabilityKind": "HAND",
+      "capabilityContract": {
+        "runtimeMode": "EXECUTABLE",
+        "entry": "capability.js",
+        "operation": "render",
+        "portableForm": "NONE",
+        "portablePath": null,
+        "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+        "requiredHostCapabilities": []
+      },
+      "builderId": "bounded-css-token-stylesheet-v1",
+      "builderDigest": "sha256:1a9fa4c3a0ce626fa1adfe709dd3bbea7aa91e867c20794e9213a6e5da82d163",
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "sharedUseRequires": "MIKE_TOBI_MERGE",
+        "canonAuthority": "NONE"
+      },
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "defaultVariantId": "typed-root-tokens",
+        "variants": [
+          {
+            "id": "typed-root-tokens",
+            "title": "Typed :root custom properties without arbitrary CSS",
+            "parameterOverrides": {}
+          }
+        ]
+      },
+      "parameterSpec": {
+        "resultSchemaId": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+          "maxLength": 180,
+          "description": "Exact result envelope emitted by the stylesheet renderer."
+        },
+        "prefix": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[a-z][a-z0-9-]{0,23}$",
+          "maxLength": 24,
+          "description": "Fixed CSS custom-property namespace prefix."
+        },
+        "tokens": {
+          "type": "array",
+          "required": true,
+          "maxBytes": 8192,
+          "description": "One to 32 closed token declarations with name, kind, and typed default value."
+        },
+        "maxInputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 128,
+          "maximum": 65536,
+          "description": "Maximum serialized override input bytes before refusal."
+        },
+        "maxOutputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 128,
+          "maximum": 65536,
+          "description": "Maximum emitted stylesheet bytes before refusal."
+        }
+      },
+      "exampleRequest": {
+        "id": "game-theme-token-stylesheet-candidate",
+        "family": "style-creation",
+        "purpose": "Build one detached bounded CSS token stylesheet renderer for the style-presentation specialist pilot.",
+        "recipeId": "bounded-css-token-stylesheet",
+        "variantId": null,
+        "parameters": {
+          "resultSchemaId": "axm.css-token-stylesheet-render-result/v1",
+          "prefix": "axm-game",
+          "tokens": [
+            {"name": "background", "kind": "COLOR_HEX", "defaultValue": "#081018"},
+            {"name": "foreground", "kind": "COLOR_HEX", "defaultValue": "#edf7f4"},
+            {"name": "layer-base", "kind": "INTEGER", "defaultValue": 0},
+            {"name": "motion-fast", "kind": "TIME_MS", "defaultValue": 180},
+            {"name": "panel-opacity", "kind": "PERCENT", "defaultValue": 92},
+            {"name": "space-unit", "kind": "LENGTH_PX", "defaultValue": 8}
+          ],
+          "maxInputBytes": 4096,
+          "maxOutputBytes": 4096
+        },
+        "source": {
+          "kind": "HUMAN",
+          "ref": "css-style-specialist-v2.14"
+        }
+      },
+      "boundaries": [
+        "fixed :root selector and fixed reviewed token declarations only",
+        "runtime input may override declared token values only through closed COLOR_HEX, LENGTH_PX, INTEGER, PERCENT, and TIME_MS types",
+        "no arbitrary selector, property, declaration, at-rule, import, URL, comment, escape, external resource, script, dynamic code, filesystem, network, environment, clock, or randomness",
+        "generated capability.js and selftest.js are emitted as inert UTF-8 data and never executed by Capability Fabric",
+        "cascade behavior, browser compatibility, accessibility, animation timing, and visual quality remain UNKNOWN until separate browser evidence",
+        "detached candidate output only; no install, merge, promotion, Foundation, or CANON authority"
+      ],
+      "verifiers": [
+        "package digest and exact deterministic rebuild",
+        "builder registry implementation-digest match",
+        "generated JavaScript syntax and forbidden-CSS static checks",
+        "externally execute emitted selftest.js only after separate sandbox consent",
+        "live browser render and visual inspection only after separate execution consent",
+        "Detached Candidate Nursery structural scan"
+      ],
+      "recipeDigest": "sha256:b0663c70aed5a9c59ef35edf52ae5165b9f09e927ec837506fdcb00114eb4623"
+    },
+    {
+      "schema": "axm.capability-recipe/v1",
       "id": "bounded-python-record-transform",
       "version": "0.1.0",
       "title": "Bounded Python Record Transform",
@@ -823,5 +938,5 @@
       "recipeDigest": "sha256:754d323174787080f5d61c2c5fe515bc74ea126af21a498bbec17a6e4665594d"
     }
   ],
-  "catalogDigest": "sha256:798c934b36f1032e08194439904527d4fd069e34e27ca80d5f6e4d871c813786"
+  "catalogDigest": "sha256:ac0e7564abf180f36dbef4957e69f347dbf80c40edbfee6859528bf1bc15ac68"
 }
