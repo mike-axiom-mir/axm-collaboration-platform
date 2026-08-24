@@ -24,8 +24,11 @@ function select({languageId,intent='reuse',signals=[],mode='MACHINE',topN=5,mine
   for(const t of pool){if(seen.has(t.id))continue;seen.add(t.id);ranked.push({lane:'VERIFIED_VAULT',score:score(t,qSignals,it),template:t})}
   for(const c of minedCandidates||[]){if(c.languageId!==languageId&&!allowCrossLanguage)continue;ranked.push({lane:'PATTERN_NURSERY',score:candidateScore(c,qSignals,it),candidate:c})}
   ranked.sort((a,b)=>b.score-a.score||String(a.template?.id||a.candidate?.candidateSha256).localeCompare(String(b.template?.id||b.candidate?.candidateSha256)));
-  const selected=ranked.slice(0,Math.max(1,Math.min(12,topN))).map(x=>x.lane==='VERIFIED_VAULT'?capsule(x.template,mode,x.score):candidateCapsule(x.candidate,mode,x.score));
-  return {schema:'axm.code.template-selection.v1',result:selected.length?'TEMPLATES_SELECTED':'NO_TEMPLATE_MATCH',languageId,intent,mode,selected,normalMachineFastPath:true,aiAndMachineShareTemplateIdentity:true,authority:'NONE'};
+  const limit=Math.max(1,Math.min(12,topN));let chosen=ranked.slice(0,limit);let nurseryDiscoverySlotUsed=false;
+  const nurseryBest=ranked.find(x=>x.lane==='PATTERN_NURSERY'&&x.candidate?.languageId===languageId&&norm(x.candidate?.intent)===it);
+  if(nurseryBest&&!chosen.some(x=>x.lane==='PATTERN_NURSERY')&&limit>1){chosen=[...chosen.slice(0,limit-1),nurseryBest];nurseryDiscoverySlotUsed=true;}
+  const selected=chosen.map(x=>x.lane==='VERIFIED_VAULT'?capsule(x.template,mode,x.score):candidateCapsule(x.candidate,mode,x.score));
+  return {schema:'axm.code.template-selection.v1',result:selected.length?'TEMPLATES_SELECTED':'NO_TEMPLATE_MATCH',languageId,intent,mode,selected,nurseryDiscoverySlotUsed,normalMachineFastPath:true,aiAndMachineShareTemplateIdentity:true,nurseryCandidateRemainsUnverified:true,authority:'NONE'};
 }
 function capsule(t,mode,score){
   const base={lane:'VERIFIED_VAULT',templateId:t.id,templateSha256:t.templateSha256,score,intent:t.intent,holeSchema:t.holes,verification:t.verifierCandidates,authority:'NONE'};
