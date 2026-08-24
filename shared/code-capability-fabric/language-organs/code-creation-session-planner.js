@@ -102,7 +102,13 @@ function strings(value, label, maximum = 128) {
 }
 
 function ids(value, label, maximum = 128) {
-  return strings(value, label, maximum).map((entry, index) => id(entry, `${label}_${index}`));
+  const normalized = strings(value, label, maximum).map((entry, index) => id(entry, `${label}_${index}`));
+  const seen = new Set();
+  for (const entry of normalized) {
+    if (seen.has(entry)) throw new Error(`${label}_NORMALIZED_ALIAS_COLLISION:${entry}`);
+    seen.add(entry);
+  }
+  return normalized;
 }
 
 function jsonClone(value, label) {
@@ -119,10 +125,15 @@ function normalizeRoleBindings(value) {
   if (value == null) return {};
   plain(value, 'ROLE_BINDINGS');
   if (Object.keys(value).length > 32) throw new Error('ROLE_BINDINGS_TOO_MANY');
-  return Object.fromEntries(Object.keys(value).sort().map(role => [
-    id(role, 'ROLE_BINDING_ROLE'),
-    id(value[role], `ROLE_BINDING_LANGUAGE_${role}`)
-  ]));
+  const normalized = [];
+  const seenRoles = new Set();
+  for (const role of Object.keys(value).sort()) {
+    const roleId = id(role, 'ROLE_BINDING_ROLE');
+    if (seenRoles.has(roleId)) throw new Error(`ROLE_BINDING_ROLE_NORMALIZED_ALIAS_COLLISION:${roleId}`);
+    seenRoles.add(roleId);
+    normalized.push([roleId, id(value[role], `ROLE_BINDING_LANGUAGE_${role}`)]);
+  }
+  return Object.fromEntries(normalized);
 }
 
 function normalizeObservation(value) {
@@ -191,11 +202,14 @@ function createRequest(input = {}) {
 }
 
 function requestCurrent(request) {
-  if (!request || request.schema !== REQUEST_SCHEMA || request.version !== VERSION || !request.requestSha256) return false;
-  const core = { ...request };
-  const digest = core.requestSha256;
-  delete core.requestSha256;
-  return hash(core) === digest;
+  try {
+    if (!request || request.schema !== REQUEST_SCHEMA || request.version !== VERSION || !request.requestSha256) return false;
+    const input = { ...request };
+    delete input.requestSha256;
+    return canon(request) === canon(createRequest(input));
+  } catch (_) {
+    return false;
+  }
 }
 
 function evaluateRootGate({ request, roots } = {}) {
@@ -236,11 +250,12 @@ function evaluateRootGate({ request, roots } = {}) {
 }
 
 function gateCurrent(gate, request) {
-  if (!gate || gate.schema !== ROOT_GATE_SCHEMA || gate.version !== VERSION || gate.requestSha256 !== request.requestSha256 || !gate.gateSha256) return false;
-  const core = { ...gate };
-  const digest = core.gateSha256;
-  delete core.gateSha256;
-  return hash(core) === digest;
+  try {
+    if (!requestCurrent(request) || !gate || gate.schema !== ROOT_GATE_SCHEMA || gate.version !== VERSION || gate.requestSha256 !== request.requestSha256 || !gate.gateSha256) return false;
+    return canon(gate) === canon(evaluateRootGate({ request, roots: gate.roots }));
+  } catch (_) {
+    return false;
+  }
 }
 
 function held(result, request, rootGate, detail = {}) {
@@ -467,4 +482,3 @@ module.exports = Object.freeze({
   verifyPlan,
   snapshot
 });
-

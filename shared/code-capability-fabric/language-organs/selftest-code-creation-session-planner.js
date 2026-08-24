@@ -140,7 +140,31 @@ test('forged root gate digest is held', () => {
   forged.roots[0].status = 'HOLD';
   assert.strictEqual(Planner.plan({ request, rootGate: forged }).result, 'ROOT_GATE_INVALID_OR_STALE');
 });
+test('rehashing a contradictory root gate cannot turn HOLD into PASS', () => {
+  const forged = clone(gate);
+  forged.roots[0].status = 'HOLD';
+  delete forged.gateSha256;
+  forged.gateSha256 = Planner.hash(forged);
+  assert.strictEqual(Planner.plan({ request, rootGate: forged }).result, 'ROOT_GATE_INVALID_OR_STALE');
+});
+test('rehashing a request with an undeclared field cannot bypass exact validation', () => {
+  const forged = clone(request);
+  delete forged.requestSha256;
+  forged.hiddenAuthority = true;
+  forged.requestSha256 = Planner.hash(forged);
+  assert.throws(() => Planner.evaluateRootGate({ request: forged, roots: roots() }), /ROOT_GATE_REQUEST_INVALID_OR_STALE/);
+});
 test('request unknown fields are refused', () => assert.throws(() => Planner.createRequest({ ...input(), surpriseAuthority: true }), /REQUEST_UNKNOWN_FIELDS/));
+test('case-normalized language aliases are refused instead of silently collapsing', () => {
+  const value = input();
+  value.activeLanguageIds = ['html', 'HTML', 'css', 'javascript'];
+  assert.throws(() => Planner.createRequest(value), /ACTIVE_LANGUAGE_IDS_NORMALIZED_ALIAS_COLLISION:html/);
+});
+test('case-normalized role aliases are refused instead of silently overwriting', () => {
+  const value = input();
+  value.roleBindings['Game-Runtime'] = 'python';
+  assert.throws(() => Planner.createRequest(value), /ROLE_BINDING_ROLE_NORMALIZED_ALIAS_COLLISION:game-runtime/);
+});
 test('observation unknown fields are refused', () => {
   const value = input();
   value.observation.rawSource = ['private'];

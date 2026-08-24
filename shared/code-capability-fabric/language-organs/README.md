@@ -148,6 +148,9 @@ This closes the difference between “the 102 organs exist” and “the Creatio
 Fabric can address them coherently.” It still does not render source or execute
 software. Missing required role bindings, stale root evidence, unknown languages,
 or an initial draft set outside the declared budget produce typed holds.
+Case-normalized identifier aliases fail closed, and currentness checks compare
+the request and root gate with exact deterministic rebuilds rather than trusting
+a recomputed digest over an internally contradictory record.
 
 ## Authority boundary
 

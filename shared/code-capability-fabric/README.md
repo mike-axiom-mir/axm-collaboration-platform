@@ -445,6 +445,10 @@ specialist eye, discipline/template direction, machine-cheatcode guidance,
 route/prebuild twin, machine keyboard, admission policy, production draft slots,
 budget, Build Window state, and Work Context card. All 102 organs remain
 available as alternatives, but the planner never silently chooses one.
+Case-normalized language or role aliases are refused instead of being silently
+collapsed, and request/root-gate verification performs an exact deterministic
+rebuild so recomputing a digest cannot legitimize undeclared or contradictory
+fields.
 
 The result contains planning records and empty editable draft slots. It generates
 no source, calls no provider, executes no candidate or tool, reads or mutates no
