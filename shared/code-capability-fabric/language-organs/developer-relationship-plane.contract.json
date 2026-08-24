@@ -1,0 +1,111 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-developer-relationship-plane",
+  "version": "v1.0",
+  "status": "TEST",
+  "provides": [
+    "axm.code.developer-substrate-atlas.v1",
+    "axm.code.developer-relationship-graph.v1",
+    "axm.code.change-impact-report.v1",
+    "axm.code.reanalysis-plan.v1",
+    "axm.code.diagnostic-finding.v1",
+    "axm.code.diagnostic-batch.v1",
+    "axm.code.action-identity.v1",
+    "axm.code.action-cache-decision.v1",
+    "axm.code.dependency-diff.v1",
+    "axm.code.impact-preview.v1",
+    "axm.code.developer-substrate-snapshot.v1"
+  ],
+  "consumes": [
+    "caller-supplied relationship nodes and edges",
+    "caller-supplied changed entity identifiers",
+    "caller-supplied machine-key invalidation planes",
+    "caller-supplied build action input/toolchain/config/environment digests",
+    "caller-supplied before/after dependency snapshots",
+    "LSP diagnostic result objects",
+    "SARIF 2.1.0 analysis results",
+    "optional AXM dependency declaration maps",
+    "optional AXM diagnostic evidence",
+    "optional build-system/project graphs",
+    "optional package/lockfile dependency evidence",
+    "optional test/coverage relationships",
+    "optional data-flow/path evidence"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.code.developer-relationship-graph.v1",
+      "axm.code.change-impact-report.v1",
+      "axm.code.reanalysis-plan.v1",
+      "axm.code.diagnostic-batch.v1",
+      "axm.code.action-cache-decision.v1",
+      "axm.code.dependency-diff.v1",
+      "deterministic SVG impact preview"
+    ],
+    "accepts": [
+      "AXM_GRAMMAR",
+      "AXM_DEPENDENCY_MAP",
+      "AXM_DIAGNOSTICS",
+      "LSP",
+      "LSIF",
+      "TREE_SITTER",
+      "PACKAGE_MANIFEST",
+      "LOCKFILE",
+      "BUILD_SYSTEM",
+      "GIT_DIFF",
+      "TEST_COVERAGE",
+      "SARIF",
+      "CODEQL",
+      "RUNTIME_TRACE",
+      "MANUAL_EVIDENCE"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "relationship-edge-as-semantic-correctness-proof",
+      "missing-edge-as-no-relationship-proof",
+      "partial-graph-as-complete-impact-proof",
+      "affected-node-as-broken-code-proof",
+      "unaffected-node-as-safe-code-proof",
+      "observed-cycle-as-defect-proof",
+      "diagnostic-finding-as-correctness-proof",
+      "diagnostic-finding-as-required-fix-without-separate-policy",
+      "no-diagnostic-as-bug-free-proof",
+      "static-analysis-result-as-runtime-proof",
+      "data-flow-path-as-exploitability-proof",
+      "cache-identity-match-as-correct-output-proof",
+      "automatic-cache-read-or-write",
+      "automatic-build-or-test-execution",
+      "dependency-change-as-automatic-rejection",
+      "caller-supplied-vulnerability-metadata-as-independent-verification",
+      "automatic-dependency-installation",
+      "automatic-source-mutation",
+      "automatic-repair",
+      "automatic-language-switch",
+      "automatic-admission-change",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon"
+    ]
+  },
+  "truth": {
+    "graphCoverageMayBePartial": true,
+    "unresolvedEndpointsRetained": true,
+    "sourceClassProvenanceRetained": true,
+    "affectedScopeIsCandidateVerificationScope": true,
+    "sourceCodeRetainedByDiagnostics": false,
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "promotion": false,
+    "canon": false
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "new-process-snapshot",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

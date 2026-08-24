@@ -1,0 +1,421 @@
+{
+  "schema": "axm.code.human-discipline-perspectives.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "purpose": "Capture only materially distinct engineering perspectives as machine-usable review/direction lenses. Job titles are not treated as proof of distinct expertise.",
+  "classificationRule": {
+    "firstClassThreshold": "A perspective is FIRST_CLASS only when it materially changes at least two of: primary invariants, failure model, evidence/verification style, resource/time horizon, system boundary, or operational feedback loop.",
+    "classes": ["FIRST_CLASS", "COMPOSITE_ROLE", "DOMAIN_OVERLAY"],
+    "titleIsEvidence": false,
+    "frequencyIsEvidence": false,
+    "specializationIsAuthority": false
+  },
+  "researchBasis": [
+    {
+      "id": "incose-system-software-interface",
+      "title": "INCOSE Working Group Addresses System and Software Interfaces",
+      "supports": ["systems-engineering", "software-architecture"],
+      "note": "Systems engineering emphasizes global lifecycle and cross-domain integration; software engineering emphasizes software-relevant requirements and constraints."
+    },
+    {
+      "id": "sebok-systems-software",
+      "title": "Systems Engineering and Software Engineering / Software Engineering in the Systems Engineering Life Cycle",
+      "supports": ["systems-engineering", "software-architecture"]
+    },
+    {
+      "id": "swebok-requirements-testing-quality",
+      "title": "SWEBOK software requirements, testing and quality knowledge areas",
+      "supports": ["software-architecture", "verification-testing"]
+    },
+    {
+      "id": "google-sre",
+      "title": "Site Reliability Engineering: How Google Runs Production Systems and SRE Workbook",
+      "supports": ["reliability-sre", "performance-capacity"]
+    },
+    {
+      "id": "nist-ssdf",
+      "title": "NIST SP 800-218 Secure Software Development Framework",
+      "supports": ["security-engineering", "build-release-reproducibility"]
+    },
+    {
+      "id": "ieee-embedded",
+      "title": "IEEE Embedded Software / Hardware-Software Co-design",
+      "supports": ["embedded-firmware", "robotics-control", "safety-critical"]
+    },
+    {
+      "id": "game-engine-architecture",
+      "title": "Game Engine Architecture: The Game Loop and Real-Time Simulation",
+      "supports": ["interactive-game-systems", "performance-capacity"]
+    },
+    {
+      "id": "siggraph-real-time",
+      "title": "ACM SIGGRAPH Advances in Real-Time Rendering in Games",
+      "supports": ["graphics-rendering", "interactive-game-systems"]
+    },
+    {
+      "id": "w3c-wcag",
+      "title": "W3C WCAG 2.2 and accessibility/usability guidance",
+      "supports": ["frontend-interaction-accessibility"]
+    },
+    {
+      "id": "google-ml-debt",
+      "title": "Hidden Technical Debt in Machine Learning Systems",
+      "supports": ["machine-learning-engineering", "data-engineering"]
+    },
+    {
+      "id": "google-data-cascades",
+      "title": "Data Cascades in High-Stakes AI",
+      "supports": ["data-engineering", "machine-learning-engineering"]
+    },
+    {
+      "id": "cmu-compiler-passes",
+      "title": "CMU Compiler Design analysis-pass guidance",
+      "supports": ["compiler-toolchain"]
+    },
+    {
+      "id": "database-transactions",
+      "title": "Database transaction/concurrency literature: atomicity, isolation, durability and recovery",
+      "supports": ["database-storage"]
+    },
+    {
+      "id": "distributed-failure-literature",
+      "title": "Distributed-systems literature on partial failure, latency, partitions, replication and consensus",
+      "supports": ["distributed-systems", "network-protocol"]
+    }
+  ],
+  "firstClassPerspectives": [
+    {
+      "id": "systems-engineering",
+      "name": "Systems Engineering",
+      "reasonFirstClass": "Optimizes whole-system capability across hardware, software, firmware, operators and lifecycle rather than only the software artifact.",
+      "primaryInvariants": ["system capability", "cross-domain interface coherence", "requirement allocation", "lifecycle closure", "integration feasibility"],
+      "failureModel": ["locally-correct component breaks system", "interface mismatch", "requirement orphan", "late integration surprise", "lifecycle blind spot"],
+      "timeHorizon": ["concept", "development", "integration", "operation", "retirement"],
+      "systemBoundary": "whole engineered system and environment",
+      "evidencePreferences": ["traceable requirements", "interface contracts", "system models", "integration tests", "operational scenarios"],
+      "codeSignals": ["hardware interface", "external subsystem", "requirement allocation", "integration boundary", "lifecycle state", "multi-component capability"],
+      "direction": ["zoom out before local optimization", "trace code decision to system capability", "inspect non-software dependencies", "test interface assumptions early", "preserve lifecycle rationale"],
+      "challenges": ["software-only optimization", "unallocated requirement", "hidden environmental assumption", "late interface discovery"],
+      "complements": ["software-architecture", "embedded-firmware", "safety-critical"],
+      "blindSpots": ["may over-model small local changes", "can underweight implementation ergonomics"]
+    },
+    {
+      "id": "software-architecture",
+      "name": "Software Architecture and Application Engineering",
+      "reasonFirstClass": "Optimizes software structure, evolvability, contracts and change cost inside the broader system.",
+      "primaryInvariants": ["behavioral correctness", "module boundaries", "API contracts", "maintainability", "evolvability"],
+      "failureModel": ["coupling explosion", "boundary leakage", "unstable abstraction", "change ripple", "requirements drift"],
+      "timeHorizon": ["implementation", "release", "maintenance"],
+      "systemBoundary": "software product and software-facing interfaces",
+      "evidencePreferences": ["architecture graph", "API compatibility", "tests", "dependency direction", "change impact"],
+      "codeSignals": ["module", "service", "API", "dependency", "public surface", "refactor", "abstraction"],
+      "direction": ["minimize unnecessary coupling", "make dependency direction explicit", "protect stable contracts", "prefer reversible structure", "measure change impact"],
+      "challenges": ["premature abstraction", "god module", "implicit contract", "local fix with broad ripple"],
+      "complements": ["systems-engineering", "verification-testing", "security-engineering"],
+      "blindSpots": ["can underweight production reality", "can overvalue elegance over domain constraints"]
+    },
+    {
+      "id": "reliability-sre",
+      "name": "Site Reliability and Production Engineering",
+      "reasonFirstClass": "Treats production service behavior, user-visible reliability, failure recovery and operational toil as first-class engineering inputs.",
+      "primaryInvariants": ["SLO attainment", "bounded error budget", "recoverability", "observability", "operational scalability"],
+      "failureModel": ["partial outage", "silent degradation", "alert blindness", "toil growth", "unsafe rollout", "recovery failure"],
+      "timeHorizon": ["request", "incident", "release", "quarterly reliability budget", "long-lived operation"],
+      "systemBoundary": "running production service plus operators and dependencies",
+      "evidencePreferences": ["SLIs/SLOs", "error budgets", "production telemetry", "incident evidence", "rollback drills", "toil measures"],
+      "codeSignals": ["service", "retry", "timeout", "health check", "deploy", "rollback", "alert", "SLO", "queue"],
+      "direction": ["design failure handling before happy-path polish", "measure user-visible reliability", "bound retries and overload", "make rollback boring", "automate recurring toil"],
+      "challenges": ["hope-as-strategy", "unbounded retry", "missing telemetry", "manual recurring operations", "release without rollback"],
+      "complements": ["distributed-systems", "performance-capacity", "security-engineering"],
+      "blindSpots": ["can resist useful risk when reliability target is unclear", "may optimize operation over product novelty"]
+    },
+    {
+      "id": "security-engineering",
+      "name": "Security Engineering",
+      "reasonFirstClass": "Uses an adversarial failure model: inputs, dependencies, identities and operators may be malicious or compromised.",
+      "primaryInvariants": ["confidentiality", "integrity", "availability", "least privilege", "trust-boundary explicitness", "supply-chain provenance"],
+      "failureModel": ["malicious input", "privilege escalation", "credential theft", "tampering", "dependency compromise", "abuse path"],
+      "timeHorizon": ["design", "build", "deployment", "attack", "vulnerability response"],
+      "systemBoundary": "attack surface, trust boundaries, identities, dependencies and data",
+      "evidencePreferences": ["threat model", "abuse cases", "permission map", "provenance", "negative tests", "vulnerability evidence"],
+      "codeSignals": ["auth", "permission", "secret", "network", "deserialization", "input boundary", "dependency", "crypto", "sandbox"],
+      "direction": ["assume hostile input at trust boundaries", "minimize authority", "separate capability from permission", "verify provenance", "prefer fail-closed behavior"],
+      "challenges": ["implicit trust", "ambient authority", "secret leakage", "unsafe deserialization", "supply-chain opacity"],
+      "complements": ["reliability-sre", "build-release-reproducibility", "network-protocol"],
+      "blindSpots": ["can over-constrain usability if risk is not contextualized", "may add cost where threat is negligible"]
+    },
+    {
+      "id": "distributed-systems",
+      "name": "Distributed Systems Engineering",
+      "reasonFirstClass": "Correctness must survive independent clocks, latency, retries, partitions, duplicated work and partial failure across nodes.",
+      "primaryInvariants": ["consistency model", "idempotency", "partition behavior", "replication correctness", "ordering guarantees", "fault tolerance"],
+      "failureModel": ["partial failure", "message loss", "duplicate delivery", "reordering", "split brain", "stale read", "clock skew"],
+      "timeHorizon": ["message", "request", "partition", "recovery", "topology change"],
+      "systemBoundary": "multiple independently failing processes/nodes and communication links",
+      "evidencePreferences": ["failure injection", "protocol traces", "consistency tests", "partition scenarios", "idempotency proof", "recovery replay"],
+      "codeSignals": ["RPC", "queue", "message", "replica", "consensus", "distributed lock", "retry", "idempotency", "event"],
+      "direction": ["model partial failure explicitly", "make delivery semantics explicit", "design idempotency", "bound retries and timeouts", "separate local success from global commit"],
+      "challenges": ["network-is-reliable assumption", "exactly-once handwave", "global clock assumption", "retry amplification"],
+      "complements": ["reliability-sre", "database-storage", "network-protocol"],
+      "blindSpots": ["can overcomplicate single-node systems", "may sacrifice simplicity for hypothetical scale"]
+    },
+    {
+      "id": "database-storage",
+      "name": "Database and Storage Engineering",
+      "reasonFirstClass": "Optimizes durable state under concurrency, failure, schema evolution and query access patterns.",
+      "primaryInvariants": ["transaction semantics", "durability", "isolation", "schema integrity", "recoverability", "query correctness"],
+      "failureModel": ["lost update", "dirty/nonrepeatable read", "corrupt state", "partial commit", "recovery mismatch", "migration break"],
+      "timeHorizon": ["transaction", "checkpoint", "migration", "crash recovery", "long-term retention"],
+      "systemBoundary": "persistent state engine plus clients and storage media",
+      "evidencePreferences": ["transaction tests", "concurrency tests", "migration rehearsal", "recovery test", "query plan", "constraint validation"],
+      "codeSignals": ["transaction", "schema", "migration", "index", "query", "lock", "MVCC", "WAL", "persistence"],
+      "direction": ["state invariants before CRUD convenience", "make transaction boundary explicit", "test concurrent histories", "treat migrations as programs", "design recovery before failure"],
+      "challenges": ["implicit transaction", "schema drift", "N+1 access", "migration without rollback", "durability assumption"],
+      "complements": ["data-engineering", "distributed-systems", "software-architecture"],
+      "blindSpots": ["can over-optimize storage internals over user workflow", "may prefer normalization where latency shape dominates"]
+    },
+    {
+      "id": "data-engineering",
+      "name": "Data Engineering",
+      "reasonFirstClass": "Treats data lineage, quality, freshness, schema evolution and reproducible transformation as the primary correctness surface.",
+      "primaryInvariants": ["lineage", "data quality", "freshness", "schema compatibility", "idempotent pipeline behavior", "reproducibility"],
+      "failureModel": ["silent bad data", "late data", "duplicate processing", "schema drift", "backfill corruption", "opaque provenance"],
+      "timeHorizon": ["event", "batch", "backfill", "retention window", "schema evolution"],
+      "systemBoundary": "sources, transformations, storage, consumers and provenance",
+      "evidencePreferences": ["data contracts", "lineage graph", "quality assertions", "freshness metrics", "replay/backfill test", "sample provenance"],
+      "codeSignals": ["pipeline", "ETL", "stream", "schema", "dataset", "backfill", "lineage", "partition", "warehouse"],
+      "direction": ["make lineage explicit", "validate data at boundaries", "design idempotent replay", "treat backfills as production changes", "preserve provenance"],
+      "challenges": ["data work invisibility", "silent schema change", "one-off cleanup", "non-replayable pipeline", "unknown consumer"],
+      "complements": ["database-storage", "machine-learning-engineering", "reliability-sre"],
+      "blindSpots": ["can underweight application semantics", "may optimize pipeline health over end-user value"]
+    },
+    {
+      "id": "machine-learning-engineering",
+      "name": "Machine Learning Engineering",
+      "reasonFirstClass": "Behavior is statistical and data-dependent; correctness can drift without source changes because the world and data distribution change.",
+      "primaryInvariants": ["evaluation validity", "data/model provenance", "distribution awareness", "reproducibility", "feedback-loop visibility", "bounded model degradation"],
+      "failureModel": ["data drift", "feedback loop", "training-serving skew", "hidden consumer", "metric proxy failure", "model/data entanglement"],
+      "timeHorizon": ["inference", "training run", "data refresh", "drift window", "model lifecycle"],
+      "systemBoundary": "data, model, training pipeline, serving path, users and changing environment",
+      "evidencePreferences": ["dataset provenance", "held-out evaluation", "slice metrics", "drift tests", "reproducible training", "online/offline comparison"],
+      "codeSignals": ["model", "training", "feature", "dataset", "inference", "drift", "embedding", "evaluation", "feedback"],
+      "direction": ["treat data as code-level dependency", "separate statistical evidence from deterministic proof", "track model/data versions together", "test slices and drift", "surface hidden feedback loops"],
+      "challenges": ["model-only thinking", "offline metric worship", "undeclared data dependency", "training-serving skew", "silent drift"],
+      "complements": ["data-engineering", "reliability-sre", "verification-testing"],
+      "blindSpots": ["can accept probabilistic behavior where deterministic control is required", "may overfocus model metrics over product semantics"]
+    },
+    {
+      "id": "embedded-firmware",
+      "name": "Embedded and Firmware Engineering",
+      "reasonFirstClass": "Software correctness is coupled to physical hardware, interrupts, memory, timing and power budgets.",
+      "primaryInvariants": ["deadline adherence", "bounded memory", "power budget", "hardware protocol correctness", "deterministic startup/shutdown", "fault-state safety"],
+      "failureModel": ["missed deadline", "interrupt race", "buffer overflow", "brownout", "hardware revision mismatch", "peripheral fault"],
+      "timeHorizon": ["interrupt", "control period", "boot", "power cycle", "device lifetime"],
+      "systemBoundary": "firmware plus processor, peripherals, buses, sensors, actuators and power",
+      "evidencePreferences": ["worst-case timing", "static memory analysis", "hardware-in-loop", "register/bus trace", "fault injection", "power measurement"],
+      "codeSignals": ["interrupt", "register", "MMIO", "RTOS", "DMA", "peripheral", "bootloader", "fixed memory", "watchdog"],
+      "direction": ["budget time and memory before abstraction", "make hardware revision assumptions explicit", "avoid unbounded dynamic behavior", "test startup/fault paths", "co-design hardware/software boundaries"],
+      "challenges": ["desktop assumptions", "unbounded allocation", "blocking ISR", "timing-by-average", "hardware magic number"],
+      "complements": ["systems-engineering", "safety-critical", "robotics-control"],
+      "blindSpots": ["can over-optimize resource use on unconstrained platforms", "may resist dynamic techniques even when safe"]
+    },
+    {
+      "id": "interactive-game-systems",
+      "name": "Interactive and Game Systems Engineering",
+      "reasonFirstClass": "Correctness includes real-time interactive response, simulation time, player-visible continuity, deterministic/replayable state and rapid content iteration.",
+      "primaryInvariants": ["frame/tick budget", "simulation coherence", "input responsiveness", "determinism where required", "content iteration", "player-visible continuity"],
+      "failureModel": ["frame hitch", "desync", "simulation/render coupling", "input latency", "non-replayable bug", "content pipeline stall"],
+      "timeHorizon": ["input sample", "simulation tick", "frame", "session", "content iteration cycle"],
+      "systemBoundary": "simulation, rendering, input, assets, tools, networking and player experience",
+      "evidencePreferences": ["frame profile", "deterministic replay", "fixed-step simulation test", "input-latency measure", "content hot-reload test", "play scenario"],
+      "codeSignals": ["game loop", "frame", "tick", "ECS", "physics", "animation", "input", "replay", "rollback", "asset"],
+      "direction": ["separate simulation from presentation", "budget every frame/tick", "make time model explicit", "preserve replayability", "optimize iteration pipeline as part of architecture"],
+      "challenges": ["render-state mutates simulation", "variable-timestep physics", "hidden nondeterminism", "content logic hardcoded in engine", "frame-spike blindness"],
+      "complements": ["graphics-rendering", "performance-capacity", "distributed-systems"],
+      "blindSpots": ["can prioritize feel/latency over business-system rigor", "may tolerate domain-specific shortcuts"]
+    },
+    {
+      "id": "graphics-rendering",
+      "name": "Graphics and Rendering Engineering",
+      "reasonFirstClass": "Optimizes visual fidelity under strict frame-time, GPU architecture, memory bandwidth and perceptual-error constraints.",
+      "primaryInvariants": ["frame-time budget", "visual stability", "GPU/CPU synchronization", "memory/bandwidth budget", "numerical/perceptual correctness"],
+      "failureModel": ["GPU stall", "temporal artifact", "precision loss", "bandwidth saturation", "pipeline hazard", "platform divergence"],
+      "timeHorizon": ["draw/dispatch", "frame", "temporal history", "platform generation"],
+      "systemBoundary": "CPU-GPU pipeline, shaders, resources, display and human perception",
+      "evidencePreferences": ["GPU capture", "frame timing", "visual diff", "artifact stress scene", "bandwidth/occupancy metrics", "platform comparison"],
+      "codeSignals": ["shader", "GPU", "render pass", "texture", "buffer", "frame graph", "raster", "ray", "temporal"],
+      "direction": ["measure GPU/CPU boundary", "treat temporal history as state", "budget bandwidth not only FLOPs", "verify perceptual artifacts", "scale fidelity to hardware"],
+      "challenges": ["average-FPS optimization", "sync stall", "precision assumption", "visual fix with unstable temporal behavior"],
+      "complements": ["interactive-game-systems", "performance-capacity", "scientific-numerical"],
+      "blindSpots": ["can overfit visual quality over maintainability", "may prefer hardware-specific optimizations"]
+    },
+    {
+      "id": "frontend-interaction-accessibility",
+      "name": "Frontend, Interaction and Accessibility Engineering",
+      "reasonFirstClass": "The user, browser/device, assistive technology and interaction state are part of the execution environment; correctness includes perceivability, operability and robust interaction.",
+      "primaryInvariants": ["interaction continuity", "accessible semantics", "responsive state", "user-perceived latency", "progressive robustness"],
+      "failureModel": ["keyboard trap", "inaccessible state", "lost focus", "hydration/state mismatch", "layout shift", "interaction race", "device/browser divergence"],
+      "timeHorizon": ["input event", "render cycle", "navigation", "session", "assistive-tech interaction"],
+      "systemBoundary": "UI code, browser/device, user, assistive technologies and network",
+      "evidencePreferences": ["keyboard/screen-reader path", "interaction tests", "accessibility tree", "web performance metrics", "cross-device test", "user-flow replay"],
+      "codeSignals": ["DOM", "component", "focus", "ARIA", "keyboard", "responsive", "browser", "interaction", "render", "layout"],
+      "direction": ["preserve semantic structure", "make all state transitions perceivable/operable", "treat focus as state", "measure user-perceived latency", "test constrained devices and assistive paths"],
+      "challenges": ["mouse-only assumption", "visual-only status", "focus loss", "layout instability", "client state races"],
+      "complements": ["software-architecture", "performance-capacity", "network-protocol"],
+      "blindSpots": ["can overfocus presentation layer", "may underweight backend/storage constraints"]
+    },
+    {
+      "id": "compiler-toolchain",
+      "name": "Compiler and Toolchain Engineering",
+      "reasonFirstClass": "Transforms programs while preserving semantics; correctness depends on explicit intermediate representations, analysis validity and pass ordering/invalidation.",
+      "primaryInvariants": ["semantic preservation", "IR validity", "analysis soundness", "pass preconditions", "deterministic/reproducible transformation"],
+      "failureModel": ["miscompile", "stale analysis", "invalid IR", "pass-order dependency", "undefined-behavior exploitation mismatch", "debug-info loss"],
+      "timeHorizon": ["parse", "analysis pass", "transform pass", "link", "toolchain version"],
+      "systemBoundary": "source languages, IRs, analyses, transformations, code generation and linker/toolchain",
+      "evidencePreferences": ["IR verifier", "differential compile", "round-trip", "analysis invalidation test", "semantic fixture", "reproducible build"],
+      "codeSignals": ["AST", "IR", "CFG", "SSA", "dataflow", "optimizer", "lowering", "codegen", "linker", "pass"],
+      "direction": ["make analysis dependencies explicit", "invalidate facts after transforms", "prefer typed IR over blind text edits", "differentially test transformations", "record missed optimization reasons"],
+      "challenges": ["stale analysis reused", "text rewrite across syntax", "unsound transform", "pass-order accident", "silent target assumption"],
+      "complements": ["verification-testing", "performance-capacity", "build-release-reproducibility"],
+      "blindSpots": ["can over-abstract application intent", "may optimize transform machinery over product value"]
+    },
+    {
+      "id": "verification-testing",
+      "name": "Verification and Test Engineering",
+      "reasonFirstClass": "Optimizes falsification power, observability, oracle quality and risk coverage rather than implementation throughput.",
+      "primaryInvariants": ["test oracle validity", "risk coverage", "reproducibility", "failure localization", "regression detectability"],
+      "failureModel": ["false pass", "missing oracle", "untestable state", "coverage illusion", "flaky/nonreproducible failure", "untested interaction"],
+      "timeHorizon": ["unit", "integration", "system", "regression", "release qualification"],
+      "systemBoundary": "artifact under test, test environment, oracle, fixtures and observability",
+      "evidencePreferences": ["negative tests", "boundary cases", "property/model tests", "differential tests", "fault injection", "reproducible failure"],
+      "codeSignals": ["test", "assert", "fixture", "mock", "oracle", "coverage", "fuzz", "property", "regression"],
+      "direction": ["ask what would falsify the claim", "design oracle before celebrating execution", "prioritize risk not raw test count", "make failures reproducible", "test interfaces and recovery"],
+      "challenges": ["happy-path-only suite", "coverage percentage as proof", "flaky acceptance", "test coupled to implementation", "missing negative fixture"],
+      "complements": ["software-architecture", "security-engineering", "safety-critical"],
+      "blindSpots": ["can optimize detectability over implementation simplicity", "testing cannot prove absence of all faults"]
+    },
+    {
+      "id": "performance-capacity",
+      "name": "Performance and Capacity Engineering",
+      "reasonFirstClass": "Treats latency distributions, throughput, resource saturation and scaling behavior as explicit quantitative constraints.",
+      "primaryInvariants": ["latency budget", "throughput target", "resource ceiling", "tail behavior", "capacity margin", "measurement validity"],
+      "failureModel": ["tail-latency collapse", "queue explosion", "resource saturation", "cache thrash", "load cliff", "benchmark illusion"],
+      "timeHorizon": ["instruction/hot path", "request/frame", "load window", "capacity forecast"],
+      "systemBoundary": "critical path, queues, compute/memory/storage/network resources and workload",
+      "evidencePreferences": ["profile", "histogram", "load test", "capacity model", "benchmark provenance", "before/after measurement"],
+      "codeSignals": ["hot path", "latency", "throughput", "allocation", "cache", "queue", "batch", "parallel", "profile"],
+      "direction": ["measure before optimizing", "inspect tails not only averages", "find bottleneck before tuning", "budget resource headroom", "separate workload change from code change"],
+      "challenges": ["premature optimization", "microbenchmark worship", "average-only metric", "unbounded queue", "optimization without counterfactual"],
+      "complements": ["reliability-sre", "interactive-game-systems", "graphics-rendering"],
+      "blindSpots": ["can trade clarity for speed unnecessarily", "may ignore product semantics"]
+    },
+    {
+      "id": "safety-critical",
+      "name": "Safety-Critical Engineering",
+      "reasonFirstClass": "Failure can cause physical harm or unacceptable hazards, so hazard analysis, traceability, fail-safe states and independent evidence become architectural constraints.",
+      "primaryInvariants": ["hazard containment", "safe state", "traceability", "deterministic fault response", "independent verification", "bounded authority"],
+      "failureModel": ["unsafe actuation", "latent common-mode fault", "unhandled hazard", "unsafe degraded mode", "traceability gap", "single-point catastrophic failure"],
+      "timeHorizon": ["control reaction", "mission/session", "maintenance", "certification lifecycle"],
+      "systemBoundary": "software plus physical process, humans, hardware and hazard environment",
+      "evidencePreferences": ["hazard analysis", "safety case", "traceability matrix", "fault injection", "independent V&V", "fail-safe test"],
+      "codeSignals": ["actuator", "safety", "interlock", "watchdog", "emergency", "limit", "redundancy", "fault state", "certification"],
+      "direction": ["identify hazard before optimizing function", "make safe state explicit", "avoid single unchecked authority path", "trace code to hazard control", "verify degraded/fault modes independently"],
+      "challenges": ["normal-mode-only design", "silent unsafe fallback", "common-mode redundancy", "missing hazard trace", "operator assumption"],
+      "complements": ["systems-engineering", "embedded-firmware", "verification-testing", "security-engineering"],
+      "blindSpots": ["can impose heavy process where consequence is low", "may reduce iteration speed"]
+    },
+    {
+      "id": "robotics-control",
+      "name": "Robotics and Control Engineering",
+      "reasonFirstClass": "Software closes feedback loops with noisy sensors and physical actuators; stability, latency, calibration and safe physical behavior dominate.",
+      "primaryInvariants": ["control-loop stability", "bounded latency/jitter", "state-estimation consistency", "calibration validity", "actuator safety", "physical-frame coherence"],
+      "failureModel": ["unstable loop", "sensor drift", "frame mismatch", "actuator saturation", "delayed feedback", "unsafe planner/controller disagreement"],
+      "timeHorizon": ["sensor sample", "control cycle", "trajectory", "mission", "calibration interval"],
+      "systemBoundary": "software, sensors, actuators, dynamics, environment and operator",
+      "evidencePreferences": ["simulation", "hardware-in-loop", "latency/jitter trace", "calibration test", "closed-loop stress scenario", "safe-stop test"],
+      "codeSignals": ["sensor", "actuator", "control loop", "PID", "trajectory", "pose", "frame", "planner", "kinematics", "calibration"],
+      "direction": ["treat latency as control input", "separate estimation from control", "track coordinate frames explicitly", "model saturation and sensor failure", "test closed-loop not only functions"],
+      "challenges": ["open-loop unit-test confidence", "frame convention mismatch", "sensor-perfect assumption", "unbounded command", "simulation-only validation"],
+      "complements": ["embedded-firmware", "safety-critical", "scientific-numerical"],
+      "blindSpots": ["can over-model physical dynamics for simple automation", "may underweight UI/business concerns"]
+    },
+    {
+      "id": "scientific-numerical",
+      "name": "Scientific and Numerical Computing",
+      "reasonFirstClass": "Correctness depends on numerical stability, conditioning, error bounds, units and reproducibility—not only type/syntax correctness.",
+      "primaryInvariants": ["numerical stability", "unit consistency", "error bounds", "reproducibility", "conditioning awareness", "reference validation"],
+      "failureModel": ["catastrophic cancellation", "overflow/underflow", "ill-conditioned solve", "unit mismatch", "non-reproducible result", "precision-dependent branch"],
+      "timeHorizon": ["operation", "iteration/convergence", "simulation run", "reproduction cycle"],
+      "systemBoundary": "algorithm, floating/fixed precision, data, units, solver and reference model",
+      "evidencePreferences": ["analytic/reference solution", "error bound", "convergence test", "dimension/unit check", "cross-precision comparison", "reproducible seed/environment"],
+      "codeSignals": ["matrix", "solver", "simulation", "floating point", "precision", "units", "convergence", "random", "numerical"],
+      "direction": ["check conditioning before tuning", "make units explicit", "compare against reference cases", "test across precision/range", "record reproducibility inputs"],
+      "challenges": ["floating-point equality assumption", "unitless API", "unstated tolerance", "random seed loss", "convergence without validation"],
+      "complements": ["graphics-rendering", "robotics-control", "machine-learning-engineering"],
+      "blindSpots": ["can overvalue mathematical fidelity over system integration", "may assume domain models are valid"]
+    },
+    {
+      "id": "network-protocol",
+      "name": "Network and Protocol Engineering",
+      "reasonFirstClass": "Optimizes interoperable state machines over lossy, delayed, reordered and potentially hostile communication channels.",
+      "primaryInvariants": ["protocol state coherence", "interoperability", "flow/congestion control", "bounded retransmission", "framing/version compatibility", "failure recovery"],
+      "failureModel": ["packet loss", "reordering", "head-of-line blocking", "congestion collapse", "version mismatch", "peer misbehavior", "half-open state"],
+      "timeHorizon": ["packet", "round trip", "connection", "network partition", "protocol evolution"],
+      "systemBoundary": "peers, transport/network path, protocol state and intermediaries",
+      "evidencePreferences": ["packet trace", "state-machine test", "loss/reorder simulation", "interop test", "congestion/load test", "version negotiation test"],
+      "codeSignals": ["socket", "packet", "protocol", "handshake", "framing", "retransmit", "backpressure", "congestion", "connection"],
+      "direction": ["make protocol state explicit", "bound retransmission", "design backpressure", "test malformed/old peers", "separate transport success from application commit"],
+      "challenges": ["infinite retry", "unbounded buffer", "version optimism", "state-machine ambiguity", "packet-order assumption"],
+      "complements": ["distributed-systems", "security-engineering", "reliability-sre"],
+      "blindSpots": ["can over-engineer local IPC", "may focus wire efficiency over application clarity"]
+    },
+    {
+      "id": "build-release-reproducibility",
+      "name": "Build, Release and Reproducibility Engineering",
+      "reasonFirstClass": "Treats transformation from source to shipped artifact as a provenance-sensitive system with dependency, environment and rollback invariants.",
+      "primaryInvariants": ["reproducible artifact", "dependency provenance", "hermeticity where required", "version traceability", "rollback capability", "release evidence"],
+      "failureModel": ["works-on-my-machine", "untracked dependency", "non-reproducible binary", "supply-chain drift", "environment-sensitive build", "irreversible rollout"],
+      "timeHorizon": ["build step", "pipeline", "release", "rollback", "dependency lifecycle"],
+      "systemBoundary": "source, build graph, dependencies, CI environment, artifacts and deployment handoff",
+      "evidencePreferences": ["content digests", "lockfiles", "SBOM/provenance", "rebuild comparison", "pipeline receipt", "rollback rehearsal"],
+      "codeSignals": ["build", "CI", "artifact", "dependency", "lockfile", "container", "release", "package", "provenance"],
+      "direction": ["pin identity not hope", "separate source from generated artifacts", "make build graph reproducible", "record provenance", "design rollback before publish"],
+      "challenges": ["ambient environment dependency", "latest tag", "generated drift", "manual release mutation", "missing artifact identity"],
+      "complements": ["security-engineering", "compiler-toolchain", "reliability-sre"],
+      "blindSpots": ["can slow experimentation if applied too early", "may overvalue hermeticity for disposable prototypes"]
+    }
+  ],
+  "compositeRoles": [
+    {"id": "full-stack-engineer", "compose": ["frontend-interaction-accessibility", "software-architecture", "database-storage", "distributed-systems"], "verdict": "COMPOSITE_ROLE", "reason": "Broad coverage role; no unique failure model beyond its component disciplines."},
+    {"id": "backend-engineer", "compose": ["software-architecture", "distributed-systems", "database-storage", "reliability-sre"], "verdict": "COMPOSITE_ROLE", "reason": "A useful product role, but primarily a combination of service, state and production concerns."},
+    {"id": "devops-engineer", "compose": ["build-release-reproducibility", "reliability-sre", "security-engineering"], "verdict": "COMPOSITE_ROLE", "reason": "Organizational/operational integration role rather than a wholly distinct correctness model."},
+    {"id": "cloud-engineer", "compose": ["distributed-systems", "reliability-sre", "security-engineering", "build-release-reproducibility"], "verdict": "COMPOSITE_ROLE", "reason": "Cloud-specific tooling matters, but the core perspective is composed from distributed/reliability/security/release lenses."},
+    {"id": "platform-engineer", "compose": ["build-release-reproducibility", "distributed-systems", "reliability-sre", "security-engineering", "software-architecture"], "verdict": "COMPOSITE_ROLE", "reason": "Focuses internal developer platform outcomes by composing existing first-class concerns."},
+    {"id": "mobile-engineer", "compose": ["frontend-interaction-accessibility", "performance-capacity", "network-protocol", "reliability-sre"], "optional": ["embedded-firmware"], "verdict": "COMPOSITE_ROLE", "reason": "Device lifecycle and constraints are important but usually compose interaction, network, performance and platform reliability perspectives."},
+    {"id": "ai-engineer", "compose": ["machine-learning-engineering", "data-engineering", "software-architecture", "reliability-sre"], "verdict": "COMPOSITE_ROLE", "reason": "Product-facing AI role composes ML/data/software/production engineering."},
+    {"id": "mlops-engineer", "compose": ["machine-learning-engineering", "data-engineering", "reliability-sre", "build-release-reproducibility"], "verdict": "COMPOSITE_ROLE", "reason": "Distinct workflow, but its machine reasoning is composed from existing ML/data/reliability/release invariants."},
+    {"id": "game-developer-generalist", "compose": ["interactive-game-systems", "graphics-rendering", "software-architecture", "performance-capacity"], "verdict": "COMPOSITE_ROLE", "reason": "General game role combines several genuinely distinct game/graphics/software/performance lenses."},
+    {"id": "data-scientist", "compose": ["machine-learning-engineering", "scientific-numerical", "data-engineering"], "verdict": "COMPOSITE_ROLE", "reason": "Statistical/domain practice is important, but code-direction concerns compose ML, numerical and data lenses."}
+  ],
+  "domainOverlays": [
+    {"id": "medical-device", "activates": ["safety-critical", "systems-engineering", "embedded-firmware", "security-engineering", "verification-testing"], "verdict": "DOMAIN_OVERLAY"},
+    {"id": "automotive-aerospace", "activates": ["safety-critical", "systems-engineering", "embedded-firmware", "robotics-control", "verification-testing"], "verdict": "DOMAIN_OVERLAY"},
+    {"id": "financial-critical", "activates": ["database-storage", "security-engineering", "distributed-systems", "verification-testing", "reliability-sre"], "verdict": "DOMAIN_OVERLAY"},
+    {"id": "industrial-control", "activates": ["safety-critical", "embedded-firmware", "robotics-control", "network-protocol", "security-engineering"], "verdict": "DOMAIN_OVERLAY"},
+    {"id": "privacy-sensitive", "activates": ["security-engineering", "data-engineering", "software-architecture"], "verdict": "DOMAIN_OVERLAY"}
+  ],
+  "boundaries": {
+    "jobTitleGrantsAuthority": false,
+    "lensActivationGrantsAuthority": false,
+    "lensOutputIsCorrectnessProof": false,
+    "compositeRoleCreatesNewFundamentalLens": false,
+    "domainOverlayCreatesAuthority": false,
+    "automaticWorkspaceRead": false,
+    "automaticWorkspaceMutation": false,
+    "automaticToolExecution": false,
+    "automaticLanguageSwitch": false,
+    "automaticPromotion": false,
+    "automaticCanon": false,
+    "authority": "NONE"
+  }
+}
