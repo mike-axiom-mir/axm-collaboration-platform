@@ -462,3 +462,27 @@ Run:
 ```powershell
 node shared/code-capability-fabric/language-organs/selftest-code-creation-session-planner.js
 ```
+
+## Evidence-bound capability lessons and release candidates
+
+The additive v2.13 `TEST` rung can seal one privacy-safe lesson candidate for
+any of the fourteen existing code-specialization knowledge lanes. It binds
+typed rules to exact provenance, support, contradiction, unknown, reuse-rights,
+four-root, resource, and human-direction references. Fixed regressions and
+separately authored held-out goals remain distinct, unscored evidence.
+
+A fully consistent packet may produce an immutable, inactive, exact-next-patch
+library release candidate with its parent preserved as the rollback target. It
+does not mutate the reference library, a running creation attempt, or any
+workspace. Rights-authority identity is not independently verified here, so a
+technical pass still requires that verification, an authenticated Tier-3 human
+decision, and a separate trusted host admission. No reward loop, automatic
+learning, installation, integration, publication, promotion, or CANON authority
+is added.
+
+See [README-capability-lesson-steward-v1.md](README-capability-lesson-steward-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-capability-lesson-steward-v1.js
+```

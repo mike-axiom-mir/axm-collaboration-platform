@@ -1,0 +1,14 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.capability-lesson-steward-snapshot/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","knowledgePolicyRef","supportedLessonKinds","knowledgeLanes","forbiddenDurableContent","capability","rightsAuthorityAssurance","persistentAdmission","rewardOrIncentiveLoop","authority","snapshotDigest"],
+  "properties":{
+    "schema":{"const":"axm.capability-lesson-steward-snapshot/v1"},"version":{"const":"1.0.0"},"status":{"const":"TEST"},"knowledgePolicyRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},
+    "supportedLessonKinds":{"const":["ACCEPTED_RECIPE","COUNTERTEST","PRIVACY_SAFE_FAILURE_RULE","TEST"]},
+    "knowledgeLanes":{"type":"array","minItems":14,"maxItems":14,"uniqueItems":true,"items":{"$ref":"capability-lesson-common.schema.json#/$defs/id"}},
+    "forbiddenDurableContent":{"const":["HIDDEN_REASONING","PRIVATE_CONTENT","PROMPTS","RAW_FAILED_ATTEMPTS","RAW_SOURCE","STDERR","STDOUT"]},
+    "capability":{"const":"EVIDENCE_BOUND_LESSON_AND_DETACHED_RELEASE_CANDIDATES"},"rightsAuthorityAssurance":{"const":"REFERENCE_BOUND_NOT_INDEPENDENTLY_VERIFIED"},
+    "persistentAdmission":{"const":"HELD_FOR_RIGHTS_VERIFICATION_AUTHENTICATED_TIER_3_DECISION_AND_SEPARATE_HOST"},"rewardOrIncentiveLoop":{"const":false},"authority":{"const":"NONE"},"snapshotDigest":{"$ref":"capability-lesson-common.schema.json#/$defs/digest"}
+  }
+}

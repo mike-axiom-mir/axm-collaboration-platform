@@ -1,0 +1,19 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.capability-library-release-candidate/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","id","libraryId","libraryVersion","createdAt","parentLibraryRef","rollbackRef","addedLessonRef","lessons","resources","truth","authority","releaseCandidateDigest"],
+  "properties":{
+    "schema":{"const":"axm.capability-library-release-candidate/v1"},"version":{"const":"1.0.0"},"status":{"const":"DETACHED_RELEASE_CANDIDATE"},
+    "id":{"$ref":"capability-lesson-common.schema.json#/$defs/id"},"libraryId":{"$ref":"capability-lesson-common.schema.json#/$defs/id"},"libraryVersion":{"$ref":"capability-lesson-common.schema.json#/$defs/semver"},"createdAt":{"$ref":"capability-lesson-common.schema.json#/$defs/timestamp"},
+    "parentLibraryRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},"rollbackRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},"addedLessonRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},
+    "lessons":{"type":"array","minItems":1,"maxItems":256,"uniqueItems":true,"items":{"$ref":"capability-lesson-common.schema.json#/$defs/lessonSummary"}},
+    "resources":{"$ref":"capability-lesson-common.schema.json#/$defs/measuredReleaseResources"},
+    "truth":{
+      "type":"object","additionalProperties":false,
+      "required":["immutableCandidate","parentPreserved","rollbackBound","activeRuntimeLibrary","authenticatedTier3DecisionVerified","runningAttemptMutated","persistentLearningAdmitted","installed","integrated","published","promoted","canonChanged"],
+      "properties":{"immutableCandidate":{"const":true},"parentPreserved":{"const":true},"rollbackBound":{"const":true},"activeRuntimeLibrary":{"const":false},"authenticatedTier3DecisionVerified":{"const":false},"runningAttemptMutated":{"const":false},"persistentLearningAdmitted":{"const":false},"installed":{"const":false},"integrated":{"const":false},"published":{"const":false},"promoted":{"const":false},"canonChanged":{"const":false}}
+    },
+    "authority":{"const":"NONE"},"releaseCandidateDigest":{"$ref":"capability-lesson-common.schema.json#/$defs/digest"}
+  }
+}

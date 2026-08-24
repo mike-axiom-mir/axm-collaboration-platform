@@ -1,0 +1,26 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.capability-lesson/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","id","laneId","lessonKind","applicability","rule","provenance","evidence","rights","review","rootsGate","requestRef","knowledgePolicyRef","lessonKeyDigest","resources","truth","authority","lessonDigest"],
+  "properties":{
+    "schema":{"const":"axm.capability-lesson/v1"},"version":{"const":"1.0.0"},"status":{"const":"PROPOSED"},
+    "id":{"$ref":"capability-lesson-common.schema.json#/$defs/id"},
+    "laneId":{"enum":["knowledge.code.application-logic","knowledge.code.audio","knowledge.code.browser-behavior","knowledge.code.build-package","knowledge.code.data-schema","knowledge.code.documentation","knowledge.code.hardware-simulation","knowledge.code.markup-structure","knowledge.code.performance-resource","knowledge.code.persistence-recovery","knowledge.code.rendering-shader","knowledge.code.security-authority","knowledge.code.style-presentation","knowledge.code.test-verification"]},
+    "lessonKind":{"enum":["ACCEPTED_RECIPE","COUNTERTEST","PRIVACY_SAFE_FAILURE_RULE","TEST"]},
+    "applicability":{"$ref":"capability-lesson-common.schema.json#/$defs/applicability"},"rule":{"$ref":"capability-lesson-common.schema.json#/$defs/rule"},
+    "provenance":{"$ref":"capability-lesson-common.schema.json#/$defs/provenance"},"evidence":{"$ref":"capability-lesson-common.schema.json#/$defs/evidence"},
+    "rights":{"$ref":"capability-lesson-common.schema.json#/$defs/rights"},"review":{"$ref":"capability-lesson-common.schema.json#/$defs/review"},"rootsGate":{"$ref":"capability-lesson-common.schema.json#/$defs/rootsGate"},
+    "requestRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},"knowledgePolicyRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},
+    "lessonKeyDigest":{"$ref":"capability-lesson-common.schema.json#/$defs/digest"},"resources":{"$ref":"capability-lesson-common.schema.json#/$defs/measuredLessonResources"},
+    "truth":{
+      "type":"object","additionalProperties":false,
+      "required":["deterministicBytes","rawSourceRetained","rawFailedAttemptsRetained","stdoutRetained","stderrRetained","promptsRetained","hiddenReasoningRetained","privateContentRetained","machinePathsRetained","contradictionRefsPreserved","rightsAuthorityReferencePresent","rightsAuthorityIndependentlyVerified","rewardOrScoreCalculated","winnerSelected","runningAttemptMutated","persistentLearningAdmitted","installed","integrated","published","promoted","canonChanged","mikeFinalMergeGatePreserved"],
+      "properties":{
+        "deterministicBytes":{"const":true},"rawSourceRetained":{"const":false},"rawFailedAttemptsRetained":{"const":false},"stdoutRetained":{"const":false},"stderrRetained":{"const":false},"promptsRetained":{"const":false},"hiddenReasoningRetained":{"const":false},"privateContentRetained":{"const":false},"machinePathsRetained":{"const":false},
+        "contradictionRefsPreserved":{"const":true},"rightsAuthorityReferencePresent":{"type":"boolean"},"rightsAuthorityIndependentlyVerified":{"const":false},"rewardOrScoreCalculated":{"const":false},"winnerSelected":{"const":false},"runningAttemptMutated":{"const":false},"persistentLearningAdmitted":{"const":false},"installed":{"const":false},"integrated":{"const":false},"published":{"const":false},"promoted":{"const":false},"canonChanged":{"const":false},"mikeFinalMergeGatePreserved":{"const":true}
+      }
+    },
+    "authority":{"const":"NONE"},"lessonDigest":{"$ref":"capability-lesson-common.schema.json#/$defs/digest"}
+  }
+}

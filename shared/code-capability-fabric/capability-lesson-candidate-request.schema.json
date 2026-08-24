@@ -1,0 +1,30 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.capability-lesson-candidate-request/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","id","laneId","lessonKind","applicability","rule","provenance","evidence","rights","review","rootsGate","authorization","resources","privacy","authority","requestDigest"],
+  "properties":{
+    "schema":{"const":"axm.capability-lesson-candidate-request/v1"},
+    "id":{"$ref":"capability-lesson-common.schema.json#/$defs/id","maxLength":94},
+    "laneId":{"enum":["knowledge.code.application-logic","knowledge.code.audio","knowledge.code.browser-behavior","knowledge.code.build-package","knowledge.code.data-schema","knowledge.code.documentation","knowledge.code.hardware-simulation","knowledge.code.markup-structure","knowledge.code.performance-resource","knowledge.code.persistence-recovery","knowledge.code.rendering-shader","knowledge.code.security-authority","knowledge.code.style-presentation","knowledge.code.test-verification"]},
+    "lessonKind":{"enum":["ACCEPTED_RECIPE","COUNTERTEST","PRIVACY_SAFE_FAILURE_RULE","TEST"]},
+    "applicability":{"$ref":"capability-lesson-common.schema.json#/$defs/applicability"},
+    "rule":{"$ref":"capability-lesson-common.schema.json#/$defs/rule"},
+    "provenance":{"$ref":"capability-lesson-common.schema.json#/$defs/provenance"},
+    "evidence":{"$ref":"capability-lesson-common.schema.json#/$defs/evidence"},
+    "rights":{"$ref":"capability-lesson-common.schema.json#/$defs/rights"},
+    "review":{"$ref":"capability-lesson-common.schema.json#/$defs/review"},
+    "rootsGate":{"$ref":"capability-lesson-common.schema.json#/$defs/rootsGate"},
+    "authorization":{"$ref":"capability-lesson-common.schema.json#/$defs/authorization"},
+    "resources":{"$ref":"capability-lesson-common.schema.json#/$defs/requestResources"},
+    "privacy":{"$ref":"capability-lesson-common.schema.json#/$defs/privacy"},
+    "authority":{"const":"NONE"},
+    "requestDigest":{"$ref":"capability-lesson-common.schema.json#/$defs/digest"}
+  },
+  "allOf":[
+    {
+      "if":{"properties":{"lessonKind":{"const":"ACCEPTED_RECIPE"}}},
+      "then":{"properties":{"provenance":{"properties":{"acceptedArtifactRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"}}}}}
+    }
+  ]
+}
