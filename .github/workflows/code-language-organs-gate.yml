@@ -64,6 +64,17 @@ jobs:
         run: node shared/code-capability-fabric/language-organs/selftest-adversarial.js
       - name: Verify exact PR51 donor bindings
         run: node shared/code-capability-fabric/language-organs/selftest-donors.js
+
+  stock-native-census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: Census native toolchains and bounded smoke probes
         env:
           AXM_TOOLCHAIN_REPORT: toolchain-census.json
@@ -152,7 +163,7 @@ jobs:
           retention-days: 1
 
   coverage-union:
-    needs: [language-organs, structural-grammar-pack, last-mile-nine]
+    needs: [language-organs, stock-native-census, structural-grammar-pack, last-mile-nine]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
