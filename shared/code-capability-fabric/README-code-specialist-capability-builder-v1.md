@@ -1,6 +1,6 @@
 # Code Specialist Capability Builder v1 (TEST)
 
-This v2.5 rung gives registered Code Capability Fabric specialists real but
+This v2.6 rung gives registered Code Capability Fabric specialists real but
 bounded construction routes. The initial build-profile catalog contains:
 
 - `organ.code.data-schema` → `closed-json-schema-validator@0.1.0`; and
@@ -8,6 +8,7 @@ bounded construction routes. The initial build-profile catalog contains:
 - `organ.code.application-logic` + Python → `bounded-python-record-transform@0.1.0`; and
 - `organ.code.application-logic` + JavaScript → `pure-json-transform@1.1.0`; and
 - `organ.code.application-logic` + JavaScript → `bounded-record-query@0.1.0`; and
+- `organ.code.application-logic` + JavaScript → `bounded-portable-fsm-definition@0.1.0`; and
 - `organ.code.application-logic` + JavaScript → `closed-object-contract-adapter@0.2.0`; and
 - `organ.code.style-presentation` + CSS → `bounded-css-token-stylesheet@0.1.0`; and
 - `organ.code.markup-structure` + SVG → `svg-status-badge@1.1.0`.
@@ -23,7 +24,7 @@ The builder requires all of the following exact inputs:
 
 - a v1.6 specialist-to-Organ-intent request and deterministically rebuilt plan;
 - one exact admitted data-schema, HTML markup-structure, Python
-  application-logic, JavaScript application-logic or record-query, CSS style-presentation, or SVG markup-structure artifact
+  application-logic, JavaScript application-logic, record-query, or portable-FSM-definition, CSS style-presentation, or SVG markup-structure artifact
   lane;
 - one exact registered build profile whose language matches that artifact;
 - a human-reviewed Capability Fabric request whose source binds the v1.6 plan;
@@ -84,6 +85,12 @@ accessors, symbols, custom prototypes, unknown or duplicate fields, unsafe
 integers, unsupported operators, and byte ceilings. Hostile Proxy traps and
 domain-semantic fitness remain unproven.
 
+The portable-FSM-definition hand emits one frozen, handler-free
+`axm.game-fsm/v1` definition with bounded state, transition, and canonical-byte
+counts. Every target must exist and every state must be reachable. It composes
+with the existing `shared/game-fsm` runtime and does not copy that runtime,
+accept guards/actions/callbacks, or claim gameplay quality.
+
 The result distinguishes what is proven from what remains unknown. Exact
 specialist lineage, recipe lineage, candidate structure, byte lineage, portable
 paths, and resource ceilings can pass. Runtime behavior remains `UNKNOWN`; the
@@ -93,7 +100,8 @@ nonce replay prevention are not claimed.
 Only the closed JSON Schema validator, static HTML-page renderer, one typed CSS
 token-stylesheet renderer, one strict SVG status-badge renderer, and one
 string-only transform in each of Python and JavaScript, plus the strict
-JavaScript closed-object adapter and bounded record-query hand are registered. The CSS lane does not claim
+JavaScript closed-object adapter, bounded record-query hand, and portable FSM
+definition hand are registered. The CSS lane does not claim
 arbitrary CSS generation or visual correctness; the SVG lane does not claim
 general SVG, vector-scene creation, or browser correctness; the Python lane does
 not claim general Python generation or runtime correctness. Broader CSS, SVG,

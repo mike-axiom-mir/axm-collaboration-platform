@@ -33,6 +33,9 @@ const javascriptCandidate = javascriptResult.detachedCandidate;
 const recordQueryBase = Builder.buildRecordQueryExampleRequest();
 const recordQueryResult = Builder.generate(recordQueryBase);
 const recordQueryCandidate = recordQueryResult.detachedCandidate;
+const fsmDefinitionBase = Builder.buildFsmDefinitionExampleRequest();
+const fsmDefinitionResult = Builder.generate(fsmDefinitionBase);
+const fsmDefinitionCandidate = fsmDefinitionResult.detachedCandidate;
 const contractAdapterBase = Builder.buildContractAdapterExampleRequest();
 const contractAdapterResult = Builder.generate(contractAdapterBase);
 const contractAdapterCandidate = contractAdapterResult.detachedCandidate;
@@ -48,7 +51,7 @@ const resultSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'code-speci
 const capabilityRecipeSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'capability-recipe.schema.json'), 'utf8'));
 const candidatePackageSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'capability-fabric', 'schemas', 'candidate-package.schema.json'), 'utf8'));
 
-test('example request is sealed under the v2.5 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
+test('example request is sealed under the v2.6 identity', () => assert.strictEqual(base.schema, Builder.REQUEST_SCHEMA));
 test('request version is exact', () => assert.strictEqual(base.version, Builder.VERSION));
 test('request JSON Schema version matches the implementation identity', () => assert.strictEqual(requestSchema.properties.version.const, Builder.VERSION));
 test('candidate JSON Schema version matches the implementation identity', () => assert.strictEqual(resultSchema.properties.version.const, Builder.VERSION));
@@ -122,7 +125,7 @@ test('public copying remains unauthorized', () => assert.strictEqual(result.reus
 test('capability gap report is READY only for this exact rung', () => assert.deepStrictEqual(result.capabilityGapReport.missingCapabilities, []));
 test('next gate is exact candidate review before sandbox decision', () => assert.strictEqual(result.nextGate, 'HUMAN_REVIEW_EXACT_CANDIDATE_BYTES_BEFORE_SEPARATE_SANDBOX_DECISION'));
 
-test('markup example request is sealed under the v2.5 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
+test('markup example request is sealed under the v2.6 identity', () => assert.strictEqual(markupBase.version, Builder.VERSION));
 test('markup example produces one detached candidate', () => assert.strictEqual(markupResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('markup result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(markupResult, markupBase), { pass: true, errors: [] }));
 test('markup generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(markupResult), Builder.canonicalJson(Builder.generate(markupBase))));
@@ -153,7 +156,7 @@ test('markup candidate remains detached and unintegrated', () => assert.strictEq
 test('markup output stays inside the exact candidate resource ceiling', () => assert(markupCandidate.package.totalBytes <= markupBase.resourceEnvelope.maxCandidateBytes && markupCandidate.package.files.length <= markupBase.resourceEnvelope.maxCandidateFiles));
 test('markup visual limitation is retained', () => assert(markupResult.limitations.includes('HTML_VISUAL_ACCESSIBILITY_AND_INTERACTION_BEHAVIOR_NOT_PROVEN')));
 
-test('Python example request is sealed under the v2.5 identity', () => assert.strictEqual(pythonBase.version, Builder.VERSION));
+test('Python example request is sealed under the v2.6 identity', () => assert.strictEqual(pythonBase.version, Builder.VERSION));
 test('Python example produces one detached candidate', () => assert.strictEqual(pythonResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('Python result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(pythonResult, pythonBase), { pass: true, errors: [] }));
 test('Python generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(pythonResult), Builder.canonicalJson(Builder.generate(pythonBase))));
@@ -178,7 +181,7 @@ test('Python key-budget expansion is held by the exact build plan', () => held(p
 test('Python string parameters cannot inject a new import line', () => { const request = changed(pythonBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.defaultValue = 'x"\nimport os\n#'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }); const built = Builder.generate(request); assert.strictEqual(built.status, 'COMPLETE_DETACHED_CANDIDATE'); assert(!/^import os$/m.test(built.detachedCandidate.files['capability.py'])); });
 test('Python candidate byte tampering fails exact result verification', () => { const tampered = clone(pythonResult); tampered.detachedCandidate.files['capability.py'] += '\n# drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, pythonBase).pass, false); });
 
-test('JavaScript example request is sealed under the v2.5 identity', () => assert.strictEqual(javascriptBase.version, Builder.VERSION));
+test('JavaScript example request is sealed under the v2.6 identity', () => assert.strictEqual(javascriptBase.version, Builder.VERSION));
 test('JavaScript example produces one detached candidate', () => assert.strictEqual(javascriptResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('JavaScript result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(javascriptResult, javascriptBase), { pass: true, errors: [] }));
 test('JavaScript generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(javascriptResult), Builder.canonicalJson(Builder.generate(javascriptBase))));
@@ -202,7 +205,7 @@ test('JavaScript unsafe field expansion is held by the exact build plan', () => 
 test('JavaScript value ceiling expansion is held by the exact build plan', () => held(javascriptBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxValueLength = 4097; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
 test('JavaScript candidate byte tampering fails exact result verification', () => { const tampered = clone(javascriptResult); tampered.detachedCandidate.files['capability.js'] += '\n// drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, javascriptBase).pass, false); });
 
-test('record-query example request is sealed under the v2.5 identity', () => assert.strictEqual(recordQueryBase.version, Builder.VERSION));
+test('record-query example request is sealed under the v2.6 identity', () => assert.strictEqual(recordQueryBase.version, Builder.VERSION));
 test('record-query example produces one detached candidate', () => assert.strictEqual(recordQueryResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('record-query result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(recordQueryResult, recordQueryBase), { pass: true, errors: [] }));
 test('record-query generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(recordQueryResult), Builder.canonicalJson(Builder.generate(recordQueryBase))));
@@ -226,7 +229,25 @@ test('record-query unsupported field kind is held before candidate emission', ()
 test('record-query record ceiling expansion is held before candidate emission', () => held(recordQueryBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxRecords = 1025; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
 test('record-query candidate byte tampering fails exact result verification', () => { const tampered = clone(recordQueryResult); tampered.detachedCandidate.files['capability.js'] += '\n// drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, recordQueryBase).pass, false); });
 
-test('contract-adapter example request is sealed under the v2.5 identity', () => assert.strictEqual(contractAdapterBase.version, Builder.VERSION));
+test('portable-FSM example request is sealed under the v2.6 identity', () => assert.strictEqual(fsmDefinitionBase.version, Builder.VERSION));
+test('portable-FSM example produces one detached candidate', () => assert.strictEqual(fsmDefinitionResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
+test('portable-FSM result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(fsmDefinitionResult, fsmDefinitionBase), { pass: true, errors: [] }));
+test('portable-FSM generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(fsmDefinitionResult), Builder.canonicalJson(Builder.generate(fsmDefinitionBase))));
+test('portable-FSM selection binds exact application Organ, artifact, profile, and language', () => { assert.strictEqual(fsmDefinitionResult.specialistContext.specialistOrganRef.id, 'organ.code.application-logic'); assert.strictEqual(fsmDefinitionResult.specialistContext.artifactRef.id, 'javascript-portable-fsm-definition'); assert.strictEqual(fsmDefinitionResult.specialistContext.buildProfileRef.id, 'code-family.bounded-portable-fsm-definition'); assert.strictEqual(fsmDefinitionResult.specialistContext.languageId, 'javascript'); });
+test('portable-FSM candidate binds exact source-reviewed recipe and builder', () => { assert.deepStrictEqual(fsmDefinitionResult.recipeRef, Builder.FSM_DEFINITION_TARGET_RECIPE); assert.strictEqual(fsmDefinitionResult.recipeRef.version, '0.1.0'); assert.strictEqual(fsmDefinitionResult.recipeRef.builderId, 'bounded-portable-fsm-definition-v1'); });
+test('portable-FSM consent binds exact catalog, profile, request, and recipe bytes', () => { assert.strictEqual(fsmDefinitionResult.consentRef.subject.catalogDigest, fsmDefinitionResult.catalogRef.sha256); assert.strictEqual(fsmDefinitionResult.consentRef.subject.buildProfileCatalogDigest, fsmDefinitionResult.buildProfileCatalogRef.sha256); assert.strictEqual(fsmDefinitionResult.consentRef.subject.buildProfileDigest, fsmDefinitionResult.specialistContext.buildProfileRef.sha256); assert.strictEqual(fsmDefinitionResult.consentRef.subject.capabilityRequestDigest, fsmDefinitionBase.capabilityBuildRequest.requestDigest); assert.strictEqual(fsmDefinitionResult.consentRef.subject.recipeDigest, Builder.FSM_DEFINITION_TARGET_RECIPE.digest); });
+test('portable-FSM candidate passes Fabric and portable path verification', () => assert(CapabilityFabric.verifyCandidate(fsmDefinitionCandidate).ok) && assert(Builder.validateCandidatePaths(Object.keys(fsmDefinitionCandidate.files)).pass));
+test('portable-FSM emits inert syntactically valid source and selftest text', () => { assert.strictEqual(typeof fsmDefinitionCandidate.files['capability.js'], 'string'); assert.strictEqual(typeof fsmDefinitionCandidate.files['selftest.js'], 'string'); assert.doesNotThrow(() => new Function(fsmDefinitionCandidate.files['capability.js'])); assert.doesNotThrow(() => new Function(fsmDefinitionCandidate.files['selftest.js'])); });
+test('portable-FSM source is handler-free and declares composition without copying the runtime', () => { const source = fsmDefinitionCandidate.files['capability.js']; assert(source.includes("schema:'axm.game-fsm/v1'") || source.includes('axm.game-fsm/v1')); assert(source.includes('embeddedHandlers')); assert(source.includes('runtimeCopied')); assert(!/createMachine|runTrace|handlers\s*:|\bguard\s*:|\baction\s*:/.test(source)); });
+test('portable-FSM candidate remains unexecuted and receives no provider, process, network, workspace, or lifecycle authority', () => { assert.strictEqual(fsmDefinitionResult.evidence.runtimeBehavior, 'UNKNOWN'); assert.strictEqual(fsmDefinitionResult.evidence.emittedSelftest, 'EMITTED_NOT_RUN'); assert.strictEqual(fsmDefinitionResult.resourceObservation.candidateExecuted, false); assert.strictEqual(fsmDefinitionResult.resourceObservation.generatedSelftestExecuted, false); assert.strictEqual(fsmDefinitionResult.resourceObservation.providerCalled, false); assert.strictEqual(fsmDefinitionResult.resourceObservation.processesSpawned, 0); assert.strictEqual(fsmDefinitionResult.resourceObservation.networkUsed, false); assert.strictEqual(fsmDefinitionResult.resourceObservation.workspaceRead, false); assert.strictEqual(fsmDefinitionResult.resourceObservation.workspaceWritten, false); assert(Object.values(fsmDefinitionCandidate.package.authority).every((value) => value === false)); assert.strictEqual(fsmDefinitionResult.truth.installed, false); assert.strictEqual(fsmDefinitionResult.truth.integrated, false); assert.strictEqual(fsmDefinitionResult.truth.published, false); assert.strictEqual(fsmDefinitionResult.truth.promoted, false); assert.strictEqual(fsmDefinitionResult.truth.canonChanged, false); });
+test('portable-FSM direct reuse, hostile Proxy behavior, and gameplay quality remain explicitly unproven', () => { assert.strictEqual(fsmDefinitionResult.reuseRights.mode, 'RESEARCH_ONLY_DIRECT_REUSE_HOLD'); assert.strictEqual(fsmDefinitionResult.reuseRights.directReuseAuthorized, false); assert(fsmDefinitionResult.limitations.includes('PORTABLE_FSM_DEFINITION_HOSTILE_PROXY_AND_GAMEPLAY_QUALITY_NOT_PROVEN')); });
+test('record-query lane cannot silently select the portable-FSM profile', () => held(recordQueryBase, (next) => { next.selection.mode = 'ONE_EXACT_JAVASCRIPT_PORTABLE_FSM_DEFINITION_SPECIALIST'; next.selection.buildProfileRef = clone(fsmDefinitionBase.selection.buildProfileRef); }, 'BUILD_REQUEST_HOLD'));
+test('portable-FSM profile lineage drift is held', () => held(fsmDefinitionBase, (next) => { next.selection.buildProfileRef.sha256 = Builder.sha256Value('forged-portable-fsm-profile'); }, 'SPECIALIST_HOLD'));
+test('portable-FSM embedded handler field is held before candidate emission', () => held(fsmDefinitionBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.states[0].handler = 'openDoor'; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'CANDIDATE_HOLD'));
+test('portable-FSM state ceiling expansion is held before candidate emission', () => held(fsmDefinitionBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxStates = 65; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
+test('portable-FSM candidate byte tampering fails exact result verification', () => { const tampered = clone(fsmDefinitionResult); tampered.detachedCandidate.files['capability.js'] += '\n// drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, fsmDefinitionBase).pass, false); });
+
+test('contract-adapter example request is sealed under the v2.6 identity', () => assert.strictEqual(contractAdapterBase.version, Builder.VERSION));
 test('contract-adapter example produces one detached candidate', () => assert.strictEqual(contractAdapterResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('contract-adapter result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(contractAdapterResult, contractAdapterBase), { pass: true, errors: [] }));
 test('contract-adapter generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(contractAdapterResult), Builder.canonicalJson(Builder.generate(contractAdapterBase))));
@@ -249,7 +270,7 @@ test('contract-adapter profile lineage drift is held', () => held(contractAdapte
 test('contract-adapter consent recipe lineage drift is held', () => held(contractAdapterBase, (next) => { next.consent.subject.recipeDigest = Builder.sha256Value('forged-adapter-recipe'); }, 'CONSENT_HOLD'));
 test('contract-adapter candidate byte tampering fails exact result verification', () => { const tampered = clone(contractAdapterResult); tampered.detachedCandidate.files['capability.js'] += '\n// drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, contractAdapterBase).pass, false); });
 
-test('CSS example request is sealed under the v2.5 identity', () => assert.strictEqual(cssBase.version, Builder.VERSION));
+test('CSS example request is sealed under the v2.6 identity', () => assert.strictEqual(cssBase.version, Builder.VERSION));
 test('CSS example produces one detached candidate', () => assert.strictEqual(cssResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('CSS result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(cssResult, cssBase), { pass: true, errors: [] }));
 test('CSS generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(cssResult), Builder.canonicalJson(Builder.generate(cssBase))));
@@ -275,7 +296,7 @@ test('CSS duplicate token aliases are refused before candidate emission', () => 
 test('CSS input budget expansion is held by the exact build plan', () => held(cssBase, (next) => { const draft = clone(next.capabilityBuildRequest); delete draft.requestDigest; draft.parameters.maxInputBytes = 65537; next.capabilityBuildRequest = CapabilityFabric.sealRequest(draft, true); next.consent.subject.capabilityRequestDigest = next.capabilityBuildRequest.requestDigest; }, 'BUILD_PLAN_HOLD'));
 test('CSS candidate byte tampering fails exact result verification', () => { const tampered = clone(cssResult); tampered.detachedCandidate.files['capability.js'] += '\n// drift'; delete tampered.resultDigest; tampered.resultDigest = Builder.sha256Value(tampered); assert.strictEqual(Builder.verify(tampered, cssBase).pass, false); });
 
-test('SVG example request is sealed under the v2.5 identity', () => assert.strictEqual(svgBase.version, Builder.VERSION));
+test('SVG example request is sealed under the v2.6 identity', () => assert.strictEqual(svgBase.version, Builder.VERSION));
 test('SVG example produces one detached candidate', () => assert.strictEqual(svgResult.status, 'COMPLETE_DETACHED_CANDIDATE'));
 test('SVG result verifies through an exact independent rebuild', () => assert.deepStrictEqual(Builder.verify(svgResult, svgBase), { pass: true, errors: [] }));
 test('SVG generation is byte-identical for identical input', () => assert.strictEqual(Builder.canonicalJson(svgResult), Builder.canonicalJson(Builder.generate(svgBase))));
@@ -427,12 +448,14 @@ test('active recipe schema knows the admitted bounded Python builder', () => ass
 test('active recipe schema knows the admitted bounded CSS builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('bounded-css-token-stylesheet-v1')));
 test('active recipe schema knows the strict closed-object adapter builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('closed-object-contract-adapter-v2')));
 test('active recipe schema knows the bounded record-query builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('bounded-record-query-v1')));
+test('active recipe schema knows the bounded portable-FSM-definition builder', () => assert(capabilityRecipeSchema.properties.builderId.enum.includes('bounded-portable-fsm-definition-v1')));
 test('candidate package schema knows the admitted validator builder', () => assert(candidatePackageSchema.$defs ? candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('closed-json-schema-validator-v1') : false));
 test('candidate package schema knows the admitted HTML page builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('static-accessible-html-page-v1')));
 test('candidate package schema knows the admitted bounded Python builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-python-record-transform-v1')));
 test('candidate package schema knows the admitted bounded CSS builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-css-token-stylesheet-v1')));
 test('candidate package schema knows the strict closed-object adapter builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('closed-object-contract-adapter-v2')));
 test('candidate package schema knows the bounded record-query builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-record-query-v1')));
+test('candidate package schema knows the bounded portable-FSM-definition builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-portable-fsm-definition-v1')));
 test('candidate package schema knows the admitted review-skill builder', () => assert(candidatePackageSchema.properties.recipeRef.properties.builderId.enum.includes('bounded-review-procedure-skill-v1')));
 test('request schema admits a profile-resolved mode token', () => assert.strictEqual(requestSchema.properties.selection.properties.mode.pattern, '^[A-Z][A-Z0-9_]{2,127}$'));
 test('request schema requires an exact build-profile reference', () => assert(requestSchema.properties.selection.required.includes('buildProfileRef')));
@@ -443,4 +466,4 @@ test('source contains no child-process module import', () => assert(!/require\([
 test('source contains no fetch call', () => assert(!/\bfetch\s*\(/.test(fs.readFileSync(sourcePath, 'utf8'))));
 test('source never invokes generated candidate text', () => assert(!/new Function|\beval\s*\(|vm\.(?:run|compile)/.test(fs.readFileSync(sourcePath, 'utf8'))));
 
-if (!process.exitCode) process.stdout.write('Code specialist capability builder v2.5 selftest: ' + passed + ' PASS\n');
+if (!process.exitCode) process.stdout.write('Code specialist capability builder v2.6 selftest: ' + passed + ' PASS\n');
