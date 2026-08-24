@@ -10,13 +10,13 @@ function familyRuleMatches(rule,a,b){return rule.sourceFamilies.includes(a.famil
 function directPairRoutes(a,b){
  const routes=[];
  for(const r of ATLAS.explicitBridges){
-   if(endpointMatches(r.source,a)&&endpointMatches(r.destination,b))routes.push({source:'EXPLICIT_BRIDGE',orientation:'DECLARED',...r});
-   if(String(r.direction||'').startsWith('BIDIRECTIONAL')&&endpointMatches(r.source,b)&&endpointMatches(r.destination,a))routes.push({source:'EXPLICIT_BRIDGE',orientation:'REVERSED_BIDIRECTIONAL',...r});
+   if(endpointMatches(r.source,a)&&endpointMatches(r.destination,b))routes.push({...r,knowledgeSource:'EXPLICIT_BRIDGE',orientation:'DECLARED'});
+   if(String(r.direction||'').startsWith('BIDIRECTIONAL')&&endpointMatches(r.source,b)&&endpointMatches(r.destination,a))routes.push({...r,knowledgeSource:'EXPLICIT_BRIDGE',orientation:'REVERSED_BIDIRECTIONAL'});
  }
- for(const r of ATLAS.familyRules)if(familyRuleMatches(r,a,b))routes.push({source:'FAMILY_RULE',orientation:'DECLARED',...r});
+ for(const r of ATLAS.familyRules)if(familyRuleMatches(r,a,b))routes.push({...r,knowledgeSource:'FAMILY_RULE',orientation:'DECLARED'});
  return routes;
 }
-function routeSpecificity(x){if(x.source==='EXPLICIT_BRIDGE')return 100;if(x.class==='NETWORK_PROTOCOL'||x.class==='PROCESS_IPC'||x.class==='FILE_DATA_CONTRACT')return 5;return 25}
+function routeSpecificity(x){if(x.knowledgeSource==='EXPLICIT_BRIDGE')return 100;if(x.class==='NETWORK_PROTOCOL'||x.class==='PROCESS_IPC'||x.class==='FILE_DATA_CONTRACT')return 5;return 25}
 function relate({languageA,languageB,purposeTags=[]}={}){
  const a=registry.getByLanguageId(languageA),b=registry.getByLanguageId(languageB);
  if(!a||!b)return{schema:'axm.code-route-relation.v1',result:'UNKNOWN_LANGUAGE',languageA:languageA||null,languageB:languageB||null,unknown:[!a?languageA:null,!b?languageB:null].filter(Boolean),routes:[],authority:'NONE'};
