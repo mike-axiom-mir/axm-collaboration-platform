@@ -19,6 +19,13 @@ def load_json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def load_first(paths):
+    for path in paths:
+        if path.is_file():
+            return load_json(path), path.name
+    raise SystemExit("MISSING_EVIDENCE_ANY:" + ",".join(str(p) for p in paths))
+
+
 def load_expected():
     organs = []
     for p in sorted(ORGAN_ROOT.glob("*/organ.json")):
@@ -45,7 +52,10 @@ def digest_json(value) -> str:
 expected = load_expected()
 expected_ids = {o["languageId"] for o in expected}
 
-toolchain = load_json(EVIDENCE_ROOT / "toolchain" / "toolchain-census.json")
+toolchain, toolchain_filename = load_first([
+    EVIDENCE_ROOT / "toolchain" / "toolchain-census.json",
+    EVIDENCE_ROOT / "toolchain" / "required-native-gap-census.json",
+])
 grammar = load_json(EVIDENCE_ROOT / "grammar" / "tree-sitter-grammar-census.json")
 last_mile = load_json(EVIDENCE_ROOT / "last-mile" / "last-mile-census.json")
 
@@ -68,7 +78,7 @@ for r in toolchain["results"]:
     if r.get("languageId") in by_language and r.get("smokePass") is True:
         evidence_class = ((r.get("smoke") or {}).get("probeClass") or "NATIVE_SMOKE")
         by_language[r["languageId"]].append({
-            "source": "stock-native-toolchain",
+            "source": "native-toolchain-evidence",
             "evidenceClass": evidence_class,
         })
 for r in grammar["results"]:
@@ -107,7 +117,9 @@ summary = {
     "coveredCount": 102 - len(uncovered),
     "uncoveredCount": len(uncovered),
     "uncoveredOrgans": uncovered,
-    "stockNativeSmokePassCount": sum(1 for r in toolchain["results"] if r.get("smokePass") is True),
+    "nativeEvidenceFile": toolchain_filename,
+    "nativeSmokePassCount": sum(1 for r in toolchain["results"] if r.get("smokePass") is True),
+    "nativeEvidenceIsRequiredSubset": bool((toolchain.get("summary") or {}).get("requiredCoverageSubset")),
     "grammarPackPassCount": sum(1 for r in grammar["results"] if r.get("pass") is True),
     "lastMilePassCount": sum(1 for r in last_mile["results"] if r.get("pass") is True),
     "daxFullParserEvidence": "ANTLR_FULL_PARSER" in dax_classes,

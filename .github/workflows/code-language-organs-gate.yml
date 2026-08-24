@@ -1,4 +1,4 @@
-# permanent read-only gate; specialist-eye materialization authority has been removed
+# permanent read-only evidence gate; optional broad host census lives in code-language-stock-census.yml
 name: AXM Code Language Organs Gate
 
 on:
@@ -6,7 +6,7 @@ on:
     paths:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
-      - ".github/ci/code-language-toolchain-probe.js"
+      - ".github/ci/code-language-required-native-gap-probe.js"
       - ".github/ci/code-language-tree-sitter-pack-probe.py"
       - ".github/ci/code-language-tree-sitter-pack-probe-v2.py"
       - ".github/ci/code-language-last-mile-probe.py"
@@ -16,7 +16,7 @@ on:
     paths:
       - "shared/code-capability-fabric/language-organs/**"
       - "shared/code-capability-fabric/module.contract.json"
-      - ".github/ci/code-language-toolchain-probe.js"
+      - ".github/ci/code-language-required-native-gap-probe.js"
       - ".github/ci/code-language-tree-sitter-pack-probe.py"
       - ".github/ci/code-language-tree-sitter-pack-probe-v2.py"
       - ".github/ci/code-language-last-mile-probe.py"
@@ -52,22 +52,38 @@ jobs:
         run: python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --check
       - name: Verify human-developer lens, 102 specialist eyes and code-native discovery seam
         run: node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
+      - name: Refuse generated machine-cheatcode drift
+        run: node shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js --check
+      - name: Verify 102 x 50 machine-native cheatcode banks
+        run: node shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js
+      - name: Verify bounded inter-cheatcode influence mesh
+        run: node shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js
       - name: Run core organ contract test
         run: node shared/code-capability-fabric/language-organs/selftest.js
       - name: Run adversarial routing and snapshot test
         run: node shared/code-capability-fabric/language-organs/selftest-adversarial.js
       - name: Verify exact PR51 donor bindings
         run: node shared/code-capability-fabric/language-organs/selftest-donors.js
-      - name: Census native toolchains and bounded smoke probes
+
+  required-native-gap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Prove required OpenCL native gap with Clang
         env:
-          AXM_TOOLCHAIN_REPORT: toolchain-census.json
-        run: node .github/ci/code-language-toolchain-probe.js
-      - name: Preserve toolchain census evidence
-        if: always()
+          AXM_TOOLCHAIN_REPORT: required-native-gap-census.json
+        run: node .github/ci/code-language-required-native-gap-probe.js
+      - name: Preserve required native coverage evidence
         uses: actions/upload-artifact@v4
         with:
           name: code-language-toolchain-census
-          path: toolchain-census.json
+          path: required-native-gap-census.json
           if-no-files-found: error
           retention-days: 1
 
@@ -146,7 +162,7 @@ jobs:
           retention-days: 1
 
   coverage-union:
-    needs: [language-organs, structural-grammar-pack, last-mile-nine]
+    needs: [language-organs, required-native-gap, structural-grammar-pack, last-mile-nine]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -156,7 +172,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Download stock native evidence
+      - name: Download required native evidence
         uses: actions/download-artifact@v4
         with:
           name: code-language-toolchain-census

@@ -1,0 +1,1409 @@
+{
+  "schema": "axm.code.language-template-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "sql",
+  "organId": "code.organ.sql.v1",
+  "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+  "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+  "eyeId": "code.eye.sql.v1",
+  "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+  "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79",
+  "lanes": {
+    "verifiedVault": {
+      "meaning": "Evidence-bound machine recipe templates. Verified refers to template mechanics/evidence binding, not arbitrary generated source correctness.",
+      "templateCount": 12,
+      "templates": [
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.native-parse-snapshot.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "understand",
+          "nativeBindings": [
+            "ANSI SQL",
+            "vendor dialects",
+            "statement list"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "9971f1c983ba8382eb7cd91aeeb890b1ec1143bddbb52b4c2cefe369f3e7b674"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.symbol-impact-map.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "impact",
+          "nativeBindings": [
+            "statement/query/block",
+            "CTE"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "REFERENCE_RESOLVED"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "eba5b001aff852e95647548e4a0a75b8ea69aecbaea6386da9c3bb30e6ccdab6"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.dependency-closure.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "dependencies",
+          "nativeBindings": [
+            "view",
+            "statement list"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ACYCLIC_GRAPH"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "68054d7a22363e2e563e9181294f76037083ae0f2705fff78ac03bc06fe7593b"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.type-state-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "impact",
+          "nativeBindings": [
+            "schema/domain-driven",
+            "NULL semantics"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "NO_COERCION_DELTA"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "45991a0bc01c09b45ff4c54ab602d28a54e4374c8b0fdf814b9196148043a0e7"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.control-effect-boundary.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "impact",
+          "nativeBindings": [
+            "database, graph, model or endpoint effects",
+            "statement list"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "ORDERING_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "ce0195895b5042de92f742547d9fa3bce3febbfebc13dcd6f478713bfb0535a0"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.rewrite-hazard-guard.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "refactor",
+          "nativeBindings": [
+            "dialect drift"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "HAZARD_NOT_RELEVANT:dialect drift"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "9a3e2bd439cf793cd1f033c749d422379d68032c24ed4886c909b0f9c04408d2"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.native-verifier-ladder.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "verification",
+          "nativeBindings": [
+            "query tests"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "faee72c057051c1fac74ee2d5f3bb2ee11fa19ebbf0a6d5f7bc7267884df5c71"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.measure-before-optimization.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "performance",
+          "nativeBindings": [
+            "statement list",
+            "table"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.performance-build.03",
+              "phase": "performance-build",
+              "opcode": "BUILD_GRAPH_INVALIDATION",
+              "emits": "BUILD_INVALIDATION_FACT",
+              "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "BUILD_GRAPH_STABLE"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "eab0593e5990f9c037a38192a4f8aebba742bca0f936fb1a758858874c55cd6f"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.debug-hypothesis-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "debug",
+          "nativeBindings": [
+            "query-or-transaction",
+            "set/relational/procedural by dialect"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.debugging.04",
+              "phase": "debugging",
+              "opcode": "STATE_CONTROL_TRACE",
+              "emits": "TRACE_PLAN",
+              "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "TRACE_EQUIVALENT"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "50b8fa995abcab550bec728aa318380d026ee0edca88cc2df894097eb3b9c727"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.cross-language-comparison.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "discovery",
+          "nativeBindings": [
+            "relational data",
+            "joins",
+            "aggregation",
+            "relational query"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.discovery.05",
+              "phase": "discovery",
+              "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+              "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+              "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "d54cc694060602bdc5a2fca9cc94ab7218bb3715876d69e2715f282d805e98d0"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.safe-refactor-preflight.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "refactor",
+          "nativeBindings": [
+            "ANSI SQL",
+            "vendor dialects",
+            "statement list",
+            "statement/query/block",
+            "CTE",
+            "view",
+            "schema/domain-driven",
+            "NULL semantics",
+            "database, graph, model or endpoint effects",
+            "dialect drift",
+            "query tests"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.parse.01",
+              "phase": "parse",
+              "opcode": "BIND_DIALECT",
+              "emits": "DIALECT_BINDING_FACT",
+              "next": "CACHE_OR_HOLD"
+            },
+            {
+              "ruleId": "code.cheat.sql.symbols.02",
+              "phase": "symbols",
+              "opcode": "TRACE_UNRESOLVED_SYMBOL",
+              "emits": "UNRESOLVED_SYMBOL_EDGE",
+              "next": "REQUEST_EVIDENCE"
+            },
+            {
+              "ruleId": "code.cheat.sql.dependencies.03",
+              "phase": "dependencies",
+              "opcode": "CYCLE_SUSPICION",
+              "emits": "CYCLE_CANDIDATE",
+              "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED"
+            },
+            {
+              "ruleId": "code.cheat.sql.types-state.04",
+              "phase": "types-state",
+              "opcode": "WIDENING_OR_COERCION",
+              "emits": "COERCION_RISK",
+              "next": "RUN_NATIVE_TYPE_CHECK"
+            },
+            {
+              "ruleId": "code.cheat.sql.control-effects.05",
+              "phase": "control-effects",
+              "opcode": "ORDER_LIFECYCLE_EDGE",
+              "emits": "ORDERING_DELTA",
+              "next": "RECHECK_ORDER_SENSITIVE_FACTS"
+            },
+            {
+              "ruleId": "code.cheat.sql.rewrite-safety.01",
+              "phase": "rewrite-safety",
+              "opcode": "SEMANTIC_HAZARD_GUARD",
+              "emits": "REWRITE_HAZARD",
+              "next": "HOLD_OR_PROVE_EQUIVALENCE"
+            },
+            {
+              "ruleId": "code.cheat.sql.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "DECLARED_DIALECT_NOT_IN_PROFILE",
+            "REFERENCE_RESOLVED",
+            "ACYCLIC_GRAPH",
+            "NO_COERCION_DELTA",
+            "ORDERING_EQUIVALENT",
+            "HAZARD_NOT_RELEVANT:dialect drift",
+            "VERIFIERS_AGREE"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "8dd39facb8e0b90e90bca655392ef390976879e7f7faf8b3d28656107b118b45"
+        },
+        {
+          "schema": "axm.code.language-machine-template.v1",
+          "id": "code.template.sql.regression-defense-pack.v1",
+          "lane": "VERIFIED_VAULT",
+          "templateClass": "MACHINE_RECIPE",
+          "languageId": "sql",
+          "intent": "verification",
+          "nativeBindings": [
+            "query tests",
+            "table",
+            "view",
+            "function references",
+            "statement list",
+            "statement/query/block"
+          ],
+          "preconditions": {
+            "languageIdExact": true,
+            "organDigest": "54a2a98ae62c13bda784cd1f349b7c36be85ad9e4d504d81eba797a41e212bc2",
+            "grammarProfileDigest": "fb1d59e966037e82c5ec56d5ebb76fddaa588a9bd7d31b8eab5cb9e0a6476a19",
+            "eyeDigest": "0b088028631a165ea092d5de2752500b2f5b182ba43de033c640ae89a22c377d",
+            "cheatcodeBankDigest": "f68d6ced610dbbd45100fab69056ed3106e686e1001a5440d0b4bebfd23d0e79"
+          },
+          "holes": [
+            {
+              "id": "H1",
+              "type": "SYMBOL",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H2",
+              "type": "SCHEMA_OR_MODEL_REF",
+              "required": true,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H3",
+              "type": "EXPRESSION",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            },
+            {
+              "id": "H4",
+              "type": "PREDICATE",
+              "required": false,
+              "source": "CALLER_OR_RENDER_ADAPTER",
+              "defaultAuthority": "NONE"
+            }
+          ],
+          "steps": [
+            {
+              "ruleId": "code.cheat.sql.verification.02",
+              "phase": "verification",
+              "opcode": "VERIFIER_DISAGREEMENT",
+              "emits": "EVIDENCE_CONFLICT",
+              "next": "HOLD_FOR_COUNTERCHECK"
+            },
+            {
+              "ruleId": "code.cheat.sql.debugging.03",
+              "phase": "debugging",
+              "opcode": "DEPENDENCY_ISOLATION",
+              "emits": "DEPENDENCY_ISOLATION_PLAN",
+              "next": "ISOLATE_ONE_EDGE_AT_A_TIME"
+            },
+            {
+              "ruleId": "code.cheat.sql.performance-build.04",
+              "phase": "performance-build",
+              "opcode": "ANALYSIS_CACHE_INVALIDATION",
+              "emits": "ANALYSIS_INVALIDATION_SET",
+              "next": "DROP_ONLY_INVALID_FACTS"
+            }
+          ],
+          "emits": "TEMPLATE_INSTANCE_PLAN",
+          "falsifiers": [
+            "VERIFIERS_AGREE",
+            "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED",
+            "ANALYSIS_PRESERVED"
+          ],
+          "verifierCandidates": [
+            "dialect parse",
+            "query tests",
+            "migration checks"
+          ],
+          "evidence": {
+            "level": "MACHINE_RECIPE_GATE_VERIFIED",
+            "doesNotClaimSourceCorrectness": true,
+            "doesNotClaimRuntimeCorrectness": true
+          },
+          "use": {
+            "normalMachine": "DETERMINISTIC_SELECT_AND_FILL_TYPED_HOLES",
+            "ai": "COMPACT_TEMPLATE_CAPSULE_FOR_PROPOSAL_AND_COUNTERCHECK",
+            "sourceRenderingWithoutAdapter": "HELD"
+          },
+          "authority": "NONE",
+          "templateSha256": "42195ef87464fc418a0609e66573e6690ae936935aa08787e2c40c5c61ceb7e8"
+        }
+      ]
+    },
+    "patternNursery": {
+      "meaning": "Frequent structural or edit patterns mined from caller-supplied observations. Candidates never self-promote.",
+      "storedCandidates": [],
+      "automaticPromotion": false
+    }
+  },
+  "structuralSkeletons": [
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.sql.01.v1",
+      "languageId": "sql",
+      "construct": "SELECT",
+      "nativeUnit": "statement list",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "SELECT"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "SCHEMA_OR_MODEL_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "081b9816061a687a0af62025753f4fe4643eec19e7060148098e6972a5500855"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.sql.02.v1",
+      "languageId": "sql",
+      "construct": "CTE",
+      "nativeUnit": "statement list",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "CTE"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "SCHEMA_OR_MODEL_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "a82c39340efd041ed19781f44918805d90578530a914bf4068456d0593bea818"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.sql.03.v1",
+      "languageId": "sql",
+      "construct": "DDL",
+      "nativeUnit": "statement list",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "DDL"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "SCHEMA_OR_MODEL_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "4c199907099f146edcca67357be7328fd717b20be2cc524233af7f6fb8e8ec97"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.sql.04.v1",
+      "languageId": "sql",
+      "construct": "DML",
+      "nativeUnit": "statement list",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "DML"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "SCHEMA_OR_MODEL_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "251b69527c68eb8cb03ab9b0082a10099fe078a9f21df0e985da0a3142338f87"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.sql.05.v1",
+      "languageId": "sql",
+      "construct": "view",
+      "nativeUnit": "statement list",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "view"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "SCHEMA_OR_MODEL_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "daa0cf9730c5a02c9ae592091ffabb7dac508052c323018bae3836f7e8efbfa3"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.sql.06.v1",
+      "languageId": "sql",
+      "construct": "function",
+      "nativeUnit": "statement list",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "function"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "SCHEMA_OR_MODEL_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "6801889ce6c3d3453dd0610826175f709d6c369dde1dd8fad5b3e20cf862b1f3"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.sql.07.v1",
+      "languageId": "sql",
+      "construct": "procedure",
+      "nativeUnit": "statement list",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "procedure"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "SCHEMA_OR_MODEL_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "06ea39eb0f74e1fa1ac2f9cba4b46920d15c58c21645e2e4dde485c17b2803d5"
+    },
+    {
+      "schema": "axm.code.language-structural-skeleton.v1",
+      "id": "code.skeleton.sql.08.v1",
+      "languageId": "sql",
+      "construct": "join",
+      "nativeUnit": "statement list",
+      "shape": [
+        {
+          "role": "ANCHOR",
+          "value": "join"
+        },
+        {
+          "role": "HOLE",
+          "id": "H1"
+        },
+        {
+          "role": "HOLE",
+          "id": "H2"
+        }
+      ],
+      "holeTypes": [
+        {
+          "id": "H1",
+          "type": "SYMBOL",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        },
+        {
+          "id": "H2",
+          "type": "SCHEMA_OR_MODEL_REF",
+          "required": true,
+          "source": "CALLER_OR_RENDER_ADAPTER",
+          "defaultAuthority": "NONE"
+        }
+      ],
+      "renderPolicy": "NO_SOURCE_EMIT_WITHOUT_LANGUAGE_RENDERER_OR_AI_PROPOSAL",
+      "verificationRequired": true,
+      "authority": "NONE",
+      "skeletonSha256": "3f3cef6e38d71a65868072b2d551504275165655a1a063b65fce6500b2d21f48"
+    }
+  ],
+  "fastUse": {
+    "indexKeys": [
+      "languageId",
+      "intent",
+      "nativeBinding"
+    ],
+    "deterministicMachineUse": true,
+    "aiCapsuleUse": true,
+    "sourceRendererOptional": true
+  },
+  "policy": {
+    "frequencyIsNotCorrectness": true,
+    "templateIsNotAuthority": true,
+    "minedCandidateIsNotVerifiedTemplate": true,
+    "automaticPromotion": false,
+    "automaticMutation": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "0c2e66adc7a9ea3f15eedea2fa67591e3b72378b28600a2776cb86f9b14cc2fc"
+}

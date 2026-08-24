@@ -1,0 +1,103 @@
+{
+  "schema": "axm.code.artifact-build-window-contract.v1",
+  "version": "1.0.1",
+  "status": "TEST",
+  "authority": "NONE",
+  "purpose": "Live mid-build artifact preview plus an explicit quick-test observation bridge, without turning preview or runtime observations into workspace or promotion authority.",
+  "provides": [
+    "axm.code.build-window-state.v1",
+    "axm.code.build-window-transition.v1",
+    "axm.code.artifact-preview-spec.v1",
+    "axm.code.quick-test-candidate/v1",
+    "axm.code.quick-test-request.v1",
+    "axm.code.quick-test-observation.v1",
+    "axm.code.build-window-snapshot.v1",
+    "axm.code.build-window-popup-safety.v1",
+    "axm.code.build-window-quick-test-intent.v1"
+  ],
+  "consumes": [
+    "axm.code.prebuild-plan.v1",
+    "axm.code.prebuild-preview.v1",
+    "axm.code.machine-keyboard-layout.v1",
+    "axm.code.machine-key-program.v1",
+    "axm.code.candidate-admission-report.v1",
+    "ephemeral candidate artifact body",
+    "artifact digest and metadata",
+    "ephemeral-live-preview",
+    "axm.disposable-candidate-sandbox-session/v1",
+    "axm.sandbox-static-evidence/v1",
+    "optional generic-code sandbox adapter accepting axm.code.quick-test-candidate/v1",
+    "explicit quick-test action"
+  ],
+  "previewModes": {
+    "STATIC": {
+      "candidateExecution": false,
+      "iframeSandboxTokens": [],
+      "network": false,
+      "persistentStorage": false,
+      "truthCeiling": "VISUAL_OR_STRUCTURAL_OBSERVATION_ONLY"
+    },
+    "BROWSER_QUICK_RUN": {
+      "candidateExecution": "EXPLICIT_ONLY",
+      "iframeSandboxTokens": ["allow-scripts"],
+      "sameOriginPrivilege": false,
+      "network": false,
+      "persistentStorage": false,
+      "cpuIsolationClaimed": false,
+      "memoryIsolationClaimed": false,
+      "truthCeiling": "BROWSER_RUNTIME_OBSERVATION_ONLY"
+    },
+    "HOST_DISPOSABLE": {
+      "candidateExecution": "EXTERNAL_ADAPTER_ONLY",
+      "requiredInputSchema": "axm.code.quick-test-candidate/v1",
+      "existingRepoSandboxDirectGenericInputClaimed": false,
+      "network": false,
+      "inheritedHostAuthority": false,
+      "workspaceMutation": false,
+      "sourceIterationMutation": false,
+      "truthCeiling": "DISPOSABLE_RUNTIME_OBSERVATION_ONLY"
+    }
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "preview-as-verification",
+      "preview-as-final-visual-proof",
+      "browser-preview-as-resource-isolation-proof",
+      "browser-preview-with-same-origin-privilege",
+      "raw-source-in-durable-build-window-state",
+      "raw-source-in-build-window-history",
+      "automatic-quick-test",
+      "existing-game-sandbox-as-generic-code-adapter-proof",
+      "quick-test-pass-as-admission-proof",
+      "quick-test-pass-as-universal-correctness",
+      "quick-test-pass-as-promotion",
+      "runtime-failure-as-in-place-source-rewrite",
+      "popup-as-workspace-authority",
+      "popup-as-execution-authority",
+      "automatic-install",
+      "automatic-deployment",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "existingCapabilityBindings": {
+    "visualDraftRoom": {
+      "requiredProvide": "ephemeral-live-preview",
+      "requiredRefusal": "live-preview-as-pixel-verification"
+    },
+    "sandbox": {
+      "requiredHandoff": "axm.disposable-candidate-sandbox-session/v1",
+      "requiresNoInheritedHostAuthority": true,
+      "currentDirectGenericCodeInput": false,
+      "genericAdapterRequiredBeforeHostQuickTest": true
+    }
+  },
+  "lifecycle": {
+    "stateOwner": "caller-or-browser-ephemeral",
+    "rawArtifactRetention": "none-by-core",
+    "popupClose": "drops-dom-preview",
+    "quickTest": "browser-direct-explicit or separate generic-sandbox adapter handoff",
+    "cleanup": "automatic-popup / adapter sandbox policy"
+  }
+}
