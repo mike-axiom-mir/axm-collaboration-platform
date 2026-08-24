@@ -19,7 +19,7 @@ function resealCandidate(candidate){
 function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
-  check(catalog.recipes.length===8,'reviewed catalog has one portable SKILL plus seven bounded HAND recipes including Python and CSS source');
+  check(catalog.recipes.length===8,'reviewed catalog has one portable SKILL plus seven bounded HAND recipes including Python, CSS, and strict SVG source');
   check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===7&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.variants.some(function(variant){return variant.id===row.candidatePolicy.defaultVariantId;});}),'every reviewed recipe explicitly defaults to one named candidate variant');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
@@ -67,6 +67,23 @@ function main(){
   const cssKindExpansion=Fabric.clone(cssRecipe.exampleRequest);cssKindExpansion.parameters.tokens[0].kind='RAW_CSS';assert.throws(function(){Fabric.build(Fabric.sealRequest(cssKindExpansion,true),catalog);},/unsupported/);passed+=1;
   const cssDuplicate=Fabric.clone(cssRecipe.exampleRequest);cssDuplicate.parameters.tokens[1].name=cssDuplicate.parameters.tokens[0].name;assert.throws(function(){Fabric.build(Fabric.sealRequest(cssDuplicate,true),catalog);},/unique/);passed+=1;
   check(true,'CSS token-name injection, raw kind expansion, and duplicate aliases are refused before candidate emission');
+
+  const svgRecipe=catalog.recipes.find(function(row){return row.id==='svg-status-badge';}),svgPackage=packages[svgRecipe.id],svgSource=svgPackage.files['capability.js'],svgContract=JSON.parse(svgPackage.files['modular-capability.contract.json']),svgCompilation=JSON.parse(svgPackage.files['compilation.receipt.json']);
+  check(svgRecipe.version==='1.1.0'&&svgRecipe.builderDigest===BuilderRegistry.describe('svg-status-badge-v1').implementationDigest,'SVG recipe binds the exact hardened builder version and digest');
+  check(svgPackage.files['capability.js']&&svgPackage.files['selftest.js'],'SVG HAND emits exact inert JavaScript source and selftest paths');
+  check(svgContract.consumes.join(',')==='axm.svg-status-badge-content/v1'&&svgContract.provides.includes('axm.creation.svg-status-badge/v1')&&svgContract.provides.includes('image/svg+xml'),'SVG contract binds one typed input and exact result/media outputs');
+  check(svgSource.includes('jsonRecord')&&svgSource.includes('recordBytes')&&!svgSource.includes('JSON.stringify(input)')&&svgSource.includes('INPUT_FIELDS_UNSUPPORTED')&&svgSource.includes('INPUT_BYTES_EXCEEDED')&&svgSource.includes('SVG_BYTES_EXCEEDED'),'generated SVG hand closes the runtime record without invoking input serialization hooks and enforces both byte ceilings');
+  check(svgSource.includes('xmlText')&&svgPackage.files['selftest.js'].includes('inheritedHookRead')&&svgPackage.files['selftest.js'].includes("'INPUT_BYTES_EXCEEDED'")&&svgPackage.files['selftest.js'].includes("'SVG_BYTES_EXCEEDED'"),'SVG emitted proof refuses inherited serialization hooks, XML-invalid text, and both active byte-budget adversaries');
+  check(svgSource.includes('"maxInputBytes":128')&&svgSource.includes('"maxOutputBytes":1024'),'SVG active candidate binds the exact exercised input and output ceilings');
+  check(svgSource.includes('<title>')&&svgSource.includes('viewBox=')&&svgSource.includes('&amp;')&&svgSource.includes('&lt;')&&svgSource.includes('&#39;'),'generated SVG hand contains bounded accessibility structure and XML escaping');
+  check(!/(?:<script|<style|\son[a-z]+\s*=|href=|xlink:href|url\s*\(|@import|<animate|<set|<foreignObject|\bfetch\s*\(|new Function|\beval\s*\()/i.test(svgSource),'generated SVG hand contains no active, external-resource, provider, or dynamic-code surface');
+  check(!/require\(['"](?:fs|node:fs|http|https|node:http|node:https|child_process|node:child_process)['"]\)/.test(svgSource),'generated SVG hand imports no filesystem, network, or process module');
+  check(svgCompilation.generatedCodeExecuted===false&&svgCompilation.testsEmitted===true,'SVG compilation receipt distinguishes emitted tests from execution');
+  check(svgRecipe.boundaries.some(function(row){return row.includes('visual fitness require separate live observation');}),'SVG recipe preserves browser and visual uncertainty');
+  const svgHidden=Fabric.clone(svgRecipe.exampleRequest);svgHidden.parameters.rawSvg='<script/>';const svgHiddenPlan=Fabric.planBuild(Fabric.sealRequest(svgHidden,true),catalog);
+  check(svgHiddenPlan.status==='HELD'&&svgHiddenPlan.holds[0].code==='CONTRACT_HOLD','SVG raw-source parameter expansion is held before builder invocation');
+  const svgColorInjection=Fabric.clone(svgRecipe.exampleRequest);svgColorInjection.parameters.foreground='url(https://example.test/a)';const svgColorPlan=Fabric.planBuild(Fabric.sealRequest(svgColorInjection,true),catalog);
+  check(svgColorPlan.status==='HELD'&&svgColorPlan.holds[0].code==='CONTRACT_HOLD','SVG colour URL injection is held by the exact recipe contract');
 
   const recipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),base=Fabric.sealRequest(recipe.exampleRequest,true),changedDraft=Fabric.clone(recipe.exampleRequest);changedDraft.parameters.defaultValue='different';const changed=Fabric.sealRequest(changedDraft,true);
   check(base.requestDigest!==changed.requestDigest,'semantic request change alters request digest');

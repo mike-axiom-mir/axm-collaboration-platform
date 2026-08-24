@@ -1,0 +1,61 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "strict-svg-status-badge-specialist-rung",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "code.language.svg.catalogued/v1",
+        "capability.candidate.detached.deterministic/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "code.svg.status-badge.render.strict/v1",
+        "code.specialist.markup-structure.svg.exact/v1",
+        "evidence.svg.badge.static-lineage/v1"
+      ],
+      "declaredConstraints": {
+        "code.language.svg.catalogued/v1": [
+          "SVG is catalogued as markup-document knowledge; catalog presence alone is not a renderer or specialist route."
+        ],
+        "code.svg.status-badge.render.strict/v1": [
+          "The legacy badge renderer silently coerces or truncates runtime values and has no explicit runtime input/output byte ceilings."
+        ],
+        "capability.candidate.detached.deterministic/v1": [
+          "Requires one exact source-reviewed recipe and active builder; grants no lifecycle authority."
+        ],
+        "evidence.svg.badge.static-lineage/v1": [
+          "Existing fixture parity is not a live browser proof and the Code Specialist Fabric does not bind an exact SVG profile."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "code.specialist.markup-structure.svg.exact/v1",
+    "code.svg.status-badge.render.strict/v1",
+    "evidence.svg.badge.static-lineage/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "code.specialist.markup-structure.svg.exact/v1",
+      "requiredBy": ["strict-svg-status-badge-specialist-rung"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "code.svg.status-badge.render.strict/v1",
+      "requiredBy": ["strict-svg-status-badge-specialist-rung"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "evidence.svg.badge.static-lineage/v1",
+      "requiredBy": ["strict-svg-status-badge-specialist-rung"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

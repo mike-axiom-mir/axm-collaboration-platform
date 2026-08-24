@@ -18,5 +18,5 @@ const rendered=sandbox.module.exports.render({label:'CAPABILITY',value:'EXPERIME
 if(!rendered.ok||rendered.mimeType!=='image/svg+xml')throw new Error('SVG proof render failed.');
 const html='<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capability Fabric SVG proof</title><style>body{margin:0;display:grid;place-items:center;min-height:100vh;background:#071018}svg{width:min(90vw,480px);height:auto}</style><main>'+rendered.svg+'</main></html>';
 const fixture=fs.readFileSync(path.join(__dirname,'fixtures','capability-fabric-svg-proof.html'),'utf8').trim();
-if(fixture!==html)throw new Error('Live SVG proof fixture drifted from generated candidate output.');
-process.stdout.write('PASS generated SVG exactly matches live proof fixture · '+candidate.package.packageDigest+'\n');
+if(fixture!==html)throw new Error('Static SVG fixture drifted from the trusted VM render output.');
+process.stdout.write('PASS trusted VM SVG render exactly matches static fixture; browser appearance remains UNKNOWN · '+candidate.package.packageDigest+'\n');

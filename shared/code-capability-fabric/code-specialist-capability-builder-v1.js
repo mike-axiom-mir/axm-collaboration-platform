@@ -9,7 +9,7 @@ const CapabilityFabric = require('../capability-fabric');
 const HandFoundryContract = require('../../tools/hand-specification-foundry/module.contract.json');
 const MODULE_CONTRACT = require('./module-code-specialist-capability-builder-v1.contract.json');
 
-const VERSION = '2.1.0';
+const VERSION = '2.2.0';
 const REQUEST_SCHEMA = 'axm.code-specialist-capability-build-request/v1';
 const RESULT_SCHEMA = 'axm.code-specialist-capability-candidate/v1';
 const TARGETS = BuildProfileRegistry.TARGETS;
@@ -19,6 +19,7 @@ const TARGET_RECIPE = TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST.recipe;
 const MARKUP_TARGET_RECIPE = TARGETS.ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST.recipe;
 const PYTHON_TARGET_RECIPE = TARGETS.ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST.recipe;
 const CSS_TARGET_RECIPE = TARGETS.ONE_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST.recipe;
+const SVG_TARGET_RECIPE = TARGETS.ONE_EXACT_SVG_MARKUP_STRUCTURE_SPECIALIST.recipe;
 const ROOTS = IntentAdapter.ROOTS;
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
 const SAFE_ID = /^[a-z0-9][a-z0-9._-]{0,127}$/;
@@ -37,6 +38,7 @@ const LIMITATIONS = Object.freeze([
   'ORGAN_INTENT_DOES_NOT_PROVE_IMPLEMENTATION_SEMANTICS',
   'PYTHON_RUNTIME_AND_EMITTED_SELFTEST_NOT_EXECUTED',
   'SPECIALIST_PROFILE_IS_ROUTING_CONTEXT_NOT_CAPABILITY_PROOF',
+  'SVG_BROWSER_ACCESSIBILITY_AND_VISUAL_QUALITY_NOT_PROVEN',
   'CANON_CHANGE_NOT_AUTHORIZED'
 ].sort(compareText));
 
@@ -450,6 +452,22 @@ function buildCssSpecializationRequest() {
   return Router.sealRequest(draft);
 }
 
+function buildSvgSpecializationRequest() {
+  const draft = clone(Router.buildExampleRequest());
+  const observation = clone(draft.observation);
+  delete observation.observationDigest;
+  observation.id = 'example-svg-code-artifact-observation';
+  observation.artifacts.push({
+    id: 'status-badge', path: 'assets/status-badge.svg', sha256: Router.sha256Value('example-bytes:assets/status-badge.svg'), byteLength: 192,
+    declaredLanguageId: 'svg', artifactFamilies: ['markup'], responsibilities: ['accessibility', 'document-structure', 'interface'], runtimes: ['browser'], frameworks: ['web-platform'],
+    requiredPermissions: [], networkDomains: [], interfaceContracts: [], dependsOnArtifactIds: [], sharedSeam: false
+  });
+  draft.id = 'route-example-svg-markup-structure-specialist';
+  draft.observation = Router.sealObservation(observation);
+  delete draft.requestDigest;
+  return Router.sealRequest(draft);
+}
+
 function buildTargetExampleRequest(target, options) {
   const intentAdapterRequest = buildTargetExampleIntentRequest(target, options);
   const intentAdapterPlan = IntentAdapter.plan(intentAdapterRequest);
@@ -578,13 +596,39 @@ function buildCssExampleRequest() {
   });
 }
 
+function buildSvgExampleIntentRequest() {
+  return buildTargetExampleIntentRequest(TARGETS.ONE_EXACT_SVG_MARKUP_STRUCTURE_SPECIALIST, {
+    specializationRequest: buildSvgSpecializationRequest(),
+    intentRequestId: 'bind-svg-markup-structure-specialist-organ-intent',
+    intentName: 'Strict SVG Markup Structure Specialist Intent',
+    intentPurpose: 'Bind one exact SVG markup-structure specialist lane to a reviewed text-only status-badge intent before a separate detached candidate-generation decision.'
+  });
+}
+
+function buildSvgExampleRequest() {
+  return buildTargetExampleRequest(TARGETS.ONE_EXACT_SVG_MARKUP_STRUCTURE_SPECIALIST, {
+    specializationRequest: buildSvgSpecializationRequest(),
+    intentRequestId: 'bind-svg-markup-structure-specialist-organ-intent',
+    intentName: 'Strict SVG Markup Structure Specialist Intent',
+    intentPurpose: 'Bind one exact SVG markup-structure specialist lane to a reviewed text-only status-badge intent before a separate detached candidate-generation decision.',
+    buildRequestId: 'svg-status-badge-renderer-candidate',
+    buildPurpose: 'Generate one detached strict SVG status-badge renderer for the explicitly reviewed synthetic status-badge artifact.',
+    outerRequestId: 'build-svg-markup-structure-specialist-candidate',
+    decisionId: 'mike-tier-1-svg-badge-candidate-direction',
+    decisionText: 'Mike authorized bounded stepwise Code Capability Fabric improvement: create one detached strict SVG status-badge candidate; do not execute, render, write, install, integrate, publish, promote, or CANON.',
+    evaluatedAt: '2026-08-24T00:00:00.000Z', expiresAt: '2026-08-25T00:00:00.000Z', nonce: 'svg-badge-candidate-0001',
+    rootEvidencePrefix: 'svg-badge-candidate-', rootEvidenceSubject: 'svg-badge-specialist-candidate-v2.2'
+  });
+}
+
 if (!MODULE_CONTRACT || MODULE_CONTRACT.id !== 'code-specialist-capability-builder-v1') fail('module contract identity mismatch');
 
 module.exports = {
-  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, PYTHON_TARGET_RECIPE, CSS_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
+  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, PYTHON_TARGET_RECIPE, CSS_TARGET_RECIPE, SVG_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
   canonicalJson, clone, same, sha256Value, jsonBytes, isSafeCandidatePath, validateCandidatePaths,
   sealRequest, normalizeRequest, generate, verify, buildExampleIntentRequest, buildExampleRequest,
   buildMarkupExampleIntentRequest, buildMarkupExampleRequest,
   buildPythonSpecializationRequest, buildPythonExampleIntentRequest, buildPythonExampleRequest,
-  buildCssSpecializationRequest, buildCssExampleIntentRequest, buildCssExampleRequest
+  buildCssSpecializationRequest, buildCssExampleIntentRequest, buildCssExampleRequest,
+  buildSvgSpecializationRequest, buildSvgExampleIntentRequest, buildSvgExampleRequest
 };

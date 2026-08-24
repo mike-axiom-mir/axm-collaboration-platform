@@ -26,15 +26,62 @@
     return {capabilityKind:'HAND',source:jsonTransformSource(parameters),selftest:jsonTransformSelftest(parameters),provides:[parameters.outputSchema],consumes:['application/json'],summary:'Pure bounded JSON field transform.'};
   }
 
-  function svgBadgeSource(parameters) {
-    const config={label:parameters.label,value:parameters.value,background:parameters.background,foreground:parameters.foreground,width:parameters.width};
-    return "'use strict';\nconst CONFIG=Object.freeze("+JSON.stringify(config)+");\nfunction esc(v){return String(v).slice(0,48).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\\\"/g,'&quot;').replace(/'/g,'&#39;');}\nfunction render(input){input=input&&typeof input==='object'&&!Array.isArray(input)?input:{};const label=esc(input.label==null?CONFIG.label:input.label),value=esc(input.value==null?CONFIG.value:input.value),split=Math.floor(CONFIG.width*0.58);const svg='<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" width=\\\"'+CONFIG.width+'\\\" height=\\\"28\\\" role=\\\"img\\\" aria-label=\\\"'+label+': '+value+'\\\"><rect width=\\\"'+CONFIG.width+'\\\" height=\\\"28\\\" rx=\\\"5\\\" fill=\\\"'+CONFIG.background+'\\\"/><rect x=\\\"'+split+'\\\" width=\\\"'+(CONFIG.width-split)+'\\\" height=\\\"28\\\" rx=\\\"5\\\" fill=\\\"'+CONFIG.foreground+'\\\"/><text x=\\\"10\\\" y=\\\"19\\\" fill=\\\"#ffffff\\\" font-family=\\\"system-ui,sans-serif\\\" font-size=\\\"13\\\">'+label+'</text><text x=\\\"'+(split+8)+'\\\" y=\\\"19\\\" fill=\\\"#081018\\\" font-family=\\\"system-ui,sans-serif\\\" font-size=\\\"13\\\" font-weight=\\\"700\\\">'+value+'</text></svg>';return {schema:'axm.creation.svg-status-badge/v1',ok:true,mimeType:'image/svg+xml',svg:svg};}\nmodule.exports={CONFIG:CONFIG,render:render};\n";
+  function svgXmlText(value){
+    if(typeof value!=='string'||!value.trim()||value.length>48)return false;
+    for(let index=0;index<value.length;index+=1){
+      const code=value.charCodeAt(index);
+      if(code===9||code===10||code===13||(code>=32&&code<=55295)||(code>=57344&&code<=65533))continue;
+      if(code>=55296&&code<=56319&&index+1<value.length){const next=value.charCodeAt(index+1);if(next>=56320&&next<=57343){index+=1;continue;}}
+      return false;
+    }
+    return true;
   }
-  function svgBadgeSelftest() {
-    return "'use strict';\nconst assert=require('assert');const capability=require('./capability.js');const first=capability.render({label:'A&B',value:'<ok>'}),second=capability.render({label:'A&B',value:'<ok>'});assert.equal(first.ok,true);assert.equal(first.svg,second.svg);assert(first.svg.includes('A&amp;B'));assert(first.svg.includes('&lt;ok&gt;'));console.log('PASS deterministic SVG badge capability');\n";
+  function svgText(value,label){
+    if(!svgXmlText(value))throw new Error(label+' is invalid');
+    return value;
+  }
+  function svgColor(value,label){
+    if(typeof value!=='string'||!/^#[0-9a-fA-F]{6}$/.test(value))throw new Error(label+' must be a six-digit hexadecimal color');
+    return value.toLowerCase();
+  }
+  function svgEscape(value){
+    return value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function svgBadgeMarkup(config,label,value){
+    const escapedLabel=svgEscape(label),escapedValue=svgEscape(value),title=svgEscape(label+': '+value),split=Math.floor(config.width*0.58);
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="'+config.width+'" height="28" viewBox="0 0 '+config.width+' 28" role="img" focusable="false" aria-label="'+title+'"><title>'+title+'</title><rect width="'+config.width+'" height="28" rx="5" fill="'+config.background+'"/><rect x="'+split+'" width="'+(config.width-split)+'" height="28" rx="5" fill="'+config.foreground+'"/><text x="10" y="19" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13">'+escapedLabel+'</text><text x="'+(split+8)+'" y="19" fill="#081018" font-family="system-ui, sans-serif" font-size="13" font-weight="700">'+escapedValue+'</text></svg>';
+  }
+  function svgBadgeSource(config) {
+    return [
+      "'use strict';",
+      "function deepFreeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);Object.getOwnPropertyNames(value).forEach(function(key){deepFreeze(value[key]);});}return value;}",
+      'const CONFIG=deepFreeze('+JSON.stringify(config)+');',
+      "function own(value,key){return Object.prototype.hasOwnProperty.call(Object(value),key);}",
+      "function recordPrototype(value){const prototype=Object.getPrototypeOf(value);if(prototype===null)return true;if(Object.getPrototypeOf(prototype)!==null||Object.getOwnPropertySymbols(prototype).length)return false;const constructor=Object.getOwnPropertyDescriptor(prototype,'constructor'),safe=['__defineGetter__','__defineSetter__','__lookupGetter__','__lookupSetter__','__proto__','constructor','hasOwnProperty','isPrototypeOf','propertyIsEnumerable','toLocaleString','toString','valueOf'];return !!constructor&&own(constructor,'value')&&typeof constructor.value==='function'&&constructor.value.name==='Object'&&Function.prototype.toString.call(constructor.value)==='function Object() { [native code] }'&&Object.getOwnPropertyNames(prototype).every(function(key){return safe.includes(key);});}",
+      "function jsonRecord(value){if(!value||typeof value!=='object'||Array.isArray(value)||!recordPrototype(value))return false;if(Object.getOwnPropertySymbols(value).length)return false;return Object.getOwnPropertyNames(value).every(function(key){const descriptor=Object.getOwnPropertyDescriptor(value,key);return descriptor&&descriptor.enumerable&&own(descriptor,'value');});}",
+      "function utf8Bytes(value){let total=0;for(let index=0;index<value.length;index+=1){const code=value.charCodeAt(index);if(code<128)total+=1;else if(code<2048)total+=2;else if(code>=55296&&code<=56319&&index+1<value.length){const next=value.charCodeAt(index+1);if(next>=56320&&next<=57343){total+=4;index+=1;}else total+=3;}else total+=3;}return total;}",
+      "function recordBytes(value){let total=2,written=false;['label','value'].forEach(function(key){if(!own(value,key))return;if(written)total+=1;written=true;total+=utf8Bytes(JSON.stringify(key))+1+utf8Bytes(JSON.stringify(Object.getOwnPropertyDescriptor(value,key).value));});return total;}",
+      "function xmlText(value){if(typeof value!=='string'||!value.trim()||value.length>48)return false;for(let index=0;index<value.length;index+=1){const code=value.charCodeAt(index);if(code===9||code===10||code===13||(code>=32&&code<=55295)||(code>=57344&&code<=65533))continue;if(code>=55296&&code<=56319&&index+1<value.length){const next=value.charCodeAt(index+1);if(next>=56320&&next<=57343){index+=1;continue;}}return false;}return true;}",
+      "function text(value){return xmlText(value)?value:null;}",
+      "function esc(value){return value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\\\"/g,'&quot;').replace(/'/g,'&#39;');}",
+      "function markup(label,value){const escapedLabel=esc(label),escapedValue=esc(value),title=esc(label+': '+value),split=Math.floor(CONFIG.width*0.58);return '<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" width=\\\"'+CONFIG.width+'\\\" height=\\\"28\\\" viewBox=\\\"0 0 '+CONFIG.width+' 28\\\" role=\\\"img\\\" focusable=\\\"false\\\" aria-label=\\\"'+title+'\\\"><title>'+title+'</title><rect width=\\\"'+CONFIG.width+'\\\" height=\\\"28\\\" rx=\\\"5\\\" fill=\\\"'+CONFIG.background+'\\\"/><rect x=\\\"'+split+'\\\" width=\\\"'+(CONFIG.width-split)+'\\\" height=\\\"28\\\" rx=\\\"5\\\" fill=\\\"'+CONFIG.foreground+'\\\"/><text x=\\\"10\\\" y=\\\"19\\\" fill=\\\"#ffffff\\\" font-family=\\\"system-ui, sans-serif\\\" font-size=\\\"13\\\">'+escapedLabel+'</text><text x=\\\"'+(split+8)+'\\\" y=\\\"19\\\" fill=\\\"#081018\\\" font-family=\\\"system-ui, sans-serif\\\" font-size=\\\"13\\\" font-weight=\\\"700\\\">'+escapedValue+'</text></svg>';}",
+      "function render(input){if(!jsonRecord(input))return {schema:CONFIG.resultSchemaId,ok:false,code:'INPUT_OBJECT_REQUIRED'};const keys=Object.keys(input);if(keys.some(function(key){return key!=='label'&&key!=='value';}))return {schema:CONFIG.resultSchemaId,ok:false,code:'INPUT_FIELDS_UNSUPPORTED'};const label=text(own(input,'label')?Object.getOwnPropertyDescriptor(input,'label').value:CONFIG.label),value=text(own(input,'value')?Object.getOwnPropertyDescriptor(input,'value').value:CONFIG.value);if(!label||!value)return {schema:CONFIG.resultSchemaId,ok:false,code:'TEXT_INVALID'};if(recordBytes(input)>CONFIG.maxInputBytes)return {schema:CONFIG.resultSchemaId,ok:false,code:'INPUT_BYTES_EXCEEDED'};const svg=markup(label,value);if(utf8Bytes(svg)>CONFIG.maxOutputBytes)return {schema:CONFIG.resultSchemaId,ok:false,code:'SVG_BYTES_EXCEEDED'};return {schema:CONFIG.resultSchemaId,ok:true,mimeType:'image/svg+xml',svg:svg};}",
+      'module.exports={CONFIG:CONFIG,render:render};',
+      ''
+    ].join('\n');
+  }
+  function svgBadgeSelftest(config) {
+    return "'use strict';\nconst assert=require('assert');const capability=require('./capability.js');assert(Object.isFrozen(capability.CONFIG));const first=capability.render({label:'A&B',value:'<ok>'}),second=capability.render({label:'A&B',value:'<ok>'});assert.equal(first.ok,true);assert.equal(first.svg,second.svg);assert(first.svg.includes('<title>A&amp;B: &lt;ok&gt;</title>'));assert(first.svg.includes('viewBox=\\\"0 0 "+config.width+" 28\\\"'));assert(!/(?:<script|<style|\\son[a-z]+=|href=|xlink:href|url\\s*\\(|@import|<animate|<set|<foreignObject)/i.test(first.svg));assert.equal(capability.render({unexpected:true}).code,'INPUT_FIELDS_UNSUPPORTED');assert.equal(capability.render({label:'',value:'ok'}).code,'TEXT_INVALID');assert.equal(capability.render({label:'x'.repeat(49),value:'ok'}).code,'TEXT_INVALID');assert.equal(capability.render({label:'ok\\u0000',value:'ok'}).code,'TEXT_INVALID');assert.equal(capability.render({label:'ok\\u0001',value:'ok'}).code,'TEXT_INVALID');assert.equal(capability.render({label:'ok\\ud800',value:'ok'}).code,'TEXT_INVALID');assert.equal(capability.render([]).code,'INPUT_OBJECT_REQUIRED');assert.equal(capability.render(new Date()).code,'INPUT_OBJECT_REQUIRED');const accessor={value:'ok'};Object.defineProperty(accessor,'label',{enumerable:true,get(){throw new Error('must not execute');}});assert.equal(capability.render(accessor).code,'INPUT_OBJECT_REQUIRED');const hostile={label:'ok',value:'ok',toJSON(){throw new Error('must not execute');}};assert.equal(capability.render(hostile).code,'INPUT_FIELDS_UNSUPPORTED');let inheritedHookRead=false;const inheritedPrototype=Object.create(null);Object.defineProperty(inheritedPrototype,'constructor',{value:Object});Object.defineProperty(inheritedPrototype,'toJSON',{get(){inheritedHookRead=true;throw new Error('must not execute');}});const inherited=Object.create(inheritedPrototype);inherited.label='ok';inherited.value='ok';assert.equal(capability.render(inherited).code,'INPUT_OBJECT_REQUIRED');assert.equal(inheritedHookRead,false);assert.equal(capability.render({label:'😀'.repeat(24),value:'😀'.repeat(24)}).code,'INPUT_BYTES_EXCEEDED');assert.equal(capability.render({label:'&'.repeat(48),value:'&'.repeat(48)}).code,'SVG_BYTES_EXCEEDED');console.log('PASS strict deterministic SVG badge capability');\n";
   }
   function buildSvgBadge(parameters) {
-    return {capabilityKind:'HAND',source:svgBadgeSource(parameters),selftest:svgBadgeSelftest(parameters),provides:['axm.creation.svg-status-badge/v1','image/svg+xml'],consumes:['application/json'],summary:'Deterministic text-only SVG status badge creation hand.'};
+    htmlExact(parameters,['resultSchemaId','label','value','background','foreground','width','maxInputBytes','maxOutputBytes'],'parameters');
+    if(!/^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$/.test(parameters.resultSchemaId||''))throw new Error('resultSchemaId is invalid');
+    if(!Number.isInteger(parameters.width)||parameters.width<120||parameters.width>512)throw new Error('width is outside the bounded range');
+    if(!Number.isInteger(parameters.maxInputBytes)||parameters.maxInputBytes<128||parameters.maxInputBytes>65536)throw new Error('maxInputBytes is outside the bounded range');
+    if(!Number.isInteger(parameters.maxOutputBytes)||parameters.maxOutputBytes<512||parameters.maxOutputBytes>65536)throw new Error('maxOutputBytes is outside the bounded range');
+    const config={resultSchemaId:parameters.resultSchemaId,label:svgText(parameters.label,'label'),value:svgText(parameters.value,'value'),background:svgColor(parameters.background,'background'),foreground:svgColor(parameters.foreground,'foreground'),width:parameters.width,maxInputBytes:parameters.maxInputBytes,maxOutputBytes:parameters.maxOutputBytes};
+    if(Buffer.byteLength(svgBadgeMarkup(config,config.label,config.value),'utf8')>config.maxOutputBytes)throw new Error('default SVG exceeds maxOutputBytes');
+    return {capabilityKind:'HAND',source:svgBadgeSource(config),selftest:svgBadgeSelftest(config),provides:[config.resultSchemaId,'image/svg+xml'],consumes:['axm.svg-status-badge-content/v1'],summary:'Strict deterministic text-only SVG status badge renderer with closed input and byte ceilings.'};
   }
 
   function directionAdapterSource(parameters) {
@@ -429,7 +476,7 @@
   }
   const entries=[
     makeEntry('pure-json-transform-v1','HAND',ACTIVE,null,buildJsonTransform,[jsonTransformSource,jsonTransformSelftest,buildJsonTransform]),
-    makeEntry('svg-status-badge-v1','HAND',ACTIVE,null,buildSvgBadge,[svgBadgeSource,svgBadgeSelftest,buildSvgBadge]),
+    makeEntry('svg-status-badge-v1','HAND',ACTIVE,null,buildSvgBadge,[svgXmlText,svgText,svgColor,svgEscape,svgBadgeMarkup,svgBadgeSource,svgBadgeSelftest,buildSvgBadge]),
     makeEntry('workshop-direction-adapter-v1','HAND',ACTIVE,null,buildDirectionAdapter,[directionAdapterSource,directionAdapterSelftest,buildDirectionAdapter]),
     makeEntry('closed-json-schema-validator-v1','HAND',REVIEW_CANDIDATE,'sha256:02a61d48f5213edc9140f1720c12f84a8de1ebc0bbc7f1b338d9a9e8bf0df14f',buildSchemaValidator,[stable,byteLength,exactKeys,inspectSchema,validatorSource,validatorSelftest,exampleFor,buildSchemaValidator]),
     makeEntry('bounded-review-procedure-skill-v1','SKILL',REVIEW_CANDIDATE,'sha256:acd5678b5327fda7c2a2f1280fb4fa26f41cfd188e4788c1df3c2e539ee532ba',buildReviewSkill,[exact,list,safeId,contractId,renderSkillMarkdown,renderSkillSelftest,buildReviewSkill]),

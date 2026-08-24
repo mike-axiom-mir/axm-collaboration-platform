@@ -71,15 +71,24 @@ through plan, compilation, candidate, module contract, and receipt.
   installs output, changes permissions, promotes material, touches Foundation,
   or changes CANON.
 
-The reviewed catalog contains six executable `HAND` recipes—a closed JSON
+The reviewed catalog contains seven executable `HAND` recipes—a closed JSON
 Schema validator, a pure JSON transform, a static semantic HTML-page renderer,
-an SVG status-badge creation hand, a Workshop Direction hand-request adapter,
-and one bounded Python record transform—plus one host-mediated portable `SKILL` for bounded evidence-first
+one bounded CSS token stylesheet, a strict text-only SVG status-badge creation
+hand, a Workshop Direction hand-request adapter, and one bounded Python record
+transform—plus one host-mediated portable `SKILL` for bounded evidence-first
 capability review. The HTML renderer is source-reviewed on its review branch;
 shared use still requires Mike's merge decision and visual behavior remains
 unproven until a separate authorized browser run. The Python source and
 selftest remain inert; runtime behavior is unproven until a separately
 authorized disposable-sandbox run.
+
+The SVG badge hand accepts only a closed plain JSON record containing optional
+`label` and `value` strings. It refuses XML-invalid text and inherited
+serialization hooks, enforces exercised input/output byte ceilings, XML-escapes
+all accepted text, emits fixed text/rectangle/title markup, and has no raw SVG, path,
+style, script, event, URL, external-resource, animation, provider, filesystem,
+or network input. Static and trusted-fixture evidence do not prove browser
+appearance, accessibility behavior, or visual quality.
 
 Builder implementations now live behind a digest-bound modular registry.
 Recipes, plans, candidate packages, and verification all bind the exact active
