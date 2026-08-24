@@ -200,7 +200,7 @@ assert(svg.includes('affected does not mean broken'));
 const snapshot = plane.snapshot();
 assert.strictEqual(snapshot.firstClassFoundationCount, 8);
 assert.strictEqual(snapshot.sourceClassCount, 15);
-assert.strictEqual(snapshot.nodeKindCount, 13);
+assert.strictEqual(snapshot.nodeKindCount, 14);
 assert.strictEqual(snapshot.edgeClassCount, 16);
 assert.strictEqual(snapshot.authority, 'NONE');
 
@@ -224,6 +224,8 @@ console.log(JSON.stringify({
   normalizedDiagnostics: mergedDiagnostics.findings.length,
   sarifFlowPathLength: sarifBatch.findings[0].flowPath.length,
   observedImportCycles: cycleGraph.cycles.length,
+  nodeKindCount: snapshot.nodeKindCount,
+  edgeClassCount: snapshot.edgeClassCount,
   snapshotSha256: snapshot.snapshotSha256,
   authority: snapshot.authority
 }, null, 2));
