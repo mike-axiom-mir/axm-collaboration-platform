@@ -34,12 +34,12 @@ for(const recipe of atlas.buildRecipes){
 const htmlJs=route.relate({languageA:'html',languageB:'javascript'});
 assert.strictEqual(htmlJs.result,'ROUTES_FOUND');
 assert(htmlJs.routes.some(r=>r.id==='browser-document-host'&&r.class==='HOSTED_DSL'));
-assert.strictEqual(htmlJs.routes[0].source,'EXPLICIT_BRIDGE');
+assert.strictEqual(htmlJs.routes[0].knowledgeSource,'EXPLICIT_BRIDGE');
 const pyC=route.relate({languageA:'python',languageB:'c'});
 assert.strictEqual(pyC.result,'ROUTES_FOUND');
 assert(pyC.routes.some(r=>r.id==='python-extended-by-c'||r.id==='c-embeds-python'));
-assert.strictEqual(pyC.routes[0].source,'EXPLICIT_BRIDGE');
-assert(pyC.routes[0].score>pyC.routes.filter(r=>r.source==='FAMILY_RULE').reduce((m,r)=>Math.max(m,r.score),-1));
+assert.strictEqual(pyC.routes[0].knowledgeSource,'EXPLICIT_BRIDGE');
+assert(pyC.routes[0].score>pyC.routes.filter(r=>r.knowledgeSource==='FAMILY_RULE').reduce((m,r)=>Math.max(m,r.score),-1));
 const daxVhdl=route.relate({languageA:'dax',languageB:'vhdl'});
 assert.strictEqual(daxVhdl.result,'NO_KNOWN_DIRECT_ROUTE');
 const browser=route.planGoal({goal:'build a browser game',activeLanguageIds:['html','css','javascript']});
