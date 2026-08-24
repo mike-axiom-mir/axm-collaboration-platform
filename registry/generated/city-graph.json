@@ -26596,25 +26596,36 @@
       },
       "boundaries": {
         "refuses": [
+          "automatic-action-from-discipline-lens",
           "automatic-action-from-influence",
           "automatic-canon",
           "automatic-dependency-install-from-discovery",
           "automatic-install",
           "automatic-promotion",
           "automatic-repair-from-discovery",
+          "automatic-source-mutation-from-template",
+          "automatic-template-promotion",
           "blind-text-rewrite-when-grammar-structure-is-required",
+          "composite-role-as-new-fundamental-lens",
           "cross-language-discovery-as-automatic-language-switch",
+          "discipline-lens-activation-as-authority",
+          "discipline-lens-output-as-correctness-proof",
+          "domain-overlay-as-authority",
           "fixture-pass-as-arbitrary-program-proof",
+          "frequency-as-correctness",
           "grammar-profile-drift-as-pass",
           "host-observation-as-execution-proof",
           "human-expertise-heuristic-as-authority",
           "implicit-provider-choice-when-multiple-match",
           "influence-count-as-confidence",
           "influence-count-as-truth",
+          "job-title-as-authority",
+          "job-title-as-distinct-expertise-proof",
           "language-guess-when-detection-is-ambiguous",
           "machine-cheatcode-drift-as-pass",
           "machine-cheatcode-match-as-semantic-proof",
           "machine-cheatcode-output-as-authority",
+          "mined-candidate-as-verified-template",
           "network-use",
           "overlook-cause-inference-without-caller-evidence",
           "permission-grant",
@@ -26634,6 +26645,8 @@
           "specialist-eye-drift-as-pass",
           "specialist-eye-output-as-authority",
           "syntax-pass-as-semantic-correctness",
+          "template-as-authority",
+          "template-match-as-semantic-proof",
           "unbound-language-tool-execution",
           "unbounded-cheatcode-propagation",
           "undefined-or-non-json-representable-state",
@@ -26667,6 +26680,7 @@
           "shared/code-capability-fabric/language-organs/selftest-adversarial.js",
           "shared/code-capability-fabric/language-organs/selftest-donors.js",
           "shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js",
+          "shared/code-capability-fabric/language-organs/selftest-human-discipline-perspectives.js",
           "shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js",
           "shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js",
           "shared/code-capability-fabric/language-organs/selftest-machine-templates.js",
@@ -26716,24 +26730,32 @@
           "axm.code-provider-host-observation/v1",
           "caller-supplied active language identities",
           "caller-supplied code build observation",
+          "caller-supplied composite role identifiers",
           "caller-supplied declared development pressures",
+          "caller-supplied domain overlays",
           "caller-supplied explicit organ preference",
           "caller-supplied fact codes, semantic signals, control signals, type signals, state signals, build signals, debug signals and verifier signals",
           "caller-supplied file path metadata",
           "caller-supplied goals, capabilities, gaps, constraints, risks, requirements and notes",
           "caller-supplied requested analysis/refactor stage",
+          "caller-supplied requested discipline perspectives",
           "caller-supplied shebang metadata"
         ],
         "consumes": [
           "axm.code.human-developer-perspective.v1 review heuristics",
+          "axm.code.human-discipline-perspectives.v1 discipline atlas",
           "axm.code.language-grammar-profile.v1 profiles",
           "axm.code.language-machine-cheatcode-bank.v1 generated banks",
           "axm.code.language-organ-families.v1",
           "axm.code.language-organ.v1 descriptors",
           "axm.code.language-specialist-eye.v1 profiles",
+          "axm.code.language-template-bank.v1 generated template banks",
           "caller-supplied code build observations",
+          "caller-supplied composite role identifiers",
           "caller-supplied declared development pressures",
+          "caller-supplied domain overlays",
           "caller-supplied fact codes and analysis signals",
+          "caller-supplied requested discipline perspectives",
           "caller-supplied verifier observations",
           "exact descriptor digests",
           "explicit request authority policy",
@@ -26743,6 +26765,11 @@
         ],
         "emits": [
           "axm.code-capability-route-plan/v1",
+          "axm.code-discipline-grammar-intersection/v1",
+          "axm.code-human-discipline-direction/v1",
+          "axm.code-human-discipline-perspective-snapshot/v1",
+          "axm.code-human-discipline-route/v1",
+          "axm.code-human-role-composition/v1",
           "axm.code-language-grammar-profile-snapshot/v1",
           "axm.code-language-grammar-specific-plan/v1",
           "axm.code-language-organ-plan/v1",
@@ -26754,18 +26781,28 @@
           "axm.code-machine-cheatcode-fabric-snapshot/v1",
           "axm.code-machine-cheatcode-influence-mesh-snapshot/v1",
           "axm.code-machine-cheatcode-influence-report/v1",
-          "axm.code-native-discovery-seam-report/v1"
+          "axm.code-native-discovery-seam-report/v1",
+          "axm.code-template-instance/v1",
+          "axm.code-template-mine-and-select/v1",
+          "axm.code-template-selection/v1"
         ],
         "provides": [
           "axm.code-build-observation/v1",
           "axm.code-capability-provider/v1",
           "axm.code-capability-request/v1",
           "axm.code-capability-route-plan/v1",
+          "axm.code-discipline-grammar-intersection/v1",
           "axm.code-human-developer-perspective/v1",
+          "axm.code-human-discipline-direction/v1",
+          "axm.code-human-discipline-perspective-snapshot/v1",
+          "axm.code-human-discipline-perspectives/v1",
+          "axm.code-human-discipline-route/v1",
+          "axm.code-human-role-composition/v1",
           "axm.code-language-grammar-profile-snapshot/v1",
           "axm.code-language-grammar-profile/v1",
           "axm.code-language-grammar-specific-plan/v1",
           "axm.code-language-machine-cheatcode-bank/v1",
+          "axm.code-language-machine-template/v1",
           "axm.code-language-organ-detect/v1",
           "axm.code-language-organ-lookup/v1",
           "axm.code-language-organ-plan/v1",
@@ -26775,15 +26812,24 @@
           "axm.code-language-specialist-eye-plan/v1",
           "axm.code-language-specialist-eye-registry/v1",
           "axm.code-language-specialist-eye-snapshot/v1",
+          "axm.code-language-structural-skeleton/v1",
+          "axm.code-language-template-bank/v1",
+          "axm.code-language-template-fabric-snapshot/v1",
           "axm.code-machine-cheatcode-challenge-report/v1",
           "axm.code-machine-cheatcode-evaluation/v1",
           "axm.code-machine-cheatcode-fabric-snapshot/v1",
           "axm.code-machine-cheatcode-influence-mesh-snapshot/v1",
           "axm.code-machine-cheatcode-influence-mesh/v1",
           "axm.code-machine-cheatcode-influence-report/v1",
+          "axm.code-mined-template-candidate/v1",
           "axm.code-native-discovery-seam-report/v1",
           "axm.code-native-discovery-seam/v1",
           "axm.code-provider-host-observation/v1",
+          "axm.code-template-admission-review/v1",
+          "axm.code-template-instance/v1",
+          "axm.code-template-mine-and-select/v1",
+          "axm.code-template-pattern-mining-report/v1",
+          "axm.code-template-selection/v1",
           "code.capability.plan",
           "code.capability.plan.verify"
         ]
@@ -26794,9 +26840,9 @@
           "shared/code-capability-fabric/module.contract.json"
         ],
         "declaredId": "code-capability-fabric",
-        "digest": "ce74aeaacbfff787addb634321e595577affcc7749125a657d18451c316a788b",
+        "digest": "75e4b5121c4b02a86ac43385dbffad17c23bf432a58f39e4c120bb09691be2d2",
         "manifest": null,
-        "observedSourceFileCount": 754,
+        "observedSourceFileCount": 757,
         "root": "shared/code-capability-fabric"
       },
       "status": "EXPERIMENTAL",
@@ -26805,7 +26851,7 @@
         "entry": null,
         "type": "UNDECLARED"
       },
-      "version": "v0.6"
+      "version": "v0.7"
     },
     {
       "authority": {
@@ -39502,7 +39548,49 @@
     },
     {
       "consumers": [],
+      "id": "axm.code-discipline-grammar-intersection/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code-human-developer-perspective/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-human-discipline-direction/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-human-discipline-perspective-snapshot/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-human-discipline-perspectives/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-human-discipline-route/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-human-role-composition/v1",
       "providers": [
         "shared/code-capability-fabric"
       ]
@@ -39531,6 +39619,13 @@
     {
       "consumers": [],
       "id": "axm.code-language-machine-cheatcode-bank/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-machine-template/v1",
       "providers": [
         "shared/code-capability-fabric"
       ]
@@ -39600,6 +39695,27 @@
     },
     {
       "consumers": [],
+      "id": "axm.code-language-structural-skeleton/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-template-bank/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-template-fabric-snapshot/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code-machine-cheatcode-challenge-report/v1",
       "providers": [
         "shared/code-capability-fabric"
@@ -39636,6 +39752,13 @@
     {
       "consumers": [],
       "id": "axm.code-machine-cheatcode-influence-report/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-mined-template-candidate/v1",
       "providers": [
         "shared/code-capability-fabric"
       ]
@@ -39683,10 +39806,52 @@
       "providers": []
     },
     {
+      "consumers": [],
+      "id": "axm.code-template-admission-review/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-template-instance/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-template-mine-and-select/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-template-pattern-mining-report/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-template-selection/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
       "consumers": [
         "shared/code-capability-fabric"
       ],
       "id": "axm.code.human-developer-perspective.v1 review heuristics",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.code.human-discipline-perspectives.v1 discipline atlas",
       "providers": []
     },
     {
@@ -39722,6 +39887,13 @@
         "shared/code-capability-fabric"
       ],
       "id": "axm.code.language-specialist-eye.v1 profiles",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.code.language-template-bank.v1 generated template banks",
       "providers": []
     },
     {
@@ -42955,6 +43127,13 @@
     },
     {
       "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied composite role identifiers",
+      "providers": []
+    },
+    {
+      "consumers": [
         "shared/research-contribution-intake"
       ],
       "id": "caller-supplied contributor-seat provenance",
@@ -42991,6 +43170,13 @@
     },
     {
       "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied domain overlays",
+      "providers": []
+    },
+    {
+      "consumers": [
         "shared/model-shadow-continuity"
       ],
       "id": "caller-supplied exact task context seat and provenance references",
@@ -43001,6 +43187,13 @@
         "shared/code-capability-fabric"
       ],
       "id": "caller-supplied fact codes and analysis signals",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied requested discipline perspectives",
       "providers": []
     },
     {
@@ -64963,18 +65156,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "ffa97f05cbec33c0a634e355de2af330f01ddbe0831ae357a4b2a7b0232ca22e",
+  "semanticDigest": "4ecef8042fa2e26d0fe02a09af99c6c73e346250f71ae8243fdbc53de24d49e8",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "afefe4c553a1db0beb677bd2652201fd6a5b480dcc3e573153e9390f33a27841",
+    "declarationDigest": "616686183200e80aecce125222c939048225853ecbaa4f26daa83f22c616c341",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "afefe4c553a1db0beb677bd2652201fd6a5b480dcc3e573153e9390f33a27841"
+    "snapshotIdentity": "616686183200e80aecce125222c939048225853ecbaa4f26daa83f22c616c341"
   },
   "summary": {
     "blockKinds": {
@@ -64987,12 +65180,12 @@
       "SENSOR": 6
     },
     "blocks": 304,
-    "capabilities": 3016,
+    "capabilities": 3037,
     "declaredContracts": 301,
     "declaredManifests": 253,
     "edges": 86,
     "schemas": 914,
-    "unresolved": 2015
+    "unresolved": 2028
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -73701,6 +73894,12 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.code.human-discipline-perspectives.v1 discipline atlas",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.code.language-grammar-profile.v1 profiles",
       "state": "UNKNOWN"
     },
@@ -73731,7 +73930,19 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.code.language-template-bank.v1 generated template banks",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied code build observations",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied composite role identifiers",
       "state": "UNKNOWN"
     },
     {
@@ -73743,7 +73954,19 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied domain overlays",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied fact codes and analysis signals",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied requested discipline perspectives",
       "state": "UNKNOWN"
     },
     {
@@ -73774,6 +73997,36 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "provider descriptors",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-discipline-grammar-intersection/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-human-discipline-direction/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-human-discipline-perspective-snapshot/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-human-discipline-route/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-human-role-composition/v1",
       "state": "UNKNOWN"
     },
     {
@@ -73846,6 +74099,24 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.code-native-discovery-seam-report/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-template-instance/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-template-mine-and-select/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-template-selection/v1",
       "state": "UNKNOWN"
     },
     {
