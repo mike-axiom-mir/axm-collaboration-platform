@@ -1,0 +1,135 @@
+name: AXM Code Work Context Dock Materializer
+
+on:
+  pull_request:
+    branches:
+      - codex/code-developer-relationship-plane-v1
+    paths:
+      - ".github/workflows/code-work-context-dock-materialize.yml"
+      - "shared/code-capability-fabric/language-organs/code-work-context-dock.js"
+      - "shared/code-capability-fabric/language-organs/code-work-context-local-store.js"
+      - "shared/code-capability-fabric/language-organs/code-work-context-dock.contract.json"
+      - "shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js"
+
+concurrency:
+  group: axm-code-work-context-dock-materialize
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  materialize-work-context-dock:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Check out exact branch source
+        uses: actions/checkout@v4
+        with:
+          ref: codex/code-work-context-dock-v1
+          fetch-depth: 1
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Prove work context dock and lower stack
+        run: |
+          node shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js
+          node shared/code-capability-fabric/language-organs/selftest-developer-relationship-plane.js
+          node shared/code-capability-fabric/language-organs/selftest-code-artifact-build-window.js
+          node shared/code-capability-fabric/language-organs/build-machine-keyboards.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-code-keyboard.js
+          node shared/code-capability-fabric/language-organs/selftest-prebuild-twin-admission.js
+      - name: Expose work context surfaces in Code Fabric contract
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const file = 'shared/code-capability-fabric/module.contract.json';
+          const c = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (c.version !== 'v0.12' && c.version !== 'v0.13') throw new Error(`unexpected code fabric version ${c.version}`);
+          c.version = 'v0.13';
+          const add = (arr, values) => { for (const v of values) if (!arr.includes(v)) arr.push(v); };
+          add(c.provides, [
+            'axm.code.work-direction.v1',
+            'axm.code.work-progress-event.v1',
+            'axm.code.work-progress-snapshot.v1',
+            'axm.code.work-scratch-note.v1',
+            'axm.code.work-scratch-view.v1',
+            'axm.code.work-context-card.v1',
+            'axm.code.work-context-store-intent.v1',
+            'axm.code.work-context-local-store-layout.v1',
+            'axm.code.work-context-handoff-candidate.v1',
+            'axm.code.work-context-dock-snapshot.v1'
+          ]);
+          add(c.consumes, [
+            'caller-supplied directional prompt, roadmap or step plan',
+            'caller- or machine-supplied work progress events',
+            'caller- or machine-supplied non-authoritative scratch notes',
+            'optional scoped local work-context store adapter',
+            'optional Deterministic Continuation Capsule handoff adapter'
+          ]);
+          add(c.handoffs.emits, [
+            'axm.code.work-context-card.v1',
+            'axm.code.work-context-store-intent.v1',
+            'axm.code.work-context-handoff-candidate.v1',
+            'axm.code.work-context-dock-snapshot.v1'
+          ]);
+          add(c.handoffs.accepts, [
+            'caller-supplied directional prompt, roadmap or step plan',
+            'caller-supplied active direction selection',
+            'caller- or machine-supplied progress event',
+            'caller- or machine-supplied scratch note',
+            'caller-supplied work-context local-store observation'
+          ]);
+          add(c.boundaries.refuses, [
+            'scratch-note-as-fact',
+            'scratch-note-as-plan-decision',
+            'machine-note-as-user-instruction',
+            'machine-plan-as-user-approved-plan-without-explicit-selection',
+            'progress-event-as-direction-rewrite',
+            'done-step-as-correctness-proof',
+            'context-card-focus-as-execution-authority',
+            'stale-context-card-as-current-direction',
+            'automatic-direction-switch',
+            'automatic-scratch-promotion',
+            'automatic-work-context-store-write',
+            'raw-source-auto-copy-into-scratch',
+            'automatic-handoff-export',
+            'work-context-store-as-source-workspace'
+          ]);
+          fs.writeFileSync(file, JSON.stringify(c, null, 2) + '\n');
+          NODE
+      - name: Regenerate deterministic repository views
+        run: |
+          node scripts/compile-city-graph.js --write
+          node scripts/compile-schema-registry.js --write
+          node scripts/compile-twin-surfaces.js --write
+          node scripts/compile-city-graph.js --check
+          node scripts/compile-schema-registry.js --check
+          node scripts/compile-twin-surfaces.js --check
+      - name: Verify repository
+        run: |
+          node verify.js
+          node hub/hub-selftest.js
+          node hub/route-selftest.js
+          node hub/graft-selftest.js
+          node hub/skin-selftest.js
+          node hub/verify-plus.js
+          git diff --check
+      - name: Commit only contract and deterministic generated views
+        run: |
+          git config user.name "AXM Work Context Dock Steward Gate"
+          git config user.email "work-context-dock-steward@axm.invalid"
+          git add shared/code-capability-fabric/module.contract.json
+          git add registry/generated docs/generated/LEGO_CITY_MAP.md docs/generated/LEGO_CITY_BEGINNER_MAP.md
+          if git diff --cached --quiet; then
+            echo "No work-context contract/view changes to commit."
+          else
+            git commit -m "chore(fabric): expose work context dock and refresh views"
+            git push origin HEAD:codex/code-work-context-dock-v1
+          fi
