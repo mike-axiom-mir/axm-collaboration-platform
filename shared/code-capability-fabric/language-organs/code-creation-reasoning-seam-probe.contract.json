@@ -1,0 +1,88 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-creation-reasoning-seam-probe",
+  "version": "v1.0",
+  "status": "TEST",
+  "provides": [
+    "axm.code.creation-reasoning-trace.v1",
+    "axm.code.creation-reasoning-analysis.v1",
+    "axm.code.creation-reasoning-seam-candidate.v1",
+    "axm.code.creation-reasoning-comparison.v1",
+    "axm.code.creation-reasoning-optimization-trial.v1",
+    "axm.code.creation-reasoning-trial-observation.v1",
+    "axm.code.creation-reasoning-seam-probe-snapshot.v1"
+  ],
+  "consumes": [
+    "caller-supplied code-creation step receipts",
+    "deterministic rule, condition, branch and reason-code receipts",
+    "neural decision summaries without private chain-of-thought",
+    "specialist observation and provenance digests",
+    "creation step input, output, dependency, uncertainty and cost observations",
+    "optional paired creation traces and metric evidence"
+  ],
+  "permissions": [],
+  "target": {
+    "inside": "reasoning paths used by the code-creation workspace and its deterministic, neural or hybrid creation machinery",
+    "outside": [
+      "Waldo runtime control",
+      "creator authority",
+      "private hidden neural chain-of-thought",
+      "execution, mutation, selection and promotion"
+    ]
+  },
+  "whyModel": {
+    "deterministic": "Inspect a supplied exact rule reference, condition digest, selected branch and reason codes.",
+    "neural": "Inspect a supplied concise decision summary, alternatives, uncertainty and evidence links; never claim access to hidden causal internals.",
+    "hybrid": "Inspect the typed handoff and whether evidence and uncertainty survive the seam.",
+    "traceCompleteness": "A supplied trace is an observation surface; absence from the trace is not proof a step did not occur."
+  },
+  "seams": [
+    "missing or incomplete why receipts",
+    "stale or unknown evidence at a transition",
+    "contradictory evidence that must remain visible",
+    "several views from one root misread as independent corroboration",
+    "unconsumed specialist outputs",
+    "exact repeated reasoning subpaths",
+    "different outputs from the same declared deterministic inputs and rule receipt",
+    "untested deterministic rule boundaries",
+    "verification discriminators placed after high commitment",
+    "missing counterevidence search before high commitment",
+    "uncertainty loss across neural and deterministic handoffs",
+    "unexpected authority effects inside a reasoning receipt"
+  ],
+  "behavior": {
+    "trace": "Normalize digest-bound creation reasoning observations without raw source or private inner reasoning.",
+    "analysis": "Explain transitions at the evidence level and surface observations, evidence gaps and falsifiable seam candidates.",
+    "comparison": "Compare deterministic, neural or hybrid creation paths without ranking or selecting a winner.",
+    "trial": "Describe a paired optimization trial with explicit metric directions, invariants and regression visibility; execute nothing.",
+    "outcome": "Preserve improved, regressed, unchanged and conflicting measurements separately without averaging them into a quality score."
+  },
+  "boundaries": {
+    "refuses": [
+      "Waldo as the probe target or dependency",
+      "raw private chain-of-thought",
+      "hidden activation, logit or internal-state capture",
+      "neural decision summary as proof of inner causality",
+      "deterministic rule receipt as independent proof the runtime used that rule",
+      "trace absence as proof a step did not occur",
+      "evidence confidence as truth",
+      "stale evidence as current state",
+      "multiple views from one root as independent evidence",
+      "finding count as a reasoning quality score",
+      "fewer steps or lower latency as automatic quality",
+      "automatic reasoning rewrite, tuning or self-modification",
+      "automatic source mutation, execution, admission, selection, install, deployment, promotion, merge or CANON"
+    ]
+  },
+  "truth": {
+    "targetsCreationReasoningNotWaldo": true,
+    "probeHasNoAuthority": true,
+    "deterministicAndNeuralWhyRemainDistinct": true,
+    "recognizedRawPrivateInnerReasoningFieldsAccepted": false,
+    "decisionSummaryMustBeExternallyPreparedNotRawInnerTrace": true,
+    "negativeAndContradictoryResultsPreserved": true,
+    "seamCandidateIsNotOptimizationProof": true,
+    "pairedTrialDoesNotCalculateWinner": true,
+    "noAutomaticLearningOrModification": true
+  }
+}
