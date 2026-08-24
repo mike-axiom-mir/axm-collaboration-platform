@@ -44,9 +44,9 @@ jobs:
             echo >> "$report"
             if [ "$code" -ne 0 ]; then failed=1; fi
           }
-          run_check node scripts/compile-city-graph.js
-          run_check node scripts/compile-schema-registry.js
-          run_check node scripts/compile-twin-surfaces.js
+          run_check node scripts/compile-city-graph.js --write
+          run_check node scripts/compile-schema-registry.js --write
+          run_check node scripts/compile-twin-surfaces.js --write
           run_check node --check shared/code-capability-fabric/language-organs/registry.js
           run_check node shared/code-capability-fabric/language-organs/selftest.js
           run_check node shared/code-capability-fabric/language-organs/selftest-adversarial.js
