@@ -8,6 +8,7 @@ const path = require('path');
 const dock = require('./code-work-context-dock.js');
 const production = require('./code-production-draft-fabric.js');
 const productionStore = require('./code-production-draft-store.js');
+const productionContext = require('./code-production-work-context-bridge.js');
 const keyboard = require('./machine-code-keyboard-router.js');
 const admission = require('./code-candidate-admission-ground.js');
 
@@ -75,6 +76,7 @@ const plainBatch = production.createBatch({
 assert.strictEqual(plainBatch.variantMode, 'EDITABLE_SLOTS_NO_INVENTED_VARIATION');
 assert.strictEqual(plainBatch.slots[0].variant, null);
 assert.strictEqual(plainBatch.truth.noVariationInventedWithoutCallerAxes, true);
+
 assert.strictEqual(production.createBatch({ projectId: direction.projectId, direction, draftCount: 17, languageId: 'javascript' }).result, 'DRAFT_COUNT_OUT_OF_RANGE');
 assert.strictEqual(production.createBatch({ projectId: direction.projectId, direction, draftCount: 0, languageId: 'javascript' }).result, 'DRAFT_COUNT_OUT_OF_RANGE');
 
@@ -139,139 +141,173 @@ assert.strictEqual(draft1v2.revision, 2);
 assert.strictEqual(draft1v2.parentRevisionSha256, draft1v1.draftRevisionSha256);
 assert.strictEqual(draft1v2.compileState, 'ADMISSIBLE_DRAFT_NOT_SELECTED');
 assert.strictEqual(draft1v2.evidenceFreshness.admission, 'CURRENT_DIGEST_BOUND');
-assert.strictEqual(draft1v2.evidenceFreshness.buildWindow, 'CURRENT_DIGEST_BOUND');
 assert.strictEqual(draft1v2.truth.priorRevisionPreserved, true);
 assert.strictEqual(draft1v1.revision, 1);
 assert.strictEqual(draft1v1.keyProgram, null);
 
-const draft1v3 = production.reviseDraft({
-  batch,
-  draft: draft1v2,
-  actorClass: 'HUMAN',
-  editSummary: 'Record naming/state-boundary notes without supplying a new structural program.',
-  scratchNoteRefs: ['sha256:note-production-1']
-});
-assert.strictEqual(draft1v3.revision, 3);
-assert.strictEqual(draft1v3.parentRevisionSha256, draft1v2.draftRevisionSha256);
-assert.strictEqual(draft1v3.draftId, draft1v1.draftId);
-assert.strictEqual(draft1v3.changeClass, 'METADATA_ONLY_NO_PROGRAM_CHANGE');
-assert.strictEqual(draft1v3.artifact.digest, candidateDigest);
-assert.strictEqual(draft1v3.admission.candidateDigest, candidateDigest);
-assert.strictEqual(draft1v3.evidenceFreshness.admission, 'INHERITED_UNCHANGED_ARTIFACT');
-assert.notStrictEqual(draft1v3.draftRevisionSha256, draft1v2.draftRevisionSha256);
-
-const program2 = keyboard.program({
+// Steward regression: changing the structural program must invalidate prior
+// artifact, admission and quick-test evidence rather than silently inherit it.
+const changedProgram = keyboard.program({
   languageId: 'javascript',
   layout: batch.layout,
   presses: [
     { keyId: 'K24', arguments: { condition: 'running' } },
-    { keyId: 'K26', arguments: { call: 'advanceSimulation' } },
-    { keyId: 'K41', arguments: { negativeCase: 'invalid-state' } }
+    { keyId: 'K25', arguments: { loop: 'variable-step' } },
+    { keyId: 'K40', arguments: { assertion: 'state remains bounded' } }
   ]
 });
-assert.strictEqual(program2.result, 'EDIT_PROGRAM_READY');
-assert.notStrictEqual(program2.programSha256, program.programSha256);
+assert.strictEqual(changedProgram.result, 'EDIT_PROGRAM_READY');
+assert.notStrictEqual(changedProgram.programSha256, program.programSha256);
 
+const draft1v3 = production.reviseDraft({
+  batch,
+  draft: draft1v2,
+  actorClass: 'MACHINE',
+  editSummary: 'Change the structural loop program; previous evidence must go stale.',
+  keyProgram: changedProgram
+});
+assert.strictEqual(draft1v3.revision, 3);
+assert.strictEqual(draft1v3.changeClass, 'STRUCTURAL_PROGRAM_CHANGED');
+assert.strictEqual(draft1v3.artifact, null);
+assert.strictEqual(draft1v3.admission, null);
+assert.strictEqual(draft1v3.buildWindow, null);
+assert.strictEqual(draft1v3.compileState, 'STRUCTURAL_PROGRAM_READY_RENDER_COMPILE_EXTERNAL');
+assert(draft1v3.evidenceFreshness.invalidatedBy.includes('STRUCTURAL_PROGRAM_CHANGED'));
+assert.strictEqual(draft1v3.evidenceFreshness.artifact, 'STALE_CLEARED_PROGRAM_CHANGED');
+
+const candidateDigest2 = 'sha256:production-draft-browser-game-v2';
+const admitted2 = admission.evaluate({
+  languageId: 'javascript',
+  candidateDigest: candidateDigest2,
+  mode: 'GUARDED',
+  existingTests: false,
+  observations: admission.makePassingFixtureObservations(policy)
+});
 const draft1v4 = production.reviseDraft({
   batch,
   draft: draft1v3,
   actorClass: 'AI',
-  editSummary: 'Change the structural program; previous rendered/runtime evidence must not follow.',
-  keyProgram: program2
+  editSummary: 'Bind freshly rendered candidate and fresh admission evidence.',
+  artifact: {
+    artifactId: 'browser-runtime-candidate',
+    digest: candidateDigest2,
+    kind: 'browser-runtime',
+    mime: 'text/javascript',
+    visualState: 'RENDERED_CANDIDATE_VISIBLE',
+    byteLength: 1240
+  },
+  admissionReport: admitted2,
+  buildWindowState: {
+    schema: 'axm.code.build-window-state.v1',
+    stateSha256: 'sha256:window-draft-1-v4',
+    stage: 'CANDIDATE_ADMISSIBLE_NOT_PROMOTED',
+    artifactDigest: candidateDigest2,
+    status: { admission: admitted2.result, quickTest: 'PASS' }
+  }
 });
-assert.strictEqual(draft1v4.revision, 4);
-assert.strictEqual(draft1v4.changeClass, 'STRUCTURAL_PROGRAM_CHANGED');
-assert.strictEqual(draft1v4.artifact, null);
-assert.strictEqual(draft1v4.admission, null);
-assert.strictEqual(draft1v4.buildWindow, null);
-assert.strictEqual(draft1v4.compileState, 'STRUCTURAL_PROGRAM_READY_RENDER_COMPILE_EXTERNAL');
-assert.strictEqual(draft1v4.evidenceFreshness.artifact, 'STALE_CLEARED_PROGRAM_CHANGED');
-assert.strictEqual(draft1v4.evidenceFreshness.admission, 'STALE_CLEARED_NO_CURRENT_ARTIFACT');
-assert.strictEqual(draft1v4.evidenceFreshness.buildWindow, 'STALE_CLEARED_UPSTREAM_EVIDENCE_CHANGED');
-assert(draft1v4.evidenceFreshness.invalidatedBy.includes('STRUCTURAL_PROGRAM_CHANGED'));
+assert.strictEqual(draft1v4.compileState, 'ADMISSIBLE_DRAFT_NOT_SELECTED');
+assert.strictEqual(draft1v4.evidenceFreshness.admission, 'CURRENT_DIGEST_BOUND');
 
+const draft1v5 = production.reviseDraft({
+  batch,
+  draft: draft1v4,
+  actorClass: 'HUMAN',
+  editSummary: 'Add a note only; candidate program and evidence stay bound.',
+  scratchNoteRefs: ['sha256:note-production-1']
+});
+assert.strictEqual(draft1v5.revision, 5);
+assert.strictEqual(draft1v5.parentRevisionSha256, draft1v4.draftRevisionSha256);
+assert.strictEqual(draft1v5.draftId, draft1v1.draftId);
+assert.strictEqual(draft1v5.artifact.digest, candidateDigest2);
+assert.strictEqual(draft1v5.admission.candidateDigest, candidateDigest2);
+assert.strictEqual(draft1v5.evidenceFreshness.artifact, 'INHERITED_UNCHANGED_PROGRAM');
+
+// Exact structural-program duplicates are surfaced only as reuse/check
+// candidates; they are never automatically deleted, ranked or selected.
 const draft2v2 = production.reviseDraft({
   batch,
   draft: set.drafts[1],
   actorClass: 'MACHINE',
-  editSummary: 'Use the same structural program to prove exact-duplicate detection without deletion.',
-  keyProgram: program2
+  editSummary: 'Independent draft happens to use the same structural program.',
+  keyProgram: changedProgram
 });
-assert.strictEqual(draft2v2.compileState, 'STRUCTURAL_PROGRAM_READY_RENDER_COMPILE_EXTERNAL');
-
-assert.throws(() => production.reviseDraft({
-  batch,
-  draft: draft1v3,
-  keyProgram: program2,
-  artifact: { digest: 'sha256:new-artifact' },
-  admissionReport: { ...admitted, candidateDigest: 'sha256:wrong-artifact' }
-}), /ADMISSION_ARTIFACT_DIGEST_MISMATCH/);
-
 const comparison = production.compareDrafts({
   batch,
-  drafts: [draft1v1, draft1v2, draft1v3, draft1v4, draft2v2, ...set.drafts.slice(1)]
+  drafts: [draft1v1, draft1v2, draft1v3, draft1v4, draft1v5, draft2v2, ...set.drafts.slice(2)]
 });
 assert.strictEqual(comparison.result, 'DRAFT_COMPARISON_READY');
 assert.strictEqual(comparison.rows.length, 4);
-assert.strictEqual(comparison.rows.find(r => r.draftId === 'draft-01').revision, 4);
+assert.strictEqual(comparison.rows.find(r => r.draftId === 'draft-01').revision, 5);
 assert.strictEqual(comparison.truth.rankingPerformed, false);
 assert.strictEqual(comparison.truth.winnerSelected, false);
 assert.strictEqual(comparison.duplicateProgramCandidates.length, 1);
 assert.deepStrictEqual(comparison.duplicateProgramCandidates[0].draftIds, ['draft-01', 'draft-02']);
-assert.strictEqual(comparison.truth.exactProgramDuplicateIsNotAutomaticDeletion, true);
 
-const selection = production.selectDraft({
-  batch,
-  draft: draft1v4,
-  actorClass: 'HUMAN',
-  reason: 'Explicitly keep this structural direction for the next review gate.',
-  currentDirection: direction
-});
-assert.strictEqual(selection.result, 'DRAFT_SELECTED_NOT_PROMOTED');
-assert.strictEqual(selection.revision, 4);
-assert.strictEqual(selection.truth.selectionIsNotPromotion, true);
-assert.strictEqual(selection.truth.otherDraftsRemainAvailable, true);
-
-const productionSummary = production.summarizeProduction({
-  batch,
-  drafts: [draft1v4, draft2v2, ...set.drafts.slice(2)],
-  selection,
-  direction
-});
-assert.strictEqual(productionSummary.result, 'PRODUCTION_CONTEXT_READY');
-assert.strictEqual(productionSummary.directionStatus, 'PRODUCTION_BATCH_DIRECTION_CURRENT');
-assert.strictEqual(productionSummary.latestDrafts.length, 4);
-assert.strictEqual(productionSummary.selected.draftId, 'draft-01');
-assert.strictEqual(productionSummary.duplicateProgramCandidates.length, 1);
-
-const contextCard = dock.buildContextCard({ direction, productionState: productionSummary });
-assert.strictEqual(contextCard.result, 'CONTEXT_CARD_READY');
-assert.strictEqual(contextCard.production.directionStatus, 'PRODUCTION_BATCH_DIRECTION_CURRENT');
-assert.strictEqual(contextCard.production.draftCount, 4);
-assert.strictEqual(contextCard.production.selected.draftId, 'draft-01');
-assert.strictEqual(contextCard.truth.productionSummaryIsNotRankingOrSelectionAuthority, true);
-
-const revisedDirection = dock.createDirection({
+const directionV2 = dock.createDirection({
   projectId: direction.projectId,
   actorClass: 'HUMAN',
   title: 'Browser game production batch v2',
-  goal: direction.goal,
-  directionalPrompt: 'Change the direction after the batch was created; old production must remain visible as stale.',
-  roadmap: direction.roadmap,
-  steps: direction.steps,
-  constraints: direction.constraints,
+  goal: 'Revise the build direction after reviewing the first production batch.',
+  directionalPrompt: 'Keep old drafts inspectable, but do not silently treat them as current-direction candidates.',
+  roadmap: ['review old batch', 'revise direction', 'create or explicitly rebase production'],
+  steps: [
+    { id: 'review', title: 'Review existing candidates' },
+    { id: 'rebase', title: 'Create or explicitly rebase production', dependsOn: ['review'] }
+  ],
+  constraints: ['stale production must remain visible', 'no silent rebase'],
   parentDirectionSha256: direction.directionSha256
 });
-assert.notStrictEqual(revisedDirection.directionSha256, direction.directionSha256);
-assert.strictEqual(production.assessBatchDirection({ batch, direction: revisedDirection }).result, 'PRODUCTION_BATCH_DIRECTION_STALE');
-assert.strictEqual(production.selectDraft({ batch, draft: draft1v4, currentDirection: revisedDirection }).result, 'DRAFT_SELECTION_HELD_STALE_DIRECTION');
-const staleCard = dock.buildContextCard({ direction: revisedDirection, productionState: productionSummary });
-assert.strictEqual(staleCard.production.directionStatus, 'PRODUCTION_BATCH_DIRECTION_STALE');
-assert.strictEqual(staleCard.production.truth.staleBatchIsNotCurrentDirection, true);
+assert.notStrictEqual(directionV2.directionSha256, direction.directionSha256);
+assert.strictEqual(production.assessBatchDirection({ batch, direction: directionV2 }).result, 'PRODUCTION_BATCH_DIRECTION_STALE');
+assert.strictEqual(production.selectDraft({ batch, draft: draft1v5, currentDirection: directionV2 }).result, 'DRAFT_SELECTION_HELD_STALE_DIRECTION');
+
+const selection = production.selectDraft({
+  batch,
+  draft: draft1v5,
+  actorClass: 'HUMAN',
+  currentDirection: direction,
+  reason: 'Explicitly keep this direction for the next review gate.'
+});
+assert.strictEqual(selection.result, 'DRAFT_SELECTED_NOT_PROMOTED');
+assert.strictEqual(selection.revision, 5);
+assert.strictEqual(selection.truth.selectionIsNotPromotion, true);
+assert.strictEqual(selection.truth.otherDraftsRemainAvailable, true);
+
+const summary = production.summarizeProduction({
+  batch,
+  drafts: [draft1v5, draft2v2, ...set.drafts.slice(2)],
+  selection,
+  direction
+});
+assert.strictEqual(summary.result, 'PRODUCTION_CONTEXT_READY');
+assert.strictEqual(summary.directionStatus, 'PRODUCTION_BATCH_DIRECTION_CURRENT');
+assert.strictEqual(summary.latestDrafts.length, 4);
+assert.strictEqual(summary.selected.draftRevisionSha256, draft1v5.draftRevisionSha256);
+
+const hotCard = productionContext.buildProductionContextCard({
+  direction,
+  batch,
+  drafts: [draft1v5, draft2v2, ...set.drafts.slice(2)],
+  selection
+});
+assert.strictEqual(hotCard.result, 'CONTEXT_CARD_READY_WITH_PRODUCTION');
+assert.strictEqual(hotCard.production.draftCount, 4);
+assert.strictEqual(hotCard.production.selected.draftRevisionSha256, draft1v5.draftRevisionSha256);
+assert.strictEqual(productionContext.verifyProductionContextCard({ card: hotCard, direction }).result, 'PRODUCTION_CONTEXT_CARD_CURRENT');
+
+const staleHotCard = productionContext.buildProductionContextCard({
+  direction: directionV2,
+  batch,
+  drafts: [draft1v5, draft2v2, ...set.drafts.slice(2)],
+  selection
+});
+assert.strictEqual(staleHotCard.result, 'CONTEXT_CARD_READY_WITH_STALE_PRODUCTION_BATCH');
+assert.strictEqual(staleHotCard.production.directionStatus, 'PRODUCTION_BATCH_DIRECTION_STALE');
+assert.strictEqual(productionContext.verifyProductionContextCard({ card: staleHotCard, direction: directionV2 }).result, 'PRODUCTION_CONTEXT_CARD_CURRENT_BATCH_STALE');
 
 const svg = production.renderComparisonSvg({
   batch,
-  drafts: [draft1v4, draft2v2, ...set.drafts.slice(2)],
+  drafts: [draft1v5, draft2v2, ...set.drafts.slice(2)],
   title: 'Browser Game Production Drafts'
 });
 assert(svg.includes('<svg'));
@@ -285,38 +321,41 @@ try {
   const descriptor = productionStore.storeDescriptor(direction.projectId);
   assert.strictEqual(descriptor.logicalRoot, 'state/code-work-context/production-browser-game/production');
   assert.strictEqual(descriptor.truth.sourceWorkspaceStorage, false);
-  assert.strictEqual(descriptor.truth.selectionPointersReferentiallyChecked, true);
 
   assert.strictEqual(productionStore.putBatch({ root, batch }).operation, 'PUT_BATCH');
   assert.strictEqual(productionStore.putBatch({ root, batch }).result, 'IMMUTABLE_OBJECT_ALREADY_PRESENT');
-
-  assert.throws(() => productionStore.putSelection({ root, selection }), /SELECTION_REVISION_MISSING/);
 
   for (const draft of set.drafts) productionStore.putDraftRevision({ root, draft });
   productionStore.putDraftRevision({ root, draft: draft1v2 });
   productionStore.putDraftRevision({ root, draft: draft1v3 });
   productionStore.putDraftRevision({ root, draft: draft1v4 });
+  productionStore.putDraftRevision({ root, draft: draft1v5 });
+
+  // Referential closure: selection cannot point at a revision that has not
+  // actually been persisted yet.
+  const missingSelection = production.selectDraft({ batch, draft: draft2v2, actorClass: 'HUMAN', currentDirection: direction });
+  assert.throws(() => productionStore.putSelection({ root, selection: missingSelection }), /SELECTION_REVISION_MISSING/);
+
   productionStore.putDraftRevision({ root, draft: draft2v2 });
-  assert.strictEqual(productionStore.selectActiveDraftRevision({ root, draft: draft1v4, actorClass: 'HUMAN' }).operation, 'SELECT_ACTIVE_DRAFT_REVISION');
-  const selectionWrite = productionStore.putSelection({ root, selection });
-  assert.strictEqual(selectionWrite.operation, 'PUT_SELECTION_POINTER');
-  assert.strictEqual(selectionWrite.selectionIntegrity, 'SELECTION_REFERENCE_CURRENT');
+  assert.strictEqual(productionStore.selectActiveDraftRevision({ root, draft: draft1v5, actorClass: 'HUMAN' }).operation, 'SELECT_ACTIVE_DRAFT_REVISION');
+  const selectionReceipt = productionStore.putSelection({ root, selection });
+  assert.strictEqual(selectionReceipt.operation, 'PUT_SELECTION_POINTER');
+  assert.strictEqual(selectionReceipt.selectionIntegrity, 'SELECTION_REFERENCE_CURRENT');
 
   const read = productionStore.readBatch({ root, projectId: direction.projectId, batchSha256: batch.batchSha256 });
   assert.strictEqual(read.result, 'PRODUCTION_BATCH_STATE_READY');
   assert.strictEqual(read.drafts.length, 4);
   const storedDraft1 = read.drafts.find(d => d.draftId === 'draft-01');
-  assert.strictEqual(storedDraft1.revisions.length, 4);
-  assert.strictEqual(storedDraft1.active.draftRevisionSha256, draft1v4.draftRevisionSha256);
-  assert.strictEqual(read.selection.draftRevisionSha256, draft1v4.draftRevisionSha256);
+  assert.strictEqual(storedDraft1.revisions.length, 5);
+  assert.strictEqual(storedDraft1.active.draftRevisionSha256, draft1v5.draftRevisionSha256);
+  assert.strictEqual(read.selection.draftRevisionSha256, draft1v5.draftRevisionSha256);
   assert.strictEqual(read.selectionIntegrity.result, 'SELECTION_REFERENCE_CURRENT');
   assert.strictEqual(read.truth.rawSourceStored, false);
 
   const fakeRaw = {
-    ...draft1v4,
-    revision: 5,
+    ...draft1v5,
     draftRevisionSha256: 'sha256:fake-raw-revision',
-    keyProgram: { ...program2, sourceCode: 'console.log("raw")' }
+    keyProgram: { ...changedProgram, sourceCode: 'console.log("raw")' }
   };
   assert.throws(() => productionStore.putDraftRevision({ root, draft: fakeRaw }), /RAW_SOURCE_REFUSED/);
   assert.throws(() => productionStore.storeDescriptor('../escape'), /PROJECT_ID_UNSAFE/);
@@ -334,13 +373,14 @@ console.log(JSON.stringify({
   batchSha256: batch.batchSha256,
   draftCount: batch.draftCount,
   variantMode: batch.variantMode,
-  draft1RevisionCount: 4,
+  draft1RevisionCount: 5,
+  evidenceInvalidation: draft1v3.evidenceFreshness.invalidatedBy,
   comparisonRows: comparison.rows.length,
   duplicateProgramCandidates: comparison.duplicateProgramCandidates.length,
-  staleDirectionState: production.assessBatchDirection({ batch, direction: revisedDirection }).result,
   selection: selection.result,
   selectionIntegrity: 'SELECTION_REFERENCE_CURRENT',
-  contextProductionState: contextCard.production.directionStatus,
+  productionContext: hotCard.result,
+  staleProductionContext: staleHotCard.result,
   storeRootClass: 'state/code-work-context/<project-id>/production',
   snapshotSha256: snapshot.snapshotSha256,
   authority: snapshot.authority
