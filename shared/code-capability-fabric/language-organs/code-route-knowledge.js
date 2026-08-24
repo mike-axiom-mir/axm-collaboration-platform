@@ -16,15 +16,16 @@ function directPairRoutes(a,b){
  for(const r of ATLAS.familyRules)if(familyRuleMatches(r,a,b))routes.push({source:'FAMILY_RULE',orientation:'DECLARED',...r});
  return routes;
 }
+function routeSpecificity(x){if(x.source==='EXPLICIT_BRIDGE')return 100;if(x.class==='NETWORK_PROTOCOL'||x.class==='PROCESS_IPC'||x.class==='FILE_DATA_CONTRACT')return 5;return 25}
 function relate({languageA,languageB,purposeTags=[]}={}){
  const a=registry.getByLanguageId(languageA),b=registry.getByLanguageId(languageB);
  if(!a||!b)return{schema:'axm.code-route-relation.v1',result:'UNKNOWN_LANGUAGE',languageA:languageA||null,languageB:languageB||null,unknown:[!a?languageA:null,!b?languageB:null].filter(Boolean),routes:[],authority:'NONE'};
  const forward=directPairRoutes(a,b).map(x=>({...x,queryDirection:`${a.languageId}->${b.languageId}`}));
  const reverse=directPairRoutes(b,a).map(x=>({...x,queryDirection:`${b.languageId}->${a.languageId}`,relevantToPair:true}));
  const wanted=new Set((purposeTags||[]).map(norm).filter(Boolean));
- const score=x=>{const text=norm([...(x.purpose||[]),x.artifact||'',x.warning||''].join(' '));let n=0;for(const t of wanted)if(text.includes(t))n+=5;return n};
+ const score=x=>{const text=norm([...(x.purpose||[]),x.artifact||'',x.warning||''].join(' '));let n=routeSpecificity(x);for(const t of wanted)if(text.includes(t))n+=5;return n};
  const routes=[...forward,...reverse].sort((x,y)=>score(y)-score(x)||x.id.localeCompare(y.id));
- return{schema:'axm.code-route-relation.v1',result:routes.length?'ROUTES_FOUND':'NO_KNOWN_DIRECT_ROUTE',languageA:a.languageId,languageB:b.languageId,families:[a.family,b.family],purposeTags:[...wanted],routes:routes.map(x=>({...x,score:score(x),authority:'NONE'})),note:routes.length?'Routes describe boundaries, not proof that a concrete adapter/toolchain is installed.':'Absence of a direct route does not mean the languages cannot coexist; process/file/network boundaries may still connect them.',authority:'NONE'};
+ return{schema:'axm.code-route-relation.v1',result:routes.length?'ROUTES_FOUND':'NO_KNOWN_DIRECT_ROUTE',languageA:a.languageId,languageB:b.languageId,families:[a.family,b.family],purposeTags:[...wanted],routes:routes.map(x=>({...x,score:score(x),authority:'NONE'})),note:routes.length?'Concrete/explicit boundaries rank ahead of generic process/network/file coexistence. Routes still do not prove a concrete adapter/toolchain is installed.':'Absence of a direct route does not mean the languages cannot coexist; process/file/network boundaries may still connect them.',authority:'NONE'};
 }
 function recipeScore(recipe,goal){const g=norm(goal);let score=0;for(const tag of recipe.goalTags){const t=norm(tag);if(g===t)score=Math.max(score,100+t.length);else if(g.includes(t)||t.includes(g))score=Math.max(score,60+Math.min(g.length,t.length));else{const parts=t.split(/[^a-z0-9]+/).filter(Boolean);score=Math.max(score,parts.reduce((n,p)=>n+(g.includes(p)?3:0),0))}}return score}
 function roleCandidates(role,activeSet,preferredSet){
