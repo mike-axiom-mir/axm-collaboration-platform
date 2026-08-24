@@ -26599,6 +26599,9 @@
           "automatic-canon",
           "automatic-install",
           "automatic-promotion",
+          "blind-text-rewrite-when-grammar-structure-is-required",
+          "fixture-pass-as-arbitrary-program-proof",
+          "grammar-profile-drift-as-pass",
           "host-observation-as-execution-proof",
           "implicit-provider-choice-when-multiple-match",
           "language-guess-when-detection-is-ambiguous",
@@ -26608,6 +26611,7 @@
           "provider-code-execution",
           "provider-code-loading",
           "provider-self-asserted-availability",
+          "rewrite-through-unknown-or-error-grammar-nodes",
           "silent-explicit-preference-fallback",
           "source-or-candidate-mutation",
           "source-review-as-runtime-proof",
@@ -26689,9 +26693,11 @@
           "axm.code-provider-host-observation/v1",
           "caller-supplied explicit organ preference",
           "caller-supplied file path metadata",
+          "caller-supplied requested analysis/refactor stage",
           "caller-supplied shebang metadata"
         ],
         "consumes": [
+          "axm.code.language-grammar-profile.v1 profiles",
           "axm.code.language-organ-families.v1",
           "axm.code.language-organ.v1 descriptors",
           "exact descriptor digests",
@@ -26702,6 +26708,8 @@
         ],
         "emits": [
           "axm.code-capability-route-plan/v1",
+          "axm.code-language-grammar-profile-snapshot/v1",
+          "axm.code-language-grammar-specific-plan/v1",
           "axm.code-language-organ-plan/v1",
           "axm.code-language-organ-snapshot/v1"
         ],
@@ -26709,6 +26717,9 @@
           "axm.code-capability-provider/v1",
           "axm.code-capability-request/v1",
           "axm.code-capability-route-plan/v1",
+          "axm.code-language-grammar-profile-snapshot/v1",
+          "axm.code-language-grammar-profile/v1",
+          "axm.code-language-grammar-specific-plan/v1",
           "axm.code-language-organ-detect/v1",
           "axm.code-language-organ-lookup/v1",
           "axm.code-language-organ-plan/v1",
@@ -26726,7 +26737,7 @@
           "shared/code-capability-fabric/module.contract.json"
         ],
         "declaredId": "code-capability-fabric",
-        "digest": "3536433bd5b4c0ae2ec48f59f161ba1812ecdc668a8553cf56f55b212fe5d004",
+        "digest": "a7e01a9263d651295cbb025c40cf9545d9e4c9844ec7ffdc458e7e44e6883c9b",
         "manifest": null,
         "observedSourceFileCount": 433,
         "root": "shared/code-capability-fabric"
@@ -26737,7 +26748,7 @@
         "entry": null,
         "type": "UNDECLARED"
       },
-      "version": "v0.3"
+      "version": "v0.4"
     },
     {
       "authority": {
@@ -39427,6 +39438,27 @@
     },
     {
       "consumers": [],
+      "id": "axm.code-language-grammar-profile-snapshot/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-grammar-profile/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-language-grammar-specific-plan/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code-language-organ-detect/v1",
       "providers": [
         "shared/code-capability-fabric"
@@ -39493,6 +39525,13 @@
         "code-recipe-foundry"
       ],
       "id": "axm.code-recipe/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.code.language-grammar-profile.v1 profiles",
       "providers": []
     },
     {
@@ -64720,18 +64759,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "4a7a6991d966464c6942fd2b817da04d610f63caa59ac0dae491b9ec40807a40",
+  "semanticDigest": "19a568d1f7c4da185894070486b016addb00f7e65db458e1fc12e9f4121f2330",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "6c90f0d8eee1b93701e69254bbc5966274219748275eaa41f899d0d59142e95d",
+    "declarationDigest": "4ab5c7898dc66eb322150d0091a3818ab8768374d2a3474c8275e29847bf273f",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "6c90f0d8eee1b93701e69254bbc5966274219748275eaa41f899d0d59142e95d"
+    "snapshotIdentity": "4ab5c7898dc66eb322150d0091a3818ab8768374d2a3474c8275e29847bf273f"
   },
   "summary": {
     "blockKinds": {
@@ -64744,12 +64783,12 @@
       "SENSOR": 6
     },
     "blocks": 304,
-    "capabilities": 2991,
+    "capabilities": 2995,
     "declaredContracts": 301,
     "declaredManifests": 253,
     "edges": 86,
     "schemas": 914,
-    "unresolved": 1997
+    "unresolved": 2000
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -73452,6 +73491,12 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.code.language-grammar-profile.v1 profiles",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.code.language-organ-families.v1",
       "state": "UNKNOWN"
     },
@@ -73483,6 +73528,18 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "provider descriptors",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-language-grammar-profile-snapshot/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-language-grammar-specific-plan/v1",
       "state": "UNKNOWN"
     },
     {
