@@ -1,0 +1,84 @@
+name: AXM Language Organs Steward Regen
+
+on:
+  push:
+    branches:
+      - codex/code-capability-fabric-language-organs-v1
+    paths:
+      - ".github/workflows/language-organs-steward-regen.yml"
+      - "shared/code-capability-fabric/language-organs/**"
+      - "shared/code-capability-fabric/module.contract.json"
+
+permissions:
+  contents: write
+
+jobs:
+  steward-regen:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact branch source
+        uses: actions/checkout@v4
+        with:
+          ref: codex/code-capability-fabric-language-organs-v1
+          fetch-depth: 1
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Regenerate derived views and run steward checks
+        id: steward
+        shell: bash
+        run: |
+          set +e
+          report="docs/steward-runs/2026-08-24-code-language-organs-v2.2/GITHUB_ACTION_REPORT.txt"
+          mkdir -p "$(dirname "$report")"
+          : > "$report"
+          failed=0
+          run_check() {
+            echo "> $*" | tee -a "$report"
+            "$@" >> "$report" 2>&1
+            code=$?
+            echo "exit=$code" | tee -a "$report"
+            echo >> "$report"
+            if [ "$code" -ne 0 ]; then failed=1; fi
+          }
+          run_check node scripts/compile-city-graph.js
+          run_check node scripts/compile-schema-registry.js
+          run_check node scripts/compile-twin-surfaces.js
+          run_check node --check shared/code-capability-fabric/language-organs/registry.js
+          run_check node shared/code-capability-fabric/language-organs/selftest.js
+          run_check node shared/code-capability-fabric/language-organs/selftest-adversarial.js
+          run_check node shared/code-capability-fabric/language-organs/selftest-donors.js
+          run_check node scripts/compile-city-graph.js --check
+          run_check node scripts/compile-schema-registry.js --check
+          run_check node scripts/compile-twin-surfaces.js --check
+          run_check node verify.js
+          run_check node hub/hub-selftest.js
+          run_check node hub/route-selftest.js
+          run_check node hub/graft-selftest.js
+          run_check node hub/skin-selftest.js
+          run_check node hub/verify-plus.js
+          run_check node tests/html-script-syntax-test.js
+          run_check node tests/tool-forge-package-test.js
+          run_check node tools/agent-tool-forge/selftest.js
+          run_check node tools/evidence-desk/selftest.js
+          run_check git diff --check
+          echo "overall_failed=$failed" | tee -a "$report"
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+      - name: Commit bounded derived outputs and report
+        shell: bash
+        run: |
+          git config user.name "AXM Steward Gate"
+          git config user.email "steward-gate@axm.invalid"
+          git add registry/generated docs/generated/LEGO_CITY_MAP.md docs/generated/LEGO_CITY_BEGINNER_MAP.md docs/steward-runs/2026-08-24-code-language-organs-v2.2/GITHUB_ACTION_REPORT.txt
+          if git diff --cached --quiet; then
+            echo "No bounded generated changes to commit."
+          else
+            git commit -m "chore(fabric): regenerate language-organ derived views"
+            git push origin HEAD:codex/code-capability-fabric-language-organs-v1
+          fi
+      - name: Preserve failing steward result
+        if: steps.steward.outputs.failed != '0'
+        run: exit 1
