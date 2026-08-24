@@ -26611,6 +26611,7 @@
           "automatic-promotion",
           "automatic-promotion-from-admission",
           "automatic-promotion-from-route",
+          "automatic-quick-test-from-build-window",
           "automatic-repair-from-discovery",
           "automatic-source-mutation-from-template",
           "automatic-template-promotion",
@@ -26619,13 +26620,21 @@
           "automatic-workspace-mutation-from-admission",
           "automatic-workspace-mutation-from-route",
           "blind-text-rewrite-when-grammar-structure-is-required",
+          "browser-preview-as-cpu-isolation-proof",
+          "browser-preview-as-memory-isolation-proof",
+          "browser-preview-with-same-origin-privilege",
           "build-pass-as-semantic-correctness",
+          "build-window-popup-as-execution-authority",
+          "build-window-popup-as-workspace-authority",
+          "build-window-preview-as-final-visual-fidelity-proof",
+          "build-window-preview-as-verification",
           "compile-pass-as-runtime-proof",
           "composite-role-as-new-fundamental-lens",
           "cross-language-discovery-as-automatic-language-switch",
           "discipline-lens-activation-as-authority",
           "discipline-lens-output-as-correctness-proof",
           "domain-overlay-as-authority",
+          "existing-game-sandbox-as-generic-code-adapter-proof",
           "fixture-pass-as-arbitrary-program-proof",
           "frequency-as-correctness",
           "generated-binding-as-runtime-proof",
@@ -26663,10 +26672,16 @@
           "provider-code-execution",
           "provider-code-loading",
           "provider-self-asserted-availability",
+          "quick-test-pass-as-admission-proof",
+          "quick-test-pass-as-promotion",
+          "quick-test-pass-as-universal-correctness",
           "raw-grammar-keyword-as-sufficient-cross-language-opportunity",
+          "raw-source-in-build-window-history",
+          "raw-source-in-durable-build-window-state",
           "rewrite-through-unknown-or-error-grammar-nodes",
           "route-existence-as-toolchain-availability",
           "route-recipe-match-as-best-architecture-proof",
+          "runtime-failure-as-in-place-source-rewrite",
           "self-amplifying-influence-loop",
           "semantic-key-as-raw-text-mutation",
           "silent-explicit-preference-fallback",
@@ -26718,6 +26733,7 @@
         "freshness": "UNKNOWN",
         "selftests": [
           "shared/code-capability-fabric/language-organs/selftest-adversarial.js",
+          "shared/code-capability-fabric/language-organs/selftest-code-artifact-build-window.js",
           "shared/code-capability-fabric/language-organs/selftest-code-route-knowledge.js",
           "shared/code-capability-fabric/language-organs/selftest-donors.js",
           "shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js",
@@ -26773,32 +26789,39 @@
           "axm.code-provider-host-observation/v1",
           "caller-supplied active language identities",
           "caller-supplied admission mode",
+          "caller-supplied artifact digest and visual-state metadata",
           "caller-supplied boundary changes",
           "caller-supplied build goal",
+          "caller-supplied build-window session/revision",
           "caller-supplied candidate digest",
           "caller-supplied code build observation",
           "caller-supplied composite role identifiers",
           "caller-supplied declared development pressures",
           "caller-supplied domain overlays",
+          "caller-supplied ephemeral candidate artifact body",
           "caller-supplied existing-test presence",
           "caller-supplied explicit organ preference",
           "caller-supplied explicit role/language bindings",
           "caller-supplied fact codes, semantic signals, control signals, type signals, state signals, build signals, debug signals and verifier signals",
           "caller-supplied file path metadata",
+          "caller-supplied generic-code sandbox adapter descriptor",
           "caller-supplied goals, capabilities, gaps, constraints, risks, requirements and notes",
           "caller-supplied machine key arguments",
           "caller-supplied machine keyboard language id",
           "caller-supplied prebuild plan and role",
           "caller-supplied preferred language identities",
+          "caller-supplied quick-test runtime class",
           "caller-supplied renderer descriptor",
           "caller-supplied requested analysis/refactor stage",
           "caller-supplied requested discipline perspectives",
           "caller-supplied route purpose tags",
+          "caller-supplied sandbox session and evidence observation",
           "caller-supplied shebang metadata",
           "caller-supplied stable key id or hot key id",
           "caller-supplied verifier observations"
         ],
         "consumes": [
+          "axm.code.artifact-build-window-contract.v1",
           "axm.code.human-developer-perspective.v1 review heuristics",
           "axm.code.human-discipline-perspectives.v1 discipline atlas",
           "axm.code.language-grammar-profile.v1 profiles",
@@ -26810,15 +26833,21 @@
           "axm.code.machine-keyboard-bank.v1 generated keyboard banks",
           "axm.code.prebuild-preview-topologies.v1 role-level preview topology",
           "axm.code.route-knowledge-atlas.v1 route knowledge",
+          "axm.disposable-candidate-sandbox-session/v1 runtime observation",
+          "axm.sandbox-static-evidence/v1 runtime evidence",
           "caller-supplied active language identities",
+          "caller-supplied artifact digest and visual-state metadata",
           "caller-supplied boundary-change declarations",
           "caller-supplied build goals",
+          "caller-supplied build-window actor and revision metadata",
           "caller-supplied candidate digests",
           "caller-supplied code build observations",
           "caller-supplied composite role identifiers",
           "caller-supplied declared development pressures",
           "caller-supplied domain overlays",
+          "caller-supplied ephemeral candidate artifact body",
           "caller-supplied existing-test presence",
+          "caller-supplied explicit quick-test action",
           "caller-supplied explicit role/language bindings",
           "caller-supplied fact codes and analysis signals",
           "caller-supplied machine key arguments",
@@ -26832,6 +26861,7 @@
           "exact descriptor digests",
           "explicit request authority policy",
           "host-observed availability",
+          "optional sandbox adapter accepting axm.code.quick-test-candidate/v1",
           "provider descriptors",
           "strict-deterministic-canonical-json"
         ],
@@ -26861,6 +26891,11 @@
           "axm.code-template-instance/v1",
           "axm.code-template-mine-and-select/v1",
           "axm.code-template-selection/v1",
+          "axm.code.artifact-preview-spec.v1",
+          "axm.code.build-window-quick-test-intent.v1",
+          "axm.code.build-window-snapshot.v1",
+          "axm.code.build-window-state.v1",
+          "axm.code.build-window-transition.v1",
           "axm.code.candidate-admission-policy.v1",
           "axm.code.candidate-admission-report.v1",
           "axm.code.machine-key-program.v1",
@@ -26870,7 +26905,9 @@
           "axm.code.prebuild-plan.v1",
           "axm.code.prebuild-preview.v1",
           "axm.code.prebuild-structural-simulation.v1",
-          "axm.code.prebuild-twin-snapshot.v1"
+          "axm.code.prebuild-twin-snapshot.v1",
+          "axm.code.quick-test-observation.v1",
+          "axm.code.quick-test-request.v1"
         ],
         "provides": [
           "axm.code-build-observation/v1",
@@ -26921,6 +26958,12 @@
           "axm.code-template-mine-and-select/v1",
           "axm.code-template-pattern-mining-report/v1",
           "axm.code-template-selection/v1",
+          "axm.code.artifact-preview-spec.v1",
+          "axm.code.build-window-popup-safety.v1",
+          "axm.code.build-window-quick-test-intent.v1",
+          "axm.code.build-window-snapshot.v1",
+          "axm.code.build-window-state.v1",
+          "axm.code.build-window-transition.v1",
           "axm.code.candidate-admission-policy.v1",
           "axm.code.candidate-admission-report.v1",
           "axm.code.machine-key-program.v1",
@@ -26932,6 +26975,9 @@
           "axm.code.prebuild-preview.v1",
           "axm.code.prebuild-structural-simulation.v1",
           "axm.code.prebuild-twin-snapshot.v1",
+          "axm.code.quick-test-candidate/v1",
+          "axm.code.quick-test-observation.v1",
+          "axm.code.quick-test-request.v1",
           "code.capability.plan",
           "code.capability.plan.verify"
         ]
@@ -26942,9 +26988,9 @@
           "shared/code-capability-fabric/module.contract.json"
         ],
         "declaredId": "code-capability-fabric",
-        "digest": "59428339d2b0bd6b75fb89f53b92431f3b1f36b4ccdb28691431d266ea0f0629",
+        "digest": "8cedeab9a4eb5d9381095c52364a1b3f434b8474f36af5da2e0b203d1166f85c",
         "manifest": null,
-        "observedSourceFileCount": 874,
+        "observedSourceFileCount": 878,
         "root": "shared/code-capability-fabric"
       },
       "status": "EXPERIMENTAL",
@@ -26953,7 +26999,7 @@
         "entry": null,
         "type": "UNDECLARED"
       },
-      "version": "v0.10"
+      "version": "v0.11"
     },
     {
       "authority": {
@@ -39978,6 +40024,55 @@
       ]
     },
     {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.code.artifact-build-window-contract.v1",
+      "providers": []
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.artifact-preview-spec.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.build-window-popup-safety.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.build-window-quick-test-intent.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.build-window-snapshot.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.build-window-state.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.build-window-transition.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
       "consumers": [],
       "id": "axm.code.candidate-admission-policy.v1",
       "providers": [
@@ -40120,6 +40215,27 @@
     {
       "consumers": [],
       "id": "axm.code.prebuild-twin-snapshot.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.quick-test-candidate/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.quick-test-observation.v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code.quick-test-request.v1",
       "providers": [
         "shared/code-capability-fabric"
       ]
@@ -40281,6 +40397,13 @@
         "shared/grounded-growth-challenger-lab"
       ],
       "id": "axm.diagnostic-experiment.receipt/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.disposable-candidate-sandbox-session/v1 runtime observation",
       "providers": []
     },
     {
@@ -41757,6 +41880,13 @@
         "visual-mold-foundry"
       ],
       "id": "axm.safety-capsule/0.9",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.sandbox-static-evidence/v1 runtime evidence",
       "providers": []
     },
     {
@@ -43357,6 +43487,13 @@
       "consumers": [
         "shared/code-capability-fabric"
       ],
+      "id": "caller-supplied artifact digest and visual-state metadata",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
       "id": "caller-supplied boundary-change declarations",
       "providers": []
     },
@@ -43365,6 +43502,13 @@
         "shared/code-capability-fabric"
       ],
       "id": "caller-supplied build goals",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied build-window actor and revision metadata",
       "providers": []
     },
     {
@@ -43440,6 +43584,13 @@
     },
     {
       "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied ephemeral candidate artifact body",
+      "providers": []
+    },
+    {
+      "consumers": [
         "shared/model-shadow-continuity"
       ],
       "id": "caller-supplied exact task context seat and provenance references",
@@ -43450,6 +43601,13 @@
         "shared/code-capability-fabric"
       ],
       "id": "caller-supplied existing-test presence",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied explicit quick-test action",
       "providers": []
     },
     {
@@ -53788,6 +53946,13 @@
         "shared/grounded-growth-phone-evidence-gate"
       ],
       "id": "optional later axm.game-package-verification/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "optional sandbox adapter accepting axm.code.quick-test-candidate/v1",
       "providers": []
     },
     {
@@ -65475,18 +65640,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "0fb05c043e7c07df4b3ae0d5b3498df729aed1e91ad0f53270a021478b9e6be3",
+  "semanticDigest": "c85ca56e0d03d4093cb8107db67c33cb7d66156f7ec365437220660cea977e20",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "c5f0e762537254f87a5c39714c6d1cff176ed874d32453083f4d523adc3cd2f6",
+    "declarationDigest": "6d6827b930aef1d5e38298d7023b2e3663ec941c8fe9dd8627658e2f20e580a3",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "c5f0e762537254f87a5c39714c6d1cff176ed874d32453083f4d523adc3cd2f6"
+    "snapshotIdentity": "6d6827b930aef1d5e38298d7023b2e3663ec941c8fe9dd8627658e2f20e580a3"
   },
   "summary": {
     "blockKinds": {
@@ -65499,12 +65664,12 @@
       "SENSOR": 6
     },
     "blocks": 304,
-    "capabilities": 3068,
+    "capabilities": 3085,
     "declaredContracts": 301,
     "declaredManifests": 253,
     "edges": 86,
     "schemas": 914,
-    "unresolved": 2047
+    "unresolved": 2055
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -74207,6 +74372,12 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.code.artifact-build-window-contract.v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.code.human-developer-perspective.v1 review heuristics",
       "state": "UNKNOWN"
     },
@@ -74273,7 +74444,25 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.disposable-candidate-sandbox-session/v1 runtime observation",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.sandbox-static-evidence/v1 runtime evidence",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied active language identities",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied artifact digest and visual-state metadata",
       "state": "UNKNOWN"
     },
     {
@@ -74286,6 +74475,12 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied build goals",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied build-window actor and revision metadata",
       "state": "UNKNOWN"
     },
     {
@@ -74321,7 +74516,19 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied ephemeral candidate artifact body",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied existing-test presence",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied explicit quick-test action",
       "state": "UNKNOWN"
     },
     {
@@ -74400,6 +74607,12 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "host-observed availability",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "optional sandbox adapter accepting axm.code.quick-test-candidate/v1",
       "state": "UNKNOWN"
     },
     {
