@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `5af6f51944ddf7f588778fbca56d88a07e4555ae45c2104aa89eb04b492303c9`
+Semantic graph digest: `682dcb11f51a251c3e0acec3b01883cabbfce744fc9ea9b84b81bfc10136725b`
 
-Blocks: 304 · Capabilities: 3006 · Schemas: 914 · Unresolved edges: 2007
+Blocks: 304 · Capabilities: 3016 · Schemas: 914 · Unresolved edges: 2015
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -220,7 +220,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/baseline-simulation-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 1 selftest(s) |
 | shared/city-gates | BRIDGE (DECLARED) | EXPERIMENTAL | NETWORK_WRITE, PUBLIC_RELEASE | 5 | 3 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
-| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 22 | 12 | 37 selftest(s) |
+| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 29 | 15 | 37 selftest(s) |
 | shared/compute-substrate-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 4 | 1 selftest(s) |
 | shared/deterministic-animation-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 3 | 2 selftest(s) |
 | shared/deterministic-audio-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 2 selftest(s) |
@@ -1769,11 +1769,14 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `json-schema:draft-2020-12` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.human-developer-perspective.v1 review heuristics` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-grammar-profile.v1 profiles` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-machine-cheatcode-bank.v1 generated banks` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-organ-families.v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-organ.v1 descriptors` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `axm.code.language-specialist-eye.v1 profiles` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied code build observations` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied declared development pressures` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied fact codes and analysis signals` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `caller-supplied verifier observations` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `exact descriptor digests` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `explicit request authority policy` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/code-capability-fabric` → `host-observed availability` (UNKNOWN)
@@ -1784,6 +1787,11 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-organ-snapshot/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-specialist-eye-plan/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-language-specialist-eye-snapshot/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-machine-cheatcode-challenge-report/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-machine-cheatcode-evaluation/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-machine-cheatcode-fabric-snapshot/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-machine-cheatcode-influence-mesh-snapshot/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-machine-cheatcode-influence-report/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `shared/code-capability-fabric` → `axm.code-native-discovery-seam-report/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.compute-hardware-reference/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/compute-substrate-lab` → `axm.compute-substrate-intake/v1` (UNKNOWN)

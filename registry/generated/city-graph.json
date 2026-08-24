@@ -26596,6 +26596,7 @@
       },
       "boundaries": {
         "refuses": [
+          "automatic-action-from-influence",
           "automatic-canon",
           "automatic-dependency-install-from-discovery",
           "automatic-install",
@@ -26608,7 +26609,12 @@
           "host-observation-as-execution-proof",
           "human-expertise-heuristic-as-authority",
           "implicit-provider-choice-when-multiple-match",
+          "influence-count-as-confidence",
+          "influence-count-as-truth",
           "language-guess-when-detection-is-ambiguous",
+          "machine-cheatcode-drift-as-pass",
+          "machine-cheatcode-match-as-semantic-proof",
+          "machine-cheatcode-output-as-authority",
           "network-use",
           "overlook-cause-inference-without-caller-evidence",
           "permission-grant",
@@ -26618,7 +26624,10 @@
           "provider-self-asserted-availability",
           "raw-grammar-keyword-as-sufficient-cross-language-opportunity",
           "rewrite-through-unknown-or-error-grammar-nodes",
+          "self-amplifying-influence-loop",
           "silent-explicit-preference-fallback",
+          "soft-influence-as-evidence",
+          "soft-influence-as-hard-activation",
           "source-or-candidate-mutation",
           "source-review-as-runtime-proof",
           "specialist-eye-candidate-as-decision",
@@ -26626,6 +26635,7 @@
           "specialist-eye-output-as-authority",
           "syntax-pass-as-semantic-correctness",
           "unbound-language-tool-execution",
+          "unbounded-cheatcode-propagation",
           "undefined-or-non-json-representable-state",
           "workspace-content-reading"
         ],
@@ -26707,6 +26717,7 @@
           "caller-supplied code build observation",
           "caller-supplied declared development pressures",
           "caller-supplied explicit organ preference",
+          "caller-supplied fact codes, semantic signals, control signals, type signals, state signals, build signals, debug signals and verifier signals",
           "caller-supplied file path metadata",
           "caller-supplied goals, capabilities, gaps, constraints, risks, requirements and notes",
           "caller-supplied requested analysis/refactor stage",
@@ -26715,11 +26726,14 @@
         "consumes": [
           "axm.code.human-developer-perspective.v1 review heuristics",
           "axm.code.language-grammar-profile.v1 profiles",
+          "axm.code.language-machine-cheatcode-bank.v1 generated banks",
           "axm.code.language-organ-families.v1",
           "axm.code.language-organ.v1 descriptors",
           "axm.code.language-specialist-eye.v1 profiles",
           "caller-supplied code build observations",
           "caller-supplied declared development pressures",
+          "caller-supplied fact codes and analysis signals",
+          "caller-supplied verifier observations",
           "exact descriptor digests",
           "explicit request authority policy",
           "host-observed availability",
@@ -26734,6 +26748,11 @@
           "axm.code-language-organ-snapshot/v1",
           "axm.code-language-specialist-eye-plan/v1",
           "axm.code-language-specialist-eye-snapshot/v1",
+          "axm.code-machine-cheatcode-challenge-report/v1",
+          "axm.code-machine-cheatcode-evaluation/v1",
+          "axm.code-machine-cheatcode-fabric-snapshot/v1",
+          "axm.code-machine-cheatcode-influence-mesh-snapshot/v1",
+          "axm.code-machine-cheatcode-influence-report/v1",
           "axm.code-native-discovery-seam-report/v1"
         ],
         "provides": [
@@ -26745,6 +26764,7 @@
           "axm.code-language-grammar-profile-snapshot/v1",
           "axm.code-language-grammar-profile/v1",
           "axm.code-language-grammar-specific-plan/v1",
+          "axm.code-language-machine-cheatcode-bank/v1",
           "axm.code-language-organ-detect/v1",
           "axm.code-language-organ-lookup/v1",
           "axm.code-language-organ-plan/v1",
@@ -26754,6 +26774,12 @@
           "axm.code-language-specialist-eye-plan/v1",
           "axm.code-language-specialist-eye-registry/v1",
           "axm.code-language-specialist-eye-snapshot/v1",
+          "axm.code-machine-cheatcode-challenge-report/v1",
+          "axm.code-machine-cheatcode-evaluation/v1",
+          "axm.code-machine-cheatcode-fabric-snapshot/v1",
+          "axm.code-machine-cheatcode-influence-mesh-snapshot/v1",
+          "axm.code-machine-cheatcode-influence-mesh/v1",
+          "axm.code-machine-cheatcode-influence-report/v1",
           "axm.code-native-discovery-seam-report/v1",
           "axm.code-native-discovery-seam/v1",
           "axm.code-provider-host-observation/v1",
@@ -26767,7 +26793,7 @@
           "shared/code-capability-fabric/module.contract.json"
         ],
         "declaredId": "code-capability-fabric",
-        "digest": "808fa8ea685185d3aeeaba27c338e3179af1a65456ae6f18de9c0767c50fa831",
+        "digest": "69ed08254fffaa66cac6c23127a513311330276e24113522523592ee7e23e353",
         "manifest": null,
         "observedSourceFileCount": 646,
         "root": "shared/code-capability-fabric"
@@ -26778,7 +26804,7 @@
         "entry": null,
         "type": "UNDECLARED"
       },
-      "version": "v0.5"
+      "version": "v0.6"
     },
     {
       "authority": {
@@ -39503,6 +39529,13 @@
     },
     {
       "consumers": [],
+      "id": "axm.code-language-machine-cheatcode-bank/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code-language-organ-detect/v1",
       "providers": [
         "shared/code-capability-fabric"
@@ -39566,6 +39599,48 @@
     },
     {
       "consumers": [],
+      "id": "axm.code-machine-cheatcode-challenge-report/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-machine-cheatcode-evaluation/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-machine-cheatcode-fabric-snapshot/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-machine-cheatcode-influence-mesh-snapshot/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-machine-cheatcode-influence-mesh/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm.code-machine-cheatcode-influence-report/v1",
+      "providers": [
+        "shared/code-capability-fabric"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm.code-native-discovery-seam-report/v1",
       "providers": [
         "shared/code-capability-fabric"
@@ -39618,6 +39693,13 @@
         "shared/code-capability-fabric"
       ],
       "id": "axm.code.language-grammar-profile.v1 profiles",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "axm.code.language-machine-cheatcode-bank.v1 generated banks",
       "providers": []
     },
     {
@@ -42915,6 +42997,13 @@
     },
     {
       "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied fact codes and analysis signals",
+      "providers": []
+    },
+    {
+      "consumers": [
         "shared/research-contribution-intake"
       ],
       "id": "caller-supplied retained signals and proposal dispositions",
@@ -42925,6 +43014,13 @@
         "shared/simulation-lab-extension-intake"
       ],
       "id": "caller-supplied simulation extension declaration",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/code-capability-fabric"
+      ],
+      "id": "caller-supplied verifier observations",
       "providers": []
     },
     {
@@ -64866,18 +64962,18 @@
       "sha256": "4d699707aaf893b20466a17a541d9c2301b1271c01e85a3f031153282814255b"
     }
   ],
-  "semanticDigest": "5af6f51944ddf7f588778fbca56d88a07e4555ae45c2104aa89eb04b492303c9",
+  "semanticDigest": "682dcb11f51a251c3e0acec3b01883cabbfce744fc9ea9b84b81bfc10136725b",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "3c641159005053f32947408801cc07f7872b5859ce06370c58801543294dd607",
+    "declarationDigest": "26c653da6a7792ab659269ca33fc3ca9b5608c098630fde9b14d72121dd481b3",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "3c641159005053f32947408801cc07f7872b5859ce06370c58801543294dd607"
+    "snapshotIdentity": "26c653da6a7792ab659269ca33fc3ca9b5608c098630fde9b14d72121dd481b3"
   },
   "summary": {
     "blockKinds": {
@@ -64890,12 +64986,12 @@
       "SENSOR": 6
     },
     "blocks": 304,
-    "capabilities": 3006,
+    "capabilities": 3016,
     "declaredContracts": 301,
     "declaredManifests": 253,
     "edges": 86,
     "schemas": 914,
-    "unresolved": 2007
+    "unresolved": 2015
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -73610,6 +73706,12 @@
     {
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.code.language-machine-cheatcode-bank.v1 generated banks",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.code.language-organ-families.v1",
       "state": "UNKNOWN"
     },
@@ -73635,6 +73737,18 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "caller-supplied declared development pressures",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied fact codes and analysis signals",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "caller-supplied verifier observations",
       "state": "UNKNOWN"
     },
     {
@@ -73695,6 +73809,36 @@
       "blockId": "shared/code-capability-fabric",
       "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.code-language-specialist-eye-snapshot/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-machine-cheatcode-challenge-report/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-machine-cheatcode-evaluation/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-machine-cheatcode-fabric-snapshot/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-machine-cheatcode-influence-mesh-snapshot/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/code-capability-fabric",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.code-machine-cheatcode-influence-report/v1",
       "state": "UNKNOWN"
     },
     {
