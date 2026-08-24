@@ -84,6 +84,45 @@
     },
     {
       "schema": "axm.code-specialist-build-profile/v1",
+      "id": "code-family.bounded-record-query",
+      "version": "1.0.0",
+      "status": "TEST",
+      "mode": "ONE_EXACT_JAVASCRIPT_RECORD_QUERY_SPECIALIST",
+      "specialistOrganRef": {
+        "id": "organ.code.application-logic",
+        "schema": "axm.code-specialist-organ-profile/v1",
+        "version": "1.0.0",
+        "sha256": "sha256:db17f57a04b3c70c9d54ed46042eca8e8780013e4c4f0dc5164c932a5ff29258"
+      },
+      "languageIds": ["javascript"],
+      "capability": {
+        "family": "record-query",
+        "recipeRef": {
+          "id": "bounded-record-query",
+          "version": "0.1.0",
+          "digest": "sha256:6e947f83cdd83775d1182165fc67f8797c56497875de94d31054febff318f69a",
+          "builderId": "bounded-record-query-v1",
+          "builderDigest": "sha256:501e7ac2c984beec72a99dddfb576cd0d6b2899787d4a19881a59613e0f2b973",
+          "capabilityKind": "HAND"
+        }
+      },
+      "exampleArtifactId": "javascript-record-query",
+      "gates": {
+        "specialist": "SELECT_EXACT_JAVASCRIPT_RECORD_QUERY_SPECIALIST_AND_REPLAN",
+        "recipe": "RESTORE_EXACT_SOURCE_REVIEWED_BOUNDED_RECORD_QUERY_RECIPE",
+        "request": "REPAIR_EXACT_HUMAN_REVIEWED_RECORD_QUERY_REQUEST"
+      },
+      "gaps": {
+        "specialist": "code.specialist.javascript.application-logic.exact-record-query-lane",
+        "recipe": "capability.recipe.bounded-record-query.exact",
+        "request": "capability.build-request.record-query.exact"
+      },
+      "evidence": {"visualBehavior": "NOT_APPLICABLE", "requiredKinds": ["DETERMINISTIC_BEHAVIOR", "STATIC_STRUCTURE"]},
+      "boundary": {"authority": "NONE", "permissions": [], "networkDomains": [], "workspaceRead": false, "workspaceWrite": false, "candidateExecution": false, "install": false, "integrate": false, "publish": false, "promote": false, "canon": false},
+      "profileDigest": "sha256:2eaf846070b5673852a8af204c38c61adcce7804de41f4f6acefaddb678d1cc3"
+    },
+    {
+      "schema": "axm.code-specialist-build-profile/v1",
       "id": "code-family.closed-object-contract-adapter",
       "version": "1.0.0",
       "status": "TEST",
@@ -287,5 +326,5 @@
     "automaticInstall": false,
     "mikeFinalMergeGateRequired": true
   },
-  "catalogDigest": "sha256:e674676e558508d10658c2b8cfa0965a060c59fb25fecac5b48f82142a1bfa32"
+  "catalogDigest": "sha256:abf75103ecf04050efc312b87fee62877a882083af2692edd890f59ba9d76d96"
 }

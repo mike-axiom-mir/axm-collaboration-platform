@@ -10,11 +10,11 @@ with a byte-bound profile catalog. A profile binds all of these exactly:
 - the capability family, evidence routes, repair gates, and typed gaps; and
 - a zero-authority detached-candidate boundary.
 
-The catalog contains seven bounded build lanes: JSON schema validation, static
+The catalog contains eight bounded build lanes: JSON schema validation, static
 HTML page rendering, one typed CSS token stylesheet, one strict text-only SVG
 status badge, and one string-only record transform in each of Python and
-JavaScript, plus one strict closed primitive-object contract adapter in
-JavaScript. Multiple lanes may share a specialist Organ and language only when
+JavaScript, plus one strict closed primitive-object contract adapter and one
+bounded closed-record query in JavaScript. Multiple lanes may share a specialist Organ and language only when
 their exact mode, recipe, builder, artifact, and profile bindings differ. It
 does not claim that Python, JavaScript, or all languages are
 generally implemented. A broader Python, JavaScript, CSS or SVG, Rust,

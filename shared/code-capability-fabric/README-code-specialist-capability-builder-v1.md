@@ -1,12 +1,13 @@
 # Code Specialist Capability Builder v1 (TEST)
 
-This v2.4 rung gives registered Code Capability Fabric specialists real but
+This v2.5 rung gives registered Code Capability Fabric specialists real but
 bounded construction routes. The initial build-profile catalog contains:
 
 - `organ.code.data-schema` → `closed-json-schema-validator@0.1.0`; and
 - `organ.code.markup-structure` → `static-accessible-html-page@0.1.0`; and
 - `organ.code.application-logic` + Python → `bounded-python-record-transform@0.1.0`; and
 - `organ.code.application-logic` + JavaScript → `pure-json-transform@1.1.0`; and
+- `organ.code.application-logic` + JavaScript → `bounded-record-query@0.1.0`; and
 - `organ.code.application-logic` + JavaScript → `closed-object-contract-adapter@0.2.0`; and
 - `organ.code.style-presentation` + CSS → `bounded-css-token-stylesheet@0.1.0`; and
 - `organ.code.markup-structure` + SVG → `svg-status-badge@1.1.0`.
@@ -15,14 +16,14 @@ Each route emits one byte-bound detached candidate. Selection is exact across
 the language, specialist Organ, build profile, Capability Fabric recipe, and
 native builder digests and the language-native source/selftest paths. One
 specialist cannot borrow or impersonate another profile's recipe.
-Two profiles may share the same specialist and language only through distinct
+Multiple profiles may share the same specialist and language only through distinct
 exact modes, recipes, builders, artifacts, and profile digests.
 
 The builder requires all of the following exact inputs:
 
 - a v1.6 specialist-to-Organ-intent request and deterministically rebuilt plan;
 - one exact admitted data-schema, HTML markup-structure, Python
-  application-logic, JavaScript application-logic, CSS style-presentation, or SVG markup-structure artifact
+  application-logic, JavaScript application-logic or record-query, CSS style-presentation, or SVG markup-structure artifact
   lane;
 - one exact registered build profile whose language matches that artifact;
 - a human-reviewed Capability Fabric request whose source binds the v1.6 plan;
@@ -75,6 +76,14 @@ primitive values, property excess, and independently measured input/output byte
 excess. Its successful result proves target shape only. Hostile Proxy behavior,
 domain semantics, and end-to-end fitness remain unproven.
 
+The record-query hand consumes one exact closed primitive record collection and
+an explicit bounded query. It supports typed `AND` predicates, stable multi-key
+ordering with original-index ties, unique projection fields, an exact result
+limit, and bounded count summaries. It rejects sparse/decorated arrays,
+accessors, symbols, custom prototypes, unknown or duplicate fields, unsafe
+integers, unsupported operators, and byte ceilings. Hostile Proxy traps and
+domain-semantic fitness remain unproven.
+
 The result distinguishes what is proven from what remains unknown. Exact
 specialist lineage, recipe lineage, candidate structure, byte lineage, portable
 paths, and resource ceilings can pass. Runtime behavior remains `UNKNOWN`; the
@@ -84,7 +93,7 @@ nonce replay prevention are not claimed.
 Only the closed JSON Schema validator, static HTML-page renderer, one typed CSS
 token-stylesheet renderer, one strict SVG status-badge renderer, and one
 string-only transform in each of Python and JavaScript, plus the strict
-JavaScript closed-object adapter are registered. The CSS lane does not claim
+JavaScript closed-object adapter and bounded record-query hand are registered. The CSS lane does not claim
 arbitrary CSS generation or visual correctness; the SVG lane does not claim
 general SVG, vector-scene creation, or browser correctness; the Python lane does
 not claim general Python generation or runtime correctness. Broader CSS, SVG,

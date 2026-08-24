@@ -9,7 +9,7 @@ const CapabilityFabric = require('../capability-fabric');
 const HandFoundryContract = require('../../tools/hand-specification-foundry/module.contract.json');
 const MODULE_CONTRACT = require('./module-code-specialist-capability-builder-v1.contract.json');
 
-const VERSION = '2.4.0';
+const VERSION = '2.5.0';
 const REQUEST_SCHEMA = 'axm.code-specialist-capability-build-request/v1';
 const RESULT_SCHEMA = 'axm.code-specialist-capability-candidate/v1';
 const TARGETS = BuildProfileRegistry.TARGETS;
@@ -19,6 +19,7 @@ const TARGET_RECIPE = TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST.recipe;
 const MARKUP_TARGET_RECIPE = TARGETS.ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST.recipe;
 const PYTHON_TARGET_RECIPE = TARGETS.ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST.recipe;
 const JAVASCRIPT_TARGET_RECIPE = TARGETS.ONE_EXACT_JAVASCRIPT_APPLICATION_LOGIC_SPECIALIST.recipe;
+const RECORD_QUERY_TARGET_RECIPE = TARGETS.ONE_EXACT_JAVASCRIPT_RECORD_QUERY_SPECIALIST.recipe;
 const CONTRACT_ADAPTER_TARGET_RECIPE = TARGETS.ONE_EXACT_JAVASCRIPT_OBJECT_CONTRACT_ADAPTER_SPECIALIST.recipe;
 const CSS_TARGET_RECIPE = TARGETS.ONE_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST.recipe;
 const SVG_TARGET_RECIPE = TARGETS.ONE_EXACT_SVG_MARKUP_STRUCTURE_SPECIALIST.recipe;
@@ -41,6 +42,7 @@ const LIMITATIONS = Object.freeze([
   'OBJECT_CONTRACT_ADAPTER_HOSTILE_PROXY_AND_DOMAIN_SEMANTICS_NOT_PROVEN',
   'ORGAN_INTENT_DOES_NOT_PROVE_IMPLEMENTATION_SEMANTICS',
   'PYTHON_RUNTIME_AND_EMITTED_SELFTEST_NOT_EXECUTED',
+  'RECORD_QUERY_HOSTILE_PROXY_AND_DOMAIN_SEMANTICS_NOT_PROVEN',
   'SPECIALIST_PROFILE_IS_ROUTING_CONTEXT_NOT_CAPABILITY_PROOF',
   'SVG_BROWSER_ACCESSIBILITY_AND_VISUAL_QUALITY_NOT_PROVEN',
   'CANON_CHANGE_NOT_AUTHORIZED'
@@ -456,6 +458,22 @@ function buildJavascriptSpecializationRequest() {
   return Router.sealRequest(draft);
 }
 
+function buildRecordQuerySpecializationRequest() {
+  const draft = clone(Router.buildExampleRequest());
+  const observation = clone(draft.observation);
+  delete observation.observationDigest;
+  observation.id = 'example-javascript-record-query-observation';
+  observation.artifacts.push({
+    id: 'javascript-record-query', path: 'module/record-query.js', sha256: Router.sha256Value('example-bytes:module/record-query.js'), byteLength: 320,
+    declaredLanguageId: 'javascript', artifactFamilies: ['module'], responsibilities: ['application-logic'], runtimes: ['node'], frameworks: ['node'],
+    requiredPermissions: [], networkDomains: [], interfaceContracts: ['axm.example.adventure-content-records/v1', 'axm.example.adventure-content-query-result/v1'], dependsOnArtifactIds: [], sharedSeam: false
+  });
+  draft.id = 'route-example-javascript-record-query-specialist';
+  draft.observation = Router.sealObservation(observation);
+  delete draft.requestDigest;
+  return Router.sealRequest(draft);
+}
+
 function buildContractAdapterSpecializationRequest() {
   const draft = clone(Router.buildExampleRequest());
   const observation = clone(draft.observation);
@@ -632,6 +650,31 @@ function buildJavascriptExampleRequest() {
   });
 }
 
+function buildRecordQueryExampleIntentRequest() {
+  return buildTargetExampleIntentRequest(TARGETS.ONE_EXACT_JAVASCRIPT_RECORD_QUERY_SPECIALIST, {
+    specializationRequest: buildRecordQuerySpecializationRequest(),
+    intentRequestId: 'bind-javascript-record-query-specialist-organ-intent',
+    intentName: 'Bounded JavaScript Record Query Intent',
+    intentPurpose: 'Bind one exact JavaScript application-logic lane to a reviewed closed-record collection query intent before a separate detached candidate-generation decision.'
+  });
+}
+
+function buildRecordQueryExampleRequest() {
+  return buildTargetExampleRequest(TARGETS.ONE_EXACT_JAVASCRIPT_RECORD_QUERY_SPECIALIST, {
+    specializationRequest: buildRecordQuerySpecializationRequest(),
+    intentRequestId: 'bind-javascript-record-query-specialist-organ-intent',
+    intentName: 'Bounded JavaScript Record Query Intent',
+    intentPurpose: 'Bind one exact JavaScript application-logic lane to a reviewed closed-record collection query intent before a separate detached candidate-generation decision.',
+    buildRequestId: 'adventure-content-record-query-candidate',
+    buildPurpose: 'Generate one detached bounded JavaScript record-query hand for the explicitly reviewed synthetic adventure-content records.',
+    outerRequestId: 'build-javascript-record-query-specialist-candidate',
+    decisionId: 'mike-tier-1-record-query-candidate-direction',
+    decisionText: 'Mike authorized continued bounded Code Capability Fabric growth: create one detached strict record-query candidate; do not execute, write, install, integrate, publish, promote, or CANON.',
+    evaluatedAt: '2026-08-25T00:00:00.000Z', expiresAt: '2026-08-26T00:00:00.000Z', nonce: 'record-query-candidate-0001',
+    rootEvidencePrefix: 'record-query-candidate-', rootEvidenceSubject: 'record-query-specialist-candidate-v2.5'
+  });
+}
+
 function buildContractAdapterExampleIntentRequest() {
   return buildTargetExampleIntentRequest(TARGETS.ONE_EXACT_JAVASCRIPT_OBJECT_CONTRACT_ADAPTER_SPECIALIST, {
     specializationRequest: buildContractAdapterSpecializationRequest(),
@@ -710,12 +753,13 @@ function buildSvgExampleRequest() {
 if (!MODULE_CONTRACT || MODULE_CONTRACT.id !== 'code-specialist-capability-builder-v1') fail('module contract identity mismatch');
 
 module.exports = {
-  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, PYTHON_TARGET_RECIPE, JAVASCRIPT_TARGET_RECIPE, CONTRACT_ADAPTER_TARGET_RECIPE, CSS_TARGET_RECIPE, SVG_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
+  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, PYTHON_TARGET_RECIPE, JAVASCRIPT_TARGET_RECIPE, RECORD_QUERY_TARGET_RECIPE, CONTRACT_ADAPTER_TARGET_RECIPE, CSS_TARGET_RECIPE, SVG_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
   canonicalJson, clone, same, sha256Value, jsonBytes, isSafeCandidatePath, validateCandidatePaths,
   sealRequest, normalizeRequest, generate, verify, buildExampleIntentRequest, buildExampleRequest,
   buildMarkupExampleIntentRequest, buildMarkupExampleRequest,
   buildPythonSpecializationRequest, buildPythonExampleIntentRequest, buildPythonExampleRequest,
   buildJavascriptSpecializationRequest, buildJavascriptExampleIntentRequest, buildJavascriptExampleRequest,
+  buildRecordQuerySpecializationRequest, buildRecordQueryExampleIntentRequest, buildRecordQueryExampleRequest,
   buildContractAdapterSpecializationRequest, buildContractAdapterExampleIntentRequest, buildContractAdapterExampleRequest,
   buildCssSpecializationRequest, buildCssExampleIntentRequest, buildCssExampleRequest,
   buildSvgSpecializationRequest, buildSvgExampleIntentRequest, buildSvgExampleRequest
