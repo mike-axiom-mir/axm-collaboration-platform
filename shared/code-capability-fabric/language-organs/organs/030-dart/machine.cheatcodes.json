@@ -1,0 +1,2325 @@
+{
+  "schema": "axm.code.language-machine-cheatcode-bank.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "languageId": "dart",
+  "organId": "code.organ.dart.v1",
+  "organDigest": "5b70b15a87cafb2001f67087ade132d01d48fb28b7ef9e3a866089f3473c293e",
+  "grammarProfileDigest": "ec42e0bfa0f8814b7c8a9a20d975e00d3cbe9fb67c2d59752bd22516b1c94658",
+  "eyeId": "code.eye.dart.v1",
+  "eyeDigest": "af90d34ce04a4fb1d7c3e6dba45166f4fb80bad46dbaff3d4b6b6257c4bd4cf2",
+  "ruleCount": 50,
+  "phaseCount": 10,
+  "rules": [
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.parse.01",
+      "rank": 1,
+      "phase": "parse",
+      "opcode": "BIND_DIALECT",
+      "nativeBindings": [
+        "Dart",
+        "library"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_OR_NATIVE",
+        "nativeSignals": [
+          "Dart",
+          "Dart",
+          "Dart"
+        ],
+        "factCodes": [
+          "DIALECT_UNBOUND"
+        ],
+        "reads": [
+          "declaredDialect",
+          "activeLanguages"
+        ],
+        "falsifiers": [
+          "DECLARED_DIALECT_NOT_IN_PROFILE"
+        ]
+      },
+      "reads": [
+        "declaredDialect",
+        "activeLanguages"
+      ],
+      "emits": "DIALECT_BINDING_FACT",
+      "falsifiers": [
+        "DECLARED_DIALECT_NOT_IN_PROFILE"
+      ],
+      "invalidates": [
+        "parse-tree",
+        "symbol-index",
+        "type-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "CACHE_OR_HOLD",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.parse.02",
+      "rank": 2,
+      "phase": "parse",
+      "opcode": "HOLD_ON_PARSE_ERROR",
+      "nativeBindings": [
+        "library",
+        "class"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "PARSE_ERROR",
+          "ERROR_NODE"
+        ],
+        "reads": [
+          "factCodes"
+        ],
+        "falsifiers": [
+          "CLEAN_REPARSE"
+        ]
+      },
+      "reads": [
+        "factCodes"
+      ],
+      "emits": "PARSE_BLOCKER",
+      "falsifiers": [
+        "CLEAN_REPARSE"
+      ],
+      "invalidates": [
+        "all-derived-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "HOLD",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.parse.03",
+      "rank": 3,
+      "phase": "parse",
+      "opcode": "CHECK_NATIVE_UNIT",
+      "nativeBindings": [
+        "library"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_OR_NATIVE",
+        "nativeSignals": [
+          "library"
+        ],
+        "factCodes": [
+          "UNIT_BOUNDARY_CHANGED"
+        ],
+        "reads": [
+          "changedUnits",
+          "factCodes"
+        ],
+        "falsifiers": [
+          "UNIT_BOUNDARY_UNCHANGED"
+        ]
+      },
+      "reads": [
+        "changedUnits",
+        "factCodes"
+      ],
+      "emits": "UNIT_BOUNDARY_FACT",
+      "falsifiers": [
+        "UNIT_BOUNDARY_UNCHANGED"
+      ],
+      "invalidates": [
+        "dependency-facts",
+        "public-surface-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "CACHE_FACT",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.parse.04",
+      "rank": 4,
+      "phase": "parse",
+      "opcode": "INDEX_NATIVE_CONSTRUCTS",
+      "nativeBindings": [
+        "class",
+        "mixin",
+        "extension",
+        "enum",
+        "function"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_OR_NATIVE",
+        "nativeSignals": [
+          "class",
+          "mixin",
+          "extension",
+          "enum",
+          "function"
+        ],
+        "factCodes": [
+          "CONSTRUCT_CHANGED"
+        ],
+        "reads": [
+          "presentConstructs",
+          "changedConstructs"
+        ],
+        "falsifiers": [
+          "CONSTRUCT_NOT_PRESENT"
+        ]
+      },
+      "reads": [
+        "presentConstructs",
+        "changedConstructs"
+      ],
+      "emits": "STRUCTURAL_CHUNK_FACT",
+      "falsifiers": [
+        "CONSTRUCT_NOT_PRESENT"
+      ],
+      "invalidates": [
+        "symbol-index"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "CACHE_FACT",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.parse.05",
+      "rank": 5,
+      "phase": "parse",
+      "opcode": "REFUSE_UNKNOWN_GRAMMAR_NODE",
+      "nativeBindings": [
+        "Future",
+        "Stream",
+        "async"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "UNKNOWN_GRAMMAR_NODE",
+          "RECOVERY_NODE"
+        ],
+        "reads": [
+          "factCodes"
+        ],
+        "falsifiers": [
+          "KNOWN_NODE_AFTER_REPARSE"
+        ]
+      },
+      "reads": [
+        "factCodes"
+      ],
+      "emits": "GRAMMAR_UNKNOWN_HOLD",
+      "falsifiers": [
+        "KNOWN_NODE_AFTER_REPARSE"
+      ],
+      "invalidates": [
+        "all-derived-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "HOLD",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.symbols.01",
+      "rank": 6,
+      "phase": "symbols",
+      "opcode": "BUILD_DECLARATION_INVENTORY",
+      "nativeBindings": [
+        "class",
+        "mixin",
+        "extension",
+        "enum"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_ALWAYS",
+        "reads": [
+          "presentConstructs"
+        ],
+        "falsifiers": [
+          "DECLARATION_SET_EMPTY"
+        ]
+      },
+      "reads": [
+        "presentConstructs"
+      ],
+      "emits": "SYMBOL_INVENTORY",
+      "falsifiers": [
+        "DECLARATION_SET_EMPTY"
+      ],
+      "invalidates": [
+        "symbol-index"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "CACHE_FACT",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.symbols.02",
+      "rank": 7,
+      "phase": "symbols",
+      "opcode": "TRACE_UNRESOLVED_SYMBOL",
+      "nativeBindings": [
+        "lexical/module/type",
+        "mixin"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "UNRESOLVED_SYMBOL",
+          "UNBOUND_REFERENCE"
+        ],
+        "reads": [
+          "factCodes",
+          "symbolSignals"
+        ],
+        "falsifiers": [
+          "REFERENCE_RESOLVED"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "symbolSignals"
+      ],
+      "emits": "UNRESOLVED_SYMBOL_EDGE",
+      "falsifiers": [
+        "REFERENCE_RESOLVED"
+      ],
+      "invalidates": [
+        "dependency-facts",
+        "impact-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "REQUEST_EVIDENCE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.symbols.03",
+      "rank": 8,
+      "phase": "symbols",
+      "opcode": "SCOPE_CROSSING_REVIEW",
+      "nativeBindings": [
+        "lexical/module/type",
+        "extension"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "SCOPE_BOUNDARY_CHANGED",
+          "CAPTURE_SET_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "scopeSignals"
+        ],
+        "falsifiers": [
+          "SCOPE_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "scopeSignals"
+      ],
+      "emits": "SCOPE_IMPACT_FACT",
+      "falsifiers": [
+        "SCOPE_EQUIVALENT"
+      ],
+      "invalidates": [
+        "symbol-index",
+        "type-facts",
+        "effect-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RECHECK_NATIVE_SCOPE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.symbols.04",
+      "rank": 9,
+      "phase": "symbols",
+      "opcode": "PUBLIC_SURFACE_DELTA",
+      "nativeBindings": [
+        "library",
+        "enum"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "PUBLIC_SURFACE_CHANGED",
+          "EXPORT_CHANGED",
+          "API_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "publicSurfaceSignals"
+        ],
+        "falsifiers": [
+          "PUBLIC_SURFACE_STABLE"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "publicSurfaceSignals"
+      ],
+      "emits": "PUBLIC_SURFACE_DELTA",
+      "falsifiers": [
+        "PUBLIC_SURFACE_STABLE"
+      ],
+      "invalidates": [
+        "dependency-facts",
+        "compatibility-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RUN_VERIFIER_IF_AUTHORIZED",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.symbols.05",
+      "rank": 10,
+      "phase": "symbols",
+      "opcode": "AMBIGUOUS_BINDING_REVIEW",
+      "nativeBindings": [
+        "lexical/module/type",
+        "function"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "SHADOWING",
+          "AMBIGUOUS_BINDING",
+          "OVERLOAD_AMBIGUITY"
+        ],
+        "reads": [
+          "factCodes",
+          "symbolSignals"
+        ],
+        "falsifiers": [
+          "BINDING_UNIQUE"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "symbolSignals"
+      ],
+      "emits": "BINDING_AMBIGUITY",
+      "falsifiers": [
+        "BINDING_UNIQUE"
+      ],
+      "invalidates": [
+        "symbol-index",
+        "type-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "REQUEST_EVIDENCE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.dependencies.01",
+      "rank": 11,
+      "phase": "dependencies",
+      "opcode": "INDEX_NATIVE_DEPENDENCY_FORMS",
+      "nativeBindings": [
+        "import",
+        "export",
+        "part"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_OR_NATIVE",
+        "nativeSignals": [
+          "import",
+          "export",
+          "part",
+          "import"
+        ],
+        "factCodes": [
+          "DEPENDENCY_CHANGED"
+        ],
+        "reads": [
+          "dependencyForms",
+          "dependencySignals"
+        ],
+        "falsifiers": [
+          "DEPENDENCY_SET_STABLE"
+        ]
+      },
+      "reads": [
+        "dependencyForms",
+        "dependencySignals"
+      ],
+      "emits": "DEPENDENCY_EDGE_FACT",
+      "falsifiers": [
+        "DEPENDENCY_SET_STABLE"
+      ],
+      "invalidates": [
+        "dependency-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "CACHE_FACT",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.dependencies.02",
+      "rank": 12,
+      "phase": "dependencies",
+      "opcode": "TRACE_UNRESOLVED_DEPENDENCY",
+      "nativeBindings": [
+        "import",
+        "library"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "UNRESOLVED_DEPENDENCY",
+          "MISSING_MODULE",
+          "MISSING_SCHEMA_REF"
+        ],
+        "reads": [
+          "factCodes",
+          "dependencySignals"
+        ],
+        "falsifiers": [
+          "DEPENDENCY_RESOLVED"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "dependencySignals"
+      ],
+      "emits": "DEPENDENCY_GAP",
+      "falsifiers": [
+        "DEPENDENCY_RESOLVED"
+      ],
+      "invalidates": [
+        "build-facts",
+        "impact-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "REQUEST_EVIDENCE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.dependencies.03",
+      "rank": 13,
+      "phase": "dependencies",
+      "opcode": "CYCLE_SUSPICION",
+      "nativeBindings": [
+        "export",
+        "library"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "DEPENDENCY_CYCLE",
+          "RECURSIVE_REFERENCE"
+        ],
+        "reads": [
+          "factCodes",
+          "dependencySignals"
+        ],
+        "falsifiers": [
+          "ACYCLIC_GRAPH"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "dependencySignals"
+      ],
+      "emits": "CYCLE_CANDIDATE",
+      "falsifiers": [
+        "ACYCLIC_GRAPH"
+      ],
+      "invalidates": [
+        "dependency-order-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RUN_GRAPH_CHECK_IF_AUTHORIZED",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.dependencies.04",
+      "rank": 14,
+      "phase": "dependencies",
+      "opcode": "TRANSITIVE_IMPACT",
+      "nativeBindings": [
+        "part",
+        "library"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "TRANSITIVE_DEPENDENT_CHANGED",
+          "CALLER_SET_CHANGED",
+          "CONSUMER_SET_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "dependencySignals"
+        ],
+        "falsifiers": [
+          "NO_TRANSITIVE_CONSUMERS"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "dependencySignals"
+      ],
+      "emits": "TRANSITIVE_IMPACT_FACT",
+      "falsifiers": [
+        "NO_TRANSITIVE_CONSUMERS"
+      ],
+      "invalidates": [
+        "test-selection-facts",
+        "compatibility-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "EXPAND_AFFECTED_TESTS",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.dependencies.05",
+      "rank": 15,
+      "phase": "dependencies",
+      "opcode": "GENERATED_OR_EXTERNAL_BOUNDARY",
+      "nativeBindings": [
+        "import",
+        "runtime plus foreign/system interfaces"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "GENERATED_SOURCE",
+          "EXTERNAL_CONSUMER",
+          "FOREIGN_INTERFACE"
+        ],
+        "reads": [
+          "factCodes",
+          "dependencySignals"
+        ],
+        "falsifiers": [
+          "BOUNDARY_NOT_PRESENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "dependencySignals"
+      ],
+      "emits": "BOUNDARY_PROVENANCE_FACT",
+      "falsifiers": [
+        "BOUNDARY_NOT_PRESENT"
+      ],
+      "invalidates": [
+        "rewrite-safety-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "HOLD_CROSS_BOUNDARY_REWRITE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.types-state.01",
+      "rank": 16,
+      "phase": "types-state",
+      "opcode": "TYPE_MODEL_BOUNDARY",
+      "nativeBindings": [
+        "compile-time static",
+        "Future"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "TYPE_CHANGED",
+          "SCHEMA_CHANGED",
+          "REPRESENTATION_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "typeSignals"
+        ],
+        "falsifiers": [
+          "TYPE_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "typeSignals"
+      ],
+      "emits": "TYPE_MODEL_DELTA",
+      "falsifiers": [
+        "TYPE_EQUIVALENT"
+      ],
+      "invalidates": [
+        "type-facts",
+        "compatibility-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RUN_TYPE_VERIFIER_IF_AUTHORIZED",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.types-state.02",
+      "rank": 17,
+      "phase": "types-state",
+      "opcode": "MUTATION_MODEL_BOUNDARY",
+      "nativeBindings": [
+        "language-defined mutable state",
+        "Stream"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "STATE_WRITE_CHANGED",
+          "MUTABILITY_CHANGED",
+          "STORAGE_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "stateSignals"
+        ],
+        "falsifiers": [
+          "STATE_TRANSITION_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "stateSignals"
+      ],
+      "emits": "STATE_MODEL_DELTA",
+      "falsifiers": [
+        "STATE_TRANSITION_EQUIVALENT"
+      ],
+      "invalidates": [
+        "effect-facts",
+        "alias-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RECOMPUTE_STATE_FACTS",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.types-state.03",
+      "rank": 18,
+      "phase": "types-state",
+      "opcode": "ABSENCE_SENTINEL_SEMANTICS",
+      "nativeBindings": [
+        "compile-time static",
+        "late init"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "NULL_SEMANTICS",
+          "NIL_SEMANTICS",
+          "BLANK_SEMANTICS",
+          "NA_SEMANTICS",
+          "OPTIONALITY_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "typeSignals"
+        ],
+        "falsifiers": [
+          "ABSENCE_BEHAVIOR_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "typeSignals"
+      ],
+      "emits": "ABSENCE_SEMANTICS_FACT",
+      "falsifiers": [
+        "ABSENCE_BEHAVIOR_EQUIVALENT"
+      ],
+      "invalidates": [
+        "branch-facts",
+        "query-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "GENERATE_NEGATIVE_FIXTURE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.types-state.04",
+      "rank": 19,
+      "phase": "types-state",
+      "opcode": "WIDENING_OR_COERCION",
+      "nativeBindings": [
+        "compile-time static",
+        "null-safety"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "IMPLICIT_CAST",
+          "TYPE_WIDENING",
+          "COERCION_CHANGED",
+          "PRECISION_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "typeSignals"
+        ],
+        "falsifiers": [
+          "NO_COERCION_DELTA"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "typeSignals"
+      ],
+      "emits": "COERCION_RISK",
+      "falsifiers": [
+        "NO_COERCION_DELTA"
+      ],
+      "invalidates": [
+        "type-facts",
+        "value-range-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RUN_NATIVE_TYPE_CHECK",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.types-state.05",
+      "rank": 20,
+      "phase": "types-state",
+      "opcode": "ALIAS_OWNERSHIP_RELATION",
+      "nativeBindings": [
+        "language-defined mutable state",
+        "isolate boundaries"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "ALIAS_SET_CHANGED",
+          "OWNERSHIP_CHANGED",
+          "LIFETIME_CHANGED",
+          "REFERENCE_IDENTITY_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "stateSignals"
+        ],
+        "falsifiers": [
+          "ALIAS_RELATION_STABLE"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "stateSignals"
+      ],
+      "emits": "ALIAS_OWNERSHIP_FACT",
+      "falsifiers": [
+        "ALIAS_RELATION_STABLE"
+      ],
+      "invalidates": [
+        "effect-facts",
+        "lifetime-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RECHECK_STATE_INVARIANTS",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.control-effects.01",
+      "rank": 21,
+      "phase": "control-effects",
+      "opcode": "CONTROL_STRUCTURE_DELTA",
+      "nativeBindings": [
+        "branch, loop, call, exception/result",
+        "async"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "CONTROL_FLOW_CHANGED",
+          "BRANCH_CHANGED",
+          "LOOP_CHANGED",
+          "PATTERN_FLOW_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "controlSignals"
+        ],
+        "falsifiers": [
+          "CONTROL_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "controlSignals"
+      ],
+      "emits": "CONTROL_FLOW_DELTA",
+      "falsifiers": [
+        "CONTROL_EQUIVALENT"
+      ],
+      "invalidates": [
+        "reachability-facts",
+        "path-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RECOMPUTE_CONTROL_FACTS",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.control-effects.02",
+      "rank": 22,
+      "phase": "control-effects",
+      "opcode": "EFFECT_BOUNDARY_DELTA",
+      "nativeBindings": [
+        "runtime plus foreign/system interfaces",
+        "generated code"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "EFFECT_CHANGED",
+          "IO_BOUNDARY_CHANGED",
+          "FOREIGN_EFFECT_CHANGED",
+          "QUERY_EFFECT_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "effectSignals"
+        ],
+        "falsifiers": [
+          "EFFECT_SET_STABLE"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "effectSignals"
+      ],
+      "emits": "EFFECT_DELTA",
+      "falsifiers": [
+        "EFFECT_SET_STABLE"
+      ],
+      "invalidates": [
+        "effect-facts",
+        "ordering-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "EXPAND_EFFECT_VERIFICATION",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.control-effects.03",
+      "rank": 23,
+      "phase": "control-effects",
+      "opcode": "CONCURRENCY_TRANSACTION_BOUNDARY",
+      "nativeBindings": [
+        "branch, loop, call, exception/result",
+        "runtime plus foreign/system interfaces"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "ASYNC_BOUNDARY_CHANGED",
+          "CONCURRENCY_CHANGED",
+          "TRANSACTION_CHANGED",
+          "CLOCK_DOMAIN_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "controlSignals",
+          "effectSignals"
+        ],
+        "falsifiers": [
+          "CONCURRENCY_OR_TRANSACTION_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "controlSignals",
+        "effectSignals"
+      ],
+      "emits": "CONCURRENCY_TRANSACTION_RISK",
+      "falsifiers": [
+        "CONCURRENCY_OR_TRANSACTION_EQUIVALENT"
+      ],
+      "invalidates": [
+        "ordering-facts",
+        "race-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RUN_CONCURRENCY_OR_TRANSACTION_CHECK",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.control-effects.04",
+      "rank": 24,
+      "phase": "control-effects",
+      "opcode": "ERROR_RESULT_PATH",
+      "nativeBindings": [
+        "branch, loop, call, exception/result",
+        "extension resolution"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "ERROR_PATH_CHANGED",
+          "EXCEPTION_CHANGED",
+          "REVERT_CHANGED",
+          "RESULT_PATH_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "controlSignals"
+        ],
+        "falsifiers": [
+          "ERROR_BEHAVIOR_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "controlSignals"
+      ],
+      "emits": "ERROR_PATH_DELTA",
+      "falsifiers": [
+        "ERROR_BEHAVIOR_EQUIVALENT"
+      ],
+      "invalidates": [
+        "path-facts",
+        "cleanup-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "GENERATE_FAILURE_FIXTURE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.control-effects.05",
+      "rank": 25,
+      "phase": "control-effects",
+      "opcode": "ORDER_LIFECYCLE_EDGE",
+      "nativeBindings": [
+        "runtime plus foreign/system interfaces",
+        "library"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "ORDERING_CHANGED",
+          "LIFECYCLE_CHANGED",
+          "INITIALIZATION_CHANGED",
+          "TEARDOWN_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "effectSignals"
+        ],
+        "falsifiers": [
+          "ORDERING_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "effectSignals"
+      ],
+      "emits": "ORDERING_DELTA",
+      "falsifiers": [
+        "ORDERING_EQUIVALENT"
+      ],
+      "invalidates": [
+        "lifecycle-facts",
+        "cache-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RECHECK_ORDER_SENSITIVE_FACTS",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.rewrite-safety.01",
+      "rank": 26,
+      "phase": "rewrite-safety",
+      "opcode": "SEMANTIC_HAZARD_GUARD",
+      "nativeBindings": [
+        "late init"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_OR_NATIVE",
+        "nativeSignals": [
+          "late init"
+        ],
+        "factCodes": [
+          "HIGH_RISK_TRANSFORM",
+          "SEMANTIC_HAZARD"
+        ],
+        "reads": [
+          "semanticSignals",
+          "changedConstructs",
+          "factCodes"
+        ],
+        "falsifiers": [
+          "HAZARD_NOT_RELEVANT:late init"
+        ]
+      },
+      "reads": [
+        "semanticSignals",
+        "changedConstructs",
+        "factCodes"
+      ],
+      "emits": "REWRITE_HAZARD",
+      "falsifiers": [
+        "HAZARD_NOT_RELEVANT:late init"
+      ],
+      "invalidates": [
+        "rewrite-safety-facts",
+        "semantic-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "HOLD_OR_PROVE_EQUIVALENCE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.rewrite-safety.02",
+      "rank": 27,
+      "phase": "rewrite-safety",
+      "opcode": "SEMANTIC_HAZARD_GUARD",
+      "nativeBindings": [
+        "null-safety"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_OR_NATIVE",
+        "nativeSignals": [
+          "null-safety"
+        ],
+        "factCodes": [
+          "HIGH_RISK_TRANSFORM",
+          "SEMANTIC_HAZARD"
+        ],
+        "reads": [
+          "semanticSignals",
+          "changedConstructs",
+          "factCodes"
+        ],
+        "falsifiers": [
+          "HAZARD_NOT_RELEVANT:null-safety"
+        ]
+      },
+      "reads": [
+        "semanticSignals",
+        "changedConstructs",
+        "factCodes"
+      ],
+      "emits": "REWRITE_HAZARD",
+      "falsifiers": [
+        "HAZARD_NOT_RELEVANT:null-safety"
+      ],
+      "invalidates": [
+        "rewrite-safety-facts",
+        "semantic-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "HOLD_OR_PROVE_EQUIVALENCE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.rewrite-safety.03",
+      "rank": 28,
+      "phase": "rewrite-safety",
+      "opcode": "SEMANTIC_HAZARD_GUARD",
+      "nativeBindings": [
+        "isolate boundaries"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_OR_NATIVE",
+        "nativeSignals": [
+          "isolate boundaries"
+        ],
+        "factCodes": [
+          "HIGH_RISK_TRANSFORM",
+          "SEMANTIC_HAZARD"
+        ],
+        "reads": [
+          "semanticSignals",
+          "changedConstructs",
+          "factCodes"
+        ],
+        "falsifiers": [
+          "HAZARD_NOT_RELEVANT:isolate boundaries"
+        ]
+      },
+      "reads": [
+        "semanticSignals",
+        "changedConstructs",
+        "factCodes"
+      ],
+      "emits": "REWRITE_HAZARD",
+      "falsifiers": [
+        "HAZARD_NOT_RELEVANT:isolate boundaries"
+      ],
+      "invalidates": [
+        "rewrite-safety-facts",
+        "semantic-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "HOLD_OR_PROVE_EQUIVALENCE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.rewrite-safety.04",
+      "rank": 29,
+      "phase": "rewrite-safety",
+      "opcode": "SEMANTIC_HAZARD_GUARD",
+      "nativeBindings": [
+        "generated code"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_OR_NATIVE",
+        "nativeSignals": [
+          "generated code"
+        ],
+        "factCodes": [
+          "HIGH_RISK_TRANSFORM",
+          "SEMANTIC_HAZARD"
+        ],
+        "reads": [
+          "semanticSignals",
+          "changedConstructs",
+          "factCodes"
+        ],
+        "falsifiers": [
+          "HAZARD_NOT_RELEVANT:generated code"
+        ]
+      },
+      "reads": [
+        "semanticSignals",
+        "changedConstructs",
+        "factCodes"
+      ],
+      "emits": "REWRITE_HAZARD",
+      "falsifiers": [
+        "HAZARD_NOT_RELEVANT:generated code"
+      ],
+      "invalidates": [
+        "rewrite-safety-facts",
+        "semantic-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "HOLD_OR_PROVE_EQUIVALENCE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.rewrite-safety.05",
+      "rank": 30,
+      "phase": "rewrite-safety",
+      "opcode": "SEMANTIC_HAZARD_GUARD",
+      "nativeBindings": [
+        "extension resolution"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_OR_NATIVE",
+        "nativeSignals": [
+          "extension resolution"
+        ],
+        "factCodes": [
+          "HIGH_RISK_TRANSFORM",
+          "SEMANTIC_HAZARD"
+        ],
+        "reads": [
+          "semanticSignals",
+          "changedConstructs",
+          "factCodes"
+        ],
+        "falsifiers": [
+          "HAZARD_NOT_RELEVANT:extension resolution"
+        ]
+      },
+      "reads": [
+        "semanticSignals",
+        "changedConstructs",
+        "factCodes"
+      ],
+      "emits": "REWRITE_HAZARD",
+      "falsifiers": [
+        "HAZARD_NOT_RELEVANT:extension resolution"
+      ],
+      "invalidates": [
+        "rewrite-safety-facts",
+        "semantic-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "HOLD_OR_PROVE_EQUIVALENCE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.verification.01",
+      "rank": 31,
+      "phase": "verification",
+      "opcode": "REQUIRE_NATIVE_VERIFIER",
+      "nativeBindings": [
+        "dart analyze"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "VERIFIER_MISSING",
+          "VERIFICATION_REQUIRED"
+        ],
+        "reads": [
+          "factCodes",
+          "verifierSignals"
+        ],
+        "falsifiers": [
+          "VERIFIER_PASS_PRESENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "verifierSignals"
+      ],
+      "emits": "VERIFICATION_GAP",
+      "falsifiers": [
+        "VERIFIER_PASS_PRESENT"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RUN_CHEAPEST_NATIVE_VERIFIER_IF_AUTHORIZED",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.verification.02",
+      "rank": 32,
+      "phase": "verification",
+      "opcode": "VERIFIER_DISAGREEMENT",
+      "nativeBindings": [
+        "compile"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "VERIFIER_DISAGREEMENT",
+          "PARSE_COMPILE_DISAGREEMENT"
+        ],
+        "reads": [
+          "factCodes",
+          "verifierSignals"
+        ],
+        "falsifiers": [
+          "VERIFIERS_AGREE"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "verifierSignals"
+      ],
+      "emits": "EVIDENCE_CONFLICT",
+      "falsifiers": [
+        "VERIFIERS_AGREE"
+      ],
+      "invalidates": [
+        "verification-summary"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "HOLD_FOR_COUNTERCHECK",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.verification.03",
+      "rank": 33,
+      "phase": "verification",
+      "opcode": "NEGATIVE_FIXTURE_REQUIRED",
+      "nativeBindings": [
+        "late init",
+        "null-safety"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "NEGATIVE_FIXTURE_MISSING",
+          "EDGE_CASE_UNTESTED"
+        ],
+        "reads": [
+          "factCodes",
+          "testSignals"
+        ],
+        "falsifiers": [
+          "NEGATIVE_FIXTURE_PASS"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "testSignals"
+      ],
+      "emits": "TEST_GAP",
+      "falsifiers": [
+        "NEGATIVE_FIXTURE_PASS"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "GENERATE_BOUNDED_NEGATIVE_FIXTURE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.verification.04",
+      "rank": 34,
+      "phase": "verification",
+      "opcode": "SYNTAX_PASS_NOT_SEMANTIC_PROOF",
+      "nativeBindings": [
+        "static app language",
+        "dart analyze"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "SYNTAX_ONLY_PASS",
+          "STRUCTURAL_ONLY_PASS"
+        ],
+        "reads": [
+          "factCodes",
+          "verifierSignals"
+        ],
+        "falsifiers": [
+          "SEMANTIC_OR_RUNTIME_EVIDENCE_PRESENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "verifierSignals"
+      ],
+      "emits": "EVIDENCE_LEVEL_WARNING",
+      "falsifiers": [
+        "SEMANTIC_OR_RUNTIME_EVIDENCE_PRESENT"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "REQUEST_STRONGER_EVIDENCE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.verification.05",
+      "rank": 35,
+      "phase": "verification",
+      "opcode": "CHEAPEST_FALSIFIER_FIRST",
+      "nativeBindings": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_ALWAYS",
+        "reads": [
+          "verifierSignals",
+          "factCodes"
+        ],
+        "falsifiers": [
+          "NO_NATIVE_VERIFIER_DECLARED"
+        ]
+      },
+      "reads": [
+        "verifierSignals",
+        "factCodes"
+      ],
+      "emits": "VERIFIER_PRIORITY_FACT",
+      "falsifiers": [
+        "NO_NATIVE_VERIFIER_DECLARED"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "CHOOSE_LOWEST_COST_FALSIFIER",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.performance-build.01",
+      "rank": 36,
+      "phase": "performance-build",
+      "opcode": "HOT_PATH_SPECIALIZATION",
+      "nativeBindings": [
+        "static app language",
+        "late init"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "HOT_PATH",
+          "PERFORMANCE_REGRESSION",
+          "LATENCY_BUDGET"
+        ],
+        "reads": [
+          "factCodes",
+          "performanceSignals"
+        ],
+        "falsifiers": [
+          "NOT_HOT_PATH"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "performanceSignals"
+      ],
+      "emits": "PERFORMANCE_ATTENTION",
+      "falsifiers": [
+        "NOT_HOT_PATH"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "MEASURE_BEFORE_TRANSFORM",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.performance-build.02",
+      "rank": 37,
+      "phase": "performance-build",
+      "opcode": "ALLOCATION_COPY_PRESSURE",
+      "nativeBindings": [
+        "compile-time static",
+        "language-defined mutable state"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "ALLOCATION_PRESSURE",
+          "COPY_PRESSURE",
+          "SERIALIZATION_PRESSURE"
+        ],
+        "reads": [
+          "factCodes",
+          "performanceSignals"
+        ],
+        "falsifiers": [
+          "NO_MEASURED_PRESSURE"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "performanceSignals"
+      ],
+      "emits": "REPRESENTATION_COST_CANDIDATE",
+      "falsifiers": [
+        "NO_MEASURED_PRESSURE"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "MEASURE_REPRESENTATION_COST",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.performance-build.03",
+      "rank": 38,
+      "phase": "performance-build",
+      "opcode": "BUILD_GRAPH_INVALIDATION",
+      "nativeBindings": [
+        "library",
+        "import"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "BUILD_GRAPH_CHANGED",
+          "CACHE_MISS_SURGE",
+          "INCREMENTAL_BUILD_REGRESSION"
+        ],
+        "reads": [
+          "factCodes",
+          "buildSignals"
+        ],
+        "falsifiers": [
+          "BUILD_GRAPH_STABLE"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "buildSignals"
+      ],
+      "emits": "BUILD_INVALIDATION_FACT",
+      "falsifiers": [
+        "BUILD_GRAPH_STABLE"
+      ],
+      "invalidates": [
+        "build-cache-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "RECOMPUTE_ONLY_INVALIDATED_ANALYSES",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.performance-build.04",
+      "rank": 39,
+      "phase": "performance-build",
+      "opcode": "ANALYSIS_CACHE_INVALIDATION",
+      "nativeBindings": [
+        "library",
+        "lexical/module/type"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "ANALYSIS_INVALIDATED",
+          "AST_CHANGED",
+          "SYMBOL_GRAPH_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "buildSignals"
+        ],
+        "falsifiers": [
+          "ANALYSIS_PRESERVED"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "buildSignals"
+      ],
+      "emits": "ANALYSIS_INVALIDATION_SET",
+      "falsifiers": [
+        "ANALYSIS_PRESERVED"
+      ],
+      "invalidates": [
+        "cached-analysis"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "DROP_ONLY_INVALID_FACTS",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.performance-build.05",
+      "rank": 40,
+      "phase": "performance-build",
+      "opcode": "LOWERING_GENERATED_OUTPUT",
+      "nativeBindings": [
+        "runtime plus foreign/system interfaces",
+        "library"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "LOWERING_CHANGED",
+          "GENERATED_OUTPUT_CHANGED",
+          "ABI_CHANGED",
+          "WIRE_FORMAT_CHANGED"
+        ],
+        "reads": [
+          "factCodes",
+          "buildSignals"
+        ],
+        "falsifiers": [
+          "OUTPUT_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "buildSignals"
+      ],
+      "emits": "LOWERING_DELTA",
+      "falsifiers": [
+        "OUTPUT_EQUIVALENT"
+      ],
+      "invalidates": [
+        "generated-output-facts",
+        "compatibility-facts"
+      ],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "VERIFY_GENERATED_BOUNDARY",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.debugging.01",
+      "rank": 41,
+      "phase": "debugging",
+      "opcode": "MINIMIZE_NATIVE_REPRO",
+      "nativeBindings": [
+        "class",
+        "mixin",
+        "library"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "BUG_REPRODUCED",
+          "FAILURE_PRESENT"
+        ],
+        "reads": [
+          "factCodes",
+          "debugSignals"
+        ],
+        "falsifiers": [
+          "FAILURE_NOT_REPRODUCED"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "debugSignals"
+      ],
+      "emits": "MINIMIZATION_PLAN",
+      "falsifiers": [
+        "FAILURE_NOT_REPRODUCED"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "DELTA_DEBUG_NATIVE_UNIT",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.debugging.02",
+      "rank": 42,
+      "phase": "debugging",
+      "opcode": "DIALECT_VERSION_DIFFERENTIAL",
+      "nativeBindings": [
+        "Dart"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "VERSION_SENSITIVE",
+          "DIALECT_SENSITIVE",
+          "REGRESSION_AFTER_UPGRADE"
+        ],
+        "reads": [
+          "factCodes",
+          "debugSignals"
+        ],
+        "falsifiers": [
+          "VERSION_INVARIANT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "debugSignals"
+      ],
+      "emits": "VERSION_DIFFERENTIAL_PLAN",
+      "falsifiers": [
+        "VERSION_INVARIANT"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "COMPARE_PINNED_DIALECTS",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.debugging.03",
+      "rank": 43,
+      "phase": "debugging",
+      "opcode": "DEPENDENCY_ISOLATION",
+      "nativeBindings": [
+        "import",
+        "export",
+        "part"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "DEPENDENCY_SUSPECT",
+          "INTEGRATION_FAILURE"
+        ],
+        "reads": [
+          "factCodes",
+          "debugSignals"
+        ],
+        "falsifiers": [
+          "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "debugSignals"
+      ],
+      "emits": "DEPENDENCY_ISOLATION_PLAN",
+      "falsifiers": [
+        "FAILURE_PERSISTS_WITH_DEPENDENCY_REMOVED"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "ISOLATE_ONE_EDGE_AT_A_TIME",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.debugging.04",
+      "rank": 44,
+      "phase": "debugging",
+      "opcode": "STATE_CONTROL_TRACE",
+      "nativeBindings": [
+        "language-defined mutable state",
+        "branch, loop, call, exception/result"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "STATE_DIVERGENCE",
+          "ORDERING_BUG",
+          "CONTROL_DIVERGENCE"
+        ],
+        "reads": [
+          "factCodes",
+          "debugSignals"
+        ],
+        "falsifiers": [
+          "TRACE_EQUIVALENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "debugSignals"
+      ],
+      "emits": "TRACE_PLAN",
+      "falsifiers": [
+        "TRACE_EQUIVALENT"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "CAPTURE_MINIMAL_STATE_CONTROL_TRACE",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.debugging.05",
+      "rank": 45,
+      "phase": "debugging",
+      "opcode": "COMPETING_HYPOTHESIS",
+      "nativeBindings": [
+        "late init",
+        "null-safety",
+        "isolate boundaries"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "HYPOTHESIS_UNCONFIRMED",
+          "MULTIPLE_CAUSES"
+        ],
+        "reads": [
+          "factCodes",
+          "debugSignals"
+        ],
+        "falsifiers": [
+          "SINGLE_CAUSE_PROVEN"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "debugSignals"
+      ],
+      "emits": "COUNTER_HYPOTHESIS_PLAN",
+      "falsifiers": [
+        "SINGLE_CAUSE_PROVEN"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "TEST_CHEAPEST_DISCRIMINATOR",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.discovery.01",
+      "rank": 46,
+      "phase": "discovery",
+      "opcode": "NATIVE_ABSTRACTION_GAP",
+      "nativeBindings": [
+        "static app language",
+        "class",
+        "mixin",
+        "extension"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "REPEATED_WORKAROUND",
+          "MISSING_NATIVE_ABSTRACTION",
+          "BOILERPLATE_CLUSTER"
+        ],
+        "reads": [
+          "factCodes",
+          "gaps",
+          "notes"
+        ],
+        "falsifiers": [
+          "NATIVE_ABSTRACTION_ALREADY_USED"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "gaps",
+        "notes"
+      ],
+      "emits": "NATIVE_CAPABILITY_GAP",
+      "falsifiers": [
+        "NATIVE_ABSTRACTION_ALREADY_USED"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "COMPARE_NATIVE_ABSTRACTION",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.discovery.02",
+      "rank": 47,
+      "phase": "discovery",
+      "opcode": "CROSS_LANGUAGE_OPPORTUNITY",
+      "nativeBindings": [
+        "Flutter",
+        "cross-platform mobile UI",
+        "single-codebase application",
+        "mobile application",
+        "cross-platform UI",
+        "device application"
+      ],
+      "trigger": {
+        "mode": "INACTIVE_NATIVE",
+        "nativeSignals": [
+          "Flutter",
+          "cross-platform mobile UI",
+          "single-codebase application",
+          "mobile application",
+          "cross-platform UI",
+          "device application"
+        ],
+        "reads": [
+          "goals",
+          "capabilities",
+          "gaps",
+          "risks",
+          "constraints",
+          "notes",
+          "activeLanguages"
+        ],
+        "falsifiers": [
+          "NO_DOMAIN_SIGNAL_MATCH"
+        ]
+      },
+      "reads": [
+        "goals",
+        "capabilities",
+        "gaps",
+        "risks",
+        "constraints",
+        "notes",
+        "activeLanguages"
+      ],
+      "emits": "CROSS_LANGUAGE_CANDIDATE",
+      "falsifiers": [
+        "NO_DOMAIN_SIGNAL_MATCH"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "DISCOVER_AND_COMPARE_ONLY",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.discovery.03",
+      "rank": 48,
+      "phase": "discovery",
+      "opcode": "WORKAROUND_PRESSURE",
+      "nativeBindings": [
+        "static app language",
+        "library"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "REPEATED_WORKAROUND",
+          "ADAPTER_CHAIN_GROWING",
+          "ESCAPE_HATCH_REPEAT"
+        ],
+        "reads": [
+          "factCodes",
+          "gaps",
+          "notes"
+        ],
+        "falsifiers": [
+          "WORKAROUND_IS_INTENTIONAL_AND_BOUNDED"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "gaps",
+        "notes"
+      ],
+      "emits": "GRAMMAR_FIT_QUESTION",
+      "falsifiers": [
+        "WORKAROUND_IS_INTENTIONAL_AND_BOUNDED"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "COMPARE_ALTERNATIVE_GRAMMAR",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.discovery.04",
+      "rank": 49,
+      "phase": "discovery",
+      "opcode": "VERIFIER_AS_CAPABILITY",
+      "nativeBindings": [
+        "dart analyze",
+        "compile",
+        "static app language"
+      ],
+      "trigger": {
+        "mode": "ACTIVE_FACT",
+        "factCodes": [
+          "VERIFIER_MISSING",
+          "UNCHECKED_INVARIANT"
+        ],
+        "reads": [
+          "factCodes",
+          "gaps",
+          "verifierSignals"
+        ],
+        "falsifiers": [
+          "EQUIVALENT_VERIFIER_PRESENT"
+        ]
+      },
+      "reads": [
+        "factCodes",
+        "gaps",
+        "verifierSignals"
+      ],
+      "emits": "VERIFIER_DISCOVERY_CANDIDATE",
+      "falsifiers": [
+        "EQUIVALENT_VERIFIER_PRESENT"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "DISCOVER_VERIFIER_WITHOUT_INSTALLING",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    },
+    {
+      "schema": "axm.code.machine-cheatcode-rule.v1",
+      "id": "code.cheat.dart.discovery.05",
+      "rank": 50,
+      "phase": "discovery",
+      "opcode": "ALTERNATIVE_BEFORE_LOCK_IN",
+      "nativeBindings": [
+        "Flutter",
+        "cross-platform mobile UI",
+        "single-codebase application",
+        "static app language"
+      ],
+      "trigger": {
+        "mode": "INACTIVE_NATIVE",
+        "nativeSignals": [
+          "Flutter",
+          "cross-platform mobile UI",
+          "single-codebase application"
+        ],
+        "reads": [
+          "goals",
+          "requirements",
+          "constraints",
+          "activeLanguages"
+        ],
+        "falsifiers": [
+          "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+        ]
+      },
+      "reads": [
+        "goals",
+        "requirements",
+        "constraints",
+        "activeLanguages"
+      ],
+      "emits": "ALTERNATIVE_COMPARISON_CANDIDATE",
+      "falsifiers": [
+        "CURRENT_GRAMMAR_EXPLICITLY_REQUIRED"
+      ],
+      "invalidates": [],
+      "verifierCandidates": [
+        "dart analyze",
+        "compile",
+        "tests"
+      ],
+      "next": "COMPARE_BEFORE_ARCHITECTURE_LOCK",
+      "mutationAuthority": false,
+      "authority": "NONE"
+    }
+  ],
+  "truth": {
+    "semanticCorrectnessClaimed": false,
+    "runtimeCorrectnessClaimed": false,
+    "automaticAction": false,
+    "authority": "NONE"
+  },
+  "authority": {
+    "workspaceRead": false,
+    "workspaceMutation": false,
+    "toolExecution": false,
+    "network": false,
+    "install": false,
+    "promotion": false,
+    "canon": false
+  },
+  "bankSha256": "8c8e199cbc4249a23f9c2d52a04afe4ccf75fb3be1250174e2ad2411cebeb193"
+}
