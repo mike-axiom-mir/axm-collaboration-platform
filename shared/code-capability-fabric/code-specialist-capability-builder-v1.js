@@ -9,7 +9,7 @@ const CapabilityFabric = require('../capability-fabric');
 const HandFoundryContract = require('../../tools/hand-specification-foundry/module.contract.json');
 const MODULE_CONTRACT = require('./module-code-specialist-capability-builder-v1.contract.json');
 
-const VERSION = '2.3.0';
+const VERSION = '2.4.0';
 const REQUEST_SCHEMA = 'axm.code-specialist-capability-build-request/v1';
 const RESULT_SCHEMA = 'axm.code-specialist-capability-candidate/v1';
 const TARGETS = BuildProfileRegistry.TARGETS;
@@ -19,6 +19,7 @@ const TARGET_RECIPE = TARGETS.ONE_EXACT_DATA_SCHEMA_SPECIALIST.recipe;
 const MARKUP_TARGET_RECIPE = TARGETS.ONE_EXACT_MARKUP_STRUCTURE_SPECIALIST.recipe;
 const PYTHON_TARGET_RECIPE = TARGETS.ONE_EXACT_PYTHON_APPLICATION_LOGIC_SPECIALIST.recipe;
 const JAVASCRIPT_TARGET_RECIPE = TARGETS.ONE_EXACT_JAVASCRIPT_APPLICATION_LOGIC_SPECIALIST.recipe;
+const CONTRACT_ADAPTER_TARGET_RECIPE = TARGETS.ONE_EXACT_JAVASCRIPT_OBJECT_CONTRACT_ADAPTER_SPECIALIST.recipe;
 const CSS_TARGET_RECIPE = TARGETS.ONE_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST.recipe;
 const SVG_TARGET_RECIPE = TARGETS.ONE_EXACT_SVG_MARKUP_STRUCTURE_SPECIALIST.recipe;
 const ROOTS = IntentAdapter.ROOTS;
@@ -37,6 +38,7 @@ const LIMITATIONS = Object.freeze([
   'JAVASCRIPT_RUNTIME_AND_EMITTED_SELFTEST_NOT_EXECUTED_BY_SPECIALIST_FABRIC',
   'BUILD_PROFILE_CATALOG_IS_BOUNDED_NOT_UNIVERSAL',
   'MEMORY_NOT_INDEPENDENTLY_ENFORCED',
+  'OBJECT_CONTRACT_ADAPTER_HOSTILE_PROXY_AND_DOMAIN_SEMANTICS_NOT_PROVEN',
   'ORGAN_INTENT_DOES_NOT_PROVE_IMPLEMENTATION_SEMANTICS',
   'PYTHON_RUNTIME_AND_EMITTED_SELFTEST_NOT_EXECUTED',
   'SPECIALIST_PROFILE_IS_ROUTING_CONTEXT_NOT_CAPABILITY_PROOF',
@@ -454,6 +456,22 @@ function buildJavascriptSpecializationRequest() {
   return Router.sealRequest(draft);
 }
 
+function buildContractAdapterSpecializationRequest() {
+  const draft = clone(Router.buildExampleRequest());
+  const observation = clone(draft.observation);
+  delete observation.observationDigest;
+  observation.id = 'example-javascript-contract-adapter-observation';
+  observation.artifacts.push({
+    id: 'javascript-contract-adapter', path: 'module/player-contract-adapter.js', sha256: Router.sha256Value('example-bytes:module/player-contract-adapter.js'), byteLength: 256,
+    declaredLanguageId: 'javascript', artifactFamilies: ['module'], responsibilities: ['application-logic'], runtimes: ['node'], frameworks: ['node'],
+    requiredPermissions: [], networkDomains: [], interfaceContracts: ['axm.example.legacy-player/v1', 'axm.example.player-summary/v1'], dependsOnArtifactIds: [], sharedSeam: false
+  });
+  draft.id = 'route-example-javascript-contract-adapter-specialist';
+  draft.observation = Router.sealObservation(observation);
+  delete draft.requestDigest;
+  return Router.sealRequest(draft);
+}
+
 function buildCssSpecializationRequest() {
   const draft = clone(Router.buildExampleRequest());
   const observation = clone(draft.observation);
@@ -614,6 +632,31 @@ function buildJavascriptExampleRequest() {
   });
 }
 
+function buildContractAdapterExampleIntentRequest() {
+  return buildTargetExampleIntentRequest(TARGETS.ONE_EXACT_JAVASCRIPT_OBJECT_CONTRACT_ADAPTER_SPECIALIST, {
+    specializationRequest: buildContractAdapterSpecializationRequest(),
+    intentRequestId: 'bind-javascript-contract-adapter-specialist-organ-intent',
+    intentName: 'Strict JavaScript Object Contract Adapter Intent',
+    intentPurpose: 'Bind one exact JavaScript application-logic lane to a reviewed closed primitive object-contract adapter intent before a separate detached candidate-generation decision.'
+  });
+}
+
+function buildContractAdapterExampleRequest() {
+  return buildTargetExampleRequest(TARGETS.ONE_EXACT_JAVASCRIPT_OBJECT_CONTRACT_ADAPTER_SPECIALIST, {
+    specializationRequest: buildContractAdapterSpecializationRequest(),
+    intentRequestId: 'bind-javascript-contract-adapter-specialist-organ-intent',
+    intentName: 'Strict JavaScript Object Contract Adapter Intent',
+    intentPurpose: 'Bind one exact JavaScript application-logic lane to a reviewed closed primitive object-contract adapter intent before a separate detached candidate-generation decision.',
+    buildRequestId: 'closed-player-contract-adapter-candidate',
+    buildPurpose: 'Generate one detached strict closed primitive object-contract adapter for the explicitly reviewed synthetic player contracts.',
+    outerRequestId: 'build-javascript-contract-adapter-specialist-candidate',
+    decisionId: 'mike-tier-1-contract-adapter-candidate-direction',
+    decisionText: 'Mike authorized continued bounded Code Capability Fabric growth: create one detached strict object-contract adapter candidate; do not execute, write, install, integrate, publish, promote, or CANON.',
+    evaluatedAt: '2026-08-24T00:00:00.000Z', expiresAt: '2026-08-25T00:00:00.000Z', nonce: 'contract-adapter-candidate-0001',
+    rootEvidencePrefix: 'contract-adapter-candidate-', rootEvidenceSubject: 'contract-adapter-specialist-candidate-v2.4'
+  });
+}
+
 function buildCssExampleIntentRequest() {
   return buildTargetExampleIntentRequest(TARGETS.ONE_EXACT_CSS_STYLE_PRESENTATION_SPECIALIST, {
     specializationRequest: buildCssSpecializationRequest(),
@@ -667,12 +710,13 @@ function buildSvgExampleRequest() {
 if (!MODULE_CONTRACT || MODULE_CONTRACT.id !== 'code-specialist-capability-builder-v1') fail('module contract identity mismatch');
 
 module.exports = {
-  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, PYTHON_TARGET_RECIPE, JAVASCRIPT_TARGET_RECIPE, CSS_TARGET_RECIPE, SVG_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
+  VERSION, REQUEST_SCHEMA, RESULT_SCHEMA, TARGET_SPECIALIST_ID, TARGET_RECIPE, MARKUP_TARGET_RECIPE, PYTHON_TARGET_RECIPE, JAVASCRIPT_TARGET_RECIPE, CONTRACT_ADAPTER_TARGET_RECIPE, CSS_TARGET_RECIPE, SVG_TARGET_RECIPE, TARGETS, BUILD_PROFILE_CATALOG, BuildProfileRegistry, ROOTS, LIMITATIONS, MODULE_CONTRACT,
   canonicalJson, clone, same, sha256Value, jsonBytes, isSafeCandidatePath, validateCandidatePaths,
   sealRequest, normalizeRequest, generate, verify, buildExampleIntentRequest, buildExampleRequest,
   buildMarkupExampleIntentRequest, buildMarkupExampleRequest,
   buildPythonSpecializationRequest, buildPythonExampleIntentRequest, buildPythonExampleRequest,
   buildJavascriptSpecializationRequest, buildJavascriptExampleIntentRequest, buildJavascriptExampleRequest,
+  buildContractAdapterSpecializationRequest, buildContractAdapterExampleIntentRequest, buildContractAdapterExampleRequest,
   buildCssSpecializationRequest, buildCssExampleIntentRequest, buildCssExampleRequest,
   buildSvgSpecializationRequest, buildSvgExampleIntentRequest, buildSvgExampleRequest
 };

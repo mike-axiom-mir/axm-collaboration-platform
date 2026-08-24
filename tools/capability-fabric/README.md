@@ -6,13 +6,14 @@ memory, and offers an explicit deterministic ZIP download. `machine.js`
 exposes the same pure operations without filesystem authority.
 
 Every recipe and candidate is explicitly typed as `HAND` or `SKILL`. Active v1
-recipes include seven reviewed executable `HAND` builders and one reviewed
+recipes include eight reviewed executable `HAND` builders and one reviewed
 host-mediated portable `SKILL` builder.
 
 Builder code is no longer selected by hard-coded branches in the Fabric core.
-A digest-bound modular registry supplies all eight active builders. The validator,
+A digest-bound modular registry supplies all nine active builders. The validator,
 semantic HTML renderer, bounded JavaScript string-record transform, bounded CSS token-stylesheet renderer, strict text-only
-SVG status-badge renderer, and bounded Python record-transform HAND are all
+SVG status-badge renderer, bounded Python record-transform HAND, and strict
+closed primitive-object contract adapter are all
 selected through exact recipe and builder digests. The generated JavaScript,
 CSS, SVG, and Python source and selftests remain inert candidate data and are not executed by
 this workbench. The
@@ -20,11 +21,13 @@ portable review SKILL was admitted through the reviewed merge gate. The
 separate Capability Recipe Admission Gate can prove exact evidence and a
 prospective catalog diff for future candidates, but cannot activate one itself.
 
-The registry also exposes one exact inactive object-contract adapter review
-candidate to Recipe Foundry. Normal Fabric builds cannot compile it. The
-candidate makes copied, renamed, defaulted, and dropped fields explicit and
-proves only structural output compatibility; source review and Mike's merge
-decision remain required before catalog activation.
+The registry retains the exact inactive v1 object-contract adapter review
+candidate for historical Recipe Foundry evidence, but normal builds compile
+only the separately hardened active v2 adapter. V2 makes copied, renamed,
+defaulted, and dropped fields explicit; rejects non-plain or non-primitive
+records; enforces property and independent byte ceilings; and proves only
+structural output compatibility. Shared use still requires Mike's merge
+decision. A v1 admission replay is a typed no-effect recipe-id collision.
 
 The v0.2 composition door deterministically connects reviewed candidates through
 exact `consumes` / `provides` identities. It refuses cycles, self-edges,

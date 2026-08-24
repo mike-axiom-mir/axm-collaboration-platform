@@ -760,6 +760,167 @@
     },
     {
       "schema": "axm.capability-recipe/v1",
+      "id": "closed-object-contract-adapter",
+      "version": "0.2.0",
+      "title": "Strict Closed Object Contract Adapter",
+      "summary": "Compile one explicit widening-only mapping between closed flat primitive object contracts with visible loss, deterministic bytes, and strict runtime refusal boundaries.",
+      "family": "contract-adapter",
+      "capabilityKind": "HAND",
+      "capabilityContract": {
+        "runtimeMode": "EXECUTABLE",
+        "entry": "capability.js",
+        "operation": "adapt",
+        "portableForm": "NONE",
+        "portablePath": null,
+        "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+        "requiredHostCapabilities": []
+      },
+      "builderId": "closed-object-contract-adapter-v2",
+      "builderDigest": "sha256:2b60372be00c2393b09a5f5d6543faf46c7a5064d6482036ecccc95e8317af23",
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "sharedUseRequires": "MIKE_TOBI_MERGE",
+        "canonAuthority": "NONE"
+      },
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "defaultVariantId": "strict-closed-default",
+        "variants": [
+          {
+            "id": "strict-closed-default",
+            "title": "Strict closed primitive mapping",
+            "parameterOverrides": {}
+          }
+        ]
+      },
+      "parameterSpec": {
+        "inputContract": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+          "maxLength": 180,
+          "description": "Exact closed source contract consumed by the adapter."
+        },
+        "outputContract": {
+          "type": "string",
+          "required": true,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{2,179}$",
+          "maxLength": 180,
+          "description": "Exact closed target contract provided by the adapter."
+        },
+        "sourceSchema": {
+          "type": "object",
+          "required": true,
+          "maxBytes": 16384,
+          "description": "Reviewed closed flat-object source schema using primitive fields only."
+        },
+        "targetSchema": {
+          "type": "object",
+          "required": true,
+          "maxBytes": 16384,
+          "description": "Reviewed closed flat-object target schema using primitive fields only."
+        },
+        "mappings": {
+          "type": "array",
+          "required": true,
+          "maxBytes": 32768,
+          "description": "Explicit one-to-one copy, rename, missing-value, and default policies."
+        },
+        "drops": {
+          "type": "array",
+          "required": true,
+          "maxBytes": 8192,
+          "description": "Every deliberately unused source property."
+        },
+        "maxProperties": {
+          "type": "integer",
+          "required": true,
+          "minimum": 1,
+          "maximum": 64,
+          "description": "Maximum properties accepted by either exact contract and at runtime."
+        },
+        "maxInputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 64,
+          "maximum": 65536,
+          "description": "Maximum deterministic JSON-equivalent source bytes before typed refusal."
+        },
+        "maxOutputBytes": {
+          "type": "integer",
+          "required": true,
+          "minimum": 64,
+          "maximum": 65536,
+          "description": "Maximum deterministic JSON-equivalent target bytes before typed refusal."
+        }
+      },
+      "exampleRequest": {
+        "id": "closed-player-contract-adapter-candidate",
+        "family": "contract-adapter",
+        "purpose": "Build one detached strict adapter from a reviewed synthetic legacy-player contract to a player-summary contract.",
+        "recipeId": "closed-object-contract-adapter",
+        "variantId": null,
+        "parameters": {
+          "inputContract": "axm.example.legacy-player/v1",
+          "outputContract": "axm.example.player-summary/v1",
+          "sourceSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["displayName", "score"],
+            "properties": {
+              "displayName": {"type": "string", "minLength": 1, "maxLength": 80},
+              "score": {"type": "integer", "minimum": 0, "maximum": 999999},
+              "category": {"type": "string", "maxLength": 32},
+              "legacyNote": {"type": "string", "maxLength": 120}
+            }
+          },
+          "targetSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "points", "label"],
+            "properties": {
+              "name": {"type": "string", "minLength": 1, "maxLength": 80},
+              "points": {"type": "number", "minimum": 0, "maximum": 999999},
+              "label": {"type": "string", "maxLength": 32}
+            }
+          },
+          "mappings": [
+            {"source": "displayName", "target": "name", "onMissing": "REFUSE", "defaultValue": null},
+            {"source": "score", "target": "points", "onMissing": "REFUSE", "defaultValue": null},
+            {"source": "category", "target": "label", "onMissing": "DEFAULT", "defaultValue": "unlabeled"}
+          ],
+          "drops": ["legacyNote"],
+          "maxProperties": 16,
+          "maxInputBytes": 2048,
+          "maxOutputBytes": 256
+        },
+        "source": {
+          "kind": "HUMAN",
+          "ref": "closed-object-adapter-v2.17"
+        }
+      },
+      "boundaries": [
+        "closed own enumerable data-property records and flat string, finite number, integer, or boolean fields only",
+        "every target field is explicitly mapped and every unused source field is explicitly dropped",
+        "copy compatibility is widening-only; defaults must satisfy the target shape; structural compatibility never proves domain meaning",
+        "accessors, symbols, custom prototypes, reserved fields, undeclared fields, malformed values, excess properties, and excess bytes are refused",
+        "pure UTF-8 and JSON-equivalent byte accounting uses no Buffer and never serializes the runtime input object",
+        "no filesystem, network, process, provider, environment, clock, randomness, dynamic code, install, integration, publication, promotion, Foundation, Atlas, or CANON authority",
+        "generated source and selftest are emitted as detached data and never executed by Capability Fabric or Code Specialist Fabric"
+      ],
+      "verifiers": [
+        "exact mapping, loss, widening, default, and totality source review",
+        "package digest and byte-identical deterministic rebuild",
+        "trusted disjoint package harness execution of the emitted selftest",
+        "independent adversarial record, accessor, symbol, prototype, property, input-byte, and output-byte fixtures",
+        "static forbidden-authority and host-dependency scan",
+        "exact Code Specialist profile, recipe, builder, consent, and candidate lineage verification"
+      ],
+      "recipeDigest": "sha256:6b324dfba5162dd6a588803d2539fa6cf16013b580569d8f99d51d5f1895eef8"
+    },
+    {
+      "schema": "axm.capability-recipe/v1",
       "id": "svg-status-badge",
       "version": "1.1.0",
       "title": "SVG Status Badge Creation Hand",
@@ -994,5 +1155,5 @@
       "recipeDigest": "sha256:e3986033316cc192e916ae90d9dababc57dda7795f1a29c996ccdebfd5494a68"
     }
   ],
-  "catalogDigest": "sha256:13a9348305afa80626e562476590c01b2d0d75600fdd8a6664da027501d6b671"
+  "catalogDigest": "sha256:d080e6b7ad16637e6019459930f0ebf6095f3dced3dfa7547781613bcbcc9b5f"
 }

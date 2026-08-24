@@ -66,8 +66,8 @@ function main(){
       packageDigests.push(candidate.package.packageDigest);
       assert.throws(function(){Cli.materialize(candidate,nurseryRoot);},function(error){return error&&error.receipt&&error.receipt.code==='OUTPUT_OVERWRITE_REFUSED';});passed+=1;process.stdout.write('PASS '+recipe.id+' refuses overwrite of exact materialization\n');
     });
-    check(new Set(packageDigests).size===8,'eight capability recipes produce distinct packages');
-    const registry=Nursery.scanSupply(nurseryRoot);check(registry.summary.total===8&&registry.summary.readyForLaterIntake===8,'Nursery independently sees all eight exact candidates ready for later intake after disjoint trusted tests');
+    check(new Set(packageDigests).size===9,'nine capability recipes produce distinct packages');
+    const registry=Nursery.scanSupply(nurseryRoot);check(registry.summary.total===9&&registry.summary.readyForLaterIntake===9,'Nursery independently sees all nine exact candidates ready for later intake after disjoint trusted tests');
     check(registry.truth.candidateCodeExecuted===false&&registry.truth.installationPerformed===false,'Nursery proves scan-only authority boundary');
 
     const tamperRecipe=catalog.recipes.find(function(row){return row.id==='pure-json-transform';}),request=Fabric.sealRequest(tamperRecipe.exampleRequest,true),candidate=Fabric.build(request,catalog).candidates[0],tampered=Fabric.clone(candidate);tampered.files['module-bundle.json']=tampered.files['module-bundle.json'].replace('pure-json-transform','changed-transform');

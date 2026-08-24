@@ -69,19 +69,19 @@ function exerciseAdapterCandidate(){
     const testReceipt=Host.runExactTest({packetRoot:materialized.directory,confirmation:Admission.TEST_CONFIRMATION});
     check(testReceipt.state==='PASS'&&testReceipt.sourceExecuted===true&&testReceipt.generatedCapabilityExecuted===true,'trusted admission host proves the exact adapter builder and generated selftest');
     const plan=Admission.buildPlan({proposal:inspected.proposal,packet:inspected.packet,catalog:Fabric.loadCatalog(),foundryVerification:inspected.verification,testReceipt:testReceipt,reviewReceipt:null,decision:null});
-    check(plan.state==='AWAITING_SOURCE_REVIEW'&&plan.action==='REVIEW_EXACT_SOURCE_AND_EVIDENCE'&&plan.checks.trustedTestVerified&&plan.checks.sourceReviewVerified===false&&Admission.verifyPlan(plan).state==='PASS','tested adapter candidate stops at the exact source-review gate');
-    check(plan.proposedRecipe&&plan.proposedRecipe.id==='closed-object-contract-adapter'&&plan.proposedRegistry.entries.some(function(row){return row.id==='closed-object-contract-adapter-v1'&&row.status===Registry.ACTIVE;})&&plan.effects.recipeActivated===false,'admission projects the adapter diff without applying or activating it');
+    check(plan.state==='HELD'&&plan.action==='NONE'&&plan.holds.length===1&&plan.holds[0].code==='RECIPE_ID_ALREADY_ACTIVE'&&plan.checks.trustedTestVerified&&Admission.verifyPlan(plan).state==='PASS','historical v1 adapter candidate is collision-held after strict v2 takes the active recipe id');
+    check(plan.proposedRecipe===null&&plan.proposedCatalog===null&&plan.proposedRegistry===null&&plan.effects.recipeActivated===false,'historical v1 replay projects no replacement catalog, registry, or activation effect');
   }finally{fs.rmSync(parent,{recursive:true,force:true});}
 }
 
 function main(){
   const inventory=Registry.inventory(),catalogBefore=Fabric.loadCatalog();
-  check(Registry.activeIds().length===8&&Registry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','registry contains eight reviewed active builders and one exact inactive adapter candidate');
+  check(Registry.activeIds().length===9&&Registry.activeIds().includes('closed-object-contract-adapter-v2')&&Registry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','registry contains the strict active v2 adapter and retains the exact inactive v1 adapter candidate');
   check(inventory.registryDigest===Registry.inventory().registryDigest,'builder registry digest is deterministic');
   REVIEWED_PILOTS.forEach(exerciseReviewedPilot);
   exerciseAdapterCandidate();
   exerciseReceiptContracts();
-  check(Fabric.canonicalJson(Fabric.loadCatalog())===Fabric.canonicalJson(catalogBefore)&&Registry.activeIds().length===8&&Registry.reviewCandidateIds().length===1,'admission replay and receipt tests perform no activation or catalog mutation');
+  check(Fabric.canonicalJson(Fabric.loadCatalog())===Fabric.canonicalJson(catalogBefore)&&Registry.activeIds().length===9&&Registry.reviewCandidateIds().length===1,'admission replay and receipt tests perform no activation or catalog mutation');
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'axm-admission-tamper-'));
   try{
     fs.cpSync(REVIEWED_PILOTS[0],temp,{recursive:true});

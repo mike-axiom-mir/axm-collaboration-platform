@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `f6a1171eecadc1df049b553896aeba04651043b1f5dd1653c4847a1af09410ce`
+Semantic graph digest: `78917672a22b45d8e5efbb93980fcf7c75f4df813f684921b9db19c938b38b05`
 
-Blocks: 304 · Capabilities: 3170 · Schemas: 923 · Unresolved edges: 2079
+Blocks: 304 · Capabilities: 3171 · Schemas: 923 · Unresolved edges: 2079
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -45,7 +45,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | browser-global-surface-observatory | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 5 | 2 | 1 selftest(s) |
 | browser-lan-hardware-qa-lab | ROUTE (INFERRED_UNCONFIRMED) | TEST | PHYSICAL_ACTUATION, WRITE_CANDIDATE | 7 | 5 | 1 selftest(s) |
 | bulk-intake-conveyor | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 7 | 4 | 1 selftest(s) |
-| capability-fabric | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 10 | 6 | 1 selftest(s) |
+| capability-fabric | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 11 | 6 | 1 selftest(s) |
 | capability-gap-workbench | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 3 | 1 selftest(s) |
 | capability-recipe-admission-gate | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | OBSERVE_LOCAL, WRITE_CANDIDATE | 6 | 5 | 1 selftest(s) |
 | capability-recipe-foundry | BRIDGE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 8 | 4 | 4 selftest(s) |
