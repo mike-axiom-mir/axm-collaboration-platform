@@ -1,0 +1,82 @@
+{
+  "schema": "axm.code.prebuild-twin-admission-contract.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "provides": [
+    "axm.code.prebuild-plan.v1",
+    "axm.code.prebuild-structural-simulation.v1",
+    "axm.code.prebuild-preview.v1",
+    "axm.code.prebuild-twin-snapshot.v1",
+    "axm.code.candidate-admission-policy.v1",
+    "axm.code.candidate-admission-report.v1"
+  ],
+  "prebuildFlow": [
+    "goal",
+    "code-route recipe",
+    "role/boundary plan IR",
+    "caller-explicit language bindings",
+    "grammar/discipline/template context",
+    "structural twin simulation",
+    "DOT/SVG preview",
+    "source proposal held until required bindings/routes resolve"
+  ],
+  "simulationBoundary": {
+    "simulatesBeforeSource": [
+      "planned roles",
+      "candidate artifacts",
+      "route/boundary classes",
+      "required versus optional components",
+      "missing language bindings",
+      "known route compatibility",
+      "verification needs",
+      "evidence/hold state"
+    ],
+    "doesNotPretendBeforeExecution": [
+      "runtime behavior",
+      "runtime performance",
+      "visual fidelity of an unimplemented UI/game",
+      "semantic correctness",
+      "absence of bugs"
+    ]
+  },
+  "admissionModes": {
+    "GUARDED": "Structural parse plus grammar-native compiler/type/validator floor. Static analysis is advisory unless the grammar exposes it as a native core validator; existing tests become required when declared present.",
+    "STRICT": "Guarded floor plus exposed static-analysis and test checks become required where available."
+  },
+  "admissionStates": {
+    "HELD_IN_QUARANTINE": "At least one required check is UNKNOWN or not applicable without stronger evidence.",
+    "REJECTED_CANDIDATE": "At least one required deterministic check failed.",
+    "ADMISSIBLE_CANDIDATE_NOT_PROMOTED": "All required checks passed; candidate may proceed to a separate review/merge/execution authority gate."
+  },
+  "principles": {
+    "unknownIsNotPass": true,
+    "planBeforeBuild": true,
+    "previewBeforeMutation": true,
+    "candidateBeforeWorkspace": true,
+    "compilerAndStaticAnalysisReduceRiskButDoNotProveCorrectness": true,
+    "admissibleIsNotPromoted": true,
+    "runtimeEvidenceRequiredForRuntimeClaims": true,
+    "roleBindingRequiresExplicitCallerOrSeparateGate": true
+  },
+  "permissions": [],
+  "refuses": [
+    "prebuild-preview-as-runtime-proof",
+    "plan-as-best-architecture-proof",
+    "automatic-language-selection-from-plan",
+    "unresolved-role-binding-as-source-generation-ready",
+    "unresolved-required-route-as-source-generation-ready",
+    "parse-pass-as-semantic-proof",
+    "compile-pass-as-runtime-proof",
+    "static-analysis-clean-as-bug-free-proof",
+    "test-pass-as-universal-correctness",
+    "unknown-required-check-as-pass",
+    "admissible-candidate-as-promoted-code",
+    "automatic-workspace-mutation",
+    "automatic-tool-execution",
+    "automatic-install",
+    "automatic-deployment",
+    "automatic-promotion",
+    "automatic-canon"
+  ],
+  "authority": "NONE"
+}
