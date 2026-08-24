@@ -1,0 +1,92 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-capability-fabric-capability-lesson-steward-v1",
+  "version": "v2.13",
+  "status": "TEST",
+  "provides": [
+    "axm.capability-lesson-candidate-request/v1",
+    "axm.capability-lesson/v1",
+    "axm.capability-library-snapshot/v1",
+    "axm.capability-lesson-evaluation-suite/v1",
+    "axm.capability-lesson-assessment/v1",
+    "axm.capability-library-release-candidate/v1",
+    "axm.capability-library-release-receipt/v1",
+    "axm.capability-lesson-steward-snapshot/v1",
+    "code.capability.lesson.propose-evaluate-release-candidate.detached/v1"
+  ],
+  "consumes": [
+    "axm.code-specialization-catalog/v1",
+    "deterministic-json-core",
+    "byte-bound-source-and-evidence-references",
+    "four-root-pass-records",
+    "declared-reuse-rights-state",
+    "fixed-regression-evidence",
+    "held-out-goal-evidence",
+    "explicit-human-direction-for-detached-candidates"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "accepts": [
+      "one exact closed capability-lesson candidate request",
+      "one immutable reference-only library snapshot",
+      "separate fixed-regression and held-out evaluation observations"
+    ],
+    "emits": [
+      "one PROPOSED privacy-safe capability lesson",
+      "one technical hold or technical-pass assessment",
+      "zero or one inactive rollback-bound detached library release candidate",
+      "one release receipt"
+    ]
+  },
+  "rootsGate": [
+    "truth",
+    "agency-non-domination",
+    "continuity",
+    "wisdom-over-speed"
+  ],
+  "boundaries": {
+    "reads": [
+      "module-local:shared/code-capability-fabric/code-specialization-catalog-v1.json"
+    ],
+    "writes": [],
+    "refuses": [
+      "raw-source-retention",
+      "raw-failed-attempt-retention",
+      "prompt-retention",
+      "stdout-retention",
+      "stderr-retention",
+      "private-content-retention",
+      "hidden-reasoning-retention",
+      "machine-path-retention",
+      "rights-authority-identity-proof-claim",
+      "reward-loop",
+      "incentive-loop",
+      "single-intelligence-score",
+      "winner-selection",
+      "provider-call",
+      "provider-code-load",
+      "workspace-read",
+      "workspace-write",
+      "network-use",
+      "child-process-spawn",
+      "candidate-execution",
+      "test-execution",
+      "running-attempt-mutation",
+      "automatic-lesson-admission",
+      "persistent-learning",
+      "model-training",
+      "physical-actuation",
+      "installation",
+      "integration",
+      "publication",
+      "promotion",
+      "canon-change"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none; emitted records remain detached data",
+    "reload": "exact deterministic rebuild from byte-bound inputs",
+    "disconnect": "no background work",
+    "cleanup": "not applicable; this pure steward writes nothing"
+  }
+}

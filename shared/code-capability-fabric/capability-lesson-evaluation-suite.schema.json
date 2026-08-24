@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.capability-lesson-evaluation-suite/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","id","suiteKind","candidateRef","preparedAt","cases","truth","authority","suiteDigest"],
+  "properties":{
+    "schema":{"const":"axm.capability-lesson-evaluation-suite/v1"},"version":{"const":"1.0.0"},"status":{"const":"OBSERVED"},
+    "id":{"$ref":"capability-lesson-common.schema.json#/$defs/id"},"suiteKind":{"enum":["FIXED_REGRESSION","HELD_OUT_GOALS"]},"candidateRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},"preparedAt":{"$ref":"capability-lesson-common.schema.json#/$defs/timestamp"},
+    "cases":{"type":"array","minItems":2,"maxItems":128,"uniqueItems":true,"items":{"$ref":"capability-lesson-common.schema.json#/$defs/evaluationCase"}},
+    "truth":{
+      "type":"object","additionalProperties":false,"required":["executionPerformedBySteward","outcomesAreSuppliedEvidence","scoreCalculated","winnerSelected","persistentLearningAdmitted"],
+      "properties":{"executionPerformedBySteward":{"const":false},"outcomesAreSuppliedEvidence":{"const":true},"scoreCalculated":{"const":false},"winnerSelected":{"const":false},"persistentLearningAdmitted":{"const":false}}
+    },
+    "authority":{"const":"NONE"},"suiteDigest":{"$ref":"capability-lesson-common.schema.json#/$defs/digest"}
+  },
+  "allOf":[{"if":{"properties":{"suiteKind":{"const":"HELD_OUT_GOALS"}}},"then":{"properties":{"cases":{"items":{"properties":{"authoredFromCandidate":{"const":false}}}}}}}]
+}

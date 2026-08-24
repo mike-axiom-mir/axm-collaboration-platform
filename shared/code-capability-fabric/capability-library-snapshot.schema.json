@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.capability-library-snapshot/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","id","libraryVersion","createdAt","lessons","truth","authority","libraryDigest"],
+  "properties":{
+    "schema":{"const":"axm.capability-library-snapshot/v1"},"version":{"const":"1.0.0"},"status":{"const":"REFERENCE_ONLY"},
+    "id":{"$ref":"capability-lesson-common.schema.json#/$defs/id","maxLength":87},"libraryVersion":{"$ref":"capability-lesson-common.schema.json#/$defs/semver"},"createdAt":{"$ref":"capability-lesson-common.schema.json#/$defs/timestamp"},
+    "lessons":{"type":"array","maxItems":256,"uniqueItems":true,"items":{"$ref":"capability-lesson-common.schema.json#/$defs/lessonSummary"}},
+    "truth":{
+      "type":"object","additionalProperties":false,"required":["immutableSnapshot","activeRuntimeLibrary","runningAttemptMutated","persistentLearningAdmitted","rollbackAvailable","installed","promoted","canonChanged"],
+      "properties":{"immutableSnapshot":{"const":true},"activeRuntimeLibrary":{"const":false},"runningAttemptMutated":{"const":false},"persistentLearningAdmitted":{"const":false},"rollbackAvailable":{"const":false},"installed":{"const":false},"promoted":{"const":false},"canonChanged":{"const":false}}
+    },
+    "authority":{"const":"NONE"},"libraryDigest":{"$ref":"capability-lesson-common.schema.json#/$defs/digest"}
+  }
+}

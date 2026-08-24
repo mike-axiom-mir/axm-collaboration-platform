@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `c73972974208ab1f7bfcb44434a7f0b90894c185fc28d5f13800ae6865e8aa9e`
+Twin digest: `5cdf40068789038034839e3d848e54e34b7367c2c7107b36d4c6c2aa052bf2ba`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -216,7 +216,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | shared/baseline-simulation-lab | ORGAN | EXPERIMENTAL | 11 | NONE | LOW | `7941a41c089dd390…` |
 | shared/city-gates | BRIDGE | EXPERIMENTAL | 5 | NETWORK_WRITE, PUBLIC_RELEASE | HIGH | `80831a1116ef8216…` |
 | shared/city-graph | ORGAN | EXPERIMENTAL | 5 | NONE | UNKNOWN | `8fdc801da1e64edd…` |
-| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 131 | NONE | LOW | `c7f0ffd4bf42e03e…` |
+| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 131 | NONE | LOW | `864ae0d7b50afe6f…` |
 | shared/compute-substrate-lab | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `65884a71a64101f4…` |
 | shared/deterministic-animation-fabric | BRICK | EXPERIMENTAL | 12 | NONE | LOW | `d03680c39d4e474d…` |
 | shared/deterministic-audio-fabric | BRICK | EXPERIMENTAL | 5 | NONE | LOW | `c4bbf8ea631be508…` |

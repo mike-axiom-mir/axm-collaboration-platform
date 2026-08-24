@@ -1,0 +1,22 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.capability-library-release-receipt/v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","status","id","assessmentRef","lessonRef","parentLibraryRef","releaseCandidateRef","technicalHolds","nextGate","truth","authority","receiptDigest"],
+  "properties":{
+    "schema":{"const":"axm.capability-library-release-receipt/v1"},"version":{"const":"1.0.0"},"status":{"enum":["RELEASE_CANDIDATE_READY_FOR_TIER_3_DECISION","RELEASE_HELD"]},"id":{"$ref":"capability-lesson-common.schema.json#/$defs/id"},
+    "assessmentRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},"lessonRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},"parentLibraryRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},"releaseCandidateRef":{"$ref":"capability-lesson-common.schema.json#/$defs/nullableByteReference"},
+    "technicalHolds":{"type":"array","maxItems":32,"uniqueItems":true,"items":{"$ref":"capability-lesson-common.schema.json#/$defs/code"}},
+    "nextGate":{"enum":["REPAIR_EVIDENCE_OR_LESSON_AND_REASSESS","VERIFY_RIGHTS_AUTHORITY_THEN_AUTHENTICATED_TIER_3_HUMAN_DECISION_AND_SEPARATE_HOST_ADMISSION"]},
+    "truth":{
+      "type":"object","additionalProperties":false,
+      "required":["releaseCandidateCreated","currentLibraryMutated","authenticatedTier3DecisionVerified","persistentLearningAdmitted","runningAttemptMutated","installed","integrated","published","promoted","canonChanged","mikeFinalMergeGatePreserved"],
+      "properties":{"releaseCandidateCreated":{"type":"boolean"},"currentLibraryMutated":{"const":false},"authenticatedTier3DecisionVerified":{"const":false},"persistentLearningAdmitted":{"const":false},"runningAttemptMutated":{"const":false},"installed":{"const":false},"integrated":{"const":false},"published":{"const":false},"promoted":{"const":false},"canonChanged":{"const":false},"mikeFinalMergeGatePreserved":{"const":true}}
+    },
+    "authority":{"const":"NONE"},"receiptDigest":{"$ref":"capability-lesson-common.schema.json#/$defs/digest"}
+  },
+  "oneOf":[
+    {"properties":{"status":{"const":"RELEASE_HELD"},"releaseCandidateRef":{"type":"null"},"technicalHolds":{"minItems":1},"truth":{"properties":{"releaseCandidateCreated":{"const":false}}}}},
+    {"properties":{"status":{"const":"RELEASE_CANDIDATE_READY_FOR_TIER_3_DECISION"},"releaseCandidateRef":{"$ref":"capability-lesson-common.schema.json#/$defs/byteReference"},"technicalHolds":{"maxItems":0},"truth":{"properties":{"releaseCandidateCreated":{"const":true}}}}}
+  ]
+}
