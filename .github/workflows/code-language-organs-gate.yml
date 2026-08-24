@@ -1,4 +1,4 @@
-# permanent read-only gate; specialist-eye materialization authority has been removed
+# permanent read-only gate; specialist-eye and machine-cheatcode materialization authority has been removed
 name: AXM Code Language Organs Gate
 
 on:
@@ -52,6 +52,12 @@ jobs:
         run: python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --check
       - name: Verify human-developer lens, 102 specialist eyes and code-native discovery seam
         run: node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
+      - name: Refuse generated machine-cheatcode drift
+        run: node shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js --check
+      - name: Verify 102 x 50 machine-native cheatcode banks
+        run: node shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js
+      - name: Verify bounded inter-cheatcode influence mesh
+        run: node shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js
       - name: Run core organ contract test
         run: node shared/code-capability-fabric/language-organs/selftest.js
       - name: Run adversarial routing and snapshot test
