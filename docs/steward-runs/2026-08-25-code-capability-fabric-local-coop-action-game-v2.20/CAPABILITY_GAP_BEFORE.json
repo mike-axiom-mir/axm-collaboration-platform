@@ -1,0 +1,132 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "deterministic-local-coop-action-game-rung",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "game.candidate.generate.deterministic.multi-file/v1",
+        "game.runtime.offline-session-only/v1",
+        "game.preview.detached-sandbox/v1",
+        "authority.detached-zero/v1"
+      ],
+      "degraded": [
+        "game.runtime.local-two-player-action/v1"
+      ],
+      "unknown": [],
+      "missing": [
+        "game.coop.shared-outcome-and-revive/v1",
+        "game.input.two-keyboard-seats/v1",
+        "game.verify.deterministic-two-seat-simulation/v1",
+        "game.verify.live-two-seat-journey/v1"
+      ],
+      "declaredConstraints": {
+        "game.candidate.generate.deterministic.multi-file/v1": [
+          "The TEST-labelled deterministic game candidate generator emits one byte-bound 11-file static web-game packet, but its only admitted recipe is the single-player Four Roots grid game."
+        ],
+        "game.runtime.local-two-player-action/v1": [
+          "Workshop game examples demonstrate same-device co-op, but no exact deterministic Fabric recipe emits a two-player action candidate."
+        ],
+        "game.coop.shared-outcome-and-revive/v1": [
+          "The current generated candidate has one player and no shared objective, shared loss, downed-player, or revive contract."
+        ],
+        "game.input.two-keyboard-seats/v1": [
+          "The current recipe merges arrows and WASD into one seat; it does not preserve two independently observable input seats."
+        ],
+        "game.runtime.offline-session-only/v1": [
+          "Generated game candidates declare DISABLED network, SESSION_ONLY persistence, zero permissions, and browser-memory ownership."
+        ],
+        "game.preview.detached-sandbox/v1": [
+          "The disposable candidate sandbox can materialize exact packet bytes into disjoint source/output/evidence roots and serve a sandboxed local preview without installation."
+        ],
+        "game.verify.deterministic-two-seat-simulation/v1": [
+          "No generated two-seat engine exists to prove independent movement, attacks, dash, revive, wave completion, shared loss, replay determinism, or bounded state."
+        ],
+        "game.verify.live-two-seat-journey/v1": [
+          "No browser-rendered Fabric-generated two-player action candidate has been observed and controlled through both seats."
+        ],
+        "authority.detached-zero/v1": [
+          "The generator and sandbox refuse provider calls, candidate process execution, host environment inheritance, network, writes outside detached roots, install, integration, publish, promotion, and CANON change."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "game.coop.shared-outcome-and-revive/v1",
+    "game.input.two-keyboard-seats/v1",
+    "game.verify.deterministic-two-seat-simulation/v1",
+    "game.verify.live-two-seat-journey/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "game.coop.shared-outcome-and-revive/v1",
+      "requiredBy": [
+        "deterministic-local-coop-action-game-rung"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.input.two-keyboard-seats/v1",
+      "requiredBy": [
+        "deterministic-local-coop-action-game-rung"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.verify.deterministic-two-seat-simulation/v1",
+      "requiredBy": [
+        "deterministic-local-coop-action-game-rung"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.verify.live-two-seat-journey/v1",
+      "requiredBy": [
+        "deterministic-local-coop-action-game-rung"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

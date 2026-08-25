@@ -152,18 +152,21 @@ and run:
 node shared/code-capability-fabric/selftest-native-game-rule-candidate-generator-v1.js
 ```
 
-## First deterministic game candidate
+## Deterministic game candidates
 
-The next `TEST` rung adds one native, typed game recipe and a byte-bound game
-candidate packet. It composes the existing Game Capability Atlas, Game Forge,
-Sandbox, playtester, Review Inbox, Evidence Desk, Detached Candidate Nursery,
-and deterministic JSON contracts. It is not a general game engine or executor.
+This `TEST` organ now admits two exact native game recipes: the original
+single-player Four Roots route and a local two-player Twin Reactor action co-op
+arena. Each produces a byte-bound 11-file packet and composes the existing Game
+Capability Atlas, Game Forge, Sandbox, playtester, Review Inbox, Evidence Desk,
+Detached Candidate Nursery, and deterministic JSON contracts. It is not a
+general game engine or executor.
 
 See [README-deterministic-game-candidate-generator-v1.md](README-deterministic-game-candidate-generator-v1.md)
 and run:
 
 ```powershell
 node shared/code-capability-fabric/selftest-deterministic-game-candidate-generator-v1.js
+node shared/code-capability-fabric/selftest-local-coop-action-game-recipe-v1.js
 node tools/sandbox/selftest-disposable-candidate-sandbox-v1.js
 ```
 

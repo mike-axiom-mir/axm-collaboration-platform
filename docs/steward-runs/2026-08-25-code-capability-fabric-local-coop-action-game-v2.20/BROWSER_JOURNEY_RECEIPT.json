@@ -1,0 +1,28 @@
+{
+  "schema": "axm.steward-live-game-journey-receipt/v1",
+  "status": "TEST",
+  "candidateRef": {"id": "twin-reactor-coop-native", "schema": "axm.game-candidate-packet/v1", "sha256": "sha256:e2a9b257857fa140caa0ec8294ce3fe1a1b0c60f27080e9fc35fd2bd975c3287"},
+  "iterationRef": {"id": "twin-reactor-coop-v2-20-review-r4-iteration-000", "schema": "axm.sandbox-candidate-iteration/v1", "sha256": "sha256:9092510930947d5445e549a077aa8ea158ee689a6e37ad4db0092176e43c3628"},
+  "host": {"surface": "Codex in-app browser", "origin": "trusted-loopback-ephemeral-port", "candidateProcesses": 0, "networkPolicy": "DISABLED"},
+  "journey": [
+    {"action": "click Start mission", "observed": "RUNNING; wave 1; reactor 100; P1 at 360,272; P2 at 600,272; four enemies", "verdict": "PASS"},
+    {"action": "P1 KeyD", "observed": "P1 360,272 -> 363,272; P2 unchanged", "verdict": "PASS"},
+    {"action": "P2 ArrowLeft", "observed": "P2 600,272 -> 597,272; P1 unchanged", "verdict": "PASS"},
+    {"action": "P1 KeyG", "observed": "P1 facing dash 363,272 -> 394,272", "verdict": "PASS"},
+    {"action": "P2 KeyL", "observed": "P2 facing dash 597,272 -> 566,272", "verdict": "PASS"},
+    {"action": "P1 KeyF", "observed": "P1 attacked; no spark was in range", "verdict": "PASS"},
+    {"action": "P2 KeyK", "observed": "P2 attacked; no spark was in range", "verdict": "PASS"},
+    {"action": "click Pause and wait 500 ms", "observed": "PAUSED; player coordinates, health, reactor, wave, and enemy count remained exact", "verdict": "PASS"},
+    {"action": "click Resume", "observed": "RUNNING restored", "verdict": "PASS"},
+    {"action": "click Restart", "observed": "READY; reactor 100; P1 360,272; P2 600,272; zero enemies", "verdict": "PASS"},
+    {"action": "reload and inspect at 480x900", "observed": "READY reset; controls and arena remained readable in two viewport slices", "verdict": "PASS"}
+  ],
+  "selectedScreenshots": [
+    {"path": "BROWSER_DESKTOP_READY.png", "byteLength": 75724, "sha256": "sha256:ff96bf8318bc713058653e3a73448efd96a6456db6f8050eabaa4bbb85ec495f"},
+    {"path": "BROWSER_TWO_SEATS_ACTIVE.png", "byteLength": 77448, "sha256": "sha256:4b4b5d58d3eec09bc2fccc41ffa58e7e1df255240c2c7fbf46add6ba5aae9047"},
+    {"path": "BROWSER_NARROW_TOP.png", "byteLength": 44907, "sha256": "sha256:9526dd9a33fcc7ca453a407e3c113ed4260a27ffb95ad6fcd935a4371d24d24c"},
+    {"path": "BROWSER_NARROW_ARENA.png", "byteLength": 42104, "sha256": "sha256:dcd9eedc30eea0924c7d2a9a732571eaed4ac80fff6f147cb9a5516df729ff23"}
+  ],
+  "limitations": ["No visual.capture.ephemeral-rolling-buffer/v1 hand was available; frame-perfect cadence, transient flicker absence, and performance timing remain LIMITED.", "Partner revive and final victory were proven through byte-verified pure-engine traces, not forced through a hidden browser scenario."],
+  "authority": "NONE"
+}

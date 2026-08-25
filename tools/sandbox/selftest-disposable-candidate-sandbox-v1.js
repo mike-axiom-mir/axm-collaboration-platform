@@ -67,6 +67,25 @@ function request(port, pathname, method = 'GET') {
       }
     });
 
+    await check('accepts only the exact two-seat co-op shape and binds the seat count', () => {
+      const coopRequest = Generator.buildCoopExampleRequest();
+      const coopGeneration = Generator.generate(coopRequest);
+      const coopSession = Sandbox.createSession({ parentRoot: TEST_PARENT, sessionId: 'twin-reactor-coop-session', request: coopRequest, generationResult: coopGeneration });
+      const inspected = Sandbox.readIteration(coopSession, 'iteration-000');
+      assert.strictEqual(coopGeneration.packet.moduleBundle.requiredSeats, 2);
+      assert.strictEqual(inspected.staticEvidence.requiredSeats, 2);
+      assert(inspected.staticEvidence.checks.includes('exact-seat-contract'));
+      const decoded = Sandbox.decodeBundle(coopGeneration.packet.moduleBundle, coopRequest.resources);
+      assert.throws(() => Sandbox.validateStaticFiles(decoded.files, coopRequest.resources, 1), /seat count differs/);
+      const unknownSeats = clone(coopGeneration.packet.moduleBundle); unknownSeats.requiredSeats = 3;
+      assert.throws(() => Sandbox.decodeBundle(unknownSeats, coopRequest.resources), /bundle identity mismatch/);
+      const prototypeAlias = decoded.files.map((file) => ({ ...file, bytes: Buffer.from(file.bytes) }));
+      const configFile = prototypeAlias.find((file) => file.path === 'game.config.json');
+      const config = JSON.parse(configFile.bytes); config.schema = '__proto__';
+      configFile.bytes = Buffer.from(JSON.stringify(config), 'utf8'); configFile.byteLength = configFile.bytes.length;
+      assert.throws(() => Sandbox.validateStaticFiles(prototypeAlias, coopRequest.resources, 2), /recipe or seat scope is unsupported/);
+    });
+
     await check('forged candidate bytes fail before a session is retained', () => {
       const forged = clone(generation);
       forged.packet.moduleBundle.files.find((file) => file.path === 'game.js').content = Buffer.from('forged').toString('base64');
