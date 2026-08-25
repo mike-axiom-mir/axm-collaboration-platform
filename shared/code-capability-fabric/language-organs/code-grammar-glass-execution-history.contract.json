@@ -1,0 +1,55 @@
+{
+  "schema": "axm.code.grammar-glass-execution-history-contract.v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "name": "Grammar Glass Execution Constellation / Return History",
+  "purpose": "Retain sealed execution observations and explicit execution holds as append-only lineage-bound Run Stars without granting re-entry or repeat-execution authority.",
+  "inputs": [
+    "axm.code.grammar-glass-day-start.v1",
+    "axm.code.grammar-glass-draft-star.v1",
+    "axm.code.interglass-sandbox-observation.v1",
+    "axm.code.interglass-execution-return-packet.v1"
+  ],
+  "outputs": [
+    "axm.code.grammar-glass-execution-history.v1",
+    "axm.code.grammar-glass-execution-run-star.v1",
+    "axm.code.grammar-glass-execution-history-summary.v1",
+    "axm.code.grammar-glass-execution-replay-request.v1"
+  ],
+  "resultClasses": [
+    "PASS_OBSERVED",
+    "FAIL_OBSERVED",
+    "CRASH_OBSERVED",
+    "TIMEOUT_OBSERVED",
+    "HELD"
+  ],
+  "invariants": {
+    "appendOnly": true,
+    "duplicateObservationDoubleCountAllowed": false,
+    "runStarCountIsQuality": false,
+    "passAutomaticallyMeansCorrect": false,
+    "failureMayBeErased": false,
+    "automaticTwisterReentry": false,
+    "automaticRepeatExecution": false,
+    "automaticGrammarMutation": false,
+    "automaticLearningAdmission": false,
+    "automaticSelectionPromotionMergeCanon": false,
+    "rawPrivateReasoningOrSourceAllowed": false,
+    "replayRequiresExplicitNewRequest": true,
+    "localBrowserReceiptChainIsIndependentRuntimeProof": false,
+    "nodeSealedObservationAndLocalBrowserReceiptAreDistinctEvidenceClasses": true
+  },
+  "visual": {
+    "surface": "EXECUTION CONSTELLATION / RETURN HISTORY",
+    "positionBasis": "run-star digest",
+    "positionOrBrightnessMeansQuality": false,
+    "allResultClassesRemainVisible": true
+  },
+  "persistence": {
+    "lightweightRunStarsConsumeFullSaveSlots": false,
+    "existingFullSaveSlotCount": 5,
+    "existingMaxBytesPerFullSaveSlot": 100000000,
+    "sixthSilentFullSaveAllowed": false
+  },
+  "authority": "NONE"
+}

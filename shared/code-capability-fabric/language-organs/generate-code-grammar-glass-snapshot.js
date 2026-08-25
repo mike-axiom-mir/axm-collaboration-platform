@@ -38,13 +38,14 @@ function main() {
     maxMemoryCarryPpm: 1100,
     maxMemoryCarriesPerTick: 96
   });
+  const interglassPolicy = glass.createInterglassPolicy({ persistenceIntent: 'TRANSIENT', maxAttempts: 1, timeoutMs: 1800 });
   const dayStart = glass.createDayStart({
     source,
     catalog,
     conditionRevision: conditions,
     dayId,
     rootSeed: seed || null,
-    startingStateRefs: ['grammar-glass-snapshot-generator:v1.2-contact-memory']
+    startingStateRefs: ['grammar-glass-snapshot-generator:v1.4-execution-history']
   });
   let cycle = glass.initializeCycle({ dayStart, catalog });
   let contactMemory = null;
@@ -104,7 +105,6 @@ function main() {
         contactMemory,
         appliedMemoryCarries: memoryStep && memoryStep.appliedMemoryCarries || []
       });
-      const interglassPolicy = glass.createInterglassPolicy({ persistenceIntent: 'TRANSIENT', maxAttempts: 1, timeoutMs: 1800 });
       const candidateModel = glass.createInterglassCandidateModel({ star, mirrorObservation: mirror, formationWhy: why, policy: interglassPolicy });
       const executorProfile = glass.createBrowserSandboxExecutorProfile({ policy: interglassPolicy });
       const runRequest = glass.createInterglassRunRequest({
@@ -134,7 +134,15 @@ function main() {
     ledger,
     stars
   });
-  const visual = glass.augmentVisualSnapshotWithInterglass({ visualSnapshot: visualBase, interglass: interglassState });
+  const doubleGlassVisual = glass.augmentVisualSnapshotWithInterglass({ visualSnapshot: visualBase, interglass: interglassState });
+  const executionHistory = glass.createExecutionHistory({
+    dayStart,
+    interglassPolicySha256: interglassPolicy.policySha256
+  });
+  const visual = glass.augmentVisualSnapshotWithExecutionHistory({
+    visualSnapshot: doubleGlassVisual,
+    executionHistory
+  });
   process.stdout.write(`${JSON.stringify(visual, null, 2)}\n`);
 }
 
