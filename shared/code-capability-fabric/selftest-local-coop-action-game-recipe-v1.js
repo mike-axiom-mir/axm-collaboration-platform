@@ -37,7 +37,7 @@ test('co-op request and packet bind the exact second recipe', () => {
   assert.strictEqual(result.packet.moduleBundle.requiredSeats, 2);
   assert.deepStrictEqual(result.packet.sourceFiles.map((item) => item.path), Generator.REQUIRED_FILES);
   assert.strictEqual(result.packet.candidate.id, 'twin-reactor-coop-native');
-  assert.strictEqual(result.packet.candidate.version, 'v0.3');
+  assert.strictEqual(result.packet.candidate.version, 'v0.4');
 });
 
 test('co-op generation is byte-identical and fully byte-bound', () => {
@@ -81,7 +81,7 @@ test('generated project, config, manifest, and contract preserve two-seat scope'
   const manifest = JSON.parse(fileBytes(result, 'sandbox.game.json'));
   const contract = JSON.parse(fileBytes(result, 'module.contract.json'));
   assert.strictEqual(project.world.cells.length, 30 * 17);
-  assert.strictEqual(project.version, '0.3.0');
+  assert.strictEqual(project.version, '0.4.0');
   assert.strictEqual(project.capabilityPlan.schema, 'axm.game-prebuild-plan/v1');
   assert.strictEqual(config.schema, 'axm.local-coop-action-game-config/v1');
   assert.strictEqual(config.session.players, 2);
@@ -95,6 +95,8 @@ test('generated project, config, manifest, and contract preserve two-seat scope'
   assert(contract.provides.includes('axm.asset-aware-game-prebuild/v1'));
   assert(contract.provides.includes('axm.known-repair-before-build/v1'));
   assert(contract.provides.includes('axm.catalog-informed-game-rendering/v1'));
+  assert(contract.provides.includes('axm.game-first-experience-flow/v1'));
+  assert(contract.provides.includes('axm.staged-review-disclosure/v1'));
   assert.deepStrictEqual(contract.permissions, []);
   assert(contract.boundaries.refuses.includes('hidden-player-seat-merging'));
 });
@@ -109,6 +111,34 @@ test('asset capability snapshot and prebuild plan are byte-bound candidate data'
   assert.strictEqual(result.packet.prebuildPlanRef.sha256, result.packet.sourceFiles.find((item) => item.path === 'prebuild-plan.json').sha256);
   assert.strictEqual(receipt.prebuild.snapshotRef.sha256, snapshot.snapshotDigest);
   assert.strictEqual(receipt.prebuild.planRef.sha256, plan.planDigest);
+});
+
+test('experience flow is built before source and byte-bound into every candidate layer', () => {
+  const flow = JSON.parse(fileBytes(result, 'experience-flow-plan.json'));
+  const config = JSON.parse(fileBytes(result, 'game.config.json'));
+  const project = JSON.parse(fileBytes(result, 'game-forge-project.json'));
+  const manifest = JSON.parse(fileBytes(result, 'sandbox.game.json'));
+  const receipt = JSON.parse(fileBytes(result, 'candidate.receipt.json'));
+  assert.strictEqual(flow.schema, 'axm.game-experience-flow-plan/v1');
+  assert.deepStrictEqual(flow.scenes.map((item) => item.id), ['LOBBY', 'MISSION_INTRO', 'ACTIVE_PLAY', 'WAVE_TRANSITION', 'WARDEN_INTRO', 'PAUSED', 'VICTORY', 'DEFEAT']);
+  assert.strictEqual(result.packet.experienceFlowPlanRef.sha256, result.packet.sourceFiles.find((item) => item.path === 'experience-flow-plan.json').sha256);
+  assert.strictEqual(config.experience.planDigest, flow.planDigest);
+  assert.strictEqual(project.experiencePlan.sha256, flow.planDigest);
+  assert.strictEqual(manifest.experienceFlowPlan, 'experience-flow-plan.json');
+  assert.strictEqual(receipt.prebuild.experienceFlowRef.sha256, flow.planDigest);
+  assert.strictEqual(result.packet.generator.experienceDirected, true);
+  assert.strictEqual(result.packet.truth.experienceFlowPlanned, true);
+});
+
+test('game-first page stages technical truth instead of pinning a test panel beside play', () => {
+  const html = fileBytes(result, 'index.html').toString('utf8');
+  assert.match(html, /id="scene-overlay"/);
+  assert.match(html, /id="transition-banner"/);
+  assert.match(html, /<details id="review-drawer"/);
+  assert.match(html, /Review build truth/);
+  assert.doesNotMatch(html, /class="layout"/);
+  assert.doesNotMatch(html, /class="panel"/);
+  assert.doesNotMatch(html, /class="asset-strip"/);
 });
 
 test('known repairs and selected visual system exist before game source bytes', () => {

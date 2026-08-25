@@ -138,11 +138,14 @@ function validateStaticFiles(files, resources, declaredSeats) {
   if (shape.players === 2) {
     const snapshot = strictJson(get('asset-capability-snapshot.json').bytes, 'asset-capability-snapshot.json');
     const plan = strictJson(get('prebuild-plan.json').bytes, 'prebuild-plan.json');
+    const experience = strictJson(get('experience-flow-plan.json').bytes, 'experience-flow-plan.json');
     if (snapshot.schema !== 'axm.asset-factory-capability-snapshot/v1' || snapshot.truth.artifactBytesProduced !== false || snapshot.truth.providerCodeLoaded !== false) throw new Error('asset capability snapshot overclaims production or provider execution');
     if (plan.schema !== 'axm.game-prebuild-plan/v1' || !Array.isArray(plan.repairs) || plan.repairs.length < 1 || plan.repairs.some((repair) => repair.state !== 'APPLIED_BEFORE_BUILD') || plan.truth.assetArtifactsProduced !== false) throw new Error('asset-aware prebuild plan is absent or overclaims artifact production');
     if (config.prebuild.planDigest !== plan.planDigest || config.prebuild.snapshotDigest !== snapshot.snapshotDigest) throw new Error('game config lost exact asset-aware prebuild lineage');
+    if (experience.schema !== 'axm.game-experience-flow-plan/v1' || experience.authority !== 'NONE' || experience.disclosure.mayHideTruth !== false || experience.truth.plannedBeforeCandidateSource !== true) throw new Error('game experience flow plan is absent, mutable, or overclaims authority');
+    if (config.experience.planDigest !== experience.planDigest || project.experiencePlan.sha256 !== experience.planDigest || manifest.experienceFlowPlan !== 'experience-flow-plan.json') throw new Error('game config, project, or manifest lost exact experience-flow lineage');
   }
-  return { verdict: 'PASS', requiredSeats: shape.players, checks: ['exact-file-set', 'byte-digests', 'script-parse-only', 'network-authority-denial', 'external-script-only', 'contract-authority-ceiling', 'installation-hold', 'exact-seat-contract', 'game-forge-project-shape', 'asset-prebuild-lineage', 'resource-ceilings'] };
+  return { verdict: 'PASS', requiredSeats: shape.players, checks: ['exact-file-set', 'byte-digests', 'script-parse-only', 'network-authority-denial', 'external-script-only', 'contract-authority-ceiling', 'installation-hold', 'exact-seat-contract', 'game-forge-project-shape', 'asset-prebuild-lineage', 'experience-flow-lineage', 'resource-ceilings'] };
 }
 function inspectDirectory(root, resources) {
   assertOrdinaryDirectory(root, 'iteration root');
