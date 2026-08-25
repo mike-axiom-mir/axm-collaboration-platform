@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `c90d0836345b69d0cb9852b7ceeace175f278cc69ab42b66c6668ff2062a59fe`
+Twin digest: `fd0122396ad374d3b9bd863ac4d1e9731fb75960c01da07f0331d28255fd4779`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -200,7 +200,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | route | ROUTE | TEST | 8 | WRITE_CANDIDATE | UNKNOWN | `8494798a81d591dc…` |
 | runner | ROOM | TEST | 3 | NONE | LOW | `3146a0bbac5cc4eb…` |
 | runtime-channel-observatory | ROOM | TEST | 5 | NONE | UNKNOWN | `75d650041b1b4b8e…` |
-| sandbox | HAND | TEST | 11 | WRITE_CANDIDATE | UNKNOWN | `32ca28d18ffd7376…` |
+| sandbox | HAND | TEST | 11 | WRITE_CANDIDATE | UNKNOWN | `2fc8a34911bb9a18…` |
 | save-migration-replay-service | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `1447b53da8e011f7…` |
 | schema-contract-migration-registry | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `c491ae21e025bed4…` |
 | schema-identity-observatory | ROOM | TEST | 4 | NONE | UNKNOWN | `4b4815108b57cb3b…` |
@@ -216,7 +216,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | shared/baseline-simulation-lab | ORGAN | EXPERIMENTAL | 11 | NONE | LOW | `7941a41c089dd390…` |
 | shared/city-gates | BRIDGE | EXPERIMENTAL | 5 | NETWORK_WRITE, PUBLIC_RELEASE | HIGH | `80831a1116ef8216…` |
 | shared/city-graph | ORGAN | EXPERIMENTAL | 5 | NONE | UNKNOWN | `8fdc801da1e64edd…` |
-| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 131 | NONE | LOW | `e38352d2e491fafd…` |
+| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 131 | NONE | LOW | `53b042c70f2cab75…` |
 | shared/compute-substrate-lab | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `65884a71a64101f4…` |
 | shared/deterministic-animation-fabric | BRICK | EXPERIMENTAL | 12 | NONE | LOW | `d03680c39d4e474d…` |
 | shared/deterministic-audio-fabric | BRICK | EXPERIMENTAL | 5 | NONE | LOW | `c4bbf8ea631be508…` |

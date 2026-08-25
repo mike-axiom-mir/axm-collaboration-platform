@@ -161,6 +161,12 @@ Capability Atlas, Game Forge, Sandbox, playtester, Review Inbox, Evidence Desk,
 Detached Candidate Nursery, and deterministic JSON contracts. It is not a
 general game engine or executor.
 
+The Twin Reactor v0.2 output-first patch adds visible directional bolts and
+facing markers, distinct spark/runner/brute/Warden enemies, a proximity link
+that strengthens both seats without merging them, bounded repair cores, and a
+visible Warden practice button. Live play remains the quality surface; focused
+tests guard deterministic state and authority boundaries only.
+
 See [README-deterministic-game-candidate-generator-v1.md](README-deterministic-game-candidate-generator-v1.md)
 and run:
 
