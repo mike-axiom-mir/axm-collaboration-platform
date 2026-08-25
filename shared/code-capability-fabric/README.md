@@ -156,22 +156,31 @@ node shared/code-capability-fabric/selftest-native-game-rule-candidate-generator
 
 This `TEST` organ now admits two exact native game recipes: the original
 single-player Four Roots route and a local two-player Twin Reactor action co-op
-arena. Each produces a byte-bound 11-file packet and composes the existing Game
+arena. The preserved single-player recipe produces an 11-file packet. Twin
+Reactor v0.3 produces a byte-bound 13-file packet, adding an exact Asset Factory
+capability snapshot and a prebuild plan. Both compose the existing Game
 Capability Atlas, Game Forge, Sandbox, playtester, Review Inbox, Evidence Desk,
-Detached Candidate Nursery, and deterministic JSON contracts. It is not a
-general game engine or executor.
+Detached Candidate Nursery, deterministic JSON, Asset Hands, Asset Fabric, and
+visual capability catalog contracts. This is not a general game engine or
+executor.
 
-The Twin Reactor v0.2 output-first patch adds visible directional bolts and
-facing markers, distinct spark/runner/brute/Warden enemies, a proximity link
-that strengthens both seats without merging them, bounded repair cores, and a
-visible Warden practice button. Live play remains the quality surface; focused
-tests guard deterministic state and authority boundaries only.
+Twin Reactor v0.3 resolves four known repairs before source bytes are built and
+records the bound factory inventory (46 built-in hands, 105 service
+capabilities, and the visual catalog family counts), then selects seven
+declared asset routes plus an exact Neon Circuit × Aetherglass
+visual treatment. The resulting candidate has distinct ship and enemy
+silhouettes, a layered circuit arena, richer projectiles and effects, and
+reduced-motion gameplay cues. The snapshot proves declared capability only: no
+asset hand/provider runs and no standalone sprite, audio, animation, or other
+asset artifact is claimed. Live play remains the quality surface; focused tests
+guard deterministic state, lineage, and authority boundaries only.
 
 See [README-deterministic-game-candidate-generator-v1.md](README-deterministic-game-candidate-generator-v1.md)
 and run:
 
 ```powershell
 node shared/code-capability-fabric/selftest-deterministic-game-candidate-generator-v1.js
+node shared/code-capability-fabric/selftest-asset-aware-game-prebuild-planner-v1.js
 node shared/code-capability-fabric/selftest-local-coop-action-game-recipe-v1.js
 node tools/sandbox/selftest-disposable-candidate-sandbox-v1.js
 ```

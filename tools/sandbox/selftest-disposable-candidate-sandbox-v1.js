@@ -181,6 +181,12 @@ function request(port, pathname, method = 'GET') {
       } finally { await preview.close(); }
     });
 
+    await check('trusted preview port selection is bounded and remains loopback-only', async () => {
+      await assert.rejects(() => Sandbox.startPreview(session, undefined, -1), /preview port/);
+      await assert.rejects(() => Sandbox.startPreview(session, undefined, 65536), /preview port/);
+      await assert.rejects(() => Sandbox.startPreview(session, undefined, 1.5), /preview port/);
+    });
+
     await check('Windows path aliases and authority metadata are not repairable', () => {
       for (const file of ['../game.js', 'C:/game.js', '//server/share/game.js', 'game.js:stream', 'CON.txt', 'module.contract.json', 'candidate.receipt.json']) {
         assert.throws(() => Sandbox.repairPlan(session, ['PATH_ADVERSARIAL_TEST'], { [file]: 'x' }), /path|allowlisted|reserved|colon/i);

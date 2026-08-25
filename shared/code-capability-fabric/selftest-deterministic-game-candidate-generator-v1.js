@@ -49,7 +49,7 @@ test('identical requests produce byte-identical packets', () => {
 
 test('candidate is complete, byte-bound, parse-only valid, and Game Forge compatible', () => {
   const result = Generator.generate(Generator.buildExampleRequest());
-  assert.deepStrictEqual(result.packet.sourceFiles.map((item) => item.path), Generator.REQUIRED_FILES);
+  assert.deepStrictEqual(result.packet.sourceFiles.map((item) => item.path), Generator.LEGACY_REQUIRED_FILES);
   let total = 0;
   for (const ref of result.packet.sourceFiles) {
     const bytes = fileBytes(result, ref.path);
