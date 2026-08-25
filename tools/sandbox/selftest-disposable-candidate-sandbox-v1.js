@@ -75,6 +75,7 @@ function request(port, pathname, method = 'GET') {
       assert.strictEqual(coopGeneration.packet.moduleBundle.requiredSeats, 2);
       assert.strictEqual(inspected.staticEvidence.requiredSeats, 2);
       assert(inspected.staticEvidence.checks.includes('exact-seat-contract'));
+      assert(inspected.staticEvidence.checks.includes('experience-flow-lineage'));
       const decoded = Sandbox.decodeBundle(coopGeneration.packet.moduleBundle, coopRequest.resources);
       assert.throws(() => Sandbox.validateStaticFiles(decoded.files, coopRequest.resources, 1), /seat count differs/);
       const unknownSeats = clone(coopGeneration.packet.moduleBundle); unknownSeats.requiredSeats = 3;

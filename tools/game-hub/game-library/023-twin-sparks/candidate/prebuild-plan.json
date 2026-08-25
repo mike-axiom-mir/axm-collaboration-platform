@@ -1,0 +1,182 @@
+{
+  "schema": "axm.game-prebuild-plan/v1",
+  "version": "0.1.0",
+  "status": "TEST",
+  "recipeId": "twin-reactor-action-coop",
+  "snapshotRef": {
+    "schema": "axm.asset-factory-capability-snapshot/v1",
+    "sha256": "sha256:3d1841059888680072866b00810780ee8a2baeb02b45f60f585eb0c75984e8c4"
+  },
+  "targetCanvas": {
+    "medium": "game-world",
+    "width": 960,
+    "height": 544,
+    "unit": "px",
+    "colourSpace": "srgb",
+    "runtime": "canvas-2d"
+  },
+  "visualSystem": {
+    "stylePresetId": "arcade-neon-circuit",
+    "treatmentId": "aetherglass-cinematic",
+    "effectIds": [
+      "glow",
+      "gradientBorder",
+      "scanlines",
+      "spotlight",
+      "vignette"
+    ],
+    "palette": {
+      "background": "#050812",
+      "surface": "#10192a",
+      "text": "#f6fbff",
+      "mutedText": "#aebbd2",
+      "p1": "#25e6ff",
+      "p2": "#7f5cff",
+      "enemy": "#ff3fae",
+      "highlight": "#dffcff",
+      "repair": "#63ff9e",
+      "reactor": "#ffd166"
+    },
+    "minimumTextContrast": 4.5,
+    "reducedMotionFallback": true,
+    "preserveGameplayCues": true
+  },
+  "assetRoutes": [
+    {
+      "id": "arena-background",
+      "handId": "raster-texture",
+      "outputs": [
+        "image/png"
+      ],
+      "purpose": "catalog-informed procedural circuit field",
+      "state": "PLANNED_FROM_DECLARATION",
+      "artifactProduced": false
+    },
+    {
+      "id": "player-and-enemy-silhouettes",
+      "handId": "pixel-sprite",
+      "outputs": [
+        "image/svg+xml"
+      ],
+      "purpose": "distinct readable combat silhouettes",
+      "state": "PLANNED_FROM_DECLARATION",
+      "artifactProduced": false
+    },
+    {
+      "id": "hud-and-controls",
+      "handId": "ui-component",
+      "outputs": [
+        "axm.ui-component-spec/v1"
+      ],
+      "purpose": "high-contrast responsive mission HUD",
+      "state": "PLANNED_FROM_DECLARATION",
+      "artifactProduced": false
+    },
+    {
+      "id": "arena-effects",
+      "handId": "portable-visual-fx",
+      "outputs": [
+        "text/css",
+        "image/svg+xml"
+      ],
+      "purpose": "glow, vignette, scanlines, spotlight, gradient border",
+      "state": "PLANNED_FROM_DECLARATION",
+      "artifactProduced": false
+    },
+    {
+      "id": "cross-surface-treatment",
+      "handId": "visual-treatment-composer",
+      "outputs": [
+        "axm.visual-treatment-recipe/v1"
+      ],
+      "purpose": "aetherglass-cinematic treatment constraints",
+      "state": "PLANNED_FROM_DECLARATION",
+      "artifactProduced": false
+    },
+    {
+      "id": "combat-motion",
+      "handId": "deterministic-animation-fabric",
+      "outputs": [
+        "axm.deterministic-animation-recipe/v1"
+      ],
+      "purpose": "bounded fixed-tick motion cues",
+      "state": "PLANNED_FROM_DECLARATION",
+      "artifactProduced": false
+    },
+    {
+      "id": "combat-audio-future-route",
+      "handId": "deterministic-audio-fabric",
+      "outputs": [
+        "audio/wav"
+      ],
+      "purpose": "declared route only; no audio artifact in this candidate",
+      "state": "PLANNED_FROM_DECLARATION",
+      "artifactProduced": false
+    }
+  ],
+  "repairs": [
+    {
+      "id": "projectile-spawn-and-swept-collision-v1",
+      "triggerFacts": [
+        "fixed-tick-projectiles",
+        "projectile-speed-can-cross-target-width"
+      ],
+      "action": "CHECK_COLLISION_AT_SPAWN_AND_ALONG_BOUNDED_MOVEMENT_SUBSTEPS",
+      "state": "APPLIED_BEFORE_BUILD",
+      "evidence": {
+        "path": "docs/steward-runs/2026-08-25-code-capability-fabric-local-coop-action-game-v2.21/BROWSER_JOURNEY_RECEIPT.md",
+        "sha256": "sha256:ffc9c9e92b35b99bcb7081496f8477c0cf4be5d12ed040c22c1f2888ac3b7e47"
+      }
+    },
+    {
+      "id": "combat-silhouette-separation-v1",
+      "triggerFacts": [
+        "two-player-seats",
+        "four-enemy-classes",
+        "shared-arena"
+      ],
+      "action": "REQUIRE_DISTINCT_SHAPE_COLOR_LABEL_AND_DIRECTION_CUES",
+      "state": "APPLIED_BEFORE_BUILD",
+      "evidence": {
+        "path": "shared/asset-hands/service.contract.json",
+        "sha256": "sha256:fd2a7555e3d1a39dfefe6358ea461033502c495d4f93dee2fa791da3b1de9b57"
+      }
+    },
+    {
+      "id": "asset-declaration-truth-ceiling-v1",
+      "triggerFacts": [
+        "asset-catalog-consumed-as-data",
+        "no-asset-provider-execution"
+      ],
+      "action": "MARK_ROUTES_PLANNED_AND_ARTIFACTS_UNPRODUCED",
+      "state": "APPLIED_BEFORE_BUILD",
+      "evidence": {
+        "path": "shared/asset-hands/visual-capability-catalog.generated.json",
+        "sha256": "sha256:9cee0af4f6c3548402c34dfb08f504444bb907d935f517dd97dce42cd27aac68"
+      }
+    },
+    {
+      "id": "reduced-motion-gameplay-cue-v1",
+      "triggerFacts": [
+        "ambient-motion",
+        "accessibility-required"
+      ],
+      "action": "FREEZE_DECORATIVE_MOTION_WHILE_PRESERVING_GAMEPLAY_STATE_CUES",
+      "state": "APPLIED_BEFORE_BUILD",
+      "evidence": {
+        "path": "shared/asset-hands/visual-capability-catalog.generated.json",
+        "sha256": "sha256:4c9825cc1757aee3f616bb4c0341a81e1cb2f78e235e07f03aca669a8327679b"
+      }
+    }
+  ],
+  "truth": {
+    "builtBeforeCandidateBytes": true,
+    "knownRepairRulesApplied": true,
+    "assetProviderExecuted": false,
+    "assetArtifactsProduced": false,
+    "catalogInformedRendering": true,
+    "outputQualityProven": false
+  },
+  "authority": "NONE",
+  "planDigest": "sha256:824956d7a1461d17adccb49979947dd589eb2f8d938f468b5052734caaf0b980"
+}

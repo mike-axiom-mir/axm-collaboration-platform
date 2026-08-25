@@ -42,6 +42,24 @@ Possible results:
 authority envelope align. It is never execution, verification, installation,
 promotion, or proof of semantic correctness.
 
+## Resource envelopes preserve quality
+
+A resource envelope is an exact per-attempt declaration and consent boundary,
+not a permanent low ceiling on what AXM may create. Quality and content needs
+stay visible as requested. When the observed host or current consent cannot
+support them, the honest result is a typed resource-expansion hold with the
+unmet delta—not a silent downgrade that pretends the smaller output met the
+goal.
+
+Version-specific file, byte, memory, process, time, and cost maxima in current
+planners are implementation limits for those versions. They are capability
+gaps to evolve, not a doctrine that complex games, media, systems, or hardware
+designs must remain small. A later attempt may request a larger exact envelope;
+material expansion requires fresh host evidence and human consent. More
+resources never grant more permissions, network, lifecycle, installation,
+promotion, or `CANON` authority. Enforced host safety ceilings still apply at
+the execution boundary.
+
 Run:
 
 ```powershell
@@ -157,14 +175,17 @@ node shared/code-capability-fabric/selftest-native-game-rule-candidate-generator
 This `TEST` organ now admits two exact native game recipes: the original
 single-player Four Roots route and a local two-player Twin Reactor action co-op
 arena. The preserved single-player recipe produces an 11-file packet. Twin
-Reactor v0.3 produces a byte-bound 13-file packet, adding an exact Asset Factory
-capability snapshot and a prebuild plan. Both compose the existing Game
+Reactor v0.4 produces a byte-bound 14-file packet, adding an exact Asset Factory
+capability snapshot, prebuild plan, and game-experience flow plan. Both compose the existing Game
 Capability Atlas, Game Forge, Sandbox, playtester, Review Inbox, Evidence Desk,
 Detached Candidate Nursery, deterministic JSON, Asset Hands, Asset Fabric, and
 visual capability catalog contracts. This is not a general game engine or
 executor.
 
-Twin Reactor v0.3 resolves four known repairs before source bytes are built and
+Twin Reactor v0.4 resolves four known repairs plus an eight-scene, twelve-transition
+game-first disclosure plan before source bytes are built. Technical truth remains
+available in an on-demand review drawer instead of occupying the normal play surface.
+The planner also
 records the bound factory inventory (46 built-in hands, 105 service
 capabilities, and the visual catalog family counts), then selects seven
 declared asset routes plus an exact Neon Circuit × Aetherglass
@@ -181,6 +202,7 @@ and run:
 ```powershell
 node shared/code-capability-fabric/selftest-deterministic-game-candidate-generator-v1.js
 node shared/code-capability-fabric/selftest-asset-aware-game-prebuild-planner-v1.js
+node shared/code-capability-fabric/selftest-game-experience-director-v1.js
 node shared/code-capability-fabric/selftest-local-coop-action-game-recipe-v1.js
 node tools/sandbox/selftest-disposable-candidate-sandbox-v1.js
 ```

@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `51e230167fef2be6255d93acac333e386e435a4807d0a895bdcd67fc5d511cf3`
+Twin digest: `e46df21c048883760827aea82bcfb0bff625c5b6a59b8bed123e1956b2936d80`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -108,7 +108,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | game-balance-telemetry-advisor | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `8a24e81e2ba1f55a…` |
 | game-capability-atlas | HAND | TEST | 4 | WRITE_CANDIDATE | UNKNOWN | `7348b250717cd41b…` |
 | game-forge | HAND | TEST | 21 | WRITE_CANDIDATE | UNKNOWN | `265b4d1bc55678ea…` |
-| game-hub | HAND | TEST | 3 | WRITE_CANDIDATE | UNKNOWN | `816321d8990071b2…` |
+| game-hub | HAND | TEST | 3 | WRITE_CANDIDATE | UNKNOWN | `680e528998a7c74a…` |
 | game-organism-lab | ROUTE | EXPERIMENTAL | 3 | WRITE_CANDIDATE | MEDIUM | `fabe92b3467f83b0…` |
 | game-production-runner | HAND | EXPERIMENTAL | 40 | NETWORK_READ, ROOT_CHANGE | HIGH | `4191d893de639b1a…` |
 | game-ui-hud-menu-runtime | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `2b62729c137d7a5a…` |
@@ -200,7 +200,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | route | ROUTE | TEST | 8 | WRITE_CANDIDATE | UNKNOWN | `8494798a81d591dc…` |
 | runner | ROOM | TEST | 3 | NONE | LOW | `3146a0bbac5cc4eb…` |
 | runtime-channel-observatory | ROOM | TEST | 5 | NONE | UNKNOWN | `75d650041b1b4b8e…` |
-| sandbox | HAND | TEST | 11 | WRITE_CANDIDATE | UNKNOWN | `9aa51fbca559cdb6…` |
+| sandbox | HAND | TEST | 11 | WRITE_CANDIDATE | UNKNOWN | `5a01ac0b198abe2c…` |
 | save-migration-replay-service | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `1447b53da8e011f7…` |
 | schema-contract-migration-registry | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `c491ae21e025bed4…` |
 | schema-identity-observatory | ROOM | TEST | 4 | NONE | UNKNOWN | `4b4815108b57cb3b…` |
@@ -216,7 +216,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | shared/baseline-simulation-lab | ORGAN | EXPERIMENTAL | 11 | NONE | LOW | `7941a41c089dd390…` |
 | shared/city-gates | BRIDGE | EXPERIMENTAL | 5 | NETWORK_WRITE, PUBLIC_RELEASE | HIGH | `80831a1116ef8216…` |
 | shared/city-graph | ORGAN | EXPERIMENTAL | 5 | NONE | UNKNOWN | `714b2200f3f7a200…` |
-| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 131 | NONE | LOW | `c1554d15c7534ddc…` |
+| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 131 | NONE | LOW | `c79f3e73cba9bd36…` |
 | shared/compute-substrate-lab | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `65884a71a64101f4…` |
 | shared/deterministic-animation-fabric | BRICK | EXPERIMENTAL | 12 | NONE | LOW | `d03680c39d4e474d…` |
 | shared/deterministic-audio-fabric | BRICK | EXPERIMENTAL | 5 | NONE | LOW | `c4bbf8ea631be508…` |

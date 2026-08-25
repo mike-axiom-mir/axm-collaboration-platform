@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-experience-flow-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "recipeId", "candidateId", "sourceRefs", "intent", "scenes", "transitions", "disclosure", "timing", "accessibility", "boundaries", "limitations", "truth", "authority", "planDigest"],
+  "properties": {
+    "schema": {"const": "axm.game-experience-flow-plan/v1"},
+    "version": {"const": "1.0.0"},
+    "status": {"const": "TEST"},
+    "recipeId": {"const": "twin-reactor-action-coop"},
+    "candidateId": {"const": "twin-reactor-coop-native"},
+    "sourceRefs": {
+      "type": "object", "additionalProperties": false, "required": ["brief", "prebuildPlan"],
+      "properties": {"brief": {"$ref": "semantic-common.schema.json#/$defs/reference"}, "prebuildPlan": {"$ref": "semantic-common.schema.json#/$defs/reference"}}
+    },
+    "intent": {
+      "type": "object", "additionalProperties": false, "required": ["mode", "promise", "defaultSceneId", "defaultDisclosure"],
+      "properties": {"mode": {"const": "GAME_FIRST_STAGED_DISCLOSURE"}, "promise": {"type": "string", "minLength": 1, "maxLength": 240}, "defaultSceneId": {"const": "LOBBY"}, "defaultDisclosure": {"const": "PLAYER_RELEVANT_ONLY"}}
+    },
+    "scenes": {"type": "array", "minItems": 8, "maxItems": 8, "items": {"$ref": "#/$defs/scene"}},
+    "transitions": {"type": "array", "minItems": 12, "maxItems": 12, "items": {"$ref": "#/$defs/transition"}},
+    "disclosure": {
+      "type": "object", "additionalProperties": false,
+      "required": ["alwaysVisible", "lobbyOnly", "outcomeOnly", "onDemand", "reviewSurface", "mayHideTruth"],
+      "properties": {
+        "alwaysVisible": {"$ref": "#/$defs/ids"}, "lobbyOnly": {"$ref": "#/$defs/ids"}, "outcomeOnly": {"$ref": "#/$defs/ids"}, "onDemand": {"$ref": "#/$defs/ids"},
+        "reviewSurface": {"const": "COLLAPSIBLE_REVIEW_DRAWER"}, "mayHideTruth": {"const": false}
+      }
+    },
+    "timing": {"type": "object", "additionalProperties": false, "required": ["clock", "expectedPreviewRateHz", "wallClockProof"], "properties": {"clock": {"const": "DETERMINISTIC_ENGINE_TICKS"}, "expectedPreviewRateHz": {"const": 12}, "wallClockProof": {"const": false}}},
+    "accessibility": {"type": "object", "additionalProperties": false, "required": ["keyboardComplete", "reducedMotionHonored", "liveStatus", "focusVisible"], "properties": {"keyboardComplete": {"const": true}, "reducedMotionHonored": {"const": true}, "liveStatus": {"const": true}, "focusVisible": {"const": true}}},
+    "boundaries": {"type": "object", "additionalProperties": false, "required": ["permissions", "networkDomains", "writes", "providerCalls", "executesAssetHands", "installs", "integrates", "promotes", "canonizes"], "properties": {"permissions": {"const": []}, "networkDomains": {"const": []}, "writes": {"const": []}, "providerCalls": {"const": false}, "executesAssetHands": {"const": false}, "installs": {"const": false}, "integrates": {"const": false}, "promotes": {"const": false}, "canonizes": {"const": false}}},
+    "limitations": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"type": "string", "minLength": 1, "maxLength": 160}},
+    "truth": {"type": "object", "additionalProperties": false, "required": ["plannedBeforeCandidateSource", "renderingProven", "playQualityProven", "humanAccepted"], "properties": {"plannedBeforeCandidateSource": {"const": true}, "renderingProven": {"const": false}, "playQualityProven": {"const": false}, "humanAccepted": {"const": false}}},
+    "authority": {"const": "NONE"},
+    "planDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "ids": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$"}},
+    "scene": {"type": "object", "additionalProperties": false, "required": ["id", "enginePhases", "purpose", "presentation", "primaryAction"], "properties": {"id": {"enum": ["LOBBY", "MISSION_INTRO", "ACTIVE_PLAY", "WAVE_TRANSITION", "WARDEN_INTRO", "PAUSED", "VICTORY", "DEFEAT"]}, "enginePhases": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["READY", "RUNNING", "PAUSED", "VICTORY", "DEFEAT"]}}, "purpose": {"type": "string", "minLength": 1, "maxLength": 180}, "presentation": {"enum": ["BLOCKING_OVERLAY", "NON_BLOCKING_BANNER", "ARENA_FIRST"]}, "primaryAction": {"type": ["string", "null"], "maxLength": 32}}},
+    "transition": {"type": "object", "additionalProperties": false, "required": ["from", "event", "to", "holdTicks"], "properties": {"from": {"enum": ["LOBBY", "MISSION_INTRO", "ACTIVE_PLAY", "WAVE_TRANSITION", "WARDEN_INTRO", "PAUSED", "VICTORY", "DEFEAT"]}, "event": {"type": "string", "pattern": "^[A-Z][A-Z_]{1,31}$"}, "to": {"enum": ["LOBBY", "MISSION_INTRO", "ACTIVE_PLAY", "WAVE_TRANSITION", "WARDEN_INTRO", "PAUSED", "VICTORY", "DEFEAT"]}, "holdTicks": {"type": "integer", "minimum": 0, "maximum": 120}}}
+  }
+}

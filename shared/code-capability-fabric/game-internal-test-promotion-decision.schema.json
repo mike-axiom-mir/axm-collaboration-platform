@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-internal-test-promotion-decision/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "decisionId", "decidedBy", "decisionSource", "authenticatedIdentityProven", "scope", "source", "target", "rootsGate", "authorizes", "refuses", "publicReuseRights", "statementDigest", "authority", "decisionDigest"],
+  "properties": {
+    "schema": {"const": "axm.game-internal-test-promotion-decision/v1"},
+    "version": {"const": "1.0.0"},
+    "decisionId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "decidedBy": {"const": "MIKE_TOBI"},
+    "decisionSource": {"const": "EXPLICIT_IN_THREAD_DIRECTION"},
+    "authenticatedIdentityProven": {"const": false},
+    "scope": {"const": "INTERNAL_WORKSHOP_TEST"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidateId", "candidateVersion", "sourceCommit", "requestDigest", "packetDigest", "bundleDigest", "liveIterationDigest"],
+      "properties": {
+        "candidateId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+        "candidateVersion": {"type": "string", "minLength": 1, "maxLength": 32},
+        "sourceCommit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "requestDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+        "packetDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+        "bundleDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+        "liveIterationDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+      }
+    },
+    "target": {
+      "type": "object", "additionalProperties": false, "required": ["slot", "gameId", "relativePath", "status"],
+      "properties": {"slot": {"type": "string", "pattern": "^[0-9]{3}$"}, "gameId": {"type": "string", "pattern": "^[0-9]{3}-[a-z0-9-]+$"}, "relativePath": {"type": "string", "pattern": "^tools/game-hub/game-library/[0-9]{3}-[a-z0-9-]+$"}, "status": {"const": "TEST"}}
+    },
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "authorizes": {"type": "object", "additionalProperties": false, "required": ["installExactCandidateBytes", "installTrustedLocalGameHubShell", "registerGameHubDiscovery", "localRuntimeTest", "preserveRollback"], "properties": {"installExactCandidateBytes": {"const": true}, "installTrustedLocalGameHubShell": {"const": true}, "registerGameHubDiscovery": {"const": true}, "localRuntimeTest": {"const": true}, "preserveRollback": {"const": true}}},
+    "refuses": {"type": "object", "additionalProperties": false, "required": ["canonicalCheckoutOverwrite", "canon", "foundationMutation", "publicRelease", "selfPromotion", "outboundNetwork"], "properties": {"canonicalCheckoutOverwrite": {"const": true}, "canon": {"const": true}, "foundationMutation": {"const": true}, "publicRelease": {"const": true}, "selfPromotion": {"const": true}, "outboundNetwork": {"const": true}}},
+    "publicReuseRights": {"type": "object", "additionalProperties": false, "required": ["state", "directPublicReuseAllowed"], "properties": {"state": {"const": "HOLD"}, "directPublicReuseAllowed": {"const": false}}},
+    "statementDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"},
+    "authority": {"const": "RECORDED_HUMAN_DIRECTION"},
+    "decisionDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  }
+}

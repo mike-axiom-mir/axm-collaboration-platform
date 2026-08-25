@@ -6,14 +6,20 @@
   "required": ["schema", "version", "status", "candidate", "requestRef", "briefRef", "generator", "gameForgeProjectRef", "moduleBundle", "moduleBundleRef", "sourceFiles", "testPlanRef", "rootsGate", "declaredAuthority", "resources", "reuseRights", "limitations", "truth", "authority", "packetDigest"],
   "properties": {
     "schema": {"const": "axm.game-candidate-packet/v1"}, "version": {"const": "0.1.0"}, "status": {"const": "EXPERIMENTAL"},
-    "candidate": {"$ref": "semantic-common.schema.json#/$defs/candidate"},
+    "candidate": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["id", "version", "status"], "properties": {"id": {"const": "four-roots-run-native"}, "version": {"const": "v0.1"}, "status": {"const": "EXPERIMENTAL"}}},
+        {"type": "object", "additionalProperties": false, "required": ["id", "version", "status"], "properties": {"id": {"const": "twin-reactor-coop-native"}, "version": {"const": "v0.4"}, "status": {"const": "EXPERIMENTAL"}}}
+      ]
+    },
     "requestRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
     "briefRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
     "assetCapabilitySnapshotRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
     "prebuildPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "experienceFlowPlanRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
     "generator": {
       "type": "object", "additionalProperties": false, "required": ["id", "version", "recipeId", "aiUsed"],
-      "properties": {"id": {"const": "axm-native-game-recipe-engine"}, "version": {"const": "0.1.0"}, "recipeId": {"enum": ["four-roots-grid-game", "twin-reactor-action-coop"]}, "aiUsed": {"const": false}, "assetAware": {"const": true}, "knownRepairsAppliedBeforeBuild": {"const": true}}
+      "properties": {"id": {"const": "axm-native-game-recipe-engine"}, "version": {"const": "0.1.0"}, "recipeId": {"enum": ["four-roots-grid-game", "twin-reactor-action-coop"]}, "aiUsed": {"const": false}, "assetAware": {"const": true}, "knownRepairsAppliedBeforeBuild": {"const": true}, "experienceDirected": {"const": true}}
     },
     "gameForgeProjectRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
     "moduleBundle": {"$ref": "semantic-common.schema.json#/$defs/moduleBundle"},
@@ -25,7 +31,7 @@
     "resources": {"type": "object", "additionalProperties": false, "required": ["fileCount", "sourceBytes", "fileCountEnforced", "fileBytesEnforced", "totalBytesEnforced", "candidateProcesses"], "properties": {"fileCount": {"type": "integer", "minimum": 10, "maximum": 16}, "sourceBytes": {"type": "integer", "minimum": 1, "maximum": 1048576}, "fileCountEnforced": {"const": true}, "fileBytesEnforced": {"const": true}, "totalBytesEnforced": {"const": true}, "candidateProcesses": {"const": 0}}},
     "reuseRights": {"type": "object", "additionalProperties": false, "required": ["state", "directReuseAllowed", "authorityRef"], "properties": {"state": {"const": "RESEARCH_ONLY_HOLD"}, "directReuseAllowed": {"const": false}, "authorityRef": {"const": null}}},
     "limitations": {"type": "array", "minItems": 8, "maxItems": 32, "items": {"type": "string", "minLength": 1, "maxLength": 160}},
-    "truth": {"type": "object", "additionalProperties": false, "required": ["deterministicBytes", "gameCodeExecuted", "runtimeBehaviorProven", "visualBehaviorProven", "playJourneyProven", "persistenceProven", "installed", "integrated", "lessonActive", "promoted", "canonChanged"], "properties": {"deterministicBytes": {"const": true}, "gameCodeExecuted": {"const": false}, "assetProviderExecuted": {"const": false}, "assetArtifactsProduced": {"const": false}, "catalogInformedRendering": {"const": true}, "knownRepairsAppliedBeforeBuild": {"const": true}, "runtimeBehaviorProven": {"const": false}, "visualBehaviorProven": {"const": false}, "playJourneyProven": {"const": false}, "persistenceProven": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "lessonActive": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}}},
+    "truth": {"type": "object", "additionalProperties": false, "required": ["deterministicBytes", "gameCodeExecuted", "runtimeBehaviorProven", "visualBehaviorProven", "playJourneyProven", "persistenceProven", "installed", "integrated", "lessonActive", "promoted", "canonChanged"], "properties": {"deterministicBytes": {"const": true}, "gameCodeExecuted": {"const": false}, "assetProviderExecuted": {"const": false}, "assetArtifactsProduced": {"const": false}, "catalogInformedRendering": {"const": true}, "knownRepairsAppliedBeforeBuild": {"const": true}, "experienceFlowPlanned": {"const": true}, "runtimeBehaviorProven": {"const": false}, "visualBehaviorProven": {"const": false}, "playJourneyProven": {"const": false}, "persistenceProven": {"const": false}, "installed": {"const": false}, "integrated": {"const": false}, "lessonActive": {"const": false}, "promoted": {"const": false}, "canonChanged": {"const": false}}},
     "authority": {"const": "NONE"}, "packetDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
   }
 }

@@ -1,0 +1,88 @@
+{
+  "slot": "023",
+  "game_id": "023-twin-sparks",
+  "name": "Twin Sparks: Reactor Run",
+  "status": "TEST · MIKE-APPROVED INTERNAL PROMOTION · HUMAN TASTE AND BALANCE QA CONTINUES",
+  "description": "Two local pilots defend one reactor through three deterministic neon-circuit waves, combining independent controls, twin-link damage, partner revival, repair cores, and one shared outcome.",
+  "version": "0.4.0",
+  "min_players": 2,
+  "max_players": 2,
+  "default_visible_seats": 2,
+  "allowed_seat_types": ["human"],
+  "launch": {
+    "server_entry": "runtime/server.js",
+    "client_entry": "/games/023/",
+    "spectator_client_entry": "/games/023/",
+    "ready_path": "/health",
+    "port": 8823,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {
+    "supports_qr": false,
+    "supports_lan_link": false,
+    "supports_room_code": false,
+    "screen_occupies_seat": false,
+    "mode": "two-human-local-shared-keyboard"
+  },
+  "controls": {
+    "profile_id": "twin-sparks-two-keyboard-seats-v1",
+    "intent_protocol": "axm.local-keyboard-action-v1",
+    "phone_controller": false,
+    "gamepad": false,
+    "keyboard": true,
+    "mouse": true,
+    "touch": false,
+    "shared_screen": true,
+    "bindings": ["P1: WASD move, F fire or revive, G dash", "P2: arrow keys move, K fire or revive, L dash", "Enter: primary scene action", "Escape: pause or resume", "Visible lifecycle buttons use the same deterministic engine"]
+  },
+  "session": {
+    "passes_seat_map": false,
+    "returns_result_summary": false,
+    "drop_in_out_later": false,
+    "target_minutes": 5,
+    "persistence": "SESSION_ONLY"
+  },
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "runtime_internet_required": false,
+    "outbound_network_allowed": false,
+    "team_mode": "two-player-local-action-coop",
+    "simulation_authority": "browser-memory-deterministic-fixed-tick",
+    "save_authority": "none",
+    "win_condition": "both pilots keep the shared reactor alive through three waves",
+    "loss_condition": "reactor reaches zero or both pilots are down",
+    "canon_effect": "none"
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "shared-runtime",
+      "controller_evidence": ["candidate/index.html", "candidate/game.js", "tests/package-selftest.js"],
+      "state_authority": "server",
+      "state_authority_scope": "The managed local server owns the Game Hub launch route and exact installed file set. The deterministic play simulation is explicitly browser-memory only and has no persistent-save authority.",
+      "host_reload_recovery": "game-hub-active-launch",
+      "host_reload_recovery_scope": "Reload restores the installed title/lobby route. An in-progress browser-memory mission intentionally restarts in version 0.4.0.",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "not-applicable",
+      "blocking_overlay_escape": "verified",
+      "physical_phone_qa": "not-applicable",
+      "physical_phone_qa_scope": "This build advertises neither a phone controller nor touch input. It is a two-human shared-keyboard TEST build.",
+      "adapter_state_interface": "window.AXM_GAME_PUBLIC_STATE"
+    }
+  },
+  "package": {
+    "source_status": "exact-byte-bound-generated-candidate-plus-trusted-local-test-shell",
+    "installed": true,
+    "promoted_to_test": true,
+    "promoted_beyond_test": false,
+    "public_release": false,
+    "required_paths": [
+      "README_FIRST.md", "KNOWN_LIMITS.md", "game.manifest.json", "runtime/server.js", "runtime/host.html", "runtime/host.css", "tests/package-selftest.js",
+      "promotion/mike-test-promotion-decision.json", "promotion/test-installation-receipt.json",
+      "candidate/README.md", "candidate/asset-capability-snapshot.json", "candidate/candidate.receipt.json", "candidate/experience-flow-plan.json", "candidate/game-forge-project.json", "candidate/game.config.json", "candidate/game.js", "candidate/index.html", "candidate/installation-gap.json", "candidate/module.contract.json", "candidate/prebuild-plan.json", "candidate/sandbox.game.json", "candidate/styles.css", "candidate/test-plan.json"
+    ]
+  }
+}

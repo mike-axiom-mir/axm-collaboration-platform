@@ -20,9 +20,9 @@ project and a byte-bound static web game bundle. The admitted recipes are:
 - `twin-reactor-action-coop`: an offline two-keyboard-seat action arena with
   directional bolts, dashes, four enemy classes, deterministic waves, a shared
   reactor, proximity-linked damage, repair cores, partner revive, a visible
-  Warden practice route, and shared victory or defeat. Candidate v0.3 is the
-  first asset-aware 13-file rung; earlier candidates remain preserved by parent
-  commits.
+  Warden practice route, and shared victory or defeat. Candidate v0.4 is a
+  14-file asset- and experience-aware rung; earlier candidates remain preserved
+  by parent commits.
 
 Before Twin Reactor source bytes are built, the planner byte-binds exact JSON
 declarations from Asset Hands, Asset Fabric, and the visual capability catalog.
@@ -33,6 +33,14 @@ selecting seven game-relevant routes, five effects, and four known repairs,
 including projectile spawn/collision, combat silhouette separation, asset
 truth ceilings, and reduced-motion gameplay cues. Its exact Neon Circuit ×
 Aetherglass choices then inform the native canvas and CSS renderer.
+
+The separate `axm.game-experience-flow-plan/v1` is also emitted before source
+bytes. It binds lobby, mission introduction, active play, wave transition,
+Warden introduction, pause, victory, and defeat scenes; deterministic
+transition ticks; and staged disclosure. Player-relevant HUD stays in the
+arena, while exact controls, Asset Factory lineage, known repairs, and authority
+holds remain inspectable through an on-demand review drawer. The plan does not
+claim rendering quality or human taste approval.
 
 This is truthful composition, not asset execution. The capability snapshot
 means the relevant hands are declared by the Workshop contracts. The generator
@@ -53,5 +61,6 @@ Run:
 ```powershell
 node shared/code-capability-fabric/selftest-deterministic-game-candidate-generator-v1.js
 node shared/code-capability-fabric/selftest-asset-aware-game-prebuild-planner-v1.js
+node shared/code-capability-fabric/selftest-game-experience-director-v1.js
 node shared/code-capability-fabric/selftest-local-coop-action-game-recipe-v1.js
 ```

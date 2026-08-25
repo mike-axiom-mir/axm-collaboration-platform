@@ -10,7 +10,7 @@ async function main() {
   const generationResult = Generator.generate(request);
   const sessionOptions = {
     parentRoot: Sandbox.SANDBOX_STATE_ROOT,
-    sessionId: 'twin-reactor-coop-v2-22-asset-aware-review-r2',
+    sessionId: 'twin-reactor-coop-v2-23-experience-flow-review-r1',
     request,
     generationResult
   };
