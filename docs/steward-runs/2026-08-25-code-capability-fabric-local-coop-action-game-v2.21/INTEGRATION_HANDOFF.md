@@ -6,14 +6,16 @@ PR: <https://github.com/mike-axiom-mir/axm-collaboration-platform/pull/71>
 
 ## Exact source and target
 
-- Sealed implementation/evidence source commit: `b958fc300b6a6c703531e248cbf7a879be045ad7`
+- Sealed game implementation/evidence source commit: `b958fc300b6a6c703531e248cbf7a879be045ad7`
+- Cross-host city-projection portability repair commit: `ddef61f0242d08aa698a1cd23b75a10314d566fe`
+- Effective technical source through: `ddef61f0242d08aa698a1cd23b75a10314d566fe`
 - Source branch: `codex/code-capability-fabric-local-coop-action-game-v2.21`
 - Assumed target branch: `codex/code-capability-fabric-local-coop-action-game-v2.20`
 - Expected target head/base: `02f1bbdb6959d59b96fd3952b4b771a420a4bdc0`
 - Target review: PR 70, open draft and mergeable at drift check.
 - Integration shape: stacked fast-forward from the exact sealed v2.20 head; PR 71 is not based directly on `main`.
 
-The handoff note itself is the only documentation follow-up after the sealed source commit. The final branch-head commit containing this note is reported in the task closeout and on PR 71.
+Documentation-only follow-ups after the effective technical source are reported in the task closeout and on PR 71.
 
 ## Target-drift check before publication
 
@@ -29,6 +31,7 @@ Because the canonical checkout is busy and not at the assumed target, it is not 
 ## Changed paths
 
 - `shared/code-capability-fabric/` — recipe, generator contract, documentation, and focused countertests;
+- `shared/city-graph/` — explicit cross-host collation for deterministic generated projections;
 - `tools/sandbox/preview-coop-game-v1.js` — exact preview session label;
 - `registry/generated/` and `docs/generated/` — deterministic derived projections rebuilt for the contract change;
 - `docs/steward-runs/2026-08-25-code-capability-fabric-local-coop-action-game-v2.21/` — candidate, browser, capability, test, root-gate, and handoff evidence.
@@ -39,6 +42,7 @@ Because the canonical checkout is busy and not at the assumed target, it is not 
 - focused checks: `12/12`, `21/21`, `12/12` PASS;
 - all ten required `AGENTS.md` commands completed;
 - `verify.js`: `0 FAIL · 25 warn`;
+- local city-map selftest: `33` assertions PASS; city/schema/twin generated-view checks PASS after the portability repair;
 - unknown/unrun boundaries are listed in `TEST_REPORT.md`.
 
 ## Precise safe review route
