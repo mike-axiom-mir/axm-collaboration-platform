@@ -4,7 +4,7 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `9c61e304d602b161741148c9c808df4153fd2cf125cd95f4d0966d9cf0640edd`
+Semantic graph digest: `2a5f89736935a74c5611f5afa61b62c2660816fd6424429046301b1a85da218a`
 
 Blocks: 304 · Capabilities: 3173 · Schemas: 923 · Unresolved edges: 2079
 
@@ -220,7 +220,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/baseline-simulation-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 1 selftest(s) |
 | shared/city-gates | BRIDGE (DECLARED) | EXPERIMENTAL | NETWORK_WRITE, PUBLIC_RELEASE | 5 | 3 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
-| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 131 | 67 | 51 selftest(s) |
+| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 131 | 67 | 52 selftest(s) |
 | shared/compute-substrate-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 4 | 1 selftest(s) |
 | shared/deterministic-animation-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 3 | 2 selftest(s) |
 | shared/deterministic-audio-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 2 selftest(s) |

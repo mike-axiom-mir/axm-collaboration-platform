@@ -70,7 +70,7 @@ function makeFilesWritable(root) {
 }
 function decodeBundle(bundle, resources) {
   exact(bundle, ['schema', 'requiredSeats', 'files'], 'module bundle');
-  if (bundle.schema !== 'axm.module-bundle/v1' || bundle.requiredSeats !== 1 || !Array.isArray(bundle.files)) throw new Error('module bundle identity mismatch');
+  if (bundle.schema !== 'axm.module-bundle/v1' || ![1, 2].includes(bundle.requiredSeats) || !Array.isArray(bundle.files)) throw new Error('module bundle identity mismatch');
   if (bundle.files.length > resources.maxFiles) throw new Error('module bundle file ceiling exceeded');
   const seen = new Set(); let total = 0;
   const files = bundle.files.map((file, index) => {
@@ -89,12 +89,12 @@ function decodeBundle(bundle, resources) {
     return { path: portable, bytes, sha256: hashBytes(bytes), byteLength: bytes.length };
   }).sort((a, b) => compareText(a.path, b.path));
   if (total > resources.maxOutputBytes) throw new Error('candidate total byte ceiling exceeded');
-  return { files, total };
+  return { files, total, requiredSeats: bundle.requiredSeats };
 }
 function strictJson(bytes, name) { try { return JSON.parse(bytes.toString('utf8')); } catch (error) { throw new Error(name + ' is not valid JSON: ' + error.message); } }
 function fileMap(files) { return new Map(files.map((file) => [Core.pathKey(file.path), file])); }
 function forbid(text, patterns, label) { for (const pattern of patterns) if (pattern.test(text)) throw new Error(label + ' contains forbidden authority or network token: ' + pattern.source); }
-function validateStaticFiles(files, resources) {
+function validateStaticFiles(files, resources, declaredSeats) {
   if (!same(files.map((file) => file.path), Generator.REQUIRED_FILES)) throw new Error('candidate file set drifted');
   const map = fileMap(files);
   const get = (name) => map.get(Core.pathKey(name));
@@ -115,12 +115,23 @@ function validateStaticFiles(files, resources) {
   if (Object.values(receipt.authority).some((value) => value !== false) || receipt.authorityCeiling !== 'NONE') throw new Error('candidate receipt claims authority');
   const gap = strictJson(get('installation-gap.json').bytes, 'installation-gap.json');
   if (gap.installAllowed !== false || gap.nextGate !== 'MIKE_INSTALLATION_DECISION') throw new Error('installation gap was removed');
+  const config = strictJson(get('game.config.json').bytes, 'game.config.json');
+  const gameShapes = {
+    'axm.sandbox-grid-game-config/v1': { width: 16, height: 10, players: 1, candidateId: 'four-roots-run-native' },
+    'axm.local-coop-action-game-config/v1': { width: 30, height: 17, players: 2, candidateId: 'twin-reactor-coop-native' }
+  };
+  if (!Object.prototype.hasOwnProperty.call(gameShapes, config.schema)) throw new Error('game config recipe or seat scope is unsupported');
+  const shape = gameShapes[config.schema];
+  if (!shape || !config.session || config.session.players !== shape.players || config.session.network !== 'DISABLED' || config.session.persistence !== 'SESSION_ONLY') throw new Error('game config recipe or seat scope is unsupported');
+  if (declaredSeats !== undefined && declaredSeats !== shape.players) throw new Error('module bundle seat count differs from the exact game config');
+  if (manifest.id !== shape.candidateId || contract.id !== shape.candidateId || receipt.candidate.id !== shape.candidateId) throw new Error('candidate identity differs across static records');
+  if (shape.players === 2 && (!contract.provides.includes('axm.local-two-player-action-coop/v1') || !same(manifest.controls, ['p1-keyboard', 'p2-keyboard', 'visible-lifecycle-buttons']))) throw new Error('two-seat candidate lost its exact co-op contract');
   const project = strictJson(get('game-forge-project.json').bytes, 'game-forge-project.json');
-  if (project.schema !== 'axm.game-forge-project/v1' || project.world.width !== 16 || project.world.height !== 10 || project.world.cells.length !== 160) throw new Error('Game Forge project shape drifted');
+  if (project.schema !== 'axm.game-forge-project/v1' || project.world.width !== shape.width || project.world.height !== shape.height || project.world.cells.length !== shape.width * shape.height) throw new Error('Game Forge project shape drifted');
   const allowedTerrain = new Set(['empty', 'ground', 'wall', 'water', 'spawn', 'goal', 'hazard', 'path']);
   if (!project.world.cells.every((cell) => cell && allowedTerrain.has(cell.terrain) && cell.height === 0)) throw new Error('Game Forge project terrain is unsupported');
   if (files.length > resources.maxFiles || files.some((file) => file.byteLength > resources.maxFileBytes) || files.reduce((sum, file) => sum + file.byteLength, 0) > resources.maxOutputBytes) throw new Error('static candidate exceeds declared resources');
-  return { verdict: 'PASS', checks: ['exact-file-set', 'byte-digests', 'script-parse-only', 'network-authority-denial', 'external-script-only', 'contract-authority-ceiling', 'installation-hold', 'game-forge-project-shape', 'resource-ceilings'] };
+  return { verdict: 'PASS', requiredSeats: shape.players, checks: ['exact-file-set', 'byte-digests', 'script-parse-only', 'network-authority-denial', 'external-script-only', 'contract-authority-ceiling', 'installation-hold', 'exact-seat-contract', 'game-forge-project-shape', 'resource-ceilings'] };
 }
 function inspectDirectory(root, resources) {
   assertOrdinaryDirectory(root, 'iteration root');
@@ -162,7 +173,7 @@ function createSession(options) {
     const realRoots = Object.values(roots).map((root) => fs.realpathSync.native(root).toLowerCase());
     if (new Set(realRoots).size !== 4) throw new Error('source/output/evidence/lesson roots are not disjoint');
     const decoded = decodeBundle(result.packet.moduleBundle, request.resources);
-    validateStaticFiles(decoded.files, request.resources);
+    validateStaticFiles(decoded.files, request.resources, decoded.requiredSeats);
     writeFiles(path.join(roots.source, 'packet'), decoded.files);
     const iterationId = 'iteration-000';
     const iterationRoot = path.join(roots.output, iterationId);

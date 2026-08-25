@@ -9,13 +9,13 @@
     "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
     "title": {"type": "string", "minLength": 1, "maxLength": 80},
     "seed": {"type": "integer", "minimum": 0, "maximum": 4294967295},
-    "recipeId": {"const": "four-roots-grid-game"},
+    "recipeId": {"enum": ["four-roots-grid-game", "twin-reactor-action-coop"]},
     "difficulty": {"enum": ["CALM", "STANDARD", "BRISK"]},
     "world": {
       "type": "object",
       "additionalProperties": false,
       "required": ["width", "height"],
-      "properties": {"width": {"const": 16}, "height": {"const": 10}}
+      "properties": {"width": {"enum": [16, 30]}, "height": {"enum": [10, 17]}}
     },
     "theme": {
       "type": "object",
@@ -42,11 +42,20 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["persistence", "network", "players"],
-      "properties": {"persistence": {"const": "SESSION_ONLY"}, "network": {"const": "DISABLED"}, "players": {"const": 1}}
+      "properties": {"persistence": {"const": "SESSION_ONLY"}, "network": {"const": "DISABLED"}, "players": {"enum": [1, 2]}}
     },
     "authority": {"const": "NONE"},
     "briefDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
   },
+  "allOf": [
+    {
+      "if": {"properties": {"recipeId": {"const": "four-roots-grid-game"}}, "required": ["recipeId"]},
+      "then": {"properties": {"world": {"properties": {"width": {"const": 16}, "height": {"const": 10}}}, "session": {"properties": {"players": {"const": 1}}}}}
+    },
+    {
+      "if": {"properties": {"recipeId": {"const": "twin-reactor-action-coop"}}, "required": ["recipeId"]},
+      "then": {"properties": {"world": {"properties": {"width": {"const": 30}, "height": {"const": 17}}}, "session": {"properties": {"players": {"const": 2}}}}}
+    }
+  ],
   "$defs": {"color": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"}}
 }
-
