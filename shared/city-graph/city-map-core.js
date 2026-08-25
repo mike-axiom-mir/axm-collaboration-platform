@@ -2,6 +2,12 @@
 
 const crypto = require('crypto');
 
+const SORT_LOCALE = 'en-US';
+
+function compareText(left, right) {
+  return String(left).localeCompare(String(right), SORT_LOCALE);
+}
+
 const GRAPH_SCHEMA = 'axm.city-graph/v1';
 const BLOCK_SCHEMA = 'axm.block-view/v1';
 const RECEIPT_SCHEMA = 'axm.city-graph-receipt/v1';
@@ -60,7 +66,7 @@ function strings(value) {
 }
 
 function unique(values) {
-  return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b));
+  return Array.from(new Set(values)).sort(compareText);
 }
 
 function declarationId(row) {
@@ -224,7 +230,7 @@ function schemaLike(value) {
 function compileSnapshot(input) {
   input = input || {};
   const rows = Array.isArray(input.declarations) ? input.declarations : [];
-  const blocks = rows.map(makeBlock).sort((a, b) => a.id.localeCompare(b.id));
+  const blocks = rows.map(makeBlock).sort((a, b) => compareText(a.id, b.id));
   const seen = new Map();
   for (const block of blocks) {
     if (seen.has(block.id)) {
@@ -233,7 +239,7 @@ function compileSnapshot(input) {
     seen.set(block.id, block.source.root);
   }
 
-  const schemaRows = (Array.isArray(input.schemas) ? input.schemas : []).map(row => ({ id: row.id, path: row.path, sha256: row.sha256 })).sort((a, b) => a.id.localeCompare(b.id));
+  const schemaRows = (Array.isArray(input.schemas) ? input.schemas : []).map(row => ({ id: row.id, path: row.path, sha256: row.sha256 })).sort((a, b) => compareText(a.id, b.id));
   const schemaIds = new Set(schemaRows.map(row => row.id));
   const capabilities = new Map();
   const edges = [];
@@ -284,10 +290,10 @@ function compileSnapshot(input) {
       declaredContracts: rows.filter(row => !!row.contract).length
     },
     blocks,
-    capabilities: Array.from(capabilities.values()).sort((a, b) => a.id.localeCompare(b.id)),
+    capabilities: Array.from(capabilities.values()).sort((a, b) => compareText(a.id, b.id)),
     schemas: schemaRows,
-    edges: edges.sort((a, b) => canonical(a).localeCompare(canonical(b))),
-    unresolved: unresolved.sort((a, b) => canonical(a).localeCompare(canonical(b))),
+    edges: edges.sort((a, b) => compareText(canonical(a), canonical(b))),
+    unresolved: unresolved.sort((a, b) => compareText(canonical(a), canonical(b))),
     truth: {
       automaticInstall: false,
       automaticExecution: false,
