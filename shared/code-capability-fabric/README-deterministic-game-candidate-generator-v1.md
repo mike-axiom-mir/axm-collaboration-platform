@@ -17,8 +17,10 @@ project and an 11-file static web game bundle. The admitted recipes are:
 
 - `four-roots-grid-game`: the original one-player 16×10 route game; and
 - `twin-reactor-action-coop`: an offline two-keyboard-seat action arena with
-  attacks, dashes, deterministic waves, a shared reactor, partner revive, and
-  shared victory or defeat.
+  directional bolts, dashes, four enemy classes, deterministic waves, a shared
+  reactor, proximity-linked damage, repair cores, partner revive, a visible
+  Warden practice route, and shared victory or defeat. Candidate v0.2 is the
+  output-first patch; v0.1 remains preserved by the parent commit.
 
 Identical input produces
 byte-identical output. The native generator calls no provider, executes no

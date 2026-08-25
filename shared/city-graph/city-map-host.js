@@ -7,6 +7,11 @@ const Core = require('./city-map-core');
 
 const SKIP_DIRS = new Set(['.git', '.pytest_cache', '__pycache__', 'node_modules', 'vendor', 'exports', 'state', 'workspace', 'logs', 'backups', 'evidence', 'fixtures']);
 const SKIP_FILES = new Set(['bridge-token.txt', 'bridge_token.txt', 'bridge.log', 'workshop.log']);
+const SORT_LOCALE = 'en-US';
+
+function compareText(left, right) {
+  return String(left).localeCompare(String(right), SORT_LOCALE);
+}
 
 function textSha256(bytes) {
   return Core.sha256(Buffer.from(bytes).toString('utf8').replace(/\r\n?/g, '\n'));
@@ -43,7 +48,7 @@ function walkFiles(start, predicate, limit) {
     let entries;
     try { entries = fs.readdirSync(current, { withFileTypes: true }); }
     catch (_) { continue; }
-    entries.sort((a, b) => a.name.localeCompare(b.name));
+    entries.sort((a, b) => compareText(a.name, b.name));
     for (const entry of entries) {
       visited += 1;
       if (visited > limit) throw new Core.CityMapError('DISCOVERY_BUDGET_EXCEEDED', `Discovery exceeded ${limit} entries under ${start}`, { start, limit });
@@ -53,7 +58,7 @@ function walkFiles(start, predicate, limit) {
       } else if (entry.isFile() && !SKIP_FILES.has(entry.name.toLowerCase()) && predicate(absolute, entry.name)) found.push(absolute);
     }
   }
-  return found.sort((a, b) => a.localeCompare(b));
+  return found.sort(compareText);
 }
 
 function proofFiles(repositoryRoot, moduleRoot) {
@@ -68,7 +73,7 @@ function evidenceLocators(repositoryRoot, moduleRoot) {
     const file = path.join(moduleRoot, name);
     if (fs.existsSync(file) && fs.statSync(file).isFile()) found.push({ path: portable(repositoryRoot, file), sha256: textSha256(fs.readFileSync(file)) });
   }
-  return found.sort((a, b) => a.path.localeCompare(b.path));
+  return found.sort((a, b) => compareText(a.path, b.path));
 }
 
 function sourceFiles(repositoryRoot, moduleRoot) {
@@ -85,7 +90,7 @@ function discoverDeclarations(repositoryRoot, rootsConfig) {
     if (!fs.existsSync(absoluteRoot)) throw new Core.CityMapError('MISSING_DECLARATION_ROOT', `Configured root does not exist: ${rootConfig.path}`);
     const children = fs.readdirSync(absoluteRoot, { withFileTypes: true })
       .filter(entry => entry.isDirectory() && (!rootConfig.ignorePrefix || !entry.name.startsWith(rootConfig.ignorePrefix)))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => compareText(a.name, b.name));
     for (const child of children) {
       const moduleRoot = path.join(absoluteRoot, child.name);
       const files = (rootConfig.declarations || []).map(name => path.join(moduleRoot, name)).filter(file => fs.existsSync(file) && fs.statSync(file).isFile());
@@ -102,7 +107,7 @@ function discoverDeclarations(repositoryRoot, rootsConfig) {
       if (declaredEntry && inside(repositoryRoot, declaredEntry) && fs.existsSync(declaredEntry) && fs.statSync(declaredEntry).isFile()) {
         const entryRow = { path: portable(repositoryRoot, declaredEntry), sha256: textSha256(fs.readFileSync(declaredEntry)) };
         if (!observedSourceFiles.some(row => row.path === entryRow.path)) observedSourceFiles.push(entryRow);
-        observedSourceFiles.sort((a, b) => a.path.localeCompare(b.path));
+        observedSourceFiles.sort((a, b) => compareText(a.path, b.path));
       }
       declarations.push({
         root: modulePath,
@@ -117,7 +122,7 @@ function discoverDeclarations(repositoryRoot, rootsConfig) {
       });
     }
   }
-  return declarations.sort((a, b) => a.root.localeCompare(b.root));
+  return declarations.sort((a, b) => compareText(a.root, b.root));
 }
 
 function discoverSchemas(repositoryRoot, rootsConfig) {
@@ -144,7 +149,7 @@ function discoverSchemas(repositoryRoot, rootsConfig) {
     }
     byId.set(id, row);
   }
-  return Array.from(byId.values()).sort((a, b) => a.id.localeCompare(b.id));
+  return Array.from(byId.values()).sort((a, b) => compareText(a.id, b.id));
 }
 
 function sourceCommit(repositoryRoot) {

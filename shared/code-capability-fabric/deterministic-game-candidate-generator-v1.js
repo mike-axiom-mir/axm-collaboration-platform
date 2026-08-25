@@ -232,7 +232,7 @@ function buildCoopBundle(request) {
   const project = CoopRecipe.buildProject(request.brief);
   const contract = {
     schema: 'axm.module-contract/v1', id: candidate.id, version: candidate.version, status: candidate.status,
-    provides: ['axm.sandbox-playable-game/v1', 'axm.local-two-player-action-coop/v1'], consumes: ['axm.game-forge-project/v1'], permissions: [],
+    provides: ['axm.sandbox-playable-game/v1', 'axm.local-two-player-action-coop/v1', 'axm.deterministic-directional-combat/v1', 'axm.proximity-coop-bonus/v1', 'axm.shared-objective-repair-loop/v1', 'axm.visible-boss-practice-route/v1'], consumes: ['axm.game-forge-project/v1'], permissions: [],
     handoffs: { emits: ['axm.local-coop-action-visible-state/v1'], accepts: ['two-local-keyboard-seats', 'explicit-ui-lifecycle-controls'] }, rootsGate: ROOTS,
     lifecycle: { state_owner: 'browser-memory', reload: 'reset', disconnect: 'not-applicable', cleanup: 'automatic' },
     boundaries: { writes: [], refuses: ['network-use', 'host-environment-access', 'filesystem-access', 'browser-storage', 'dynamic-code', 'provider-call', 'hidden-player-seat-merging', 'automatic-install', 'automatic-integration', 'automatic-learning-admission', 'automatic-promotion', 'automatic-canon'] }
@@ -244,7 +244,11 @@ function buildCoopBundle(request) {
     ['two-seat-isolation', 'P1 and P2 movement, attacks, and dashes remain independently addressable.', 'deterministic-runtime'],
     ['shared-objective', 'Both players defend one reactor and receive one shared victory or defeat.', 'deterministic-runtime'],
     ['partner-revive', 'A standing nearby partner can revive a downed teammate; self-revive and distant revive are absent.', 'runtime-countertest'],
-    ['entity-cap', 'Enemy state never exceeds the declared entity ceiling.', 'runtime-countertest'],
+    ['directional-bolts', 'Each seat fires bounded visible bolts in its own facing direction.', 'browser-play'],
+    ['twin-link', 'Proximity is visibly disclosed and deterministically strengthens both seats without merging them.', 'browser-play'],
+    ['enemy-classes', 'Spark, runner, brute, and Warden behavior remains typed and bounded.', 'deterministic-runtime'],
+    ['repair-loop', 'Eligible enemy defeats emit bounded green cores that visibly repair a damaged shared reactor.', 'browser-play'],
+    ['entity-cap', 'Enemy, projectile, and repair-core state never exceeds declared ceilings.', 'runtime-countertest'],
     ['network-storage-denial', 'The candidate uses no network, provider, persistence, filesystem, or dynamic-code surface.', 'sandbox-boundary'],
     ['keyboard-journey', 'Both keyboard seats visibly move their own avatar in the detached preview.', 'browser-play'],
     ['lifecycle-controls', 'Visible start, pause, resume, and restart controls operate the same bounded engine.', 'browser-click'],

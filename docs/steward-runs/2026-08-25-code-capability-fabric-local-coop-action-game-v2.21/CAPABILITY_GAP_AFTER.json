@@ -1,0 +1,84 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "two-seat-output",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.input.two-keyboard-seats",
+        "visual.capture.live"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.input.two-keyboard-seats": ["one local keyboard"],
+        "visual.capture.live": ["in-app browser screenshots and semantic state; no rolling buffer"]
+      }
+    },
+    {
+      "id": "combat-output",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.combat.directional-bolts",
+        "game.combat.typed-enemies"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.combat.directional-bolts": ["fixed-tick bounded static candidate"],
+        "game.combat.typed-enemies": ["spark, runner, brute, Warden only"]
+      }
+    },
+    {
+      "id": "cooperation-output",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.coop.proximity-link",
+        "game.objective.repair-core-loop"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.coop.proximity-link": ["two local seats; no identity merge"],
+        "game.objective.repair-core-loop": ["six-core ceiling; shared reactor only"]
+      }
+    },
+    {
+      "id": "boss-output",
+      "required": true,
+      "status": "READY",
+      "available": ["game.boss.visible-practice-route"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.boss.visible-practice-route": ["visible TEST route"]
+      }
+    },
+    {
+      "id": "bounded-candidate",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "candidate.bytes.deterministic",
+        "candidate.authority.none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "candidate.bytes.deterministic": ["exact recipe and request"],
+        "candidate.authority.none": ["no install, integration, publish, promotion, or CANON"]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

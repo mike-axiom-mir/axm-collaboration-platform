@@ -37,6 +37,7 @@ test('co-op request and packet bind the exact second recipe', () => {
   assert.strictEqual(result.packet.moduleBundle.requiredSeats, 2);
   assert.deepStrictEqual(result.packet.sourceFiles.map((item) => item.path), Generator.REQUIRED_FILES);
   assert.strictEqual(result.packet.candidate.id, 'twin-reactor-coop-native');
+  assert.strictEqual(result.packet.candidate.version, 'v0.2');
 });
 
 test('co-op generation is byte-identical and fully byte-bound', () => {
@@ -85,6 +86,10 @@ test('generated project, config, manifest, and contract preserve two-seat scope'
   assert.notDeepStrictEqual(config.inputs.p1, config.inputs.p2);
   assert.deepStrictEqual(manifest.controls, ['p1-keyboard', 'p2-keyboard', 'visible-lifecycle-buttons']);
   assert(contract.provides.includes('axm.local-two-player-action-coop/v1'));
+  assert(contract.provides.includes('axm.deterministic-directional-combat/v1'));
+  assert(contract.provides.includes('axm.proximity-coop-bonus/v1'));
+  assert(contract.provides.includes('axm.shared-objective-repair-loop/v1'));
+  assert(contract.provides.includes('axm.visible-boss-practice-route/v1'));
   assert.deepStrictEqual(contract.permissions, []);
   assert(contract.boundaries.refuses.includes('hidden-player-seat-merging'));
 });
@@ -119,6 +124,42 @@ test('both seats can attack and score without merging identities', () => {
   p2Engine.step({ 'p2-attack': true });
   assert.strictEqual(p2Engine.snapshot().players[0].score, 0);
   assert.strictEqual(p2Engine.snapshot().players[1].score, 1);
+});
+
+test('directional bolts expose an exact proximity-link damage bonus', () => {
+  const linked = api.createEngine('LINK_DAMAGE');
+  linked.step({ 'p1-attack': true });
+  assert.strictEqual(linked.snapshot().linked, true);
+  assert.strictEqual(linked.snapshot().enemies[0].hp, 1);
+  const separated = api.createEngine('LINK_DAMAGE_SEPARATED');
+  separated.step({ 'p1-attack': true });
+  assert.strictEqual(separated.snapshot().linked, false);
+  assert.strictEqual(separated.snapshot().enemies[0].hp, 2);
+});
+
+test('repair cores restore bounded shared reactor health through a visible player pickup', () => {
+  const engine = api.createEngine('REPAIR_CORE');
+  engine.step({});
+  const state = engine.snapshot();
+  assert.strictEqual(state.reactor.health, 76);
+  assert.strictEqual(state.repairCores.length, 0);
+  assert.strictEqual(state.players[0].cores, 1);
+  assert.match(state.message, /restored the reactor/i);
+});
+
+test('wave-three Warden is typed, durable, and inside the same enemy ceiling', () => {
+  const state = api.createEngine('WARDEN').snapshot();
+  assert.strictEqual(state.enemies.length, 1);
+  assert.strictEqual(state.enemies[0].kind, 'warden');
+  assert.strictEqual(state.enemies[0].hp, 8);
+  assert.strictEqual(state.enemies[0].maxHp, 8);
+  assert.strictEqual(state.reactor.health, 76);
+});
+
+test('a bolt spawned inside the Warden hits instead of tunneling past it', () => {
+  const engine = api.createEngine('WARDEN_OVERLAP');
+  engine.step({ 'p1-attack': true });
+  assert.strictEqual(engine.snapshot().enemies[0].hp, 6);
 });
 
 test('dash is bounded by an exact cooldown', () => {
@@ -180,6 +221,8 @@ test('identical two-seat traces replay identically and stay inside the entity ca
   for (let repeat = 0; repeat < 40; repeat += 1) for (const input of trace) { left.step(input); right.step(clone(input)); }
   assert.deepStrictEqual(left.snapshot(), right.snapshot());
   assert(left.snapshot().enemies.length <= 18);
+  assert(left.snapshot().projectiles.length <= 24);
+  assert(left.snapshot().repairCores.length <= 6);
 });
 
 test('pause freezes simulation and reset returns exact ready state', () => {
