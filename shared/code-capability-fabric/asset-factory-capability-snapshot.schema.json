@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/asset-factory-capability-snapshot-v1.schema.json",
+  "title": "AXM Asset Factory capability snapshot v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "observed", "catalogInventory", "declaredHands", "selections", "truth", "limitations", "authority", "snapshotDigest"],
+  "properties": {
+    "schema": { "const": "axm.asset-factory-capability-snapshot/v1" },
+    "version": { "const": "0.1.0" },
+    "status": { "const": "TEST" },
+    "observed": {
+      "type": "object",
+      "required": ["assetHands", "assetFabric", "visualCatalog"],
+      "properties": {
+        "assetHands": { "$ref": "#/$defs/sourceRef" },
+        "assetFabric": { "$ref": "#/$defs/sourceRef" },
+        "visualCatalog": { "$ref": "#/$defs/sourceRef" }
+      },
+      "additionalProperties": false
+    },
+    "catalogInventory": {
+      "type": "object",
+      "required": ["builtInHandsDeclared", "serviceCapabilitiesDeclared", "assetFabricCapabilitiesDeclared", "visualAdaptersDeclared", "aetherFxModulesDeclared", "pbrMaterialFamiliesDeclared", "portableEffectsDeclared", "stylePresetsDeclared", "treatmentMoldsDeclared"],
+      "properties": {
+        "builtInHandsDeclared": { "type": "integer", "minimum": 1 },
+        "serviceCapabilitiesDeclared": { "type": "integer", "minimum": 1 },
+        "assetFabricCapabilitiesDeclared": { "type": "integer", "minimum": 1 },
+        "visualAdaptersDeclared": { "type": "integer", "minimum": 1 },
+        "aetherFxModulesDeclared": { "type": "integer", "minimum": 1 },
+        "pbrMaterialFamiliesDeclared": { "type": "integer", "minimum": 1 },
+        "portableEffectsDeclared": { "type": "integer", "minimum": 1 },
+        "stylePresetsDeclared": { "type": "integer", "minimum": 1 },
+        "treatmentMoldsDeclared": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "declaredHands": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/declaredHand" } },
+    "selections": {
+      "type": "object",
+      "required": ["style", "treatment", "effects"],
+      "properties": {
+        "style": { "$ref": "#/$defs/style" },
+        "treatment": { "$ref": "#/$defs/treatment" },
+        "effects": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/effect" } }
+      },
+      "additionalProperties": false
+    },
+    "truth": {
+      "type": "object",
+      "required": ["declarationsAreAvailabilityProofOnly", "artifactBytesProduced", "visualQualityProven", "providerCodeLoaded", "networkUsed", "workspaceScanned"],
+      "properties": {
+        "declarationsAreAvailabilityProofOnly": { "const": true },
+        "artifactBytesProduced": { "const": false },
+        "visualQualityProven": { "const": false },
+        "providerCodeLoaded": { "const": false },
+        "networkUsed": { "const": false },
+        "workspaceScanned": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "limitations": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 120 } },
+    "authority": { "const": "NONE" },
+    "snapshotDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "colour": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+    "sourceRef": {
+      "type": "object",
+      "required": ["id", "schema", "sha256", "declaredDigest"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "schema": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "declaredDigest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] }
+      },
+      "additionalProperties": false
+    },
+    "declaredHand": {
+      "type": "object",
+      "required": ["id", "operations", "outputs", "availability", "artifactProduced"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$" },
+        "operations": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["create", "edit", "inspect", "workflow"] } },
+        "outputs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 160 } },
+        "availability": { "const": "DECLARED_BUILT_IN" },
+        "artifactProduced": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "style": {
+      "type": "object",
+      "required": ["id", "name", "source", "intent", "sha256"],
+      "properties": {
+        "id": { "const": "arcade-neon-circuit" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "source": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "intent": {
+          "type": "object",
+          "required": ["accessibility", "character", "geometry", "intensity", "keywords", "material", "palette", "pattern"],
+          "properties": {
+            "accessibility": { "type": "object", "required": ["highContrast", "minimumTextContrast", "reducedMotion"], "properties": { "highContrast": { "type": "boolean" }, "minimumTextContrast": { "type": "number", "minimum": 1, "maximum": 21 }, "reducedMotion": { "type": "boolean" } }, "additionalProperties": false },
+            "character": { "type": "object", "required": ["accessory", "headShape", "outfit", "proportion", "silhouette"], "properties": { "accessory": { "type": "string" }, "headShape": { "type": "string" }, "outfit": { "type": "string" }, "proportion": { "type": "number" }, "silhouette": { "type": "string" } }, "additionalProperties": false },
+            "geometry": { "type": "object", "required": ["cornerRoundness", "detailDensity", "silhouetteExaggeration"], "properties": { "cornerRoundness": { "type": "number" }, "detailDensity": { "type": "number" }, "silhouetteExaggeration": { "type": "number" } }, "additionalProperties": false },
+            "intensity": { "type": "number" },
+            "keywords": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 80 } },
+            "material": { "type": "object", "required": ["clearcoat", "emissiveStrength", "gloss", "glowIntensity", "glowRadius", "grain", "iridescence", "metallic", "outlineWidth", "pulseSpeed", "roughness", "sheen", "shimmerSpeed", "specular", "translucency", "weathering"], "properties": { "clearcoat": { "type": "number" }, "emissiveStrength": { "type": "number" }, "gloss": { "type": "number" }, "glowIntensity": { "type": "number" }, "glowRadius": { "type": "number" }, "grain": { "type": "number" }, "iridescence": { "type": "number" }, "metallic": { "type": "number" }, "outlineWidth": { "type": "number" }, "pulseSpeed": { "type": "number" }, "roughness": { "type": "number" }, "sheen": { "type": "number" }, "shimmerSpeed": { "type": "number" }, "specular": { "type": "number" }, "translucency": { "type": "number" }, "weathering": { "type": "number" } }, "additionalProperties": false },
+            "palette": { "type": "object", "required": ["accent", "primary", "secondary"], "properties": { "accent": { "$ref": "#/$defs/colour" }, "primary": { "$ref": "#/$defs/colour" }, "secondary": { "$ref": "#/$defs/colour" } }, "additionalProperties": false },
+            "pattern": { "type": "object", "required": ["kind", "scale", "strength"], "properties": { "kind": { "type": "string" }, "scale": { "type": "number" }, "strength": { "type": "number" } }, "additionalProperties": false }
+          },
+          "additionalProperties": false
+        },
+        "sha256": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
+    "treatment": {
+      "type": "object",
+      "required": ["id", "name", "source", "constraints", "palette", "sha256"],
+      "properties": {
+        "id": { "const": "aetherglass-cinematic" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "source": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "constraints": { "type": "object", "required": ["maxEffectCost", "maxLayers", "minimumTextContrast", "preserveGameplayCues", "reducedMotionFallback"], "properties": { "maxEffectCost": { "type": "integer", "minimum": 0 }, "maxLayers": { "type": "integer", "minimum": 1 }, "minimumTextContrast": { "type": "number", "minimum": 1, "maximum": 21 }, "preserveGameplayCues": { "const": true }, "reducedMotionFallback": { "const": true } }, "additionalProperties": false },
+        "palette": { "type": "object", "required": ["accent", "background", "highlight", "mutedText", "primary", "secondary", "shadow", "surface", "text"], "properties": { "accent": { "$ref": "#/$defs/colour" }, "background": { "$ref": "#/$defs/colour" }, "highlight": { "$ref": "#/$defs/colour" }, "mutedText": { "$ref": "#/$defs/colour" }, "primary": { "$ref": "#/$defs/colour" }, "secondary": { "$ref": "#/$defs/colour" }, "shadow": { "$ref": "#/$defs/colour" }, "surface": { "$ref": "#/$defs/colour" }, "text": { "$ref": "#/$defs/colour" } }, "additionalProperties": false },
+        "sha256": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
+    "effect": { "type": "object", "required": ["id", "kind", "source", "css", "svg", "tokens", "sha256"], "properties": { "id": { "type": "string", "minLength": 1, "maxLength": 80 }, "kind": { "type": "string", "minLength": 1, "maxLength": 120 }, "source": { "type": "string", "minLength": 1, "maxLength": 160 }, "css": { "type": "boolean" }, "svg": { "type": "boolean" }, "tokens": { "type": "boolean" }, "sha256": { "$ref": "#/$defs/digest" } }, "additionalProperties": false }
+  },
+  "additionalProperties": false
+}

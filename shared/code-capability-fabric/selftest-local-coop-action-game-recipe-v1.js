@@ -37,7 +37,7 @@ test('co-op request and packet bind the exact second recipe', () => {
   assert.strictEqual(result.packet.moduleBundle.requiredSeats, 2);
   assert.deepStrictEqual(result.packet.sourceFiles.map((item) => item.path), Generator.REQUIRED_FILES);
   assert.strictEqual(result.packet.candidate.id, 'twin-reactor-coop-native');
-  assert.strictEqual(result.packet.candidate.version, 'v0.2');
+  assert.strictEqual(result.packet.candidate.version, 'v0.3');
 });
 
 test('co-op generation is byte-identical and fully byte-bound', () => {
@@ -81,6 +81,8 @@ test('generated project, config, manifest, and contract preserve two-seat scope'
   const manifest = JSON.parse(fileBytes(result, 'sandbox.game.json'));
   const contract = JSON.parse(fileBytes(result, 'module.contract.json'));
   assert.strictEqual(project.world.cells.length, 30 * 17);
+  assert.strictEqual(project.version, '0.3.0');
+  assert.strictEqual(project.capabilityPlan.schema, 'axm.game-prebuild-plan/v1');
   assert.strictEqual(config.schema, 'axm.local-coop-action-game-config/v1');
   assert.strictEqual(config.session.players, 2);
   assert.notDeepStrictEqual(config.inputs.p1, config.inputs.p2);
@@ -90,8 +92,45 @@ test('generated project, config, manifest, and contract preserve two-seat scope'
   assert(contract.provides.includes('axm.proximity-coop-bonus/v1'));
   assert(contract.provides.includes('axm.shared-objective-repair-loop/v1'));
   assert(contract.provides.includes('axm.visible-boss-practice-route/v1'));
+  assert(contract.provides.includes('axm.asset-aware-game-prebuild/v1'));
+  assert(contract.provides.includes('axm.known-repair-before-build/v1'));
+  assert(contract.provides.includes('axm.catalog-informed-game-rendering/v1'));
   assert.deepStrictEqual(contract.permissions, []);
   assert(contract.boundaries.refuses.includes('hidden-player-seat-merging'));
+});
+
+test('asset capability snapshot and prebuild plan are byte-bound candidate data', () => {
+  const snapshot = JSON.parse(fileBytes(result, 'asset-capability-snapshot.json'));
+  const plan = JSON.parse(fileBytes(result, 'prebuild-plan.json'));
+  const receipt = JSON.parse(fileBytes(result, 'candidate.receipt.json'));
+  assert.strictEqual(snapshot.schema, 'axm.asset-factory-capability-snapshot/v1');
+  assert.strictEqual(plan.schema, 'axm.game-prebuild-plan/v1');
+  assert.strictEqual(result.packet.assetCapabilitySnapshotRef.sha256, result.packet.sourceFiles.find((item) => item.path === 'asset-capability-snapshot.json').sha256);
+  assert.strictEqual(result.packet.prebuildPlanRef.sha256, result.packet.sourceFiles.find((item) => item.path === 'prebuild-plan.json').sha256);
+  assert.strictEqual(receipt.prebuild.snapshotRef.sha256, snapshot.snapshotDigest);
+  assert.strictEqual(receipt.prebuild.planRef.sha256, plan.planDigest);
+});
+
+test('known repairs and selected visual system exist before game source bytes', () => {
+  const config = JSON.parse(fileBytes(result, 'game.config.json'));
+  const plan = JSON.parse(fileBytes(result, 'prebuild-plan.json'));
+  assert(config.prebuild.appliedRepairs.includes('projectile-spawn-and-swept-collision-v1'));
+  assert(plan.repairs.every((item) => item.state === 'APPLIED_BEFORE_BUILD'));
+  assert.strictEqual(config.visual.stylePresetId, 'arcade-neon-circuit');
+  assert.strictEqual(config.visual.treatmentId, 'aetherglass-cinematic');
+  assert.deepStrictEqual(config.visual.effectIds, ['glow', 'gradientBorder', 'scanlines', 'spotlight', 'vignette']);
+});
+
+test('asset declarations never become produced-artifact or provider-execution claims', () => {
+  const snapshot = JSON.parse(fileBytes(result, 'asset-capability-snapshot.json'));
+  const plan = JSON.parse(fileBytes(result, 'prebuild-plan.json'));
+  const receipt = JSON.parse(fileBytes(result, 'candidate.receipt.json'));
+  assert(snapshot.declaredHands.every((item) => item.artifactProduced === false));
+  assert(plan.assetRoutes.every((item) => item.artifactProduced === false));
+  assert.strictEqual(receipt.truth.assetProviderExecuted, false);
+  assert.strictEqual(receipt.truth.assetArtifactsProduced, false);
+  assert.strictEqual(result.truth.assetProviderExecuted, false);
+  assert.strictEqual(result.truth.assetArtifactsProduced, false);
 });
 
 test('generated source exposes a deterministic pure engine and no ambient host dependency', () => {

@@ -10,14 +10,14 @@ async function main() {
   const generationResult = Generator.generate(request);
   const sessionOptions = {
     parentRoot: Sandbox.SANDBOX_STATE_ROOT,
-    sessionId: 'twin-reactor-coop-v2-21-review-r5',
+    sessionId: 'twin-reactor-coop-v2-22-asset-aware-review-r2',
     request,
     generationResult
   };
   const session = fs.existsSync(path.join(sessionOptions.parentRoot, sessionOptions.sessionId))
     ? Sandbox.resumeSession(sessionOptions)
     : Sandbox.createSession(sessionOptions);
-  const preview = await Sandbox.startPreview(session);
+  const preview = await Sandbox.startPreview(session, undefined, 52600);
   process.stdout.write(JSON.stringify({
     schema: 'axm.sandbox-preview-start/v1', status: 'TEST', url: preview.url,
     sessionId: session.sessionId, candidateRef: session.receipt.candidateRef,

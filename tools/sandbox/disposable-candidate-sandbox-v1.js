@@ -95,7 +95,10 @@ function strictJson(bytes, name) { try { return JSON.parse(bytes.toString('utf8'
 function fileMap(files) { return new Map(files.map((file) => [Core.pathKey(file.path), file])); }
 function forbid(text, patterns, label) { for (const pattern of patterns) if (pattern.test(text)) throw new Error(label + ' contains forbidden authority or network token: ' + pattern.source); }
 function validateStaticFiles(files, resources, declaredSeats) {
-  if (!same(files.map((file) => file.path), Generator.REQUIRED_FILES)) throw new Error('candidate file set drifted');
+  const candidatePaths = files.map((file) => file.path);
+  const legacyFileSet = same(candidatePaths, Generator.LEGACY_REQUIRED_FILES);
+  const assetAwareFileSet = same(candidatePaths, Generator.REQUIRED_FILES);
+  if (!legacyFileSet && !assetAwareFileSet) throw new Error('candidate file set drifted');
   const map = fileMap(files);
   const get = (name) => map.get(Core.pathKey(name));
   const script = get('game.js').bytes.toString('utf8');
@@ -122,6 +125,7 @@ function validateStaticFiles(files, resources, declaredSeats) {
   };
   if (!Object.prototype.hasOwnProperty.call(gameShapes, config.schema)) throw new Error('game config recipe or seat scope is unsupported');
   const shape = gameShapes[config.schema];
+  if ((shape.players === 1 && !legacyFileSet) || (shape.players === 2 && !assetAwareFileSet)) throw new Error('candidate file set differs from the exact game recipe');
   if (!shape || !config.session || config.session.players !== shape.players || config.session.network !== 'DISABLED' || config.session.persistence !== 'SESSION_ONLY') throw new Error('game config recipe or seat scope is unsupported');
   if (declaredSeats !== undefined && declaredSeats !== shape.players) throw new Error('module bundle seat count differs from the exact game config');
   if (manifest.id !== shape.candidateId || contract.id !== shape.candidateId || receipt.candidate.id !== shape.candidateId) throw new Error('candidate identity differs across static records');
@@ -131,7 +135,14 @@ function validateStaticFiles(files, resources, declaredSeats) {
   const allowedTerrain = new Set(['empty', 'ground', 'wall', 'water', 'spawn', 'goal', 'hazard', 'path']);
   if (!project.world.cells.every((cell) => cell && allowedTerrain.has(cell.terrain) && cell.height === 0)) throw new Error('Game Forge project terrain is unsupported');
   if (files.length > resources.maxFiles || files.some((file) => file.byteLength > resources.maxFileBytes) || files.reduce((sum, file) => sum + file.byteLength, 0) > resources.maxOutputBytes) throw new Error('static candidate exceeds declared resources');
-  return { verdict: 'PASS', requiredSeats: shape.players, checks: ['exact-file-set', 'byte-digests', 'script-parse-only', 'network-authority-denial', 'external-script-only', 'contract-authority-ceiling', 'installation-hold', 'exact-seat-contract', 'game-forge-project-shape', 'resource-ceilings'] };
+  if (shape.players === 2) {
+    const snapshot = strictJson(get('asset-capability-snapshot.json').bytes, 'asset-capability-snapshot.json');
+    const plan = strictJson(get('prebuild-plan.json').bytes, 'prebuild-plan.json');
+    if (snapshot.schema !== 'axm.asset-factory-capability-snapshot/v1' || snapshot.truth.artifactBytesProduced !== false || snapshot.truth.providerCodeLoaded !== false) throw new Error('asset capability snapshot overclaims production or provider execution');
+    if (plan.schema !== 'axm.game-prebuild-plan/v1' || !Array.isArray(plan.repairs) || plan.repairs.length < 1 || plan.repairs.some((repair) => repair.state !== 'APPLIED_BEFORE_BUILD') || plan.truth.assetArtifactsProduced !== false) throw new Error('asset-aware prebuild plan is absent or overclaims artifact production');
+    if (config.prebuild.planDigest !== plan.planDigest || config.prebuild.snapshotDigest !== snapshot.snapshotDigest) throw new Error('game config lost exact asset-aware prebuild lineage');
+  }
+  return { verdict: 'PASS', requiredSeats: shape.players, checks: ['exact-file-set', 'byte-digests', 'script-parse-only', 'network-authority-denial', 'external-script-only', 'contract-authority-ceiling', 'installation-hold', 'exact-seat-contract', 'game-forge-project-shape', 'asset-prebuild-lineage', 'resource-ceilings'] };
 }
 function inspectDirectory(root, resources) {
   assertOrdinaryDirectory(root, 'iteration root');
@@ -353,8 +364,9 @@ function reviewShell(session, iteration) {
   const title = 'AXM Detached Game Candidate Review';
   return Buffer.from('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + title + '</title><style>body{margin:0;background:#02050a;color:#f5f8ff;font:16px system-ui}header{padding:12px 18px;border-bottom:1px solid #31465f;background:#0a1421}strong{color:#ffcf5a}iframe{display:block;width:100%;height:calc(100vh - 74px);border:0;background:white}</style></head><body><header><strong>TEST / detached / not installed</strong> · ' + session.sessionId + ' · ' + iteration.id + '</header><iframe title="Detached game candidate" sandbox="allow-scripts" src="/candidate/index.html"></iframe></body></html>\n', 'utf8');
 }
-async function startPreview(session, requestedIterationId) {
+async function startPreview(session, requestedIterationId, requestedPort = 0) {
   if (!session.request.authorization.sandboxPreview) throw new Error('sandbox preview is not authorized');
+  if (!Number.isInteger(requestedPort) || requestedPort < 0 || requestedPort > 65535) throw new Error('preview port must be an integer from 0 through 65535');
   const iteration = readIteration(session, requestedIterationId || session.currentIteration.id);
   const root = iteration.root;
   const server = http.createServer((request, response) => {
@@ -378,7 +390,7 @@ async function startPreview(session, requestedIterationId) {
   server.maxHeadersCount = 48;
   server.requestTimeout = 5000;
   server.headersTimeout = 5000;
-  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(requestedPort, '127.0.0.1', resolve); });
   const address = server.address();
   return { url: 'http://127.0.0.1:' + address.port + '/', iteration: { id: requestedIterationId || session.currentIteration.id, digest: iteration.iterationDigest }, candidateProcesses: 0, close: () => new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve())) };
 }

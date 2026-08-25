@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/game-prebuild-plan-v1.schema.json",
+  "title": "AXM game prebuild plan v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "recipeId", "snapshotRef", "targetCanvas", "visualSystem", "assetRoutes", "repairs", "truth", "authority", "planDigest"],
+  "properties": {
+    "schema": { "const": "axm.game-prebuild-plan/v1" },
+    "version": { "const": "0.1.0" },
+    "status": { "const": "TEST" },
+    "recipeId": { "const": "twin-reactor-action-coop" },
+    "snapshotRef": { "type": "object", "required": ["schema", "sha256"], "properties": { "schema": { "const": "axm.asset-factory-capability-snapshot/v1" }, "sha256": { "$ref": "#/$defs/digest" } }, "additionalProperties": false },
+    "targetCanvas": { "type": "object", "required": ["medium", "width", "height", "unit", "colourSpace", "runtime"], "properties": { "medium": { "const": "game-world" }, "width": { "const": 960 }, "height": { "const": 544 }, "unit": { "const": "px" }, "colourSpace": { "const": "srgb" }, "runtime": { "const": "canvas-2d" } }, "additionalProperties": false },
+    "visualSystem": {
+      "type": "object",
+      "required": ["stylePresetId", "treatmentId", "effectIds", "palette", "minimumTextContrast", "reducedMotionFallback", "preserveGameplayCues"],
+      "properties": {
+        "stylePresetId": { "const": "arcade-neon-circuit" },
+        "treatmentId": { "const": "aetherglass-cinematic" },
+        "effectIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["glow", "gradientBorder", "scanlines", "spotlight", "vignette"] } },
+        "palette": { "type": "object", "required": ["background", "surface", "text", "mutedText", "p1", "p2", "enemy", "highlight", "repair", "reactor"], "properties": { "background": { "$ref": "#/$defs/colour" }, "surface": { "$ref": "#/$defs/colour" }, "text": { "$ref": "#/$defs/colour" }, "mutedText": { "$ref": "#/$defs/colour" }, "p1": { "$ref": "#/$defs/colour" }, "p2": { "$ref": "#/$defs/colour" }, "enemy": { "$ref": "#/$defs/colour" }, "highlight": { "$ref": "#/$defs/colour" }, "repair": { "$ref": "#/$defs/colour" }, "reactor": { "$ref": "#/$defs/colour" } }, "additionalProperties": false },
+        "minimumTextContrast": { "type": "number", "minimum": 1, "maximum": 21 },
+        "reducedMotionFallback": { "const": true },
+        "preserveGameplayCues": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "assetRoutes": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/assetRoute" } },
+    "repairs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/repair" } },
+    "truth": { "type": "object", "required": ["builtBeforeCandidateBytes", "knownRepairRulesApplied", "assetProviderExecuted", "assetArtifactsProduced", "catalogInformedRendering", "outputQualityProven"], "properties": { "builtBeforeCandidateBytes": { "const": true }, "knownRepairRulesApplied": { "const": true }, "assetProviderExecuted": { "const": false }, "assetArtifactsProduced": { "const": false }, "catalogInformedRendering": { "const": true }, "outputQualityProven": { "const": false } }, "additionalProperties": false },
+    "authority": { "const": "NONE" },
+    "planDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "colour": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+    "assetRoute": { "type": "object", "required": ["id", "handId", "outputs", "purpose", "state", "artifactProduced"], "properties": { "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$" }, "handId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$" }, "outputs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 160 } }, "purpose": { "type": "string", "minLength": 1, "maxLength": 240 }, "state": { "const": "PLANNED_FROM_DECLARATION" }, "artifactProduced": { "const": false } }, "additionalProperties": false },
+    "repair": { "type": "object", "required": ["id", "triggerFacts", "action", "state", "evidence"], "properties": { "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$" }, "triggerFacts": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 120 } }, "action": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9_-]{1,159}$" }, "state": { "const": "APPLIED_BEFORE_BUILD" }, "evidence": { "type": "object", "required": ["path", "sha256"], "properties": { "path": { "type": "string", "minLength": 1, "maxLength": 320 }, "sha256": { "$ref": "#/$defs/digest" } }, "additionalProperties": false } }, "additionalProperties": false }
+  },
+  "additionalProperties": false
+}

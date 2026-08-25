@@ -2,7 +2,7 @@
 
 const RECIPE_ID = 'twin-reactor-action-coop';
 const WORLD = Object.freeze({ width: 30, height: 17 });
-const CANDIDATE = Object.freeze({ id: 'twin-reactor-coop-native', version: 'v0.2', status: 'EXPERIMENTAL' });
+const CANDIDATE = Object.freeze({ id: 'twin-reactor-coop-native', version: 'v0.3', status: 'EXPERIMENTAL' });
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 
@@ -26,7 +26,10 @@ function buildArena(seed, difficulty) {
   };
 }
 
-function buildConfig(brief) {
+function buildConfig(brief, prebuildPlan) {
+  if (!prebuildPlan || prebuildPlan.schema !== 'axm.game-prebuild-plan/v1' || prebuildPlan.recipeId !== RECIPE_ID || prebuildPlan.authority !== 'NONE') throw new Error('exact asset-aware prebuild plan is required');
+  const appliedRepairs = prebuildPlan.repairs.filter((item) => item.state === 'APPLIED_BEFORE_BUILD').map((item) => item.id);
+  if (!appliedRepairs.includes('projectile-spawn-and-swept-collision-v1')) throw new Error('projectile integrity repair must be applied before build');
   return {
     schema: 'axm.local-coop-action-game-config/v1', title: brief.title,
     seed: brief.seed, difficulty: brief.difficulty, arena: buildArena(brief.seed, brief.difficulty),
@@ -45,11 +48,20 @@ function buildConfig(brief) {
       p2: { move: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'], attackOrRevive: 'KeyK', dash: 'KeyL' },
       shared: { startOrRestart: 'Enter', pause: 'Escape' }
     },
+    prebuild: {
+      schema: prebuildPlan.schema,
+      planDigest: prebuildPlan.planDigest,
+      snapshotDigest: prebuildPlan.snapshotRef.sha256,
+      appliedRepairs,
+      assetRoutes: prebuildPlan.assetRoutes.map((item) => ({ id: item.id, handId: item.handId, state: item.state, artifactProduced: item.artifactProduced }))
+    },
+    visual: clone(prebuildPlan.visualSystem),
     session: clone(brief.session), authority: 'NONE'
   };
 }
 
-function buildProject(brief) {
+function buildProject(brief, prebuildPlan) {
+  if (!prebuildPlan || prebuildPlan.schema !== 'axm.game-prebuild-plan/v1') throw new Error('game project requires the exact prebuild plan');
   const cells = [];
   for (let y = 0; y < WORLD.height; y += 1) {
     for (let x = 0; x < WORLD.width; x += 1) {
@@ -59,8 +71,8 @@ function buildProject(brief) {
   }
   return {
     schema: 'axm.game-forge-project/v1', id: brief.id, name: brief.title,
-    version: '0.2.0', runtimeMode: '2D', status: 'DRAFT', createdAt: null,
-    updatedAt: null, capabilityPlan: null,
+    version: '0.3.0', runtimeMode: '2D', status: 'DRAFT', createdAt: null,
+    updatedAt: null, capabilityPlan: { schema: prebuildPlan.schema, sha256: prebuildPlan.planDigest, authority: 'NONE' },
     world: { width: WORLD.width, height: WORLD.height, cells },
     physics: { schema: 'axm.game-physics-config/v1', engine: 'axm-physics-2d', engineVersion: '0.3.1', enabled: false, world: null, updatedAt: null },
     events: { nodes: [], edges: [] },
@@ -71,7 +83,10 @@ function buildProject(brief) {
       { id: 'twin-link-field', type: 'Coop', state: 'DECLARED' },
       { id: 'directional-energy-bolts', type: 'Combat', state: 'DECLARED' },
       { id: 'repair-core-recovery', type: 'Recovery', state: 'DECLARED' },
-      { id: 'wave-three-warden', type: 'Boss', state: 'DECLARED' }
+      { id: 'wave-three-warden', type: 'Boss', state: 'DECLARED' },
+      { id: 'asset-factory-capability-snapshot', type: 'AssetPlan', state: 'DECLARED' },
+      { id: 'known-repair-prebuild-gate', type: 'RepairPlan', state: 'APPLIED' },
+      { id: 'catalog-informed-visual-system', type: 'Presentation', state: 'DECLARED' }
     ],
     behaviors: [], tests: [], mods: []
   };
@@ -80,6 +95,10 @@ function buildProject(brief) {
 function runtimeFactory(CONFIG) {
   const R = CONFIG.rules;
   const A = CONFIG.arena;
+  const V = CONFIG.visual;
+  const requiredRepair = 'projectile-spawn-and-swept-collision-v1';
+  if (!CONFIG.prebuild || !Array.isArray(CONFIG.prebuild.appliedRepairs) || !CONFIG.prebuild.appliedRepairs.includes(requiredRepair)) throw new Error('PREBUILD_REPAIR_MISSING:' + requiredRepair);
+  if (!V || V.stylePresetId !== 'arcade-neon-circuit' || V.treatmentId !== 'aetherglass-cinematic') throw new Error('ASSET_AWARE_VISUAL_PLAN_MISSING');
   const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
   const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const copy = (value) => JSON.parse(JSON.stringify(value));
@@ -325,48 +344,139 @@ function runtimeFactory(CONFIG) {
       ArrowUp: 'p2-up', ArrowLeft: 'p2-left', ArrowDown: 'p2-down', ArrowRight: 'p2-right', KeyK: 'p2-attack', KeyL: 'p2-dash'
     };
     const byId = (id) => doc.getElementById(id);
+    const reducedMotion = Boolean(win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const P = V.palette;
 
-    function drawCircle(x, y, radius, fill, stroke) {
-      context.beginPath(); context.arc(x, y, radius, 0, Math.PI * 2); context.fillStyle = fill; context.fill();
-      context.lineWidth = 3; context.strokeStyle = stroke; context.stroke();
+    function glow(color, blur) { context.shadowColor = color; context.shadowBlur = blur; }
+    function clearGlow() { context.shadowColor = 'transparent'; context.shadowBlur = 0; }
+    function polygon(points, fill, stroke, width) {
+      context.beginPath(); context.moveTo(points[0][0], points[0][1]);
+      for (let index = 1; index < points.length; index += 1) context.lineTo(points[index][0], points[index][1]);
+      context.closePath(); context.fillStyle = fill; context.fill(); context.lineWidth = width || 2; context.strokeStyle = stroke; context.stroke();
+    }
+    function regularPolygon(x, y, radius, sides, rotation, fill, stroke, width) {
+      const points = [];
+      for (let index = 0; index < sides; index += 1) {
+        const angle = rotation + index * Math.PI * 2 / sides;
+        points.push([x + Math.cos(angle) * radius, y + Math.sin(angle) * radius]);
+      }
+      polygon(points, fill, stroke, width);
+    }
+    function healthBar(x, y, width, ratio, color) {
+      context.fillStyle = '#190812'; context.fillRect(x - width / 2, y, width, 6);
+      context.fillStyle = color; context.fillRect(x - width / 2, y, Math.max(0, width * ratio), 6);
+      context.strokeStyle = '#ffffff66'; context.lineWidth = 1; context.strokeRect(x - width / 2, y, width, 6);
     }
 
-    function drawDiamond(x, y, radius, fill, stroke) {
-      context.beginPath(); context.moveTo(x, y - radius); context.lineTo(x + radius, y); context.lineTo(x, y + radius); context.lineTo(x - radius, y); context.closePath();
-      context.fillStyle = fill; context.fill(); context.lineWidth = 3; context.strokeStyle = stroke; context.stroke();
+    function drawBackground(state) {
+      const tick = reducedMotion ? 0 : state.tick;
+      const field = context.createRadialGradient(A.width / 2, A.height / 2, 24, A.width / 2, A.height / 2, 560);
+      field.addColorStop(0, '#14284a'); field.addColorStop(0.45, P.surface); field.addColorStop(1, P.background);
+      context.fillStyle = field; context.fillRect(0, 0, A.width, A.height);
+      context.globalAlpha = 0.34; context.strokeStyle = P.p1; context.lineWidth = 1;
+      for (let lane = 0; lane < 11; lane += 1) {
+        const y = 28 + lane * 49;
+        context.beginPath(); context.moveTo(0, y); context.lineTo(160 + (lane % 3) * 42, y); context.lineTo(202 + (lane % 3) * 42, y + 18); context.lineTo(A.width, y + 18); context.stroke();
+      }
+      context.strokeStyle = P.p2;
+      for (let lane = 0; lane < 9; lane += 1) {
+        const x = 38 + lane * 111;
+        context.beginPath(); context.moveTo(x, 0); context.lineTo(x, 82 + (lane % 2) * 38); context.lineTo(x + 26, 108 + (lane % 2) * 38); context.lineTo(x + 26, A.height); context.stroke();
+      }
+      context.globalAlpha = 1;
+      for (let index = 0; index < 36; index += 1) {
+        const x = (index * 137 + CONFIG.seed * 17) % A.width;
+        const y = (index * 71 + CONFIG.seed * 29) % A.height;
+        const pulse = 0.35 + ((index + Math.floor(tick / 8)) % 5) * 0.1;
+        context.globalAlpha = reducedMotion ? 0.55 : pulse; context.fillStyle = index % 3 === 0 ? P.p2 : P.p1;
+        context.fillRect(x, y, index % 4 === 0 ? 3 : 2, index % 4 === 0 ? 3 : 2);
+      }
+      context.globalAlpha = 1;
+      const vignette = context.createRadialGradient(A.width / 2, A.height / 2, 180, A.width / 2, A.height / 2, 580);
+      vignette.addColorStop(0, '#00000000'); vignette.addColorStop(1, '#000000b8'); context.fillStyle = vignette; context.fillRect(0, 0, A.width, A.height);
+    }
+
+    function drawLink(state) {
+      if (!state.linked || state.players.some((item) => item.down)) return;
+      const gradient = context.createLinearGradient(state.players[0].x, state.players[0].y, state.players[1].x, state.players[1].y);
+      gradient.addColorStop(0, P.p1); gradient.addColorStop(0.5, P.highlight); gradient.addColorStop(1, P.p2);
+      context.save(); glow(P.p1, 22); context.strokeStyle = gradient; context.lineWidth = 10; context.globalAlpha = 0.22;
+      context.beginPath(); context.moveTo(state.players[0].x, state.players[0].y); context.lineTo(state.players[1].x, state.players[1].y); context.stroke();
+      context.lineWidth = 2; context.globalAlpha = 0.92; context.setLineDash([12, 9]); context.stroke(); context.restore();
+    }
+
+    function drawObstacle(item, index) {
+      context.save(); glow(index % 2 ? P.p2 : P.p1, 12); regularPolygon(item.x, item.y, item.radius, 6, Math.PI / 6, '#111c31', index % 2 ? P.p2 : P.p1, 2);
+      clearGlow(); regularPolygon(item.x, item.y, item.radius * 0.62, 6, Math.PI / 6, '#08111f', '#ffffff33', 1);
+      context.strokeStyle = index % 2 ? P.p2 : P.p1; context.lineWidth = 2; context.beginPath(); context.moveTo(item.x - 12, item.y); context.lineTo(item.x + 12, item.y); context.moveTo(item.x, item.y - 12); context.lineTo(item.x, item.y + 12); context.stroke(); context.restore();
+    }
+
+    function drawReactor(state) {
+      const tick = reducedMotion ? 0 : state.tick;
+      context.save(); context.translate(state.reactor.x, state.reactor.y); glow(P.reactor, 28);
+      const core = context.createRadialGradient(0, 0, 4, 0, 0, state.reactor.radius);
+      core.addColorStop(0, '#fffce0'); core.addColorStop(0.38, P.reactor); core.addColorStop(1, '#a95411');
+      context.beginPath(); context.arc(0, 0, state.reactor.radius, 0, Math.PI * 2); context.fillStyle = core; context.fill(); context.strokeStyle = '#fff6c9'; context.lineWidth = 3; context.stroke();
+      clearGlow(); context.rotate(tick * 0.012); context.strokeStyle = P.p1; context.lineWidth = 4; context.setLineDash([18, 10]); context.beginPath(); context.arc(0, 0, state.reactor.radius + 12, 0, Math.PI * 2); context.stroke();
+      context.rotate(-tick * 0.024); context.strokeStyle = P.p2; context.lineWidth = 2; context.setLineDash([7, 13]); context.beginPath(); context.arc(0, 0, state.reactor.radius + 20, 0, Math.PI * 2); context.stroke();
+      context.setLineDash([]); context.fillStyle = '#2b1b00'; context.font = '900 16px system-ui'; context.textAlign = 'center'; context.fillText(String(state.reactor.health), 0, 6); context.restore();
+    }
+
+    function drawProjectile(item) {
+      const length = Math.hypot(item.vx, item.vy) || 1, dx = item.vx / length, dy = item.vy / length;
+      const color = item.owner === 'p1' ? P.p1 : P.p2;
+      context.save(); glow(item.linked ? P.highlight : color, item.linked ? 18 : 10); context.strokeStyle = color; context.lineWidth = item.linked ? 7 : 4; context.lineCap = 'round';
+      context.beginPath(); context.moveTo(item.x - dx * 18, item.y - dy * 18); context.lineTo(item.x + dx * 7, item.y + dy * 7); context.stroke();
+      context.fillStyle = P.highlight; context.beginPath(); context.arc(item.x + dx * 7, item.y + dy * 7, item.linked ? 4 : 3, 0, Math.PI * 2); context.fill(); context.restore();
+    }
+
+    function drawEnemy(item, state) {
+      const kind = item.kind || 'spark';
+      context.save(); context.translate(item.x, item.y); const turn = reducedMotion ? 0 : state.tick * (kind === 'runner' ? 0.03 : 0.012); context.rotate(turn); glow(P.enemy, kind === 'warden' ? 30 : 14);
+      if (kind === 'runner') {
+        polygon([[15, 0], [-10, -10], [-4, 0], [-10, 10]], '#ff7edb', P.highlight, 2);
+      } else if (kind === 'brute') {
+        regularPolygon(0, 0, 20, 4, Math.PI / 4, '#e52d5a', '#ffd6df', 3); regularPolygon(0, 0, 10, 4, 0, '#4b0e27', P.highlight, 2);
+      } else if (kind === 'warden') {
+        regularPolygon(0, 0, 31, 8, Math.PI / 8, '#ff8a2a', '#fff0bd', 4); regularPolygon(0, 0, 19, 6, -turn * 2, '#48152d', P.highlight, 2);
+        context.strokeStyle = P.enemy; context.lineWidth = 3; context.setLineDash([8, 7]); context.beginPath(); context.arc(0, 0, 39, 0, Math.PI * 2); context.stroke(); context.setLineDash([]);
+      } else {
+        const spikes = []; for (let point = 0; point < 16; point += 1) { const radius = point % 2 ? 8 : 15; const angle = point * Math.PI / 8; spikes.push([Math.cos(angle) * radius, Math.sin(angle) * radius]); }
+        polygon(spikes, '#ff3f8e', '#ffd6ee', 2);
+      }
+      context.restore();
+      if (kind === 'warden') { context.fillStyle = '#fff4cf'; context.font = '900 11px system-ui'; context.textAlign = 'center'; context.fillText('WARDEN', item.x, item.y - 47); }
+      if ((item.maxHp || 1) > 1) healthBar(item.x, item.y + (kind === 'warden' ? 45 : 28), kind === 'warden' ? 70 : 38, item.hp / item.maxHp, kind === 'warden' ? P.reactor : P.enemy);
+    }
+
+    function drawPlayer(item, index, state) {
+      const color = index === 0 ? P.p1 : P.p2;
+      const angle = Math.atan2(item.facingY, item.facingX);
+      context.save(); context.translate(item.x, item.y); context.rotate(angle); glow(color, item.down ? 0 : 22); context.globalAlpha = item.down ? 0.48 : 1;
+      if (index === 0) {
+        polygon([[23, 0], [-14, -15], [-8, 0], [-14, 15]], item.down ? '#45505c' : color, P.highlight, 3);
+        polygon([[6, 0], [-8, -6], [-8, 6]], '#07101d', P.highlight, 1);
+      } else {
+        polygon([[22, 0], [2, -15], [-16, -8], [-8, 0], [-16, 8], [2, 15]], item.down ? '#45505c' : color, P.highlight, 3);
+        regularPolygon(2, 0, 6, 4, Math.PI / 4, '#07101d', P.highlight, 1);
+      }
+      if (!item.down && !reducedMotion) { context.fillStyle = index === 0 ? P.p2 : P.p1; context.globalAlpha = 0.6 + (state.tick % 6) * 0.05; polygon([[-13, -5], [-25 - state.tick % 5, 0], [-13, 5]], context.fillStyle, context.fillStyle, 1); }
+      context.restore(); context.globalAlpha = 1;
+      context.fillStyle = P.highlight; context.font = '900 10px system-ui'; context.textAlign = 'center'; context.fillText(item.id.toUpperCase(), item.x, item.y - 25);
+      if (item.down) { context.strokeStyle = '#ffffff'; context.lineWidth = 3; context.beginPath(); context.moveTo(item.x - 11, item.y - 11); context.lineTo(item.x + 11, item.y + 11); context.moveTo(item.x + 11, item.y - 11); context.lineTo(item.x - 11, item.y + 11); context.stroke(); }
+    }
+
+    function drawRepairCore(item, state) {
+      const pulse = reducedMotion ? 0 : (state.tick % 18) / 18 * Math.PI * 2;
+      context.save(); context.translate(item.x, item.y); context.rotate(Math.PI / 4 + pulse * 0.12); glow(P.repair, 22); context.fillStyle = P.repair; context.strokeStyle = '#eafff0'; context.lineWidth = 3; context.fillRect(-10, -10, 20, 20); context.strokeRect(-10, -10, 20, 20); clearGlow(); context.fillStyle = '#10351f'; context.fillRect(-3, -7, 6, 14); context.fillRect(-7, -3, 14, 6); context.restore();
     }
 
     function render() {
       const state = engine.snapshot();
       context.clearRect(0, 0, A.width, A.height);
-      context.fillStyle = '#07101d'; context.fillRect(0, 0, A.width, A.height);
-      context.strokeStyle = '#193c52'; context.lineWidth = 1;
-      for (let x = 0; x <= A.width; x += 48) { context.beginPath(); context.moveTo(x, 0); context.lineTo(x, A.height); context.stroke(); }
-      for (let y = 0; y <= A.height; y += 48) { context.beginPath(); context.moveTo(0, y); context.lineTo(A.width, y); context.stroke(); }
-      if (state.linked && !state.players.some((item) => item.down)) {
-        context.strokeStyle = '#74f7ff'; context.lineWidth = 7; context.globalAlpha = 0.18;
-        context.beginPath(); context.moveTo(state.players[0].x, state.players[0].y); context.lineTo(state.players[1].x, state.players[1].y); context.stroke(); context.globalAlpha = 1;
-      }
-      A.obstacles.forEach((item) => drawCircle(item.x, item.y, item.radius, '#142b3b', '#315d70'));
-      drawCircle(state.reactor.x, state.reactor.y, state.reactor.radius, '#ffd166', '#fff2bd');
-      context.fillStyle = '#301f00'; context.font = 'bold 16px system-ui'; context.textAlign = 'center'; context.fillText(String(state.reactor.health), state.reactor.x, state.reactor.y + 6);
-      state.projectiles.forEach((item) => { drawCircle(item.x, item.y, item.linked ? 7 : 5, item.owner === 'p1' ? '#39dff2' : '#bd7cff', item.linked ? '#ffffff' : '#a9c5d6'); });
-      state.enemies.forEach((item) => {
-        const kind = item.kind || 'spark';
-        const radius = kind === 'warden' ? 29 : kind === 'brute' ? 19 : kind === 'runner' ? 10 : 13;
-        const fill = kind === 'warden' ? '#ff9f43' : kind === 'brute' ? '#ff3d64' : kind === 'runner' ? '#ff7edb' : '#ff5577';
-        drawCircle(item.x, item.y, radius, fill, kind === 'warden' ? '#fff0bd' : '#ffd6df');
-        if (kind === 'warden') { context.fillStyle = '#fff4cf'; context.font = 'bold 11px system-ui'; context.fillText('WARDEN', item.x, item.y - 38); }
-        if ((item.maxHp || 1) > 1) { const width = radius * 1.6; context.fillStyle = '#2c0710'; context.fillRect(item.x - width / 2, item.y + radius + 6, width, 5); context.fillStyle = '#fff0bd'; context.fillRect(item.x - width / 2, item.y + radius + 6, width * item.hp / item.maxHp, 5); }
-      });
-      state.players.forEach((item, index) => {
-        const color = index === 0 ? '#39dff2' : '#bd7cff';
-        drawCircle(item.x, item.y, 18, item.down ? '#3c4852' : color, '#ffffff');
-        context.fillStyle = '#061018'; context.font = 'bold 13px system-ui'; context.fillText(item.id.toUpperCase(), item.x, item.y + 5);
-        if (!item.down) { context.strokeStyle = '#ffffff'; context.lineWidth = 4; context.beginPath(); context.moveTo(item.x + item.facingX * 12, item.y + item.facingY * 12); context.lineTo(item.x + item.facingX * 29, item.y + item.facingY * 29); context.stroke(); }
-        if (item.down) { context.strokeStyle = '#ffffff'; context.beginPath(); context.moveTo(item.x - 10, item.y - 10); context.lineTo(item.x + 10, item.y + 10); context.moveTo(item.x + 10, item.y - 10); context.lineTo(item.x - 10, item.y + 10); context.stroke(); }
-      });
-      state.repairCores.forEach((item) => drawDiamond(item.x, item.y, 12, '#63ff9e', '#e5ffed'));
+      drawBackground(state); drawLink(state); A.obstacles.forEach(drawObstacle); drawReactor(state);
+      state.projectiles.forEach(drawProjectile); state.enemies.forEach((item) => drawEnemy(item, state));
+      state.players.forEach((item, index) => drawPlayer(item, index, state)); state.repairCores.forEach((item) => drawRepairCore(item, state));
       byId('phase').textContent = state.phase; byId('wave').textContent = String(state.wave) + '/3';
       byId('reactor-health').textContent = String(state.reactor.health);
       byId('enemy-count').textContent = String(state.enemies.length);
@@ -400,6 +510,15 @@ function runtimeFactory(CONFIG) {
     win.AXM_GAME_INPUT = (action, pressed) => { if (!Object.values(map).includes(action)) return false; held[action] = pressed !== false; return true; };
     win.AXM_GAME_STEP = (ticks) => { const count = Math.max(1, Math.min(240, Number.isSafeInteger(ticks) ? ticks : 1)); for (let index = 0; index < count; index += 1) engine.step(held); render(); return engine.snapshot(); };
     win.AXM_GAME_PUBLIC_STATE = () => engine.snapshot();
+    win.AXM_GAME_PREBUILD_RECEIPT = Object.freeze({
+      schema: CONFIG.prebuild.schema,
+      planDigest: CONFIG.prebuild.planDigest,
+      snapshotDigest: CONFIG.prebuild.snapshotDigest,
+      repairRuleIds: CONFIG.prebuild.appliedRepairs.slice(),
+      plannedAssetHands: CONFIG.prebuild.assetRoutes.map((item) => item.handId),
+      assetArtifactsProduced: false,
+      authority: 'NONE'
+    });
     render(); win.requestAnimationFrame(frame);
     return engine;
   }
@@ -411,15 +530,20 @@ function gameSource(config) {
   return `'use strict';\n\nconst CONFIG = Object.freeze(${JSON.stringify(config)});\nconst AXM_COOP_FACTORY = ${runtimeFactory.toString()};\n(function(root){const api=AXM_COOP_FACTORY(CONFIG);if(typeof module==='object'&&module.exports)module.exports=api;if(root&&root.document){root.AXM_COOP_GAME=api;const boot=()=>api.mount(root.document,root);if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();}})(typeof window==='object'?window:null);\n`;
 }
 
-function styleSource(brief) {
-  const theme = brief.theme;
-  return `:root{color-scheme:dark;--bg:${theme.background};--panel:${theme.panel};--p1:${theme.player};--p2:#bd7cff;--accent:${theme.accent};--text:${theme.text}}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -20%,#17334a,var(--bg) 58%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,sans-serif}.shell{width:min(1320px,96vw);margin:auto;padding:20px}.mast{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:14px}.eyebrow{margin:0;color:var(--accent);font-size:.78rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase}h1{margin:.15em 0;font-size:clamp(2rem,5vw,4rem);line-height:.92}.lede{max-width:760px;color:#bfd0e3}.badge{padding:8px 12px;border:1px solid #5e7690;border-radius:999px;background:#08131f;font-weight:800}.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px}.arena-wrap{position:relative;padding:10px;border:2px solid var(--accent);border-radius:20px;background:#03070c;box-shadow:0 24px 80px #000a}canvas{display:block;width:100%;height:auto;aspect-ratio:960/544;border-radius:12px;background:#07101d;outline:none}.hud{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:10px}.metric,.player-card,.panel{border:1px solid #38536d;border-radius:14px;background:color-mix(in srgb,var(--panel) 90%,black);padding:12px}.metric span,.player-card span{display:block;color:#a9bbcf;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}.metric strong,.player-card strong{font-size:1.1rem}.players{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.player-card.p1{border-color:var(--p1)}.player-card.p2{border-color:var(--p2)}.panel h2{margin-top:0}.keys{display:grid;grid-template-columns:1fr 1fr;gap:10px}.keys article{padding:10px;border-radius:12px;background:#07121e}.keys h3{margin:.1em 0 .4em}.keys p{margin:.35em 0;color:#c9d8e7}.legend{display:grid;gap:6px;margin:12px 0;padding:10px;border:1px solid #29475d;border-radius:10px;background:#07121e;color:#c9d8e7;font-size:.84rem}.legend b{color:#fff}.status{min-height:4.5em;padding:12px;border-left:4px solid var(--accent);background:#08131f;border-radius:8px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{min-height:48px;border:2px solid #6e8aa6;border-radius:12px;background:#10243a;color:var(--text);font:800 1rem system-ui;cursor:pointer}.actions button:first-child,.actions button:last-child{grid-column:1/3}.actions button:first-child{border-color:var(--accent);background:#443200}.actions button:last-child{border-color:#ff9f43;background:#3a1e0d}.actions button:focus-visible,canvas:focus-visible{outline:4px solid white;outline-offset:3px}.boundary{margin:.8em 0 0;color:#93a9bf;font-size:.85rem}.p1-label{color:var(--p1)}.p2-label{color:var(--p2)}@media(max-width:920px){.mast{align-items:start;flex-direction:column}.layout{grid-template-columns:1fr}.panel{order:-1}.keys{grid-template-columns:1fr 1fr}}@media(max-width:620px){.shell{width:100%;padding:10px}.hud{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/3}.keys{grid-template-columns:1fr}h1{font-size:2.25rem}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}\n`;
+function styleSource(brief, prebuildPlan) {
+  if (!prebuildPlan || prebuildPlan.schema !== 'axm.game-prebuild-plan/v1') throw new Error('styles require the exact prebuild plan');
+  const palette = prebuildPlan.visualSystem.palette;
+  return `:root{color-scheme:dark;--bg:${palette.background};--surface:${palette.surface};--p1:${palette.p1};--p2:${palette.p2};--enemy:${palette.enemy};--accent:${palette.enemy};--highlight:${palette.highlight};--repair:${palette.repair};--reactor:${palette.reactor};--text:${palette.text};--muted:${palette.mutedText}}*{box-sizing:border-box}body{margin:0;min-height:100vh;overflow-x:hidden;background:radial-gradient(circle at 48% -10%,#182a4e 0,var(--bg) 47%,#020309 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,sans-serif}body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(90deg,transparent 49%,var(--p1) 50%,transparent 51%),linear-gradient(transparent 49%,var(--p2) 50%,transparent 51%);background-size:88px 88px;mask-image:linear-gradient(to bottom,#000,transparent 72%)}.shell{position:relative;width:min(1420px,97vw);margin:auto;padding:22px}.mast{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:12px}.title-stack{max-width:850px}.eyebrow{margin:0;color:var(--p1);font-size:.75rem;font-weight:950;letter-spacing:.19em;text-transform:uppercase;text-shadow:0 0 18px color-mix(in srgb,var(--p1) 70%,transparent)}h1{margin:.1em 0;font-size:clamp(2.4rem,6vw,5rem);line-height:.84;letter-spacing:-.06em;text-transform:uppercase;background:linear-gradient(105deg,#fff 5%,var(--p1) 38%,var(--p2) 68%,var(--enemy));background-clip:text;color:transparent;filter:drop-shadow(0 0 24px #25e6ff45)}.lede{max-width:780px;margin:.7em 0;color:#c4d4e8;font-size:1.02rem}.badge{flex:none;padding:9px 14px;border:1px solid var(--p2);border-radius:999px;background:#0a1021cc;box-shadow:inset 0 0 20px #7f5cff18,0 0 22px #7f5cff22;font-weight:900}.asset-strip{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}.asset-strip span{padding:6px 9px;border:1px solid #ffffff26;border-radius:8px;background:#09101dcc;color:var(--muted);font:800 .72rem/1 system-ui;text-transform:uppercase;letter-spacing:.06em}.asset-strip strong{color:var(--highlight)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:16px}.arena-wrap{position:relative;padding:3px;border-radius:22px;background:conic-gradient(from 210deg,var(--p1),var(--p2),var(--enemy),var(--p1));box-shadow:0 28px 100px #000c,0 0 44px #25e6ff1f}.arena-wrap:before{content:"";position:absolute;inset:3px;border-radius:19px;pointer-events:none;z-index:2;box-shadow:inset 0 0 38px #000,inset 0 0 12px var(--p1)}.arena-wrap:after{content:"";position:absolute;inset:3px;border-radius:19px;pointer-events:none;z-index:3;background:repeating-linear-gradient(to bottom,transparent 0,transparent 4px,#ffffff08 5px),radial-gradient(circle at 50% 45%,transparent 45%,#0009 100%);mix-blend-mode:screen;opacity:.55}canvas{position:relative;z-index:1;display:block;width:100%;height:auto;aspect-ratio:960/544;border-radius:19px;background:var(--bg);outline:none}.hud{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:10px}.metric,.player-card,.panel,.build-readout{border:1px solid #ffffff22;border-radius:14px;background:linear-gradient(145deg,#17223bd9,#080d18ed);box-shadow:inset 0 1px #ffffff10,0 12px 32px #0006;backdrop-filter:blur(14px)}.metric{position:relative;overflow:hidden;padding:11px}.metric:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(var(--p1),var(--p2))}.metric span,.player-card span{display:block;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em}.metric strong,.player-card strong{font-size:1.13rem}.panel{padding:13px}.players{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.player-card{padding:11px}.player-card.p1{border-color:color-mix(in srgb,var(--p1) 70%,transparent)}.player-card.p2{border-color:color-mix(in srgb,var(--p2) 70%,transparent)}.panel h2{margin:.15em 0 .6em;font-size:1.15rem}.build-readout{margin-bottom:10px;padding:11px;border-color:#63ff9e66}.build-readout strong{display:block;color:var(--repair);font-size:.72rem;letter-spacing:.12em}.build-readout span{display:block;margin-top:4px;color:var(--muted);font-size:.78rem}.keys{display:grid;grid-template-columns:1fr 1fr;gap:8px}.keys article{padding:9px;border:1px solid #ffffff14;border-radius:11px;background:#070d19bb}.keys h3{margin:.1em 0 .35em}.keys p{margin:.3em 0;color:#c9d8e7;font-size:.85rem}.legend{display:grid;gap:6px;margin:10px 0;padding:9px;border:1px solid #29475d;border-radius:10px;background:#060c17c9;color:#c9d8e7;font-size:.8rem}.legend b{color:#fff}.status{min-height:4.2em;margin:.65em 0;padding:11px;border-left:4px solid var(--p1);background:#07111dcc;border-radius:8px;color:#eaf8ff}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{position:relative;min-height:48px;border:1px solid #ffffff33;border-radius:11px;background:linear-gradient(135deg,#172641,#0b1324);color:var(--text);font:900 .92rem system-ui;cursor:pointer;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}.actions button:hover{transform:translateY(-1px);border-color:var(--p1);box-shadow:0 0 20px #25e6ff25}.actions button:first-child,.actions button:last-child{grid-column:1/3}.actions button:first-child{border-color:var(--p1);background:linear-gradient(120deg,#06465a,#152656)}.actions button:last-child{border-color:var(--reactor);background:linear-gradient(120deg,#4b2606,#402047)}.actions button:focus-visible,canvas:focus-visible{outline:4px solid white;outline-offset:3px}.boundary{margin:.75em 0 0;color:#8fa2ba;font-size:.75rem}.p1-label{color:var(--p1)}.p2-label{color:var(--p2)}@media(max-width:980px){.mast{align-items:start;flex-direction:column}.layout{grid-template-columns:1fr}.panel{order:-1}.keys{grid-template-columns:1fr 1fr}}@media(max-width:650px){.shell{width:100%;padding:10px}.hud{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/3}.keys{grid-template-columns:1fr}.asset-strip span{font-size:.65rem}h1{font-size:2.65rem}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.arena-wrap:after{background:radial-gradient(circle at 50% 45%,transparent 45%,#0009 100%)}}\n`;
 }
 
-function indexSource(brief) {
+function indexSource(brief, prebuildPlan) {
+  if (!prebuildPlan || prebuildPlan.schema !== 'axm.game-prebuild-plan/v1') throw new Error('index requires the exact prebuild plan');
   const escape = (value) => value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const title = escape(brief.title);
-  return `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><link rel="stylesheet" href="styles.css"></head><body><main class="shell"><header class="mast"><div><p class="eyebrow">Detached TEST candidate · deterministic patch v0.2</p><h1>${title}</h1><p class="lede">Two players, one keyboard, one reactor. Stay close to link your energy bolts, break distinct spark classes, collect green repair cores, and face the Warden together.</p></div><span class="badge">Offline · session only</span></header><div class="layout"><section aria-labelledby="arena-title"><h2 id="arena-title" class="eyebrow">Action arena</h2><div class="arena-wrap"><canvas id="arena" width="960" height="544" tabindex="0" role="img" aria-label="Twin Reactor action arena preparing"></canvas></div><div class="hud"><div class="metric"><span>Phase</span><strong id="phase">READY</strong></div><div class="metric"><span>Wave</span><strong id="wave">1/3</strong></div><div class="metric"><span>Reactor</span><strong id="reactor-health">100</strong></div><div class="metric"><span>Enemies</span><strong id="enemy-count">0</strong></div><div class="metric"><span>Twin field</span><strong id="link-state">LINKED ×2</strong></div></div></section><aside class="panel"><div class="players"><div class="player-card p1"><span class="p1-label">P1 health</span><strong id="p1-health">3</strong><span>Score <b id="p1-score">0</b></span></div><div class="player-card p2"><span class="p2-label">P2 health</span><strong id="p2-health">3</strong><span>Score <b id="p2-score">0</b></span></div></div><h2>Two-seat controls</h2><div class="keys"><article><h3 class="p1-label">Player 1</h3><p><b>W A S D</b> move</p><p><b>F</b> fire / revive</p><p><b>G</b> dash</p></article><article><h3 class="p2-label">Player 2</h3><p><b>Arrow keys</b> move</p><p><b>K</b> fire / revive</p><p><b>L</b> dash</p></article></div><div class="legend"><span><b>Twin field:</b> stay within range for double-damage bolts.</span><span><b>Green cores:</b> collect them to repair reactor damage.</span><span><b>Warden:</b> the large wave-three spark takes teamwork.</span></div><p><b>Enter</b> start · <b>Escape</b> pause</p><p id="status" class="status" role="status" aria-live="polite">Preparing the deterministic arena.</p><div class="actions"><button id="start" type="button">Start mission</button><button id="pause" type="button">Pause</button><button id="restart" type="button">Restart</button><button id="practice" type="button">Warden practice</button></div><p class="boundary">Practice is a visible TEST route. No network, save data, AI provider, install, promotion, or CANON authority.</p></aside></div></main><script src="game.js"></script></body></html>\n`;
+  const handCount = prebuildPlan.assetRoutes.length;
+  const effectCount = prebuildPlan.visualSystem.effectIds.length;
+  const repairCount = prebuildPlan.repairs.length;
+  return `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><link rel="stylesheet" href="styles.css"></head><body><main class="shell"><header class="mast"><div class="title-stack"><p class="eyebrow">Asset-aware detached candidate · v0.3</p><h1>${title}</h1><p class="lede">Two pilots defend one reactor inside a catalog-informed neon circuit arena. Distinct silhouettes, layered energy, readable combat classes, and known collision repairs are planned before candidate bytes.</p></div><span class="badge">Offline · session only</span></header><div class="asset-strip" aria-label="Prebuild asset plan"><span><strong>${handCount}</strong> declared asset routes</span><span><strong>${effectCount}</strong> portable FX</span><span><strong>${repairCount}</strong> prebuild repairs</span><span>Neon Circuit × Aetherglass</span></div><div class="layout"><section aria-labelledby="arena-title"><h2 id="arena-title" class="eyebrow">Twin Reactor defense grid</h2><div class="arena-wrap"><canvas id="arena" width="960" height="544" tabindex="0" role="img" aria-label="Twin Reactor action arena preparing"></canvas></div><div class="hud"><div class="metric"><span>Phase</span><strong id="phase">READY</strong></div><div class="metric"><span>Wave</span><strong id="wave">1/3</strong></div><div class="metric"><span>Reactor</span><strong id="reactor-health">100</strong></div><div class="metric"><span>Hostiles</span><strong id="enemy-count">0</strong></div><div class="metric"><span>Twin field</span><strong id="link-state">LINKED ×2</strong></div></div></section><aside class="panel"><div class="build-readout"><strong>PREBUILD PLAN APPLIED</strong><span>Catalog declarations informed this rendering. Asset artifacts themselves were not silently claimed or installed.</span></div><div class="players"><div class="player-card p1"><span class="p1-label">Cyan pilot · P1</span><strong id="p1-health">3</strong><span>Score <b id="p1-score">0</b></span></div><div class="player-card p2"><span class="p2-label">Violet pilot · P2</span><strong id="p2-health">3</strong><span>Score <b id="p2-score">0</b></span></div></div><h2>Two-seat controls</h2><div class="keys"><article><h3 class="p1-label">Player 1</h3><p><b>W A S D</b> move</p><p><b>F</b> fire / revive</p><p><b>G</b> dash</p></article><article><h3 class="p2-label">Player 2</h3><p><b>Arrow keys</b> move</p><p><b>K</b> fire / revive</p><p><b>L</b> dash</p></article></div><div class="legend"><span><b>Twin beam:</b> link for double-damage bolts.</span><span><b>Repair crystal:</b> restore the shared reactor.</span><span><b>Enemy silhouettes:</b> spark, runner, brute, Warden.</span></div><p><b>Enter</b> start · <b>Escape</b> pause</p><p id="status" class="status" role="status" aria-live="polite">Preparing the deterministic arena.</p><div class="actions"><button id="start" type="button">Launch defense</button><button id="pause" type="button">Pause</button><button id="restart" type="button">Restart</button><button id="practice" type="button">Warden showcase</button></div><p class="boundary">The asset plan is advisory candidate data. No network, save data, provider execution, install, promotion, or CANON authority.</p></aside></div></main><script src="game.js"></script></body></html>\n`;
 }
 
 module.exports = { RECIPE_ID, WORLD, CANDIDATE, buildArena, buildConfig, buildProject, runtimeFactory, gameSource, styleSource, indexSource };

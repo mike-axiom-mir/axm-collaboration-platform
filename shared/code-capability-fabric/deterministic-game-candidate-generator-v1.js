@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const Core = require('./semantic-candidate-generator-v1');
 const CoopRecipe = require('./local-coop-action-game-recipe-v1');
+const AssetPrebuild = require('./asset-aware-game-prebuild-planner-v1');
 
 const VERSION = '0.1.0';
 const BRIEF_SCHEMA = 'axm.game-generation-brief/v1';
@@ -19,6 +20,11 @@ const REQUIRED_COMPONENT_IDS = [
   'evidence-desk', 'game-capability-atlas', 'game-forge', 'review-inbox', 'sandbox'
 ];
 const REQUIRED_FILES = [
+  'README.md', 'asset-capability-snapshot.json', 'candidate.receipt.json', 'game-forge-project.json',
+  'game.config.json', 'game.js', 'index.html', 'installation-gap.json',
+  'module.contract.json', 'prebuild-plan.json', 'sandbox.game.json', 'styles.css', 'test-plan.json'
+];
+const LEGACY_REQUIRED_FILES = [
   'README.md', 'candidate.receipt.json', 'game-forge-project.json',
   'game.config.json', 'game.js', 'index.html', 'installation-gap.json',
   'module.contract.json', 'sandbox.game.json', 'styles.css', 'test-plan.json'
@@ -228,16 +234,18 @@ function sourceFile(path, bytes) {
 
 function buildCoopBundle(request) {
   const candidate = clone(CoopRecipe.CANDIDATE);
-  const config = CoopRecipe.buildConfig(request.brief);
-  const project = CoopRecipe.buildProject(request.brief);
+  const assetSnapshot = AssetPrebuild.buildCapabilitySnapshot();
+  const prebuildPlan = AssetPrebuild.buildPrebuildPlan(request.brief, assetSnapshot);
+  const config = CoopRecipe.buildConfig(request.brief, prebuildPlan);
+  const project = CoopRecipe.buildProject(request.brief, prebuildPlan);
   const contract = {
     schema: 'axm.module-contract/v1', id: candidate.id, version: candidate.version, status: candidate.status,
-    provides: ['axm.sandbox-playable-game/v1', 'axm.local-two-player-action-coop/v1', 'axm.deterministic-directional-combat/v1', 'axm.proximity-coop-bonus/v1', 'axm.shared-objective-repair-loop/v1', 'axm.visible-boss-practice-route/v1'], consumes: ['axm.game-forge-project/v1'], permissions: [],
+    provides: ['axm.sandbox-playable-game/v1', 'axm.local-two-player-action-coop/v1', 'axm.deterministic-directional-combat/v1', 'axm.proximity-coop-bonus/v1', 'axm.shared-objective-repair-loop/v1', 'axm.visible-boss-practice-route/v1', 'axm.asset-aware-game-prebuild/v1', 'axm.known-repair-before-build/v1', 'axm.catalog-informed-game-rendering/v1'], consumes: ['axm.game-forge-project/v1', AssetPrebuild.SNAPSHOT_SCHEMA, AssetPrebuild.PLAN_SCHEMA], permissions: [],
     handoffs: { emits: ['axm.local-coop-action-visible-state/v1'], accepts: ['two-local-keyboard-seats', 'explicit-ui-lifecycle-controls'] }, rootsGate: ROOTS,
     lifecycle: { state_owner: 'browser-memory', reload: 'reset', disconnect: 'not-applicable', cleanup: 'automatic' },
     boundaries: { writes: [], refuses: ['network-use', 'host-environment-access', 'filesystem-access', 'browser-storage', 'dynamic-code', 'provider-call', 'hidden-player-seat-merging', 'automatic-install', 'automatic-integration', 'automatic-learning-admission', 'automatic-promotion', 'automatic-canon'] }
   };
-  const receipt = { schema: 'axm.game-candidate-receipt/v1', candidate, generator: { id: GENERATOR_ID, version: VERSION, recipeId: COOP_RECIPE_ID }, authority: { installed: false, integrated: false, published: false, lessonActive: false, promoted: false, canonChanged: false }, truth: { gameCodeExecuted: false, runtimeBehaviorProven: false, visualBehaviorProven: false, playJourneyProven: false }, authorityCeiling: 'NONE' };
+  const receipt = { schema: 'axm.game-candidate-receipt/v1', candidate, generator: { id: GENERATOR_ID, version: VERSION, recipeId: COOP_RECIPE_ID }, prebuild: { snapshotRef: { schema: assetSnapshot.schema, sha256: assetSnapshot.snapshotDigest }, planRef: { schema: prebuildPlan.schema, sha256: prebuildPlan.planDigest }, appliedRepairRuleIds: prebuildPlan.repairs.map((item) => item.id), plannedAssetHands: prebuildPlan.assetRoutes.map((item) => item.handId) }, authority: { installed: false, integrated: false, published: false, lessonActive: false, promoted: false, canonChanged: false }, truth: { gameCodeExecuted: false, assetProviderExecuted: false, assetArtifactsProduced: false, catalogInformedRendering: true, runtimeBehaviorProven: false, visualBehaviorProven: false, playJourneyProven: false }, authorityCeiling: 'NONE' };
   const testPlan = { schema: 'axm.game-candidate-test-plan/v1', candidate, cases: [
     ['byte-lineage', 'All source and Game Forge project bytes match their digests.', 'static-structure'],
     ['script-syntax', 'The external game script parses without execution.', 'parse-only'],
@@ -248,6 +256,10 @@ function buildCoopBundle(request) {
     ['twin-link', 'Proximity is visibly disclosed and deterministically strengthens both seats without merging them.', 'browser-play'],
     ['enemy-classes', 'Spark, runner, brute, and Warden behavior remains typed and bounded.', 'deterministic-runtime'],
     ['repair-loop', 'Eligible enemy defeats emit bounded green cores that visibly repair a damaged shared reactor.', 'browser-play'],
+    ['asset-capability-lineage', 'The prebuild snapshot binds exact Asset Hands, Asset Fabric, and visual catalog declarations.', 'static-structure'],
+    ['known-repair-prebuild', 'Every admitted known repair rule is applied before candidate source bytes are emitted.', 'deterministic-prebuild'],
+    ['catalog-informed-rendering', 'The live arena visibly uses the selected Neon Circuit palette, Aetherglass treatment constraints, portable FX, and distinct silhouettes.', 'browser-render'],
+    ['asset-truth-ceiling', 'Declared Asset Factory routes never become claims that asset artifacts were produced or installed.', 'static-countertest'],
     ['entity-cap', 'Enemy, projectile, and repair-core state never exceeds declared ceilings.', 'runtime-countertest'],
     ['network-storage-denial', 'The candidate uses no network, provider, persistence, filesystem, or dynamic-code surface.', 'sandbox-boundary'],
     ['keyboard-journey', 'Both keyboard seats visibly move their own avatar in the detached preview.', 'browser-play'],
@@ -257,22 +269,23 @@ function buildCoopBundle(request) {
     ['resource-budget', 'Build and preview remain inside declared file, byte, entity, and process ceilings.', 'measured-resource'],
     ['restart-truth', 'Reload and restart reset because persistence is explicitly unsupported.', 'browser-reload']
   ].map(([id, claim, evidenceKind]) => ({ id, claim, evidenceKind, verdict: 'UNRUN' })), truth: { gameCodeExecuted: false, humanApproved: false }, authority: 'NONE' };
-  const sandboxManifest = { schema: 'axm.sandbox-game-candidate/v1', id: candidate.id, title: request.brief.title, status: 'EXPERIMENTAL', entry: 'index.html', script: 'game.js', style: 'styles.css', project: 'game-forge-project.json', controls: ['p1-keyboard', 'p2-keyboard', 'visible-lifecycle-buttons'], network: 'DISABLED', persistence: 'SESSION_ONLY', installed: false, authority: 'NONE' };
+  const sandboxManifest = { schema: 'axm.sandbox-game-candidate/v1', id: candidate.id, title: request.brief.title, status: 'EXPERIMENTAL', entry: 'index.html', script: 'game.js', style: 'styles.css', project: 'game-forge-project.json', prebuildPlan: 'prebuild-plan.json', assetCapabilitySnapshot: 'asset-capability-snapshot.json', controls: ['p1-keyboard', 'p2-keyboard', 'visible-lifecycle-buttons'], network: 'DISABLED', persistence: 'SESSION_ONLY', installed: false, authority: 'NONE' };
   const installGap = { schema: 'axm.game-installation-gap/v1', status: 'INSTALLATION_REVIEW_REQUIRED', candidateId: candidate.id, missingCapability: 'trusted-static-game-runtime-install-adapter', sandboxPreviewIsInstallationProof: false, installAllowed: false, nextGate: 'MIKE_INSTALLATION_DECISION', authority: 'NONE' };
   const files = [
-    sourceFile('README.md', Buffer.from('# ' + request.brief.title + '\n\nEXPERIMENTAL deterministic native two-player action co-op candidate. Detached sandbox preview only. P1 uses WASD/F/G; P2 uses arrows/K/L. Direct reuse remains held; installation requires Mike.\n', 'utf8')),
+    sourceFile('README.md', Buffer.from('# ' + request.brief.title + '\n\nEXPERIMENTAL deterministic native two-player action co-op candidate. Asset Factory declarations inform the prebuild plan and visual system without claiming produced asset artifacts. Detached sandbox preview only. P1 uses WASD/F/G; P2 uses arrows/K/L. Direct reuse remains held; installation requires Mike.\n', 'utf8')),
+    sourceFile('asset-capability-snapshot.json', jsonBytes(assetSnapshot)),
     sourceFile('candidate.receipt.json', jsonBytes(receipt)), sourceFile('game.config.json', jsonBytes(config)),
     sourceFile('game.js', Buffer.from(CoopRecipe.gameSource(config), 'utf8')), sourceFile('game-forge-project.json', jsonBytes(project)),
-    sourceFile('index.html', Buffer.from(CoopRecipe.indexSource(request.brief), 'utf8')), sourceFile('installation-gap.json', jsonBytes(installGap)),
-    sourceFile('module.contract.json', jsonBytes(contract)), sourceFile('sandbox.game.json', jsonBytes(sandboxManifest)),
-    sourceFile('styles.css', Buffer.from(CoopRecipe.styleSource(request.brief), 'utf8')), sourceFile('test-plan.json', jsonBytes(testPlan))
+    sourceFile('index.html', Buffer.from(CoopRecipe.indexSource(request.brief, prebuildPlan), 'utf8')), sourceFile('installation-gap.json', jsonBytes(installGap)),
+    sourceFile('module.contract.json', jsonBytes(contract)), sourceFile('prebuild-plan.json', jsonBytes(prebuildPlan)), sourceFile('sandbox.game.json', jsonBytes(sandboxManifest)),
+    sourceFile('styles.css', Buffer.from(CoopRecipe.styleSource(request.brief, prebuildPlan), 'utf8')), sourceFile('test-plan.json', jsonBytes(testPlan))
   ].sort((a, b) => compareText(a.path, b.path));
   if (!same(files.map((file) => file.path), REQUIRED_FILES)) throw new Error('native co-op game recipe file set drifted');
   const seen = new Set(), maxFile = request.resources.maxFileBytes;
   let total = 0;
   files.forEach((file) => { const key = Core.pathKey(file.path); if (seen.has(key)) throw new Error('candidate file path collision'); seen.add(key); const bytes = Buffer.from(file.content, 'base64'); if (bytes.length > maxFile) throw new Error('candidate file exceeds byte ceiling: ' + file.path); if (hashBytes(bytes) !== file.sha256) throw new Error('candidate file digest mismatch'); total += bytes.length; });
   if (files.length > request.resources.maxFiles || total > request.resources.maxOutputBytes) throw new Error('candidate bundle exceeds file or output byte ceiling');
-  return { candidate, config, project, bundle: { schema: MODULE_BUNDLE_SCHEMA, requiredSeats: 2, files }, totalBytes: total };
+  return { candidate, config, project, assetSnapshot, prebuildPlan, bundle: { schema: MODULE_BUNDLE_SCHEMA, requiredSeats: 2, files }, totalBytes: total };
 }
 
 function buildBundle(request) {
@@ -311,7 +324,7 @@ function buildBundle(request) {
     sourceFile('module.contract.json', jsonBytes(contract)), sourceFile('sandbox.game.json', jsonBytes(sandboxManifest)),
     sourceFile('styles.css', Buffer.from(styleSource(request.brief), 'utf8')), sourceFile('test-plan.json', jsonBytes(testPlan))
   ].sort((a, b) => compareText(a.path, b.path));
-  if (!same(files.map((file) => file.path), REQUIRED_FILES)) throw new Error('native game recipe file set drifted');
+  if (!same(files.map((file) => file.path), LEGACY_REQUIRED_FILES)) throw new Error('native game recipe file set drifted');
   const seen = new Set(), maxFile = request.resources.maxFileBytes;
   let total = 0;
   files.forEach((file) => { const key = Core.pathKey(file.path); if (seen.has(key)) throw new Error('candidate file path collision'); seen.add(key); const bytes = Buffer.from(file.content, 'base64'); if (bytes.length > maxFile) throw new Error('candidate file exceeds byte ceiling: ' + file.path); if (hashBytes(bytes) !== file.sha256) throw new Error('candidate file digest mismatch'); total += bytes.length; });
@@ -326,11 +339,17 @@ function generate(input) {
   const sourceFiles = built.bundle.files.map((file) => { const bytes = Buffer.from(file.content, 'base64'); return { path: file.path, sha256: 'sha256:' + file.sha256, byteLength: bytes.length }; });
   const projectFile = sourceFiles.find((file) => file.path === 'game-forge-project.json');
   const testFile = sourceFiles.find((file) => file.path === 'test-plan.json');
+  const assetSnapshotFile = sourceFiles.find((file) => file.path === 'asset-capability-snapshot.json');
+  const prebuildPlanFile = sourceFiles.find((file) => file.path === 'prebuild-plan.json');
   const core = {
     schema: PACKET_SCHEMA, version: VERSION, status: 'EXPERIMENTAL', candidate: built.candidate,
     requestRef: { id: request.id, schema: request.schema, sha256: request.requestDigest },
     briefRef: { id: request.brief.id, schema: request.brief.schema, sha256: request.brief.briefDigest },
-    generator: { id: GENERATOR_ID, version: VERSION, recipeId: request.brief.recipeId, aiUsed: false },
+    ...(built.prebuildPlan ? {
+      assetCapabilitySnapshotRef: { id: built.candidate.id + '-asset-capability-snapshot', schema: built.assetSnapshot.schema, sha256: assetSnapshotFile.sha256 },
+      prebuildPlanRef: { id: built.candidate.id + '-prebuild-plan', schema: built.prebuildPlan.schema, sha256: prebuildPlanFile.sha256 }
+    } : {}),
+    generator: { id: GENERATOR_ID, version: VERSION, recipeId: request.brief.recipeId, aiUsed: false, ...(built.prebuildPlan ? { assetAware: true, knownRepairsAppliedBeforeBuild: true } : {}) },
     gameForgeProjectRef: { id: request.brief.id + '-game-forge-project', schema: 'axm.game-forge-project/v1', sha256: projectFile.sha256 },
     moduleBundle: built.bundle,
     moduleBundleRef: { id: built.candidate.id + '-module-bundle', schema: MODULE_BUNDLE_SCHEMA, sha256: 'sha256:' + hashBytes(bundleBytes), byteLength: bundleBytes.length },
@@ -338,10 +357,10 @@ function generate(input) {
     rootsGate: clone(request.rootsGate), declaredAuthority: { permissions: [], networkDomains: [], lifecycleEffects: [] },
     resources: { fileCount: sourceFiles.length, sourceBytes: built.totalBytes, fileCountEnforced: true, fileBytesEnforced: true, totalBytesEnforced: true, candidateProcesses: 0 },
     reuseRights: clone(request.reuseRights), limitations: LIMITATIONS.slice(),
-    truth: { deterministicBytes: true, gameCodeExecuted: false, runtimeBehaviorProven: false, visualBehaviorProven: false, playJourneyProven: false, persistenceProven: false, installed: false, integrated: false, lessonActive: false, promoted: false, canonChanged: false }, authority: 'NONE'
+    truth: { deterministicBytes: true, gameCodeExecuted: false, ...(built.prebuildPlan ? { assetProviderExecuted: false, assetArtifactsProduced: false, catalogInformedRendering: true, knownRepairsAppliedBeforeBuild: true } : {}), runtimeBehaviorProven: false, visualBehaviorProven: false, playJourneyProven: false, persistenceProven: false, installed: false, integrated: false, lessonActive: false, promoted: false, canonChanged: false }, authority: 'NONE'
   };
   const packet = { ...core, packetDigest: hashValue(core) };
-  const result = { request, packet, truth: { providerCalled: false, candidateCodeExecuted: false, workspaceWritten: false, networkUsed: false, installed: false, integrated: false, lessonActive: false, canonChanged: false } };
+  const result = { request, packet, truth: { providerCalled: false, ...(built.prebuildPlan ? { assetProviderExecuted: false, assetArtifactsProduced: false, prebuildPlanGenerated: true } : {}), candidateCodeExecuted: false, workspaceWritten: false, networkUsed: false, installed: false, integrated: false, lessonActive: false, canonChanged: false } };
   if (jsonBytes(result).length > request.resources.maxOutputBytes) throw new Error('complete game generation result exceeds output byte ceiling');
   return result;
 }
@@ -364,9 +383,9 @@ function buildExampleRequest() {
 function buildCoopExampleRequest() {
   const brief = sealBrief({ schema: BRIEF_SCHEMA, id: 'twin-reactor-coop', title: 'Twin Sparks: Reactor Run', seed: 220825, recipeId: COOP_RECIPE_ID, difficulty: 'STANDARD', world: { width: 30, height: 17 }, theme: { background: '#030711', panel: '#0b1928', wall: '#26384a', path: '#174a5b', player: '#39dff2', accent: '#ffcf5a', text: '#f4f8ff' }, accessibility: { touchTargetPx: 48, reducedMotionDefault: true, highContrast: true }, session: { persistence: 'SESSION_ONLY', network: 'DISABLED', players: 2 }, authority: 'NONE' });
   const contracts = loadRequiredComponentContracts();
-  const decisionRef = { id: 'mike-bounded-local-coop-game-direction', schema: 'axm.explicit-human-direction/v1', sha256: hashValue('Mike requested one bounded two-player action co-op game candidate; generation, detached sandbox build, preview, repair, and lesson candidates are allowed while installation, integration, publication, promotion, and CANON remain gated.') };
-  const rootsGate = ROOTS.map((root) => ({ root, verdict: 'PASS', evidenceRefs: [{ id: 'twin-reactor-coop-' + root, schema: 'axm.four-root-technical-review/v1', sha256: hashValue('twin-reactor-coop-v0.1:' + root) }] }));
-  return sealRequest({ schema: REQUEST_SCHEMA, id: 'generate-twin-reactor-coop', goal: 'Generate one deterministic, detached, offline two-player action co-op web game candidate where two independent local seats defend one reactor, fight bounded waves, revive each other, and share victory or defeat.', brief, components: REQUIRED_COMPONENT_IDS.map((key) => component(contracts[key])), rootsGate, authorization: { schema: 'axm.bounded-sandbox-growth-authorization/v1', decisionRef, scope: 'GENERATE_BUILD_PREVIEW_REPAIR_AND_LESSON_CANDIDATES', generate: true, sandboxBuild: true, sandboxPreview: true, sandboxRepair: true, lessonCandidate: true, maxIterations: 3, install: false, integrate: false, publish: false, promote: false, canon: false, authenticatedIdentityProven: false, authority: 'NONE' }, resources: { maxInputBytes: 1048576, maxOutputBytes: 2097152, maxFileBytes: 262144, maxFiles: 16, maxIterations: 3, maxCandidateProcesses: 0, maxCostMinorUnits: 0 }, reuseRights: { state: 'RESEARCH_ONLY_HOLD', directReuseAllowed: false, authorityRef: null }, authority: 'NONE' });
+  const decisionRef = { id: 'mike-bounded-local-coop-game-direction', schema: 'axm.explicit-human-direction/v1', sha256: hashValue('Mike requested one bounded two-player action co-op game candidate that knows the declared Asset Factory capability surface and applies grounded known repairs before candidate bytes; detached generation and preview remain allowed while installation, integration, publication, promotion, and CANON remain gated.') };
+  const rootsGate = ROOTS.map((root) => ({ root, verdict: 'PASS', evidenceRefs: [{ id: 'twin-reactor-coop-' + root, schema: 'axm.four-root-technical-review/v1', sha256: hashValue('twin-reactor-coop-v0.3:' + root) }] }));
+  return sealRequest({ schema: REQUEST_SCHEMA, id: 'generate-twin-reactor-coop', goal: 'Generate one deterministic, detached, offline two-player action co-op web game candidate where two independent local seats defend one reactor through a byte-bound asset-aware prebuild plan, known repairs, distinct visual silhouettes, bounded waves, partner revival, and shared victory or defeat.', brief, components: REQUIRED_COMPONENT_IDS.map((key) => component(contracts[key])), rootsGate, authorization: { schema: 'axm.bounded-sandbox-growth-authorization/v1', decisionRef, scope: 'GENERATE_BUILD_PREVIEW_REPAIR_AND_LESSON_CANDIDATES', generate: true, sandboxBuild: true, sandboxPreview: true, sandboxRepair: true, lessonCandidate: true, maxIterations: 3, install: false, integrate: false, publish: false, promote: false, canon: false, authenticatedIdentityProven: false, authority: 'NONE' }, resources: { maxInputBytes: 1048576, maxOutputBytes: 2097152, maxFileBytes: 262144, maxFiles: 16, maxIterations: 3, maxCandidateProcesses: 0, maxCostMinorUnits: 0 }, reuseRights: { state: 'RESEARCH_ONLY_HOLD', directReuseAllowed: false, authorityRef: null }, authority: 'NONE' });
 }
 
-module.exports = { VERSION, BRIEF_SCHEMA, REQUEST_SCHEMA, PACKET_SCHEMA, RECIPE_ID, COOP_RECIPE_ID, SUPPORTED_RECIPE_IDS, GENERATOR_ID, ROOTS, REQUIRED_COMPONENT_IDS, REQUIRED_FILES, LIMITATIONS, clone, hashValue, jsonBytes, sealBrief, normalizeBrief, sealRequest, normalizeRequest, loadRequiredComponentContracts, buildMap, buildBundle, buildCoopBundle, generate, verifyGeneration, buildExampleRequest, buildCoopExampleRequest };
+module.exports = { VERSION, BRIEF_SCHEMA, REQUEST_SCHEMA, PACKET_SCHEMA, RECIPE_ID, COOP_RECIPE_ID, SUPPORTED_RECIPE_IDS, GENERATOR_ID, ROOTS, REQUIRED_COMPONENT_IDS, REQUIRED_FILES, LEGACY_REQUIRED_FILES, LIMITATIONS, clone, hashValue, jsonBytes, sealBrief, normalizeBrief, sealRequest, normalizeRequest, loadRequiredComponentContracts, buildMap, buildBundle, buildCoopBundle, generate, verifyGeneration, buildExampleRequest, buildCoopExampleRequest };
