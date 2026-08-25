@@ -1,0 +1,165 @@
+name: AXM Code Work Context Dock Gate
+
+on:
+  pull_request:
+    paths:
+      - "shared/code-capability-fabric/language-organs/**"
+      - "shared/code-capability-fabric/module.contract.json"
+      - "tools/grammar-glass/**"
+      - ".github/workflows/code-work-context-dock-gate.yml"
+  push:
+    paths:
+      - "shared/code-capability-fabric/language-organs/**"
+      - "shared/code-capability-fabric/module.contract.json"
+      - "tools/grammar-glass/**"
+      - ".github/workflows/code-work-context-dock-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  work-context-dock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check work-context and production syntax
+        run: |
+          node --check shared/code-capability-fabric/language-organs/code-work-context-dock.js
+          node --check shared/code-capability-fabric/language-organs/code-work-context-local-store.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js
+          node --check shared/code-capability-fabric/language-organs/code-production-draft-fabric.js
+          node --check shared/code-capability-fabric/language-organs/code-production-draft-store.js
+          node --check shared/code-capability-fabric/language-organs/code-production-work-context-bridge.js
+          node --check shared/code-capability-fabric/language-organs/code-production-budget.js
+          node --check shared/code-capability-fabric/language-organs/code-built-software-experiment-sandbox.js
+          node --check shared/code-capability-fabric/language-organs/code-creation-reasoning-seam-probe.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-production-drafts.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-production-budget.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-built-software-experiment-sandbox.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-creation-reasoning-seam-probe.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-base.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-cycle.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-observation.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-memory.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-interglass.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-interglass-core.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-interglass-receipts.js
+          node --check shared/code-capability-fabric/language-organs/code-grammar-glass-execution-history.js
+          node --check shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-memory.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-interglass.js
+          node --check shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-execution-history.js
+          node --check tools/grammar-glass/interglass-executor.js
+          node --check tools/grammar-glass/app.js
+          node --check tools/grammar-glass/execution-history-view.js
+          python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass.contract.json >/dev/null
+          python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass-memory.contract.json >/dev/null
+          python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass-interglass.contract.json >/dev/null
+          python -m json.tool shared/code-capability-fabric/language-organs/code-grammar-glass-execution-history.contract.json >/dev/null
+      - name: Prove direction, scratch, hot card and scoped local store
+        run: node shared/code-capability-fabric/language-organs/selftest-code-work-context-dock.js
+      - name: Prove bounded editable production draft batches
+        run: node shared/code-capability-fabric/language-organs/selftest-code-production-drafts.js
+      - name: Prove production budgets and explicit stop conditions
+        run: node shared/code-capability-fabric/language-organs/selftest-code-production-budget.js
+      - name: Prove built-software experiment sandbox and five-save loop gate
+        run: node shared/code-capability-fabric/language-organs/selftest-code-built-software-experiment-sandbox.js
+      - name: Probe code-creation reasoning seams without authority
+        run: node shared/code-capability-fabric/language-organs/selftest-code-creation-reasoning-seam-probe.js
+      - name: Prove Grammar Glass execution constellation and return history without authority
+        run: |
+          node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass.js
+          node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-memory.js
+          node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-interglass.js
+          node shared/code-capability-fabric/language-organs/selftest-code-grammar-glass-execution-history.js
+          visual_dir="$(mktemp -d)"
+          node shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js \
+            --seed 6f2d8b4abef8ebf661925d5ce9d1aeea05b584055e8bdc96b9f857fd66d65e0f \
+            --day phase-2-return-history-gate-fixture \
+            --ticks 6 \
+            --stars 4 > "$visual_dir/grammar-glass-snapshot.json"
+          test -s "$visual_dir/grammar-glass-snapshot.json"
+          python -m json.tool "$visual_dir/grammar-glass-snapshot.json" >/dev/null
+          python - "$visual_dir/grammar-glass-snapshot.json" <<'PY'
+          import json, sys
+          p=json.load(open(sys.argv[1], encoding='utf-8'))
+          assert p['schema']=='axm.code.grammar-glass-visual-snapshot.v1'
+          assert p['version']=='1.4.0'
+          assert p['profileCount']==102
+          assert p['atomCount']==1122
+          assert p['contactMemory']['contactEdgeCount'] > 0
+          assert p['contactMemory']['multiHopPathCount'] > 0
+          assert len(p['formationWhy']) > 0
+          assert len(p['mirrorResponses']) > 0
+          assert p['animationModel']['interpolationCreatesEvidence'] is False
+          assert p['truth']['multiHopMemoryIsNotSemanticTransitivity'] is True
+          assert p['interglass']['state']=='EXECUTION_READY'
+          assert p['interglass']['runRequest']['resourceCeilings']['maxAttempts']==1
+          assert p['interglass']['runRequest']['sandboxContractBinding']['saveSlotCount']==5
+          assert p['interglass']['runRequest']['sandboxContractBinding']['maxBytesPerSaveSlot']==100000000
+          assert p['interglass']['runRequest']['truth']['automaticReentryAllowed'] is False
+          assert p['doubleGlass']['innerGlass']=='DISPOSABLE_BROWSER_SANDBOX'
+          assert p['executionHistory']['eventCount']==0
+          assert p['executionHistory']['runStarCount']==0
+          assert p['executionSky']==[]
+          assert p['executionHistory']['localBrowserReceiptChainClass']=='CLIENT_LIGHTWEIGHT_DIGEST_CHAIN_NOT_INDEPENDENT_RUNTIME_PROOF'
+          assert p['truth']['executionHistoryIsAppendOnly'] is True
+          assert p['truth']['executionStarCountIsNotQuality'] is True
+          assert p['truth']['executionHistoryDoesNotFeedTwisterAutomatically'] is True
+          assert p['constellation']['eventCount'] > 1
+          PY
+          grep -q 'MOVING TOROIDAL FIELD' tools/grammar-glass/index.html
+          grep -q 'REACTIVE DRAFT MIRROR GLASS' tools/grammar-glass/index.html
+          grep -q 'DOUBLE GLASS' tools/grammar-glass/index.html
+          grep -q 'INTERGLASS SANDBOX EXECUTION LANE' tools/grammar-glass/index.html
+          grep -q 'EXECUTION CONSTELLATION · RETURN HISTORY' tools/grammar-glass/index.html
+          grep -q 'RUN ONCE' tools/grammar-glass/index.html
+          grep -q 'LOCAL_BROWSER_RUNTIME_RECEIPT_CHAIN_NOT_NODE_SEALED' tools/grammar-glass/execution-history-view.js
+          grep -q 'MAX_LOCAL_EVENTS=256' tools/grammar-glass/execution-history-view.js
+          grep -q 'localStorage' tools/grammar-glass/execution-history-view.js
+          grep -q 'EXPLICIT_REPLAY_REQUEST_HELD_EXECUTOR_AND_USER_ACTION_REQUIRED' tools/grammar-glass/execution-history-view.js
+          grep -q 'requestAnimationFrame' tools/grammar-glass/app.js
+          grep -q 'AXM_INTERGLASS_RESULT_V1' tools/grammar-glass/interglass-executor.js
+          ! grep -q 'crypto.subtle' tools/grammar-glass/interglass-executor.js
+          node -e "const fs=require('fs'),vm=require('vm');const c={window:{},addEventListener(){},TextEncoder,structuredClone,setTimeout,clearTimeout};vm.runInNewContext(fs.readFileSync('tools/grammar-glass/interglass-executor.js','utf8'),c);if(c.window.AXMInterglassExecutor.sha256('abc')!=='ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad')throw Error('INTERGLASS_SHA256_SELFTEST_FAILED')"
+          grep -q "connect-src 'none'" shared/code-capability-fabric/language-organs/code-grammar-glass-interglass-core.js
+          grep -q 'CONTACT_MEMORY_PROPAGATION' shared/code-capability-fabric/language-organs/code-grammar-glass-memory.js
+      - name: Preserve developer relationship plane and build window
+        run: |
+          node shared/code-capability-fabric/language-organs/selftest-developer-relationship-plane.js
+          node shared/code-capability-fabric/language-organs/selftest-code-artifact-build-window.js
+      - name: Preserve machine keyboard and prebuild admission
+        run: |
+          node shared/code-capability-fabric/language-organs/build-machine-keyboards.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-code-keyboard.js
+          node shared/code-capability-fabric/language-organs/selftest-prebuild-twin-admission.js
+      - name: Preserve route and discipline layers
+        run: |
+          node shared/code-capability-fabric/language-organs/selftest-code-route-knowledge.js
+          node shared/code-capability-fabric/language-organs/selftest-human-discipline-perspectives.js
+      - name: Preserve template, cheatcode and grammar foundations
+        run: |
+          node shared/code-capability-fabric/language-organs/build-machine-templates.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-templates.js
+          node shared/code-capability-fabric/language-organs/build-machine-cheatcodes.js --check
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcodes.js
+          node shared/code-capability-fabric/language-organs/selftest-machine-cheatcode-influence.js
+          python shared/code-capability-fabric/language-organs/build-grammar-profiles.py --check
+          python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --check
+          node shared/code-capability-fabric/language-organs/selftest-grammar-profiles.js
+          node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
+      - name: Refuse whitespace or patch corruption
+        run: git diff --check

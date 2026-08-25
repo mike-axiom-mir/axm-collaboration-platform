@@ -1,0 +1,77 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-production-budget",
+  "version": "v1.0",
+  "status": "TEST",
+  "provides": [
+    "axm.code.production-budget.v1",
+    "axm.code.production-work-receipt.v1",
+    "axm.code.production-budget-use.v1",
+    "axm.code.production-budget-status.v1",
+    "axm.code.production-work-preflight.v1"
+  ],
+  "consumes": [
+    "axm.code.production-batch.v1",
+    "axm.code.production-draft-revision.v1",
+    "axm.code.work-direction.v1",
+    "caller-declared finite ceilings",
+    "digest-bound observed-work receipts",
+    "optional explicit stop signals"
+  ],
+  "permissions": [],
+  "limits": {
+    "maxTotalDraftRevisions": 256,
+    "maxRevisionsPerDraft": 64,
+    "maxArtifactBuilds": 128,
+    "maxAdmissionChecks": 128,
+    "maxQuickTests": 128,
+    "maxHeavyVerifierRuns": 64,
+    "proposedWorkUnitsPerPreflight": 64,
+    "reason": "Bound draft loops and external verification requests before more work is requested."
+  },
+  "behavior": {
+    "budget": "A budget is an immutable batch-bound ceiling, not permission or reserved compute.",
+    "usage": "Draft revisions are counted by immutable revision identity; external work is counted only from digest-bound observation receipts.",
+    "stop": "A current ceiling, stale or missing direction, or explicit recognized stop signal holds proposed future work without deleting candidates.",
+    "preflight": "A preflight reports whether proposed units fit beneath the ceiling; it never executes or authorizes them.",
+    "selection": "No budget state scores, ranks, selects, admits, promotes or merges a draft."
+  },
+  "recognizedWorkKinds": [
+    "ARTIFACT_BUILD",
+    "ADMISSION_CHECK",
+    "QUICK_TEST",
+    "HEAVY_VERIFIER"
+  ],
+  "recognizedStopSignals": [
+    "CALLER_PAUSE",
+    "REVIEW_CHECKPOINT_REQUESTED",
+    "BLOCKING_FAILURE",
+    "EVIDENCE_CONFLICT",
+    "DEPENDENCY_UNAVAILABLE"
+  ],
+  "boundaries": {
+    "refuses": [
+      "missing-or-unbounded-ceilings",
+      "foreign-batch-budget-or-receipt",
+      "unknown-stop-signal",
+      "within-budget-as-execution-permission",
+      "missing-receipt-as-proof-of-zero-cost",
+      "admission-as-automatic-stop-or-winner",
+      "budget-status-as-draft-ranking",
+      "automatic-tool-or-verifier-execution",
+      "automatic-workspace-mutation",
+      "automatic-selection-promotion-merge-or-canon"
+    ]
+  },
+  "truth": {
+    "budgetIsCeilingNotPermission": true,
+    "missingReceiptsMayUnderstateRealWork": true,
+    "heldDraftsRemainInspectible": true,
+    "reachingCeilingHoldsNextWork": true,
+    "noQualityScore": true,
+    "noAutomaticWinner": true,
+    "toolExecution": false,
+    "workspaceMutation": false
+  }
+}
+

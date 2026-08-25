@@ -1,0 +1,78 @@
+name: AXM Grammar Glass StarZoom Gate
+
+on:
+  pull_request:
+    paths:
+      - "tools/grammar-glass/**"
+      - "shared/code-capability-fabric/language-organs/code-grammar-glass*"
+      - "shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js"
+      - ".github/workflows/grammar-glass-starzoom-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  starzoom:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check viewer and StarZoom syntax
+        run: |
+          node --check tools/grammar-glass/interglass-executor.js
+          node --check tools/grammar-glass/app.js
+          node --check tools/grammar-glass/execution-history-view.js
+          node --check tools/grammar-glass/vessel-view.js
+          node --check tools/grammar-glass/execution-constellation-epp.js
+          node --check tools/grammar-glass/starzoom-data.js
+          node --check tools/grammar-glass/starzoom.js
+          node --check tools/grammar-glass/starzoom-steward.js
+      - name: Prove StarZoom inspect-only truth contract
+        run: |
+          grep -q 'STARZOOM_CAPTURE_LENS_V2' tools/grammar-glass/starzoom.js
+          grep -q 'REPLAY_INPUT_AUDIT_ONLY_NOT_EXECUTION_PERMISSION' tools/grammar-glass/starzoom-data.js
+          grep -q 'NON_RANKING_CAPTURE_COMPARISON' tools/grammar-glass/starzoom-data.js
+          grep -q 'comparisonRanks:false' tools/grammar-glass/starzoom-data.js
+          grep -q 'automaticExecution:false' tools/grammar-glass/starzoom.js
+          grep -q 'starContainsExecutableSoftware:false' tools/grammar-glass/starzoom-data.js
+          grep -q 'CAPTURED RECEIPT' tools/grammar-glass/starzoom-data.js
+          grep -q 'BOUND SNAPSHOT CONTEXT' tools/grammar-glass/starzoom-data.js
+          grep -q 'DERIVED VIEW' tools/grammar-glass/starzoom-data.js
+          grep -q 'STAR NAVIGATOR' tools/grammar-glass/starzoom-steward.js
+          grep -q 'starzoom-data.js' tools/grammar-glass/index.html
+          grep -q 'starzoom.js' tools/grammar-glass/index.html
+          grep -q 'starzoom-steward.js' tools/grammar-glass/index.html
+      - name: Bind StarZoom to a real Grammar Glass snapshot contract
+        run: |
+          visual_dir="$(mktemp -d)"
+          node shared/code-capability-fabric/language-organs/generate-code-grammar-glass-snapshot.js \
+            --seed 6f2d8b4abef8ebf661925d5ce9d1aeea05b584055e8bdc96b9f857fd66d65e0f \
+            --day starzoom-gate-fixture \
+            --ticks 6 \
+            --stars 4 > "$visual_dir/grammar-glass-snapshot.json"
+          python - "$visual_dir/grammar-glass-snapshot.json" <<'PY'
+          import json, sys
+          p=json.load(open(sys.argv[1], encoding='utf-8'))
+          assert p['schema']=='axm.code.grammar-glass-visual-snapshot.v1'
+          assert p['version']=='1.4.0'
+          assert p['profileCount']==102
+          assert p['atomCount']==1122
+          assert len(p['draftSky'])==4
+          assert p['interglass']['state']=='EXECUTION_READY'
+          assert p['interglass']['runRequest']['truth']['automaticReentryAllowed'] is False
+          assert p['executionSky']==[]
+          assert p['truth']['executionStarCountIsNotQuality'] is True
+          assert p['truth']['executionHistoryDoesNotFeedTwisterAutomatically'] is True
+          PY
+      - name: Refuse patch corruption
+        run: git diff --check

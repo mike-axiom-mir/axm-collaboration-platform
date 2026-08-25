@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "code-capability-fabric",
-  "version": "v0.12",
+  "version": "v0.13",
   "status": "TEST",
   "provides": [
     "axm.code-capability-provider/v1",
@@ -84,7 +84,17 @@
     "axm.code.action-cache-decision.v1",
     "axm.code.dependency-diff.v1",
     "axm.code.impact-preview.v1",
-    "axm.code.developer-substrate-snapshot.v1"
+    "axm.code.developer-substrate-snapshot.v1",
+    "axm.code.work-direction.v1",
+    "axm.code.work-progress-event.v1",
+    "axm.code.work-progress-snapshot.v1",
+    "axm.code.work-scratch-note.v1",
+    "axm.code.work-scratch-view.v1",
+    "axm.code.work-context-card.v1",
+    "axm.code.work-context-store-intent.v1",
+    "axm.code.work-context-local-store-layout.v1",
+    "axm.code.work-context-handoff-candidate.v1",
+    "axm.code.work-context-dock-snapshot.v1"
   ],
   "consumes": [
     "provider descriptors",
@@ -140,7 +150,12 @@
     "optional AXM diagnostic evidence",
     "optional build-system/project graph evidence",
     "optional test/coverage relationship evidence",
-    "optional data-flow/path evidence"
+    "optional data-flow/path evidence",
+    "caller-supplied directional prompt, roadmap or step plan",
+    "caller- or machine-supplied work progress events",
+    "caller- or machine-supplied non-authoritative scratch notes",
+    "optional scoped local work-context store adapter",
+    "optional Deterministic Continuation Capsule handoff adapter"
   ],
   "permissions": [],
   "handoffs": {
@@ -193,7 +208,11 @@
       "axm.code.diagnostic-batch.v1",
       "axm.code.action-cache-decision.v1",
       "axm.code.dependency-diff.v1",
-      "axm.code.developer-substrate-snapshot.v1"
+      "axm.code.developer-substrate-snapshot.v1",
+      "axm.code.work-context-card.v1",
+      "axm.code.work-context-store-intent.v1",
+      "axm.code.work-context-handoff-candidate.v1",
+      "axm.code.work-context-dock-snapshot.v1"
     ],
     "accepts": [
       "axm.code-capability-request/v1",
@@ -235,7 +254,12 @@
       "caller-supplied changed entity ids",
       "caller-supplied LSP diagnostics",
       "caller-supplied SARIF 2.1.0 results",
-      "caller-supplied build/package/test/data-flow evidence"
+      "caller-supplied build/package/test/data-flow evidence",
+      "caller-supplied directional prompt, roadmap or step plan",
+      "caller-supplied active direction selection",
+      "caller- or machine-supplied progress event",
+      "caller- or machine-supplied scratch note",
+      "caller-supplied work-context local-store observation"
     ]
   },
   "boundaries": {
@@ -367,7 +391,21 @@
       "automatic-source-mutation-from-developer-plane",
       "automatic-repair-from-developer-plane",
       "automatic-admission-change-from-developer-plane",
-      "automatic-promotion-from-developer-plane"
+      "automatic-promotion-from-developer-plane",
+      "scratch-note-as-fact",
+      "scratch-note-as-plan-decision",
+      "machine-note-as-user-instruction",
+      "machine-plan-as-user-approved-plan-without-explicit-selection",
+      "progress-event-as-direction-rewrite",
+      "done-step-as-correctness-proof",
+      "context-card-focus-as-execution-authority",
+      "stale-context-card-as-current-direction",
+      "automatic-direction-switch",
+      "automatic-scratch-promotion",
+      "automatic-work-context-store-write",
+      "raw-source-auto-copy-into-scratch",
+      "automatic-handoff-export",
+      "work-context-store-as-source-workspace"
     ]
   },
   "lifecycle": {

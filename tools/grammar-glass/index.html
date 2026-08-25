@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grammar Glass · Code Twister</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="execution-history.css">
+<link rel="stylesheet" href="vessel.css">
+<link rel="stylesheet" href="constellation-epp.css">
+<link rel="stylesheet" href="starzoom.css">
+<link rel="stylesheet" href="starzoom-steward.css">
+</head>
+<body><main>
+<header class="top">
+  <div>
+    <div class="eyebrow">POLYGLOT STRUCTURAL DRAFTING + OBSERVABILITY</div>
+    <h1>GRAMMAR GLASS <span>/ CODE TWISTER</span></h1>
+    <div class="muted">Seeded · replayable · provenance-bound · visual motion creates no evidence</div>
+  </div>
+  <div class="facts" id="facts"></div>
+</header>
+
+<section class="load" id="load"><div>
+  <div class="eyebrow">NO CANNED LANGUAGE ACTIVITY</div>
+  <h2>Load a recorded Grammar Glass snapshot</h2>
+  <p class="muted">The vessel renders only recorded grammar atoms, influence paths, candidate lineage and execution receipts.</p>
+  <label>Load snapshot JSON<input id="file" type="file" accept="application/json,.json"></label>
+</div></section>
+
+<div class="grid vessel-grid" id="workspace" hidden>
+  <section class="panel vessel-panel">
+    <div class="head vessel-head">
+      <div><h2>GRAMMAR GLASS VESSEL · SOFTWARE TWISTER</h2><small>seeded code matter inside the observation glass</small></div>
+      <div class="motion">
+        <span class="pill green" id="coverage"></span>
+        <button class="control" id="motionToggle" aria-pressed="true">PAUSE</button>
+        <label class="pill">speed <input id="speed" type="range" min="20" max="220" value="100"></label>
+      </div>
+    </div>
+
+    <div class="vessel-scene" id="fieldWrap">
+      <div class="vessel-atmosphere" aria-hidden="true"></div>
+      <canvas id="vesselCanvas" class="vessel-canvas"></canvas>
+      <canvas id="field" class="legacy-field" aria-hidden="true"></canvas>
+      <canvas id="sky" class="draft-orbit-canvas" aria-label="Draft star orbit"></canvas>
+      <canvas id="executionSky" class="execution-orbit-canvas" aria-label="Execution constellation orbit"></canvas>
+
+      <div class="glass-vessel" aria-hidden="true">
+        <div class="glass-rim glass-rim-top"></div>
+        <div class="glass-wall glass-wall-left"></div>
+        <div class="glass-wall glass-wall-right"></div>
+        <div class="glass-glare glass-glare-a"></div>
+        <div class="glass-glare glass-glare-b"></div>
+        <div class="glass-rim glass-rim-bottom"></div>
+        <div class="vessel-throat"></div>
+      </div>
+
+      <div class="vessel-label">
+        <b>CODE TWISTER</b>
+        <small>real grammar atoms · seeded visual projection</small>
+      </div>
+
+      <div class="mirror-response vessel-mirror" id="mirrorGlass">
+        <div class="label"><span>REACTIVE DRAFT MIRROR · ON GLASS</span><span>OBSERVE ONLY</span></div>
+        <pre id="response">Load a snapshot to reveal the mirror response.</pre>
+      </div>
+
+      <div class="candidate-transfer" id="candidateTransfer" data-state="EMPTY">
+        <div class="seed-lineage"></div>
+        <div class="candidate-crystal" id="candidateCrystal"><span id="candidateCrystalLabel">candidate</span></div>
+      </div>
+
+      <div class="inner-glass-vessel" id="innerGlassVessel" data-state="EMPTY">
+        <div class="inner-glass-title">INNER GLASS · SANDBOX</div>
+        <b id="sandboxCapsuleState">EMPTY</b>
+        <iframe id="sandboxFrame" title="Interglass sandbox" sandbox="allow-scripts"></iframe>
+      </div>
+
+      <div class="vessel-orbit-legend">
+        <span><i class="draft-dot"></i>INNER ORBIT · Draft Stars</span>
+        <span><i class="run-dot"></i>OUTER ORBIT · Run Stars</span>
+        <span class="lineage-focus-label" id="lineageFocusLabel">click star → trace lineage</span>
+      </div>
+    </div>
+
+    <div class="vessel-controls-strip">
+      <div class="candidate-summary">
+        <div class="eyebrow">INTERGLASS CREATION LANE</div>
+        <pre class="candidate-info" id="candidateInfo">No candidate loaded.</pre>
+      </div>
+      <div class="interglass-controls">
+        <span class="pill amber" id="sandboxState">EMPTY</span>
+        <button class="control" id="armCandidate">ARM CANDIDATE</button>
+        <button class="control" id="runCandidate" disabled>RUN ONCE</button>
+        <button class="control" id="releasePayload" disabled>RELEASE PAYLOAD</button>
+      </div>
+    </div>
+    <div class="creation-track"><div class="eyebrow">CREATION / EXECUTION TRACE</div><div id="runTrail" class="run-trail"></div></div>
+    <div class="body truth"><span class="status-dot"></span>The glass, vortex, condensation and transfer motion are a projection of recorded state. They do not create randomness, execution evidence, quality or authority.</div>
+    <div class="vessel-contract-label">MOVING TOROIDAL FIELD · REACTIVE DRAFT MIRROR GLASS · DOUBLE GLASS · INTERGLASS SANDBOX EXECUTION LANE</div>
+  </section>
+
+  <aside class="side vessel-side">
+    <section class="panel"><div class="head"><h2>Contact memory</h2><span class="pill amber">DECAYS</span></div><div class="body"><div class="memory-meter" id="memoryMetrics"></div><p class="truth">Recorded contact may alter later circulation through bounded paths. This is not training.</p></div></section>
+    <section class="panel"><div class="head"><h2>Why did this composite form?</h2><span class="pill">DERIVATION</span></div><div class="body why" id="why"></div></section>
+    <section class="panel"><div class="head"><h2>Formation / mirror selector</h2><span class="pill green">NO WINNER</span></div><div class="body cards" id="mirrors"></div></section>
+    <section class="panel"><div class="head"><h2>Inspector</h2><span class="pill">LINEAGE</span></div><pre class="body inspector" id="inspector">Select an atom, mirror or star.</pre></section>
+  </aside>
+
+  <section class="panel execution-history-panel compact-history">
+    <div class="head"><h2>EXECUTION CONSTELLATION · RETURN HISTORY</h2><span class="pill" id="executionHistoryStatus">EMPTY</span></div>
+    <div class="execution-history-inline">
+      <div class="execution-history-metrics" id="executionHistoryMetrics"></div>
+      <div class="execution-history-cards" id="executionHistoryCards"></div>
+      <pre class="execution-history-inspector" id="executionHistoryInspector">Draft and Run Stars orbit the vessel. Click either star family to trace formation → candidate → sandbox → result.</pre>
+    </div>
+    <div class="body truth">Draft Stars occupy the inner constellation shell; Run Stars occupy the outer shell. PASS, FAIL, CRASH, TIMEOUT and HELD use different visual skins, not quality ranks. Click any star to illuminate exact lineage; history never auto-feeds the Twister.</div>
+  </section>
+
+  <section class="panel sky technical-sky"><div class="head"><h2>DRAFTSKY · immutable Draft Stars</h2><span class="pill">brightness ≠ quality</span></div><div class="stars" id="stars"></div></section>
+  <section class="panel ledger"><div class="head"><h2>CONSTELLATION LEDGER</h2><code id="constellation"></code></div><div class="ledgergrid" id="ledger"></div></section>
+  <section class="panel languages"><div class="head"><h2>Actual grammar identities</h2><span class="pill" id="profileCount"></span></div><div class="langlist" id="languages"></div></section>
+</div>
+</main>
+<script src="interglass-executor.js"></script>
+<script src="app.js"></script>
+<script src="execution-history-view.js"></script>
+<script src="vessel-view.js"></script>
+<script src="execution-constellation-epp.js"></script>
+<script src="starzoom-data.js"></script>
+<script src="starzoom.js"></script>
+<script src="starzoom-steward.js"></script>
+</body></html>
