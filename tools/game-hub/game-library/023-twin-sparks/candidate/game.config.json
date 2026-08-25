@@ -1,0 +1,238 @@
+{
+  "schema": "axm.local-coop-action-game-config/v1",
+  "title": "Twin Sparks: Reactor Run",
+  "seed": 220825,
+  "difficulty": "STANDARD",
+  "arena": {
+    "width": 960,
+    "height": 544,
+    "margin": 32,
+    "reactor": {
+      "x": 480,
+      "y": 272,
+      "radius": 42,
+      "health": 100
+    },
+    "playerSpawns": [
+      {
+        "id": "p1",
+        "x": 360,
+        "y": 272
+      },
+      {
+        "id": "p2",
+        "x": 600,
+        "y": 272
+      }
+    ],
+    "enemySpawns": [
+      {
+        "x": 84,
+        "y": 72
+      },
+      {
+        "x": 888,
+        "y": 79
+      },
+      {
+        "x": 886,
+        "y": 472
+      },
+      {
+        "x": 72,
+        "y": 465
+      },
+      {
+        "x": 480,
+        "y": 64
+      },
+      {
+        "x": 480,
+        "y": 480
+      }
+    ],
+    "obstacles": [
+      {
+        "x": 262,
+        "y": 164,
+        "radius": 32
+      },
+      {
+        "x": 698,
+        "y": 164,
+        "radius": 32
+      },
+      {
+        "x": 262,
+        "y": 380,
+        "radius": 32
+      },
+      {
+        "x": 698,
+        "y": 380,
+        "radius": 32
+      }
+    ],
+    "enemyCounts": [
+      4,
+      6,
+      8
+    ]
+  },
+  "rules": {
+    "fixedTick": true,
+    "waves": 3,
+    "entityCap": 18,
+    "playerHealth": 3,
+    "playerSpeed": 3,
+    "dashDistance": 28,
+    "dashCooldownTicks": 48,
+    "attackRange": 62,
+    "attackCooldownTicks": 16,
+    "reviveRange": 74,
+    "reviveHoldTicks": 36,
+    "enemySpeed": 1.15,
+    "projectileSpeed": 12,
+    "projectileLifetimeTicks": 46,
+    "projectileCap": 24,
+    "linkRange": 260,
+    "linkedDamage": 2,
+    "repairCoreCap": 6,
+    "repairCoreHeal": 12,
+    "repairCorePickupRange": 30,
+    "nextWaveDelayTicks": 42
+  },
+  "inputs": {
+    "p1": {
+      "move": [
+        "KeyW",
+        "KeyA",
+        "KeyS",
+        "KeyD"
+      ],
+      "attackOrRevive": "KeyF",
+      "dash": "KeyG"
+    },
+    "p2": {
+      "move": [
+        "ArrowUp",
+        "ArrowLeft",
+        "ArrowDown",
+        "ArrowRight"
+      ],
+      "attackOrRevive": "KeyK",
+      "dash": "KeyL"
+    },
+    "shared": {
+      "startOrRestart": "Enter",
+      "pause": "Escape"
+    }
+  },
+  "prebuild": {
+    "schema": "axm.game-prebuild-plan/v1",
+    "planDigest": "sha256:824956d7a1461d17adccb49979947dd589eb2f8d938f468b5052734caaf0b980",
+    "snapshotDigest": "sha256:3d1841059888680072866b00810780ee8a2baeb02b45f60f585eb0c75984e8c4",
+    "appliedRepairs": [
+      "projectile-spawn-and-swept-collision-v1",
+      "combat-silhouette-separation-v1",
+      "asset-declaration-truth-ceiling-v1",
+      "reduced-motion-gameplay-cue-v1"
+    ],
+    "assetRoutes": [
+      {
+        "id": "arena-background",
+        "handId": "raster-texture",
+        "state": "PLANNED_FROM_DECLARATION",
+        "artifactProduced": false
+      },
+      {
+        "id": "player-and-enemy-silhouettes",
+        "handId": "pixel-sprite",
+        "state": "PLANNED_FROM_DECLARATION",
+        "artifactProduced": false
+      },
+      {
+        "id": "hud-and-controls",
+        "handId": "ui-component",
+        "state": "PLANNED_FROM_DECLARATION",
+        "artifactProduced": false
+      },
+      {
+        "id": "arena-effects",
+        "handId": "portable-visual-fx",
+        "state": "PLANNED_FROM_DECLARATION",
+        "artifactProduced": false
+      },
+      {
+        "id": "cross-surface-treatment",
+        "handId": "visual-treatment-composer",
+        "state": "PLANNED_FROM_DECLARATION",
+        "artifactProduced": false
+      },
+      {
+        "id": "combat-motion",
+        "handId": "deterministic-animation-fabric",
+        "state": "PLANNED_FROM_DECLARATION",
+        "artifactProduced": false
+      },
+      {
+        "id": "combat-audio-future-route",
+        "handId": "deterministic-audio-fabric",
+        "state": "PLANNED_FROM_DECLARATION",
+        "artifactProduced": false
+      }
+    ]
+  },
+  "visual": {
+    "stylePresetId": "arcade-neon-circuit",
+    "treatmentId": "aetherglass-cinematic",
+    "effectIds": [
+      "glow",
+      "gradientBorder",
+      "scanlines",
+      "spotlight",
+      "vignette"
+    ],
+    "palette": {
+      "background": "#050812",
+      "surface": "#10192a",
+      "text": "#f6fbff",
+      "mutedText": "#aebbd2",
+      "p1": "#25e6ff",
+      "p2": "#7f5cff",
+      "enemy": "#ff3fae",
+      "highlight": "#dffcff",
+      "repair": "#63ff9e",
+      "reactor": "#ffd166"
+    },
+    "minimumTextContrast": 4.5,
+    "reducedMotionFallback": true,
+    "preserveGameplayCues": true
+  },
+  "experience": {
+    "schema": "axm.game-experience-flow-plan/v1",
+    "planDigest": "sha256:0e338f899e65d9e250a5bed884eb66bdecf64e24d3fdfa26579f8ad7ad838222",
+    "defaultSceneId": "LOBBY",
+    "sceneIds": [
+      "LOBBY",
+      "MISSION_INTRO",
+      "ACTIVE_PLAY",
+      "WAVE_TRANSITION",
+      "WARDEN_INTRO",
+      "PAUSED",
+      "VICTORY",
+      "DEFEAT"
+    ],
+    "reviewSurface": "COLLAPSIBLE_REVIEW_DRAWER",
+    "holdTicks": {
+      "missionIntro": 24,
+      "wardenIntro": 24
+    }
+  },
+  "session": {
+    "persistence": "SESSION_ONLY",
+    "network": "DISABLED",
+    "players": 2
+  },
+  "authority": "NONE"
+}

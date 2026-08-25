@@ -42,6 +42,24 @@ Possible results:
 authority envelope align. It is never execution, verification, installation,
 promotion, or proof of semantic correctness.
 
+## Resource envelopes preserve quality
+
+A resource envelope is an exact per-attempt declaration and consent boundary,
+not a permanent low ceiling on what AXM may create. Quality and content needs
+stay visible as requested. When the observed host or current consent cannot
+support them, the honest result is a typed resource-expansion hold with the
+unmet delta—not a silent downgrade that pretends the smaller output met the
+goal.
+
+Version-specific file, byte, memory, process, time, and cost maxima in current
+planners are implementation limits for those versions. They are capability
+gaps to evolve, not a doctrine that complex games, media, systems, or hardware
+designs must remain small. A later attempt may request a larger exact envelope;
+material expansion requires fresh host evidence and human consent. More
+resources never grant more permissions, network, lifecycle, installation,
+promotion, or `CANON` authority. Enforced host safety ceilings still apply at
+the execution boundary.
+
 Run:
 
 ```powershell

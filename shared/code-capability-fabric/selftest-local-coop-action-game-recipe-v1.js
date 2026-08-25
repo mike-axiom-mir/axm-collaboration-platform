@@ -321,6 +321,10 @@ test('schema files stay closed and enumerate exactly the two admitted recipes', 
   assert.strictEqual(briefSchema.additionalProperties, false);
   assert.deepStrictEqual(briefSchema.properties.recipeId.enum, Generator.SUPPORTED_RECIPE_IDS);
   assert.deepStrictEqual(packetSchema.properties.generator.properties.recipeId.enum, Generator.SUPPORTED_RECIPE_IDS);
+  assert.deepStrictEqual(packetSchema.properties.candidate.oneOf.map((entry) => [entry.properties.id.const, entry.properties.version.const]), [
+    ['four-roots-run-native', 'v0.1'],
+    ['twin-reactor-coop-native', 'v0.4']
+  ]);
 });
 
 process.stdout.write('PASS local co-op action game recipe (' + passed + ' cases)\n');

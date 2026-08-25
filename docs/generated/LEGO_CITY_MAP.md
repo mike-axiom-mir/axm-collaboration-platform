@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `00327ec63b379a3f10de1bbb4023b26925ff0d59a286ec55a16a76c71f915c57`
+Semantic graph digest: `1ca7a0b43d45d16a90451c74b3fb24f1fc60747534b76a67cd1908e4d07d4367`
 
-Blocks: 304 · Capabilities: 3173 · Schemas: 925 · Unresolved edges: 2079
+Blocks: 304 · Capabilities: 3173 · Schemas: 928 · Unresolved edges: 2079
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -112,7 +112,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | game-balance-telemetry-advisor | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | game-capability-atlas | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | game-forge | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 21 | 8 | 2 selftest(s) |
-| game-hub | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 3 | 3 | 53 selftest(s) |
+| game-hub | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 3 | 3 | 54 selftest(s) |
 | game-organism-lab | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 3 | 2 | 1 selftest(s) |
 | game-production-runner | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NETWORK_READ, ROOT_CHANGE | 40 | 4 | 1 selftest(s) |
 | game-ui-hud-menu-runtime | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
@@ -220,7 +220,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/baseline-simulation-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 11 | 6 | 1 selftest(s) |
 | shared/city-gates | BRIDGE (DECLARED) | EXPERIMENTAL | NETWORK_WRITE, PUBLIC_RELEASE | 5 | 3 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
-| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 131 | 67 | 53 selftest(s) |
+| shared/code-capability-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 131 | 67 | 54 selftest(s) |
 | shared/compute-substrate-lab | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 4 | 1 selftest(s) |
 | shared/deterministic-animation-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 12 | 3 | 2 selftest(s) |
 | shared/deterministic-audio-fabric | BRICK (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 3 | 2 selftest(s) |
