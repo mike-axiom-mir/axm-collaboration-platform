@@ -398,7 +398,7 @@ node shared/code-capability-fabric/selftest-code-specialist-organ-intent-adapter
 
 ## Registered code-family build profiles → detached candidates
 
-The additive v2.5 `TEST` rung moves code-family binding out of hard-coded
+The additive v2.6 `TEST` rung moves code-family binding out of hard-coded
 builder branches and into an exact, digest-bound build-profile catalog. The
 initial profiles connect `organ.code.data-schema` to the closed JSON Schema
 validator recipe and `organ.code.markup-structure` to the bounded semantic
@@ -407,8 +407,10 @@ recipe, JavaScript application logic to one strict byte-bound string-record
 transform recipe, CSS style presentation to one typed design-token stylesheet
 recipe, SVG markup structure to the strict existing text-only status-badge recipe,
 a second exact JavaScript application-logic lane to the strict closed-object
-contract adapter, and a third exact JavaScript application-logic lane to the
-bounded closed-record query recipe. Same-language lanes remain distinguishable only through
+contract adapter, a third exact JavaScript application-logic lane to the
+bounded closed-record query recipe, and a fourth to a bounded handler-free
+portable FSM definition that composes with the existing shared Game FSM runtime.
+Same-language lanes remain distinguishable only through
 their exact mode, profile, recipe, builder, and artifact bindings.
 Later or broader families require their own Code Atlas language, specialist
 binding, source-reviewed recipe, builder digest, and evidence plan; unsupported

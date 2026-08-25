@@ -6,17 +6,19 @@ memory, and offers an explicit deterministic ZIP download. `machine.js`
 exposes the same pure operations without filesystem authority.
 
 Every recipe and candidate is explicitly typed as `HAND` or `SKILL`. Active v1
-recipes include eight reviewed executable `HAND` builders and one reviewed
+recipes include ten reviewed executable `HAND` builders and one reviewed
 host-mediated portable `SKILL` builder.
 
 Builder code is no longer selected by hard-coded branches in the Fabric core.
-A digest-bound modular registry supplies all ten active builders. The validator,
+A digest-bound modular registry supplies all eleven active builders. The validator,
 semantic HTML renderer, bounded JavaScript string-record transform, bounded CSS token-stylesheet renderer, strict text-only
 SVG status-badge renderer, bounded Python record-transform HAND, and strict
-closed primitive-object contract adapter are all
+closed primitive-object contract adapter, bounded record query, and handler-free
+portable FSM definition are all
 selected through exact recipe and builder digests. The generated JavaScript,
 CSS, SVG, and Python source and selftests remain inert candidate data and are not executed by
-this workbench. The
+this workbench. The portable FSM definition composes with the existing shared
+Game FSM runtime; it neither copies that runtime nor embeds handlers. The
 portable review SKILL was admitted through the reviewed merge gate. The
 separate Capability Recipe Admission Gate can prove exact evidence and a
 prospective catalog diff for future candidates, but cannot activate one itself.

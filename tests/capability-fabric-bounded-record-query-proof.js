@@ -13,11 +13,11 @@ const Specialist = require('../shared/code-capability-fabric/code-specialist-cap
 const EXPECTED = Object.freeze({
   builder: 'sha256:501e7ac2c984beec72a99dddfb576cd0d6b2899787d4a19881a59613e0f2b973',
   recipe: 'sha256:6e947f83cdd83775d1182165fc67f8797c56497875de94d31054febff318f69a',
-  catalog: 'sha256:d4055fc19f95122e4d4ec21fa445203a0c9e64681ba91c4fc69736dd3ada35c3',
-  directPackage: 'sha256:9b46531cd71772e04033c80c8164578809a89fbe8d64d7ae2eba805459b67e90',
+  catalog: 'sha256:7557f514bfb85f987e91c1ad06c5ffb1f69de657f6ddf7372c543e958a232425',
+  directPackage: 'sha256:96c5eb573b9a86eef486cf5189bdabe7fa3eebc2140a5737d377211d4337c4b4',
   profile: 'sha256:2eaf846070b5673852a8af204c38c61adcce7804de41f4f6acefaddb678d1cc3',
-  profileCatalog: 'sha256:abf75103ecf04050efc312b87fee62877a882083af2692edd890f59ba9d76d96',
-  specialistPackage: 'sha256:036835752d624d6ac5ae9cdef842b934c75c9ef67dc05e833325a7f8f449fa97'
+  profileCatalog: 'sha256:060deca3775d440c4b515a9706fbbad060908b24d20ceb38398a004174da4ffb',
+  specialistPackage: 'sha256:de9fd061bf6bada9292da5c2fa6a4743962b666ac7502deda08d0450370cb3a2'
 });
 
 let passed = 0;

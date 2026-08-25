@@ -19,11 +19,11 @@ function resealCandidate(candidate){
 function main(){
   const catalog=Fabric.loadCatalog(),catalogCheck=Fabric.validateCatalog(catalog);
   check(catalogCheck.ok,'digest-bound recipe catalog validates');
-  check(catalog.recipes.length===10,'reviewed catalog has one portable SKILL plus nine bounded HAND recipes including the strict record-query hand');
-  check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===9&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
+  check(catalog.recipes.length===11,'reviewed catalog has one portable SKILL plus ten bounded HAND recipes including the strict record-query and portable-FSM-definition hands');
+  check(catalog.recipes.filter(function(row){return row.capabilityKind==='HAND'&&row.capabilityContract.runtimeMode==='EXECUTABLE';}).length===10&&catalog.recipes.filter(function(row){return row.capabilityKind==='SKILL'&&row.capabilityContract.runtimeMode==='HOST_MEDIATED';}).length===1,'reviewed active recipes preserve their exact modular kind and runtime boundary');
   check(catalog.recipes.every(function(row){return row.candidatePolicy.defaultCount===1&&row.candidatePolicy.variants.some(function(variant){return variant.id===row.candidatePolicy.defaultVariantId;});}),'every reviewed recipe explicitly defaults to one named candidate variant');
   check(catalog.activationPolicy==='SOURCE_REVIEW_AND_MIKE_MERGE','shared activation policy preserves Mike merge gate');
-  check(BuilderRegistry.activeIds().length===10&&BuilderRegistry.activeIds().includes('closed-object-contract-adapter-v2')&&BuilderRegistry.activeIds().includes('bounded-record-query-v1')&&BuilderRegistry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','modular builder registry activates the strict adapter and record-query builders while retaining the exact historical v1 review candidate');
+  check(BuilderRegistry.activeIds().length===11&&BuilderRegistry.activeIds().includes('closed-object-contract-adapter-v2')&&BuilderRegistry.activeIds().includes('bounded-record-query-v1')&&BuilderRegistry.activeIds().includes('bounded-portable-fsm-definition-v1')&&BuilderRegistry.reviewCandidateIds().join(',')==='closed-object-contract-adapter-v1','modular builder registry activates the strict adapter, record-query, and portable-FSM-definition builders while retaining the exact historical v1 review candidate');
   check(catalog.recipes.every(function(row){const builder=BuilderRegistry.describe(row.builderId);return builder&&row.builderDigest===builder.implementationDigest;}),'every active recipe binds the exact modular builder digest');
 
   const packages={};

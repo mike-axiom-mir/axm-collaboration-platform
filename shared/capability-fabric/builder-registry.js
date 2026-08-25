@@ -588,6 +588,102 @@
     return {capabilityKind:'HAND',source:recordQuerySource(config),selftest:recordQuerySelftest(config),provides:[config.resultSchemaId],consumes:[config.inputSchemaId],summary:'Strict deterministic closed-record collection filtering, stable ordering, projection, limit, and bounded count summary.'};
   }
 
+  function fsmRecord(value,expected,label) {
+    let prototype,names,symbols;
+    try {
+      if(!value||typeof value!=='object'||Array.isArray(value))throw new Error(label+' must be an object');
+      prototype=Object.getPrototypeOf(value);names=Object.getOwnPropertyNames(value);symbols=Object.getOwnPropertySymbols(value);
+    } catch(error) { throw new Error(label+' inspection failed'); }
+    if((prototype!==Object.prototype&&prototype!==null)||symbols.length)throw new Error(label+' must be plain own-property data');
+    const wanted=expected.slice().sort();
+    if(names.length!==wanted.length||names.slice().sort().some(function(name,index){return name!==wanted[index];}))throw new Error(label+' fields mismatch');
+    const values=Object.create(null);
+    wanted.forEach(function(name){
+      let descriptor;
+      try { descriptor=Object.getOwnPropertyDescriptor(value,name); } catch(error) { throw new Error(label+' inspection failed'); }
+      if(!descriptor||!descriptor.enumerable||!Object.prototype.hasOwnProperty.call(descriptor,'value'))throw new Error(label+'.'+name+' must be an enumerable data property');
+      values[name]=descriptor.value;
+    });
+    return values;
+  }
+  function fsmArray(value,maximum,label) {
+    let prototype,names,symbols,lengthDescriptor;
+    try {
+      if(!Array.isArray(value))throw new Error(label+' must be an array');
+      prototype=Object.getPrototypeOf(value);names=Object.getOwnPropertyNames(value);symbols=Object.getOwnPropertySymbols(value);lengthDescriptor=Object.getOwnPropertyDescriptor(value,'length');
+    } catch(error) { throw new Error(label+' inspection failed'); }
+    if(prototype!==Array.prototype||symbols.length||!lengthDescriptor||!Object.prototype.hasOwnProperty.call(lengthDescriptor,'value'))throw new Error(label+' must be a plain dense array');
+    const length=lengthDescriptor.value;
+    if(!Number.isInteger(length)||length<0||length>maximum)throw new Error(label+' exceeds its bounded length');
+    const expected=['length'];for(let index=0;index<length;index+=1)expected.push(String(index));
+    const sorted=expected.slice().sort();
+    if(names.length!==sorted.length||names.slice().sort().some(function(name,index){return name!==sorted[index];}))throw new Error(label+' must be a plain dense array');
+    const rows=[];
+    for(let index=0;index<length;index+=1){const descriptor=Object.getOwnPropertyDescriptor(value,String(index));if(!descriptor||!descriptor.enumerable||!Object.prototype.hasOwnProperty.call(descriptor,'value'))throw new Error(label+'['+index+'] must be an enumerable data property');rows.push(descriptor.value);}
+    return rows;
+  }
+  function fsmToken(value,label) {
+    if(typeof value!=='string'||!/^[A-Za-z][A-Za-z0-9_.:-]{0,63}$/.test(value)||['__proto__','constructor','prototype'].includes(value.toLowerCase()))throw new Error(label+' is invalid');
+    return value;
+  }
+  function fsmDefinitionId(value) {
+    if(typeof value!=='string'||!/^[a-z][a-z0-9.-]{2,63}$/.test(value)||['constructor','prototype'].includes(value))throw new Error('definitionId is invalid');
+    return value;
+  }
+  function inspectFsmParameters(parameters) {
+    const input=fsmRecord(parameters,['definitionId','initialState','states','maxStates','maxTransitions','maxDefinitionBytes'],'parameters');
+    if(!Number.isInteger(input.maxStates)||input.maxStates<2||input.maxStates>64)throw new Error('maxStates is outside the bounded range');
+    if(!Number.isInteger(input.maxTransitions)||input.maxTransitions<1||input.maxTransitions>256)throw new Error('maxTransitions is outside the bounded range');
+    if(!Number.isInteger(input.maxDefinitionBytes)||input.maxDefinitionBytes<256||input.maxDefinitionBytes>65536)throw new Error('maxDefinitionBytes is outside the bounded range');
+    const rows=fsmArray(input.states,input.maxStates,'states');
+    if(rows.length<2)throw new Error('states must contain at least two declarations');
+    const states=rows.map(function(row,index){
+      const state=fsmRecord(row,['id','motionBlock','transitions'],'states['+index+']'),id=fsmToken(state.id,'states['+index+'].id');
+      if(state.motionBlock!==null)fsmToken(state.motionBlock,'states['+index+'].motionBlock');
+      const transitions=fsmArray(state.transitions,input.maxTransitions,'states['+index+'].transitions').map(function(value,transitionIndex){
+        const transition=fsmRecord(value,['event','target'],'states['+index+'].transitions['+transitionIndex+']');
+        return {event:fsmToken(transition.event,'states['+index+'].transitions['+transitionIndex+'].event'),target:fsmToken(transition.target,'states['+index+'].transitions['+transitionIndex+'].target')};
+      }).sort(function(left,right){return left.event<right.event?-1:left.event>right.event?1:0;});
+      if(new Set(transitions.map(function(transition){return transition.event;})).size!==transitions.length)throw new Error('states['+index+'] transition events must be unique');
+      return {id:id,motionBlock:state.motionBlock,transitions:transitions};
+    }).sort(function(left,right){return left.id<right.id?-1:left.id>right.id?1:0;});
+    if(new Set(states.map(function(state){return state.id;})).size!==states.length)throw new Error('state ids must be unique');
+    const initialState=fsmToken(input.initialState,'initialState'),ids=new Set(states.map(function(state){return state.id;}));
+    if(!ids.has(initialState))throw new Error('initialState must name one declared state');
+    let transitionCount=0;
+    states.forEach(function(state){state.transitions.forEach(function(transition){transitionCount+=1;if(!ids.has(transition.target))throw new Error('transition target '+transition.target+' is not declared');});});
+    if(!transitionCount)throw new Error('at least one transition is required');
+    if(transitionCount>input.maxTransitions)throw new Error('transitions exceed maxTransitions');
+    const byId=new Map(states.map(function(state){return [state.id,state];})),reachable=new Set([initialState]),queue=[initialState];
+    while(queue.length){const current=byId.get(queue.shift());current.transitions.forEach(function(transition){if(!reachable.has(transition.target)){reachable.add(transition.target);queue.push(transition.target);}});}
+    if(reachable.size!==states.length)throw new Error('every state must be reachable from initialState');
+    const stateMap={};
+    states.forEach(function(state){const on={};state.transitions.forEach(function(transition){Object.defineProperty(on,transition.event,{value:transition.target,enumerable:true,writable:true,configurable:true});});const node={};if(state.motionBlock!==null)node.meta={motion_block:state.motionBlock};node.on=on;Object.defineProperty(stateMap,state.id,{value:node,enumerable:true,writable:true,configurable:true});});
+    const definition={schema:'axm.game-fsm/v1',id:fsmDefinitionId(input.definitionId),initial:initialState,states:stateMap};
+    const definitionBytes=byteLength(definition);
+    if(definitionBytes>input.maxDefinitionBytes)throw new Error('definition exceeds maxDefinitionBytes');
+    return {definition:definition,limits:{maxStates:input.maxStates,maxTransitions:input.maxTransitions,maxDefinitionBytes:input.maxDefinitionBytes,actualStates:states.length,actualTransitions:transitionCount,actualDefinitionBytes:definitionBytes},composition:{consumer:'shared/game-fsm',consumerContract:'axm.game-fsm/v1',embeddedHandlers:false,runtimeCopied:false}};
+  }
+  function fsmDefinitionSource(config) {
+    return [
+      "'use strict';",
+      "function deepFreeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);Object.getOwnPropertyNames(value).forEach(function(key){const descriptor=Object.getOwnPropertyDescriptor(value,key);if(descriptor&&Object.prototype.hasOwnProperty.call(descriptor,'value'))deepFreeze(descriptor.value);});}return value;}",
+      'const DEFINITION=deepFreeze('+JSON.stringify(config.definition)+');',
+      'const LIMITS=deepFreeze('+JSON.stringify(config.limits)+');',
+      'const COMPOSITION=deepFreeze('+JSON.stringify(config.composition)+');',
+      'function definition(){return DEFINITION;}',
+      'module.exports={COMPOSITION:COMPOSITION,DEFINITION:DEFINITION,LIMITS:LIMITS,definition:definition};',
+      ''
+    ].join('\n');
+  }
+  function fsmDefinitionSelftest(config) {
+    return "'use strict';\nconst assert=require('assert');const candidate=require('./capability.js');const first=candidate.definition(),second=candidate.definition();assert.strictEqual(first,second);assert(Object.isFrozen(first));assert(Object.isFrozen(first.states));assert.deepStrictEqual(first,"+JSON.stringify(config.definition)+");assert.deepStrictEqual(candidate.LIMITS,"+JSON.stringify(config.limits)+");assert.deepStrictEqual(candidate.COMPOSITION,{consumer:'shared/game-fsm',consumerContract:'axm.game-fsm/v1',embeddedHandlers:false,runtimeCopied:false});assert.deepStrictEqual(Object.keys(candidate).sort(),['COMPOSITION','DEFINITION','LIMITS','definition']);const names=Object.keys(first.states);assert.equal(names.length,candidate.LIMITS.actualStates);let transitions=0;const reachable=new Set([first.initial]),queue=[first.initial];for(const stateId of names){const node=first.states[stateId];assert(Object.isFrozen(node));assert(Object.isFrozen(node.on));assert(!Object.prototype.hasOwnProperty.call(node,'enter'));assert(!Object.prototype.hasOwnProperty.call(node,'exit'));for(const event of Object.keys(node.on)){transitions+=1;assert(names.includes(node.on[event]));}}while(queue.length){const node=first.states[queue.shift()];for(const target of Object.values(node.on)){if(!reachable.has(target)){reachable.add(target);queue.push(target);}}}assert.equal(reachable.size,names.length);assert.equal(transitions,candidate.LIMITS.actualTransitions);assert.throws(()=>{first.initial='drift';},TypeError);function noFunctions(value){if(typeof value==='function')return false;if(!value||typeof value!=='object')return true;return Object.getOwnPropertyNames(value).every(function(key){const descriptor=Object.getOwnPropertyDescriptor(value,key);return descriptor&&Object.prototype.hasOwnProperty.call(descriptor,'value')&&noFunctions(descriptor.value);});}assert.equal(noFunctions(first),true);console.log('PASS bounded portable FSM definition capability');\n";
+  }
+  function buildFsmDefinition(parameters) {
+    const config=inspectFsmParameters(parameters);
+    return {capabilityKind:'HAND',source:fsmDefinitionSource(config),selftest:fsmDefinitionSelftest(config),provides:['axm.game-fsm/v1'],consumes:['axm.portable-fsm-definition-request/v1'],summary:'Deterministic bounded handler-free portable FSM definition module for the existing shared Game FSM runtime.'};
+  }
+
   function makeEntry(id, kind, status, proposalDigest, build, parts) {
     const material={id:id,capabilityKind:kind,status:status,proposalDigest:proposalDigest,implementation:parts.map(function(part){return String(part).replace(/\r\n/g,'\n');})};
     return {id:id,capabilityKind:kind,status:status,proposalDigest:proposalDigest,implementationDigest:digest(material),build:build};
@@ -603,7 +699,8 @@
     makeEntry('static-accessible-html-page-v1','HAND',REVIEW_CANDIDATE,'sha256:983ff82440f97044d5d1af9737e7656df547898b9a0753579fb01440ca4ecfc6',buildHtmlPage,[htmlExact,htmlText,htmlPageSource,htmlPageSelftest,buildHtmlPage]),
     makeEntry('bounded-css-token-stylesheet-v1','HAND',ACTIVE,null,buildCssTokenStylesheet,[htmlExact,cssTokenName,cssTokenValue,cssStylesheetSource,cssStylesheetSelftest,buildCssTokenStylesheet]),
     makeEntry('bounded-python-record-transform-v1','HAND',ACTIVE,null,buildPythonRecordTransform,[htmlExact,pythonField,pythonText,pythonRecordTransformSource,pythonRecordTransformSelftest,buildPythonRecordTransform]),
-    makeEntry('bounded-record-query-v1','HAND',ACTIVE,null,buildRecordQuery,[htmlExact,jsonTransformSchema,recordQueryField,inspectRecordQueryParameters,recordQuerySource,recordQuerySelftest,buildRecordQuery])
+    makeEntry('bounded-record-query-v1','HAND',ACTIVE,null,buildRecordQuery,[htmlExact,jsonTransformSchema,recordQueryField,inspectRecordQueryParameters,recordQuerySource,recordQuerySelftest,buildRecordQuery]),
+    makeEntry('bounded-portable-fsm-definition-v1','HAND',ACTIVE,null,buildFsmDefinition,[byteLength,fsmRecord,fsmArray,fsmToken,fsmDefinitionId,inspectFsmParameters,fsmDefinitionSource,fsmDefinitionSelftest,buildFsmDefinition])
   ];
   // Lifecycle activation is applied after implementation sealing so the exact
   // source-reviewed builder digest remains the one bound by the admission plan.

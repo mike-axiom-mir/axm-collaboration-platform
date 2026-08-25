@@ -734,6 +734,91 @@
     },
     {
       "schema": "axm.capability-recipe/v1",
+      "id": "bounded-portable-fsm-definition",
+      "version": "0.1.0",
+      "title": "Bounded Portable FSM Definition",
+      "summary": "Compile a deterministic handler-free state-machine definition that composes with AXM's existing shared Game FSM runtime without copying or extending that runtime.",
+      "family": "portable-fsm-definition",
+      "capabilityKind": "HAND",
+      "capabilityContract": {
+        "runtimeMode": "EXECUTABLE",
+        "entry": "capability.js",
+        "operation": "definition",
+        "portableForm": "NONE",
+        "portablePath": null,
+        "resultContractPolicy": "BUILDER_PROVIDES_EXACT",
+        "requiredHostCapabilities": ["shared/game-fsm@0.1.0"]
+      },
+      "builderId": "bounded-portable-fsm-definition-v1",
+      "builderDigest": "sha256:d918384d364b2be00e6523aed02daeb5b418b5a603607c83423d83e3c1f35124",
+      "activation": "ACTIVE_SOURCE_REVIEWED",
+      "reviewPolicy": {
+        "activation": "source-review-and-merge",
+        "sharedUseRequires": "MIKE_TOBI_MERGE",
+        "canonAuthority": "NONE"
+      },
+      "candidatePolicy": {
+        "defaultCount": 1,
+        "defaultVariantId": "portable-gameplay-fsm",
+        "variants": [
+          {
+            "id": "portable-gameplay-fsm",
+            "title": "Handler-free portable gameplay state machine",
+            "parameterOverrides": {}
+          }
+        ]
+      },
+      "parameterSpec": {
+        "definitionId": {"type": "string", "required": true, "pattern": "^[a-z][a-z0-9.-]{2,63}$", "maxLength": 64, "description": "Stable identifier for the generated axm.game-fsm/v1 definition."},
+        "initialState": {"type": "string", "required": true, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]{0,63}$", "maxLength": 64, "description": "Exact declared initial state."},
+        "states": {"type": "array", "required": true, "maxBytes": 32768, "description": "Two to 64 state declarations with handler-free named transitions and optional motion-block metadata."},
+        "maxStates": {"type": "integer", "required": true, "minimum": 2, "maximum": 64, "description": "Maximum number of declared states."},
+        "maxTransitions": {"type": "integer", "required": true, "minimum": 1, "maximum": 256, "description": "Maximum total transition count."},
+        "maxDefinitionBytes": {"type": "integer", "required": true, "minimum": 256, "maximum": 65536, "description": "Maximum canonical UTF-8 bytes for the emitted definition."}
+      },
+      "exampleRequest": {
+        "id": "adventure-door-fsm-candidate",
+        "family": "portable-fsm-definition",
+        "purpose": "Build one detached portable state-machine definition for a synthetic adventure door interaction.",
+        "recipeId": "bounded-portable-fsm-definition",
+        "variantId": null,
+        "parameters": {
+          "definitionId": "adventure-door-fsm",
+          "initialState": "locked",
+          "states": [
+            {"id": "locked", "motionBlock": "door-locked", "transitions": [{"event": "UNLOCK", "target": "closed"}]},
+            {"id": "closed", "motionBlock": "door-closed", "transitions": [{"event": "LOCK", "target": "locked"}, {"event": "OPEN", "target": "open"}]},
+            {"id": "open", "motionBlock": "door-open", "transitions": [{"event": "CLOSE", "target": "closed"}]}
+          ],
+          "maxStates": 8,
+          "maxTransitions": 16,
+          "maxDefinitionBytes": 4096
+        },
+        "source": {"kind": "HUMAN", "ref": "portable-fsm-v2.19"}
+      },
+      "boundaries": [
+        "handler-free axm.game-fsm/v1 definition data with named states, named events, declared targets, and optional motion-block metadata only",
+        "all states must be reachable from the initial state; all targets must be declared; state ids and per-state event ids must be unique",
+        "no guards, actions, callbacks, expressions, dynamic code, embedded handlers, filesystem, network, process, provider, environment, clock, or randomness",
+        "state, transition, and canonical definition-byte ceilings fail closed",
+        "the generated hand composes with shared/game-fsm@0.1.0 and does not copy or replace its transition runtime",
+        "generated capability.js and selftest.js are inert UTF-8 data and are never executed by Capability Fabric",
+        "hostile Proxy traps and gameplay quality remain unproven",
+        "detached candidate output only; no install, merge, publication, promotion, Foundation, or CANON authority"
+      ],
+      "verifiers": [
+        "package digest and exact deterministic rebuild",
+        "builder registry implementation-digest match",
+        "generated JavaScript syntax and forbidden-authority static checks",
+        "trusted disjoint harness execution of exact emitted selftest bytes",
+        "composition trace through the unchanged shared Game FSM runtime with malformed-definition countertests",
+        "state, transition, definition-byte, lineage, and authority proofs",
+        "Detached Candidate Nursery structural scan"
+      ],
+      "recipeDigest": "sha256:d2e860d8572c5960ee579c25389f02d3277632bbdda4e1c87af1f2a2fdd6398b"
+    },
+    {
+      "schema": "axm.capability-recipe/v1",
       "id": "pure-json-transform",
       "version": "1.1.0",
       "title": "Bounded JavaScript String-Record Transform",
@@ -1258,5 +1343,5 @@
       "recipeDigest": "sha256:e3986033316cc192e916ae90d9dababc57dda7795f1a29c996ccdebfd5494a68"
     }
   ],
-  "catalogDigest": "sha256:d4055fc19f95122e4d4ec21fa445203a0c9e64681ba91c4fc69736dd3ada35c3"
+  "catalogDigest": "sha256:7557f514bfb85f987e91c1ad06c5ffb1f69de657f6ddf7372c543e958a232425"
 }
