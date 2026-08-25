@@ -135,6 +135,23 @@ are semantically correct, or that every runtime is proven.
 PR #51 remains the exact source-reviewed Python donor for its bounded recipe.
 Source review remains distinct from runtime proof.
 
+## Creation-session composition
+
+`code-creation-session-planner.js` is the provider-neutral composition seam over
+the stacked language-organ work. It requires the four roots to PASS for the exact
+request plus a caller-explicit primary language and role bindings. It then binds
+one deterministic plan across grammar, specialist-eye, discipline/template,
+cheatcode, route/prebuild, keyboard, admission-policy, production-budget,
+Build Window, and Work Context records.
+
+This closes the difference between “the 102 organs exist” and “the Creation
+Fabric can address them coherently.” It still does not render source or execute
+software. Missing required role bindings, stale root evidence, unknown languages,
+or an initial draft set outside the declared budget produce typed holds.
+Case-normalized identifier aliases fail closed, and currentness checks compare
+the request and root gate with exact deterministic rebuilds rather than trusting
+a recomputed digest over an internally contradictory record.
+
 ## Authority boundary
 
 Capability is not authority. These registries and eyes:
@@ -158,4 +175,5 @@ python shared/code-capability-fabric/language-organs/build-specialist-eyes.py --
 node shared/code-capability-fabric/language-organs/selftest-specialist-eyes.js
 node shared/code-capability-fabric/language-organs/selftest.js
 node shared/code-capability-fabric/language-organs/selftest-adversarial.js
+node shared/code-capability-fabric/language-organs/selftest-code-creation-session-planner.js
 ```

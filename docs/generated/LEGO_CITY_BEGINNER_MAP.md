@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `caca8dcccff41ce61c4379e8aed6e0b00085924f3bc200fbcd5fd6e964a95a6a`
+Twin digest: `c73972974208ab1f7bfcb44434a7f0b90894c185fc28d5f13800ae6865e8aa9e`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -41,9 +41,9 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | browser-global-surface-observatory | ROOM | TEST | 5 | NONE | UNKNOWN | `7fd59e1eb7d51db5…` |
 | browser-lan-hardware-qa-lab | ROUTE | TEST | 7 | PHYSICAL_ACTUATION, WRITE_CANDIDATE | HIGH | `bb91233756d68341…` |
 | bulk-intake-conveyor | HAND | TEST | 7 | WRITE_CANDIDATE | UNKNOWN | `46335417c3c9f353…` |
-| capability-fabric | BRIDGE | EXPERIMENTAL | 10 | WRITE_CANDIDATE | UNKNOWN | `2c6601dc5d06d9d9…` |
+| capability-fabric | BRIDGE | EXPERIMENTAL | 10 | WRITE_CANDIDATE | UNKNOWN | `ec7301ff25c9e8a0…` |
 | capability-gap-workbench | HAND | TEST | 5 | WRITE_CANDIDATE | MEDIUM | `e8c183f4486ef4ae…` |
-| capability-recipe-admission-gate | HAND | EXPERIMENTAL | 6 | OBSERVE_LOCAL, WRITE_CANDIDATE | UNKNOWN | `e8963da683352ddc…` |
+| capability-recipe-admission-gate | HAND | EXPERIMENTAL | 6 | OBSERVE_LOCAL, WRITE_CANDIDATE | UNKNOWN | `85672721ae2f3ad5…` |
 | capability-recipe-foundry | BRIDGE | EXPERIMENTAL | 8 | WRITE_CANDIDATE | UNKNOWN | `1bdb09a3bd2f080f…` |
 | challenge-arena | HAND | TEST | 5 | ROOT_CHANGE, WRITE_CANDIDATE | HIGH | `f0177c0134c697f5…` |
 | character-animation-mocap-studio | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `2aea59965e3adca5…` |
@@ -216,7 +216,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | shared/baseline-simulation-lab | ORGAN | EXPERIMENTAL | 11 | NONE | LOW | `7941a41c089dd390…` |
 | shared/city-gates | BRIDGE | EXPERIMENTAL | 5 | NETWORK_WRITE, PUBLIC_RELEASE | HIGH | `80831a1116ef8216…` |
 | shared/city-graph | ORGAN | EXPERIMENTAL | 5 | NONE | UNKNOWN | `8fdc801da1e64edd…` |
-| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 91 | NONE | LOW | `1a3610b079cb09cc…` |
+| shared/code-capability-fabric | ORGAN | EXPERIMENTAL | 131 | NONE | LOW | `c7f0ffd4bf42e03e…` |
 | shared/compute-substrate-lab | ORGAN | EXPERIMENTAL | 6 | NONE | LOW | `65884a71a64101f4…` |
 | shared/deterministic-animation-fabric | BRICK | EXPERIMENTAL | 12 | NONE | LOW | `d03680c39d4e474d…` |
 | shared/deterministic-audio-fabric | BRICK | EXPERIMENTAL | 5 | NONE | LOW | `c4bbf8ea631be508…` |
