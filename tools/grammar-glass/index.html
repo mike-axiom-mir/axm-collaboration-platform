@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="execution-history.css">
 <link rel="stylesheet" href="vessel.css">
+<link rel="stylesheet" href="constellation-epp.css">
 </head>
 <body><main>
 <header class="top">
@@ -65,7 +66,7 @@
 
       <div class="candidate-transfer" id="candidateTransfer" data-state="EMPTY">
         <div class="seed-lineage"></div>
-        <div class="candidate-crystal"><span id="candidateCrystalLabel">candidate</span></div>
+        <div class="candidate-crystal" id="candidateCrystal"><span id="candidateCrystalLabel">candidate</span></div>
       </div>
 
       <div class="inner-glass-vessel" id="innerGlassVessel" data-state="EMPTY">
@@ -75,8 +76,9 @@
       </div>
 
       <div class="vessel-orbit-legend">
-        <span><i class="draft-dot"></i>Draft Stars</span>
-        <span><i class="run-dot"></i>Run Stars</span>
+        <span><i class="draft-dot"></i>INNER ORBIT · Draft Stars</span>
+        <span><i class="run-dot"></i>OUTER ORBIT · Run Stars</span>
+        <span class="lineage-focus-label" id="lineageFocusLabel">click star → trace lineage</span>
       </div>
     </div>
 
@@ -109,9 +111,9 @@
     <div class="execution-history-inline">
       <div class="execution-history-metrics" id="executionHistoryMetrics"></div>
       <div class="execution-history-cards" id="executionHistoryCards"></div>
-      <pre class="execution-history-inspector" id="executionHistoryInspector">Run Stars appear around the vessel. Click a receipt here for exact lineage.</pre>
+      <pre class="execution-history-inspector" id="executionHistoryInspector">Draft and Run Stars orbit the vessel. Click either star family to trace formation → candidate → sandbox → result.</pre>
     </div>
-    <div class="body truth">PASS, FAIL, CRASH, TIMEOUT and HELD remain visible as receipt classes. Star count is not quality and history never auto-feeds the Twister.</div>
+    <div class="body truth">Draft Stars occupy the inner constellation shell; Run Stars occupy the outer shell. PASS, FAIL, CRASH, TIMEOUT and HELD use different visual skins, not quality ranks. Click any star to illuminate exact lineage; history never auto-feeds the Twister.</div>
   </section>
 
   <section class="panel sky technical-sky"><div class="head"><h2>DRAFTSKY · immutable Draft Stars</h2><span class="pill">brightness ≠ quality</span></div><div class="stars" id="stars"></div></section>
@@ -123,4 +125,5 @@
 <script src="app.js"></script>
 <script src="execution-history-view.js"></script>
 <script src="vessel-view.js"></script>
+<script src="execution-constellation-epp.js"></script>
 </body></html>
