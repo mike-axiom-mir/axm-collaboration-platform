@@ -36,6 +36,26 @@ promoted: false
 - Never let a generated module alter the Foundation directly.
 - Never let a module promote or canonize itself.
 
+## GitHub lane lifecycle
+
+For Git/GitHub work, use `.agents/skills/axm-github-floor-manager/SKILL.md`.
+
+Before editing, identify the repository, branch, exact HEAD, intended base,
+existing PR, stacked-parent relationship, and any pre-existing working-tree
+changes. Preserve unrelated work.
+
+Every lane should have explicit lifecycle intent:
+
+- `MERGE` — proceed through verification toward the authorized merge gate.
+- `HOLD` — preserve the lane without merging or deleting it.
+- `TEMP` — disposable scaffolding with an owner and mechanically checkable
+  cleanup condition.
+
+Ambiguous intent defaults to `HOLD`. A push is a checkpoint, not completion.
+After every push, re-check the PR head, CI, review threads, mergeability, and
+cleanup state. If a run is blocked or disconnected, leave an exact continuation
+receipt instead of forcing a new instance to reconstruct GitHub state from chat.
+
 ## Secrets and local state
 
 Never commit:
