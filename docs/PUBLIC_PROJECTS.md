@@ -66,3 +66,8 @@ This index is a navigation map, not a claim that every repository is finished or
 - Private state, personal experience, secrets, local saves, and private continuity do not belong in public exports.
 - Apache-2.0 applies where the repository includes that license; repositories without an explicit license grant no automatic reuse rights.
 - Human review remains the merge boundary.
+
+
+---
+
+Maintainers can use the [GitHub Discoverability Metadata Matrix](GITHUB_METADATA_MATRIX.md) for exact public-safe descriptions, topics, profile copy, and settings gates.
