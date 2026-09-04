@@ -58,6 +58,16 @@ Local server, LAN, filesystem, or package behaviour must not be advertised as wo
 - Review whether `axm-collaboration-platform` should remain marked as a template. Apache-2.0 now permits reuse, but template status should still reflect an intentional reusable starting point rather than merely repository visibility.
 - Upload project-specific social preview images only when their depicted features match the current public state.
 
+## Repository-name review gate
+
+Three public names may be intentional project vocabulary or inherited typos:
+
+- `axm-102-grammer` versus `axm-102-grammar`;
+- `axm-grammer-glass` versus `axm-grammar-glass`;
+- `axm-casual-loop` versus the project's causal-loop terminology.
+
+Do not rename them automatically. A rename improves ordinary search only if the corrected spelling matches the canonical project identity. GitHub redirects old repository URLs after a rename, but code references, package names, badges, local remotes, and documentation still require a bounded migration check.
+
 ## Shared boundary
 
 Metadata improves discovery; it does not upgrade experimental work into production readiness, merge open PRs, or make proposals CANON.
