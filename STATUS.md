@@ -22,7 +22,7 @@ Current separately packaged Windows build:
 | Guided Proof One | **Planned** | A narrow creation, verification, controlled-failure, and rollback demonstration is not yet the public default. |
 | RepairBuddy warning baseline | **44 warnings remain open** | The complete-warning delta adds orientation; it does not acknowledge, suppress, or automatically repair the warnings. |
 | Production security | **Not claimed** | Localhost binding and public-safety scanning are not a security certification. |
-| Broad open-source license | **Not granted** | See [License Status](LICENSE_STATUS.md). |
+| Open-source license | **Apache-2.0** | See [LICENSE](LICENSE) and [License Status](LICENSE_STATUS.md); preserved third-party notices still apply. |
 
 Machine-readable public gates:
 [`registry/public-status.json`](registry/public-status.json).
