@@ -33,6 +33,7 @@
 | Read what changed in v0.7.0 | [Open the current prerelease](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.7.0-experimental) |
 | Use the current packaged Windows build | [Download the v0.7.0 Windows source package](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.7.0-experimental/AXM-Workshop-v0.7.0-experimental-Windows-source.zip) and its [SHA-256 file](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.7.0-experimental/AXM-Workshop-v0.7.0-experimental-Windows-source.zip.sha256) |
 | Understand what is inside | Read the [Discovery Root](AXM_DISCOVERY_ROOT.md) |
+| Explore every public AXM project | Open the [Public Project Map](docs/PUBLIC_PROJECTS.md) |
 | Inspect current limitations | Read [Public Status](STATUS.md) |
 | Help improve AXM | Read [Contributing](CONTRIBUTING.md) |
 | Orient an AI collaborator | Begin with [AI Start Here](AI_START_HERE.md) |
