@@ -14,6 +14,7 @@
   <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform/actions/workflows/public-launch.yml"><img alt="Public launch checks" src="https://github.com/mike-axiom-mir/axm-collaboration-platform/actions/workflows/public-launch.yml/badge.svg?branch=main"></a>
   <img alt="Local first" src="https://img.shields.io/badge/local--first-yes-16a085">
   <img alt="Status experimental" src="https://img.shields.io/badge/status-experimental-f59e0b">
+  <a href="LICENSE"><img alt="Apache License 2.0" src="https://img.shields.io/badge/license-Apache--2.0-3b82f6"></a>
 </p>
 
 <p align="center">
@@ -21,8 +22,8 @@
 </p>
 
 > **Public experimental source checkpoint.** AXM is runnable and open for
-> evaluation, but it is not production-certified and does not yet carry a broad
-> open-source license. Warnings and unproven boundaries remain visible.
+> evaluation, but it is not production-certified. The repository is licensed
+> under Apache-2.0; warnings and unproven boundaries remain visible.
 
 ## Choose your route
 
@@ -33,6 +34,7 @@
 | Read what changed in v0.7.0 | [Open the current prerelease](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.7.0-experimental) |
 | Use the current packaged Windows build | [Download the v0.7.0 Windows source package](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.7.0-experimental/AXM-Workshop-v0.7.0-experimental-Windows-source.zip) and its [SHA-256 file](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.7.0-experimental/AXM-Workshop-v0.7.0-experimental-Windows-source.zip.sha256) |
 | Understand what is inside | Read the [Discovery Root](AXM_DISCOVERY_ROOT.md) |
+| Explore every public AXM project | Open the [Public Project Map](docs/PUBLIC_PROJECTS.md) |
 | Inspect current limitations | Read [Public Status](STATUS.md) |
 | Help improve AXM | Read [Contributing](CONTRIBUTING.md) |
 | Orient an AI collaborator | Begin with [AI Start Here](AI_START_HERE.md) |
@@ -137,9 +139,9 @@ execution.
 - Use the issue templates for reproducible bugs and bounded ideas.
 - Read [Contributing](CONTRIBUTING.md) before opening a pull request.
 - Never post tokens, passwords, private logs, personal data, or private paths.
-- This repository currently has **no broad open-source license grant**. Public
-  visibility permits inspection and evaluation, not automatic redistribution
-  or commercial reuse. Read [License Status](LICENSE_STATUS.md).
+- Repository content is licensed under the [Apache License 2.0](LICENSE), except
+  where a file or preserved third-party notice states otherwise. Read
+  [License Status](LICENSE_STATUS.md).
 
 ## Maintainer verification
 
