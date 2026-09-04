@@ -50,7 +50,8 @@ assert(readme.includes('registry/modules.json') &&
   readme.includes('registry/capabilities.jsonl') &&
   readme.includes('registry/public-status.json'),
   'README must route capability truth to generated registries');
-assert(readme.includes('not automatic redistribution'), 'README must disclose the license boundary');
+assert(readme.includes('Apache License 2.0') && readme.includes('preserved third-party notice'),
+  'README must disclose the Apache-2.0 license boundary');
 
 const status = read('STATUS.md');
 assert(status.includes('v0.7.0-experimental'), 'STATUS must name the latest reviewed source');
@@ -79,8 +80,9 @@ assert(bugTemplate.includes('source/package route'),
   'bug template must identify which public route was tested');
 
 const site = read('site/index.html');
-assert(!/\bFree software\b|\bUse it freely\b/.test(site), 'public doorway must not imply a license that is not granted');
-assert(site.includes('public experimental Workshop') && site.includes('current license boundary remains explicit'));
+assert(site.includes('public experimental Workshop licensed under Apache License 2.0') &&
+  site.includes('third-party boundaries remain explicit'),
+  'public doorway must state the Apache-2.0 license boundary');
 assert(site.includes('CURRENT RELEASE TRUTH') && site.includes('v0.7.0-experimental'));
 
 for (const relative of [
@@ -107,6 +109,8 @@ for (const name of archived) {
 }
 
 assert(read('SECURITY.md').includes('/security/advisories/new'), 'Security must provide a private reporting route');
-assert(read('LICENSE_STATUS.md').includes('does **not yet include a broad open-source license grant**'));
+assert(read('LICENSE_STATUS.md').includes('Apache License 2.0') &&
+  read('LICENSE_STATUS.md').includes('does not cancel or narrow the Apache-2.0 grant'),
+  'license status must state the current Apache-2.0 grant');
 
 console.log('public GitHub surface selftest: PASS (' + documents.length + ' visitor documents, ' + archived.length + ' preserved historical reports)');
