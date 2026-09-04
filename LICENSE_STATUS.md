@@ -1,19 +1,15 @@
 # License Status
 
-AXM Workshop is publicly visible for inspection and experimental evaluation,
-but this repository does **not yet include a broad open-source license grant**.
+AXM Workshop is licensed under the [Apache License 2.0](LICENSE), except where a file or preserved third-party notice states otherwise.
 
-Public visibility does not by itself grant permission to redistribute, relicense,
-sell, or incorporate AXM into another product. No additional permission is
-granted beyond the terms that already apply through GitHub.
+The repository's experimental status describes technical readiness. It does not cancel or narrow the Apache-2.0 grant. Under that license, people may use, reproduce, modify, and distribute the covered material while following its conditions, including preservation of required notices and license text.
 
-You may still:
+Important boundaries:
 
-- inspect the source and public evidence;
-- download the experimental release for personal evaluation;
-- report issues or propose improvements;
-- discuss collaboration or a future license in
-  [GitHub Discussions](https://github.com/mike-axiom-mir/axm-collaboration-platform/discussions).
+- the software is provided without warranties or conditions;
+- Apache-2.0 does not grant permission to use AXM names or marks as an endorsement;
+- third-party components, assets, and notices keep their own terms;
+- private AXM state, local saves, logs, secrets, and unpublished material are not part of this public repository;
+- public roadmap statements are direction, not guaranteed delivery or proof of readiness.
 
-Do not submit confidential permission requests or private material in a public
-Discussion. A later explicit license decision may replace this notice.
+See [LICENSE](LICENSE) for the complete controlling terms.
