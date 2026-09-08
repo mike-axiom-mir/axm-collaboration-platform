@@ -2,8 +2,8 @@
   "schema": "axm.tool-manifest/v1",
   "id": "hermes-local",
   "folderAlias": "hermes",
-  "name": "Hermes Local Runtime Wrapper",
-  "version": "v0.2",
+  "name": "AXM Hermes Runtime Adapter",
+  "version": "v0.4",
   "status": "TEST",
   "entry": "index.html",
   "contract": "module.contract.json",
@@ -13,53 +13,45 @@
   "category": "AI Team",
   "layer": "machine",
   "risk": "HIGH",
-  "tags": [
-    "connector",
-    "runtime",
-    "local-ai",
-    "model",
-    "consent-gated",
-    "proposal-first"
-  ],
+  "tags": ["runtime", "local-ai", "source-pinned", "fail-closed-hook", "research-posture", "return-packet", "repairable", "watchdog", "learning-bounded"],
   "uses": [
-    "node-runtime",
-    "git-runtime",
-    "configured-external-hermes-source",
-    "configured-external-command",
-    "loopback-http",
-    "local-filesystem",
-    "agent-tool-forge-prompt-packs"
+    "node-runtime", "python-runtime", "uv-runtime", "git-runtime",
+    "immutable-hermes-commit-and-tree-lock", "hermes-shell-hooks", "local-filesystem",
+    "provider-credential-egress-guard", "hermes-write-safe-root", "per-run-evidence-capsule", "loopback-http"
   ],
-  "permissions": [
-    "files",
-    "network",
-    "machine.execute"
-  ],
+  "permissions": ["files", "network", "machine.execute"],
   "actions": [
-    "check local bootstrap prerequisites",
-    "clone an explicitly configured external Hermes source on an explicit install command",
-    "start an explicitly configured command from the cloned external folder",
-    "serve loopback-only health, consent, and module status",
-    "create consent-gated local task, review-proposal, and prompt-pack files"
+    "verify reviewed upstream Hermes origin commit tree version and clean worktree",
+    "fetch only the exact pinned upstream snapshot rather than floating branch history",
+    "install pinned upstream dependencies only on explicit deps command",
+    "start Hermes with uv no-sync and Hermes runtime lazy dependency installation disabled",
+    "prepare or repair AXM-owned Hermes hooks memory skill and background-review controls while backing up conflicting local config",
+    "default built-in Hermes memory and automatic background review off and gate skill/memory writes",
+    "launch each Hermes process inside a fresh AXM run capsule with a bounded wall-clock watchdog",
+    "strip inherited secrets and remote provider credentials according to local provider-egress policy",
+    "layer Hermes native write-safe-root underneath AXM fail-closed path and capability checks",
+    "enforce research versus operator posture before every Hermes tool dispatch",
+    "fail closed on missing authority unknown tools unverifiable file paths or exhausted limits",
+    "write metadata-only hashed tool provider and session evidence receipts",
+    "finalize each process into a candidate-only AXM Return Packet",
+    "repair orphaned incomplete runs into recovery Return Packets",
+    "serve the preserved loopback proposal-control layer"
   ],
   "accepts": [
-    "human:explicit-cli-action",
-    "local-file:hermes-source.local.json",
-    "http:loopback-json-request",
-    "human:local-consent-toggle"
+    "human:explicit-cli-action", "local-file:runtime/policy.json", "http:loopback-json-request",
+    "human:local-consent-toggle", "hermes-hook:pre_tool_call", "hermes-hook:pre_llm_call",
+    "hermes-hook:post_tool_call", "hermes-hook:provider-observer-events", "hermes-hook:session-lifecycle-events"
   ],
   "produces": [
-    "axm.hermes-task-proposal/v1",
-    "axm.hermes-review-proposal/v1",
-    "agent-tool-forge:prompt-pack-json",
-    "process:configured-external-hermes-command"
+    "axm.hermes-run-manifest/v1", "axm.hermes-tool-receipt/v1", "axm.hermes-provider-receipt/v1",
+    "axm.hermes-session-event/v1", "axm.hermes-return-packet/v1",
+    "axm.hermes-task-proposal/v1", "axm.hermes-review-proposal/v1", "process:pinned-external-hermes-runtime"
   ],
   "readiness": [
-    "node-runtime",
-    "git-runtime-for-install",
-    "hermes-source.local.json-for-install-or-start",
-    "tools/hermes/external/hermes-agent-for-start"
+    "node-runtime", "python-runtime", "git-runtime-for-install", "uv-runtime-for-deps-and-start",
+    "valid-hermes-source.lock.json", "verified-external-hermes-commit-tree-version",
+    "prepared-runtime/hermes-home/config.yaml", "valid-runtime/policy.json", "pinned-runtime-venv-present"
   ],
-  "summary": "Explicit-config bootstrap plus a loopback, consent-gated local proposal service for an external Hermes Agent installation.",
-  "notes": "AXM does not bundle Hermes or connect this control layer to it yet. The source example is configuration, not live source, license, installation, readiness, identity binding, sandbox, or runtime proof. Bootstrap install/start is explicit but separate from the control-layer consent toggle."
+  "summary": "Pinned external Hermes Agent with AXM research/operator authority, bounded learning, credential egress guard, layered write controls, wall-clock watchdog, per-run evidence capsules, Return Packets, and deterministic repair.",
+  "notes": "Hermes remains external MIT donor/runtime code. Credential stripping is not network isolation; hook authorization is not an OS sandbox; watchdog termination is not a process-tree kill guarantee. Default posture is research, action consent is OFF, provider credentials are local-only, runtime lazy installs/background review/built-in memory are OFF, and all mutation/world-action capabilities are OFF. Hermes outputs/memory/skills remain non-canonical candidates."
 }

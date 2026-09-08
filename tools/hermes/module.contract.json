@@ -1,75 +1,100 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "hermes-local",
-  "version": "v0.2",
+  "version": "v0.4",
   "provides": [
-    "local-bootstrap-prerequisite-report",
-    "explicit-config-external-source-clone",
-    "explicit-config-external-command-launch",
+    "immutable-reviewed-hermes-commit-tree-version-verification",
+    "exact-snapshot-source-fetch-without-floating-branch-history",
+    "explicit-pinned-upstream-dependency-install",
+    "runtime-no-sync-and-lazy-install-disabled-mode",
+    "repairable-axm-managed-hermes-profile",
+    "axm-owned-hermes-learning-controls",
+    "provider-credential-egress-guard",
+    "research-and-operator-runtime-postures",
+    "fail-closed-pre-tool-policy-gate",
+    "hermes-native-write-safe-root-defense-in-depth",
+    "wall-clock-run-watchdog",
+    "axm-pre-llm-context-injection",
+    "per-run-isolated-counter-and-evidence-capsules",
+    "metadata-only-hashed-tool-receipts",
+    "metadata-only-provider-model-egress-receipts",
+    "metadata-only-session-outcome-events",
+    "candidate-only-return-packet-finalization",
+    "orphan-run-recovery-finalization",
     "loopback-control-layer-health",
-    "local-consent-state-read-and-write",
-    "consent-gated-task-proposal-creation",
-    "consent-gated-review-proposal-creation",
-    "consent-gated-prompt-pack-creation"
+    "legacy-consent-gated-task-review-and-prompt-proposals"
   ],
   "consumes": [
-    "runtime:node",
-    "runtime:git-for-install",
-    "human:explicit-bootstrap-command",
-    "local-config:hermes-source.local.json",
-    "filesystem:tools/hermes",
-    "filesystem:tools/agent-tool-forge/prompt-packs",
-    "network:configured-git-remote-on-explicit-install",
-    "process:configured-command-on-explicit-start"
+    "runtime:node", "runtime:python", "runtime:uv-for-explicit-deps-and-no-sync-start", "runtime:git-for-install-and-verification",
+    "human:explicit-bootstrap-command", "source-lock:hermes-source.lock.json", "local-config:runtime/policy.json",
+    "filesystem:tools/hermes", "network:reviewed-git-remote-on-explicit-install",
+    "process:pinned-upstream-hermes-on-explicit-start", "hermes-hook:pre_tool_call", "hermes-hook:pre_llm_call",
+    "hermes-hook:post_tool_call", "hermes-hook:pre_api_request", "hermes-hook:post_api_request",
+    "hermes-hook:api_request_error", "hermes-hook:on_session_end", "hermes-hook:on_session_finalize",
+    "hermes-config:memory-skills-auxiliary-background-review", "hermes-env:HERMES_WRITE_SAFE_ROOT",
+    "hermes-env:HERMES_DISABLE_LAZY_INSTALLS", "hermes-env:HERMES_REDACT_SECRETS"
   ],
-  "permissions": [
-    "files",
-    "network",
-    "machine.execute"
-  ],
+  "permissions": ["files", "network", "machine.execute"],
   "handoffs": {
     "emits": [
-      "axm.hermes-task-proposal/v1",
-      "axm.hermes-review-proposal/v1",
-      "agent-tool-forge:prompt-pack-json",
-      "process:configured-external-hermes-command"
+      "axm.hermes-run-manifest/v1", "axm.hermes-tool-receipt/v1", "axm.hermes-provider-receipt/v1",
+      "axm.hermes-session-event/v1", "axm.hermes-return-packet/v1",
+      "axm.hermes-task-proposal/v1", "axm.hermes-review-proposal/v1", "process:pinned-external-hermes-runtime"
     ],
     "accepts": [
-      "human:explicit-cli-action",
-      "local-file:hermes-source.local.json",
-      "http:loopback-json-request",
-      "human:local-consent-toggle"
+      "human:explicit-cli-action", "local-file:runtime/policy.json", "http:loopback-json-request",
+      "human:local-consent-toggle", "hermes-hook:lifecycle-json"
     ]
   },
   "boundaries": {
     "automaticWrites": [
-      "tools/hermes/queue:directory-initialization",
-      "tools/hermes/outbox:directory-initialization",
-      "tools/hermes/logs:startup-log",
-      "tools/hermes/external:bootstrap-directory-initialization",
-      "tools/agent-tool-forge/prompt-packs:directory-initialization"
+      "tools/hermes/queue:directory-initialization-by-legacy-loopback-runner",
+      "tools/hermes/outbox:directory-initialization-by-legacy-loopback-runner",
+      "tools/hermes/logs:startup-log-by-legacy-loopback-runner"
     ],
     "explicitWrites": [
-      "tools/hermes/.hermes-consent.json",
+      "tools/hermes/external/hermes-agent:pinned-reviewed-exact-snapshot-fetch-and-checkout",
+      "tools/hermes/runtime/policy.json:local-policy-runtime-consent-and-learning-controls",
+      "tools/hermes/runtime/hermes-home/config.yaml:axm-owned-hooks-memory-skills-auxiliary-block-plus-preserved-nonowned-config",
+      "tools/hermes/runtime/backups:pre-repair-config-snapshots",
+      "tools/hermes/runtime/audit/consent-events.jsonl:metadata-only-consent-transitions",
+      "tools/hermes/runtime/runs/<run>:run-manifest-state-tool-provider-session-evidence-and-return-packet",
+      "tools/hermes/run-reports:local-candidate-return-packet-copies",
+      "tools/hermes/runtime/hermes-home:upstream-hermes-local-state-after-explicit-start",
+      "tools/hermes/.hermes-consent.json:legacy-loopback-consent-state",
       "tools/hermes/queue:task-proposal-json",
-      "tools/hermes/outbox:review-proposal-markdown",
-      "tools/agent-tool-forge/prompt-packs:prompt-pack-json",
-      "tools/hermes/external/hermes-agent:configured-git-clone",
-      "configured-external-command:effects-outside-wrapper-not-bounded"
+      "tools/hermes/outbox:review-proposal-markdown"
     ],
     "refuses": [
-      "automatic-bootstrap-install-or-start",
-      "implicit-external-source-selection",
-      "bundled-hermes-runtime",
-      "hermes-runtime-readiness-claim",
-      "control-layer-to-hermes-runtime-connection-claim",
-      "identity-or-package-profile-binding-claim",
+      "automatic-install-deps-or-runtime-start",
+      "floating-branch-or-tag-as-source-trust-anchor",
+      "floating-branch-history-clone-as-required-install-path",
+      "runtime-uv-auto-sync-or-hermes-lazy-dependency-install-by-default",
+      "commit-only-verification-without-tree-and-version-check",
+      "automatic-source-lock-update",
+      "dirty-or-wrong-origin-hermes-checkout-rewrite",
+      "bundled-hermes-runtime-claim",
+      "os-container-or-vm-sandbox-enforcement-claim",
+      "provider-credential-guard-as-network-isolation-claim",
+      "provider-observer-hook-as-provider-request-blocking-claim",
+      "launcher-watchdog-as-process-tree-termination-guarantee",
       "foundation-sandbox-enforcement-claim",
-      "external-command-sandbox-claim",
-      "source-example-as-live-source-or-license-verification",
-      "consent-state-as-bootstrap-permission-gate",
-      "consent-state-as-runtime-readiness-proof",
-      "direct-workshop-source-edit",
+      "automatic-background-self-improvement-by-default",
+      "built-in-hermes-memory-or-user-profile-by-default",
+      "ungated-hermes-memory-or-skill-write-by-default",
+      "research-posture-world-action-authority",
+      "operator-posture-as-blanket-authority",
+      "unknown-future-tool-auto-allow",
+      "file-mutation-without-explicit-capability-and-contained-path",
+      "high-authority-terminal-code-computer-delegation-scheduling-messaging-memory-skill-browser-account-home-project-coordination-generation-by-default",
+      "raw-prompt-response-tool-result-or-path-storage-in-axm-receipts",
+      "runtime-policy-consent-as-legacy-loopback-consent-claim",
+      "legacy-loopback-consent-as-runtime-tool-permission-claim",
+      "hermes-memory-as-axm-canon",
+      "hermes-generated-skill-as-axm-canon",
+      "automatic-return-packet-promotion",
+      "automatic-merge-gate-approval",
+      "identity-or-package-profile-binding-claim",
       "automatic-proposal-application",
       "automatic-status-promotion",
       "canon-authority"
@@ -77,8 +102,11 @@
   },
   "lifecycle": {
     "state_owner": "filesystem",
+    "run_state_scope": "fresh-per-launch-capsule",
     "reload": "resume",
     "disconnect": "graceful-degrade",
+    "watchdog": "bounded-direct-child-runtime-without-process-tree-guarantee",
+    "crash_recovery": "explicit-repair-closes-incomplete-run-as-candidate-return-packet",
     "cleanup": "explicit"
   }
 }

@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `912405f1d41b465b7fc7300dbe487169f586fffc04ee453e7277e56ab675bfd9`
+Semantic graph digest: `9088eb7ca5a534c52a53b004988523c24fb1aa1dec599d3d84f2521667ad2eb7`
 
-Blocks: 318 · Capabilities: 3535 · Schemas: 744 · Unresolved edges: 1950
+Blocks: 318 · Capabilities: 3561 · Schemas: 744 · Unresolved edges: 1969
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -109,7 +109,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | hand-verification-lab | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 2 | 1 selftest(s) |
 | handoff-wiring-observatory | BRIDGE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 6 | 3 | 1 selftest(s) |
 | hardware-research-registry | ROOM (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 4 | 1 selftest(s) |
-| hermes-local | BRIDGE (INFERRED_UNCONFIRMED) | TEST | EXECUTE_TRUSTED, NETWORK_READ | 8 | 8 | 1 selftest(s) |
+| hermes-local | BRIDGE (INFERRED_UNCONFIRMED) | TEST | EXECUTE_TRUSTED, NETWORK_READ | 20 | 22 | 2 selftest(s) |
 | holodeck-composer | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 4 | 5 | 1 selftest(s) |
 | holodeck-screen-deck | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 7 | 5 | 1 selftest(s) |
 | host-assumption-observatory | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 6 | 1 | 1 selftest(s) |
@@ -1025,16 +1025,35 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `hardware-research-registry` → `service:hardware-research-registry-core` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `hardware-research-registry` → `axm.compute-hardware-reference/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `hardware-research-registry` → `axm.research-evidence-ledger/v1` (UNKNOWN)
-- `UNRESOLVED_CAPABILITY` — `hermes-local` → `filesystem:tools/agent-tool-forge/prompt-packs` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `hermes-local` → `filesystem:tools/hermes` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-config:memory-skills-auxiliary-background-review` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-env:HERMES_DISABLE_LAZY_INSTALLS` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-env:HERMES_REDACT_SECRETS` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-env:HERMES_WRITE_SAFE_ROOT` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-hook:api_request_error` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-hook:on_session_end` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-hook:on_session_finalize` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-hook:post_api_request` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-hook:post_tool_call` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-hook:pre_api_request` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-hook:pre_llm_call` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `hermes-hook:pre_tool_call` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `hermes-local` → `human:explicit-bootstrap-command` (UNKNOWN)
-- `UNRESOLVED_CAPABILITY` — `hermes-local` → `local-config:hermes-source.local.json` (UNKNOWN)
-- `UNRESOLVED_CAPABILITY` — `hermes-local` → `network:configured-git-remote-on-explicit-install` (UNKNOWN)
-- `UNRESOLVED_CAPABILITY` — `hermes-local` → `process:configured-command-on-explicit-start` (UNKNOWN)
-- `UNRESOLVED_CAPABILITY` — `hermes-local` → `runtime:git-for-install` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `local-config:runtime/policy.json` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `network:reviewed-git-remote-on-explicit-install` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `process:pinned-upstream-hermes-on-explicit-start` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `runtime:git-for-install-and-verification` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `hermes-local` → `runtime:node` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `runtime:python` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `runtime:uv-for-explicit-deps-and-no-sync-start` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `hermes-local` → `source-lock:hermes-source.lock.json` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-provider-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-return-packet/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-review-proposal/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-run-manifest/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-session-event/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-task-proposal/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-tool-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `holodeck-composer` → `axm.holodeck-world/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `holodeck-composer` → `axm.holodeck-camera-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `holodeck-screen-deck` → `axm.holodeck-render-adapter/v1` (UNKNOWN)

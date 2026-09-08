@@ -12443,21 +12443,38 @@
       },
       "boundaries": {
         "refuses": [
-          "automatic-bootstrap-install-or-start",
+          "automatic-background-self-improvement-by-default",
+          "automatic-install-deps-or-runtime-start",
+          "automatic-merge-gate-approval",
           "automatic-proposal-application",
+          "automatic-return-packet-promotion",
+          "automatic-source-lock-update",
           "automatic-status-promotion",
-          "bundled-hermes-runtime",
+          "built-in-hermes-memory-or-user-profile-by-default",
+          "bundled-hermes-runtime-claim",
           "canon-authority",
-          "consent-state-as-bootstrap-permission-gate",
-          "consent-state-as-runtime-readiness-proof",
-          "control-layer-to-hermes-runtime-connection-claim",
-          "direct-workshop-source-edit",
-          "external-command-sandbox-claim",
+          "commit-only-verification-without-tree-and-version-check",
+          "dirty-or-wrong-origin-hermes-checkout-rewrite",
+          "file-mutation-without-explicit-capability-and-contained-path",
+          "floating-branch-history-clone-as-required-install-path",
+          "floating-branch-or-tag-as-source-trust-anchor",
           "foundation-sandbox-enforcement-claim",
-          "hermes-runtime-readiness-claim",
+          "hermes-generated-skill-as-axm-canon",
+          "hermes-memory-as-axm-canon",
+          "high-authority-terminal-code-computer-delegation-scheduling-messaging-memory-skill-browser-account-home-project-coordination-generation-by-default",
           "identity-or-package-profile-binding-claim",
-          "implicit-external-source-selection",
-          "source-example-as-live-source-or-license-verification"
+          "launcher-watchdog-as-process-tree-termination-guarantee",
+          "legacy-loopback-consent-as-runtime-tool-permission-claim",
+          "operator-posture-as-blanket-authority",
+          "os-container-or-vm-sandbox-enforcement-claim",
+          "provider-credential-guard-as-network-isolation-claim",
+          "provider-observer-hook-as-provider-request-blocking-claim",
+          "raw-prompt-response-tool-result-or-path-storage-in-axm-receipts",
+          "research-posture-world-action-authority",
+          "runtime-policy-consent-as-legacy-loopback-consent-claim",
+          "runtime-uv-auto-sync-or-hermes-lazy-dependency-install-by-default",
+          "ungated-hermes-memory-or-skill-write-by-default",
+          "unknown-future-tool-auto-allow"
         ],
         "writes": []
       },
@@ -12485,65 +12502,111 @@
         ]
       },
       "id": "hermes-local",
-      "name": "Hermes Local Runtime Wrapper",
+      "name": "AXM Hermes Runtime Adapter",
       "proof": {
         "behaviorProvenByGraph": false,
         "evidenceLocators": [],
         "freshness": "UNKNOWN",
         "selftests": [
+          "tools/hermes/axm/hardening-selftest.js",
           "tools/hermes/selftest.js"
         ]
       },
       "resources": {
         "readiness": [
           "git-runtime-for-install",
-          "hermes-source.local.json-for-install-or-start",
           "node-runtime",
-          "tools/hermes/external/hermes-agent-for-start"
+          "pinned-runtime-venv-present",
+          "prepared-runtime/hermes-home/config.yaml",
+          "python-runtime",
+          "uv-runtime-for-deps-and-start",
+          "valid-hermes-source.lock.json",
+          "valid-runtime/policy.json",
+          "verified-external-hermes-commit-tree-version"
         ],
         "uses": [
-          "agent-tool-forge-prompt-packs",
-          "configured-external-command",
-          "configured-external-hermes-source",
           "git-runtime",
+          "hermes-shell-hooks",
+          "hermes-write-safe-root",
+          "immutable-hermes-commit-and-tree-lock",
           "local-filesystem",
           "loopback-http",
-          "node-runtime"
+          "node-runtime",
+          "per-run-evidence-capsule",
+          "provider-credential-egress-guard",
+          "python-runtime",
+          "uv-runtime"
         ]
       },
       "schema": "axm.block-view/v1",
       "sockets": {
         "accepts": [
+          "hermes-hook:lifecycle-json",
+          "hermes-hook:post_tool_call",
+          "hermes-hook:pre_llm_call",
+          "hermes-hook:pre_tool_call",
+          "hermes-hook:provider-observer-events",
+          "hermes-hook:session-lifecycle-events",
           "http:loopback-json-request",
           "human:explicit-cli-action",
           "human:local-consent-toggle",
-          "local-file:hermes-source.local.json"
+          "local-file:runtime/policy.json"
         ],
         "consumes": [
-          "filesystem:tools/agent-tool-forge/prompt-packs",
           "filesystem:tools/hermes",
+          "hermes-config:memory-skills-auxiliary-background-review",
+          "hermes-env:HERMES_DISABLE_LAZY_INSTALLS",
+          "hermes-env:HERMES_REDACT_SECRETS",
+          "hermes-env:HERMES_WRITE_SAFE_ROOT",
+          "hermes-hook:api_request_error",
+          "hermes-hook:on_session_end",
+          "hermes-hook:on_session_finalize",
+          "hermes-hook:post_api_request",
+          "hermes-hook:post_tool_call",
+          "hermes-hook:pre_api_request",
+          "hermes-hook:pre_llm_call",
+          "hermes-hook:pre_tool_call",
           "human:explicit-bootstrap-command",
-          "local-config:hermes-source.local.json",
-          "network:configured-git-remote-on-explicit-install",
-          "process:configured-command-on-explicit-start",
-          "runtime:git-for-install",
-          "runtime:node"
+          "local-config:runtime/policy.json",
+          "network:reviewed-git-remote-on-explicit-install",
+          "process:pinned-upstream-hermes-on-explicit-start",
+          "runtime:git-for-install-and-verification",
+          "runtime:node",
+          "runtime:python",
+          "runtime:uv-for-explicit-deps-and-no-sync-start",
+          "source-lock:hermes-source.lock.json"
         ],
         "emits": [
-          "agent-tool-forge:prompt-pack-json",
+          "axm.hermes-provider-receipt/v1",
+          "axm.hermes-return-packet/v1",
           "axm.hermes-review-proposal/v1",
+          "axm.hermes-run-manifest/v1",
+          "axm.hermes-session-event/v1",
           "axm.hermes-task-proposal/v1",
-          "process:configured-external-hermes-command"
+          "axm.hermes-tool-receipt/v1",
+          "process:pinned-external-hermes-runtime"
         ],
         "provides": [
-          "consent-gated-prompt-pack-creation",
-          "consent-gated-review-proposal-creation",
-          "consent-gated-task-proposal-creation",
-          "explicit-config-external-command-launch",
-          "explicit-config-external-source-clone",
-          "local-bootstrap-prerequisite-report",
-          "local-consent-state-read-and-write",
-          "loopback-control-layer-health"
+          "axm-owned-hermes-learning-controls",
+          "axm-pre-llm-context-injection",
+          "candidate-only-return-packet-finalization",
+          "exact-snapshot-source-fetch-without-floating-branch-history",
+          "explicit-pinned-upstream-dependency-install",
+          "fail-closed-pre-tool-policy-gate",
+          "hermes-native-write-safe-root-defense-in-depth",
+          "immutable-reviewed-hermes-commit-tree-version-verification",
+          "legacy-consent-gated-task-review-and-prompt-proposals",
+          "loopback-control-layer-health",
+          "metadata-only-hashed-tool-receipts",
+          "metadata-only-provider-model-egress-receipts",
+          "metadata-only-session-outcome-events",
+          "orphan-run-recovery-finalization",
+          "per-run-isolated-counter-and-evidence-capsules",
+          "provider-credential-egress-guard",
+          "repairable-axm-managed-hermes-profile",
+          "research-and-operator-runtime-postures",
+          "runtime-no-sync-and-lazy-install-disabled-mode",
+          "wall-clock-run-watchdog"
         ]
       },
       "source": {
@@ -12553,9 +12616,9 @@
           "tools/hermes/module.contract.json"
         ],
         "declaredId": "hermes-local",
-        "digest": "87c1d83ed19847fce908276d41c995722c70a7d5d79babbf016bea0098a5a87c",
+        "digest": "0acaaf6fb0e97136cc6ecb31311acd2f43412e404b0e1be53d6750363b6f6eef",
         "manifest": "tools/hermes/manifest.json",
-        "observedSourceFileCount": 22,
+        "observedSourceFileCount": 27,
         "root": "tools/hermes"
       },
       "status": "TEST",
@@ -12564,7 +12627,7 @@
         "entry": "index.html",
         "type": "local-module"
       },
-      "version": "v0.2"
+      "version": "v0.4"
     },
     {
       "authority": {
@@ -40909,6 +40972,20 @@
     },
     {
       "consumers": [],
+      "id": "axm-owned-hermes-learning-controls",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "axm-pre-llm-context-injection",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "axm-slash-version-family-map",
       "providers": [
         "protocol-version-observatory"
@@ -45139,6 +45216,13 @@
     },
     {
       "consumers": [],
+      "id": "candidate-only-return-packet-finalization",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "candidate-pack-manifest",
       "providers": [
         "shared/game-asset-foundation"
@@ -46215,27 +46299,6 @@
       "id": "consent-aware-identity-task-routing",
       "providers": [
         "agent-command-center"
-      ]
-    },
-    {
-      "consumers": [],
-      "id": "consent-gated-prompt-pack-creation",
-      "providers": [
-        "hermes-local"
-      ]
-    },
-    {
-      "consumers": [],
-      "id": "consent-gated-review-proposal-creation",
-      "providers": [
-        "hermes-local"
-      ]
-    },
-    {
-      "consumers": [],
-      "id": "consent-gated-task-proposal-creation",
-      "providers": [
-        "hermes-local"
       ]
     },
     {
@@ -48254,6 +48317,13 @@
     },
     {
       "consumers": [],
+      "id": "exact-snapshot-source-fetch-without-floating-branch-history",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "exact-source-digest-receipt",
       "providers": [
         "asset-engine-roundtrip-bridge"
@@ -48478,20 +48548,6 @@
     },
     {
       "consumers": [],
-      "id": "explicit-config-external-command-launch",
-      "providers": [
-        "hermes-local"
-      ]
-    },
-    {
-      "consumers": [],
-      "id": "explicit-config-external-source-clone",
-      "providers": [
-        "hermes-local"
-      ]
-    },
-    {
-      "consumers": [],
       "id": "explicit-content-verified-document-run",
       "providers": [
         "game-production-runner"
@@ -48664,6 +48720,13 @@
       "id": "explicit-phone-drop-navigation",
       "providers": [
         "workshop-command-center"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "explicit-pinned-upstream-dependency-install",
+      "providers": [
+        "hermes-local"
       ]
     },
     {
@@ -48861,6 +48924,13 @@
       "id": "fail-closed-missing-evidence",
       "providers": [
         "technical-art-validator"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "fail-closed-pre-tool-policy-gate",
+      "providers": [
+        "hermes-local"
       ]
     },
     {
@@ -49086,13 +49156,6 @@
         "verification-proof-lab"
       ],
       "id": "filesystem:intakes/verification-proof-99-v0.1",
-      "providers": []
-    },
-    {
-      "consumers": [
-        "hermes-local"
-      ],
-      "id": "filesystem:tools/agent-tool-forge/prompt-packs",
       "providers": []
     },
     {
@@ -50897,6 +50960,97 @@
     },
     {
       "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-config:memory-skills-auxiliary-background-review",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-env:HERMES_DISABLE_LAZY_INSTALLS",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-env:HERMES_REDACT_SECRETS",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-env:HERMES_WRITE_SAFE_ROOT",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-hook:api_request_error",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-hook:on_session_end",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-hook:on_session_finalize",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-hook:post_api_request",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-hook:post_tool_call",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-hook:pre_api_request",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-hook:pre_llm_call",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "hermes-hook:pre_tool_call",
+      "providers": []
+    },
+    {
+      "consumers": [],
+      "id": "hermes-native-write-safe-root-defense-in-depth",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [
         "shared/verification-source-evolution-review"
       ],
       "id": "historical and candidate verification receipts as data",
@@ -52098,6 +52252,13 @@
     },
     {
       "consumers": [],
+      "id": "immutable-reviewed-hermes-commit-tree-version-verification",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "in-memory-user-check-and-retirement-proposal-editing",
       "providers": [
         "verifier"
@@ -52528,6 +52689,13 @@
     },
     {
       "consumers": [],
+      "id": "legacy-consent-gated-task-review-and-prompt-proposals",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "legacy-main-hub-url-preservation",
       "providers": [
         "main-hub"
@@ -52625,13 +52793,6 @@
       ]
     },
     {
-      "consumers": [],
-      "id": "local-bootstrap-prerequisite-report",
-      "providers": [
-        "hermes-local"
-      ]
-    },
-    {
       "consumers": [
         "model-lab"
       ],
@@ -52656,7 +52817,7 @@
       "consumers": [
         "hermes-local"
       ],
-      "id": "local-config:hermes-source.local.json",
+      "id": "local-config:runtime/policy.json",
       "providers": []
     },
     {
@@ -52664,13 +52825,6 @@
       "id": "local-connector-readiness-view",
       "providers": [
         "agent-command-center"
-      ]
-    },
-    {
-      "consumers": [],
-      "id": "local-consent-state-read-and-write",
-      "providers": [
-        "hermes-local"
       ]
     },
     {
@@ -53146,6 +53300,27 @@
       "id": "metadata-only-audit",
       "providers": [
         "secrets-permissions-console"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "metadata-only-hashed-tool-receipts",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "metadata-only-provider-model-egress-receipts",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "metadata-only-session-outcome-events",
+      "providers": [
+        "hermes-local"
       ]
     },
     {
@@ -58484,16 +58659,16 @@
     },
     {
       "consumers": [
-        "hermes-local"
+        "finance-world-room"
       ],
-      "id": "network:configured-git-remote-on-explicit-install",
+      "id": "network:explicit-world-bank-v2",
       "providers": []
     },
     {
       "consumers": [
-        "finance-world-room"
+        "hermes-local"
       ],
-      "id": "network:explicit-world-bank-v2",
+      "id": "network:reviewed-git-remote-on-explicit-install",
       "providers": []
     },
     {
@@ -59540,6 +59715,13 @@
     },
     {
       "consumers": [],
+      "id": "orphan-run-recovery-finalization",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "owner-lock-preserving-retirement-intent-withdrawal",
       "providers": [
         "review-inbox"
@@ -59696,6 +59878,13 @@
       "id": "per-module-extension-footprint",
       "providers": [
         "module-footprint-observatory"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "per-run-isolated-counter-and-evidence-capsules",
+      "providers": [
+        "hermes-local"
       ]
     },
     {
@@ -60127,7 +60316,7 @@
       "consumers": [
         "hermes-local"
       ],
-      "id": "process:configured-command-on-explicit-start",
+      "id": "process:pinned-upstream-hermes-on-explicit-start",
       "providers": []
     },
     {
@@ -60339,6 +60528,13 @@
       ],
       "id": "provider descriptors",
       "providers": []
+    },
+    {
+      "consumers": [],
+      "id": "provider-credential-egress-guard",
+      "providers": [
+        "hermes-local"
+      ]
     },
     {
       "consumers": [],
@@ -60889,6 +61085,13 @@
     },
     {
       "consumers": [],
+      "id": "repairable-axm-managed-hermes-profile",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "replay-receipts",
       "providers": [
         "copy-composer-hand"
@@ -60913,6 +61116,13 @@
       "id": "requirement-driven-asset-families",
       "providers": [
         "asset-fabric"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "research-and-operator-runtime-postures",
+      "providers": [
+        "hermes-local"
       ]
     },
     {
@@ -61395,6 +61605,13 @@
     },
     {
       "consumers": [],
+      "id": "runtime-no-sync-and-lazy-install-disabled-mode",
+      "providers": [
+        "hermes-local"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "runtime-registerable-creation-providers",
       "providers": [
         "shared/asset-hands"
@@ -61404,7 +61621,7 @@
       "consumers": [
         "hermes-local"
       ],
-      "id": "runtime:git-for-install",
+      "id": "runtime:git-for-install-and-verification",
       "providers": []
     },
     {
@@ -61416,9 +61633,23 @@
     },
     {
       "consumers": [
+        "hermes-local"
+      ],
+      "id": "runtime:python",
+      "providers": []
+    },
+    {
+      "consumers": [
         "evidence-desk"
       ],
       "id": "runtime:sha256",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "runtime:uv-for-explicit-deps-and-no-sync-start",
       "providers": []
     },
     {
@@ -63297,6 +63528,13 @@
       "providers": [
         "technical-glasses"
       ]
+    },
+    {
+      "consumers": [
+        "hermes-local"
+      ],
+      "id": "source-lock:hermes-source.lock.json",
+      "providers": []
     },
     {
       "consumers": [],
@@ -65248,6 +65486,13 @@
       "id": "voxel-cells-and-capture-manifests",
       "providers": [
         "spatial-studio"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "wall-clock-run-watchdog",
+      "providers": [
+        "hermes-local"
       ]
     },
     {
@@ -69964,18 +70209,18 @@
       "sha256": "2effd339ff854a7bd1bdc8bc97710e3a65bf33ac01c5c9f27d7893f5fda0faae"
     }
   ],
-  "semanticDigest": "912405f1d41b465b7fc7300dbe487169f586fffc04ee453e7277e56ab675bfd9",
+  "semanticDigest": "9088eb7ca5a534c52a53b004988523c24fb1aa1dec599d3d84f2521667ad2eb7",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "9c545ae9df663a83d9f87158fd88467b35e24f49dce787f4e738c61a389c6133",
+    "declarationDigest": "3c7a77f6ad3a26900398cc6f20aa711e43a6d3ea11867491fe1d88606657bdd0",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "9c545ae9df663a83d9f87158fd88467b35e24f49dce787f4e738c61a389c6133"
+    "snapshotIdentity": "3c7a77f6ad3a26900398cc6f20aa711e43a6d3ea11867491fe1d88606657bdd0"
   },
   "summary": {
     "blockKinds": {
@@ -69988,12 +70233,12 @@
       "SENSOR": 6
     },
     "blocks": 318,
-    "capabilities": 3535,
+    "capabilities": 3561,
     "declaredContracts": 315,
     "declaredManifests": 234,
     "edges": 93,
     "schemas": 744,
-    "unresolved": 1950
+    "unresolved": 1969
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -74160,13 +74405,79 @@
     {
       "blockId": "hermes-local",
       "code": "UNRESOLVED_CAPABILITY",
-      "socket": "filesystem:tools/agent-tool-forge/prompt-packs",
+      "socket": "filesystem:tools/hermes",
       "state": "UNKNOWN"
     },
     {
       "blockId": "hermes-local",
       "code": "UNRESOLVED_CAPABILITY",
-      "socket": "filesystem:tools/hermes",
+      "socket": "hermes-config:memory-skills-auxiliary-background-review",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-env:HERMES_DISABLE_LAZY_INSTALLS",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-env:HERMES_REDACT_SECRETS",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-env:HERMES_WRITE_SAFE_ROOT",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-hook:api_request_error",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-hook:on_session_end",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-hook:on_session_finalize",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-hook:post_api_request",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-hook:post_tool_call",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-hook:pre_api_request",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-hook:pre_llm_call",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "hermes-hook:pre_tool_call",
       "state": "UNKNOWN"
     },
     {
@@ -74178,31 +74489,61 @@
     {
       "blockId": "hermes-local",
       "code": "UNRESOLVED_CAPABILITY",
-      "socket": "local-config:hermes-source.local.json",
+      "socket": "local-config:runtime/policy.json",
       "state": "UNKNOWN"
     },
     {
       "blockId": "hermes-local",
       "code": "UNRESOLVED_CAPABILITY",
-      "socket": "network:configured-git-remote-on-explicit-install",
+      "socket": "network:reviewed-git-remote-on-explicit-install",
       "state": "UNKNOWN"
     },
     {
       "blockId": "hermes-local",
       "code": "UNRESOLVED_CAPABILITY",
-      "socket": "process:configured-command-on-explicit-start",
+      "socket": "process:pinned-upstream-hermes-on-explicit-start",
       "state": "UNKNOWN"
     },
     {
       "blockId": "hermes-local",
       "code": "UNRESOLVED_CAPABILITY",
-      "socket": "runtime:git-for-install",
+      "socket": "runtime:git-for-install-and-verification",
       "state": "UNKNOWN"
     },
     {
       "blockId": "hermes-local",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "runtime:node",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "runtime:python",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "runtime:uv-for-explicit-deps-and-no-sync-start",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "source-lock:hermes-source.lock.json",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.hermes-provider-receipt/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.hermes-return-packet/v1",
       "state": "UNKNOWN"
     },
     {
@@ -74214,7 +74555,25 @@
     {
       "blockId": "hermes-local",
       "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.hermes-run-manifest/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.hermes-session-event/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.hermes-task-proposal/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "hermes-local",
+      "code": "UNRESOLVED_SCHEMA",
+      "socket": "axm.hermes-tool-receipt/v1",
       "state": "UNKNOWN"
     },
     {
