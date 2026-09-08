@@ -1,19 +1,11 @@
 # License Status
 
-AXM Workshop is publicly visible for inspection and experimental evaluation,
-but this repository does **not yet include a broad open-source license grant**.
+AXM Workshop source owned by AXM is licensed under the **Apache License 2.0**. See [`LICENSE`](LICENSE).
 
-Public visibility does not by itself grant permission to redistribute, relicense,
-sell, or incorporate AXM into another product. No additional permission is
-granted beyond the terms that already apply through GitHub.
+Third-party code, assets, runtimes, models, data, fonts, media, and other imported material are **not relicensed by this repository**. They remain governed by their own upstream terms and must be preserved in the repository/release provenance and third-party records.
 
-You may still:
+The root [`THIRD_PARTY.json`](THIRD_PARTY.json) is the governance entrypoint. Existing detailed registries and vendored license/NOTICE files remain authoritative for the individual external components they describe.
 
-- inspect the source and public evidence;
-- download the experimental release for personal evaluation;
-- report issues or propose improvements;
-- discuss collaboration or a future license in
-  [GitHub Discussions](https://github.com/mike-axiom-mir/axm-collaboration-platform/discussions).
+Public visibility is therefore not the permission source: Apache-2.0 is the permission grant for AXM-owned source, while each recorded third-party item keeps its own license.
 
-Do not submit confidential permission requests or private material in a public
-Discussion. A later explicit license decision may replace this notice.
+Before redistribution or a public release, verify the generated BOM/notices and do not ship anything whose source, license, redistribution permission, or required attribution is unresolved.
