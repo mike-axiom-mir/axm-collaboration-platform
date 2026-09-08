@@ -1,0 +1,50 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-recipe-evidence-bridge",
+  "version": "0.1.0",
+  "status": "TEST",
+  "provides": [
+    "code.recipe.evidence.query/v1",
+    "axm.code-recipe-evidence-packet/v1"
+  ],
+  "consumes": [
+    "axm.code-recipe-pack/v1",
+    "axm.code-recipe-syntax-audit/v1",
+    "axm.code-recipe-evidence-query/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.code-recipe-evidence-packet/v1"],
+    "accepts": ["axm.code-recipe-pack/v1", "axm.code-recipe-syntax-audit/v1", "axm.code-recipe-evidence-query/v1"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "snippet-execution",
+      "snippet-byte-copy-into-evidence-packet",
+      "dynamic-code-loading",
+      "process-execution",
+      "network-use",
+      "provider-registration",
+      "recipe-as-capability-proof",
+      "recipe-as-provider-proof",
+      "silent-query-field-coercion",
+      "silent-malformed-recipe-skip",
+      "ambiguous-syntax-evidence-binding",
+      "syntax-pass-as-runtime-proof",
+      "syntax-pass-as-correctness-proof",
+      "source-url-as-license-proof",
+      "popularity-as-correctness-proof",
+      "semantic-deduplication-without-review",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}
