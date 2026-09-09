@@ -5,7 +5,7 @@
   "id": "local-sync",
   "folderAlias": "local-sync",
   "name": "AXM LEGO City Owner-Defined Local Sync",
-  "version": "v0.1",
+  "version": "v0.2",
   "status": "EXPERIMENTAL",
   "entry": "local-sync-core.js",
   "contract": "module.contract.json",
@@ -18,9 +18,9 @@
   "uses": ["typed-state-snapshots", "owner-defined-merge-rules"],
   "permissions": [],
   "actions": ["compile immutable local snapshots", "apply exact typed merge semantics", "emit human reconciliation packets"],
-  "accepts": ["axm.state-snapshot/v1", "axm.merge-rule/v1"],
+  "accepts": ["axm.state-snapshot/v1", "axm.merge-rule/v1", "axm.merge-admission/v1"],
   "produces": ["axm.merge-result/v1", "axm.reconciliation-request/v1"],
-  "readiness": ["node-runtime", "explicit-merge-rule"],
+  "readiness": ["node-runtime", "sealed-snapshots", "explicit-pinned-merge-rule"],
   "summary": "Produce deterministic merge candidates or explicit reconciliation holds without writing or choosing an owner.",
   "notes": "EXPERIMENTAL. Foundation, CANON, roots, and authority namespaces never auto-merge."
 }

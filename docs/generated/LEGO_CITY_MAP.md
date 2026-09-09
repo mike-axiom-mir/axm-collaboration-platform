@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `9088eb7ca5a534c52a53b004988523c24fb1aa1dec599d3d84f2521667ad2eb7`
+Semantic graph digest: `82a5cde1f3d33c71c12d50ec45e51888a6bb6bdb81d9ed1bbf73850ecdbafaba`
 
-Blocks: 318 · Capabilities: 3561 · Schemas: 744 · Unresolved edges: 1969
+Blocks: 318 · Capabilities: 3562 · Schemas: 745 · Unresolved edges: 1970
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -230,7 +230,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/human-benefit-evidence | SENSOR (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 8 | 4 | 1 selftest(s) |
 | shared/identity-shell-fabric | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 19 | 6 | 5 selftest(s) |
 | shared/intake-harbor | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
-| shared/local-sync | BRICK (DECLARED) | EXPERIMENTAL | NONE | 3 | 2 | 1 selftest(s) |
+| shared/local-sync | BRICK (DECLARED) | EXPERIMENTAL | NONE | 3 | 3 | 1 selftest(s) |
 | shared/model-shadow-challenger-gate | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 6 | 1 selftest(s) |
 | shared/model-shadow-continuity | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 25 | 4 | 1 selftest(s) |
 | shared/model-shadow-history-checkpoint-anchor | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | ROOT_CHANGE | 21 | 4 | 2 selftest(s) |
@@ -1737,6 +1737,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/identity-shell-fabric` → `explicit-authority-and-resource-envelope` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/intake-harbor` → `axm.artifact-ref/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/intake-harbor` → `axm.intake-step-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/local-sync` → `axm.merge-admission/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/local-sync` → `axm.merge-rule/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/local-sync` → `axm.state-snapshot/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/model-shadow-challenger-gate` → `axm.review-item/v1` (UNKNOWN)

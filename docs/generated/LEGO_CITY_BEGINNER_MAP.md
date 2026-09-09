@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `a993d0ec5c8d1a53d3bd4319118e658a9e30dca66ebfe6de2cad7b0ef3f35692`
+Twin digest: `c8f3259815d616c7a20790f4de975e60b488676e776ae50ded4dad7d5314246d`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -226,7 +226,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | shared/human-benefit-evidence | SENSOR | EXPERIMENTAL | 8 | NONE | LOW | `57347b3bb37e9d98…` |
 | shared/identity-shell-fabric | ORGAN | EXPERIMENTAL | 19 | NONE | LOW | `f51e0db08c29c5c6…` |
 | shared/intake-harbor | ORGAN | EXPERIMENTAL | 4 | NONE | LOW | `53bdc534834fa7b8…` |
-| shared/local-sync | BRICK | EXPERIMENTAL | 3 | NONE | LOW | `4c19fefb969055e2…` |
+| shared/local-sync | BRICK | EXPERIMENTAL | 3 | NONE | LOW | `ec18d78f4c57a2a4…` |
 | shared/model-shadow-challenger-gate | ORGAN | EXPERIMENTAL | 13 | NONE | LOW | `66f37b2ad30db90a…` |
 | shared/model-shadow-continuity | ORGAN | EXPERIMENTAL | 25 | NONE | LOW | `c27aed550c9fcc1d…` |
 | shared/model-shadow-history-checkpoint-anchor | HAND | EXPERIMENTAL | 21 | ROOT_CHANGE | HIGH | `6ba813c69a83db93…` |

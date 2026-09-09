@@ -8,11 +8,11 @@
     "schema": { "const": "axm.merge-result/v1" },
     "state": { "enum": ["IDENTICAL", "CANDIDATE", "HOLD", "CONFLICT"] },
     "semantics": { "type": "string" },
-    "localDigest": { "type": "string" },
-    "remoteDigest": { "type": "string" },
+    "localDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "remoteDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "candidate": { "type": ["object", "null"] },
     "reconciliation": { "type": ["object", "null"] },
     "applied": { "const": false },
-    "resultDigest": { "type": "string" }
+    "resultDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
   }
 }
