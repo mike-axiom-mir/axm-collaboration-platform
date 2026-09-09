@@ -1,14 +1,14 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "local-sync",
-  "version": "v0.1",
+  "version": "v0.2",
   "provides": ["city.state.snapshot", "city.state.merge-typed", "city.state.reconciliation-packet"],
-  "consumes": ["axm.state-snapshot/v1", "axm.merge-rule/v1"],
+  "consumes": ["axm.state-snapshot/v1", "axm.merge-rule/v1", "axm.merge-admission/v1"],
   "permissions": [],
-  "handoffs": { "emits": ["axm.merge-result/v1", "axm.reconciliation-request/v1"], "accepts": ["axm.state-snapshot/v1", "axm.merge-rule/v1"] },
+  "handoffs": { "emits": ["axm.merge-result/v1", "axm.reconciliation-request/v1"], "accepts": ["axm.state-snapshot/v1", "axm.merge-rule/v1", "axm.merge-admission/v1"] },
   "lifecycle": { "state_owner": "caller", "reload": "recompute-from-parent-snapshots", "disconnect": "not-applicable", "cleanup": "not-applicable" },
   "boundaries": {
     "writes": [],
-    "refuses": ["automatic-root-merge", "automatic-canon-merge", "automatic-authority-merge", "last-writer-wins", "implicit-merge-rule", "conflict-erasure", "state-persistence", "promotion", "merge-to-repository", "canon-change", "root-change"]
+    "refuses": ["automatic-root-merge", "automatic-canon-merge", "automatic-authority-merge", "last-writer-wins", "implicit-merge-rule", "unpinned-merge-rule", "unsealed-input", "conflict-erasure", "state-persistence", "promotion", "merge-to-repository", "canon-change", "root-change"]
   }
 }

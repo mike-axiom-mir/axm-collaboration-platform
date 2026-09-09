@@ -8,11 +8,11 @@
     "schema": { "const": "axm.reconciliation-request/v1" },
     "namespace": { "type": "string" },
     "reason": { "type": "string" },
-    "localDigest": { "type": "string" },
-    "remoteDigest": { "type": "string" },
-    "ruleDigest": { "type": "string" },
+    "localDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "remoteDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "ruleDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "requiresHuman": { "const": true },
     "grantsAuthority": { "const": false },
-    "requestDigest": { "type": "string" }
+    "requestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
   }
 }

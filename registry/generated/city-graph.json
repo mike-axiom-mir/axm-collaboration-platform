@@ -27465,7 +27465,9 @@
           "merge-to-repository",
           "promotion",
           "root-change",
-          "state-persistence"
+          "state-persistence",
+          "unpinned-merge-rule",
+          "unsealed-input"
         ],
         "writes": []
       },
@@ -27497,8 +27499,9 @@
       },
       "resources": {
         "readiness": [
-          "explicit-merge-rule",
-          "node-runtime"
+          "explicit-pinned-merge-rule",
+          "node-runtime",
+          "sealed-snapshots"
         ],
         "uses": [
           "owner-defined-merge-rules",
@@ -27508,10 +27511,12 @@
       "schema": "axm.block-view/v1",
       "sockets": {
         "accepts": [
+          "axm.merge-admission/v1",
           "axm.merge-rule/v1",
           "axm.state-snapshot/v1"
         ],
         "consumes": [
+          "axm.merge-admission/v1",
           "axm.merge-rule/v1",
           "axm.state-snapshot/v1"
         ],
@@ -27532,9 +27537,9 @@
           "shared/local-sync/module.contract.json"
         ],
         "declaredId": "local-sync",
-        "digest": "599679e4908e72f6869cfff6bfa410305ca4dfea93ee74f069b106a2f30c25dd",
+        "digest": "7c491b41e6cdbf7fe926643fa5539c6a72d2dc207d3c5228544b0ff0f7e77675",
         "manifest": "shared/local-sync/manifest.json",
-        "observedSourceFileCount": 9,
+        "observedSourceFileCount": 10,
         "root": "shared/local-sync"
       },
       "status": "EXPERIMENTAL",
@@ -27543,7 +27548,7 @@
         "entry": "local-sync-core.js",
         "type": "machine-capability"
       },
-      "version": "v0.1"
+      "version": "v0.2"
     },
     {
       "authority": {
@@ -42218,6 +42223,13 @@
         "asset-fabric"
       ],
       "id": "axm.material-graph/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/local-sync"
+      ],
+      "id": "axm.merge-admission/v1",
       "providers": []
     },
     {
@@ -67554,14 +67566,19 @@
       "sha256": "a7d02501cdd2ba94559cc1fa110a7e08078f6b2b3f5256ff5dcee182ae2f4a5f"
     },
     {
+      "id": "axm.merge-admission/v1",
+      "path": "shared/local-sync/merge-admission.schema.json",
+      "sha256": "593d291492805fdf82a5a7221ddd3657789642b1c66f7a602553ee527b57569f"
+    },
+    {
       "id": "axm.merge-result/v1",
       "path": "shared/local-sync/merge-result.schema.json",
-      "sha256": "6629e39b66a88c413e00d7260fddd0e70931169adf08e558818f90d100ea3a56"
+      "sha256": "52a5720619f462075594919adfe3fef6eb4266f9daa093dd7755f70468c85746"
     },
     {
       "id": "axm.merge-rule/v1",
       "path": "shared/local-sync/merge-rule.schema.json",
-      "sha256": "e7938b8d8e94c20b58d1d94ce53cb385114ae1e2019a5ee95a57f961e5d2c910"
+      "sha256": "0d11abde436654dc412e6c8292a4febbe1ca185407617a18882e44aa45305ce8"
     },
     {
       "id": "axm.mirror.actor/v1",
@@ -69001,7 +69018,7 @@
     {
       "id": "axm.reconciliation-request/v1",
       "path": "shared/local-sync/reconciliation-request.schema.json",
-      "sha256": "c5f8b79c540fa5677b266661c2cd55bdaff6567f82bd1c8b22a95c4945b20c93"
+      "sha256": "31c367ba7c1dc0c6a7c5ec3d719e092c769aed541ac316fe33447e99647dadb4"
     },
     {
       "id": "axm.repairbuddy.replay-recipe/v1",
@@ -69351,7 +69368,7 @@
     {
       "id": "axm.state-snapshot/v1",
       "path": "shared/local-sync/state-snapshot.schema.json",
-      "sha256": "0e6247adef2d96627ca26c94eecdee6b546f13875338e1218e69b478fb0cc639"
+      "sha256": "fc17371638cbb484f5d5d514aa4305eea384f48526af1b0849b85e43adbe9401"
     },
     {
       "id": "axm.three-mf-capability-receipt/v1",
@@ -70209,18 +70226,18 @@
       "sha256": "2effd339ff854a7bd1bdc8bc97710e3a65bf33ac01c5c9f27d7893f5fda0faae"
     }
   ],
-  "semanticDigest": "9088eb7ca5a534c52a53b004988523c24fb1aa1dec599d3d84f2521667ad2eb7",
+  "semanticDigest": "82a5cde1f3d33c71c12d50ec45e51888a6bb6bdb81d9ed1bbf73850ecdbafaba",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "3c7a77f6ad3a26900398cc6f20aa711e43a6d3ea11867491fe1d88606657bdd0",
+    "declarationDigest": "5da4ca69a3ebe399edb86262367a9b464a4fed3578b02e71a015b4f80c04f2b6",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "3c7a77f6ad3a26900398cc6f20aa711e43a6d3ea11867491fe1d88606657bdd0"
+    "snapshotIdentity": "5da4ca69a3ebe399edb86262367a9b464a4fed3578b02e71a015b4f80c04f2b6"
   },
   "summary": {
     "blockKinds": {
@@ -70233,12 +70250,12 @@
       "SENSOR": 6
     },
     "blocks": 318,
-    "capabilities": 3561,
+    "capabilities": 3562,
     "declaredContracts": 315,
     "declaredManifests": 234,
     "edges": 93,
-    "schemas": 744,
-    "unresolved": 1969
+    "schemas": 745,
+    "unresolved": 1970
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -78672,6 +78689,12 @@
       "blockId": "shared/intake-harbor",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.intake-step-receipt/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/local-sync",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.merge-admission/v1",
       "state": "UNKNOWN"
     },
     {

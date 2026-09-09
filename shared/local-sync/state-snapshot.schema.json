@@ -6,13 +6,17 @@
   "additionalProperties": false,
   "properties": {
     "schema": { "const": "axm.state-snapshot/v1" },
-    "id": { "type": "string" },
-    "namespace": { "type": "string" },
-    "valueSchema": { "type": "string" },
+    "id": { "type": "string", "minLength": 1 },
+    "namespace": { "type": "string", "minLength": 1 },
+    "valueSchema": { "type": "string", "minLength": 1 },
     "value": {},
     "revision": { "type": "integer", "minimum": 0 },
-    "parentDigests": { "type": "array" },
-    "authorityDomain": { "type": "string" },
-    "snapshotDigest": { "type": "string" }
+    "parentDigests": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+    },
+    "authorityDomain": { "type": "string", "minLength": 1 },
+    "snapshotDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
   }
 }

@@ -6,11 +6,18 @@
   "additionalProperties": false,
   "properties": {
     "schema": { "const": "axm.merge-rule/v1" },
-    "id": { "type": "string" },
-    "namespace": { "type": "string" },
+    "id": { "type": "string", "minLength": 1 },
+    "namespace": { "type": "string", "minLength": 1 },
     "semantics": { "enum": ["CRDT_MERGEABLE", "APPEND_ONLY", "LAST_WRITER_NOT_ALLOWED", "HUMAN_RECONCILIATION_REQUIRED", "SINGLE_AUTHORITY", "IMMUTABLE"] },
     "strategy": { "type": ["string", "null"] },
-    "owner": { "type": "string" },
-    "ruleDigest": { "type": "string" }
-  }
+    "owner": { "type": "string", "minLength": 1 },
+    "ruleDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "semantics": { "const": "CRDT_MERGEABLE" } } },
+      "then": { "properties": { "strategy": { "const": "G_SET" } } },
+      "else": { "properties": { "strategy": { "type": "null" } } }
+    }
+  ]
 }
