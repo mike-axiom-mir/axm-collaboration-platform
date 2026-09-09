@@ -9,7 +9,20 @@ const U = require('./operations-utils');
 
 const SCHEMA = 'axm.multiplayer-controller-transport/v1';
 const WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
-function privateIpv4() { for (const [name, rows] of Object.entries(os.networkInterfaces())) { if (/virtual|vethernet|wsl|loopback/i.test(name)) continue; for (const row of rows || []) if (row.family === 'IPv4' && !row.internal && !row.address.startsWith('169.254.')) return row.address; } return null; }
+function privateIpv4(readInterfaces) {
+  let interfaces;
+  try {
+    interfaces = (readInterfaces || os.networkInterfaces)();
+  } catch (_) {
+    return null;
+  }
+  if (!interfaces || typeof interfaces !== 'object') return null;
+  for (const [name, rows] of Object.entries(interfaces)) {
+    if (/virtual|vethernet|wsl|loopback/i.test(name)) continue;
+    for (const row of rows || []) if (row && row.family === 'IPv4' && !row.internal && !row.address.startsWith('169.254.')) return row.address;
+  }
+  return null;
+}
 function textFrame(value) { const data = Buffer.from(typeof value === 'string' ? value : JSON.stringify(value)); if (data.length < 126) return Buffer.concat([Buffer.from([0x81, data.length]), data]); if (data.length <= 65535) { const head = Buffer.alloc(4); head[0] = 0x81; head[1] = 126; head.writeUInt16BE(data.length,2); return Buffer.concat([head,data]); } throw new Error('websocket payload exceeds 64 KB'); }
 function parseFrames(buffer) {
   const messages = []; let offset = 0;
