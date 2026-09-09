@@ -12,6 +12,7 @@ $ErrorActionPreference = 'Stop'
 $ToolDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RestoreScript = Join-Path $ToolDir 'restore-test.ps1'
 $PlannerScript = Join-Path $ToolDir 'package-planner.js'
+$PublicSafetyPolicyPath = Join-Path $ToolDir 'public-safety-policy.json'
 $Root = [System.IO.Path]::GetFullPath((Join-Path $ToolDir '..\..'))
 $RuntimeTool = [System.IO.Path]::GetFullPath((Join-Path $Root 'scripts\windows-runtime-bundle.js'))
 if (-not $RuntimeRoot) { $RuntimeRoot = Join-Path $Root 'runtime\node' }
@@ -159,6 +160,18 @@ try {
   $excludedFiles = @()
   $scanFindings = @()
   if ($IsPublicSafe) {
+    if (-not (Test-Path -LiteralPath $PublicSafetyPolicyPath -PathType Leaf)) {
+      throw 'Workshop public-safety policy is missing.'
+    }
+    $publicSafetyPolicy = Get-Content -LiteralPath $PublicSafetyPolicyPath -Raw | ConvertFrom-Json
+    if ($publicSafetyPolicy.schema -ne 'axm.workshop-public-safety-policy/v1' -or
+        @($publicSafetyPolicy.always_private_filenames).Count -eq 0) {
+      throw 'Workshop public-safety policy is malformed.'
+    }
+    $alwaysPrivateFileNames = @(
+      $publicSafetyPolicy.always_private_filenames |
+        ForEach-Object { ([string]$_).ToLowerInvariant() }
+    )
     # Nested game runtime folders are content and remain packageable. Only the
     # top-level runtime was excluded above. Other private folder names are
     # removed wherever they occur inside a selected scope.
@@ -190,6 +203,7 @@ try {
       }
     }
     $sensitiveFiles = Get-ChildItem -LiteralPath $CopyPath -Recurse -File -Force | Where-Object {
+      $alwaysPrivateFileNames -contains $_.Name.ToLowerInvariant() -or
       $_.Name -ieq 'bridge-token.txt' -or $_.Name -ieq 'bridge_token.txt' -or
       $_.Name -ieq '.env' -or $_.Name -like '.env.*' -or
       $_.Extension -in @('.pem','.pfx','.key','.log') -or
