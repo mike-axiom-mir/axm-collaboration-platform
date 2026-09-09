@@ -144,7 +144,7 @@ code { padding: .1rem .3rem; border: 1px solid rgba(111,228,239,.2); border-radi
 .expiry-banner b { font-size: .82rem; }
 .expiry-banner small { margin-top: .15rem; color: #d0bfc0; font-size: .68rem; }
 
-.workroom { display: grid; gap: 1rem; }
+.workroom { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; max-width: 100%; min-width: 0; gap: 1rem; }
 .panel { border: 1px solid var(--line); border-radius: 1.1rem; background: linear-gradient(145deg, rgba(18,29,49,.91), rgba(9,17,30,.94)); box-shadow: 0 18px 60px rgba(0,0,0,.17); }
 .project-bar { display: grid; grid-template-columns: .38fr 1fr; gap: 2rem; padding: 1.25rem; }
 .project-heading { padding: .35rem; }
@@ -225,7 +225,7 @@ dialog form { display: grid; gap: .8rem; padding: 1.2rem; }
 .guest-footer a { text-decoration: none; }.guest-footer b { color: #cfd9e8; font: 740 .62rem/1 var(--mono); letter-spacing: .07em; }
 
 /* Public maker deck: a bounded browser-safe slice of Studio, SFX and Shapeable. */
-.maker-deck { overflow: hidden; }
+.maker-deck { width: 100%; max-width: 100%; min-width: 0; overflow: hidden; }
 .maker-deck-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; padding: 1.35rem; border-bottom: 1px solid var(--line); }
 .maker-deck-head h2 { margin-bottom: .35rem; font-size: clamp(1.5rem, 3vw, 2.3rem); letter-spacing: -.045em; }
 .maker-deck-head > div > p:not(.eyebrow) { max-width: 760px; margin: 0; color: var(--muted); font-size: .76rem; }
@@ -253,6 +253,12 @@ dialog form { display: grid; gap: .8rem; padding: 1.2rem; }
 .full-tool-frame-wrap.extra-tall iframe { height: 880px; }
 .full-tool-lock { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center; padding: 2rem; color: var(--muted); background: rgba(4,10,19,.94); font: 720 .7rem/1.6 var(--mono); text-align: center; }
 .full-tool-frame-wrap.is-live .full-tool-lock { display: none; }
+.phone-maker-route { display: none; width: min(100%, 32rem); }
+.phone-maker-route > span, .phone-maker-route b, .phone-maker-route small { display: block; }
+.phone-maker-route > span { color: var(--cyan); font-size: .55rem; letter-spacing: .13em; }
+.phone-maker-route b { margin-top: .45rem; color: var(--text); font: 820 1rem/1.25 var(--display); }
+.phone-maker-route small { margin-top: .45rem; color: var(--muted); font: 600 .68rem/1.55 var(--display); }
+.phone-maker-route button { min-height: 44px; margin-top: .85rem; padding: .65rem .85rem; border: 1px solid var(--line-strong); border-radius: .65rem; background: rgba(111,228,239,.12); color: var(--cyan); font: 780 .65rem/1 var(--display); }
 .quick-maker { margin-top: .85rem; border: 1px solid var(--line); border-radius: .85rem; background: rgba(5,12,24,.44); }
 .quick-maker > summary { padding: .8rem 1rem; color: var(--text); font-size: .7rem; font-weight: 780; cursor: pointer; }
 .quick-maker > summary small { margin-left: .5rem; color: var(--muted-2); font: .55rem/1.4 var(--mono); }
@@ -359,7 +365,7 @@ dialog form { display: grid; gap: .8rem; padding: 1.2rem; }
   .ended-panel img { max-height: 440px; width: 100%; object-fit: cover; }
   .maker-tabs { grid-template-columns: 1fr 1fr; }
   .maker-tab:nth-child(2) { border-right: 0; }.maker-tab:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
-  .studio-layout, .sfx-layout, .game-builder-layout, .site-builder-layout { grid-template-columns: 1fr; }
+  .studio-layout, .sfx-layout, .game-builder-layout, .site-builder-layout { grid-template-columns: minmax(0, 1fr); }
   .studio-controls { grid-template-columns: 1fr 1fr; }
   .studio-controls fieldset { grid-column: 1 / -1; }
   .game-controls, .site-controls { max-height: none; }
@@ -374,7 +380,7 @@ dialog form { display: grid; gap: .8rem; padding: 1.2rem; }
   .header-actions { gap: .35rem; }
   .header-actions .button { min-height: 40px; padding: .5rem .65rem; font-size: .66rem; }
   .session-meter { width: 100%; min-width: 0; padding: .5rem .25rem 0; border-top: 1px solid var(--line); }
-  .guest-shell { width: calc(100% - 1rem); padding-top: 1.5rem; }
+  .guest-shell { width: calc(100% - 1rem); max-width: 100%; min-width: 0; padding-top: 1.5rem; overflow-x: clip; }
   .welcome-panel { padding-block: 1.5rem; }
   .welcome-copy h1 { font-size: clamp(3rem,15vw,4.3rem); }
   .welcome-actions, .welcome-actions .button { width: 100%; }
@@ -396,8 +402,9 @@ dialog form { display: grid; gap: .8rem; padding: 1.2rem; }
   .maker-deck-head, .maker-panel-head { align-items: flex-start; flex-direction: column; gap: 1rem; }
   .maker-proof { justify-content: flex-start; }
   .maker-tabs { display: flex; overflow-x: auto; scroll-snap-type: x proximity; }
-  .maker-tab { flex: 0 0 210px; border-bottom: 0 !important; scroll-snap-align: start; }
-  .maker-panel { padding: .75rem; }
+  .maker-tab { flex: 0 0 min(210px, 76vw); min-width: 0; border-bottom: 0 !important; scroll-snap-align: start; }
+  .maker-panel, .quick-maker, .studio-layout, .sfx-layout, .game-builder-layout, .site-builder-layout, .game-controls, .site-controls, .game-preview, .site-preview { width: 100%; max-width: 100%; min-width: 0; }
+  .maker-panel { padding: .75rem; overflow: hidden; }
   .studio-controls, .sfx-controls { grid-template-columns: 1fr; }
   .maker-output-card { grid-template-columns: 1fr; }.maker-output-card .button { width: 100%; }
   .game-preview-overlay { align-items: flex-start; flex-direction: column; left: .55rem; top: .55rem; transform: none; }
@@ -408,8 +415,12 @@ dialog form { display: grid; gap: .8rem; padding: 1.2rem; }
   .site-preview-art { width: min(100%,280px); }
   .site-preview-features { grid-template-columns: 1fr; }
   .artifact-item { grid-template-columns: 52px minmax(0,1fr); }.artifact-item button { grid-column: 2; justify-self: start; }
-  .full-tool-frame-wrap, .full-tool-frame-wrap.extra-tall { min-height: 680px; margin-inline: -.35rem; border-radius: .7rem; }
-  .full-tool-frame-wrap iframe, .full-tool-frame-wrap.extra-tall iframe { height: 680px; }
+  .full-tool-frame-wrap, .full-tool-frame-wrap.extra-tall { min-width: 0; min-height: 180px; margin-inline: 0; border-radius: .7rem; }
+  .full-tool-frame-wrap iframe, .full-tool-frame-wrap.extra-tall iframe { display: none; }
+  .full-tool-frame-wrap.is-mobile-route .full-tool-lock { display: grid; padding: 1rem; }
+  .full-tool-frame-wrap.is-mobile-route [data-desktop-lock] { display: none; }
+  .full-tool-frame-wrap.is-mobile-route .phone-maker-route { display: block; }
+  .quick-maker[open] { scroll-margin-top: .75rem; }
   .quick-maker > summary small { display: block; margin: .25rem 0 0; }
 }
 

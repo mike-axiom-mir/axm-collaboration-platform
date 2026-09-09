@@ -1101,7 +1101,7 @@ $('stageGameAsset').onclick=stageGameAsset;
   setPalette(0); renderTools(); fillSelects(); renderLayers(); renderIds(); applyGoalTools();
   await tryResume();
   await initDuet();
-  await loadGameAssetTargets();
+  if (!new URLSearchParams(location.search).has('public-demo')) await loadGameAssetTargets();
   consumeCollaborationNotice();
   if(pendingStudioMode)applyStudioMode(pendingStudioMode);
   studioBootReady=true;

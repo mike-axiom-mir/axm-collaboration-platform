@@ -36,12 +36,18 @@ for (const id of ['studioFullFrame', 'sfxFullFrame', 'gameFullFrame', 'siteFullF
 }
 assert(html.includes('Four real AXM workspaces. Thirty active minutes.'));
 assert(makers.includes("type: 'axm:demo-session'") && makers.includes('updateDemoFrames'), 'parent session must lock and unlock every full tool');
+assert(makers.includes("matchMedia('(max-width: 650px)')") && makers.includes('usesCompactMaker()'), 'phone route must choose the compact maker without changing the canonical tool');
+assert(makers.includes('if (usesCompactMaker())') && makers.includes('quickMaker.open = true'), 'phone route must keep desktop iframes dormant and reveal the touch-capable maker');
+assert(makers.includes('active: editable === true && !usesCompactMaker()'), 'a loaded desktop engine must pause when the viewport changes to the phone route');
+assert((html.match(/data-open-quick=/g) || []).length === 4, 'every production workspace must expose an explicit phone-maker action');
+assert(styles.includes('.full-tool-frame-wrap.is-mobile-route') && styles.includes('overflow-x: clip'), 'phone route must contain the desktop surface without page-level horizontal escape');
 assert(gate.includes('window.top === window') && gate.includes("event.source !== window.parent"), 'full tools must refuse direct untimed entry and accept only their parent gate');
 for (const [name, entry] of [['Studio', studioEngine], ['Audio Studio', audioStudio], ['Game Forge', gameForge], ['Shapeable Builder', shapeableBuilder]]) {
   assert(entry.includes("connect-src 'none'"), `${name} public route must block network transport`);
   assert(entry.includes('../../../demo-gate.js'), `${name} public route must carry the timed session gate`);
 }
 assert(studioEngine.includes('TOOL_REGISTRY') && studioEngine.includes('vectorObjects') && studioEngine.includes('animationFrames'), 'public Studio must be the layered/vector/animation engine');
+assert(studioEngine.includes("if (!new URLSearchParams(location.search).has('public-demo')) await loadGameAssetTargets()"), 'public Studio must not probe a server-backed Game Hub through its no-network boundary');
 assert(publicStudioAdapter.includes('complete browser canvas') && publicStudioAdapter.includes('local AXM'), 'public Studio must label model bridges and Game Hub installation as local-only');
 assert(audioStudio.includes('sound-lab-engine.html?embedded=1') && audioStudio.includes('id="synthView"'), 'public Audio Studio must include Sound Lab and synthesis');
 assert(gameForge.includes('knowledgeFrame') && gameForge.includes('physics-lab.css') && gameForge.includes('previewFrame'), 'public Game Forge must include Atlas, physics and playable preview routes');
