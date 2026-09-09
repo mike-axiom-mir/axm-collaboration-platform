@@ -1504,6 +1504,71 @@ function requestPath(req) {
   return raw;
 }
 
+function isLoopbackHostname(hostname) {
+  const value = String(hostname || "").toLowerCase();
+  return (
+    value === "127.0.0.1" ||
+    value === "localhost" ||
+    value === "[::1]" ||
+    value === "::1"
+  );
+}
+
+/* Loopback binding prevents remote TCP access, but it does not stop a hostile
+   web page from sending a simple cross-origin POST to localhost. Keep native
+   clients available when they send no browser provenance, while refusing
+   browser-originated state changes that are not from this Workshop origin. */
+function browserStateChangeRefusal(req) {
+  const method = String(req.method || "GET").toUpperCase();
+  if (method === "GET" || method === "HEAD" || method === "OPTIONS")
+    return null;
+
+  const fetchSite = String(req.headers["sec-fetch-site"] || "").toLowerCase();
+  if (fetchSite === "cross-site") {
+    return "browser cross-site state change refused";
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(req.headers, "origin")) return null;
+  const rawOrigin = String(req.headers.origin || "");
+  if (!rawOrigin || rawOrigin === "null") return "opaque browser origin refused";
+
+  let origin;
+  try {
+    origin = new URL(rawOrigin);
+  } catch (_) {
+    return "malformed browser origin refused";
+  }
+  if (origin.protocol !== "http:" && origin.protocol !== "https:") {
+    return "non-http browser origin refused";
+  }
+
+  if (isLoopbackHostname(HOST)) {
+    const originPort =
+      origin.port || (origin.protocol === "http:" ? "80" : "443");
+    if (
+      !isLoopbackHostname(origin.hostname) ||
+      origin.protocol !== "http:" ||
+      originPort !== String(ACTIVE_PORT)
+    ) {
+      return "browser origin is outside the active local Workshop";
+    }
+    return null;
+  }
+
+  /* Non-loopback binding is an explicitly separate capability. Preserve its
+     existing LAN door while still requiring browser requests to be same-site
+     and to name the host that received the request. */
+  const requestHost = String(req.headers.host || "").toLowerCase();
+  if (
+    fetchSite !== "same-origin" ||
+    !requestHost ||
+    origin.host.toLowerCase() !== requestHost
+  ) {
+    return "browser origin does not match the active Workshop host";
+  }
+  return null;
+}
+
 function mirrorCoreStatus() {
   const installed =
     fs.existsSync(path.join(MIRROR_CORE_DIR, "server", "server.js")) &&
@@ -1846,6 +1911,13 @@ function productionSessionRuntimeBlocked(rawUrl) {
 
 const server = http.createServer((req, res) => {
   const rawUrl = String(req.url || "/");
+  const browserAuthorityError = browserStateChangeRefusal(req);
+  if (browserAuthorityError)
+    return send(res, 403, {
+      ok: false,
+      code: "CROSS_ORIGIN_STATE_CHANGE_REFUSED",
+      error: browserAuthorityError,
+    });
   if (
     SAFE_MODE &&
     ["/game-api", "/games/", "/services/"].some((prefix) =>
