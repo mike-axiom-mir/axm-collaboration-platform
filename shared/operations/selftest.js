@@ -16,6 +16,7 @@ const Recovery = require('./recovery-service');
 const Search = require('./search-service');
 const Assets = require('./asset-filesystem-service');
 const Device = require('./device-handoff-service');
+const Multiplayer = require('./multiplayer-transport-service');
 const Diagnostics = require('./diagnostics-service');
 const EvidenceRetention = require('../evidence-retention/evidence-retention-service');
 
@@ -247,6 +248,10 @@ async function main() {
     check(packBytes.readUInt32LE(0)===0x04034b50&&packBytes.includes(Buffer.from('ASSET_PACK_MANIFEST.json'))&&packBytes.includes(Buffer.from('one.txt'))&&pack.assets===1,'native asset pack ZIP contains the explicit asset and governed manifest');
     check(pack.archiveEngine==='axm-native-zip-store'&&pack.requiredThirdPartyDependencies.length===0&&U.crc32(Buffer.from('123456789'))===0xcbf43926,'asset ZIP engine needs no archive executable or package and records a standard CRC-32');
 
+    check(Device.privateIpv4(() => { throw new Error('interface discovery unavailable'); }) === null, 'device handoff degrades to loopback when interface discovery throws');
+    check(Device.privateIpv4(() => null) === null, 'device handoff degrades to loopback when interface discovery is unavailable');
+    check(Multiplayer.privateIpv4(() => { throw new Error('interface discovery unavailable'); }) === null, 'multiplayer transport degrades to loopback when interface discovery throws');
+    check(Multiplayer.privateIpv4(() => null) === null, 'multiplayer transport degrades to loopback when interface discovery is unavailable');
     const handoff=Device.create({root,stateRoot}); const session=await handoff.createSession({ttlMinutes:2,actor:'Mike'}),parsedUrl=new URL(session.localUrl),payload=Buffer.from('phone-selected-file').toString('base64');
     const response=await fetch('http://127.0.0.1:'+parsedUrl.port+'/upload',{method:'POST',headers:{'content-type':'application/json','x-axm-handoff-token':parsedUrl.searchParams.get('token')},body:JSON.stringify({sessionId:parsedUrl.pathname.split('/').pop(),files:[{name:'phone.txt',type:'text/plain',size:19,data:payload}]})});
     const upload=await response.json(); check(response.ok&&upload.saved.length===1&&fs.existsSync(path.join(root,upload.saved[0].path)),'handoff-only sidecar receives one explicitly selected file');
