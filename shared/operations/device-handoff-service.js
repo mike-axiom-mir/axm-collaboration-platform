@@ -7,10 +7,17 @@ const os = require('os');
 const path = require('path');
 const U = require('./operations-utils');
 
-function privateIpv4() {
+function privateIpv4(readInterfaces) {
+  let interfaces;
+  try {
+    interfaces = (readInterfaces || os.networkInterfaces)();
+  } catch (_) {
+    return null;
+  }
+  if (!interfaces || typeof interfaces !== 'object') return null;
   const rows = [];
-  for (const entries of Object.values(os.networkInterfaces())) for (const item of entries || []) {
-    if (item.family !== 'IPv4' || item.internal) continue;
+  for (const entries of Object.values(interfaces)) for (const item of entries || []) {
+    if (!item || item.family !== 'IPv4' || item.internal) continue;
     if (/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(item.address)) rows.push(item.address);
   }
   return rows[0] || null;
