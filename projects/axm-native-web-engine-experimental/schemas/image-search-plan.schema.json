@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.image-search-plan/v1",
+  "title": "AXM Image Search Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","query","providers","requests","merge","authority","planDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.image-search-plan/v1"},
+    "version": {"const": 1},
+    "status": {"const": "EXPERIMENTAL"},
+    "query": {"$ref": "image-search-query.schema.json"},
+    "providers": {"$ref": "#/$defs/providers"},
+    "requests": {"type": "array", "minItems": 1, "maxItems": 2, "items": {"$ref": "#/$defs/request"}},
+    "merge": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/merge"}]},
+    "authority": {"$ref": "#/$defs/authority"},
+    "planDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "providers": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["searxng","brave"]}},
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type","header","prefix","secretEnv"],
+      "properties": {
+        "type": {"const": "ENV_HEADER_SECRET"},
+        "header": {"type": "string", "minLength": 1, "maxLength": 64},
+        "prefix": {"type": "string", "maxLength": 32},
+        "secretEnv": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$"}
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider","method","url","headers","auth","transportAuthority"],
+      "properties": {
+        "provider": {"enum": ["searxng","brave"]},
+        "method": {"const": "GET"},
+        "url": {"type": "string", "pattern": "^https?://", "maxLength": 4096},
+        "headers": {"type": "object", "additionalProperties": {"type": "string", "maxLength": 1024}, "maxProperties": 8},
+        "auth": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/auth"}]},
+        "transportAuthority": {"const": "REQUIRES_EXPLICIT_IMAGE_SEARCH_EXECUTOR"}
+      }
+    },
+    "merge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method","k"],
+      "properties": {"method": {"const": "RECIPROCAL_RANK_FUSION"}, "k": {"type": "integer", "minimum": 1, "maximum": 1000}}
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["networkExecutionGranted","imageFetchGranted","arbitraryNavigationGranted","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "networkExecutionGranted": {"const": false},
+        "imageFetchGranted": {"const": false},
+        "arbitraryNavigationGranted": {"const": false},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    }
+  }
+}

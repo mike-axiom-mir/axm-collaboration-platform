@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.research-run/v1",
+  "title": "AXM Research Mode Run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","researchPlanDigest","question","mode","visualStateDigest","search","ai","authority","runDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.research-run/v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PASS","PARTIAL"]},
+    "researchPlanDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "question": {"type": "string", "minLength": 1, "maxLength": 4000},
+    "mode": {"enum": ["search+ai","search-only","ai-only"]},
+    "visualStateDigest": {"type": ["string","null"], "pattern": "^[a-f0-9]{64}$"},
+    "search": {"type": ["object","null"]},
+    "ai": {"type": ["object","null"]},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["browserMutationAllowed","resultNavigationAllowed","backgroundExecutionUsed","searchNetworkExecutionUsed","aiNetworkExecutionUsed","resultContentTrusted","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "browserMutationAllowed": {"const": false},
+        "resultNavigationAllowed": {"const": false},
+        "backgroundExecutionUsed": {"const": false},
+        "searchNetworkExecutionUsed": {"type": "boolean"},
+        "aiNetworkExecutionUsed": {"type": "boolean"},
+        "resultContentTrusted": {"const": false},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    },
+    "runDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

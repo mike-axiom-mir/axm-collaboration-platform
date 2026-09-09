@@ -1,0 +1,137 @@
+AXM NATIVE WEB ENGINE — DETACHED PHASE 0/1 LOCAL INTAKE HANDOFF
+Date: 2026-08-23
+Status: EXPERIMENTAL
+installed: false
+promoted: false
+canon: false
+
+PURPOSE
+-------
+Carry a reviewable offline web-engine proof into local AXM intake later without
+silently installing it or changing existing foundations.
+
+EXPECTED PACKAGE ROOT
+---------------------
+projects/axm-native-web-engine-experimental/
+
+VERIFY BEFORE INTAKE
+--------------------
+1. Read README.md, RECONNAISSANCE_MAP.md, ACTION_REPORT.md, KNOWN_LIMITS.md,
+   SECURITY_BOUNDARIES.md, PROVENANCE.md, and module.contract.json.
+2. Confirm the intended upstream checkpoint in manifests/build-manifest.json.
+3. Run from the package root:
+       node --test tests/*.test.js
+       node scripts/verify-schemas.js
+       node scripts/build-source-manifest.js --verify
+4. Compare observed results with ACTION_REPORT.md. Any mismatch becomes HOLD.
+5. Inspect the current local Workshop for newer or conflicting browser work.
+6. Map the package again as EXISTING / EXTEND / ADAPT / NEW / HOLD.
+
+INTAKE BOUNDARY
+---------------
+- Treat every file as data until explicit local review.
+- Do not execute through a privileged host or grant network/local authority.
+- Do not edit Foundation, Hub, registry, server, launcher, Mirror, or existing
+  browser tools merely because this package validates.
+- Do not install, promote, merge, or mark CANON automatically.
+- Preserve source manifest, fixtures, goldens, warnings, and known limits.
+- If local intake chooses a Rust rewrite, retain equivalence fixtures and the
+  same Source Record / Document Tree / Page Model contracts rather than silently
+  replacing the evidence lineage.
+
+FIRST SAFE LOCAL DECISION
+-------------------------
+Choose one:
+  HOLD
+  ACCEPT_FOR_TEST
+  REQUEST_REPAIR
+  REJECT
+
+Only Mike / the explicit AXM Merge Gate may make a promotion or canon decision.
+
+SECOND STEWARD PASS ADDENDUM — 2026-08-23
+-----------------------------------------
+Package version: 0.3.0-experimental.1
+Status remains: EXPERIMENTAL / installed false / promoted false / canon false
+
+NEW REVIEW SURFACES
+-------------------
+- STRUCTURE_VIEW_CONTRACT.md
+- examples/simple.structure.svg
+- examples/simple.browser-snapshot.html
+- headless commands: layout, display
+- explicit artifact commands: render-svg, browser-snapshot
+
+VERIFY THIS PASS
+----------------
+Run from the package root:
+    node --test tests/*.test.js
+    node scripts/verify-schemas.js
+    node scripts/build-examples.js --verify
+    node scripts/build-source-manifest.js --verify
+
+Then inspect both committed examples as inert data. Confirm their displayed
+source/Page Model/layout/Display List/ledger lineage against headless output.
+Any digest mismatch, active-content finding, unexpected write, clipped required
+boundary label, or newer conflicting local browser work becomes HOLD.
+
+STRUCTURE-VIEW BOUNDARY
+-----------------------
+The new visual body is a static AXM Structure View over the semantic Page Model.
+It is not Site View, CSS rendering, navigation, page execution, network access,
+or a production browser shell. Discarding the derived view is the declared
+reversal; original source bytes are not modified.
+
+FIRST SAFE LOCAL DECISION IS STILL ONE OF
+-----------------------------------------
+  HOLD
+  ACCEPT_FOR_TEST
+  REQUEST_REPAIR
+  REJECT
+
+THIRD STEWARD PASS ADDENDUM — 2026-08-23
+----------------------------------------
+Package version: 0.4.0-experimental.1
+Status remains: EXPERIMENTAL / installed false / promoted false / canon false
+
+NEW REVIEW SURFACES
+-------------------
+- LOCAL_BROWSER_SESSION_CONTRACT.md
+- src/browser-session.js
+- src/local-browser-host.js
+- schemas/local-browser-bundle.schema.json
+- schemas/local-browser-session.schema.json
+- schemas/local-browser-host-receipt.schema.json
+- golden/local-session.navigation.json
+- headless command: session
+- local human command: serve-local
+
+VERIFY THIS PASS
+----------------
+Run from the package root:
+    npm run verify
+
+Then run the bounded human shell only after reviewing its authority contract:
+    node cli.js serve-local fixtures/session-home.html \
+      --allow-local fixtures/session-about.html \
+      --allow-local fixtures/session-details.html
+
+Confirm the printed origin is 127.0.0.1, open only the printed ephemeral
+shellUrl, and exercise an allowed link, back, forward, reload, a same-document
+target, and a held external address. Stop the host with Ctrl+C and confirm the
+listener closed.
+
+LOCAL-SESSION BOUNDARY
+----------------------
+The entry file and each additional page require explicit caller enumeration.
+The shell may navigate only within that closed set. The package-owned trusted
+controller is active, but page scripts, forms, resources, unlisted files, and
+external network targets remain inert or held. Loopback shell transport is not
+the future Network Broker or content-process isolation.
+
+FIRST SAFE LOCAL DECISION IS STILL ONE OF
+-----------------------------------------
+  HOLD
+  ACCEPT_FOR_TEST
+  REQUEST_REPAIR
+  REJECT

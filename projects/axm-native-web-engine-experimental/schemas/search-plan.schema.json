@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.search-plan/v1",
+  "title": "AXM Search Provider Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","query","providers","requests","merge","authority","planDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.search-plan/v1"},
+    "version": {"const": 1},
+    "status": {"const": "EXPERIMENTAL"},
+    "query": {"$ref": "search-query.schema.json"},
+    "providers": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["searxng","brave","kagi"]}},
+    "requests": {"type": "array", "minItems": 1, "maxItems": 3, "items": {"$ref": "#/$defs/request"}},
+    "merge": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/merge"}]},
+    "authority": {"$ref": "#/$defs/authority"},
+    "planDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type","header","prefix","secretEnv"],
+      "properties": {
+        "type": {"const": "ENV_HEADER_SECRET"},
+        "header": {"type": "string", "minLength": 1},
+        "prefix": {"type": "string"},
+        "secretEnv": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$"}
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider","method","url","headers","auth","transportAuthority"],
+      "properties": {
+        "provider": {"enum": ["searxng","brave","kagi"]},
+        "method": {"const": "GET"},
+        "url": {"type": "string", "pattern": "^https?://"},
+        "headers": {"type": "object", "additionalProperties": {"type": "string"}},
+        "auth": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/auth"}]},
+        "transportAuthority": {"const": "REQUIRES_EXPLICIT_NETWORK_EXECUTOR"}
+      }
+    },
+    "merge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method","k","maxPerDomain"],
+      "properties": {
+        "method": {"const": "RECIPROCAL_RANK_FUSION"},
+        "k": {"type": "integer", "minimum": 1},
+        "maxPerDomain": {"type": "integer", "minimum": 1}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["networkExecutionGranted","arbitraryNavigationGranted","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "networkExecutionGranted": {"const": false},
+        "arbitraryNavigationGranted": {"const": false},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    }
+  }
+}

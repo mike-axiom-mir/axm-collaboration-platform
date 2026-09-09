@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.local-browser-session-verification/v1",
+  "title": "AXM Local Browser Session Verification Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","status","inputBytes","sessionDigestDeclared","sessionDigestComputed","bundleDigestDeclared","bundleDigestComputed","checks","findingCount","findings","limits","authority","verificationDigest"],
+  "properties": {
+    "schema":{"const":"axm.web.local-browser-session-verification/v1"},
+    "status":{"enum":["PASS","FAIL"]},
+    "inputBytes":{"type":"integer","minimum":0},
+    "sessionDigestDeclared":{"$ref":"#/$defs/nullableDigest"},
+    "sessionDigestComputed":{"$ref":"#/$defs/nullableDigest"},
+    "bundleDigestDeclared":{"$ref":"#/$defs/nullableDigest"},
+    "bundleDigestComputed":{"$ref":"#/$defs/nullableDigest"},
+    "checks":{"type":"object","additionalProperties":false,"required":["total","passed","failed"],"properties":{"total":{"type":"integer","minimum":0},"passed":{"type":"integer","minimum":0},"failed":{"type":"integer","minimum":0}}},
+    "findingCount":{"type":"integer","minimum":0,"maximum":128},
+    "findings":{"type":"array","maxItems":128,"items":{"$ref":"#/$defs/finding"}},
+    "limits":{"type":"object","additionalProperties":false,"required":["maxInputBytes","maxFindings","maxTransitions"],"properties":{"maxInputBytes":{"type":"integer","minimum":1},"maxFindings":{"const":128},"maxTransitions":{"const":512}}},
+    "authority":{"type":"object","additionalProperties":false,"required":["mutationAllowed","installAllowed","promotionAllowed","canonAllowed"],"properties":{"mutationAllowed":{"const":false},"installAllowed":{"const":false},"promotionAllowed":{"const":false},"canonAllowed":{"const":false}}},
+    "verificationDigest":{"$ref":"#/$defs/digest"}
+  },
+  "$defs": {
+    "digest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "nullableDigest":{"oneOf":[{"$ref":"#/$defs/digest"},{"type":"null"}]},
+    "finding":{"type":"object","additionalProperties":false,"required":["code","message"],"properties":{"code":{"type":"string","pattern":"^[A-Z0-9_]+$"},"message":{"type":"string","minLength":1}}}
+  }
+}

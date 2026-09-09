@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.token-stream/v1",
+  "title": "AXM Web Token Stream",
+  "type": "object",
+  "required": ["schema","sourceDigest","tokens","warnings","tokenDigest"],
+  "properties": {
+    "schema":{"const":"axm.web.token-stream/v1"},
+    "sourceDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "tokens":{"type":"array","items":{"type":"object","required":["type","sourceSpan"]}},
+    "warnings":{"type":"array","items":{"$ref":"#/$defs/warning"}},
+    "tokenDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "warning": {
+      "type":"object",
+      "required":["code","severity","offset","detail"],
+      "properties": {
+        "code":{"type":"string"},
+        "severity":{"const":"warning"},
+        "offset":{"type":["integer","null"]},
+        "detail":{"type":["string","null"]}
+      }
+    }
+  }
+}

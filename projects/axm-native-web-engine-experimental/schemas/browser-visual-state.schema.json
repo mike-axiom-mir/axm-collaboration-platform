@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.browser-visual-state/v1",
+  "title": "AXM Browser Visual State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","sessionId","bundleDigest","page","viewport","shell","focus","visualFidelity","visibleEntryCount","visibleEntries","authority","visualDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.browser-visual-state/v1"},
+    "version": {"const": 1},
+    "status": {"const": "EXPERIMENTAL"},
+    "sessionId": {"type": "string", "minLength": 1, "maxLength": 128},
+    "bundleDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "page": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pageId","address","locator","title","sourceDigest","structureIndexDigest"],
+      "properties": {
+        "pageId": {"type": "string", "minLength": 1, "maxLength": 128},
+        "address": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "title": {"type": "string", "maxLength": 4096},
+        "sourceDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "structureIndexDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "viewport": {
+      "type": "object", "additionalProperties": false,
+      "required": ["width","height","scrollX","scrollY","devicePixelRatio"],
+      "properties": {
+        "width": {"type": "number", "minimum": 1, "maximum": 16384},
+        "height": {"type": "number", "minimum": 1, "maximum": 16384},
+        "scrollX": {"type": "number", "minimum": -10000000, "maximum": 10000000},
+        "scrollY": {"type": "number", "minimum": -10000000, "maximum": 10000000},
+        "devicePixelRatio": {"type": "number", "minimum": 0.25, "maximum": 8}
+      }
+    },
+    "shell": {
+      "type": "object", "additionalProperties": false,
+      "required": ["theme","density","textScale","focusMode","metadataVisible","filter"],
+      "properties": {
+        "theme": {"enum": ["midnight","paper","contrast"]},
+        "density": {"enum": ["comfortable","compact"]},
+        "textScale": {"enum": ["small","normal","large"]},
+        "focusMode": {"enum": ["full","reading"]},
+        "metadataVisible": {"type": "boolean"},
+        "filter": {"type": "string", "maxLength": 200}
+      }
+    },
+    "focus": {
+      "type": "object", "additionalProperties": false,
+      "required": ["activeElementId","focusedEntryRef","sessionScrollEntryRef"],
+      "properties": {
+        "activeElementId": {"type": ["string","null"], "maxLength": 128},
+        "focusedEntryRef": {"type": ["string","null"], "maxLength": 128},
+        "sessionScrollEntryRef": {"type": ["string","null"], "maxLength": 128}
+      }
+    },
+    "visualFidelity": {"enum": ["DOM_GEOMETRY","STRUCTURED_SCREEN_MODEL"]},
+    "visibleEntryCount": {"type": "integer", "minimum": 0, "maximum": 128},
+    "visibleEntries": {
+      "type": "array", "maxItems": 128,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["screenOrder","entryRef","kind","label","text","meta","rect","visibilityRatio"],
+        "properties": {
+          "screenOrder": {"type": "integer", "minimum": 1, "maximum": 128},
+          "entryRef": {"type": "string", "minLength": 1, "maxLength": 128},
+          "kind": {"type": "string", "minLength": 1, "maxLength": 64},
+          "label": {"type": "string", "maxLength": 256},
+          "text": {"type": "string"},
+          "meta": {"type": "string"},
+          "rect": {
+            "oneOf": [
+              {"type": "null"},
+              {"type": "object", "additionalProperties": false, "required": ["x","y","width","height"], "properties": {
+                "x": {"type": "number"}, "y": {"type": "number"}, "width": {"type": "number", "minimum": 0}, "height": {"type": "number", "minimum": 0}
+              }}
+            ]
+          },
+          "visibilityRatio": {"type": ["number","null"], "minimum": 0, "maximum": 1}
+        }
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observationOnly","browserMutationAllowed","networkAuthorityGranted","pageCodeExecuted"],
+      "properties": {
+        "observationOnly": {"const": true},
+        "browserMutationAllowed": {"const": false},
+        "networkAuthorityGranted": {"const": false},
+        "pageCodeExecuted": {"const": false}
+      }
+    },
+    "visualDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

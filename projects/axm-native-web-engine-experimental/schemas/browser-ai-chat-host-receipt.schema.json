@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.browser-ai-chat-host-receipt/v1",
+  "title": "AXM Browser AI Chat Host Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","origin","chatUrl","parentOrigin","sessionId","registryDigest","loopbackTransportUsed","controllerCspHash","maxActionBytes","conversationPersistence","authority","receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.browser-ai-chat-host-receipt/v1"},
+    "version": {"const": 1},
+    "status": {"const": "EXPERIMENTAL"},
+    "origin": {"type": "string", "pattern": "^http://127\\.0\\.0\\.1:[0-9]+$"},
+    "chatUrl": {"type": "string", "pattern": "^http://127\\.0\\.0\\.1:[0-9]+/chat/[A-Za-z0-9_-]+/$"},
+    "parentOrigin": {"type": "string", "pattern": "^http://127\\.0\\.0\\.1:[0-9]+$"},
+    "sessionId": {"type": "string", "pattern": "^session-[a-f0-9]{24}$"},
+    "registryDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "loopbackTransportUsed": {"const": true},
+    "controllerCspHash": {"type": "string", "pattern": "^sha256-.+$"},
+    "maxActionBytes": {"type": "integer", "minimum": 1},
+    "conversationPersistence": {"const": "MEMORY_ONLY"},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["providerExecutionImplicit","providerExecutionRequiresExplicitAuthority","browserMutationAllowed","browserNavigationAllowed","searchExecutionGranted","toolExecutionGranted","pageCodeExecutionGranted","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "providerExecutionImplicit": {"const": false},
+        "providerExecutionRequiresExplicitAuthority": {"const": true},
+        "browserMutationAllowed": {"const": false},
+        "browserNavigationAllowed": {"const": false},
+        "searchExecutionGranted": {"const": false},
+        "toolExecutionGranted": {"const": false},
+        "pageCodeExecutionGranted": {"const": false},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    },
+    "receiptDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

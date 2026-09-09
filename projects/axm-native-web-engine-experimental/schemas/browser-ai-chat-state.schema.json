@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.browser-ai-chat-state/v1",
+  "title": "AXM Browser AI Chat State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","available","running","executionConfigured","selectedProviderId","providers","messages","visualState","conversationDigest","lastError","authority","stateDigest"],
+  "properties": {
+    "schema": {"const": "axm.web.browser-ai-chat-state/v1"},
+    "version": {"const": 1},
+    "status": {"const": "EXPERIMENTAL"},
+    "available": {"type": "boolean"},
+    "running": {"type": "boolean"},
+    "executionConfigured": {"type": "boolean"},
+    "selectedProviderId": {"type": ["string","null"], "maxLength": 40},
+    "providers": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id","label","adapter","model","enabled","visualStateAccess","local"],
+        "properties": {
+          "id": {"type": "string", "maxLength": 40},
+          "label": {"type": "string", "maxLength": 120},
+          "adapter": {"type": "string", "maxLength": 64},
+          "model": {"type": "string", "maxLength": 160},
+          "enabled": {"type": "boolean"},
+          "visualStateAccess": {"type": "boolean"},
+          "local": {"type": "boolean"}
+        }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sequence","role","providerId","text","visualStateUsed","executionDigest"],
+        "properties": {
+          "sequence": {"type": "integer", "minimum": 1},
+          "role": {"enum": ["user","assistant"]},
+          "providerId": {"type": "string", "maxLength": 40},
+          "text": {"type": "string", "maxLength": 24000},
+          "visualStateUsed": {"type": "boolean"},
+          "executionDigest": {
+            "oneOf": [
+              {"type": "null"},
+              {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+            ]
+          }
+        }
+      }
+    },
+    "visualState": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["visualDigest","fidelity","page","visibleEntryCount"],
+          "properties": {
+            "visualDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "fidelity": {"enum": ["DOM_GEOMETRY","STRUCTURED_SCREEN_MODEL"]},
+            "page": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["title","address","pageId"],
+              "properties": {
+                "title": {"type": "string"},
+                "address": {"type": "string"},
+                "pageId": {"type": "string"}
+              }
+            },
+            "visibleEntryCount": {"type": "integer", "minimum": 0, "maximum": 128}
+          }
+        }
+      ]
+    },
+    "conversationDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "lastError": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code","message"],
+          "properties": {
+            "code": {"type": "string", "maxLength": 120},
+            "message": {"type": "string", "maxLength": 2000}
+          }
+        }
+      ]
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["browserMutationAllowed","browserNavigationAllowed","searchExecutionGranted","toolExecutionGranted","pageCodeExecutionGranted","historyPersistenceAllowed","networkExecutionImplicit","networkExecutionRequiresExplicitAuthority","installAllowed","promotionAllowed","canonAllowed"],
+      "properties": {
+        "browserMutationAllowed": {"const": false},
+        "browserNavigationAllowed": {"const": false},
+        "searchExecutionGranted": {"const": false},
+        "toolExecutionGranted": {"const": false},
+        "pageCodeExecutionGranted": {"const": false},
+        "historyPersistenceAllowed": {"const": false},
+        "networkExecutionImplicit": {"const": false},
+        "networkExecutionRequiresExplicitAuthority": {"const": true},
+        "installAllowed": {"const": false},
+        "promotionAllowed": {"const": false},
+        "canonAllowed": {"const": false}
+      }
+    },
+    "stateDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

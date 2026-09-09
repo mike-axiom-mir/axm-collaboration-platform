@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.local-browser-host-receipt/v2",
+  "title": "AXM Policy-Bound Loopback Browser Shell Host Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","status","origin","shellUrl","sessionId","bundleDigest","shellPolicySchema","shellPolicyDigest","loopbackTransportUsed","externalNetworkUsed","trustedShellScriptActive","pageScriptExecuted","allowedMethods","maxActionBytes","receiptDigest"],
+  "properties": {
+    "schema":{"const":"axm.web.local-browser-host-receipt/v2"},
+    "status":{"const":"EXPERIMENTAL"},
+    "origin":{"type":"string","pattern":"^http://127\\.0\\.0\\.1:[0-9]+$"},
+    "shellUrl":{"type":"string","pattern":"^http://127\\.0\\.0\\.1:[0-9]+/s/[A-Za-z0-9_-]+/$"},
+    "sessionId":{"type":"string","pattern":"^session-[a-f0-9]{24}$"},
+    "bundleDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "shellPolicySchema":{"const":"axm.web.local-browser-shell-policy/v1"},
+    "shellPolicyDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "loopbackTransportUsed":{"const":true},
+    "externalNetworkUsed":{"const":false},
+    "trustedShellScriptActive":{"const":true},
+    "pageScriptExecuted":{"const":false},
+    "allowedMethods":{"type":"array","const":["GET","POST"]},
+    "maxActionBytes":{"type":"integer","minimum":1},
+    "receiptDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  }
+}

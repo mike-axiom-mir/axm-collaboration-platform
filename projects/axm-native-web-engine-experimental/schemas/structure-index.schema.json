@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.structure-index/v1",
+  "title": "AXM Shared Semantic Structure Index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","sourceDigest","documentDigest","pageModelDigest","plainTextDigest","title","language","locator","summary","limits","entryCount","entries","held","structureIndexDigest"],
+  "properties": {
+    "schema":{"const":"axm.web.structure-index/v1"},
+    "version":{"const":1},
+    "sourceDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "documentDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "pageModelDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "plainTextDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "title":{"type":"string"},
+    "language":{"type":["string","null"]},
+    "locator":{"type":"string"},
+    "summary":{"type":"object","additionalProperties":false,"required":["headings","paragraphs","landmarks","links","media","lists","tables","forms","controls"],"properties":{"headings":{"type":"integer","minimum":0},"paragraphs":{"type":"integer","minimum":0},"landmarks":{"type":"integer","minimum":0},"links":{"type":"integer","minimum":0},"media":{"type":"integer","minimum":0},"lists":{"type":"integer","minimum":0},"tables":{"type":"integer","minimum":0},"forms":{"type":"integer","minimum":0},"controls":{"type":"integer","minimum":0}}},
+    "limits":{"type":"object","additionalProperties":false,"required":["maxItems","maxTextChars","observedTextCharacters"],"properties":{"maxItems":{"type":"integer","minimum":1},"maxTextChars":{"type":"integer","minimum":1},"observedTextCharacters":{"type":"integer","minimum":0}}},
+    "entryCount":{"type":"integer","minimum":0},
+    "entries":{"type":"array","items":{"$ref":"#/$defs/entry"}},
+    "held":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["feature","state"],"properties":{"feature":{"type":"string","minLength":1},"state":{"const":"HELD"}}}},
+    "structureIndexDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "entry": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["entryId","nodeRef","kind","label","text","meta"],
+      "properties":{
+        "entryId":{"type":"string","pattern":"^entry-[0-9]{4}$"},
+        "nodeRef":{"type":["string","null"]},
+        "kind":{"enum":["heading","paragraph","landmark","link","media","list","table","form","plain-text"]},
+        "label":{"type":"string"},
+        "text":{"type":"string"},
+        "meta":{"type":"string"}
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.ai-provider-registry/v1",
+  "title": "AXM AI Provider Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","status","mode","researchModeEnabled","activeProviderId","providers","authority","registryDigest"],
+  "properties": {
+    "schema": {"const":"axm.web.ai-provider-registry/v1"}, "version":{"const":1}, "status":{"const":"EXPERIMENTAL"}, "mode":{"enum":["single","panel"]},
+    "researchModeEnabled":{"type":"boolean"}, "activeProviderId":{"type":["string","null"],"pattern":"^[a-z][a-z0-9._-]*$","maxLength":40},
+    "providers":{"type":"array","maxItems":8,"items":{"type":"object","additionalProperties":false,"required":["id","label","adapter","endpoint","model","enabled","visualStateAccess","referenceAccess","researchAccess","local","capabilities","auth","metadata"],"properties":{
+      "id":{"type":"string","pattern":"^[a-z][a-z0-9._-]*$","maxLength":40},"label":{"type":"string","minLength":1,"maxLength":120},
+      "adapter":{"enum":["openai-responses","anthropic-messages","openai-compatible-chat","gemini-generate-content","ollama-chat"]},"endpoint":{"type":"string","minLength":1,"maxLength":2048},"model":{"type":"string","minLength":1,"maxLength":160},
+      "enabled":{"type":"boolean"},"visualStateAccess":{"type":"boolean"},"referenceAccess":{"type":"boolean"},"researchAccess":{"type":"boolean"},"local":{"type":"boolean"},
+      "capabilities":{"type":"object","additionalProperties":false,"required":["text","image","pdf","textDocument"],"properties":{"text":{"const":true},"image":{"type":"boolean"},"pdf":{"type":"boolean"},"textDocument":{"type":"boolean"}}},
+      "auth":{"oneOf":[{"type":"null"},{"type":"object","additionalProperties":false,"required":["type","secretEnv","header","prefix"],"properties":{"type":{"const":"ENV_HEADER_SECRET"},"secretEnv":{"type":"string","pattern":"^[A-Z][A-Z0-9_]{2,63}$"},"header":{"type":"string","minLength":1,"maxLength":64},"prefix":{"type":"string","maxLength":32}}}]},
+      "metadata":{"type":"object","additionalProperties":false,"required":["notes"],"properties":{"notes":{"type":["string","null"],"maxLength":500}}}
+    }}},
+    "authority":{"type":"object","additionalProperties":false,"required":["providerExecutionGranted","browserMutationAllowed","searchAuthorityGranted","installAllowed","promotionAllowed","canonAllowed"],"properties":{"providerExecutionGranted":{"const":false},"browserMutationAllowed":{"const":false},"searchAuthorityGranted":{"const":false},"installAllowed":{"const":false},"promotionAllowed":{"const":false},"canonAllowed":{"const":false}}},
+    "registryDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  }
+}

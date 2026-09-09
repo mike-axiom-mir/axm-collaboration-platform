@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.image-search-query/v1",
+  "title": "AXM Image Search Query",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","version","query","count","language","country","safeSearch","mode","provider","providers"],
+  "properties": {
+    "schema": {"const": "axm.web.image-search-query/v1"},
+    "version": {"const": 1},
+    "query": {"type": "string", "minLength": 1, "maxLength": 400},
+    "count": {"type": "integer", "minimum": 1, "maximum": 50},
+    "language": {"type": "string", "pattern": "^(?:all|[a-z]{2,3}(?:-[A-Z]{2})?)$"},
+    "country": {"type": ["string","null"], "pattern": "^[A-Z]{2}$"},
+    "safeSearch": {"enum": ["off","moderate","strict"]},
+    "mode": {"enum": ["single","federated"]},
+    "provider": {"enum": ["auto","searxng","brave"]},
+    "providers": {"type": "array", "maxItems": 2, "uniqueItems": true, "items": {"enum": ["searxng","brave"]}}
+  }
+}

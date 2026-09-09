@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.web.page-model/v1",
+  "title": "AXM Web Semantic Page Model",
+  "type": "object",
+  "required": ["schema","sourceDigest","documentDigest","title","language","plainText","plainTextDigest","headings","paragraphs","landmarks","lists","links","media","tables","forms","controls","metadata","relationships","pageModelDigest"],
+  "properties": {
+    "schema":{"const":"axm.web.page-model/v1"},
+    "sourceDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "documentDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "title":{"type":"string"},
+    "language":{"type":["string","null"]},
+    "plainText":{"type":"string"},
+    "plainTextDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "headings":{"type":"array"},
+    "paragraphs":{"type":"array"},
+    "landmarks":{"type":"array"},
+    "lists":{"type":"array"},
+    "links":{"type":"array"},
+    "media":{"type":"array"},
+    "tables":{"type":"array"},
+    "forms":{"type":"array"},
+    "controls":{"type":"array"},
+    "metadata":{"type":"array"},
+    "relationships":{"type":"object"},
+    "pageModelDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  },
+  "additionalProperties":false
+}
