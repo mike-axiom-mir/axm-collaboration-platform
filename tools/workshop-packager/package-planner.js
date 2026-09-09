@@ -6,6 +6,17 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 
+const PUBLIC_SAFETY_POLICY = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'public-safety-policy.json'), 'utf8').replace(/^\uFEFF/, '')
+);
+if (PUBLIC_SAFETY_POLICY.schema !== 'axm.workshop-public-safety-policy/v1' ||
+    !Array.isArray(PUBLIC_SAFETY_POLICY.always_private_filenames)) {
+  throw new Error('Workshop public-safety policy is malformed');
+}
+const ALWAYS_PRIVATE_FILENAMES = new Set(
+  PUBLIC_SAFETY_POLICY.always_private_filenames.map(name => String(name).toLowerCase())
+);
+
 const PRIVATE_TOP_LEVEL = new Set([
   'exports', 'backups', 'logs', 'saves', 'state', '.claude', '.codex', '.grok',
   '.git', 'node_modules', 'runtime', 'sessions', 'cache', 'tmp', 'projects', 'intakes',
@@ -78,6 +89,7 @@ function isPublicExcluded(relative, isDirectory) {
   const name = segments[segments.length - 1];
   if (name === 'axm_start_report.txt') return true;
   if (name.endsWith('.bak') || name.includes('.bak-')) return true;
+  if (ALWAYS_PRIVATE_FILENAMES.has(name)) return true;
   if (name === 'bridge-token.txt' || name === 'bridge_token.txt' || name === '.env' || name.startsWith('.env.')) return true;
   if (name === 'private-preview.js' || name.startsWith('private_')) return true;
   if (!isDirectory && SENSITIVE_EXTENSIONS.has(path.extname(name).toLowerCase())) return true;
