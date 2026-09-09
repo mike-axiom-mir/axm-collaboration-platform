@@ -42,6 +42,13 @@ It means the core remains useful locally and network authority stays declared.
 The Windows bootstrap, optional AI providers, connectors, and update routes have
 their own visible network boundaries.
 
+The default loopback server rejects browser-originated state-changing requests
+from cross-site, opaque, malformed, non-HTTP, or non-loopback origins before
+they reach Workshop or proxied sidecar routes. Same-origin local browser calls
+and origin-less local command-line clients remain available. An explicit
+non-loopback listener is still a separate reviewed capability; this boundary is
+not user authentication and does not make a LAN listener safe by itself.
+
 ## Dependency and release checks
 
 `package-lock.json` pins installed package versions. Dependency advisories

@@ -1,0 +1,25 @@
+name: Local browser authority
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: axm-local-browser-authority-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  cross-origin-state-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the Workshop
+        uses: actions/checkout@v4
+      - name: Use the declared Node.js line
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.17.0
+      - name: Exercise the real local server boundary
+        run: node tests/local-browser-authority-selftest.js
