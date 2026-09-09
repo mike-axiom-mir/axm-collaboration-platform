@@ -21,16 +21,37 @@
     game: 'Game Forge active · browser-local production route',
     site: 'Shapeable Builder active · standalone HTML export'
   };
+  var compactMakerQuery = window.matchMedia('(max-width: 650px)');
+
+  function usesCompactMaker() { return compactMakerQuery.matches; }
+  function quickMakerFor(name) {
+    var panel = document.querySelector('[data-maker-panel="' + name + '"]');
+    return panel && panel.querySelector('.quick-maker');
+  }
+  function compactStatus(name) {
+    var labels = { studio: 'Phone sketcher', sfx: 'Phone SFX maker', game: 'Phone game maker', site: 'Phone site maker' };
+    return (labels[name] || 'Phone maker') + ' active · full workspace waits for a wider screen';
+  }
 
   function demoFrames() { return Array.prototype.slice.call(document.querySelectorAll('[data-demo-tool]')); }
   function sendDemoState(frame) {
     if (!frame || !frame.contentWindow || !frame.src) return;
-    frame.contentWindow.postMessage({ type: 'axm:demo-session', active: editable === true }, location.origin);
+    frame.contentWindow.postMessage({ type: 'axm:demo-session', active: editable === true && !usesCompactMaker() }, location.origin);
   }
   function loadDemoFrame(name) {
     if (!editable) return;
     var frame = document.querySelector('[data-demo-tool="' + name + '"]');
     if (!frame) return;
+    if (usesCompactMaker()) {
+      var compactShell = frame.closest('[data-demo-shell]');
+      if (compactShell) compactShell.classList.add('is-mobile-route');
+      var compactQuickMaker = quickMakerFor(name);
+      document.querySelectorAll('.quick-maker').forEach(function (candidate) { if (candidate !== compactQuickMaker) candidate.open = false; });
+      if (compactQuickMaker) compactQuickMaker.open = true;
+      var compactStatusNode = document.getElementById(name === 'sfx' ? 'sfxStatus' : name + 'Status');
+      if (compactStatusNode) compactStatusNode.textContent = compactStatus(name);
+      return;
+    }
     if (!frame.src && frame.dataset.demoSrc) frame.src = frame.dataset.demoSrc;
     var shell = frame.closest('[data-demo-shell]');
     if (shell) shell.classList.add('is-live');
@@ -41,9 +62,13 @@
   function updateDemoFrames() {
     demoFrames().forEach(function (frame) {
       var shell = frame.closest('[data-demo-shell]');
-      if (shell) shell.classList.toggle('is-live', editable);
-      frame.style.pointerEvents = editable ? '' : 'none';
-      frame.tabIndex = editable ? 0 : -1;
+      var compact = usesCompactMaker();
+      if (shell) {
+        shell.classList.toggle('is-live', editable && !compact);
+        shell.classList.toggle('is-mobile-route', editable && compact);
+      }
+      frame.style.pointerEvents = editable && !compact ? '' : 'none';
+      frame.tabIndex = editable && !compact ? 0 : -1;
       if (!editable) {
         var name = frame.dataset.demoTool;
         var statusNode = document.getElementById(name === 'sfx' ? 'sfxStatus' : name + 'Status');
@@ -52,6 +77,22 @@
       sendDemoState(frame);
     });
     if (editable) loadDemoFrame(state.activeTool);
+  }
+
+  function openQuickMaker(name, moveFocus) {
+    var quickMaker = quickMakerFor(name);
+    if (!quickMaker) return;
+    quickMaker.open = true;
+    if (moveFocus) {
+      var firstControl = quickMaker.querySelector('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)');
+      if (firstControl) firstControl.focus({ preventScroll: true });
+      quickMaker.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    }
+  }
+
+  function handleResponsiveRoute() {
+    updateDemoFrames();
+    if (editable && usesCompactMaker()) openQuickMaker(state.activeTool, false);
   }
 
   function $(id) { return document.getElementById(id); }
@@ -606,6 +647,11 @@
     document.querySelectorAll('[data-maker-tab]').forEach(function (button) {
       button.addEventListener('click', function () { selectTab(button.dataset.makerTab, true); });
     });
+    document.querySelectorAll('[data-open-quick]').forEach(function (button) {
+      button.addEventListener('click', function () { openQuickMaker(button.dataset.openQuick, true); });
+    });
+    if (compactMakerQuery.addEventListener) compactMakerQuery.addEventListener('change', handleResponsiveRoute);
+    else compactMakerQuery.addListener(handleResponsiveRoute);
     document.querySelectorAll('[data-studio-tool]').forEach(function (button) {
       button.addEventListener('click', function () { if (!editable) return; state.studio.tool = button.dataset.studioTool; renderStudio(); emitChange(); });
     });
