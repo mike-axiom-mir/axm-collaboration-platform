@@ -20,41 +20,47 @@ on:
       - "tests/city-intake-gates-test.js"
       - "tests/lego-city-blueprint-conformance-test.js"
       - ".github/workflows/city-map-gate.yml"
-  workflow_dispatch:
 
 concurrency:
   group: axm-city-map-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   city-map:
+    if: github.event_name == 'pull_request' && github.event.pull_request.number == 83 && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'automation/truth-sentinel-hermes-evidence-admission-20260910'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out exact review source
+      - name: Check out exact PR head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24.17.0"
-      - name: Generate compiler-owned review views
+      - name: Regenerate compiler-owned views only
         run: |
           node scripts/compile-city-graph.js --write
           node scripts/compile-schema-registry.js --write
           node scripts/compile-twin-surfaces.js --write
           git diff --name-only -- registry/generated docs/generated | tee generated-city-files.txt
-      - name: Export compiler-owned review views
-        uses: actions/upload-artifact@v4
-        with:
-          name: axm-city-generated-pr83
-          if-no-files-found: error
-          retention-days: 1
-          path: |
-            registry/generated/
-            docs/generated/
-            generated-city-files.txt
+          unexpected="$(git diff --name-only | grep -Ev '^(registry/generated/|docs/generated/LEGO_CITY_MAP\.md|docs/generated/LEGO_CITY_BEGINNER_MAP\.md)$' || true)"
+          test -z "$unexpected"
+      - name: Commit exact generated delta to review branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- registry/generated docs/generated/LEGO_CITY_MAP.md docs/generated/LEGO_CITY_BEGINNER_MAP.md
+          if git diff --cached --quiet; then
+            echo 'No generated delta to commit.'
+          else
+            git commit -m 'chore: refresh generated City views for Hermes evidence admission'
+            git push origin HEAD:refs/heads/automation/truth-sentinel-hermes-evidence-admission-20260910
+          fi
       - name: Run focused negative and boundary tests
         run: node tests/city-map-gate-test.js
       - name: Refuse omitted modules and generated-view drift
