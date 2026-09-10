@@ -7,6 +7,11 @@ const crypto = require('crypto');
 const RETURN_PACKET_SCHEMA = 'axm.hermes-return-packet/v2';
 const LEGACY_RETURN_PACKET_SCHEMA = 'axm.hermes-return-packet/v1';
 const MAX_EVIDENCE_BYTES = 1024 * 1024;
+const EVIDENCE_RECORD_CONTRACTS = Object.freeze({
+  'tool-receipt': Object.freeze({ schema: 'axm.hermes-tool-receipt/v1', receiptHash: true }),
+  'provider-receipt': Object.freeze({ schema: 'axm.hermes-provider-receipt/v1', receiptHash: true }),
+  'session-event': Object.freeze({ schema: 'axm.hermes-session-event/v1', receiptHash: true })
+});
 
 class RunLedgerError extends Error {
   constructor(code, message, details) { super(message); this.name = 'RunLedgerError'; this.code = code; this.details = details || null; }
@@ -199,11 +204,49 @@ function createRun(options) {
   return { runId, runDir, stateDir, receiptDir, providerReceiptDir, sessionEventDir, manifest };
 }
 
-function readJson(file) { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch (_) { return null; } }
-function readJsonFiles(dir) {
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir).filter(name => name.endsWith('.json')).sort().map(name => readJson(path.join(dir, name))).filter(Boolean);
+function invalidRunEvidence(kind, file, cause, message) {
+  const name = path.basename(file);
+  return new RunLedgerError('RUN_EVIDENCE_INVALID', `${kind} evidence ${name} cannot be admitted: ${message}`, { kind, file: name, cause });
 }
+
+function evidenceFileNames(dir, kind) {
+  let stat;
+  try { stat = fs.lstatSync(dir); }
+  catch (error) {
+    if (error && error.code === 'ENOENT') return [];
+    throw invalidRunEvidence(kind, dir, error.code || 'DIRECTORY_READ_FAILED', 'evidence directory cannot be inspected');
+  }
+  if (!stat.isDirectory()) throw invalidRunEvidence(kind, dir, 'DIRECTORY_NOT_REGULAR', 'evidence directory is not a real directory');
+  try { return fs.readdirSync(dir).filter(name => name.endsWith('.json')).sort(); }
+  catch (error) { throw invalidRunEvidence(kind, dir, error.code || 'DIRECTORY_READ_FAILED', 'evidence directory cannot be listed'); }
+}
+
+function readEvidenceObject(file, kind) {
+  let bytes;
+  try { bytes = readEvidenceBytes(file); }
+  catch (error) { throw invalidRunEvidence(kind, file, error.code || 'READ_FAILED', error.message); }
+  let record;
+  try { record = JSON.parse(bytes.toString('utf8')); }
+  catch (_) { throw invalidRunEvidence(kind, file, 'INVALID_JSON', 'file is not valid JSON'); }
+  if (!record || Array.isArray(record) || typeof record !== 'object') throw invalidRunEvidence(kind, file, 'ROOT_NOT_OBJECT', 'JSON root is not an object');
+  try { assertPortable(record); }
+  catch (error) { throw invalidRunEvidence(kind, file, error.code || 'NON_PORTABLE_JSON', error.message); }
+  return record;
+}
+
+function readEvidenceRecords(dir, kind, expectedRunId) {
+  const contract = EVIDENCE_RECORD_CONTRACTS[kind];
+  if (!contract) throw new RunLedgerError('RUN_EVIDENCE_CONTRACT_UNKNOWN', `Unknown run-evidence contract: ${kind}`);
+  return evidenceFileNames(dir, kind).map(name => {
+    const file = path.join(dir, name);
+    const record = readEvidenceObject(file, kind);
+    if (record.schema !== contract.schema) throw invalidRunEvidence(kind, file, 'SCHEMA_MISMATCH', `expected ${contract.schema}`);
+    if (record.run_id !== expectedRunId) throw invalidRunEvidence(kind, file, 'RUN_ID_MISMATCH', 'record does not belong to the selected run');
+    if (contract.receiptHash && !/^[0-9a-f]{64}$/.test(record.receipt_hash || '')) throw invalidRunEvidence(kind, file, 'RECEIPT_HASH_INVALID', 'receipt_hash is not a lowercase SHA-256 identity');
+    return record;
+  });
+}
+
 function tally(records, key) {
   const out = {};
   for (const record of records) {
@@ -212,17 +255,26 @@ function tally(records, key) {
   }
   return out;
 }
+
 function sumStateCounters(dir) {
-  const states = readJsonFiles(dir);
+  const states = evidenceFileNames(dir, 'runtime-state').map(name => {
+    const file = path.join(dir, name);
+    const state = readEvidenceObject(file, 'runtime-state');
+    for (const key of ['tool_calls', 'files_read', 'files_written']) {
+      if (!Number.isSafeInteger(state[key]) || state[key] < 0) throw invalidRunEvidence('runtime-state', file, 'COUNTER_INVALID', `${key} must be a non-negative safe integer`);
+    }
+    return state;
+  });
   return states.reduce((acc, state) => {
-    acc.tool_calls += Number.isFinite(Number(state.tool_calls)) ? Number(state.tool_calls) : 0;
-    acc.files_read += Number.isFinite(Number(state.files_read)) ? Number(state.files_read) : 0;
-    acc.files_written += Number.isFinite(Number(state.files_written)) ? Number(state.files_written) : 0;
+    acc.tool_calls += state.tool_calls;
+    acc.files_read += state.files_read;
+    acc.files_written += state.files_written;
     return acc;
   }, { tool_calls: 0, files_read: 0, files_written: 0 });
 }
+
 function receiptSetHash(records) {
-  const hashes = records.map(record => String(record.receipt_hash || '')).filter(Boolean).sort();
+  const hashes = records.map(record => record.receipt_hash).sort();
   return hashText(hashes.join('\n'));
 }
 function latestSessionEvidence(records) {
@@ -242,9 +294,9 @@ function finalizeRun(options) {
   const prior = inspectRunCompletion(options.runDir, options.runId);
   if (prior.state === 'COMPLETE') return loadReturnPacket(packetPath, { runDir: options.runDir, expectedRunId: options.runId });
   if (prior.state !== 'INTERRUPTED') throw new RunLedgerError('EVIDENCE_PATH_CONFLICT', `Run completion is ${prior.state}; existing evidence was preserved`, prior);
-  const toolReceipts = readJsonFiles(options.receiptDir);
-  const providerReceipts = readJsonFiles(options.providerReceiptDir);
-  const sessionEvents = readJsonFiles(options.sessionEventDir);
+  const toolReceipts = readEvidenceRecords(options.receiptDir, 'tool-receipt', options.runId);
+  const providerReceipts = readEvidenceRecords(options.providerReceiptDir, 'provider-receipt', options.runId);
+  const sessionEvents = readEvidenceRecords(options.sessionEventDir, 'session-event', options.runId);
   const stateCounters = sumStateCounters(path.join(options.runDir, 'state'));
   const manifestPath = path.join(options.runDir, 'run-manifest.json');
   const manifestBytes = readEvidenceBytes(manifestPath);
