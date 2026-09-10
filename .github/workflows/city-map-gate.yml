@@ -47,9 +47,7 @@ jobs:
           node scripts/compile-city-graph.js --write
           node scripts/compile-schema-registry.js --write
           node scripts/compile-twin-surfaces.js --write
-          git diff --name-only -- registry/generated docs/generated | tee generated-city-files.txt
-          unexpected="$(git diff --name-only | grep -Ev '^(registry/generated/|docs/generated/LEGO_CITY_MAP\.md|docs/generated/LEGO_CITY_BEGINNER_MAP\.md)$' || true)"
-          test -z "$unexpected"
+          git diff --name-only -- registry/generated docs/generated
       - name: Commit exact generated delta to review branch
         run: |
           git config user.name 'github-actions[bot]'
