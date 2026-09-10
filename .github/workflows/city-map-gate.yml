@@ -39,6 +39,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24.17.0"
+      - name: Generate compiler-owned review views
+        run: |
+          node scripts/compile-city-graph.js --write
+          node scripts/compile-schema-registry.js --write
+          node scripts/compile-twin-surfaces.js --write
+          git diff --name-only -- registry/generated docs/generated | tee generated-city-files.txt
+      - name: Export compiler-owned review views
+        uses: actions/upload-artifact@v4
+        with:
+          name: axm-city-generated-pr83
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            registry/generated/
+            docs/generated/
+            generated-city-files.txt
       - name: Run focused negative and boundary tests
         run: node tests/city-map-gate-test.js
       - name: Refuse omitted modules and generated-view drift
