@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `a993d0ec5c8d1a53d3bd4319118e658a9e30dca66ebfe6de2cad7b0ef3f35692`
+Twin digest: `dab9d8b6989c57d7cad8ffaafd5de89dba01675a5c2f2df145faaf7b31d626b9`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -105,7 +105,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | hand-verification-lab | HAND | TEST | 5 | WRITE_CANDIDATE | MEDIUM | `6938d10baa06cb9f…` |
 | handoff-wiring-observatory | BRIDGE | TEST | 6 | WRITE_CANDIDATE | UNKNOWN | `57cde5bbd5c688b4…` |
 | hardware-research-registry | ROOM | EXPERIMENTAL | 4 | NONE | UNKNOWN | `ef27c133d27157dc…` |
-| hermes-local | BRIDGE | TEST | 20 | EXECUTE_TRUSTED, NETWORK_READ | HIGH | `9ec79352c890396e…` |
+| hermes-local | BRIDGE | TEST | 23 | EXECUTE_TRUSTED, NETWORK_READ | HIGH | `6daf68419c2e877a…` |
 | holodeck-composer | HAND | TEST | 4 | WRITE_CANDIDATE | UNKNOWN | `0f7ce6371889cb97…` |
 | holodeck-screen-deck | ROOM | TEST | 7 | NONE | UNKNOWN | `6700b48376e421dc…` |
 | host-assumption-observatory | ROOM | TEST | 6 | NONE | UNKNOWN | `4e5411727b7878e3…` |

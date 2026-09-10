@@ -219,6 +219,7 @@ function testRuntimeBoundary(tempRoot) {
   check(/^[0-9a-f]{64}$/.test(packet.run_manifest_sha256), 'Return Packet binds the exact launch manifest evidence');
   check(RunLedger.verifyReturnPacket(packet, { runDir: run.runDir, expectedRunId: run.runId }).ok, 'completed Return Packet verifies against its exact run capsule');
   check(RunLedger.inspectRunCompletion(run.runDir, run.runId).state === 'COMPLETE', 'run completion requires an admitted Return Packet');
+  check(fs.readdirSync(run.runDir).every(name => !name.endsWith('.tmp')), 'successful publication leaves no private temporary completion artifact');
   const packetPath = path.join(run.runDir, 'return-packet.json');
   const sealedPacketText = fs.readFileSync(packetPath, 'utf8');
   const tamperedPacket = JSON.parse(sealedPacketText); tamperedPacket.outcome = 'process-exited-nonzero-or-unknown';
@@ -293,7 +294,7 @@ async function main() {
 
   check(manifest.schema === ContractVerifier.MANIFEST_SCHEMA, 'manifest schema current');
   check(manifest.kind === 'adapter' && manifest.risk === 'HIGH', 'manifest exposes adapter/high-risk role');
-  check(manifest.version === 'v0.4' && contract.version === 'v0.4', 'manifest and contract aligned on v0.4');
+  check(manifest.version === 'v0.5' && contract.version === 'v0.5', 'manifest and contract aligned on v0.5');
   check(ContractVerifier.validateContract(contract, manifest).pass, 'module contract validates');
   check(contract.boundaries.refuses.includes('os-container-or-vm-sandbox-enforcement-claim'), 'contract refuses fake OS sandbox claim');
   check(contract.boundaries.refuses.includes('provider-credential-guard-as-network-isolation-claim'), 'contract refuses fake network-isolation claim');
@@ -311,7 +312,7 @@ async function main() {
   check(/HEAD\^\{tree\}/.test(bootstrap) && /observedHermesVersion/.test(bootstrap), 'bootstrap verifies commit tree and declared version');
   check(/sanitizeEnvironment/.test(bootstrap) && /verifyHermesHomeCredentialPolicy/.test(bootstrap), 'bootstrap applies provider credential egress guard');
   check(/RunLedger\.createRun/.test(bootstrap) && /RunLedger\.finalizeRun/.test(bootstrap), 'launcher wraps each Hermes execution in run capsule and Return Packet');
-  check(/repairInterruptedRuns/.test(bootstrap) && /action === 'repair'/.test(bootstrap), 'launcher has explicit crash/config repair path');
+  check(/repairInterruptedRuns/.test(bootstrap) && /inspectRunCompletion/.test(bootstrap) && /action === 'repair'/.test(bootstrap), 'launcher repairs only explicitly inspected interrupted runs');
   check(/BEGIN AXM MANAGED HERMES RUNTIME/.test(bootstrap) && /backupFile/.test(bootstrap), 'managed hook block is repairable with config backup');
   check(/max_run_minutes \* 60 \* 1000/.test(bootstrap) && /killSignal: 'SIGTERM'/.test(bootstrap), 'launcher enforces wall-clock watchdog');
   check(/\^\[A-Za-z0-9_.-\]\+\\s\*:/.test(bootstrap), 'force-repair YAML remover stops at any next top-level key');
@@ -326,7 +327,7 @@ async function main() {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-hermes-v04-'));
   try { testRuntimeBoundary(path.join(tempRoot, 'runtime')); await testLegacyLoopback(tempRoot); }
   finally { fs.rmSync(tempRoot, { recursive: true, force: true }); }
-  console.log('PASS AXM Hermes runtime adapter v0.4 selftest: ' + passes + ' assertions; live upstream/model-provider execution intentionally not required');
+  console.log('PASS AXM Hermes runtime adapter v0.5 selftest: ' + passes + ' assertions; live upstream/model-provider execution intentionally not required');
 }
 
 main().catch(error => { console.error(error && error.stack || error); process.exitCode = 1; });

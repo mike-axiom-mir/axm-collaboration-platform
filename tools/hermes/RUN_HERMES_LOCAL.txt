@@ -1,4 +1,4 @@
-AXM Hermes Runtime Adapter v0.4 - local intake note
+AXM Hermes Runtime Adapter v0.5 - local intake note
 
 Fast path:
 
@@ -28,14 +28,14 @@ For the first live run, keep research + local model and enable only global actio
 node hermes-bootstrap.js consent on "first local research run"
 node hermes-bootstrap.js start
 
-Each start creates its own runtime/runs/<run-id>/ capsule and ends with a candidate-only Return Packet. The packet cross-checks tool authorizations against completion receipts and flags missing evidence.
+Each start creates its own runtime/runs/<run-id>/ capsule and ends with a sealed, manifest-bound, candidate-only Return Packet. The packet cross-checks tool authorizations against completion receipts and flags missing evidence.
 
 After the run:
 
 node hermes-bootstrap.js consent off "run ended"
 node hermes-bootstrap.js repair
 
-Use repair whenever a run or machine dies unexpectedly. It closes incomplete run capsules into recovery Return Packets instead of deleting evidence, while skipping capsules whose launcher PID is still alive.
+Use repair whenever a run or machine dies unexpectedly. It closes only interrupted capsules into recovery Return Packets instead of deleting evidence, skips capsules whose launcher PID is still alive, and holds corrupt or legacy completion artifacts for review.
 
 Only change posture to operator when action capability is actually needed. Operator still requires individual capability switches such as allow_file_mutation, allow_terminal, allow_execute_code, etc.
 

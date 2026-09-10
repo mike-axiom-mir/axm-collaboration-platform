@@ -4,12 +4,146 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
+const RETURN_PACKET_SCHEMA = 'axm.hermes-return-packet/v2';
+const LEGACY_RETURN_PACKET_SCHEMA = 'axm.hermes-return-packet/v1';
+const MAX_EVIDENCE_BYTES = 1024 * 1024;
+
+class RunLedgerError extends Error {
+  constructor(code, message, details) { super(message); this.name = 'RunLedgerError'; this.code = code; this.details = details || null; }
+}
+
 function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
 function hashText(value) { return crypto.createHash('sha256').update(Buffer.isBuffer(value) ? value : Buffer.from(String(value || ''), 'utf8')).digest('hex'); }
 function hashFile(file) { return fs.existsSync(file) ? hashText(fs.readFileSync(file)) : null; }
 function now() { return new Date().toISOString(); }
 function safeRunId() { return 'run-' + now().replace(/[^0-9]/g, '').slice(0, 14) + '-' + crypto.randomBytes(4).toString('hex'); }
 function argvShape(args) { return (args || []).map(arg => String(arg).startsWith('-') ? 'flag' : 'value'); }
+
+function assertPortable(value, at, seen) {
+  const location = at || '$';
+  const visited = seen || new Set();
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return;
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) throw new RunLedgerError('NON_PORTABLE_JSON', `Non-finite number at ${location}`);
+    return;
+  }
+  if (typeof value !== 'object') throw new RunLedgerError('NON_PORTABLE_JSON', `Unsupported JSON value at ${location}`);
+  if (visited.has(value)) throw new RunLedgerError('NON_PORTABLE_JSON', `Cyclic JSON value at ${location}`);
+  visited.add(value);
+  if (Array.isArray(value)) value.forEach((entry, index) => assertPortable(entry, `${location}[${index}]`, visited));
+  else {
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype !== Object.prototype && prototype !== null) throw new RunLedgerError('NON_PORTABLE_JSON', `Non-plain object at ${location}`);
+    for (const key of Object.keys(value)) assertPortable(value[key], `${location}.${key}`, visited);
+  }
+  visited.delete(value);
+}
+
+function stableStringify(value) {
+  assertPortable(value);
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+  return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+}
+
+function readEvidenceBytes(file, maxBytes) {
+  const limit = Number.isInteger(maxBytes) && maxBytes > 0 ? maxBytes : MAX_EVIDENCE_BYTES;
+  let stat;
+  try { stat = fs.lstatSync(file); } catch (error) { throw new RunLedgerError('EVIDENCE_READ_FAILED', `Cannot inspect evidence ${path.basename(file)}`, { cause: error.code }); }
+  if (!stat.isFile()) throw new RunLedgerError('EVIDENCE_NOT_REGULAR', `Evidence is not a regular file: ${path.basename(file)}`);
+  if (stat.size < 1 || stat.size > limit) throw new RunLedgerError('EVIDENCE_SIZE_INVALID', `Evidence size outside 1..${limit} bytes: ${path.basename(file)}`);
+  const flags = fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0);
+  let fd;
+  try {
+    fd = fs.openSync(file, flags);
+    const opened = fs.fstatSync(fd);
+    if (!opened.isFile() || opened.size !== stat.size) throw new RunLedgerError('EVIDENCE_CHANGED_DURING_READ', `Evidence changed while opening: ${path.basename(file)}`);
+    return fs.readFileSync(fd);
+  } finally { if (fd !== undefined) fs.closeSync(fd); }
+}
+
+function syncDirectory(directory) {
+  const fd = fs.openSync(directory, fs.constants.O_RDONLY);
+  try { fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
+}
+
+function verifyExistingBytes(file, expected) {
+  let actual;
+  try { actual = readEvidenceBytes(file, Math.max(MAX_EVIDENCE_BYTES, expected.length)); }
+  catch (error) { throw new RunLedgerError('EVIDENCE_PATH_CONFLICT', `Occupied evidence path cannot be admitted: ${path.basename(file)}`, { cause: error.code }); }
+  if (!actual.equals(expected)) throw new RunLedgerError('EVIDENCE_PATH_CONFLICT', `Occupied evidence path contains different bytes: ${path.basename(file)}`);
+}
+
+function publishEvidence(file, bytes) {
+  ensureDir(path.dirname(file));
+  if (fs.existsSync(file)) { verifyExistingBytes(file, bytes); syncDirectory(path.dirname(file)); return { created: false }; }
+  const temporary = path.join(path.dirname(file), `.${path.basename(file)}.${process.pid}.${crypto.randomBytes(8).toString('hex')}.tmp`);
+  let fd;
+  try {
+    fd = fs.openSync(temporary, 'wx', 0o600);
+    fs.writeFileSync(fd, bytes);
+    fs.fsyncSync(fd);
+    fs.closeSync(fd); fd = undefined;
+    try { fs.linkSync(temporary, file); }
+    catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      verifyExistingBytes(file, bytes);
+    }
+    syncDirectory(path.dirname(file));
+    return { created: true };
+  } finally {
+    if (fd !== undefined) fs.closeSync(fd);
+    try { fs.unlinkSync(temporary); } catch (_) {}
+  }
+}
+
+function packetIdentity(packet) {
+  const unsigned = Object.assign({}, packet); delete unsigned.packet_sha256;
+  return hashText(stableStringify(unsigned));
+}
+
+function verifyReturnPacket(packet, options) {
+  try {
+    assertPortable(packet);
+    if (!packet || packet.schema !== RETURN_PACKET_SCHEMA) throw new RunLedgerError('UNSUPPORTED_RETURN_PACKET', 'Return Packet schema is not v2');
+    if (!/^[0-9a-f]{64}$/.test(packet.packet_sha256 || '') || packetIdentity(packet) !== packet.packet_sha256) throw new RunLedgerError('RETURN_PACKET_HASH_DRIFT', 'Return Packet fields do not match packet_sha256');
+    if (!/^[0-9a-f]{64}$/.test(packet.run_manifest_sha256 || '')) throw new RunLedgerError('RUN_MANIFEST_HASH_INVALID', 'Return Packet lacks an exact run-manifest identity');
+    if (options && options.expectedRunId && packet.run_id !== options.expectedRunId) throw new RunLedgerError('RUN_ID_MISMATCH', 'Return Packet run_id does not match the selected run');
+    if (packet.canon !== false || packet.review_required !== true || packet.promotion !== 'candidate-only') throw new RunLedgerError('RETURN_PACKET_AUTHORITY_DRIFT', 'Return Packet widened candidate-only authority');
+    if (options && options.runDir) {
+      const manifestPath = path.join(options.runDir, 'run-manifest.json');
+      const manifestBytes = readEvidenceBytes(manifestPath);
+      if (hashText(manifestBytes) !== packet.run_manifest_sha256) throw new RunLedgerError('RUN_MANIFEST_HASH_DRIFT', 'Launch manifest bytes no longer match the completed packet');
+      let manifest;
+      try { manifest = JSON.parse(manifestBytes.toString('utf8')); } catch (_) { throw new RunLedgerError('RUN_MANIFEST_INVALID', 'Launch manifest is not valid JSON'); }
+      if (!manifest || manifest.schema !== 'axm.hermes-run-manifest/v1' || manifest.run_id !== packet.run_id) throw new RunLedgerError('RUN_MANIFEST_MISMATCH', 'Launch manifest does not identify this run');
+    }
+    return { ok: true, packet_sha256: packet.packet_sha256 };
+  } catch (error) { return { ok: false, code: error.code || 'RETURN_PACKET_INVALID', message: error.message }; }
+}
+
+function loadReturnPacket(file, options) {
+  const bytes = readEvidenceBytes(file);
+  let packet;
+  try { packet = JSON.parse(bytes.toString('utf8')); } catch (_) { throw new RunLedgerError('RETURN_PACKET_INVALID_JSON', 'Return Packet is not valid JSON'); }
+  if (stableStringify(packet) + '\n' !== bytes.toString('utf8')) throw new RunLedgerError('RETURN_PACKET_NONCANONICAL', 'Return Packet bytes are not canonical JSON');
+  const verified = verifyReturnPacket(packet, options);
+  if (!verified.ok) throw new RunLedgerError(verified.code, verified.message);
+  return packet;
+}
+
+function inspectRunCompletion(runDir, expectedRunId) {
+  const packetPath = path.join(runDir, 'return-packet.json');
+  if (!fs.existsSync(packetPath)) return { state: 'INTERRUPTED', reason: 'return-packet-missing' };
+  try {
+    const bytes = readEvidenceBytes(packetPath);
+    let parsed;
+    try { parsed = JSON.parse(bytes.toString('utf8')); } catch (_) { return { state: 'HELD_INVALID', reason: 'return-packet-invalid-json' }; }
+    if (parsed && parsed.schema === LEGACY_RETURN_PACKET_SCHEMA) return { state: 'HELD_LEGACY_UNSEALED', reason: 'v1-has-no-self-verifying-completion-identity' };
+    loadReturnPacket(packetPath, { runDir, expectedRunId });
+    return { state: 'COMPLETE', reason: 'sealed-return-packet-admitted' };
+  } catch (error) { return { state: 'HELD_INVALID', reason: error.code || 'return-packet-invalid' }; }
+}
 
 function createRun(options) {
   const runId = safeRunId();
@@ -96,11 +230,19 @@ function latestSessionEvidence(records) {
 }
 
 function finalizeRun(options) {
+  const packetPath = path.join(options.runDir, 'return-packet.json');
+  const prior = inspectRunCompletion(options.runDir, options.runId);
+  if (prior.state === 'COMPLETE') return loadReturnPacket(packetPath, { runDir: options.runDir, expectedRunId: options.runId });
+  if (prior.state !== 'INTERRUPTED') throw new RunLedgerError('EVIDENCE_PATH_CONFLICT', `Run completion is ${prior.state}; existing evidence was preserved`, prior);
   const toolReceipts = readJsonFiles(options.receiptDir);
   const providerReceipts = readJsonFiles(options.providerReceiptDir);
   const sessionEvents = readJsonFiles(options.sessionEventDir);
   const stateCounters = sumStateCounters(path.join(options.runDir, 'state'));
-  const manifest = readJson(path.join(options.runDir, 'run-manifest.json')) || {};
+  const manifestPath = path.join(options.runDir, 'run-manifest.json');
+  const manifestBytes = readEvidenceBytes(manifestPath);
+  let manifest;
+  try { manifest = JSON.parse(manifestBytes.toString('utf8')); } catch (_) { throw new RunLedgerError('RUN_MANIFEST_INVALID', 'Launch manifest is not valid JSON'); }
+  if (!manifest || manifest.schema !== 'axm.hermes-run-manifest/v1' || manifest.run_id !== options.runId) throw new RunLedgerError('RUN_MANIFEST_MISMATCH', 'Launch manifest does not identify the selected run');
   const providerMismatch = providerReceipts.some(record => record.policy_mismatch === true);
   const toolReceiptGap = toolReceipts.length < stateCounters.tool_calls;
   const sessionEvidence = latestSessionEvidence(sessionEvents);
@@ -110,9 +252,10 @@ function finalizeRun(options) {
   const initialProfileHash = manifest.profile_sha256 || null;
   const watchdogTimedOut = options.watchdogTimedOut === true;
 
-  const packet = {
-    schema: 'axm.hermes-return-packet/v1',
+  const unsignedPacket = {
+    schema: RETURN_PACKET_SCHEMA,
     run_id: options.runId,
+    run_manifest_sha256: hashText(manifestBytes),
     finished_at: now(),
     process_exit_code: Number.isInteger(options.exitCode) ? options.exitCode : null,
     process_signal: options.signal || null,
@@ -172,13 +315,18 @@ function finalizeRun(options) {
     review_required: true,
     promotion: 'candidate-only'
   };
-  const packetPath = path.join(options.runDir, 'return-packet.json');
-  fs.writeFileSync(packetPath, JSON.stringify(packet, null, 2) + '\n', 'utf8');
+  const packet = Object.assign({}, unsignedPacket, { packet_sha256: packetIdentity(unsignedPacket) });
+  const bytes = Buffer.from(stableStringify(packet) + '\n', 'utf8');
+  publishEvidence(packetPath, bytes);
   if (options.reportDir) {
     ensureDir(options.reportDir);
-    fs.writeFileSync(path.join(options.reportDir, options.runId + '.json'), JSON.stringify(packet, null, 2) + '\n', 'utf8');
+    publishEvidence(path.join(options.reportDir, options.runId + '.json'), bytes);
   }
   return packet;
 }
 
-module.exports = { hashText, hashFile, createRun, finalizeRun };
+module.exports = {
+  RETURN_PACKET_SCHEMA, LEGACY_RETURN_PACKET_SCHEMA, RunLedgerError,
+  hashText, hashFile, stableStringify, verifyReturnPacket, loadReturnPacket, inspectRunCompletion,
+  createRun, finalizeRun
+};

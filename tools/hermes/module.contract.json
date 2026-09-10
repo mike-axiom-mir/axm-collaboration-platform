@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "hermes-local",
-  "version": "v0.4",
+  "version": "v0.5",
   "provides": [
     "immutable-reviewed-hermes-commit-tree-version-verification",
     "exact-snapshot-source-fetch-without-floating-branch-history",
@@ -20,6 +20,9 @@
     "metadata-only-provider-model-egress-receipts",
     "metadata-only-session-outcome-events",
     "candidate-only-return-packet-finalization",
+    "sealed-manifest-bound-return-packet-completion-admission",
+    "create-only-return-packet-publication",
+    "explicit-invalid-and-legacy-completion-hold-states",
     "orphan-run-recovery-finalization",
     "loopback-control-layer-health",
     "legacy-consent-gated-task-review-and-prompt-proposals"
@@ -38,7 +41,7 @@
   "handoffs": {
     "emits": [
       "axm.hermes-run-manifest/v1", "axm.hermes-tool-receipt/v1", "axm.hermes-provider-receipt/v1",
-      "axm.hermes-session-event/v1", "axm.hermes-return-packet/v1",
+      "axm.hermes-session-event/v1", "axm.hermes-return-packet/v2",
       "axm.hermes-task-proposal/v1", "axm.hermes-review-proposal/v1", "process:pinned-external-hermes-runtime"
     ],
     "accepts": [
@@ -93,6 +96,9 @@
       "hermes-memory-as-axm-canon",
       "hermes-generated-skill-as-axm-canon",
       "automatic-return-packet-promotion",
+      "filename-presence-as-run-completion-proof",
+      "overwrite-of-conflicting-completion-evidence",
+      "legacy-unsealed-return-packet-as-admitted-completion",
       "automatic-merge-gate-approval",
       "identity-or-package-profile-binding-claim",
       "automatic-proposal-application",
@@ -106,7 +112,7 @@
     "reload": "resume",
     "disconnect": "graceful-degrade",
     "watchdog": "bounded-direct-child-runtime-without-process-tree-guarantee",
-    "crash_recovery": "explicit-repair-closes-incomplete-run-as-candidate-return-packet",
+    "crash_recovery": "explicit-repair-closes-only-interrupted-runs-and-holds-invalid-or-legacy-completion-evidence",
     "cleanup": "explicit"
   }
 }

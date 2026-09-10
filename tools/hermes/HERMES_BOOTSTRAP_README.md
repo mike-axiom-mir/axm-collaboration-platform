@@ -1,4 +1,4 @@
-# AXM Hermes Bootstrap / Runtime Launcher v0.4
+# AXM Hermes Bootstrap / Runtime Launcher v0.5
 
 Status: TEST / local-intake candidate.
 
@@ -44,7 +44,7 @@ The managed block has begin/end markers. Provider/model settings outside the blo
 - policy validation
 - provider-credential policy check
 - source-verification report
-- closure of interrupted run capsules that never received a Return Packet
+- closure of interrupted run capsules that never received an admitted Return Packet
 
 A conflicting unmanaged top-level `hooks:` block or broken AXM marker structure fails closed. `repair --force` is the explicit backed-up take-over path.
 
@@ -86,9 +86,9 @@ Hermes hook metadata produces:
 - provider/model/base-scope receipts
 - session outcome events
 
-The launcher creates `run-manifest.json` before execution and `return-packet.json` after exit. Raw prompts, responses, tool args/results, paths, CLI values, and secret names/values are not stored by AXM evidence files.
+The launcher creates `run-manifest.json` before execution and a sealed `axm.hermes-return-packet/v2` after exit. The Return Packet binds the exact manifest bytes, carries its own SHA-256 identity, and is published create-only. Raw prompts, responses, tool args/results, paths, CLI values, and secret names/values are not stored by AXM evidence files.
 
-Interrupted capsules are not deleted; `repair` closes them into recovery Return Packets.
+Interrupted capsules are not deleted; `repair` closes them into recovery Return Packets. Corrupt, conflicting, or legacy v1 completion artifacts are preserved in explicit held states rather than overwritten or mistaken for completion.
 
 ## Hook boundary
 
