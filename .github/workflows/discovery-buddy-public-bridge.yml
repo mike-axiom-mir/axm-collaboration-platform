@@ -1,0 +1,131 @@
+name: Workshop public capability bridge
+
+on:
+  pull_request:
+    paths:
+      - '.axm/discovery-public.json'
+      - 'registry/*capabilit*.jsonl'
+      - 'scripts/generate-public-discovery.js'
+      - 'tests/public-discovery-selftest.js'
+      - 'tests/discovery-buddy-public-bridge.py'
+      - '.github/workflows/discovery-buddy-public-bridge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: workshop-public-capability-bridge-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository-required:
+    name: Workshop required checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the exact candidate head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Use the declared Node.js line
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.17.0
+      - name: Verify generated public discovery remains exact
+        run: npm run discovery:verify
+      - name: Run direct checks required by AGENTS.md
+        run: |
+          node verify.js
+          node hub/hub-selftest.js
+          node hub/route-selftest.js
+          node hub/graft-selftest.js
+          node hub/skin-selftest.js
+          node hub/verify-plus.js
+          node tests/html-script-syntax-test.js
+          node tests/tool-forge-package-test.js
+          node tools/agent-tool-forge/selftest.js
+          node tools/evidence-desk/selftest.js
+      - name: Check changed lines for whitespace errors
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            git diff --check "${{ github.event.pull_request.base.sha }}..HEAD"
+          else
+            git show --check --format=fuller --no-renames HEAD --
+          fi
+
+  portable-discovery-consumer:
+    name: portable Discovery Buddy scan + query
+    runs-on: ubuntu-latest
+    needs: repository-required
+    steps:
+      - name: Check out the exact candidate head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Use Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Compile the independent bridge verifier
+        run: python -m py_compile tests/discovery-buddy-public-bridge.py
+      - name: Check out pinned portable Discovery Buddy source
+        uses: actions/checkout@v4
+        with:
+          repository: mike-axiom-mir/axm-discovery-buddy
+          ref: 565c38ecf93a9d563b02211258d8d36fcb1162b5
+          path: .ci/discovery-buddy
+          persist-credentials: false
+      - name: Build and independently verify the one-file discovery consumer
+        run: |
+          python .ci/discovery-buddy/tools/build_portable_discovery.py build \
+            --output "$RUNNER_TEMP/discovery-buddy.pyz" \
+            --receipt "$RUNNER_TEMP/discovery-buddy.pyz.receipt.json"
+          python .ci/discovery-buddy/tools/build_portable_discovery.py verify \
+            --output "$RUNNER_TEMP/discovery-buddy.pyz" \
+            --receipt "$RUNNER_TEMP/discovery-buddy.pyz.receipt.json"
+          rm -rf .ci/discovery-buddy
+          test ! -e .ci/discovery-buddy
+      - name: Scan and exact-verify the Workshop through only the portable consumer
+        run: |
+          python "$RUNNER_TEMP/discovery-buddy.pyz" scan . \
+            --public \
+            --output-dir "$RUNNER_TEMP/workshop-discovery"
+          python "$RUNNER_TEMP/discovery-buddy.pyz" verify . \
+            --public \
+            --output-dir "$RUNNER_TEMP/workshop-discovery"
+      - name: Independently bind the public index to the real Workshop registry
+        run: |
+          python tests/discovery-buddy-public-bridge.py \
+            --repo-root . \
+            --index "$RUNNER_TEMP/workshop-discovery/public-discovery.json" \
+            --emit-query-id "$RUNNER_TEMP/selected-capability.txt"
+      - name: Query one deterministic real Workshop capability
+        shell: bash
+        run: |
+          CAPABILITY_ID="$(tr -d '\r\n' < "$RUNNER_TEMP/selected-capability.txt")"
+          test -n "$CAPABILITY_ID"
+          python "$RUNNER_TEMP/discovery-buddy.pyz" query \
+            "$RUNNER_TEMP/workshop-discovery/public-discovery.json" \
+            --capability-id "$CAPABILITY_ID" \
+            --repo mike-axiom-mir/axm-collaboration-platform \
+            > "$RUNNER_TEMP/query.json"
+          python tests/discovery-buddy-public-bridge.py \
+            --repo-root . \
+            --index "$RUNNER_TEMP/workshop-discovery/public-discovery.json" \
+            --query "$RUNNER_TEMP/query.json" \
+            --expected-query-id "$CAPABILITY_ID" \
+            --receipt "$RUNNER_TEMP/bridge-receipt.json"
+      - name: Preserve portable bridge evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: workshop-public-capability-bridge-evidence
+          path: |
+            ${{ runner.temp }}/workshop-discovery/public-discovery.json
+            ${{ runner.temp }}/query.json
+            ${{ runner.temp }}/selected-capability.txt
+            ${{ runner.temp }}/bridge-receipt.json
+            ${{ runner.temp }}/discovery-buddy.pyz.receipt.json
+          if-no-files-found: error
