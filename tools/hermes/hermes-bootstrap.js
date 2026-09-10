@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* AXM Hermes Runtime Bootstrap v0.4
+/* AXM Hermes Runtime Bootstrap v0.5
 
    Build hard, fail visibly, repair deterministically.
 
@@ -267,13 +267,19 @@ function pidAlive(pid) {
   if (!Number.isInteger(pid) || pid <= 0) return false;
   try { process.kill(pid, 0); return true; } catch (_) { return false; }
 }
-function incompleteRuns() {
+function runCompletionInventory() {
   if (!exists(RUNS_DIR)) return [];
-  return fs.readdirSync(RUNS_DIR).filter(name => exists(path.join(RUNS_DIR, name, 'run-manifest.json')) && !exists(path.join(RUNS_DIR, name, 'return-packet.json'))).sort();
+  return fs.readdirSync(RUNS_DIR).filter(name => exists(path.join(RUNS_DIR, name, 'run-manifest.json'))).sort().map(runId => ({
+    runId,
+    completion: RunLedger.inspectRunCompletion(path.join(RUNS_DIR, runId), runId)
+  }));
 }
 function repairInterruptedRuns() {
-  const lock = sourceLock(); let repaired = 0, skippedActive = 0;
-  for (const runId of incompleteRuns()) {
+  const lock = sourceLock(); let repaired = 0, skippedActive = 0, held = 0;
+  const inventory = runCompletionInventory();
+  held = inventory.filter(entry => entry.completion.state.startsWith('HELD_')).length;
+  for (const entry of inventory.filter(item => item.completion.state === 'INTERRUPTED')) {
+    const runId = entry.runId;
     const runDir = path.join(RUNS_DIR, runId), manifest = readJson(path.join(runDir, 'run-manifest.json')) || {};
     if (pidAlive(manifest.launcher_pid)) { skippedActive += 1; continue; }
     RunLedger.finalizeRun({
@@ -284,7 +290,7 @@ function repairInterruptedRuns() {
     });
     repaired += 1;
   }
-  return { repaired, skippedActive };
+  return { repaired, skippedActive, held };
 }
 function repair(force) {
   prepare(force);
@@ -294,7 +300,7 @@ function repair(force) {
   console.log('  policy:           valid');
   console.log('  profile:          AXM-owned hooks/learning controls reconciled');
   console.log('  credential guard: ok (' + credentials.secret_keys.length + ' approved .env secret keys)');
-  console.log('  orphan runs:      ' + recovery.repaired + ' closed; ' + recovery.skippedActive + ' still have a live launcher PID');
+  console.log('  orphan runs:      ' + recovery.repaired + ' closed; ' + recovery.skippedActive + ' still have a live launcher PID; ' + recovery.held + ' completion artifact(s) held for review');
 }
 
 function showDoctor() {
@@ -303,7 +309,7 @@ function showDoctor() {
   const policy = readJson(POLICY_FILE), policyCheck = RuntimePolicy.validatePolicy(policy);
   let credentialStatus = 'not checked';
   if (policyCheck.ok) { try { verifyHermesHomeCredentialPolicy(policy); credentialStatus = 'ok'; } catch (e) { credentialStatus = 'REFUSED: ' + e.message; } }
-  console.log('AXM Hermes Runtime doctor v0.4');
+  console.log('AXM Hermes Runtime doctor v0.5');
   console.log('git:               ' + (hasCommand('git') ? 'ok' : 'missing'));
   console.log('python:            ' + (pythonCommand() || 'missing'));
   console.log('node:              ' + (hasCommand('node') ? 'ok' : 'missing'));

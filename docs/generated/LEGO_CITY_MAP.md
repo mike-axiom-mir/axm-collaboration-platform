@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `9088eb7ca5a534c52a53b004988523c24fb1aa1dec599d3d84f2521667ad2eb7`
+Semantic graph digest: `3e638c9c2ea0f3768fed2e4de9bb043f808d80b0a96bb2a8cbfaeaacb0cde55c`
 
-Blocks: 318 · Capabilities: 3561 · Schemas: 744 · Unresolved edges: 1969
+Blocks: 318 · Capabilities: 3564 · Schemas: 744 · Unresolved edges: 1969
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -109,7 +109,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | hand-verification-lab | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 5 | 2 | 1 selftest(s) |
 | handoff-wiring-observatory | BRIDGE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 6 | 3 | 1 selftest(s) |
 | hardware-research-registry | ROOM (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 4 | 1 selftest(s) |
-| hermes-local | BRIDGE (INFERRED_UNCONFIRMED) | TEST | EXECUTE_TRUSTED, NETWORK_READ | 20 | 22 | 2 selftest(s) |
+| hermes-local | BRIDGE (INFERRED_UNCONFIRMED) | TEST | EXECUTE_TRUSTED, NETWORK_READ | 23 | 22 | 2 selftest(s) |
 | holodeck-composer | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 4 | 5 | 1 selftest(s) |
 | holodeck-screen-deck | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 7 | 5 | 1 selftest(s) |
 | host-assumption-observatory | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 6 | 1 | 1 selftest(s) |
@@ -1048,7 +1048,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `hermes-local` → `runtime:uv-for-explicit-deps-and-no-sync-start` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `hermes-local` → `source-lock:hermes-source.lock.json` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-provider-receipt/v1` (UNKNOWN)
-- `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-return-packet/v1` (UNKNOWN)
+- `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-return-packet/v2` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-review-proposal/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-run-manifest/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `hermes-local` → `axm.hermes-session-event/v1` (UNKNOWN)

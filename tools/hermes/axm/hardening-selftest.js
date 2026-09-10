@@ -11,7 +11,7 @@ function check(value, label) { if (!value) throw new Error('FAIL: ' + label); pa
 const policy = JSON.parse(fs.readFileSync(path.join(ROOT, 'axm-policy.example.json'), 'utf8'));
 const bootstrap = fs.readFileSync(path.join(ROOT, 'hermes-bootstrap.js'), 'utf8');
 
-check(RuntimePolicy.validatePolicy(policy).ok, 'default v0.4 policy validates');
+check(RuntimePolicy.validatePolicy(policy).ok, 'default v0.5 policy validates');
 check(policy.learning.memory_enabled === false && policy.learning.user_profile_enabled === false, 'built-in Hermes memory/profile are off by default');
 check(policy.learning.background_review_enabled === false, 'automatic Hermes background review is off by default');
 check(policy.learning.memory_write_approval === true && policy.learning.skill_write_approval === true, 'Hermes learning writes are approval-gated by default');

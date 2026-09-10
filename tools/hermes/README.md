@@ -1,4 +1,4 @@
-# AXM Hermes Runtime Adapter v0.4
+# AXM Hermes Runtime Adapter v0.5
 
 Status: EXPERIMENTAL / draft PR / candidate for local intake.
 
@@ -137,7 +137,9 @@ Session-end/finalize hooks retain only completion/failure/interruption/outcome m
 
 ### Return Packet
 
-At process exit AXM aggregates the run-local receipts into `axm.hermes-return-packet/v1` with deterministic receipt-set hashes and an evidence summary.
+At process exit AXM aggregates the run-local receipts into `axm.hermes-return-packet/v2` with deterministic receipt-set hashes and an evidence summary. The packet carries its own SHA-256 identity and binds the exact `run-manifest.json` bytes that opened the run.
+
+Completion is admitted only after the v2 packet passes strict bounded JSON parsing, canonical-byte verification, its self-hash, run identity, manifest binding, and candidate-only authority checks. Publication uses a same-directory private temporary file, file `fsync`, create-only hard-link exposure, and directory `fsync`; an occupied path with different or invalid bytes is preserved and held.
 
 Every packet is:
 
@@ -162,8 +164,10 @@ Repair currently:
 3. preserves user provider/model configuration outside that managed block
 4. backs up the existing Hermes config before managed changes
 5. verifies local provider-credential policy
-6. finds interrupted run capsules that lack Return Packets
-7. closes those capsules into recovery Return Packets rather than deleting evidence
+6. classifies run capsules as `COMPLETE`, `INTERRUPTED`, `HELD_INVALID`, or `HELD_LEGACY_UNSEALED`
+7. closes only truly interrupted capsules into recovery Return Packets rather than deleting evidence
+
+Existing v1 packets are not silently promoted to trustworthy completion evidence. They remain explicit held legacy artifacts for human review or a future migration tool.
 
 If the managed config markers or an unmanaged top-level `hooks:` block conflict, ordinary repair refuses the rewrite. `repair --force` is the explicit take-over path and backs up the previous config first.
 
@@ -222,7 +226,7 @@ Likewise, the Hub/Foundation sandbox remains an intended architecture boundary, 
 
 No silent semantic merge was performed between those two consent systems.
 
-## What v0.4 implements
+## What v0.5 implements
 
 - exact upstream repository + commit + tree + version verification
 - explicit locked dependency install
@@ -238,8 +242,10 @@ No silent semantic merge was performed between those two consent systems.
 - provider/model/base-scope evidence receipts
 - session outcome receipts
 - per-launch run manifest
-- candidate-only Return Packet
-- interrupted-run recovery
+- sealed, launch-manifest-bound, candidate-only Return Packet v2
+- create-only atomic Return Packet publication with idempotent exact reuse
+- explicit completion admission and held legacy/corrupt states
+- interrupted-run recovery that cannot be suppressed by mere filename presence
 - legacy proposal layer preserved
 
 ## Still not claimed

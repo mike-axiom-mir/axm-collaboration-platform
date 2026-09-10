@@ -215,8 +215,51 @@ function testRuntimeBoundary(tempRoot) {
   check(packet.session_events.latest_turn_evidence.completed === true && packet.canon === false && packet.promotion === 'candidate-only', 'Return Packet preserves outcome evidence without promotion');
   check(packet.integrity_flags.policy_changed_during_run === true && packet.integrity_flags.profile_changed_during_run === false, 'Return Packet detects policy drift while distinguishing stable profile');
   check(packet.integrity_flags.source_verified_after_run === true && packet.watchdog.max_run_minutes === 15 && packet.watchdog.timed_out === false, 'Return Packet carries source-after-run and watchdog evidence');
+  check(packet.schema === 'axm.hermes-return-packet/v2' && /^[0-9a-f]{64}$/.test(packet.packet_sha256), 'Return Packet v2 carries a deterministic self-verifying identity');
+  check(/^[0-9a-f]{64}$/.test(packet.run_manifest_sha256), 'Return Packet binds the exact launch manifest evidence');
+  check(RunLedger.verifyReturnPacket(packet, { runDir: run.runDir, expectedRunId: run.runId }).ok, 'completed Return Packet verifies against its exact run capsule');
+  check(RunLedger.inspectRunCompletion(run.runDir, run.runId).state === 'COMPLETE', 'run completion requires an admitted Return Packet');
+  check(fs.readdirSync(run.runDir).every(name => !name.endsWith('.tmp')), 'successful publication leaves no private temporary completion artifact');
+  const packetPath = path.join(run.runDir, 'return-packet.json');
+  const sealedPacketText = fs.readFileSync(packetPath, 'utf8');
+  const tamperedPacket = JSON.parse(sealedPacketText); tamperedPacket.outcome = 'process-exited-nonzero-or-unknown';
+  fs.writeFileSync(packetPath, JSON.stringify(tamperedPacket) + '\n', 'utf8');
+  check(RunLedger.inspectRunCompletion(run.runDir, run.runId).state === 'HELD_INVALID', 'tampered Return Packet cannot suppress interrupted-run recovery as false completion');
+  let conflictHeld = false;
+  try {
+    RunLedger.finalizeRun({
+      runId: run.runId, runDir: run.runDir, receiptDir: run.receiptDir, providerReceiptDir: run.providerReceiptDir, sessionEventDir: run.sessionEventDir,
+      reportDir: path.join(tempRoot, 'reports'), sourceLock: json('hermes-source.lock.json'), policyFile, configFile,
+      sourceVerified: true, sourceVerifiedAfter: true, exitCode: 0, signal: null, watchdogTimedOut: false
+    });
+  } catch (error) { conflictHeld = error && error.code === 'EVIDENCE_PATH_CONFLICT'; }
+  check(conflictHeld && fs.readFileSync(packetPath, 'utf8') !== sealedPacketText, 'conflicting occupied completion evidence is preserved and held, never overwritten');
+  fs.writeFileSync(packetPath, sealedPacketText, 'utf8');
+  const repeated = RunLedger.finalizeRun({
+    runId: run.runId, runDir: run.runDir, receiptDir: run.receiptDir, providerReceiptDir: run.providerReceiptDir, sessionEventDir: run.sessionEventDir,
+    reportDir: path.join(tempRoot, 'reports'), sourceLock: json('hermes-source.lock.json'), policyFile, configFile,
+    sourceVerified: true, sourceVerifiedAfter: true, exitCode: 99, signal: 'must-not-replace', watchdogTimedOut: false
+  });
+  check(repeated.packet_sha256 === packet.packet_sha256 && repeated.outcome === packet.outcome, 'repeat finalization is idempotent and cannot revise admitted completion truth');
+  const manifestPath = path.join(run.runDir, 'run-manifest.json');
+  const manifestTextBeforeTamper = fs.readFileSync(manifestPath, 'utf8');
+  const alteredManifest = JSON.parse(manifestTextBeforeTamper); alteredManifest.launcher_pid = 1;
+  fs.writeFileSync(manifestPath, JSON.stringify(alteredManifest) + '\n', 'utf8');
+  check(RunLedger.inspectRunCompletion(run.runDir, run.runId).state === 'HELD_INVALID', 'completion is held when its launch manifest drifts');
+  fs.writeFileSync(manifestPath, manifestTextBeforeTamper, 'utf8');
+  fs.writeFileSync(packetPath, JSON.stringify(Object.assign({}, packet, { schema: 'axm.hermes-return-packet/v1' })) + '\n', 'utf8');
+  check(RunLedger.inspectRunCompletion(run.runDir, run.runId).state === 'HELD_LEGACY_UNSEALED', 'legacy unsealed Return Packets remain explicit held evidence');
+  fs.writeFileSync(packetPath, sealedPacketText, 'utf8');
   const manifestText = fs.readFileSync(path.join(run.runDir, 'run-manifest.json'), 'utf8');
   check(!manifestText.includes('DO_NOT_STORE_PROMPT') && manifestText.includes('"max_run_minutes": 15'), 'run manifest stores watchdog and invocation shape, never raw CLI values');
+
+  const malformedOrphan = RunLedger.createRun({
+    runtimeRoot: path.join(tempRoot, 'runtime-malformed-orphan'), sourceLock: json('hermes-source.lock.json'), sourceVerified: true,
+    policy, policyFile, configFile, args: [], environmentReport: null, launcherPid: null
+  });
+  check(RunLedger.inspectRunCompletion(malformedOrphan.runDir, malformedOrphan.runId).state === 'INTERRUPTED', 'valid manifest without completion evidence is explicitly interrupted');
+  fs.writeFileSync(path.join(malformedOrphan.runDir, 'run-manifest.json'), '{"truncated":', 'utf8');
+  check(RunLedger.inspectRunCompletion(malformedOrphan.runDir, malformedOrphan.runId).state === 'HELD_INVALID', 'malformed launch evidence is held instead of sent into automatic repair');
 
   const watchdogPolicyFile = path.join(tempRoot, 'watchdog-policy.json');
   const watchdogPolicy = json('axm-policy.example.json');
@@ -259,7 +302,7 @@ async function main() {
 
   check(manifest.schema === ContractVerifier.MANIFEST_SCHEMA, 'manifest schema current');
   check(manifest.kind === 'adapter' && manifest.risk === 'HIGH', 'manifest exposes adapter/high-risk role');
-  check(manifest.version === 'v0.4' && contract.version === 'v0.4', 'manifest and contract aligned on v0.4');
+  check(manifest.version === 'v0.5' && contract.version === 'v0.5', 'manifest and contract aligned on v0.5');
   check(ContractVerifier.validateContract(contract, manifest).pass, 'module contract validates');
   check(contract.boundaries.refuses.includes('os-container-or-vm-sandbox-enforcement-claim'), 'contract refuses fake OS sandbox claim');
   check(contract.boundaries.refuses.includes('provider-credential-guard-as-network-isolation-claim'), 'contract refuses fake network-isolation claim');
@@ -277,7 +320,7 @@ async function main() {
   check(/HEAD\^\{tree\}/.test(bootstrap) && /observedHermesVersion/.test(bootstrap), 'bootstrap verifies commit tree and declared version');
   check(/sanitizeEnvironment/.test(bootstrap) && /verifyHermesHomeCredentialPolicy/.test(bootstrap), 'bootstrap applies provider credential egress guard');
   check(/RunLedger\.createRun/.test(bootstrap) && /RunLedger\.finalizeRun/.test(bootstrap), 'launcher wraps each Hermes execution in run capsule and Return Packet');
-  check(/repairInterruptedRuns/.test(bootstrap) && /action === 'repair'/.test(bootstrap), 'launcher has explicit crash/config repair path');
+  check(/repairInterruptedRuns/.test(bootstrap) && /inspectRunCompletion/.test(bootstrap) && /action === 'repair'/.test(bootstrap), 'launcher repairs only explicitly inspected interrupted runs');
   check(/BEGIN AXM MANAGED HERMES RUNTIME/.test(bootstrap) && /backupFile/.test(bootstrap), 'managed hook block is repairable with config backup');
   check(/max_run_minutes \* 60 \* 1000/.test(bootstrap) && /killSignal: 'SIGTERM'/.test(bootstrap), 'launcher enforces wall-clock watchdog');
   check(/\^\[A-Za-z0-9_.-\]\+\\s\*:/.test(bootstrap), 'force-repair YAML remover stops at any next top-level key');
@@ -292,7 +335,7 @@ async function main() {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-hermes-v04-'));
   try { testRuntimeBoundary(path.join(tempRoot, 'runtime')); await testLegacyLoopback(tempRoot); }
   finally { fs.rmSync(tempRoot, { recursive: true, force: true }); }
-  console.log('PASS AXM Hermes runtime adapter v0.4 selftest: ' + passes + ' assertions; live upstream/model-provider execution intentionally not required');
+  console.log('PASS AXM Hermes runtime adapter v0.5 selftest: ' + passes + ' assertions; live upstream/model-provider execution intentionally not required');
 }
 
 main().catch(error => { console.error(error && error.stack || error); process.exitCode = 1; });
