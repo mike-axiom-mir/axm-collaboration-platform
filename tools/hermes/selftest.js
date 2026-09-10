@@ -253,6 +253,14 @@ function testRuntimeBoundary(tempRoot) {
   const manifestText = fs.readFileSync(path.join(run.runDir, 'run-manifest.json'), 'utf8');
   check(!manifestText.includes('DO_NOT_STORE_PROMPT') && manifestText.includes('"max_run_minutes": 15'), 'run manifest stores watchdog and invocation shape, never raw CLI values');
 
+  const malformedOrphan = RunLedger.createRun({
+    runtimeRoot: path.join(tempRoot, 'runtime-malformed-orphan'), sourceLock: json('hermes-source.lock.json'), sourceVerified: true,
+    policy, policyFile, configFile, args: [], environmentReport: null, launcherPid: null
+  });
+  check(RunLedger.inspectRunCompletion(malformedOrphan.runDir, malformedOrphan.runId).state === 'INTERRUPTED', 'valid manifest without completion evidence is explicitly interrupted');
+  fs.writeFileSync(path.join(malformedOrphan.runDir, 'run-manifest.json'), '{"truncated":', 'utf8');
+  check(RunLedger.inspectRunCompletion(malformedOrphan.runDir, malformedOrphan.runId).state === 'HELD_INVALID', 'malformed launch evidence is held instead of sent into automatic repair');
+
   const watchdogPolicyFile = path.join(tempRoot, 'watchdog-policy.json');
   const watchdogPolicy = json('axm-policy.example.json');
   writeJson(watchdogPolicyFile, watchdogPolicy);

@@ -133,6 +133,14 @@ function loadReturnPacket(file, options) {
 }
 
 function inspectRunCompletion(runDir, expectedRunId) {
+  const manifestPath = path.join(runDir, 'run-manifest.json');
+  try {
+    const manifestBytes = readEvidenceBytes(manifestPath);
+    const manifest = JSON.parse(manifestBytes.toString('utf8'));
+    if (!manifest || manifest.schema !== 'axm.hermes-run-manifest/v1' || (expectedRunId && manifest.run_id !== expectedRunId)) {
+      return { state: 'HELD_INVALID', reason: 'run-manifest-mismatch' };
+    }
+  } catch (error) { return { state: 'HELD_INVALID', reason: error.code || 'run-manifest-invalid' }; }
   const packetPath = path.join(runDir, 'return-packet.json');
   if (!fs.existsSync(packetPath)) return { state: 'INTERRUPTED', reason: 'return-packet-missing' };
   try {
@@ -187,7 +195,7 @@ function createRun(options) {
     canon: false,
     review_required: true
   };
-  fs.writeFileSync(path.join(runDir, 'run-manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+  publishEvidence(path.join(runDir, 'run-manifest.json'), Buffer.from(JSON.stringify(manifest, null, 2) + '\n', 'utf8'));
   return { runId, runDir, stateDir, receiptDir, providerReceiptDir, sessionEventDir, manifest };
 }
 
