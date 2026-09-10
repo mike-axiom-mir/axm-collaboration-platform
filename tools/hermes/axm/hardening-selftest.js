@@ -119,7 +119,8 @@ expectEvidenceHold(fixture => {
       schema: 'axm.hermes-provider-receipt/v1', run_id: fixture.run.runId, receipt_hash: 'c'.repeat(64), provider: 'lmstudio', model: 'local', base_url_scope: 'loopback', policy_mismatch: false
     }) + '\n', 'utf8');
     fs.writeFileSync(path.join(fixture.run.sessionEventDir, 'session.json'), JSON.stringify({
-      schema: 'axm.hermes-session-event/v1', run_id: fixture.run.runId, receipt_hash: 'd'.repeat(64), event: 'on_session_end', completed: true, failed: false, interrupted: false
+      schema: 'axm.hermes-session-event/v1', run_id: fixture.run.runId, receipt_hash: 'd'.repeat(64), event: 'on_session_end', completed: true, failed: false, interrupted: false,
+      turn_exit_reason: null, model: 'local', platform: 'test'
     }) + '\n', 'utf8');
     fs.writeFileSync(path.join(fixture.run.stateDir, 'state.json'), JSON.stringify({ tool_calls: 1, files_read: 1, files_written: 0 }) + '\n', 'utf8');
     const packet = finalizeFixture(fixture);
