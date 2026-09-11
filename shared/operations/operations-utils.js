@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const EvidenceRetention = require('../evidence-retention/evidence-retention-service');
+const AtomicJsonPublication = require('./atomic-json-publication');
 
 function now() { return new Date().toISOString(); }
 function uid(prefix) { return String(prefix || 'op') + '-' + Date.now().toString(36) + '-' + crypto.randomBytes(4).toString('hex'); }
@@ -17,10 +18,7 @@ function loadJson(file, fallback) {
 }
 
 function atomicJson(file, value) {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  const temp = file + '.tmp-' + process.pid + '-' + crypto.randomBytes(3).toString('hex');
-  fs.writeFileSync(temp, JSON.stringify(value, null, 2) + '\n', 'utf8');
-  fs.renameSync(temp, file);
+  return AtomicJsonPublication.publish(file, value);
 }
 
 function appendJsonl(file, value) {
