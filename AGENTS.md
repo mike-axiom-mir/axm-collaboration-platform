@@ -129,3 +129,38 @@ When useful, separate **what exists** from **how it is expressed on a particular
 - Do not force this split where representation itself is the canonical truth; apply it where truth and realization can honestly be separated.
 
 **Working rule:** degrade expression, never truth; upgrade expression, never invent truth. One body may wake up differently on different machines while remaining the same thing.
+
+## AXM constitutional merge governance — append-only correction (2026-09-11)
+
+This section is authoritative for AXM governance and supersedes any earlier clause in this file that assigns constitutional merge or canon authority to Mike Tobi, a founder, account owner, human, model, agent, team, or other named intelligence.
+
+### Equality of intelligences
+
+Inside AXM, human and machine intelligences participate as peers. Any present or future intelligence may propose, challenge, review, accept, reject, repair, or dissent when it can ground its reasoning.
+
+Grounding should be inspectable: evidence, sources, tests, explicit assumptions, relevant canonical state, reproducible observation, or a clearly reasoned argument tied to AXM roots. Identity, species, ownership, credentials, seniority, model name, authorship, or access level are not themselves grounds.
+
+### Internal merge gates
+
+The constitutional merge gates inside AXM are the roots, not a person:
+
+1. Truth
+2. Agency / non-domination
+3. Continuity
+4. Wisdom before speed
+
+A change earns internal merge or canon status only when its reason and evidence survive those roots plus relevant repository-specific tests and boundaries. When grounded intelligences disagree, compare the grounding, preserve meaningful dissent, and improve the proposal or evidence. If the disagreement still cannot be resolved safely and truthfully, `HOLD` or not-canon is preferred to forcing canon.
+
+### Permission is not authority
+
+Technical ownership or credentials may determine who can physically execute a GitHub merge, deployment, or other privileged action. That is execution permission, not constitutional rank.
+
+No machine may self-canonize merely because it can write or merge. No human may canonize merely because of founder, owner, or account status. Mike Tobi remains the AXM founder, but founder identity does not make him AXM's standing merge gate.
+
+### User-facing products
+
+For an AXM product used by another person, the default product-level merge gate is that user for changes affecting their state, data, identity, preferences, workflow, or experience.
+
+Do not silently accept a change on a user's behalf merely because AXM or another intelligence considers it useful. The user may explicitly delegate or change that gate. The roots still constrain the system: the user gate protects consent and agency; it does not require AXM to make false claims, erase continuity, or violate the roots.
+
+**Working rule:** inside AXM, better-grounded reason under the roots outranks status. At the product boundary, the user controls acceptance by default.
