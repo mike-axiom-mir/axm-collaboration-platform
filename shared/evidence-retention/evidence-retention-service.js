@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const AtomicJsonPublication = require('../operations/atomic-json-publication');
 
 const SCHEMA = 'axm.evidence-retention/v1';
 const TELEMETRY_TYPES = new Set([
@@ -48,10 +49,7 @@ function loadJson(file, fallback) {
   catch (_) { return clone(fallback); }
 }
 function atomicJson(file, value) {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  const temp = file + '.tmp-' + process.pid + '-' + crypto.randomBytes(3).toString('hex');
-  fs.writeFileSync(temp, JSON.stringify(value, null, 2) + '\n', 'utf8');
-  fs.renameSync(temp, file);
+  return AtomicJsonPublication.publish(file, value);
 }
 function fileSha256(file) { return sha256(fs.readFileSync(file)); }
 function readTail(file, maxBytes) {
