@@ -164,3 +164,23 @@ For an AXM product used by another person, the default product-level merge gate 
 Do not silently accept a change on a user's behalf merely because AXM or another intelligence considers it useful. The user may explicitly delegate or change that gate. The roots still constrain the system: the user gate protects consent and agency; it does not require AXM to make false claims, erase continuity, or violate the roots.
 
 **Working rule:** inside AXM, better-grounded reason under the roots outranks status. At the product boundary, the user controls acceptance by default.
+
+## Repository-level HOLD — collaboration platform safety boundary (2026-09-12)
+
+The collaboration platform does **not need improvement work at this time**. Treat the repository's platform-wide growth, refactor, integration, and capability-expansion lanes as `HOLD`.
+
+The reason is a safety and manageability boundary, not a lack of future value. The current collaboration platform has a sufficiently broad and interdependent safety/integration surface that local Codex should not be asked to manage or improve it as a whole yet. Doing so before the required capabilities are safely captured would create unnecessary risk of mis-coordination, hidden regressions, weakened boundaries, or claims that exceed the available evidence.
+
+Until this HOLD is deliberately revisited:
+
+- do not start broad improvement, refactor, growth, or platform-integration work;
+- do not merge existing platform growth lanes merely to reduce branch or PR count;
+- preserve existing branches, PRs, failures, tests, and historical evidence as provenance unless a separate grounded reason requires a change;
+- do not weaken safety checks, permissions, isolation, provenance, recovery, or truth boundaries to make the platform easier for local Codex to operate;
+- a narrowly scoped repair is allowed only when it addresses a concrete safety, data-integrity, or continuity defect and can be bounded and evidenced independently of broader platform growth.
+
+Resume wider work later, when the capabilities needed to understand, operate, test, coordinate, and recover the platform are safely captured as bounded, inspectable, testable components. At that point local Codex or another qualified intelligence may reassess the HOLD against the AXM roots and current evidence.
+
+This pause is intentional preservation under **Continuity** and **Wisdom before speed**. It is not abandonment, failure, or permission to bypass the platform's safety model.
+
+**Working rule:** preserve the collaboration platform now; capture the missing operating capabilities safely first; improve the platform later from a stronger foundation.
