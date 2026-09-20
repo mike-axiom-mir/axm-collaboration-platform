@@ -21,7 +21,7 @@
 </p>
 
 > **Public experimental source checkpoint.** AXM is runnable and open for
-> evaluation. AXM-owned source is licensed under Apache-2.0; third-party
+> evaluation. AXM-owned source in the current branch is licensed under AGPL-3.0-or-later; third-party
 > components keep their own upstream terms. Warnings and unproven boundaries
 > remain visible.
 
@@ -138,7 +138,7 @@ execution.
 - Use the issue templates for reproducible bugs and bounded ideas.
 - Read [Contributing](CONTRIBUTING.md) before opening a pull request.
 - Never post tokens, passwords, private logs, personal data, or private paths.
-- AXM-owned source in this repository is licensed under **Apache-2.0**. Third-party
+- AXM-owned source in the current repository state is licensed under **AGPL-3.0-or-later**. Third-party
   code, assets, runtimes, models, data, fonts and media retain their own terms;
   see [License Status](LICENSE_STATUS.md), `THIRD_PARTY.json`, and preserved
   component notices before redistribution.
