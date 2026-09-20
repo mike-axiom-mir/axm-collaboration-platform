@@ -1,5 +1,7 @@
 # AXM Public Project Map
 
+> **License migration note — 2026-09-20:** this document is a historical 2026-09-13 checkpoint. Its Apache-2.0 statements accurately describe that checkpoint and are intentionally preserved. Current repository licenses were migrated on 2026-09-20; consult each repository's current root LICENSE for present terms.
+
 **Human-readable checkpoint — audited 2026-09-13.**
 
 This page is a fast orientation map for the public repositories owned by `mike-axiom-mir`. It is deliberately shorter than the individual READMEs so a person can see what exists, what stage it is in, and whether a packaged GitHub prerelease exists without having to inspect dozens of repositories at machine speed.
