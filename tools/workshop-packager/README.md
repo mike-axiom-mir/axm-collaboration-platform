@@ -21,6 +21,9 @@ state.
 
 Local relay credentials such as `bridge-token.txt` and `bridge_token.txt` are
 always excluded even when they sit beside a packageable nested runtime.
+Package-manager and login credential files such as `.npmrc`, `.netrc`,
+`_netrc`, `.pypirc`, `.git-credentials`, and common private SSH identity
+filenames are also always excluded, regardless of their contents or nesting.
 
 Only exact reviewed intake dependencies are included in a public snapshot:
 `intakes/ai-team-collaboration-runs-01-101-v1` supplies AI Team Steward's
@@ -140,5 +143,6 @@ complete Hub boot, but it can prove that its declared files restore exactly.
 ```powershell
 node tools/workshop-packager/selftest.js
 node tools/workshop-packager/mobile-selftest.js
+node tools/workshop-packager/credential-boundary-selftest.js
 node tools/workshop-packager/return-interoperability-selftest.js <modular-package.zip>
 ```

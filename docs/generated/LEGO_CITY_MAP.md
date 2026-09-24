@@ -4,7 +4,7 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `9088eb7ca5a534c52a53b004988523c24fb1aa1dec599d3d84f2521667ad2eb7`
+Semantic graph digest: `e33f21922bca19ff35f08f230245a6053494293edc884232fd5575b9c79207d3`
 
 Blocks: 318 · Capabilities: 3561 · Schemas: 744 · Unresolved edges: 1969
 
@@ -323,7 +323,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | workshop-command-center | ROUTE (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 20 | 16 | 1 selftest(s) |
 | workshop-direction | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 7 | 3 | 1 selftest(s) |
 | workshop-needs-observatory | ROOM (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 3 | 3 selftest(s) |
-| workshop-packager | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 13 | 4 | 3 selftest(s) |
+| workshop-packager | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 13 | 4 | 4 selftest(s) |
 | workshop-search-provenance | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 8 | 5 | 1 selftest(s) |
 | workshop-updater | HAND (INFERRED_UNCONFIRMED) | TEST | NETWORK_READ, WRITE_CANDIDATE | 8 | 6 | 1 selftest(s) |
 | world-partition-streaming-compiler | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |

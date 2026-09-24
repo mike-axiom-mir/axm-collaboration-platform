@@ -1,0 +1,42 @@
+name: Workshop public-safety boundary
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/workshop-public-safety.yml'
+      - 'tools/workshop-packager/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/workshop-public-safety.yml'
+      - 'tools/workshop-packager/**'
+
+permissions:
+  contents: read
+
+jobs:
+  credential-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove always-private credential paths stay out
+        run: node tools/workshop-packager/credential-boundary-selftest.js
+      - name: Validate JavaScript and PowerShell syntax
+        shell: pwsh
+        run: |
+          node --check tools/workshop-packager/package-planner.js
+          node --check tools/workshop-packager/credential-boundary-selftest.js
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path tools/workshop-packager/package-workshop.ps1),
+            [ref]$null,
+            [ref]$errors
+          )
+          if ($errors.Count) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }

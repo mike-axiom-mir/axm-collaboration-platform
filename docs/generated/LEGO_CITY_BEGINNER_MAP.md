@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `a993d0ec5c8d1a53d3bd4319118e658a9e30dca66ebfe6de2cad7b0ef3f35692`
+Twin digest: `87df5938cc43c5c3a65e9db7d2b11044bab69017cfeca986513f1c66aaacd273`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -319,7 +319,7 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | workshop-command-center | ROUTE | TEST | 20 | WRITE_CANDIDATE | UNKNOWN | `73aa4eeccf8ca8bf…` |
 | workshop-direction | HAND | EXPERIMENTAL | 7 | WRITE_CANDIDATE | UNKNOWN | `21f832c26199aef9…` |
 | workshop-needs-observatory | ROOM | EXPERIMENTAL | 6 | NONE | UNKNOWN | `455502bbafac3dd8…` |
-| workshop-packager | HAND | TEST | 13 | WRITE_CANDIDATE | UNKNOWN | `d542890d1f819b4f…` |
+| workshop-packager | HAND | TEST | 13 | WRITE_CANDIDATE | UNKNOWN | `4548b0774928bcfa…` |
 | workshop-search-provenance | ROOM | TEST | 8 | NONE | UNKNOWN | `08b31af027afb6de…` |
 | workshop-updater | HAND | TEST | 8 | NETWORK_READ, WRITE_CANDIDATE | UNKNOWN | `33c8c554d63c2dc5…` |
 | world-partition-streaming-compiler | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | MEDIUM | `03154daa9f606c42…` |
